@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+<name>Kataster portal kml report</name>
+<!-- hladam 5124 - 1372 (e) -->
+<Folder>
+<open>1</open>
+<name>LV: 5124</name>
+<Placemark>
+<Style>
+<LineStyle><width>1.0</width><color>ff50B432</color></LineStyle>
+<PolyStyle><color>8050B432</color><fill>1</fill></PolyStyle>
+</Style>
+<name>E: 1372 1/5 Plocha: 5355</name>
+<Polygon>
+<tessellate>1</tessellate>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>
+17.7257366,48.2636322,0
+17.7256147,48.2635569,0
+17.7238495,48.2654334,0
+17.7219969,48.2673649,0
+17.7220401,48.2673956,0
+17.7220988,48.2674364,0
+17.7257366,48.2636322,0
+</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+</Placemark>
+<!-- hladam 5124 - 1373/201 (e) -->
+<Placemark>
+<Style>
+<LineStyle><width>1.0</width><color>ff50B432</color></LineStyle>
+<PolyStyle><color>8050B432</color><fill>1</fill></PolyStyle>
+</Style>
+<name>E: 1373/201 1/5 Plocha: 3174</name>
+<Polygon>
+<tessellate>1</tessellate>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>
+17.7220735,48.2674669,0
+17.7219652,48.2673908,0
+17.7199124,48.2695065,0
+17.7200940,48.2694999,0
+17.7201054,48.2694980,0
+17.7220735,48.2674669,0
+</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+</Placemark>
+<!-- hladam 5124 - 1373/202 (e) -->
+<Placemark>
+<Style>
+<LineStyle><width>1.0</width><color>ff50B432</color></LineStyle>
+<PolyStyle><color>8050B432</color><fill>1</fill></PolyStyle>
+</Style>
+<name>E: 1373/202 1/5 Plocha: 1257</name>
+<Polygon>
+<tessellate>1</tessellate>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>
+17.7201054,48.2694980,0
+17.7200940,48.2694999,0
+17.7199124,48.2695065,0
+17.7192993,48.2701384,0
+17.7191580,48.2702840,0
+17.7192328,48.2703984,0
+17.7201054,48.2694980,0
+</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon>
+</Placemark>
+</Folder>
+</Document>
+</kml>

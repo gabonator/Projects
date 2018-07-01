@@ -1,0 +1,1 @@
+Z katastralnych map ziska pomocou cisla parcely a katastralneho uzemia geometriu pozemku. Tato je skonvertovana do formatu KML ktory je potom mozne zobrazit v Google Earth

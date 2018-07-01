@@ -1,0 +1,1 @@
+Very handy when it is necessary to receive/transmit multiple uart signals. ESP8266 tested with 5 bitbanged UART channels at 9600 bauds. Support for 9bit MDB protocol

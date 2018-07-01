@@ -1,0 +1,471 @@
+<html>
+<title>ORK100 - Riadiaci panel</title>
+<head>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+
+<style>
+#schemecontainer {width:600px; height:580px; float:left; margin-right:20px;}
+#scheme {position:relative; width:634px; height:563px; zoom:0.9; }
+.scheme {position:absolute; left:0px; top:0px;}
+.fan {position:absolute; left:90px; top:450px; display:none}
+.flame {position:absolute; left:290px; top:390px; width:120px; display:none}
+.ion {position:absolute; left:270px; top:320px; width:60px; display:none}
+.spark {position:absolute; left:370px; top:320px; width:60px; display:none}
+.pump {position:absolute; left:470px; top:397px;  display:none}
+.servo {position:absolute; left:90px; top:360px;  display:none}
+.valve1 {position:absolute; left:350px; top:60px;  display:none}
+.valve2 {position:absolute; left:237px; top:60px;  display:none}
+.sensor1 {position:absolute; left:465px; top:30px;  display:none}
+.sensor2 {position:absolute; left:237px; top:160px;  display:none}
+.sensor3 {position:absolute; left:468px; top:463px;  display:none}
+.temperature  {background:url("scheme/thermometer.png"); background-size:40px; background-repeat: no-repeat; 
+padding-left:30px; padding-top:2px;  height:40px; width:120px; font-family:arial; font-weight:bold;}
+#temp_out { position:absolute; left:480px; top:250px; }
+#temp_in { position:absolute; left:480px; top:350px; }
+#temp_body { position:absolute; left:350px; top:160px; }
+#temp_air { position:absolute; left:70px; top:140px; }
+.info {font-family:arial; font-weight:bold;}
+#info_servo { position:absolute; left:160px; top:364px; }
+
+#container {width:100%}
+#statePane {font-size:17px;}
+#stateBox {padding-bottom:0px;}
+#stateBox h4 {background:#d0d0d0; margin-top:5px; margin-bottom:5px;}
+
+#modecontainer {clear:both; height:88px; overflow:hidden;}
+.modegroup1 {height:75px; border:#d0d080 5px solid; border-radius:5px; float:left; background:#d0d080; text-align:center; font-family:arial;}
+.modegroup2 {height:60px; border:#ffffff 5px solid; border-radius:5px; float:left; }
+.modebox {width:120px; height:55px; line-height:50px; text-align:center; background:#f0f0f0; border:#808080 2px solid; border-radius:5px;
+  margin-right:5px; float:left; font-family:arial; font-size:20px;
+  }
+.two {font-size:20px; line-height:26px;}
+.selected {background:#808080; color:#ffffff;}
+
+</style>
+<h1>Riadiaci panel kotla ORK100</h1>
+
+<div id="container">
+<div id="modecontainer">
+<div class="modegroup2">
+<div class="modebox selected" id="modeoffline">Offline</div>
+<div class="modebox two" id="modesafe">Bezpecny rezim</div>
+</div>
+<div class="modegroup1">
+<div class="modebox" id="modeprepare">Priprava</div>
+<div class="modebox" id="modeignition">Zapalovanie</div>
+<div class="modebox" id="modeheating">Kurenie</div>
+<div class="modebox" id="modestandby">Oddych</div><br>
+Proces kurenia
+</div>
+<div class="modegroup2">
+<div class="modebox two" id="modemanual">Manualny rezim</div>
+<div class="modebox two" id="modelocked">Uzamknuty rezim</div>
+</div>
+</div>
+
+<div id="schemecontainer">
+<div id="scheme">
+<img class="scheme" id="scheme_clean" src="scheme/scheme_clean.png">
+<img class="fan" id="fan_error" src="scheme/fan_error.png" title="Turbo ventilator - porucha">
+<img class="fan" id="fan_icon" src="scheme/fan_icon.png" title="Turbo ventilator - pripraveny">
+<img class="fan" id="fan_on" src="scheme/fan_on.png" title="Turbo ventilator - aktivny">
+<img class="flame" id="flame_on" src="scheme/flame.png" title="Plamen hori">
+<img class="flame" id="flame_off" src="scheme/flame_off.png" title="Plamen nehori">
+<img class="flame" id="flame_trans" src="scheme/flame_trans.png" title="Plamen v prechode">
+<img class="ion" id="ion_error" src="scheme/ion_error.png" title="Ionizacny senzor - porucha">
+<img class="ion" id="ion_flame" src="scheme/ion_flame.png" title="Ionizacny senzor - plamen hori">
+<img class="ion" id="ion_icon" src="scheme/ion_icon.png" title="Ionizacny senzor - plamen nehori">
+<img class="ion" id="ion_offline" src="scheme/ion_offline.png" title="Ionizacny senzor - kotol vypnuty">
+<img class="ion" id="ion_trans" src="scheme/ion_trans.png" title="Ionizacny senzor - plamen v prechode">
+<img class="pump" id="pump_error" src="scheme/pump_error.png" title="Obehove cerpadlo - porucha">
+<img class="pump" id="pump_icon" src="scheme/pump_icon.png" title="Obehove cerpadlo - pripravene">
+<img class="pump" id="pump_on" src="scheme/pump_on.png" title="Obehove cerpadlo - v prevadzke">
+<img class="sensor1" id="sensor1_error" src="scheme/sensor_error.png" title="Senzor tlaku plynu na vstupe - porucha, tlak poklesol pod nastavenu uroven">
+<img class="sensor1" id="sensor1_icon" src="scheme/sensor_icon.png" title="Senzor tlaku plynu na vstupe - v poriadku">
+<img class="sensor2" id="sensor2_error" src="scheme/sensor2_error.png" title="Preslahovy senzor - porucha">
+<img class="sensor2" id="sensor2_icon" src="scheme/sensor2_icon.png" title="Preslahovy senzor - v poriadku">
+<img class="sensor3" id="sensor3_error" src="scheme/sensor_error.png" title="Senzor tlaku spalin na vystupe - upchaty vyfuk">
+<img class="sensor3" id="sensor3_icon" src="scheme/sensor_icon.png" title="Senzor tlaku spalin na vystupe - v poriadku">
+<img class="servo" id="servo_icon" src="scheme/servo_icon.png" title="Servo klapky pritoku vzduchu - klapka zatvorena">
+<img class="servo" id="servo_working" src="scheme/servo_working.png" title="Servo klapky pritoku vzduchu - v prevadzke">
+<img class="spark" id="spark_icon" src="scheme/spark_icon.png" title="Zapalovacia isrka - neaktivna">
+<img class="spark" id="spark_on" src="scheme/spark_on.png" title="Zapalovacia isrka - aktivna">
+<img class="valve1" id="valve1_icon" src="scheme/valve_icon.png" title="Solenoidovy ventil plynu EVP1 - zatvoreny">
+<img class="valve1" id="valve1_working" src="scheme/valve_working.png" title="Solenoidovy ventil plynu EVP1 - otvoreny">
+<img class="valve2" id="valve2_icon" src="scheme/valve_icon.png" title="Solenoidovy ventil plynu EVP2 - zatvoreny">
+<img class="valve2" id="valve2_working" src="scheme/valve_working.png" title="Solenoidovy ventil plynu EVP2 - otvoreny">
+<div class="temperature" id="temp_out">voda vystup<br>??? &deg;C</div>
+<div class="temperature" id="temp_in">voda vstup<br>??? &deg;C</div>
+<div class="temperature" id="temp_body">teplota kotla<br>??? &deg;C</div>
+<div class="temperature" id="temp_air">nasavanie<br>??? &deg;C</div>
+<div class="info" id="info_servo">klapka<br>otvorena<br>???%</div>
+</div>
+</div>
+
+<div id="statePane">
+
+<div id="stateBox">
+<h4>Ovladanie:</h4>
+<!--<span id="onlineState"></span><br>-->
+<input type="button" value="Zastav kotol" onClick="onSafe()" style="font-size:20px">&nbsp;
+<input type="button" value="Spusti kurenie" onClick="onStart()" style="font-size:20px">
+</div>
+
+<div id="stateBox">
+<h4>Teploty:</h4>
+voda vstup=<span id="teplotaVstup"></span>&deg;C<br>
+voda vystup=<span id="teplotaVystup"></span>&deg;C<br>
+kotol=<span id="teplotaTermostat"></span>&deg;C<br>
+nasavanie=<span id="teplotaVzduch"></span>&deg;C<br>
+</div>
+
+<div id="stateBox">
+<h4>Poruchy:</h4>
+<span id="poruchy"></span>
+</div>
+
+<div id="stateBox">
+<h4>Zariadenia:</h4>
+ionizacny senzor=<span id="devIon"></span> (<span id="devIonVolts"></span>V)<br>
+obehove cerpadlo=<span id="devCerpadlo"></span><br>
+ventilator=<span id="devVentilator"></span><br>
+zapalovanie=<span id="devZapalovanie"></span><br>
+plyn=<span id="devPlyn"></span><br>
+klapka=<span id="devKlapka"></span><br>
+</div>
+
+<div id="stateBox">
+<h4>Stav:</h4>
+rezim=<span id="state"></span><br>
+pocet chyb:<span id="infoErrors"></span><br>
+pocet cyklov:<span id="infoCycles"></span><br>
+zapnuty:<span id="infoUptime"></span> min<br>
+zapnuty plyn:<span id="infoGastime"></span> min<br>
+termostat:<span id="infoConfig"></span>&deg;C<br>
+</div>
+</div>
+
+</div>
+<br><br><br>
+<div id="chart" style="width:100%; height:400px;"></div>
+
+<br><br>
+<textarea rows="15" cols="100" id="log">
+</textarea>
+<br>
+<input type="text" id="send"><input type="button" value="Posli prikaz" onClick="onSend()">
+<span id="logspan"></span><br><br>
+
+<script>
+  var globalInfo = false;
+  var globalInfoReceived = 0;
+
+  var first = true;
+  var buffer = "";
+  socket = new WebSocket("ws://"+window.location.hostname+":2222");
+  socket.onopen = function()
+  {
+    console.log("Connected!");
+  }
+  socket.onclose = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onerror = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onmessage = function(msg)
+  {
+    buffer += new String(msg.data);
+    var lines = buffer.split("\n");
+    while ( lines.length > 1 )
+      Receive( lines.shift() );
+    buffer = lines.join("\n");
+  }
+
+  function Receive(msg)
+  {  
+    if (first)
+    {
+      first = false;
+      return;
+    }
+
+    console.log(msg);
+    if (msg.charAt(0) == "{" && msg.charAt(msg.length-1) == "}")
+    {
+//    msg = msg.split("'").join("\"");
+      msg = msg.replace("},devs", "],devs");
+      msg = msg.replace("ion=", "ion:");
+      msg = msg.replace("median=", "median:");
+      
+      var json = eval("("+msg+")");
+      Process(json);
+      return;
+    }
+    onLog(msg);
+  }
+
+  function onSend()
+  {
+    if (globalInfo && globalInfo.state == "manual")
+      socket.send(document.getElementById("send").value);
+    else
+      socket.send(document.getElementById("send").value + "\n");
+  }
+
+  function onSafe()
+  {
+    socket.send("safe\n");
+  }
+
+  function onStart()
+  {
+    socket.send("start\n");
+  }
+
+  function onLog(msg)
+  {
+    $("log").value = msg + "\n" + $("log").value;
+  }
+
+  $ = function(id) 
+  {
+    return document.getElementById(id);
+  }
+
+  function Process(json)
+  {
+//console.log(json);
+    if (json.state)
+    {
+      $("state").innerHTML = json.state;
+      if (json.state == "safe")
+        $("state").style = "";
+      else if (json.state == "automatic-prepare")
+        $("state").style = "color:black; background:yellow;";
+      else if (json.state == "automatic-ignition")
+        $("state").style = "color:black; background:orange;";
+      else if (json.state == "automatic-burning")
+        $("state").style = "color:white; background:#00b000;";
+      else
+        $("state").style = "color:white; background:black;";
+    }
+
+    if (json.config)
+    {
+      $("infoErrors").innerHTML = json.errors;
+      $("infoCycles").innerHTML = json.cycles;
+      $("infoUptime").innerHTML = (json.uptime / 60).toFixed(1);
+      $("infoGastime").innerHTML = (json.plynSeconds / 60).toFixed(1);
+      $("infoConfig").innerHTML = json.config.temperatureSetMin + " / " + json.config.temperatureSetMax;
+      return;
+    }
+    if (json.devs)
+    {
+      if (json.temp)
+      {
+        $("teplotaVstup").innerHTML = json.temp.vstup;
+        $("teplotaVystup").innerHTML = json.temp.vystup;
+        $("teplotaTermostat").innerHTML = json.temp.termostat;
+        $("teplotaVzduch").innerHTML = json.temp.vzduch;
+      }
+      if (json.ion)
+      {
+        $("devIon").innerHTML = json.ion[1];
+        $("devIonVolts").innerHTML = json.ion[0];
+
+        if (json.ion[1] == "Nehori")
+          $("devIon").style = "";
+        else if (json.ion[1] == "Hori")
+          $("devIon").style = "color:white; background:#00b000;";
+        else if (json.ion[1] == "Prechod")
+          $("devIon").style = "color:black; background:yellow;";
+        else 
+          $("devIon").style = "color:white; background:black;";
+      }
+      if (json.errors)
+      {
+        if (json.errors.length == 0)
+          $("poruchy").innerHTML = "Ziadne"; 
+        else
+          $("poruchy").innerHTML = json.errors.join("<br>");
+      }
+      if (json.devs)
+      {
+        $("devCerpadlo").innerHTML = json.devs.cerpadlo;
+        $("devCerpadlo").style = json.devs.cerpadlo == "off" ? "" : "color:white; background:#00b000;";
+        $("devVentilator").innerHTML = json.devs.ventilator;
+        $("devVentilator").style = json.devs.ventilator == "off" ? "" : "color:white; background:#00b000;";
+        $("devZapalovanie").innerHTML = json.devs.zapalovanie;
+        $("devZapalovanie").style = json.devs.zapalovanie == "off" ? "" : "color:black; background:yellow;";
+        $("devPlyn").innerHTML = json.devs.plyn;
+        $("devPlyn").style = json.devs.plyn == "off" ? "" : "color:white; background:black;";
+        $("devKlapka").innerHTML = json.devs.klapka;
+        $("devKlapka").style = json.devs.klapka == "ZATVORENA" ? "" : "color:white; background:black;";
+      }
+
+      if (json.devs && json.errors && json.ion)
+      {
+        globalInfo = json;
+        globalInfoReceived = (new Date()).getTime();
+
+        hideElements(["fan_error", "fan_icon", "fan_on"]);
+        if (json.errors.indexOf("ochrana") != -1)
+          showElement("fan_error");
+        else if (json.devs.ventilator != "off")
+          showElement("fan_on");
+        else
+          showElement("fan_icon");
+
+        hideElements(["flame_on", "flame_off", "flame_trans"]);
+        if (json.ion[1] == "Hori")
+          showElement("flame_on");
+        else if (json.ion[1] == "Prechod")
+          showElement("flame_trans");
+        else
+          showElement("flame_off");
+
+        hideElements(["ion_error", "ion_flame", "ion_icon", "ion_offline", "ion_trans"]);
+        if (json.ion[1] == "Hori")
+          showElement("ion_flame");
+        else if (json.ion[1] == "Prechod")
+          showElement("ion_trans");
+        else if (json.ion[1] == "Nehori")
+          showElement("ion_icon");
+        else if (json.ion[1] == "Vypnuty")
+          showElement("ion_offline");
+        else
+          showElement("ion_error");
+
+        hideElements(["pump_error", "pump_icon", "pump_on"]);
+        if (json.errors.indexOf("ochrana") != -1)
+          showElement("pump_error");
+        else if (json.devs.cerpadlo != "off")
+          showElement("pump_on");
+        else
+          showElement("pump_icon");
+
+        hideElements(["spark_icon", "spark_on"]);
+        if (json.devs.zapalovanie != "off")
+          showElement("spark_on");
+        else
+          showElement("spark_icon");
+
+        hideElements(["valve1_icon", "valve1_working"]);
+        if (json.devs.plyn != "off")
+          showElement("valve1_working");
+        else
+          showElement("valve1_icon");
+
+        hideElements(["valve2_icon", "valve2_working"]);
+        if (json.devs.plyn != "off")
+          showElement("valve2_working");
+        else
+          showElement("valve2_icon");
+
+        hideElements(["servo_icon", "servo_working"]);
+        if (json.devs.klapka != "ZATVORENA")
+          showElement("servo_working");
+        else
+          showElement("servo_icon");
+
+        $("info_servo").innerHTML = "klapka<br>" + json.devs.klapka + "<br>" + Math.floor(klapkaState*100/36) + "%";
+
+        $("temp_out").innerHTML = "voda vystup<br>" + safeTemp(json.temp.vystup);
+        $("temp_in").innerHTML = "voda vstup<br>" + safeTemp(json.temp.vstup);
+        $("temp_air").innerHTML = "nasavanie<br>" + safeTemp(json.temp.vzduch);// + " &deg;C";
+        $("temp_body").innerHTML = "teplota kotla<br>" + safeTemp(json.temp.termostat);// + " &deg;C";
+
+
+        hideElements(["sensor1_icon", "sensor1_error"]);
+        if (json.errors.indexOf("plynVstup") != -1)
+          showElement("sensor1_error");
+        else
+          showElement("sensor1_icon");
+
+        hideElements(["sensor2_icon", "sensor2_error"]);
+        if (json.errors.indexOf("preslah") != -1)
+          showElement("sensor2_error");
+        else
+          showElement("sensor2_icon");
+
+        hideElements(["sensor3_icon", "sensor3_error"]);
+        if (json.errors.indexOf("tlakVyfuku") != -1)
+          showElement("sensor3_error");
+        else
+          showElement("sensor3_icon");
+
+      }
+
+      return;
+    }
+    onLog(JSON.stringify(json));
+  }
+
+  function hideElements(arr)
+  {
+    for (var i in arr)
+      $(arr[i]).style.display = "none";
+  }
+
+  function showElement(e)
+  {
+    $(e).style.display = "block";
+  }
+
+  function safeTemp(t)
+  {
+    if (t=="error")
+      return "<span style='background:red'>Chyba!</span>";
+    return t + " &deg;C";
+  }
+
+
+  var klapkaState = 0;
+  setInterval(function()
+  {
+    if (!globalInfo)
+      return;
+    if (globalInfo.devs.klapka == "otvorena")
+      klapkaState = 36;
+    if (globalInfo.devs.klapka == "ZATVORENA")
+      klapkaState = 0;
+    if (globalInfo.devs.klapka == "OTVARA SA")
+      klapkaState = Math.min(36, klapkaState+1);
+    if (globalInfo.devs.klapka == "ZATVARA SA")
+      klapkaState = Math.max(0, klapkaState-1);
+
+    var msPastLastInfo = (new Date()).getTime() - globalInfoReceived;
+//    $("onlineState").innerHTML = (msPastLastInfo < 5000) ? "Online" : "Offline";
+
+    var online = msPastLastInfo < 3000;
+    $("modeoffline").className = !online ? "modebox selected" : "modebox";
+    $("modesafe").className = (online && globalInfo.state == "safe") ? "modebox two selected" : "modebox two";
+    $("modeprepare").className = (online && globalInfo.state == "automatic-prepare") ? "modebox selected" : "modebox";
+    $("modeignition").className = (online && globalInfo.state == "automatic-ignition") ? "modebox selected" : "modebox";
+    $("modeheating").className = (online && globalInfo.state == "automatic-burning") ? "modebox selected" : "modebox";
+    $("modestandby").className = (online && globalInfo.state == "automatic-standby") ? "modebox selected" : "modebox";
+    $("modemanual").className = (online && globalInfo.state == "manual") ? "modebox two selected" : "modebox two";
+    $("modelocked").className = (online && globalInfo.state == "locked") ? "modebox two selected" : "modebox two";
+
+  }, 1000);
+
+$("logspan").innerHTML = "<a href='logs/" + datestamp() + ".txt'>Zaznam udalosti...</a> <a href='meas.html'>Graf...</a>" ;
+
+function datestamp()
+{
+  var d = new Date();
+  return d.getFullYear() + "-" +
+         ("0" + (1+d.getMonth())).substr(-2) + "-" +  
+         ("0" + d.getDate()).substr(-2);         
+}
+</script>
+<script src="meas.js"></script>
+
+</html>
