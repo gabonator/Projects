@@ -10,7 +10,7 @@ Used libraries:
   SSD1306 Oled display: https:github.com/ThingPulse/esp8266-oled-ssd1306
 
 Video:
-  https:youtu.be/Kb0fgH8GiYA
+  https://youtu.be/Kb0fgH8GiYA
 
 To enable websocket service on your iPhone:
   Sygic -> Menu (left top corner) -> Settings -> Info -> About -> 3x tap anywhere -> enable Websocket server
