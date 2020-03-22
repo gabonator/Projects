@@ -1,0 +1,91 @@
+<html>
+<title>websocket test</title>
+<head>
+</head>
+
+<style>
+</style>
+<h1>Websocket test</h1>
+
+<textarea rows="20" cols="100" id="log">
+</textarea>
+<br>
+<input type="text" id="send" value="Pub.GoToggle();"><input type="button" value="Posli prikaz" onClick="onSend()">
+<br>
+<input type="button" value="Stop()" onClick="_send('Stop()')">
+<input type="button" value="Absolute(-4)" onClick="_send('Absolute(-4)')">
+<input type="button" value="Absolute(0)" onClick="_send('Absolute(0)')">
+<input type="button" value="Set(0)" onClick="_send('Set(0)')">
+<input type="button" value="SetLow()" onClick="_send('SetLow()')">
+<input type="button" value="SetHigh()" onClick="_send('SetHigh()')">
+<input type="button" value="Pub.GoToggle()" onClick="_send('Pub.GoToggle()')">
+<input type="button" value="Relative(-1)" onClick="_send('Relative(-1)')">
+<input type="button" value="Relative(1)" onClick="_send('Relative(1)')">
+<input type="button" value="Stop()" onClick="_send('Stop()')">
+<br>
+<input type="button" value="Demo" onClick="Demo()">
+
+<script>
+  var globalInfo = false;
+  var globalInfoReceived = 0;
+
+  var first = true;
+  var buffer = "";
+  socket = new WebSocket("ws://"+window.location.hostname+":2222");
+  socket.onopen = function()
+  {
+    console.log("Connected!");
+    setInterval( () =>
+    {
+//      socket.send("Status()\n");
+    }, 1000);
+  }
+  socket.onclose = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onerror = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onmessage = function(msg)
+  {
+    buffer += new String(msg.data);
+    var lines = buffer.split("\n");
+    while ( lines.length > 1 )
+      Receive( lines.shift() );
+    buffer = lines.join("\n");
+  }
+
+  function Receive(msg)
+  {  
+    onLog(msg);
+  }
+
+  function onSend()
+  {
+    socket.send($("send").value + "\n");
+  }
+
+  function _send(m)
+  {
+    socket.send(m+"\n");
+  }
+
+  function onLog(msg)
+  {
+    $("log").value = msg + "\n" + $("log").value;
+  }
+
+  $ = function(id) 
+  {
+    return document.getElementById(id);
+  }
+
+  function Demo()
+  {
+    setInterval( () => _send('Pub.GoToggle()'), 40000);
+  }
+</script>
+
+</html>
