@@ -1,0 +1,269 @@
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 24 B8 5F 
+#5000 (Fault code) = 36 (Underload fault LL)
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 0B 86 16 25 00 00 00 00 00 00 00 00 00 00 01 99 00 00 B8 4B 
+#3001 (Setting frequency) = 2950
+#3002 (BUS voltage) = 5669
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 24 B8 5F 
+#5000 (Fault code) = 36 (Underload fault LL)
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 13 88 16 27 00 5A 00 00 04 B6 00 00 FF E9 01 99 00 00 16 BE 
+#3001 (Setting frequency) = 5000
+#3002 (BUS voltage) = 5671
+#3003 (Output voltage) = 90
+#3004 (Output current) = 0
+#3005 (Operation speed) = 1206
+#3006 (Output power) = 0
+#3007 (Output torque) = 65513
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 13 88 16 25 01 8E 00 00 0B B3 00 00 FF EE 01 99 00 00 1F CB 
+#3001 (Setting frequency) = 5000
+#3002 (BUS voltage) = 5669
+#3003 (Output voltage) = 398
+#3004 (Output current) = 0
+#3005 (Operation speed) = 2995
+#3006 (Output power) = 0
+#3007 (Output torque) = 65518
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 13 88 16 2C 01 8E 00 00 0B B3 00 00 FF EE 01 99 00 00 D6 CD 
+#3001 (Setting frequency) = 5000
+#3002 (BUS voltage) = 5676
+#3003 (Output voltage) = 398
+#3004 (Output current) = 0
+#3005 (Operation speed) = 2995
+#3006 (Output power) = 0
+#3007 (Output torque) = 65518
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 24 B8 5F 
+#5000 (Fault code) = 36 (Underload fault LL)
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 0B 86 16 28 00 00 00 00 00 00 00 00 00 00 01 99 00 00 75 4E 
+#3001 (Setting frequency) = 2950
+#3002 (BUS voltage) = 5672
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 24 B8 5F 
+#5000 (Fault code) = 36 (Underload fault LL)
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 0B 86 16 2D 00 00 00 00 00 00 00 00 00 00 01 99 00 00 B0 4D 
+#3001 (Setting frequency) = 2950
+#3002 (BUS voltage) = 5677
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 40 00 00 00 00 00 00 00 00 00 00 01 99 00 00 ED 0F 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5696
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 3C 00 00 00 00 00 00 00 00 00 00 01 99 00 00 91 2E 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5692
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 3F 00 00 00 00 00 00 00 00 00 00 01 99 00 00 D2 2F 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5695
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 42 00 00 00 00 00 00 00 00 00 00 01 99 00 00 6F 0E 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5698
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 44 00 00 00 00 00 00 00 00 00 00 01 99 00 00 E9 0C 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5700
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 38 00 00 00 00 00 00 00 00 00 00 01 99 00 00 95 2D 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5688
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 52 00 00 00 00 00 00 00 00 00 00 01 99 00 00 7F 02 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5714
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 4A 00 00 00 00 00 00 00 00 00 00 01 99 00 00 67 08 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5706
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 3F 00 00 00 00 00 00 00 00 00 00 01 99 00 00 D2 2F 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5695
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 3F 00 00 00 00 00 00 00 00 00 00 01 99 00 00 D2 2F 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5695
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 3D 00 00 00 00 00 00 00 00 00 00 01 99 00 00 50 2E 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5693
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 30 00 00 00 00 00 00 00 00 00 00 01 99 00 00 9D 2B 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5680
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()
+Send Packet: 01 03 30 01 00 09 DB 0C 
+Local read Packet: 01 03 12 00 00 16 28 00 00 00 00 00 00 00 00 00 00 01 99 00 00 85 21 
+#3001 (Setting frequency) = 0
+#3002 (BUS voltage) = 5672
+#3003 (Output voltage) = 0
+#3004 (Output current) = 0
+#3005 (Operation speed) = 0
+#3006 (Output power) = 0
+#3007 (Output torque) = 0
+#3008 (PID setting) = 409
+#3009 (PID feedback) = 0
+Send Packet: 01 03 50 00 00 01 95 0A 
+Local read Packet: 01 03 02 00 00 B8 44 
+#5000 (Fault code) = 0 ()

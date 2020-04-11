@@ -4,33 +4,9 @@ const Models = require('snowboy').Models;
 
 const models = new Models();
 
-/*
-models.add({
-  file: 'resources/models/snowboy.umdl',
-  sensitivity: '0.5',
-  hotwords : 'snowboy'
-});
-*/
-/*
-models.add({
-  file: 'resources/models/computer.umdl',
-  sensitivity: '0.1',
-  hotwords : 'computer'
-});
-*/
-/*
-models.add({
-  file: 'resources/models/jarvis.umdl',
-  sensitivity: '0.8,0.8',
-//  hotwords : 'Jarvis'
-});
-*/
-models.add({
-  file: 'resources/ahoj.pmdl',
-  sensitivity: '0.5',
-  hotwords : 'ahoj'
-});
-
+models.add({  file: 'resources/ahoj.pmdl',  sensitivity: '0.5',  hotwords : 'ahoj'});
+models.add({  file: 'resources/pivo.pmdl',  sensitivity: '0.5',  hotwords : 'pivo'});
+models.add({  file: 'resources/dakujem.pmdl',  sensitivity: '0.5',  hotwords : 'dakujem'});
 
 const detector = new Detector({
   resource: "resources/common.res",
@@ -40,13 +16,14 @@ const detector = new Detector({
 });
 
 detector.on('silence', function () {
-  console.log('silence');
+//  console.log('silence');
 });
 
 detector.on('sound', function (buffer) {
   // <buffer> contains the last chunk of the audio that triggers the "sound"
   // event. It could be written to a wav stream.
-  console.log('sound');
+//  console.log('sound');
+    process.stdout.write(".");
 });
 
 detector.on('error', function () {

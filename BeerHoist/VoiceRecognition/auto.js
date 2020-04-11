@@ -7,11 +7,9 @@ const Models = require('snowboy').Models;
 
 const models = new Models();
 
-models.add({
-  file: 'resources/ahoj.pmdl',
-  sensitivity: '0.5',
-  hotwords : 'ahoj'
-});
+models.add({  file: 'resources/ahoj.pmdl',  sensitivity: '0.5',  hotwords : 'ahoj'});
+models.add({  file: 'resources/pivo.pmdl',  sensitivity: '0.5',  hotwords : 'pivo'});
+models.add({  file: 'resources/dakujem.pmdl',  sensitivity: '0.5',  hotwords : 'dakujem'});
 
 const detector = new Detector({
   resource: "resources/common.res",
@@ -24,8 +22,7 @@ detector.on('silence', function () {
 });
 
 detector.on('sound', function (buffer) {
-    process.stdout.write(".");
-
+  process.stdout.write(".");
 });
 
 detector.on('error', function () {
@@ -35,8 +32,12 @@ detector.on('error', function () {
 detector.on('hotword', function (index, hotword, buffer) {
   console.log('hotword', index, hotword);
 
-  if (hotword == "ahoj")
-      serial.write(Buffer.from("Pub.GoToggle()\n"), function() {});
+  if (hotword == "pivo")
+      serial.write(Buffer.from("Pub.GoHigh()\n"), function() {});
+  if (hotword == "dakujem")
+      serial.write(Buffer.from("Pub.GoLow()\n"), function() {});
+//  if (hotword == "ahoj")
+//      serial.write(Buffer.from("Pub.GoToggle()\n"), function() {});
 });
 
 const mic = record.record({
@@ -66,7 +67,7 @@ serial.on('closed', function() {
     clearTimeout(reconnect);
 
   console.log("bt: connection closed, reconnecting...");
-  reconnect = setTimeout(btReconnect, 10000);
+  reconnect = setTimeout(btReconnect, 30000);
 });
 
 function btReconnect()
@@ -74,16 +75,16 @@ function btReconnect()
   if (reconnect)
     clearTimeout(reconnect);
 
-  console.log("bt: connecting...");
+  process.stdout.write("bt: connecting...");
 
   serial.connect(address, channel, function() {
-    console.log('bt: connected');
+    process.stdout.write('\nbt: connected!\n');
   }, function () {
     if (reconnect)
       clearTimeout(reconnect);
 
-    console.log("bt: cannot connect, reconnecting...");
-    reconnect = setTimeout(btReconnect, 10000);
+    process.stdout.write("bt: cannot connect, reconnecting... ");
+    reconnect = setTimeout(btReconnect, 30000);
   });
 }
 
