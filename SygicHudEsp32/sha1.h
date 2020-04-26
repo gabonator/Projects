@@ -28,6 +28,9 @@
  *
  */
 
+namespace GABO
+{
+
 #ifndef _SHA_enum_
 #define _SHA_enum_
 enum
@@ -70,4 +73,5 @@ int SHA1Input(  SHA1Context *,
 int SHA1Result( SHA1Context *,
                uint8_t Message_Digest[SHA1HashSize]);
 
+}
 #endif

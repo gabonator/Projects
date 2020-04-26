@@ -146,7 +146,8 @@ public:
       
         s << "POST " << mPath << " HTTP/1.0\r\n"
         << "Host: " << mHost << "\r\n"
-        << "User-Agent: iot-endpoint-valky-2018-1 (sim800L on LA104 by valky.eu built " __DATE__ " " __TIME__ ")\r\n"
+        << "User-Agent: iot-endpoint-valky-2020-1 on ESP32\r\n"
+        << "Http-Server: rio-gabo-guru 2020 esp32\r\n"
         << "content-type: application/json\r\n"
         << "content-length: " << counter.Count() << "\r\n"
         << "\r\n"; 

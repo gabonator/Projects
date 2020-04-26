@@ -21,12 +21,15 @@ class CPrintStream : public CAtStream
 class CUploader
 {
     bool mConnected{false};
+    char mIp[32];
+    
   public:
     void setup()
     {
       Serial.print("Wifi connecting...\n");
       WiFi.begin(wifiSsid, wifiPassword);
     }
+    
     void loop()
     {
       if (WiFi.status() == WL_CONNECTED)
@@ -34,6 +37,9 @@ class CUploader
         if (!mConnected)
         {
           Serial.print("Wifi connect ok!\n");
+          IPAddress ip = WiFi.localIP();
+          sprintf(mIp, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+ 
           mConnected = true;
         }
       } else
@@ -46,6 +52,16 @@ class CUploader
       }
     }
 
+    bool isConnected()
+    {
+      return mConnected;
+    }
+
+    char* getAddress()
+    {
+      return mIp;
+    }
+
     bool sendRequest(CHttpRequest* req)
     {
       char content[256];
@@ -56,15 +72,18 @@ class CUploader
       char last[5] = {0};
 
       WiFiClient client;
-      Serial.print("Api:Connecting...\n");
+      Serial.print("Api: Connecting...\n");
       if (!client.connect(req->Host(), 80))
       {
         Serial.println("Api: connection failed");
         return false;
       }
+      //Serial.print("Api:Connected\n");
 
       CPrintStream stream(client);
       req->Request(stream);
+//      Serial.print("Api:Request sent\n");
+      Serial.print("Api: Send ok\n");
 
       while (client.connected())
       {
@@ -88,7 +107,6 @@ class CUploader
         }
       }
       client.stop();
-      Serial.print("Api: Send ok\n");
       Serial.print("Api: Response: '");
       Serial.print(content);
       Serial.print("'\n");

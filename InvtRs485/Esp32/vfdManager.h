@@ -72,7 +72,6 @@ public:
       mNotifyError = true;
       return;
     }
-
     
     for (int i=3, reg = mRequestBase; i<packet.getLength()-2; i+=2, reg++)
     {
@@ -203,5 +202,10 @@ public:
       return false;
     mNotifyError = false;
     return true;
+  }
+  
+  CVfdAttributes& getAttributes()
+  {
+    return mAttributes;
   }
 };

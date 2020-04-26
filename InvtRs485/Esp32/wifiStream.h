@@ -4,6 +4,12 @@ public:
     virtual CAtStream& operator <<(const char*) = 0;
     virtual CAtStream& operator <<(char*) = 0;
 //    virtual CAtStream& operator <<(const __FlashStringHelper *) = 0;
+    virtual CAtStream& operator <<(long int n)
+    {
+      char temp[32];
+      sprintf(temp, "%d", n);
+      return *this << temp;
+    }
     virtual CAtStream& operator <<(int n)
     {
       char temp[32];

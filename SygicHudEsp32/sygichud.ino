@@ -18,9 +18,11 @@
 //
 
 #include <WiFi.h>
-#include <WebSocketClient.h>
+#include "WebSocketClient.h"
 #include <OLEDDisplayFonts.h>
 #include "SSD1306Wire.h" 
+
+using namespace GABO;
 
 class CIcons
 {

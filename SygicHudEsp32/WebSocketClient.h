@@ -40,12 +40,15 @@ http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75
 */
 
 
-#ifndef WEBSOCKETCLIENT_H_
-#define WEBSOCKETCLIENT_H_
+#ifndef WEBSOCKETCLIENT_H_1
+#define WEBSOCKETCLIENT_H_1
 
 #include <Arduino.h>
 #include <Stream.h>
 #include "Client.h"
+
+namespace GABO 
+{
 
 // CRLF characters to terminate lines/handshakes in headers.
 #define CRLF "\r\n"
@@ -121,6 +124,6 @@ private:
     void sendEncodedData(String str, uint8_t opcode);
 };
 
-
+}
 
 #endif

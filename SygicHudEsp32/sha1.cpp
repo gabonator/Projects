@@ -1,3 +1,4 @@
+
 /*
  *  sha1.c
  *
@@ -30,6 +31,8 @@
  */
 
 #include "sha1.h"
+namespace GABO 
+{
 
 /*
  *  Define the SHA1 circular left shift macro
@@ -386,4 +389,6 @@ void SHA1PadMessage(SHA1Context *context)
     context->Message_Block[63] = context->Length_Low;
     
     SHA1ProcessMessageBlock(context);
+}
+
 }

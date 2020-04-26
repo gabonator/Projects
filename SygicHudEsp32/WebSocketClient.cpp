@@ -7,6 +7,7 @@
 #include "sha1.h"
 #include "Base64.h"
 
+namespace GABO {
 
 bool WebSocketClient::handshake(Client &client) {
 
@@ -345,4 +346,6 @@ void WebSocketClient::sendEncodedData(String str, uint8_t opcode) {
     str.toCharArray(cstr, size);
 
     sendEncodedData(cstr, opcode);
+}
+
 }
