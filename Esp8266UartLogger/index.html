@@ -1,0 +1,109 @@
+<html>
+<head>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<script>
+"use strict";
+
+class Comm {
+  constructor()
+  {
+    var base = location.hash ? location.hash.substr(1) : window.location.hostname;
+    if (base == "localhost" || base == "")
+      base = "192.168.1.105";
+
+    this.uri = "ws://" + base + ":88/";
+    this.online = false;
+  }
+
+  init()
+  {
+    var websocket = new WebSocket(this.uri);
+    this.websocket = websocket;
+
+    websocket.onopen = (() => {
+      this.online = true;
+      this.handle("Connected");
+    }).bind(this);
+
+    websocket.onclose = (() => {
+      this.online = false;
+      this.handle("Disconnected");
+    }).bind(this);
+
+    websocket.onmessage = ((evt) => {
+      var command = evt.data.toString();
+      this.process(command);
+    }).bind(this);
+
+    websocket.onerror = ((evt) => {
+      this.handle("Error: " + evt.data);
+    }).bind(this);
+
+  }
+
+  process(line)
+  {
+    eval(line);
+  }
+
+  send(line)
+  {
+    if (this.online)
+      this.websocket.send(line);
+  }
+
+  handle(message)
+  {
+    console.log(message);
+  }
+}
+
+class Handler 
+{
+  log(msg)
+  {
+    document.querySelector('#info').innerHTML = msg;
+  }
+  status(json)
+  {
+    this.log(JSON.stringify(json));
+  }
+  append(line)
+  {
+    var textarea = document.querySelector('#textarea');
+    textarea.value += line + "\n";
+    textarea.scrollTop = textarea.scrollHeight;
+  }
+  error(msg)
+  {
+    this.log(msg);
+  }
+}
+
+var _h = new Handler();
+var comm = new Comm();
+comm.handle = (msg) => _h.log(msg);
+window.addEventListener("load", () => comm.init(), false); 
+
+setInterval(() => {
+  if (comm.online)
+    comm.send("status();\n");
+}, 5000);
+
+</script>
+</head>
+<body>
+  <h2>
+      Uart logger
+  </h2>
+  <textarea id="textarea" cols=80 rows=20 readonly></textarea>
+  <div id="info"></div>
+  <br>
+  <a href="/download">Download initial buffer (limited size)</a>&nbsp;
+  <a href="/log.txt">See initial buffer (limited size)</a><br>
+  <input type="button" value="Set 57600 bauds" onClick="comm.send('baudrate(57600);\n')">
+  <input type="button" value="Set 9600 bauds" onClick="comm.send('baudrate(9600);\n')">
+  <input type="text" id="cmd"><input value="send" type="button"
+  onClick="comm.send(document.querySelector('#cmd').value)"><br>
+</body>
+</html>
