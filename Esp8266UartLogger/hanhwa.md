@@ -49,7 +49,7 @@ pinout:
 
 Connector pins/sockets fits two row 2mm pin header
 
-UART running initially at 9600 bauds, 8-N-1. Headunit requests to switch the speed at startup to 57600 bauds with command: "$PSRF100,1,57600,8,1,0,*36"
+UART running initially at 57600 bauds, 8-N-1 (not 9600 as stated on the label). Headunit requests to switch the speed at startup to 57600 bauds with command: "$PSRF100,1,57600,8,1,0,*36"
 
 Sample of nmea stream:
 ```

@@ -1,3 +1,5 @@
+// Wemos D1 mini, Generic ESP8266 module
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include "WebSocketServer.h"
@@ -16,12 +18,17 @@ char rxLine[128];
 char rxBuffer[32000];
 int rxBufferSize = 0;
 int rxTotal = 0;
+int rxErrors = 0;
 int rxLines = 0;
 int rxLineIndex = 0;
 int rxBaudrate = 57600; //9600;
 int rxSpecial = 0;
 bool mConnecting = false;
 bool mConnected = false;
+
+
+int configInitBaudrate = 57600;
+int configInitWait = 2000;
 
 #define wifi_ap 1
 
@@ -49,6 +56,9 @@ Ticker ticker1s;
 
 void setup() 
 {
+  loadConfig();
+  rxBaudrate = configInitBaudrate;
+
   Serial.begin(rxBaudrate);
 
   ticker1s.attach(1, [](){nUptime++;});
@@ -56,7 +66,7 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, 0);
 
-  for (int i=0; i<200; i++)
+  for (int i=0; i<configInitWait/10; i++)
   {
     doComm();
     delay(10);    
@@ -65,6 +75,33 @@ void setup()
   digitalWrite(LED_BUILTIN, 1);
   wifiConnect();
   digitalWrite(LED_BUILTIN, 0);
+}
+
+void loadConfig()
+{
+  int configOffset = 77;
+  uint32_t check;
+
+  EEPROM.begin(512);
+  EEPROM.get(configOffset, check); configOffset += sizeof(check);
+  if (check == 0x6ab02020)
+  {
+    EEPROM.get(configOffset, configInitBaudrate); configOffset += sizeof(configInitBaudrate);
+    EEPROM.get(configOffset, configInitWait); configOffset += sizeof(configInitWait);
+  }
+  EEPROM.end();
+}
+
+void saveConfig()
+{
+  int configOffset = 77;
+  uint32_t check = 0x6ab02020;
+
+  EEPROM.begin(512);
+  EEPROM.put(configOffset, check); configOffset += sizeof(check);
+  EEPROM.put(configOffset, configInitBaudrate); configOffset += sizeof(configInitBaudrate);
+  EEPROM.put(configOffset, configInitWait); configOffset += sizeof(configInitWait);
+  EEPROM.end();
 }
 
 void wifiConnect()
@@ -173,16 +210,38 @@ void loop()
   doWebserver();
 }
 
+char lastChars[6] = {0, 0, 0, 0, 0, 0};
 void doCommCritical()
 {
   while (Serial.available())
   {
     char c = Serial.read();
 
-    rxTotal++;
-    if (rxBufferSize < sizeof(rxBuffer))
-      rxBuffer[rxBufferSize++] = c;
+    // workaround for noisy RX line and lost CR/LF
+    lastChars[0] = lastChars[1];
+    lastChars[1] = lastChars[2];
+    lastChars[2] = lastChars[3];
+    lastChars[3] = lastChars[4];
+    lastChars[4] = c;
 
+    if (lastChars[0] == '$' && strcmp(lastChars, "$PSRF") == 0)
+    {
+      strcpy(rxLine, lastChars);
+      rxLineIndex = strlen(rxLine)-1; // to overwrite F
+    }
+
+    // append to huge buffer if readable char    
+    rxTotal++;
+    if ((c>=32 && c<127) || c == 0x0d || c == 0x0a) // text/plain
+    {
+      if (rxBufferSize < sizeof(rxBuffer))
+        rxBuffer[rxBufferSize++] = c;
+    } else
+    {
+      rxErrors++;
+    }
+
+    // append to last line
     if (c == 0x0d || c == 0x0a)
     {
       if (rxLineIndex>1)
@@ -213,28 +272,29 @@ void doComm()
 
 void handleCommLine(char* line)
 {
-  if (rxLine[0] == '$')
+  if (line[0] == '$')
   {
     // special sentence
     // $PSRF100,1,57600,8,1,0,*36
-    if (strstr(rxLine, "$PSRF100") == rxLine)
+    if (strstr(line, "$PSRF100") == line)
     {
-      rxSpecial++;
-      char* comma = strstr(rxLine, ",");
+      rxSpecial+=1;
+      char* comma = strstr(line, ",");
       if (!comma) 
         return;
-      comma++;
       
-      comma = strstr(rxLine, ",");
+      comma = strstr(comma+1, ",");
       if (!comma) 
         return;
       comma++;
       char* baudrate = comma;
 
-      comma = strstr(rxLine, ",");
+      comma = strstr(comma, ",");
       if (!comma) 
         return;
       *comma = 0;
+
+      rxSpecial+=1000;
 
       rxBaudrate = atoi(baudrate);
       Serial.begin(rxBaudrate);
@@ -260,17 +320,35 @@ void handleCommLine(char* line)
 
 void handleWebsocket(char* data)
 {
+  if (strstr(data, "info();") == data)
+  {
+    char message[256];
+    sprintf(message, "_h.status({name:\"esp8266 uart logger by Gabriel Valky\", built:\"%s\", url:\"https://github.com/gabonator\"});\n", __DATE__ " " __TIME__);
+    webSocket.sendData(message);
+  }
   if (strstr(data, "status();") == data)
   {
-    char message[128];
-    sprintf(message, "_h.status({totalBytes:%d,baudrate:%d,lines:%d,special:%d,uptime:%d});\n", 
-      rxTotal, rxBaudrate, rxLines, rxSpecial, nUptime);
+    char message[256];
+    sprintf(message, "_h.status({totalBytes:%d,baudrate:%d,lines:%d,special:%d,"
+      "uptime:%d,err:%d,initbaud:%d,initwait:%d});\n", 
+      rxTotal, rxBaudrate, rxLines, rxSpecial, nUptime, rxErrors, 
+      configInitBaudrate, configInitWait);
     webSocket.sendData(message);
   }
   if (strstr(data, "baudrate(") == data)
   {
     rxBaudrate = atoi(data+9);
     Serial.begin(rxBaudrate);
+  }
+  if (strstr(data, "initwait(") == data)
+  {
+    configInitWait = atoi(data+9);
+    saveConfig();
+  }
+  if (strstr(data, "initbaud(") == data)
+  {
+    configInitBaudrate = atoi(data+9);
+    saveConfig();
   }
 }
 
@@ -346,7 +424,7 @@ void send(WiFiClient& client, const char* buf, int nSize)
     doComm();
     
     Serial.print("#");
-    int nSending = min(nSize, 2048);
+    int nSending = min(nSize, 256);
 
     client.write(buf, nSending);
     client.flush();
@@ -396,7 +474,7 @@ bool processRequest(WiFiClient& client, char* req)
   if (strstr(req, "GET /log.txt"))
   {
     client.print("HTTP/1.1 200 OK\r\n");
-    client.print("Content-Type: text/html\r\n");
+    client.print("Content-Type: text/plain\r\n");
     char msg[64];
     sprintf(msg, "Content-Length: %d\r\n", rxBufferSize);
     client.print(msg);
@@ -408,7 +486,7 @@ bool processRequest(WiFiClient& client, char* req)
   if (strstr(req, "GET /download"))
   {
     client.print("HTTP/1.1 200 OK\r\n");
-    client.print("Content-Type: text/html\r\n");
+    client.print("Content-Type: text/plain\r\n");
     client.print("Content-Disposition: attachment; filename=\"nmealog.txt\"\r\n");
     char msg[64];
     sprintf(msg, "Content-Length: %d\r\n", rxBufferSize);

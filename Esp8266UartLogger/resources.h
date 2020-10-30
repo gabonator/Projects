@@ -1,6 +1,7 @@
 const /*PROGMEM*/ char _index_html[] = R"---(
 <html>
 <head>
+<!-- https://github.com/gabonator/Projects/Esp8266UartLogger -->
 <link rel="icon" type="image/png" href="/favicon.png"/>
 <script>
 "use strict";
@@ -10,7 +11,7 @@ class Comm {
   {
     var base = location.hash ? location.hash.substr(1) : window.location.hostname;
     if (base == "localhost" || base == "")
-      base = "192.168.1.105";
+      base = "192.168.4.1";
 
     this.uri = "ws://" + base + ":88/";
     this.online = false;
@@ -67,7 +68,11 @@ class Handler
   }
   status(json)
   {
-    this.log(JSON.stringify(json));
+    var q = "";
+    for (var i in json)
+      q += (q == "" ? "" : ", ") + i + ": " + json[i];
+    //this.log(JSON.stringify(json));
+    this.log(q);
   }
   append(line)
   {
@@ -79,39 +84,55 @@ class Handler
   {
     this.log(msg);
   }
+  copyClipboard()
+  {
+    var textarea = document.querySelector('#textarea');    
+    textarea.focus();
+    textarea.select();
+    document.execCommand('copy');
+    //navigator.clipboard.writeText(textarea.value);
+  }
 }
 
 var _h = new Handler();
 var comm = new Comm();
+var info = false;
 comm.handle = (msg) => _h.log(msg);
 window.addEventListener("load", () => comm.init(), false); 
 
 setInterval(() => {
   if (comm.online)
-    comm.send("status();\n");
+  {
+    if (!info)
+    {
+      comm.send("info();\n");
+      info = true;
+    } else
+    {
+      comm.send("status();\n");
+    }
+  }
 }, 5000);
 
 </script>
 </head>
 <body>
   <h2>
-      Uart logger
+    Wifi Uart logger
   </h2>
   <textarea id="textarea" cols=80 rows=20 readonly></textarea>
-  <div id="info"></div>
+  <div id="info">Connecting...</div>
   <br>
-  <a href="/download">Download initial buffer (32kB max)</a>&nbsp;
-  <a href="/log.txt">See initial buffer</a><br>
+  <input type="button" value="Copy textarea" onClick="_h.copyClipboard()">&nbsp;
+  Initial buffer (limited to 32kB): <a href="/download">Download</a>&nbsp;
+  <a href="/log.txt">View</a><br>
+  <br>
   <input type="button" value="Set 57600 bauds" onClick="comm.send('baudrate(57600);\n')">
   <input type="button" value="Set 9600 bauds" onClick="comm.send('baudrate(9600);\n')">
   <input type="text" id="cmd"><input value="send" type="button"
-  onClick="comm.send(document.querySelector('#cmd').value)"><br>
+  onClick="comm.send(document.querySelector('#cmd').value)">
 </body>
 </html>
-)---";
-
-const /*PROGMEM*/ char _index_html_redirect[] = R"---(
-<html><script>document.location.href = "http://192.168.1.144/remote.html#" + window.location.hostname;</script></html>
 )---";
 
 const /*PROGMEM*/ char _favicon_png[] = {
