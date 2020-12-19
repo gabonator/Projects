@@ -5,6 +5,8 @@ class CInstruction : public CSerializable
 {
 public:
 	CStaticAnalysis m_analysis;
+    string m_origin;
+    int m_line;
 
 	virtual ~CInstruction() {}
 	virtual void Eval(CMachine& m) { _ASSERT(0); }
@@ -56,6 +58,8 @@ public:
 
 	CINop(const string& strComment) : m_strComment(strComment)	
 	{
+        if (m_strComment.length() > 42)
+            m_strComment = m_strComment.substr(0, 42) + "...";
 	}
 
 	virtual void Eval(CMachine& m) {}
@@ -463,7 +467,7 @@ public:
 
 	virtual void Serialize(CSerializer& s)
 	{
-		s << m_label << m_reg;
+		s << m_label << m_reg << _enum(m_eType);
 	}
 };
 
@@ -577,8 +581,28 @@ public:
 	}
 };
 
+class CIStop : public CInstruction
+{
+public:
+
+public:
+    CIStop(){
+        int f = 9;
+    }
+
+    virtual void Eval(CMachine& m) {_ASSERT(0);}
+    virtual void Serialize(CSerializer& s)
+    {
+    }
+};
+
 CInstruction* CInstruction::FromName(string strClassName)
 {
+    // OSX
+    while (strClassName[0] >= '0' && strClassName[0] <= '9')
+        strClassName = strClassName.substr(1, strClassName.length()-1);
+    strClassName = "class " + strClassName;
+    
 	if (strClassName == "class CIFunction")
 		return new CIFunction();
 	if (strClassName == "class CINop")
@@ -615,18 +639,8 @@ CInstruction* CInstruction::FromName(string strClassName)
 		return new CITest();
 	if (strClassName == "class CIData")
 		return new CIData();
+    if (strClassName == "class CIStop")
+        return new CIStop();
 	return nullptr;
 }
 
-class CIStop : public CInstruction
-{
-public:
-
-public:
-    CIStop(){}
-
-    virtual void Eval(CMachine& m) {_ASSERT(0);}
-    virtual void Serialize(CSerializer& s)
-    {
-    }
-};

@@ -7,6 +7,7 @@ public:
 
 	vector<shared_ptr<CInstruction>> m_arrCode;
 	vector<string> m_arrSource;
+    vector<int> m_arrLine;
 
 	CSourceParser()
 	{
@@ -76,27 +77,32 @@ public:
 		_ASSERT(f);
 
 		int nLength = 0;
-
+        int line;
 		CSerializer serializer(f);
 		serializer << nLength;
 
 		m_arrCode.resize(nLength);
 		m_arrSource.resize(nLength);
+        m_arrLine.resize(nLength);
 
 		for (int i=0; i<nLength; i++)
 		{
 			string strSourceLine;
 			string strClassName;
 
+            serializer << line;
 			serializer << strSourceLine;
 			serializer << strClassName;
 
 			CInstruction* pInstruction = CInstruction::FromName(strClassName);
 			_ASSERT(pInstruction);
 			pInstruction->Serialize(serializer);
+            pInstruction->m_origin = strSourceLine;
+            pInstruction->m_line = i;
 
 			m_arrCode[i] = shared_ptr<CInstruction>(pInstruction);
 			m_arrSource[i] = strSourceLine;
+            m_arrLine[i] = i;
 		}
 		/*
 		for (int i=0; (size_t)i<m_arrCode.size(); i++)

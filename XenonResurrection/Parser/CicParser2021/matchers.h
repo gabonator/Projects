@@ -301,17 +301,17 @@ class CIMFlow : public CInstructionMatcher
         {
             return make_shared<CIStop>();
         }
-
+/*
         if ( CUtils::match("^db (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
         }
 
-        if ( CUtils::match("^dw (.*)$", strLine, arrMatches) )
+        if ( CUtils::match("^dw offset (.*)$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
+            return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
         }
-
+*/
         if ( CUtils::match("^off_(.+) dw (.+)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
@@ -358,10 +358,9 @@ class CIMFlow : public CInstructionMatcher
 			return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
 		}
 
-        if ( CUtils::match("^call (.*)\\[bx\\]$", strLine, arrMatches) )
+        if ( CUtils::match("^call (.*)\\[(.*)\\]$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
-            //return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
+            return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
         }
 
 		if ( CUtils::match("^loop[\\s]+(.*)$", strLine, arrMatches) )
@@ -426,7 +425,7 @@ class CIMData : public CInstructionMatcher
 			return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
 		}
 
-		if ( CUtils::match("^\\s*dw offset (.*)$", strLine, arrMatches) )
+		if ( CUtils::match("^dw offset (.*)$", strLine, arrMatches) )
 		{
 			return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
 		}
@@ -441,6 +440,11 @@ class CIMData : public CInstructionMatcher
 			return make_shared<CIData>(CIData::Byte, arrMatches[0], CUtils::ParseLiteral(arrMatches[1]));
 		}
 
+        if ( CUtils::match("^db (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
+
 		return nullptr;
 	}
 };
@@ -450,7 +454,7 @@ class CIMNop : public CInstructionMatcher
 	virtual shared_ptr<CInstruction> Match(string strLine) override
 	{
 		vector<string> arrMatches;
-        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large")
+        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" || strLine.substr(0, 4) == "seg0" || strLine.find(" db ") != string::npos || strLine == "align 20h")
         {
             return make_shared<CINop>();
         }

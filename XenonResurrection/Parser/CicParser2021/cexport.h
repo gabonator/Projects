@@ -47,7 +47,7 @@ public:
 		return aux;
 	}
 
-	shared_ptr<CCInstruction> Convert(string strFunction, shared_ptr<CInstruction> pInInstruction, shared_ptr<CInstruction> pPrevious)
+    shared_ptr<CCInstruction> Convert(string strFunction, shared_ptr<CInstruction> pInInstruction, shared_ptr<CInstruction> pPrevious)
 	{
 		shared_ptr<CCInstruction> pOutInstruction;
 
@@ -57,6 +57,10 @@ public:
 		shared_ptr<CICompare> pCompare = dynamic_pointer_cast<CICompare>(pInInstruction);
 		if ( pCompare )
 		{
+            pOutInstruction = make_shared<CCCompare>(pCompare, CCCompare::ZeroFlag);
+            return nullptr;
+            //_ASSERT(0);
+            /*
 			// TODO: Automatic
 			if (strFunction=="")
 			{
@@ -71,6 +75,7 @@ public:
 				pOutInstruction = make_shared<CCCompare>(pCompare, CCCompare::ZeroCarryFlag);
 			} else
 				return nullptr;
+             */
 		}
 		if (dynamic_pointer_cast<CITest>(pInInstruction) )
 		{
@@ -148,11 +153,16 @@ public:
 
 			pOutInstruction = make_shared<CCConditionalJump>( pLoop, pPrevious );
 		}
-			
+		
+        shared_ptr<CIStop> pStop = dynamic_pointer_cast<CIStop>(pInInstruction);
+        if (pStop)
+            pOutInstruction = make_shared<CCStop>(pStop);
+
+        pOutInstruction->mOrigin = pInInstruction->m_origin;
 		_ASSERT(pOutInstruction);
 		return pOutInstruction;
 	}
-
+    
 	shared_ptr<CInstruction> TracebackCondition(CIConditionalJump::EType eType, vector<shared_ptr<CInstruction>>& arrInput, int nLine)
 	{
 		for (int nTraceBack=nLine; nTraceBack>=max(0, nLine-10); nTraceBack--)
@@ -198,6 +208,20 @@ public:
 			}
 			if (dynamic_pointer_cast<CICall>(pInstruction))
 			{
+                if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_15C0F" )
+                {
+                    // ends width xor ax, ax; or dec ax
+                    return make_shared<CICompare>(CValue("ax"), CValue("0", CValue::r16)); // TODO: CHECK!
+                } else
+                    if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_10101" )
+                    {
+                        // ends width "cmp, jz" and "stc", need to manually fix 10101 to clear carry
+                        return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
+                    } else
+
+                _ASSERT(0);
+                
+                /*
 				// Toto musime manualne!!!
 				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_13D8" ) // alu op -> AL
 				{
@@ -368,7 +392,7 @@ public:
 					//dynamic_pointer_cast<CICall>(pInstruction)->m_label
 
 					_ASSERT(0);
-				}
+				}*/
 				return pInstruction;
 			}
 		}
@@ -376,12 +400,13 @@ public:
 		return nullptr;
 	}
 
-	void Convert(CLabel strFunction, vector<shared_ptr<CInstruction>>& arrInput, vector<shared_ptr<CCInstruction>>& arrOutput)
+    void Convert(CLabel strFunction, vector<shared_ptr<CInstruction>>& arrInput, vector<shared_ptr<CCInstruction>>& arrOutput)
 	{
 		shared_ptr<CCInstruction> pPrev;
 
 		for (int i=0; i<(int)arrInput.size(); i++)
 		{
+            //std::cout << arrInput[i]->m_origin << "\n";
 			shared_ptr<CInstruction> pInInstruction = arrInput[i];
 			shared_ptr<CInstruction> pCondition;
 			/*
@@ -427,7 +452,7 @@ public:
 		if ( !arrOutput.empty() && arrOutput.back()->ToString() == "return;" )
 			arrOutput.pop_back();
 	}
-
+#if 0
 	void OptimizeLoops(vector<shared_ptr<CCInstruction>>& arrOutput)
 	{
 		int nLastLabel = -1;
@@ -820,7 +845,7 @@ public:
 			}
 		}
 	}
-
+#endif
 	void DumpProgram(vector<shared_ptr<CCInstruction>>& arrOutput, int nBaseIndent = 0)
 	{
 		int nIndent = 0;
@@ -869,8 +894,22 @@ public:
 			CUtils::replace(all, "\r", "\n"); 
 			istringstream is(all);
 			string line;
+            bool first = true;
 			while (getline(is, line, '\n'))
+            {
+                if (first)
+                {
+                    first = false;
+                    if (line.length() < 50)
+                    {
+                        while (line.length() + strPad.length() < 50)
+                            line += " ";
+                        line += "//" + arrOutput[i]->mOrigin;
+                    }
+                }
+                
 				out << strPad << line << endl;
+            }
 
 			if ( !dynamic_pointer_cast<CCSwitch>(arrOutput[i]) )
 			{
@@ -879,7 +918,7 @@ public:
 			}
 		}
 	}
-
+#if 0
 	void Optimize(CLabel name, vector<shared_ptr<CInstruction>>& arrInput)
 	{
 		vector<shared_ptr<CCInstruction>> arrOutput;
@@ -901,6 +940,7 @@ public:
 		*/
 		DumpProgram(arrOutput);	
 	}
+#endif
 
 	// TODO: Duplicity
 	int FindLabel(const vector<shared_ptr<CInstruction>>& arrCode, string label)
@@ -917,7 +957,7 @@ public:
 		return -1;
 	}
 
-	vector<shared_ptr<CInstruction>> GetSubCode(const vector<shared_ptr<CInstruction>>& arrCode, CLabel label)
+    vector<shared_ptr<CInstruction>> GetSubCode(const vector<shared_ptr<CInstruction>>& arrCode, CLabel label)
 	{
 		vector<shared_ptr<CInstruction>> aux;
 
@@ -928,7 +968,12 @@ public:
 
 		return move(aux);
 	}
+    void SetSource(const vector<shared_ptr<CInstruction>>& arrSource)
+    {
+        m_arrSource = arrSource;
+    }
 
+#if 0
 	void Process(const vector<shared_ptr<CInstruction>>& arrSource)
 	{
 		m_arrSource = arrSource;
@@ -1038,4 +1083,5 @@ public:
 			i += arrFunction.size();
 		}
 	}
+#endif
 };

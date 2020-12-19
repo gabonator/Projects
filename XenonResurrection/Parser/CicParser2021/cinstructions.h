@@ -1,6 +1,7 @@
 class CCInstruction
 {
 public:
+    string mOrigin;
 	virtual ~CCInstruction() {}
 	virtual string ToString() = 0;
 	virtual bool TryJoin(shared_ptr<CCInstruction>) 
@@ -22,7 +23,7 @@ public:
 		CValue& vFrom = pAssignment->m_valueFrom;
 
 		m_strDst = vTo.SetC(&pAssignment->m_analysis);
-
+/*
 		if ( vFrom.m_eType == CValue::es_ptr && vFrom.GetRegisterLength() == CValue::r8 )
 		{
 			if ( pAssignment->m_analysis.m_es.GetValue() == 0xF000 && vFrom.m_nValue == 0xFFFE)
@@ -31,7 +32,7 @@ public:
 				m_strSrc = "0xff";
 				return;
 			}
-		}
+		}*/
 		m_strSrc = vFrom.GetC(&pAssignment->m_analysis);
 	}
 
@@ -39,7 +40,7 @@ public:
 	{
 		string op1 = pAlu->m_op1.ToC();
 		string op2 = pAlu->m_op2.m_eType == CValue::invalid ? "???" : pAlu->m_op2.ToC();
-		switch (pAlu->m_eType)
+		switch (pAlu->m_eType) // tuto!!
 		{
 		case CIAlu::Increment: 
 			_ASSERT(!pAlu->m_bExportInsertion);
@@ -94,8 +95,16 @@ public:
 			m_strDst = op1; 
 			m_strSrc = op1 + " & " + op2;
 			break;
-		case CIAlu::Or: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+		case CIAlu::Or:
+            if (pAlu->m_bExportInsertion)
+            {
+                if (op1 == "_ax" && op2 == "_ax")
+                    m_strInsertion = "flags.sign = _ax & 0x8000";
+                else
+                    _ASSERT(0);
+            }
+
+			//_ASSERT(!pAlu->m_bExportInsertion);
 			m_strDst = op1; 
 			m_strSrc = op1 + " | " + op2;
 			break;
@@ -172,6 +181,8 @@ public:
 
 	virtual bool TryJoin(shared_ptr<CCInstruction> pInstruction) override
 	{
+        return false;
+        
 		shared_ptr<CCAssignment> pPrev = dynamic_pointer_cast<CCAssignment>(pInstruction);
 		if (!pPrev)
 			return false;
@@ -283,6 +294,7 @@ public:
 		case CIZeroArgOp::stc: m_strOperation = "flags.carry = true"; break;
 		case CIZeroArgOp::lahf: m_strOperation = "_ah = flags.toByte()"; break;
 		case CIZeroArgOp::sahf: m_strOperation = "flags.fromByte(_ah)"; break;
+        case CIZeroArgOp::xlat: m_strOperation = "_xlat()"; break;
 
 		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::stosb: m_strOperation = "_stosb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
@@ -294,6 +306,7 @@ public:
 		case CIZeroArgOp::pushf: m_strOperation = "_pushf()"; break;
 		case CIZeroArgOp::popf: m_strOperation = "_popf()"; break;
 		case CIZeroArgOp::aaa: m_strOperation = "_ASSERT(0 /* check carry */); _aaa()"; break;
+            case CIZeroArgOp::cwd: m_strOperation = "_cwd()"; break;
 		default:
 				_ASSERT(0);
 		}
@@ -456,7 +469,9 @@ public:
 			From(pCondition, dynamic_pointer_cast<CITest>(pInstruction));
 		else if ( dynamic_pointer_cast<CIAlu>(pInstruction) )
 			From(pCondition, dynamic_pointer_cast<CIAlu>(pInstruction));
-		else 
+		else if ( dynamic_pointer_cast<CISingleArgOp>(pInstruction) && dynamic_pointer_cast<CISingleArgOp>(pInstruction)->m_eType == CISingleArgOp::interrupt )
+            From(pCondition, dynamic_pointer_cast<CISingleArgOp>(pInstruction));
+        else
 			_ASSERT(0);
 	}
 
@@ -470,11 +485,17 @@ public:
 		m_eLabelType = Label;
 
 		m_strSigned = "?";
-		if (pCompare->m_op1.GetRegisterLength() == pCompare->m_op2.GetRegisterLength())
-		{
-			m_strSigned = SignedType(pCompare->m_op1);
-		}
-
+        if (pCompare->m_op2.m_eType == CValue::EType::constant)
+        {
+            m_strSigned = SignedType(pCompare->m_op1);
+        } else
+        {
+            if (pCompare->m_op1.GetRegisterLength() == pCompare->m_op2.GetRegisterLength())
+            {
+                m_strSigned = SignedType(pCompare->m_op1);
+            }
+        }
+        
 		// http://marin.jb.free.fr/jumps/
 		switch ( pCondition->m_eType )
 		{
@@ -488,6 +509,7 @@ public:
 
 		case CIConditionalJump::jbe: m_strCondition = "$a <= $b"; break;
 		case CIConditionalJump::ja: m_strCondition = "$a > $b"; break;
+        case CIConditionalJump::jl: m_strCondition = "($type)$a < ($type)$b"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -533,6 +555,8 @@ public:
 			{
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
+            case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0"; break; // TODO: verify?
+
 			default:
 				_ASSERT(0);
 			}
@@ -552,10 +576,21 @@ public:
 				m_strCondition = "!flags.carry && ($a != 0)"; break;
 			case CIConditionalJump::jb: 
 				pAlu->m_bExportInsertion = true;
-				m_strCondition = "flags.carry"; break;
-			case CIConditionalJump::jnb: 
+				m_strCondition = "flags.carry";
+                //m_strCondition = "$a < 0"; // nemozeme, naozaj nastava carry, sub bl, 20h; jb ...
+                break;
+			case CIConditionalJump::jnb:
 				pAlu->m_bExportInsertion = true;
 				m_strCondition = "!flags.carry"; break;
+            case CIConditionalJump::jbe:
+                m_strCondition = "$a <= 0"; break;
+                //pAlu->m_bExportInsertion = true;
+                //m_strCondition = "flags.carry || ($a == 0)"; break;
+                    
+            case CIConditionalJump::js:
+                pAlu->m_bExportInsertion = true;
+                m_strCondition = "flags.sign"; break;
+
 			default:
 				_ASSERT(0);
 			}
@@ -614,6 +649,14 @@ public:
 			_ASSERT(0);
 		}
 	}
+        
+    void From(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CISingleArgOp> interrupt)
+    {
+        m_strLabel = pCondition->m_label;
+        m_eLabelType = Label;
+        m_strCondition = "_FIXME_";
+    }
+
 	
 	string GetNegated()
 	{
@@ -982,10 +1025,12 @@ class CCSwitch : public CCInstruction
 public:
 	string m_strSelector;
 	vector<CLabel> m_arrLabels;
+    CISwitch::EType m_type;
 
 public:
 	CCSwitch(shared_ptr<CISwitch> pSwitch, vector<shared_ptr<CInstruction>> arrInstructions)
 	{
+        m_type = pSwitch->m_eType;
 		m_strSelector = pSwitch->m_reg.ToC();
 
 		for (int i=0; i<(int)arrInstructions.size(); i++)
@@ -1002,8 +1047,15 @@ public:
 		stringstream ss;
 		ss << "switch (" << m_strSelector << ")" << endl;
 		ss << "{" << endl;
-		for (int i=0; i<(int)m_arrLabels.size(); i++)
-			ss << "  case " << i*2 << ": goto " << m_arrLabels[i] << ";" << endl;
+        if (m_type == CISwitch::EType::Jump)
+        {
+            for (int i=0; i<(int)m_arrLabels.size(); i++)
+                ss << "  case " << i*2 << ": goto " << m_arrLabels[i] << ";" << endl;
+        } else {
+            for (int i=0; i<(int)m_arrLabels.size(); i++)
+                ss << "  case " << i*2 << ": " << m_arrLabels[i] << "(); break;" << endl;
+        }
+            
 		ss << "  default:" << endl;
 		ss << "    _ASSERT(0);" << endl;
 		ss << "}" << endl;
@@ -1011,3 +1063,21 @@ public:
 		return ss.str();
 	}
 };
+
+
+class CCStop : public CCInstruction
+{
+    shared_ptr<CIStop> m_Stop;
+public:
+    CCStop(shared_ptr<CIStop> pStop) : m_Stop(pStop)
+    {
+    }
+
+    virtual string ToString() override
+    {
+        stringstream ss;
+        ss << "_STOP_(\"" << m_Stop->m_origin << "\");";
+        return ss.str();
+    }
+};
+

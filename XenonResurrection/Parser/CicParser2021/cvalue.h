@@ -1,3 +1,45 @@
+int FixDsOffset(int ofs)
+{
+    //dseg
+    if (ofs >= 0x28530 && ofs < 0x28530 + 0xfd10)
+    {
+        const int dseg_begin = 0x28530;
+        ofs -= dseg_begin;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+    // seg003
+    if (ofs >= 0x25650 && ofs < 0x25650 + 0x2ee0)
+    {
+        const int seg3_begin = 0x25650;
+        ofs -= seg3_begin;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+    _ASSERT(0);
+    return ofs;
+}
+
+int FixCsOffset(int ofs)
+{
+    if (ofs >= 0x1000*16 && ofs <= 0x1000*16 + 0xf290 )
+    {
+        const int code_begin = 0x1000;
+        ofs -= code_begin*16;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+    if (ofs >= 0x1f29*16 && ofs <= 0x1f29*16 + 0x5900 )
+    {
+        const int code_begin = 0x1f29;
+        ofs -= code_begin*16;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+    _ASSERT(0);
+    return ofs;
+}
+
 string CValue::ToC()
 {
 	stringstream ss;
@@ -24,30 +66,35 @@ string CValue::ToC()
 	case si: return "_si";
 	case di: return "_di";
 	case bp: return "_bp";
+    case sp: return "_sp";
 
 	case constant:
 		if ( m_eRegLength == CValue::r8 )
-			sprintf_s(str, 31, "0x%02x", m_nValue);
+			sprintf(str, "0x%02x", m_nValue);
 		else
 		if ( m_eRegLength == CValue::r16 )
-			sprintf_s(str, 31, "0x%04x", m_nValue);
+			sprintf(str, "0x%04x", m_nValue);
 		else
-			sprintf_s(str, 31, "%d", m_nValue); // TODO
+			sprintf(str, "%d", m_nValue); // TODO
 		return str;
 
 	case CValue::byteptrasword:
 	case CValue::wordptr:
-		ss << "*(WORD*)&memory[adr(_ds, 0x" << hex << uppercase << m_nValue << ")]";
+		ss << "memory16(_ds, 0x" << hex << uppercase << FixDsOffset(m_nValue) << ")"; //ds
 		return ss.str();
 
 	case CValue::wordptrasbyte:
 	case CValue::byteptr:
 		// TODO: vsade pridat adr(_ds, ...)
-		ss << "memory[adr(_ds, 0x" << hex << uppercase << m_nValue << ")]";
+		ss << "memory(_ds, 0x" << hex << uppercase << FixDsOffset(m_nValue) << ")"; //ds
 		return ss.str();
 
 	case CValue::byteptrval:
-		return "memory[adr(_ds, " + m_value->ToC() + ")]";
+		return "memory(_ds, " + m_value->ToC() + ")"; //ds
+
+    case CValue::cs_ptr:
+        ss << "memory(_cs, 0x" << hex << uppercase << FixCsOffset(m_nValue) << ")"; //ds
+        return ss.str();
 
 	case CValue::bx_plus_si:
 		return "_bx + _si";
@@ -57,18 +104,18 @@ string CValue::ToC()
 		return ss.str();
 
 	case CValue::segment:
-		_ASSERT(m_eSegment == dseg);
+//		_ASSERT(m_eSegment == dseg);
 		return "SEG_DATA";
 
 	case CValue::wordptrval:
-		ss << "*(WORD*)&memory[adr(_ds, " << m_value->ToC() << ")]";
+		ss << "memory16(_ds, " << m_value->ToC() << ")"; //ds
 		return ss.str();
 
 	case CValue::es_ptr_di:
 		if ( m_eRegLength == CValue::r8 )
-			ss << "memory[adr(_es, _di)]";
+			ss << "memory(_es, _di)";
 		else if ( m_eRegLength == CValue::r16 )
-			ss << "*(WORD*)&memory[adr(_es, _di)]";
+			ss << "memory16(_es, _di)";
 		else
 			_ASSERT(0);
 		return ss.str();
@@ -76,10 +123,10 @@ string CValue::ToC()
 	case CValue::es_ptr_di_plus:
 		_ASSERT(m_nValue >= 0);
 		if ( m_eRegLength == CValue::r8 )
-			ss << "memory[adr(_es, _di + " << m_nValue << ")]";
+			ss << "memory(_es, _di + " << m_nValue << ")";
 		else
 		if ( m_eRegLength == CValue::r16 )
-			ss << "*(WORD*)&memory[adr(_es, _di + " << m_nValue << ")]";
+			ss << "memory16(_es, _di + " << m_nValue << ")";
 		else
 			_ASSERT(0);
 		return ss.str();
@@ -87,17 +134,19 @@ string CValue::ToC()
 	case CValue::es_ptr:
 		_ASSERT(m_nValue >= 0);
 		if ( m_eRegLength == CValue::r8 )
-			ss << "memory[adr(_es, " << m_nValue << ")]";
+			ss << "memory(_es, " << m_nValue << ")";
 		else
 		if ( m_eRegLength == CValue::r16 )
-			ss << "*(WORD*)&memory[adr(_es, " << m_nValue << ")]";
+			ss << "memory16(_es, " << m_nValue << ")";
 		else
 			_ASSERT(0);
 		return ss.str();
 
 	case CValue::si_plus:
-		_ASSERT(m_nValue >= 0);
-		ss << "_si + " << m_nValue;
+            if (m_nValue >= 0)
+                ss << "_si + " << m_nValue;
+            else
+                ss << "_si - " << (-m_nValue);
 		return ss.str();
 
 	case CValue::codebyte:
@@ -110,7 +159,7 @@ string CValue::ToC()
 
 	case CValue::wordptr_es:
 		// TODO: what if value = 0xffff ?
-		ss << "*(WORD*)&memory[adr(_es, " << m_nValue << ")]";
+		ss << "memory16(_es, " << m_nValue << ")";
 		return ss.str();
 
 	case CValue::bx_plus_si_plus:
@@ -125,13 +174,32 @@ string CValue::ToC()
 
 	case CValue::ds_ptr_bp_plus:
 		_ASSERT(m_eRegLength == r16);
-		ss << "*(WORD*)&memory[adr(_ds, _bp + " << m_nValue << ")]";
+		ss << "memory16(_ds, _bp + " << m_nValue << ")";
 		return ss.str();
 
 	case CValue::di_plus:
 		//_ASSERT(m_eRegLength == r16);
 		ss << "_di + " << m_nValue;
 		return ss.str();
+
+    case CValue::stop:
+        return "_STOP_";
+            
+    case CValue::ss_wordptr:
+        ss << "memory16(-1, -1)"; //TODO: neviem
+        return ss.str();
+
+    case CValue::cs_ptr_si:
+        ss << "memory16(_cs, _si)"; //TODO: neviem
+        return ss.str();
+    
+    case CValue::wordptr_es_di:
+        ss << "memory16(_es, _di)";
+        return ss.str();
+
+    case CValue::dwordptr:
+        ss << "_FIXME_";
+            return ss.str();
 
 	default:
 		_ASSERT(0);
@@ -142,6 +210,8 @@ string CValue::ToC()
 
 string CValue::GetC(CStaticAnalysis* pAnalysis)
 {
+    return ToC();
+    /*
 	stringstream videoOffset;
 
 	switch (m_eType)
@@ -185,10 +255,13 @@ string CValue::GetC(CStaticAnalysis* pAnalysis)
 		_ASSERT(0);
 
 	return result.str();
+     */
 }
 
 string CValue::SetC(CStaticAnalysis* pAnalysis)
 {
+    return ToC();
+    /*
 	stringstream videoOffset;
 
 	switch (m_eType)
@@ -233,5 +306,5 @@ string CValue::SetC(CStaticAnalysis* pAnalysis)
 		_ASSERT(0);
 
 	return result.str();
-
+*/
 }
