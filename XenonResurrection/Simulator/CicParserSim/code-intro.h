@@ -944,7 +944,7 @@ loc_20ABD:                                        //loc_20ABD:
   _di = _pop();                                   //pop di
 }
 
-void sub_20AC0()
+void sub_20AC0() // draw letter
 {
   _push(_di);                                     //push di
   _push(_cx);                                     //push cx

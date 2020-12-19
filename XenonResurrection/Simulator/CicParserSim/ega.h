@@ -1,4 +1,5 @@
 typedef uint32_t DWORD;
+
 class CVideoAdapter
 {
 public:
@@ -204,9 +205,8 @@ public:
 		full_map_mask				= 0xffffffff;
 		full_not_map_mask			= ~full_map_mask;
 		full_bit_mask				= 0xffffffff;
-        
-        for (int i=0; i<2000; i++)
-            memory[i] = -1;
+    
+        memset(memory, 0, sizeof(memory));
 	}
 
     bool Interrupt()
@@ -224,23 +224,23 @@ public:
                 g = g * 255 / 3;
                 b = b * 255 / 3;
 //                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
-                palette[i] = r | (g << 8) | (b << 16);
+                palette[i] = b | (g << 8) | (r << 16);
             }
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
-            //<< " data " << (int)_es << ":" << (int)_dx << endl;
+            // << " data " << (int)_es << ":" << (int)_dx << endl;
             return true;
         }
         if (_ax == 0x1012)
         {
             for (int i=0; i<_cx; i++)
             {
-                int r = ::memory(_es, _dx+i*3);
-                int g = ::memory(_es, _dx+i*3+1);
-                int b = ::memory(_es, _dx+i*3+2);
+                int r = ::memory(_es, _dx+i*3)*4;
+                int g = ::memory(_es, _dx+i*3+1)*4;
+                int b = ::memory(_es, _dx+i*3+2)*4;
                 
                 int palIndex = _bx + i;
-                palette[palIndex] = r | (g << 8) | (b << 16);
+                palette[palIndex] = b | (g << 8) | (r << 16);
             }
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
@@ -299,6 +299,7 @@ public:
 				_ASSERT(0);
 			}
 		}
+        _ASSERT(0);
 		return false;
 	}
 	
@@ -380,8 +381,15 @@ public:
 	virtual void Write(DWORD dwAddr, BYTE bWrite) override
 	{
 		dwAddr -= 0xa000 * 16;
-
-		DWORD data = ModeOperation(bWrite);
+/*
+        if (dwAddr == 13001)
+        {
+            
+            int f = 9;
+        }
+ */
+        LoadLatch(dwAddr);
+        DWORD data = ModeOperation(bWrite);
 
 		TLatch pixels;
 		pixels.u32Data = uLatch.u32Data;

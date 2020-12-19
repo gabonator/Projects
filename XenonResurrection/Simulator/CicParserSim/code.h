@@ -315,7 +315,7 @@ loc_10663:                                        //loc_10663:
   _xlat();                                        //xlat
     
     std::cout << "Override gfx !!!!" << std::endl;
-    _ax = 0;
+    _ax = 3;
 
 
     // Hercules: 4

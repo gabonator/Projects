@@ -7,8 +7,15 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 #include "cpu.h"
+
+#include "ega.h"
+#include "sdl.h"
+
+CEga mVideo;
 
 constexpr WORD seg000 = 0x1000;
 constexpr WORD seg002 = 0x24B9;
@@ -34,10 +41,6 @@ uint8_t segment7[0x10000];
 uint8_t segment5[0x10000];
 //uint8_t videoram[0x10000];
 
-#include "ega.h"
-#include "sdl.h"
-
-CEga mVideo;
 CSdl mSdl;
 
 using namespace std;
@@ -66,7 +69,7 @@ void _interrupt(BYTE i)
             filename[i] = c;
             filename[i+1] = 0;
         }
-        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/CicParser2021/app/";
+        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
         strcat(fullname, filename);
         std::cout << "Open file: " << filename << endl;
         _flags.carry = 0;
