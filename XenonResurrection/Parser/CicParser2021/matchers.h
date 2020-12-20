@@ -252,7 +252,7 @@ class CIMAlu : public CInstructionMatcher
 
         if ( CUtils::match("^ror (.+),(.+)$", strLine, arrMatches) )
         {
-            return make_shared<CIAlu>(CIAlu::Mul, CValue(arrMatches[0]), CValue(arrMatches[1]));
+            return make_shared<CIAlu>(CIAlu::Ror, CValue(arrMatches[0]), CValue(arrMatches[1]));
         }
 
 		return nullptr;

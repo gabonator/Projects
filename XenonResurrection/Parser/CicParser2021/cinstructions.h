@@ -43,41 +43,75 @@ public:
 		switch (pAlu->m_eType) // tuto!!
 		{
 		case CIAlu::Increment: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = op1 + " + 1";
 			break;
 		case CIAlu::Decrement: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+            _ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = op1 + " - 1";
 			break;
-		case CIAlu::Add: 
-			if (pAlu->m_bExportInsertion)
+		case CIAlu::Add:
+                if (pAlu->m_ExportInsertion == CIAlu::None){}
+            else
+			if (pAlu->m_ExportInsertion == CIAlu::Carry)
 			{
 				_ASSERT(pAlu->m_op1.GetRegisterLength() == pAlu->m_op2.GetRegisterLength());
 				if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
-					m_strInsertion = "flags.carry = (" + op1 + " + " + op2 + ") >= 0x100";
+					m_strInsertion = "_flags.carry = (" + op1 + " + " + op2 + ") >= 0x100";
 				else if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
-					m_strInsertion = "flags.carry = (" + op1 + " + " + op2 + ") >= 0x10000";
+					m_strInsertion = "_flags.carry = (" + op1 + " + " + op2 + ") >= 0x10000";
 				else
 					_ASSERT(0);
-			}
+            } else
+                if (pAlu->m_ExportInsertion == CIAlu::Sign)
+                {
+                    string prefix = "???";
+                    if (pAlu->m_op1.GetRegisterLength() == CValue::r8 &&
+                        pAlu->m_op2.GetRegisterLength() == CValue::r8)
+                        prefix = "char";
+                    else
+                        if (pAlu->m_op1.GetRegisterLength() == CValue::r16 &&
+                            pAlu->m_op2.GetRegisterLength() == CValue::r16)
+                            prefix = "short";
+                    else
+                        _ASSERT(0);
+
+                    m_strInsertion = "_flags.sign = ("+prefix+")(" + op1 + " + " + op2 + ") < 0";
+                } else
+                _ASSERT(0);
 
 			m_strDst = op1; 
 			m_strSrc = op1 + " + " + op2;
 			break;
 		case CIAlu::AddWithCarry: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			// TODO CARRY!!! ODKIAL??
 			m_strDst = op1; 
 			m_strSrc = op1 + " + " + op2 + " + flags.carry; _ASSERT(0 /* add with carry */)";
 			break;
-		case CIAlu::Sub: 
-			if (pAlu->m_bExportInsertion)
+		case CIAlu::Sub:
+                if (pAlu->m_ExportInsertion == CIAlu::None){}
+                    else
+			if (pAlu->m_ExportInsertion == CIAlu::Carry)
 			{
-				m_strInsertion = "flags.carry = " + op1 + " < " + op2;
-			}
+				m_strInsertion = "_flags.carry = " + op1 + " < " + op2;
+            } else if (pAlu->m_ExportInsertion == CIAlu::Sign)
+            {
+                string prefix = "???";
+                if (pAlu->m_op1.GetRegisterLength() == CValue::r8 &&
+                    pAlu->m_op2.GetRegisterLength() == CValue::r8)
+                    prefix = "char";
+                else
+                    if (pAlu->m_op1.GetRegisterLength() == CValue::r16 &&
+                        pAlu->m_op2.GetRegisterLength() == CValue::r16)
+                        prefix = "short";
+                else
+                    _ASSERT(0);
+
+                m_strInsertion = "_flags.sign = (" + prefix + ")(" + op1 + " - " + op2 + ") < 0";
+            } else _ASSERT(0);
 
 			m_strDst = op1; 
 			if ( op1 == op2 )
@@ -86,65 +120,81 @@ public:
 				m_strSrc = op1 + " - " + op2;
 			break;
 		case CIAlu::Xor: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = op1 + " ^ " + op2;
 			break;
 		case CIAlu::And: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = op1 + " & " + op2;
 			break;
 		case CIAlu::Or:
-            if (pAlu->m_bExportInsertion)
+                if (pAlu->m_ExportInsertion == CIAlu::None){}
+                    else
+            if (pAlu->m_ExportInsertion == CIAlu::Sign)
             {
                 if (op1 == "_ax" && op2 == "_ax")
-                    m_strInsertion = "flags.sign = _ax & 0x8000";
+                    m_strInsertion = "_flags.sign = _ax & 0x8000";
                 else
                     _ASSERT(0);
-            }
+            } else _ASSERT(0);
 
-			//_ASSERT(!pAlu->m_bExportInsertion);
+			//_ASSERT(!pAlu->m_ExportInsertion);
 			m_strDst = op1; 
 			m_strSrc = op1 + " | " + op2;
 			break;
 		case CIAlu::Not: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = "(~" + op1 + ")";
 			break;
 		case CIAlu::Neg: 
-			_ASSERT(!pAlu->m_bExportInsertion);
+			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 			m_strDst = op1; 
 			m_strSrc = "-" + op1;
 			break;
-		case CIAlu::Shl: 
-			if (pAlu->m_bExportInsertion)
+		case CIAlu::Shl:
+                if (pAlu->m_ExportInsertion == CIAlu::None) {}
+                else
+			if (pAlu->m_ExportInsertion == CIAlu::Carry)
 			{
 				_ASSERT(op2 == "1");
 				if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
-					m_strInsertion = "flags.carry = !!(" + op1 + " & 0x80)";
+					m_strInsertion = "_flags.carry = !!(" + op1 + " & 0x80)";
 				else if (pAlu->m_op1.GetRegisterLength() == CValue::r16)
-					m_strInsertion = "flags.carry = !!(" + op1 + " & 0x8000)";
+					m_strInsertion = "_flags.carry = !!(" + op1 + " & 0x8000)";
 				else
 					_ASSERT(0);
-			}
+            } else _ASSERT(0);
 			m_strDst = op1; 
 			m_strSrc = op1 + " << " + op2;
 			break;
-		case CIAlu::Shr: 
-			if (pAlu->m_bExportInsertion)
+		case CIAlu::Shr:
+                if (pAlu->m_ExportInsertion == CIAlu::None) {}
+                    else
+			if (pAlu->m_ExportInsertion == CIAlu::Carry)
 			{
 				_ASSERT(op2 == "1");
-				m_strInsertion = "flags.carry = " + op1 + " & 1";
-			}
+				m_strInsertion = "_flags.carry = " + op1 + " & 1";
+			} else
+                _ASSERT(0);
 			m_strDst = op1; 
 			m_strSrc = op1 + " >> " + op2;
 			break;
 		case CIAlu::Mul: 
-			_ASSERT(!pAlu->m_bExportInsertion);
-			m_strDst = CValue("ax").ToC(); 
+                
+			m_strDst = CValue("ax").ToC();
 			m_strSrc = op1 + " * " + CValue("al").ToC();
+                
+                if (pAlu->m_ExportInsertion == CIAlu::None) {}
+                    else /*
+            if (pAlu->m_ExportInsertion == CIAlu::Overflow)
+            {
+                m_strInsertion = "_flags.carry = (int)(" + m_strSrc + ") >= 0x10000";
+            } else*/
+                _ASSERT(0);
+
 			break;
 		default:
 			_ASSERT(0);
@@ -286,14 +336,14 @@ public:
 
 		switch (pInstruction->m_eType)
 		{
-		case CIZeroArgOp::cli: m_strOperation = "flags.interrupt = false"; break;
-		case CIZeroArgOp::sti: m_strOperation = "flags.interrupt = true"; break;
-		case CIZeroArgOp::cld: m_strOperation = "flags.direction = false"; break;
-		case CIZeroArgOp::_std: m_strOperation = "flags.direction = true"; break;
-		case CIZeroArgOp::clc: m_strOperation = "flags.carry = false"; break;
-		case CIZeroArgOp::stc: m_strOperation = "flags.carry = true"; break;
+		case CIZeroArgOp::cli: m_strOperation = "_flags.interrupt = false"; break;
+		case CIZeroArgOp::sti: m_strOperation = "_flags.interrupt = true"; break;
+		case CIZeroArgOp::cld: m_strOperation = "_flags.direction = false"; break;
+		case CIZeroArgOp::_std: m_strOperation = "_flags.direction = true"; break;
+		case CIZeroArgOp::clc: m_strOperation = "_flags.carry = false"; break;
+		case CIZeroArgOp::stc: m_strOperation = "_flags.carry = true"; break;
 		case CIZeroArgOp::lahf: m_strOperation = "_ah = flags.toByte()"; break;
-		case CIZeroArgOp::sahf: m_strOperation = "flags.fromByte(_ah)"; break;
+		case CIZeroArgOp::sahf: m_strOperation = "_flags.fromByte(_ah)"; break;
         case CIZeroArgOp::xlat: m_strOperation = "_xlat()"; break;
 
 		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
@@ -572,24 +622,28 @@ public:
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
 			case CIConditionalJump::ja: 
-				pAlu->m_bExportInsertion = true;
-				m_strCondition = "!flags.carry && ($a != 0)"; break;
+				pAlu->m_ExportInsertion = CIAlu::Carry;
+				m_strCondition = "!_flags.carry && ($a != 0)"; break;
 			case CIConditionalJump::jb: 
-				pAlu->m_bExportInsertion = true;
-				m_strCondition = "flags.carry";
+				pAlu->m_ExportInsertion = CIAlu::Carry;
+				m_strCondition = "_flags.carry";
                 //m_strCondition = "$a < 0"; // nemozeme, naozaj nastava carry, sub bl, 20h; jb ...
                 break;
 			case CIConditionalJump::jnb:
-				pAlu->m_bExportInsertion = true;
-				m_strCondition = "!flags.carry"; break;
+				pAlu->m_ExportInsertion = CIAlu::Carry;
+				m_strCondition = "!_flags.carry"; break;
             case CIConditionalJump::jbe:
                 m_strCondition = "$a <= 0"; break;
-                //pAlu->m_bExportInsertion = true;
-                //m_strCondition = "flags.carry || ($a == 0)"; break;
+                //pAlu->m_ExportInsertion = true;
+                //m_strCondition = "_flags.carry || ($a == 0)"; break;
                     
             case CIConditionalJump::js:
-                pAlu->m_bExportInsertion = true;
-                m_strCondition = "flags.sign"; break;
+                pAlu->m_ExportInsertion = CIAlu::Sign;
+                m_strCondition = "_flags.sign"; break;
+
+            case CIConditionalJump::jns:
+                    pAlu->m_ExportInsertion = CIAlu::Sign;
+                    m_strCondition = "_flags.sign"; break;
 
 			default:
 				_ASSERT(0);
@@ -603,15 +657,23 @@ public:
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
 			case CIConditionalJump::jb: 
-				pAlu->m_bExportInsertion = true;
-				m_strCondition = "flags.carry"; break;
+				pAlu->m_ExportInsertion = CIAlu::Carry;
+				m_strCondition = "_flags.carry"; break;
 			case CIConditionalJump::jnb: 
-				pAlu->m_bExportInsertion = true;
-				m_strCondition = "!flags.carry"; break;
+				pAlu->m_ExportInsertion = CIAlu::Carry;
+				m_strCondition = "!_flags.carry"; break;
 			default:
 				_ASSERT(0);
 			}
 			break;
+        case CIAlu::Mul:
+            switch ( pCondition->m_eType )
+            {
+            case CIConditionalJump::jnb:
+                    pAlu->m_ExportInsertion = CIAlu::Overflow;
+                    m_strCondition = "!_flags.carry"; break;
+            }
+            break;
 
 		default:
 			_ASSERT(0);
@@ -627,22 +689,22 @@ public:
 		{
 		case CIConditionalJump::jz: 
 			_ASSERT(eCondition == ZeroFlag);
-			m_strCondition = "flags.zero"; 
+			m_strCondition = "_flags.zero";
 			break;
 			
 		case CIConditionalJump::jnz: 
 			_ASSERT(eCondition == ZeroFlag);
-			m_strCondition = "!flags.zero"; 
+			m_strCondition = "!_flags.zero";
 			break;
 
 		case CIConditionalJump::jnb: 
 			_ASSERT(eCondition == CarryFlag || eCondition == ZeroCarryFlag);
-			m_strCondition = "!flags.carry"; 
+			m_strCondition = "!_flags.carry";
 			break;
 
 		case CIConditionalJump::jb: 
 			_ASSERT(eCondition == CarryFlag);
-			m_strCondition = "flags.carry"; 
+			m_strCondition = "_flags.carry";
 			break;
 
 		default:
@@ -943,14 +1005,14 @@ public:
 		{
 		case CCCompare::ZeroCarryFlag: 
 			// TODO: Check
-			m_strCode = "flags.zero = $arg1 == $arg2; flags.carry = $arg1 < $arg2"; 
+			m_strCode = "_flags.zero = $arg1 == $arg2; flags.carry = $arg1 < $arg2";
 			break;
 
 		case CCCompare::ZeroFlag: 
 			if (strArgument1 == strArgument2)
-				m_strCode = "flags.zero = true";
+				m_strCode = "_flags.zero = true";
 			else
-				m_strCode = "flags.zero = $arg1 == $arg2"; 
+				m_strCode = "_flags.zero = $arg1 == $arg2";
 			break;
 
 		default:

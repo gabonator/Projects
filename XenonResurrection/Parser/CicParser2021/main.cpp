@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
 //    sp.Save("/Users/gabrielvalky/Documents/git/Projects/CicParser2021/xenon3.x");
 //    return 0;
 
-    sp.Load("/Users/gabrielvalky/Documents/git/Projects/CicParser2021/xenon3.x");
+    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon3.x");
 //    sp.Load("/Users/gabrielvalky/Documents/git/Projects/CicParser2021/test3.x");
 
     CCExport e;
@@ -104,7 +104,27 @@ int main(int argc, const char * argv[])
         //"sub_1F3C7", "sub_1F371"
         //"sub_209E9", "sub_1F492", "sub_2058D", "sub_20973", "sub_20A1D", "sub_10ED9", "sub_2098C", "sub_2098C",
         //"sub_14191", "sub_20A2E", "sub_20A3C", "sub_20A47", "sub_20A5C"
-        "sub_20973"
+        //"sub_20973"
+        // pre-game
+        
+        ///"sub_15B21", "sub_10831", "sub_109EB", "sub_10A51", "sub_10AFB", "sub_15935", "sub_1595D", "sub_15C7C",
+        ///"sub_10A0D", "sub_10B83", "sub_10BC7", "sub_10D81", "sub_10DE7", "sub_14191",
+      
+        //"sub_15B21", "sub_10831", "sub_109EB", "sub_10A51", "sub_10AFB", "sub_15935", "sub_1595D", "sub_15C7C",
+        //"sub_10A0D", "sub_10B83", "sub_10BC7", "sub_10D81", "sub_10DE7", "sub_14191", "sub_15B21"
+        //"sub_10BE9", "sub_20B5B"
+        //"sub_20A39"
+        //"sub_1F3B5", "sub_20B8A", "sub_1F38C"
+       // "sub_1F325", "sub_1F363"
+        //"sub_11B43", "sub_11A19", "sub_11AAF", "sub_10F5A", "sub_10F78"
+        //"sub_15926"
+        
+        //"sub_1F3EF", "sub_10ED5", "sub_1421C"
+        //"sub_20854", "sub_20919", "sub_2095F"
+        //"sub_10BA5", "sub_1373D", "sub_10FF0"
+    
+        "sub_20AD0"
+        
     };
     
     std::set<string> imports;

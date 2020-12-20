@@ -201,6 +201,11 @@ string CValue::ToC()
         ss << "_FIXME_";
             return ss.str();
 
+    case CValue::cs_ptr_bx_plus:
+            _ASSERT(m_eRegLength == r16);
+            ss << "memory16(_cs, _bx + " << m_nValue << ")";
+            return ss.str();
+
 	default:
 		_ASSERT(0);
 	}

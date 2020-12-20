@@ -335,18 +335,18 @@ public:
 	EType m_eType;
 
 	// Realtime
-	bool m_bExportInsertion;
+    enum {None, Carry, Sign, Overflow} m_ExportInsertion;
 
 public:
-	CIAlu() : m_bExportInsertion(false) {}
+	CIAlu() : m_ExportInsertion(None) {}
 
 	CIAlu(EType eType, const CValue& op1) : 
-	  m_eType(eType), m_op1(op1), m_bExportInsertion(false)
+	  m_eType(eType), m_op1(op1), m_ExportInsertion(None)
 	{
 	}
 
 	CIAlu(EType eType, const CValue& op1, const CValue& op2) : 
-	  m_eType(eType), m_op1(op1), m_op2(op2), m_bExportInsertion(false)
+	  m_eType(eType), m_op1(op1), m_op2(op2), m_ExportInsertion(None)
 	{
 	}
 
