@@ -22,6 +22,7 @@ public:
 		m_arrMatchers.push_back(std::make_shared<CIMCompare>());
 		m_arrMatchers.push_back(std::make_shared<CIMData>());
 		m_arrMatchers.push_back(std::make_shared<CIMNop>());
+        m_arrMatchers.push_back(std::make_shared<CIMSegment>());
 
 		m_arrCode.reserve(20000);
 		m_arrSource.reserve(20000);
@@ -45,7 +46,7 @@ public:
 		_ASSERT(0);
 	}
 
-	void Save(char* strFileName)
+	void Save(const char* strFileName)
 	{
 		std::ofstream f(strFileName, ios::binary);
 		_ASSERT(f);
@@ -70,7 +71,7 @@ public:
 		f.close();
 	}
 
-	void Load(char* strFileName)
+	void Load(const char* strFileName)
 	{
 		std::ifstream f;
 		f.open(strFileName, ios::binary);

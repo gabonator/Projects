@@ -36,6 +36,14 @@ int FixCsOffset(int ofs)
         _ASSERT(ofs >=0 && ofs <= 0xffff);
         return ofs;
     }
+    if (ofs >= 0x28530 && ofs < 0x28530 + 0xfd10)
+    {
+        const int dseg_begin = 0x28530;
+        ofs -= dseg_begin;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+
     _ASSERT(0);
     return ofs;
 }
@@ -105,6 +113,7 @@ string CValue::ToC()
 
 	case CValue::segment:
 //		_ASSERT(m_eSegment == dseg);
+            _ASSERT(0);
 		return "SEG_DATA";
 
 	case CValue::wordptrval:
@@ -198,7 +207,7 @@ string CValue::ToC()
         return ss.str();
 
     case CValue::dwordptr:
-        ss << "_FIXME_";
+            ss << "0x" << hex << uppercase << FixCsOffset(m_nValue);
             return ss.str();
 
     case CValue::cs_ptr_bx_plus:

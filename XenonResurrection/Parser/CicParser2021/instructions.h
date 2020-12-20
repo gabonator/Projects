@@ -70,6 +70,26 @@ public:
 	}
 };
 
+class CISegment : public CInstruction
+{
+public:
+    string m_strSegmentName;
+
+public:
+    CISegment() {}
+    
+    CISegment(const string& strSegmentName) : m_strSegmentName(strSegmentName)
+    {
+    }
+
+    virtual void Eval(CMachine& m) {}
+
+    virtual void Serialize(CSerializer& s)
+    {
+        s << m_strSegmentName;
+    }
+};
+
 class CILabel : public CInstruction
 {
 public:
@@ -423,13 +443,17 @@ public:
 class CICall : public CInstruction
 {
 public:
+    enum EType {
+        Default,
+        NearPtr
+    } m_type;
 	CLabel m_label;
 
 public:
-	CICall() : m_label("") {}
+	CICall() : m_label(""), m_type(Default) {}
 
-	CICall(const CLabel& label) : 
-	  m_label(label)
+	CICall(const CLabel& label, EType type) :
+	  m_label(label), m_type(type)
 	{
 	}
 
@@ -437,7 +461,7 @@ public:
 
 	virtual void Serialize(CSerializer& s)
 	{
-		s << m_label;
+		s << m_label << _enum(m_type);
 	}
 };
 
@@ -447,7 +471,8 @@ public:
 	enum EType
 	{
 		Jump,
-		Call
+		Call,
+        FarCall
 	};
 
 public:
@@ -584,10 +609,14 @@ public:
 class CIStop : public CInstruction
 {
 public:
+    string mComment;
 
 public:
-    CIStop(){
-        int f = 9;
+    CIStop(shared_ptr<CInstruction> pOrigin = nullptr, string comment = "")
+    {
+        if (pOrigin)
+            m_origin = pOrigin->m_origin;
+        mComment = comment;
     }
 
     virtual void Eval(CMachine& m) {_ASSERT(0);}
@@ -641,6 +670,8 @@ CInstruction* CInstruction::FromName(string strClassName)
 		return new CIData();
     if (strClassName == "class CIStop")
         return new CIStop();
+    if (strClassName == "class CISegment")
+        return new CISegment();
 	return nullptr;
 }
 

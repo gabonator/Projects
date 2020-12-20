@@ -247,7 +247,7 @@ class CIMAlu : public CInstructionMatcher
 
         if ( CUtils::match("^idiv (.+)$", strLine, arrMatches) )
         {
-            return make_shared<CIAlu>(CIAlu::Mul, CValue(arrMatches[0]));
+            return make_shared<CIAlu>(CIAlu::IDiv, CValue(arrMatches[0]));
         }
 
         if ( CUtils::match("^ror (.+),(.+)$", strLine, arrMatches) )
@@ -275,10 +275,9 @@ class CIMFlow : public CInstructionMatcher
 			return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
 		}
 
-        if ( CUtils::match("^call cs:off_(.*)$", strLine, arrMatches) )
+        if ( CUtils::match("^call cs:(off_.*)\\[(.*)\\]$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
-            //return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
+            return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::FarCall);
         }
 
         if ( CUtils::match("^call dword ptr cs:\\[(.*)\\]$", strLine, arrMatches) )
@@ -319,12 +318,13 @@ class CIMFlow : public CInstructionMatcher
 
         if ( CUtils::match("^dd (.*)$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
+            return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
         }
 
-        if ( CUtils::match("^off_(.*) dd (.*)$", strLine, arrMatches) )
+        if ( CUtils::match("^(off_.*) dd (.*)$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
+            return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
+            //return make_shared<CIStop>();
         }
 
         if ( CUtils::match("^jmp(\\sshort)?\\s+(.*)$", strLine, arrMatches) )
@@ -339,17 +339,17 @@ class CIMFlow : public CInstructionMatcher
 
 		if ( CUtils::match("^call\\s+(\\w+)$", strLine, arrMatches) )
 		{
-			return make_shared<CICall>(CLabel(arrMatches[0]));
+			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::Default);
 		}
 
 		if ( CUtils::match("^call\\s+near\\s+(\\w+)$", strLine, arrMatches) )
 		{
-			return make_shared<CICall>(CLabel(arrMatches[0]));
+			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::Default);
 		}
 
 		if ( CUtils::match("^call\\s+near\\s+ptr\\s+(\\w+)$", strLine, arrMatches) )
 		{
-			return make_shared<CICall>(CLabel(arrMatches[0]));
+			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::NearPtr);
 		}
 		
 		//WTF: call dword ptr cs:[bp+7FBh]
@@ -449,12 +449,25 @@ class CIMData : public CInstructionMatcher
 	}
 };
 
+class CIMSegment : public CInstructionMatcher
+{
+    virtual shared_ptr<CInstruction> Match(string strLine) override
+    {
+        vector<string> arrMatches;
+        if ( CUtils::match("^(seg.*) segment .*public.*$", strLine, arrMatches) )
+        {
+            return make_shared<CISegment>(arrMatches[0]);
+        }
+        return nullptr;
+    }
+};
+    
 class CIMNop : public CInstructionMatcher
 {
 	virtual shared_ptr<CInstruction> Match(string strLine) override
 	{
 		vector<string> arrMatches;
-        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" || strLine.substr(0, 4) == "seg0" || strLine.find(" db ") != string::npos || strLine == "align 20h")
+        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" || /*strLine.substr(0, 4) == "seg0" || */ strLine.find(" db ") != string::npos || strLine == "align 20h")
         {
             return make_shared<CINop>();
         }

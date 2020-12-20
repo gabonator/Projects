@@ -29,10 +29,13 @@ public:
 		for (int i=0; (size_t)i<m_arrSource.size(); i++)
 		{
 			shared_ptr<CIData> pData = dynamic_pointer_cast<CIData>(m_arrSource[i]);
-			if (pData)
+			if (pData && pData->m_strVariableName == label)
 			{
 				if (!bFound)
 					bFound = true;
+            }
+            if (pData)
+            {
 			} else
 			{
 				if (bFound)
@@ -102,7 +105,7 @@ public:
 
 		shared_ptr<CIAlu> pAlu = dynamic_pointer_cast<CIAlu>(pInInstruction);
 		if (pAlu)
-			pOutInstruction = make_shared<CCAssignment>( pAlu );
+			pOutInstruction = make_shared<CCAssignment>( pAlu, pPrevious );
 
 		shared_ptr<CIZeroArgOp> pZeroArgOp = dynamic_pointer_cast<CIZeroArgOp>(pInInstruction);
 		if (pZeroArgOp)
@@ -114,7 +117,7 @@ public:
 
 		shared_ptr<CITwoArgOp> pTwoArgOp = dynamic_pointer_cast<CITwoArgOp>(pInInstruction);
 		if (pTwoArgOp)
-			pOutInstruction = make_shared<CCTwoArgOp>( pTwoArgOp );
+			pOutInstruction = make_shared<CCTwoArgOp>( pTwoArgOp, pPrevious );
 
 		shared_ptr<CIString> pStringOp = dynamic_pointer_cast<CIString>(pInInstruction);
 		if (pStringOp)
@@ -134,7 +137,7 @@ public:
 
 		shared_ptr<CICall> pCall = dynamic_pointer_cast<CICall>(pInInstruction);
 		if (pCall)
-			pOutInstruction = make_shared<CCCall>( pCall );
+			pOutInstruction = make_shared<CCCall>( pCall, pPrevious );
 
 		shared_ptr<CISwitch> pSwitch = dynamic_pointer_cast<CISwitch>(pInInstruction);
 		if (pSwitch)
@@ -408,7 +411,7 @@ public:
 		{
             //std::cout << arrInput[i]->m_origin << "\n";
 			shared_ptr<CInstruction> pInInstruction = arrInput[i];
-			shared_ptr<CInstruction> pCondition;
+			shared_ptr<CInstruction> pCondition = i > 0 ? arrInput[i-1] : nullptr;
 			/*
 			if (dynamic_pointer_cast<CITwoArgOp>(pInInstruction) && 
 				(dynamic_pointer_cast<CITwoArgOp>(pInInstruction)->m_eType == CITwoArgOp::rcl ||
@@ -437,9 +440,12 @@ public:
 			}
 
 			shared_ptr<CCInstruction> pOutInstruction = Convert(strFunction, pInInstruction, pCondition);
-
-			if (!pOutInstruction)
+            
+            if (!pOutInstruction)
 				continue;
+
+            if (pOutInstruction->mDropPrevious)
+                arrOutput.pop_back();
 
 			if (pOutInstruction->TryJoin(pPrev))
 				arrOutput.pop_back();
@@ -644,6 +650,14 @@ public:
 				if (find(pSwitch->m_arrLabels.begin(), pSwitch->m_arrLabels.end(), label) != pSwitch->m_arrLabels.end())
 					aux.push_back(i);
 			}
+            
+            shared_ptr<CCConditionalJump> pJump = dynamic_pointer_cast<CCConditionalJump>(arrOutput[i]);
+            if ( pJump && pJump->cond )
+            {
+                if (find(pSwitch->m_arrLabels.begin(), pSwitch->m_arrLabels.end(), label) != pSwitch->m_arrLabels.end())
+                    aux.push_back(i);
+            }
+
 		}
 		return aux;
 	}
@@ -888,7 +902,7 @@ public:
 			string strPad;
 			if ( !dynamic_pointer_cast<CCLabel>(arrOutput[i]) )
 				for (int j=0; j<nBaseIndent + nIndent; j++)
-					strPad += "  ";
+					strPad += "    ";
 
 			string all(arrOutput[i]->ToString());
 			CUtils::replace(all, "\r", "\n"); 

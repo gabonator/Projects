@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2DD1C32E25881F440029B1E4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD1C32D25881F440029B1E4 /* main.cpp */; };
-		2DD1C34B25881F7F0029B1E4 /* dos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD1C33C25881F7E0029B1E4 /* dos.cpp */; };
-		2DD1C34C25881F7F0029B1E4 /* emulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD1C33F25881F7E0029B1E4 /* emulator.cpp */; };
 		2DD1C34E25881F7F0029B1E4 /* asmparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD1C34925881F7F0029B1E4 /* asmparser.cpp */; };
 /* End PBXBuildFile section */
 
@@ -28,23 +26,18 @@
 /* Begin PBXFileReference section */
 		2DD1C32A25881F440029B1E4 /* CicParser2021 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CicParser2021; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD1C32D25881F440029B1E4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		2DD1C33525881F7E0029B1E4 /* dos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dos.h; sourceTree = "<group>"; };
 		2DD1C33625881F7E0029B1E4 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		2DD1C33725881F7E0029B1E4 /* label.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = label.h; sourceTree = "<group>"; };
 		2DD1C33825881F7E0029B1E4 /* value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = value.h; sourceTree = "<group>"; };
 		2DD1C33925881F7E0029B1E4 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		2DD1C33B25881F7E0029B1E4 /* instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instructions.h; sourceTree = "<group>"; };
-		2DD1C33C25881F7E0029B1E4 /* dos.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dos.cpp; sourceTree = "<group>"; };
 		2DD1C33D25881F7E0029B1E4 /* matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matchers.h; sourceTree = "<group>"; };
 		2DD1C33E25881F7E0029B1E4 /* parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
-		2DD1C33F25881F7E0029B1E4 /* emulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = emulator.cpp; sourceTree = "<group>"; };
 		2DD1C34125881F7E0029B1E4 /* cvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvalue.h; sourceTree = "<group>"; };
 		2DD1C34225881F7E0029B1E4 /* cexport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cexport.h; sourceTree = "<group>"; };
 		2DD1C34325881F7F0029B1E4 /* video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = video.h; sourceTree = "<group>"; };
 		2DD1C34425881F7F0029B1E4 /* reganalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reganalysis.h; sourceTree = "<group>"; };
 		2DD1C34625881F7F0029B1E4 /* serializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serializer.h; sourceTree = "<group>"; };
-		2DD1C34725881F7F0029B1E4 /* machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = machine.h; sourceTree = "<group>"; };
-		2DD1C34825881F7F0029B1E4 /* ega.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ega.h; sourceTree = "<group>"; };
 		2DD1C34925881F7F0029B1E4 /* asmparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = asmparser.cpp; sourceTree = "<group>"; };
 		2DD1C34A25881F7F0029B1E4 /* cinstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinstructions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -85,13 +78,8 @@
 				2DD1C34225881F7E0029B1E4 /* cexport.h */,
 				2DD1C34A25881F7F0029B1E4 /* cinstructions.h */,
 				2DD1C34125881F7E0029B1E4 /* cvalue.h */,
-				2DD1C33C25881F7E0029B1E4 /* dos.cpp */,
-				2DD1C33525881F7E0029B1E4 /* dos.h */,
-				2DD1C34825881F7F0029B1E4 /* ega.h */,
-				2DD1C33F25881F7E0029B1E4 /* emulator.cpp */,
 				2DD1C33B25881F7E0029B1E4 /* instructions.h */,
 				2DD1C33725881F7E0029B1E4 /* label.h */,
-				2DD1C34725881F7F0029B1E4 /* machine.h */,
 				2DD1C33D25881F7E0029B1E4 /* matchers.h */,
 				2DD1C33E25881F7E0029B1E4 /* parser.h */,
 				2DD1C34425881F7F0029B1E4 /* reganalysis.h */,
@@ -159,9 +147,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD1C34B25881F7F0029B1E4 /* dos.cpp in Sources */,
 				2DD1C34E25881F7F0029B1E4 /* asmparser.cpp in Sources */,
-				2DD1C34C25881F7F0029B1E4 /* emulator.cpp in Sources */,
 				2DD1C32E25881F440029B1E4 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

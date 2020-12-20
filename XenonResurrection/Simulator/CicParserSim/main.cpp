@@ -67,6 +67,7 @@ void _interrupt(BYTE i)
         _ASSERT(f);
         fclose(f);
         f = nullptr;
+        _flags.carry = 0;
     }
 
     if (i == 0x21 && _ah == 0x3d)
