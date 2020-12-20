@@ -401,7 +401,7 @@ public:
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 10000)
+        if (q++ > 6000)
         {
             _sync();
             q= 0;

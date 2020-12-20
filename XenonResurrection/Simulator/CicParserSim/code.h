@@ -14,25 +14,25 @@ void sub_10000();
 void sub_1011C();
 void sub_1066E() {_ASSERT(0);};
 void sub_106FE();
-void sub_1080F() {_ASSERT(0);};
-void sub_10985() {_ASSERT(0);};
-void sub_10A2F() {_ASSERT(0);};
+void sub_1080F();
+void sub_10985();
+void sub_10A2F();
 void sub_10A95() {_ASSERT(0);};
-void sub_10BA5() {_ASSERT(0);};
+void sub_10BA5();
 void sub_10D5F();
 void sub_10D81();
 void sub_10DA3();
-void sub_10E2B() {_ASSERT(0);};
-void sub_10E4D() {_ASSERT(0);};
+void sub_10E2B();
+void sub_10E4D();
 void sub_10E6F() {_ASSERT(0);};
 void sub_10E91() {_ASSERT(0);};
 void sub_10FF0() {_ASSERT(0);};
-void sub_11827() {_ASSERT(0);};
+void sub_11827();
 void sub_118F5() {_ASSERT(0);};
 void sub_1193C() {_ASSERT(0);};
 void sub_11A62() {_ASSERT(0);};
 void sub_11A65() {_ASSERT(0);};
-void sub_11B43() {_ASSERT(0);};
+void sub_11B43();
 void sub_12B22() {_ASSERT(0);};
 void sub_13319() {_ASSERT(0);};
 void sub_135EB() {_ASSERT(0);};
@@ -46,11 +46,11 @@ void sub_1426A();
 void sub_14675() {_ASSERT(0);};
 void sub_14A69() {_ASSERT(0);};
 void sub_15863();
-void sub_15926() {_ASSERT(0);};
+void sub_15926();
 void sub_159C8() {_ASSERT(0);};
-void sub_15B21() {_ASSERT(0);};
+void sub_15B21();
 void sub_15C0F() {_ASSERT(0);};
-void sub_15CC5() {_ASSERT(0);};
+void sub_15CC5();
 void sub_16058();
 void sub_160A5();
 void sub_24EFC() {_ASSERT(0);};
@@ -166,7 +166,6 @@ loc_1059C:                                        //loc_1059C:
 
 void sub_24B90()
 {
-//  _cs = seg002;
   _flags.interrupt = true;                         //sti
   _push(_bx);                                     //push bx
   _push(_cx);                                     //push cx
@@ -373,7 +372,7 @@ void sub_15E8A() // TODO: tuto nastavuje timer
   _flags.interrupt = true;                         //sti
 }
 
-void sub_15E5E() // keyboard isr
+void sub_15E5E() // keyboard isr seg000:5eeb
 {
   _ax = 0x3509;                                   //mov ax, 3509h
   _interrupt(0x21);                               //int 21h
@@ -390,6 +389,7 @@ void sub_15E5E() // keyboard isr
 
 void sub_13C75()
 {
+    // _dump();
   sub_16058();                                    //call sub_16058
   memory(_ds, 0x8F54) = 0;                        //mov byte_31484, 0
   memory16(_ds, 0x8E6E) = 1;                      //mov word_3139E, 1
@@ -453,14 +453,17 @@ loc_13D47:                                        //loc_13D47:
   sub_10985();                                    //call sub_10985
   memory16(_ds, 0x919A) = 1;                      //mov word_316CA, 1
   sub_10E4D();                                    //call sub_10E4D
+    
+
   sub_10BA5();                                    //call sub_10BA5
-  sub_1373D();                                    //call sub_1373D
-  sub_10FF0();                                    //call sub_10FF0
-  sub_13682();                                    //call sub_13682
-  sub_1080F();                                    //call sub_1080F
-  sub_14675();                                    //call sub_14675
-  sub_10A95();                                    //call sub_10A95
-  sub_13615();                                    //call sub_13615
+#warning fun skip
+  ///sub_1373D();                                    //call sub_1373D
+  ///sub_10FF0();                                    //call sub_10FF0
+  ///sub_13682();                                    //call sub_13682
+    sub_1080F();                                    //call sub_1080F
+  ///sub_14675();                                    //call sub_14675
+  ///sub_10A95();                                    //call sub_10A95
+  ///sub_13615();                                    //call sub_13615
   _al = memory(_ds, 0x8F58);                      //mov al, byte_31488
   if (_al & _al)                                  //jnz short loc_13D75
     goto loc_13D75;
@@ -560,10 +563,8 @@ loc_13E82:                                        //loc_13E82:
   memory16(_ds, 0xFCEE) = _ax;                    //mov word_3821E, ax
 loc_13E9F:                                        //loc_13E9F:
   _ax = memory16(_ds, 0xFCE2);                    //mov ax, word_38212
-  _flags.carry = memory16(_ds, 0xFCE6) < _ax;      //sub word_38216, ax
   memory16(_ds, 0xFCE6) -= _ax;
-    _ASSERT(0);
-  if (_flags.sign)                                 //js short loc_13EBB
+  if ((short)memory16(_ds, 0xFCE6) < 0)                                 //js short loc_13EBB
     goto loc_13EBB;
   if ((short)memory16(_ds, 0xFCE6) < (short)0x10) //jl short loc_13EC5
     goto loc_13EC5;
@@ -1088,146 +1089,6 @@ void sub_seg001_2a() // vga?
     memory16(_ds, /*0x2c787-0x28530*/ 0x4257) = _dx;
     _ax = _ds;
     _es = _ax;
-}
-
-void sub_1034C()
-{
-  sub_103DD();                                    //call sub_103DD
-  _si = _ax;                                      //mov si, ax
-  _dl = memory(_ds, _si + 9074);                  //mov dl, [si+2372h]
-  _dh = 0x00;                                     //mov dh, 0
-  _cl = 0x06;                                     //mov cl, 6
-  _dx <<= _cl;                                    //shl dx, cl
-  _push(_dx);                                     //push dx
-  _cl = memory(_ds, _si + 9330);                  //mov cl, [si+2472h]
-    _ASSERT(_cl >= 2);
-  _ch = 0x00;                                     //mov ch, 0
-  _cx -= 0x0002;                                  //sub cx, 2
-  sub_103FD();                                    //call sub_103FD
-  _ax |= _si;                                     //or ax, si
-  _rol(_ax, _cl);                                 //rol ax, cl
-  _ax &= 0x3f;                                    //and ax, 3Fh
-  _dx = _pop();                                   //pop dx
-  _ax += _dx;                                     //add ax, dx
-}
-
-void sub_103DD()
-{
-  _dx = memory16(_ds, 0x112C);                    //mov dx, word_2965C
-  if ((char)memory(_ds, 0x112E) > (char)8)        //jg short loc_103EB
-    goto loc_103EB;
-  sub_104C9();                                    //call sub_104C9
-loc_103EB:                                        //loc_103EB:
-  _xchg(_dl, _dh);                                //xchg dl, dh
-  _ax = _dx;                                      //mov ax, dx
-  _dl = _dl ^ _dl;                                //xor dl, dl
-  memory16(_ds, 0x112C) = _dx;                    //mov word_2965C, dx
-  memory(_ds, 0x112E) -= 8;                       //sub byte_2965E, 8
-  _ah = _ah ^ _ah;                                //xor ah, ah
-}
-
-void sub_103FD()
-{
-  _push(_cx);                                     //push cx
-  _dx = memory16(_ds, 0x112C);                    //mov dx, word_2965C
-  if ((char)memory(_ds, 0x112E) > (char)8)        //jg short loc_1040C
-    goto loc_1040C;
-  sub_104C9();                                    //call sub_104C9  -- read data 2565:216c
-loc_1040C:                                        //loc_1040C:
-  _cx = _pop();                                   //pop cx
-  _ax = _dx;                                      //mov ax, dx
-  _dx <<= _cl;                                    //shl dx, cl
-  memory16(_ds, 0x112C) = _dx;                    //mov word_2965C, dx
-  memory(_ds, 0x112E) -= _cl;                     //sub byte_2965E, cl
-  _dx = 0xffff;                                   //mov dx, 0FFFFh
-  _dx >>= _cl;                                    //shr dx, cl
-  _dx = (~_dx);                                   //not dx
-  _ax &= _dx;                                     //and ax, dx
-}
-
-void sub_10423()
-{
-  _push(_si);                                     //push si
-  _ax = _ds;                                      //mov ax, ds
-  _es = _ax;                                      //mov es, ax
-  _si = _si ^ _si;                                //xor si, si
-  _di = _si;                                      //mov di, si
-loc_1042C:                                        //loc_1042C:
-  if (memory16(_ds, _si + 3142) < 1254)           //jb short loc_10449
-    goto loc_10449;
-  _ax = memory16(_ds, _si + 4);                   //mov ax, [si+4]
-  _ax += 1;                                       //inc ax
-  _ax >>= 1;                                      //shr ax, 1
-  memory16(_ds, _di + 4) = _ax;                   //mov [di+4], ax
-  _ax = memory16(_ds, _si + 3142);                //mov ax, [si+0C46h]
-  memory16(_ds, _di + 3142) = _ax;                //mov [di+0C46h], ax
-  _di += 1;                                       //inc di
-  _di += 1;                                       //inc di
-loc_10449:                                        //loc_10449:
-  _si += 1;                                       //inc si
-  _si += 1;                                       //inc si
-  if (_si < 0x04e6)                               //jb short loc_1042C
-    goto loc_1042C;
-  _si = _si ^ _si;                                //xor si, si
-  _di = 0x0274;                                   //mov di, 274h
-loc_10456:                                        //loc_10456:
-  _bx = _si;                                      //mov bx, si
-  _bx += 1;                                       //inc bx
-  _bx += 1;                                       //inc bx
-  _ax = memory16(_ds, _si + 4);                   //mov ax, [si+4]
-  _ax = _ax + memory16(_ds, _bx + 4);             //add ax, [bx+4]
-  memory16(_ds, _di + 4) = _ax;                   //mov [di+4], ax
-  _bx = _di;                                      //mov bx, di
-loc_10468:                                        //loc_10468:
-  _bx -= 1;                                       //dec bx
-  _bx -= 1;                                       //dec bx
-  if (_ax < memory16(_ds, _bx + 4))               //jb short loc_10468
-    goto loc_10468;
-  _bx += 1;                                       //inc bx
-  _bx += 1;                                       //inc bx
-  _cx = _di;                                      //mov cx, di
-  _cx -= _bx;                                     //sub cx, bx
-  _cx >>= 1;                                      //shr cx, 1
-  _flags.direction = true;                         //std
-  _push(_cx);                                     //push cx
-  _push(_si);                                     //push si
-  _push(_di);                                     //push di
-  _lea(_si, memory16(_ds, _di + 4));              //lea si, [di+4]
-  _di = _si;                                      //mov di, si
-  _si -= 1;                                       //dec si
-  _si -= 1;                                       //dec si
-  _rep_movsw<MemAuto, MemAuto, DirAuto>();        //rep movsw
-  memory16(_ds, _bx + 4) = _ax;                   //mov [bx+4], ax
-  _di = _pop();                                   //pop di
-  _si = _pop();                                   //pop si
-  _cx = _pop();                                   //pop cx
-  _push(_si);                                     //push si
-  _push(_di);                                     //push di
-  _lea(_si, memory16(_ds, _di + 3142));           //lea si, [di+0C46h]
-  _di = _si;                                      //mov di, si
-  _si -= 1;                                       //dec si
-  _si -= 1;                                       //dec si
-  _rep_movsw<MemAuto, MemAuto, DirAuto>();        //rep movsw
-  _di = _pop();                                   //pop di
-  _si = _pop();                                   //pop si
-  memory16(_ds, _bx + 3142) = _si;                //mov [bx+0C46h], si
-  _si += 0x0004;                                  //add si, 4
-  _di += 0x0002;                                  //add di, 2
-  if (_di < 0x04e6)                               //jb short loc_10456
-    goto loc_10456;
-  _si = _si ^ _si;                                //xor si, si
-loc_104AD:                                        //loc_104AD:
-  _di = memory16(_ds, _si + 3142);                //mov di, [si+0C46h]
-  memory16(_ds, _di + 1260) = _si;                //mov [di+4ECh], si
-  if (_di >= 0x04e6)                              //jnb short loc_104BF
-    goto loc_104BF;
-  memory16(_ds, _di + 1262) = _si;                //mov [di+4EEh], si
-loc_104BF:                                        //loc_104BF:
-  _si += 1;                                       //inc si
-  _si += 1;                                       //inc si
-  if (_si < 0x04e6)                               //jb short loc_104AD
-    goto loc_104AD;
-  _si = _pop();                                   //pop si
 }
 
 

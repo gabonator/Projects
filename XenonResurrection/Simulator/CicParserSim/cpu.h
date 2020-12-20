@@ -165,20 +165,22 @@ struct DirAuto
 };
 
 template <class DST, class SRC, class DIR>
+void _movsb()
+{
+    //memory[adr(_es, _di)] = memory[adr(_ds, _si)];
+    DIR::Assert();
+    DST::Set8(_es, DIR::Move(_di), SRC::Get8(_ds, DIR::Move(_si)));
+}
+
+
+
+template <class DST, class SRC, class DIR>
 void _rep_movsb()
 {
     _ASSERT(_cx);
     while (_cx--)
         _movsb<DST, SRC, DIR>();
     _cx = 0;
-}
-
-template <class DST, class SRC, class DIR>
-void _movsb()
-{
-    //memory[adr(_es, _di)] = memory[adr(_ds, _si)];
-    DIR::Assert();
-    DST::Set8(_es, DIR::Move(_di), SRC::Get8(_ds, DIR::Move(_si)));
 }
 
 template <class DST, class SRC, class DIR>
@@ -299,11 +301,21 @@ template <typename INT>
 INT rol(INT val) {
     return (val << 1) | (val >> (sizeof(INT)*CHAR_BIT-1));
 }
+template <typename INT>
+INT ror(INT val) {
+    return (val >> 1) | (val << (sizeof(INT)*CHAR_BIT-1));
+}
 
 void _rol(WORD& b, BYTE l)
 {
     _ASSERT(l>=0 && l <= 7);
     while (l--) b = rol<WORD>(b);    
+}
+
+void _ror(BYTE& b, BYTE l)
+{
+    _ASSERT(l == 1);
+    b = ror<BYTE>(b);
 }
 
 void _div(WORD& r)
@@ -358,7 +370,7 @@ void _sync();
 void _idiv(WORD d)
 {
     // DX:AX / d -> AX result, DX remainder
-    uint32_t dw = (_dx << 16) | _ax;
+    int32_t dw = (_dx << 16) | _ax;
     WORD result = dw / d;
     WORD remainder = dw % d;
     _ax = result;

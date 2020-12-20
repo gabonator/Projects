@@ -16,33 +16,46 @@
 #include "sdl.h"
 
 CEga mVideo;
+void _dump();
 
 constexpr WORD seg000 = 0x1000;
 constexpr WORD seg002 = 0x24B9;
 constexpr WORD dataseg = 0x2853;
-constexpr WORD seg001 = 0x1000;
+constexpr WORD seg001 = 0x1f29;
 constexpr WORD seg003 = 0x2565;
 constexpr WORD seg005 = 0x3824;
 constexpr WORD seg007 = 0x449b;
+constexpr WORD seg009 = 0x63d0;
 constexpr WORD video = 0xa000;
 
 #include "code.h"
 #include "code-loader.h"
 #include "code-intro.h"
-
+#include "code-pregame.h"
 
 reg_t _reg;
 
 uint8_t datasegment[0x10000];
 uint8_t segment2[0x10000];
+uint8_t segment1[0x10000];
 uint8_t segment0[0x10000];
 uint8_t segment3[0x10000];
 uint8_t segment7[0x10000];
 uint8_t segment5[0x10000];
+uint8_t segment9[0x10000];
 //uint8_t videoram[0x10000];
 
 CSdl mSdl;
-
+/*
+uint8_t mark2[0x10000] = {0};
+uint8_t mark1[0x10000] = {0};
+uint8_t mark0[0x10000] = {0};
+uint8_t mark3[0x10000] = {0};
+uint8_t mark7[0x10000] = {0};
+uint8_t mark5[0x10000] = {0};
+uint8_t mark9[0x10000] = {0};
+uint8_t markd[0x10000] = {0};
+*/
 using namespace std;
 void _interrupt(BYTE i)
 {
@@ -88,11 +101,7 @@ void _interrupt(BYTE i)
         for (int i=0; i<_cx; i++)
             memory(_ds, _dx+i) = buf[i];
         delete[] buf;
-        std::cout << "read " << _cx << " (" << c << ")" << endl;
-        if (c != _cx)
-        {
-            int f = 9;
-        }
+        //std::cout << "read " << _cx << " (" << c << ")" << endl;
         _ASSERT(c);
         _flags.carry = 0;
     }
@@ -105,7 +114,7 @@ void _interrupt(BYTE i)
     }
     if (i == 0x21 && _ah == 0x25)
     {
-        // set int vect AL DS:SX
+        // set int vect AL DS:DX
         // seg000:600b - TODO: ignorujeme
     }
     if (i == 0x80)
@@ -294,12 +303,12 @@ void MemAuto::Set8(WORD seg, WORD ofs, BYTE data)
 
 BYTE MemVideo::Get8(WORD seg, WORD ofs)
 {
-    _ASSERT(seg == 0xa000);
+    _ASSERT(seg == 0xa000 || seg == 0xa400);
     return mVideo.Read(seg*16+ofs);
 }
 void MemVideo::Set8(WORD seg, WORD ofs, BYTE data)
 {
-    _ASSERT(seg == 0xa000);
+    _ASSERT(seg == 0xa000 || seg == 0xa400);
     mVideo.Write(seg*16+ofs, data);
 }
 
@@ -339,6 +348,14 @@ WORD& memory16(WORD segment, WORD offset)
     if (segment == seg007) // seg003
     {
         return *(WORD*)(segment7 + offset);
+    }
+    if (segment == seg009)
+    {
+        return *(WORD*)(segment9 + offset);
+    }
+    if (segment == seg000) // seg003
+    {
+        return *(WORD*)(segment0 + offset);
     }
     if (segment == 0x0000 && (offset == 512 || offset == 514)) // custom int 80h handler
     {
@@ -381,9 +398,17 @@ BYTE& memory(WORD segment, WORD offset)
     {
         return *(segment7 + offset);
     }
+    if (segment == seg009)
+    {
+        return *(segment9 + offset);
+    }
     if (segment == seg000)
     {
         return *(segment0 + offset);
+    }
+    if (segment == seg001)
+    {
+        return *(segment1 + offset);
     }
     static BYTE dummy = 0;
     _ASSERT(0);
@@ -395,7 +420,24 @@ void _repne_scasw()
     _ASSERT(0);
 }
 
-void loadSegment(uint8_t* buffer, char* suffix, int len)
+void onKey(int k)
+{
+ //   memory(dataseg, 0x8f5b) = 0xff;
+//    memory(dataseg, 0x8f59) = 0x80;
+    int code = 0;
+    switch (k)
+    {
+        case SDL_SCANCODE_UP: code = 1; break;
+        case SDL_SCANCODE_DOWN: code = 2; break;
+        case SDL_SCANCODE_LEFT: code = 4; break;
+        case SDL_SCANCODE_RIGHT: code = 5; break;
+        case SDL_SCANCODE_RETURN: code = 0x80;
+            memory(dataseg, 0x8f5b) = 0xff; break;
+    }
+    memory(dataseg, 0x8f59) = code;
+}
+
+void loadSegment(uint8_t* buffer, const char* suffix, int len)
 {
     memset(buffer, 0, 0x10000);
     char fname[128];
@@ -417,6 +459,40 @@ void _sync()
     mSdl.Loop();
 }
 
+void saveSegment(uint8_t* buffer, const char* suffix)
+{
+    char fname[128];
+    sprintf(fname, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/%s.out", suffix);
+    
+    FILE* f = fopen(fname, "wb");
+    fwrite(buffer, 0x10000, 1, f);
+    fclose(f);
+}
+
+void _dump()
+{
+    static bool once = true;
+    if (once)
+        once = false;
+    else
+        return;
+    
+    stringstream ss;
+    ss << "palette = [";
+    for (int i=0; i<16; i++)
+        ss << "0x" << hex << std::setw(6) << std::setfill('0') << mVideo.palette[i] << ", ";
+    ss << "]";
+    cout << ss.str();
+        
+    saveSegment(segment0, "seg0");
+    saveSegment(segment2, "seg2");
+    saveSegment(segment3, "seg3");
+    saveSegment(segment5, "seg5");
+    saveSegment(segment7, "seg7");
+    saveSegment(segment9, "seg9");
+    saveSegment(datasegment, "segd");
+}
+
 int main(int argc, const char * argv[]) {
     m_arrStack.resize(2*128, 0);
     _sp = 128;
@@ -426,8 +502,10 @@ int main(int argc, const char * argv[]) {
     loadSegment(segment2, "seg2", 2742);
     loadSegment(segment0, "seg0", 62096);
     loadSegment(segment3, "seg3", 11999); // ma byt 12000 !!!
+    loadSegment(segment1, "seg1", 0x5900);
     memset(segment5, 0, 0x10000);
     memset(segment7, 0, 0x10000);
+    memset(segment9, 0, 0x10000);
     //memset(videoram, 0xff, 0x10000);
     
     mSdl.Init();

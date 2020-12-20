@@ -2,6 +2,8 @@ typedef uint32_t Uint32;
 #include <SDL.h>
 #include <SDL_render.h>
 
+void onKey(int k);
+
 class CSdl
 {
     enum {
@@ -73,7 +75,10 @@ public:
         while( SDL_PollEvent( &event ) )
         {
             if (SDL_KEYDOWN == event.type)
+            {
                 lastKey = event.key.keysym.scancode;
+                onKey(event.key.keysym.scancode);
+            }
 
             if( ( SDL_QUIT == event.type ) ||
                ( SDL_KEYDOWN == event.type && SDL_SCANCODE_ESCAPE == event.key.keysym.scancode ) )
