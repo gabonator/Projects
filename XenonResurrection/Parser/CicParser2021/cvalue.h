@@ -215,6 +215,123 @@ string CValue::ToC()
             ss << "memory16(_cs, _bx + " << m_nValue << ")";
             return ss.str();
 
+        case CValue::cs_ptr_di:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _di)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _di)";
+            else
+                _ASSERT(0);
+            return ss.str();
+
+        case CValue::cs_ptr_di_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _di + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _di + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::es_ptr_si:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_es, _si)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_es, _si)";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::es_ptr_si_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_es, _si + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_es, _si + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+
+        case CValue::cs_ptr_bp:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bp)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bp)";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::cs_ptr_bp_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bp + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bp + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::cs_ptr_bp_plus_si_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bp + _si + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bp + _si + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::cs_ptr_bx:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bx)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bx)";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::ss_ptr:
+            ss << "_FIXME_";
+            /*
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ss, " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ss, " << m_nValue << ")";
+            else
+                _ASSERT(0);
+             */
+            return ss.str();
+        case CValue::ss_byteptr:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ss, " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ss, " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::cs_ptr_bx_plus_di:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bx + _di)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bx + _di)";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::cs_ptr_bx_plus_di_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bx + _di + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bx + _di + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+        case CValue::bx_plus_di_plus:
+            ss << "_bx + _di + " << m_nValue;
+            return ss.str();
+
 	default:
 		_ASSERT(0);
 	}

@@ -62,7 +62,7 @@ extern reg_t _reg;
 #define _si _reg.si
 #define _di _reg.di
 #define _bp _reg.bp
-#define _cs _reg.cs
+//#define _cs _reg.cs
 #define _sp _reg.sp
 
 #define _cli() _reg.flags.bit.intr = 0
@@ -177,6 +177,7 @@ void _movsb()
 template <class DST, class SRC, class DIR>
 void _rep_movsb()
 {
+    _ASSERT(_cx < 0x6000);
     _ASSERT(_cx);
     while (_cx--)
         _movsb<DST, SRC, DIR>();
@@ -194,6 +195,7 @@ void _movsw()
 template <class DST, class SRC, class DIR>
 void _rep_movsw()
 {
+    _ASSERT(_cx < 0x6000);
     _ASSERT(_cx);
     while (_cx--)
         _movsw<DST, SRC, DIR>();
@@ -203,6 +205,7 @@ void _rep_movsw()
 template <class DST, class DIR>
 void _rep_stosb()
 {
+    _ASSERT(_cx < 0x6000);
     _ASSERT(_cx);
     while (_cx--)
         _stosb<DST, DIR>();
@@ -219,10 +222,13 @@ void _stosb()
 template <class DST, class DIR>
 void _rep_stosw()
 {
+    _ASSERT(_cx == 0x7a34 || _cx < 0x5000);
     if (_cx)
     {
         while (_cx--)
             _stosw<DST, DIR>();
+        _cx = 0;
+
     }
 }
 
@@ -375,4 +381,18 @@ void _idiv(WORD d)
     WORD remainder = dw % d;
     _ax = result;
     _dx = remainder;
+}
+
+void _sar(WORD& a, BYTE b)
+{
+    int16_t& sa = (short&)a;
+    sa >>= b;
+}
+
+void _cbw()
+{
+    if (_al & 0x80)
+        _ah = 0xff;
+    else
+        _ah = 0;
 }

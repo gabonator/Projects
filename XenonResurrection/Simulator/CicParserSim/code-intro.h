@@ -201,7 +201,7 @@ void sub_10D5F()
 
 void sub_21836()
 {
-    _cs = seg001 ;
+    WORD _cs = seg001 ;
     memory(_cs, 0x25A5) = 1;                      //mov cs:byte_21835, 1
 }
 
@@ -426,7 +426,7 @@ void sub_10B3F()
     }
 }
 
-void sub_1595D()
+void sub_1595D() // label screen with starfields
 {
     memory16(_ds, 0x3752) = _ax;                  //mov word_2BC82, ax
     memory16(_ds, 0x3754) = _si;                  //mov word_2BC84, si
@@ -481,9 +481,9 @@ void sub_1F38C()
     _interrupt(0x10);                             //int 10h
 }
 
-void sub_1F3D7()
+void sub_1F3D7() // set palette
 {
-    _cs = seg001 ;
+    WORD _cs = seg001 ;
     if (memory(_cs, 0x136) == 0)                  //jz short locret_1F3EE
       goto locret_1F3EE;
     memory(_cs, 0x136) = 0;                       //mov cs:byte_1F3C6, 0
@@ -706,7 +706,7 @@ void sub_10ED9()
     sub_14191();                                  //call sub_14191
 }
 
-void sub_205AE()
+void sub_205AE() // Swap pages
 {
     sub_10EF1();                                  //call sub_10EF1
 //loc_205B3:                                        //loc_205B3:
@@ -878,7 +878,7 @@ loc_20AC2:                                        //loc_20AC2:
 
 void sub_1F3C7()
 {
-    _cs = seg001 ;
+    WORD _cs = seg001 ;
     _ax = 0x1000;                                 //mov ax, 1000h
     _bl = 0x12;                                   //mov bl, 12h
     _bh = 0x00;                                   //mov bh, 0

@@ -34,12 +34,15 @@ public:
         es_ptr_si_plus,
 		stack_bp_plus,
         cs_ptr_bx_plus,
+        cs_ptr_bx_plus_di,
+        cs_ptr_bx_plus_di_plus,
         ds_ptr_bp,
         cs_ptr_di,
         cs_ptr_di_plus,
         cs_ptr_bx,
         cs_ptr_bp,
         cs_ptr_bp_plus,
+        cs_ptr_bp_plus_si_plus,
         cs_ptr_si,
         ss_byteptr,
 
@@ -55,7 +58,8 @@ public:
 		es_ptr,
         cs_ptr,
 		bx_plus_si_plus,
-		ds_ptr_bp_plus,        
+		ds_ptr_bp_plus,
+        bx_plus_di_plus,
 
         wordptr_es_di,
         wordptr_es_si,
@@ -434,6 +438,13 @@ public:
 			return;
 		}
 
+        if ( CUtils::match("^bx\\+di\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = bx_plus_di_plus;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
 		if ( CUtils::match("^bx\\+(.*)$", value.c_str(), matches) )
 		{
 			m_eType = bx_plus;
@@ -580,6 +591,15 @@ public:
             return;
         }
 
+        if ( CUtils::match("^cs:\\[bp\\+si\\+(.*)\\]$", value.c_str(), matches) )
+        {
+            _ASSERT(eRegLength == r16 || eRegLength == r8);
+            m_eRegLength = eRegLength;
+            m_eType = cs_ptr_bp_plus_si_plus;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
         if ( CUtils::match("^cs:\\[bp\\+(.*)\\]$", value.c_str(), matches) )
         {
             _ASSERT(eRegLength == r16 || eRegLength == r8);
@@ -588,6 +608,23 @@ public:
             m_nValue = CUtils::ParseLiteral(matches[0]);
             return;
         }
+        
+        if ( CUtils::match("^cs:\\[bx\\+di\\]$", value.c_str(), matches) )
+        {
+            _ASSERT(eRegLength == r16 || eRegLength == r8);
+            m_eRegLength = eRegLength;
+            m_eType = cs_ptr_bx_plus_di;
+            return;
+        }
+        if ( CUtils::match("^cs:\\[bx\\+di\\+(.*)\\]$", value.c_str(), matches) )
+        {
+            _ASSERT(eRegLength == r16 || eRegLength == r8);
+            m_eRegLength = eRegLength;
+            m_eType = cs_ptr_bx_plus_di_plus;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
 
         if ( CUtils::match("^cs:\\[bx\\+(.*)\\]$", value.c_str(), matches) )
         {
@@ -648,7 +685,15 @@ public:
             m_nValue = CUtils::ParseLiteral(matches[0]);
             return;
         }
-/*
+
+        if ( CUtils::match("^word ptr cs:unk_(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r16;
+            m_eType = cs_ptr;
+            m_nValue = CUtils::ParseLiteral(matches[0] + "h");
+            return;
+        }
+        /*
         if ( CUtils::match("^cs:\\[bx\\+(.*)\\]$", value.c_str(), matches) )
         {
             _ASSERT(eRegLength == r16 || eRegLength == r8);

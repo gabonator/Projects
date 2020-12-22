@@ -597,7 +597,7 @@ public:
 	CIData(EType eType, const string& strVariableName, const string& strFunction) : 
 	  m_eType(eType), m_strVariableName(strVariableName), m_strFunction(strFunction)
 	{
-		_ASSERT(m_eType == Function);
+		_ASSERT(m_eType == Function || m_eType == Word);
 	}
 
 	virtual void Serialize(CSerializer& s)

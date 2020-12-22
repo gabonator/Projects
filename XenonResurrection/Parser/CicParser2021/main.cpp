@@ -76,11 +76,11 @@ int main(int argc, const char * argv[])
     
     CSourceParser sp;
 
-//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon3.asm");
-//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon3.x");
+//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.asm");
+//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
 //    return 0;
 
-    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon3.x");
+    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
 
     CCExport e;
     e.SetSource(sp.m_arrCode);
@@ -112,7 +112,26 @@ int main(int argc, const char * argv[])
         "sub_10A2F", "sub_10E4D", "sub_20854", "sub_20919", "sub_2095F", "sub_10BA5",
         "sub_136FC", "sub_1370B", "sub_20AD0",
          */
-        "sub_15B10", "sub_15935"
+        //"sub_15E59"
+        //"sub_10DC5", "sub_1F325"
+        //"sub_10A73", "sub_205ED", "sub_20627", "sub_2217E", "sub_24178"
+        //"sub_116BA", "sub_10762", "sub_1077C", "sub_1078E", "sub_10BA5",
+        //"sub_10E91", "sub_11022", "sub_12BCC", "sub_135EB"
+        //"sub_135EB", "sub_135F2"
+        //"sub_10E91", "sub_208F9"
+        //"sub_1373D", "sub_11689"
+        //"sub_10EF5", "sub_13326", "sub_13A39"
+        //"sub_10875", "sub_1F585"
+        
+    //"sub_14311", "sub_14759", "sub_14759"
+        //"sub_11BEA", "sub_10F96", "sub_11C18", "sub_10F2F"
+        //"sub_11E29", "sub_11D1E", "sub_11E02"
+        //"sub_141B1"
+        //"sub_20653", "sub_10EDD", "sub_10EE1", "sub_11CCC", "sub_13A36", "sub_10F96"
+        "sub_14865", "sub_14871"
+
+        
+        // TODO: endp ; sp-analysis failed!!!!!!!!!
 
 /*
  goto nearptr -> call
@@ -159,26 +178,37 @@ int main(int argc, const char * argv[])
             shared_ptr<CIJump> pJump = dynamic_pointer_cast<CIJump>(arrFunction[j]);
             if (pJump && custom.GlobalExitLabel(pJump->m_label))
                 arrFunction[j] = make_shared<CIStop>(pJump, "exit program");
+            
+            bool traceSegment = (arrFunction[j]->m_origin.find("cs") != string::npos);
+                
+            /*
             shared_ptr<CIAssignment> pAssign = dynamic_pointer_cast<CIAssignment>(arrFunction[j]);
             if (pAssign)
             {
                 if (pAssign->m_valueFrom.ToC().find("_cs") != string::npos ||
                     pAssign->m_valueTo.ToC().find("_cs") != string::npos)
                 {
-                    int nBegin = e.FindLabel(sp.m_arrCode, testLabel);
-
-                    for (int k=nBegin; k>=0; k--)
-                    {
-                        shared_ptr<CISegment> pSegment = dynamic_pointer_cast<CISegment>(sp.m_arrCode[k]);
-                        if (pSegment)
-                        {
-                            usingCs = pSegment->m_strSegmentName;
-                            break;
-                        }
-                    }
-                    cout << testLabel << "  -  " << usingCs << endl;
-                    _ASSERT(!usingCs.empty());
+                    traceSegment = true;
                 }
+            }
+            shared_ptr<CIAssignment> pAssign = dynamic_pointer_cast<CISingleArgOp>(arrFunction[j]);
+            if (pAssign)*/
+
+            if (traceSegment)
+            {
+                int nBegin = e.FindLabel(sp.m_arrCode, testLabel);
+
+                for (int k=nBegin; k>=0; k--)
+                {
+                    shared_ptr<CISegment> pSegment = dynamic_pointer_cast<CISegment>(sp.m_arrCode[k]);
+                    if (pSegment)
+                    {
+                        usingCs = pSegment->m_strSegmentName;
+                        break;
+                    }
+                }
+                cout << testLabel << "  -  " << usingCs << endl;
+                _ASSERT(!usingCs.empty());
             }
         }
                     
@@ -211,7 +241,7 @@ int main(int argc, const char * argv[])
             output << "  // " << comment;
         output << endl << "{" << endl;
         if (!usingCs.empty())
-            output << "    _cs = " << usingCs << ";" << endl;
+            output << "    WORD _cs = " << usingCs << ";" << endl;
         e.DumpProgram(output, arrCFunction, 1);
         if (arrCFunction.size() > 0 && dynamic_pointer_cast<CCLabel>(arrCFunction[arrCFunction.size()-1]))
             output << "    return;" << endl;

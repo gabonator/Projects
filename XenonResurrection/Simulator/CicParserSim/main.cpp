@@ -25,6 +25,7 @@ constexpr WORD seg001 = 0x1f29;
 constexpr WORD seg003 = 0x2565;
 constexpr WORD seg005 = 0x3824;
 constexpr WORD seg007 = 0x449b;
+constexpr WORD seg008 = 0x5489;
 constexpr WORD seg009 = 0x63d0;
 constexpr WORD video = 0xa000;
 
@@ -32,6 +33,7 @@ constexpr WORD video = 0xa000;
 #include "code-loader.h"
 #include "code-intro.h"
 #include "code-pregame.h"
+#include "code-game.h"
 
 reg_t _reg;
 
@@ -42,6 +44,7 @@ uint8_t segment0[0x10000];
 uint8_t segment3[0x10000];
 uint8_t segment7[0x10000];
 uint8_t segment5[0x10000];
+uint8_t segment8[0x10000];
 uint8_t segment9[0x10000];
 //uint8_t videoram[0x10000];
 
@@ -85,6 +88,10 @@ void _interrupt(BYTE i)
         }
         char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
         strcat(fullname, filename);
+        for (int i=0; i<128 && fullname[i]; i++)
+            if (fullname[i] == '\\')
+                fullname[i] = '/';
+        
         std::cout << "Open file: " << filename << endl;
         _flags.carry = 0;
         _ASSERT(f == nullptr);
@@ -225,8 +232,16 @@ void _interrupt(BYTE i)
 }
 void _out(WORD port, BYTE val)
 {
+    if (mVideo.PortWrite8(port, val))
+    {
+        return;
+    }
+    if (port == 0x43 || port == 0x40 || port == 0x201)
+    {
+        return;
+    }
     cout << "out8(" << std::hex << (int)port << ", " << (int)val << ")" << endl;
-    
+    _ASSERT(0);
 }
 void _out(WORD port, WORD val)
 {
@@ -236,35 +251,6 @@ void _out(WORD port, WORD val)
         return;
     }
     _ASSERT(0);
-#if 0
-    if (port == 0x3c4)
-    {
-        
-        if ((val & 0xff) == 0x02)
-        {
-            //http://www.retroarchive.org/swag/EGAVGA/0213.PAS.html
-            int writeMask = val >> 8;
-            std::cout << "Set write mask " << writeMask << endl;
-            return;
-        }
-        _ASSERT(0);
-    
-    }
-    if (port == 0x3ce)
-    {
-        /*
-         
-         */
-        // ega
-        return;
-    }
-    if (port == 0x3d4)
-    {
-        // VGA!
-        return;
-    }
-    _ASSERT(0);
-#endif
 }
 
 void _in(BYTE& val, WORD port)
@@ -330,6 +316,10 @@ WORD& memory16(WORD segment, WORD offset)
     if (offset==0x236e) {
         int f = 9;
     }
+    if (segment == dataseg && offset == 0x9c80)
+    {
+        int f = 9;
+    }
     if (segment == dataseg) // dseg
     {
         return *(WORD*)(datasegment + offset);
@@ -349,6 +339,10 @@ WORD& memory16(WORD segment, WORD offset)
     if (segment == seg007) // seg003
     {
         return *(WORD*)(segment7 + offset);
+    }
+    if (segment == seg008)
+    {
+        return *(WORD*)(segment8 + offset);
     }
     if (segment == seg009)
     {
@@ -376,6 +370,11 @@ WORD& memory16(WORD segment, WORD offset)
 
 BYTE& memory(WORD segment, WORD offset)
 {
+    if (segment == dataseg && offset == 0x9c80)
+    {
+        int f = 9;
+    }
+
     if (segment == 0x2565 && offset==0x2472) {
         int f = 9;
     }
@@ -398,6 +397,10 @@ BYTE& memory(WORD segment, WORD offset)
     if (segment == seg007) // seg003
     {
         return *(segment7 + offset);
+    }
+    if (segment == seg008)
+    {
+        return *(segment8 + offset);
     }
     if (segment == seg009)
     {
@@ -432,6 +435,8 @@ void onKey(int k)
         case SDL_SCANCODE_DOWN: code = 2; break;
         case SDL_SCANCODE_LEFT: code = 4; break;
         case SDL_SCANCODE_RIGHT: code = 5; break;
+        case SDL_SCANCODE_SPACE: code = 0x80; break;
+            
         case SDL_SCANCODE_RETURN: code = 0x80;
             memory(dataseg, 0x8f5b) = 0xff; break;
     }
@@ -495,10 +500,10 @@ void _dump()
 }
 
 int main(int argc, const char * argv[]) {
-    m_arrStack.resize(2*128, 0);
-    _sp = 128;
-    _ds = _es = _di = _bp = _cs = 0x6666;
-    _cs = seg000;
+    m_arrStack.resize(2*32, 0);
+    _sp = 32;
+    _ds = _es = _di = _bp = 0x6666;
+    //_cs = seg000;
     loadSegment(datasegment, "dseg", 21815);
     loadSegment(segment2, "seg2", 2742);
     loadSegment(segment0, "seg0", 62096);
@@ -506,6 +511,7 @@ int main(int argc, const char * argv[]) {
     loadSegment(segment1, "seg1", 0x5900);
     memset(segment5, 0, 0x10000);
     memset(segment7, 0, 0x10000);
+    memset(segment8, 0, 0x10000);
     memset(segment9, 0, 0x10000);
     //memset(videoram, 0xff, 0x10000);
     

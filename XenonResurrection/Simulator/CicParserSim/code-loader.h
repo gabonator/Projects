@@ -166,7 +166,7 @@ loc_101FC:                                        //loc_101FC:
       goto loc_101FC;
 loc_1021D:                                        //loc_1021D:
     _ax = memory16(_ds, 0x2);                     //mov ax, word_28532
-    _flags.sign = _ax & 0x8000;                   //or ax, ax
+    _flags.sign = !!(_ax & 0x8000);                   //or ax, ax
     _ax |= _ax;
     if (_flags.sign)                              //js short loc_1022C
       goto loc_1022C;

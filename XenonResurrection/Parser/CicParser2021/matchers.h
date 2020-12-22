@@ -280,6 +280,11 @@ class CIMFlow : public CInstructionMatcher
             return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::FarCall);
         }
 
+        if ( CUtils::match("^jmp cs:(off_.*)\\[(.*)\\]$", strLine, arrMatches) )
+        {
+            return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Jump);
+        }
+
         if ( CUtils::match("^call dword ptr cs:\\[(.*)\\]$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
@@ -305,12 +310,17 @@ class CIMFlow : public CInstructionMatcher
         {
             return make_shared<CIStop>();
         }
+*/
+        if ( CUtils::match("^(.+) dw offset (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
+        }
 
         if ( CUtils::match("^dw offset (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
         }
-*/
+
         if ( CUtils::match("^off_(.+) dw (.+)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
@@ -351,7 +361,13 @@ class CIMFlow : public CInstructionMatcher
 		{
 			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::NearPtr);
 		}
-		
+        
+        if ( CUtils::match("^call near ptr.*$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
+
+        
 		//WTF: call dword ptr cs:[bp+7FBh]
 		if ( CUtils::match("^call dword ptr cs:(off_code_\\w+)\\[(.*)\\]$", strLine, arrMatches) )
 		{
@@ -429,6 +445,11 @@ class CIMData : public CInstructionMatcher
 		{
 			return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
 		}
+
+        if ( CUtils::match("^dw (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIData>(CIData::Word, "", arrMatches[0]);
+        }
 
 		if ( CUtils::match("^(.*_code_.*)\\sdw(.*)$", strLine, arrMatches) )
 		{

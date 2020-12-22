@@ -109,7 +109,6 @@ public:
 			converter >> std::hex >> nValue;
 			return true;
 		}
-
 		return false;
 	}
 

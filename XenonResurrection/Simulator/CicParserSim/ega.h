@@ -4,6 +4,7 @@ class CVideoAdapter
 {
 public:
 	virtual bool PortWrite16(int port, int data) = 0;
+    virtual bool PortWrite8(int port, int data) = 0;
 	virtual bool Interrupt(int ah, int al, int bh, int bl) = 0;
 	virtual void Write(DWORD dwAddr, BYTE bWrite) = 0;
 	virtual BYTE Read(DWORD dwAddr) = 0;
@@ -276,6 +277,7 @@ public:
 			if ( (data & 0x00ff) == 0x0c )
 			{
 				SetAddrHi( data >>8 );
+                _sync();
 				return true;
 			}
 			if ( (data & 0x00ff) == 0x0d )
@@ -303,6 +305,22 @@ public:
 		return false;
 	}
 	
+    virtual bool PortWrite8(int port, int data) override
+    {
+        static int lastPort = 0, lastData = 0;
+        if ( port == 0x3ce )
+        {
+            lastPort = 0x3ce;
+            lastData = data;
+            return true;
+        }
+        if (port == 0x3cf)
+        {
+            return PortWrite16 ( lastPort, (data<<8)|lastData);
+        }
+        return false;
+    }
+
 	virtual DWORD GetPixel(int x, int y) override
 	{
 		BYTE* _video = (BYTE*)memory;
@@ -401,7 +419,7 @@ public:
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 6000)
+        if (q++ > 36000)
         {
             _sync();
             q= 0;

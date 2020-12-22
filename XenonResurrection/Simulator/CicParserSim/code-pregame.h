@@ -38,18 +38,17 @@ void sub_136FC();
 void sub_1370B();
 void sub_20AD0();
 
-
 // imports
 void nullsub_4() {_ASSERT(0);};
-void sub_109A7(){_ASSERT(0);};
-void sub_10A73(){_ASSERT(0);};
-void sub_10DC5(){_ASSERT(0);};
-void sub_116A9(){_ASSERT(0);};
-void sub_116BA(){_ASSERT(0);};
-void sub_15B10(){_ASSERT(0);};
-void sub_15E24(){_ASSERT(0);};
-void sub_15E52(){_ASSERT(0);};
-void sub_15E59(){_ASSERT(0);};
+void sub_109A7();
+void sub_10A73();
+void sub_10DC5();
+void sub_116A9();
+void sub_116BA();
+void sub_15B10();
+void sub_15E24();
+void sub_15E52();
+void sub_15E59();
 void sub_1F383(){_ASSERT(0);};
 void sub_21844(){_ASSERT(0);};
 void sub_21FF4(){_ASSERT(0);};
@@ -68,6 +67,9 @@ void sub_24540(){_ASSERT(0);};
 void sub_245B4(){_ASSERT(0);};
 void sub_24649(){_ASSERT(0);};
 void sub_24679(){_ASSERT(0);};
+void sub_10EF5();
+void sub_13326();
+void sub_13A39();
 
 void sub_15B21()
 {
@@ -526,8 +528,8 @@ void sub_1F363()
     _push(_di);                                   //push di
     _cx = 0x1c90;                                 //mov cx, 1C90h
 loc_1F368:                                        //loc_1F368:
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemAuto, DirAuto>();          //movsb
     _si += 0x0006;                                //add si, 6
     if (--_cx)                                    //loop loc_1F368
       goto loc_1F368;
@@ -556,7 +558,7 @@ loc_11854:                                        //loc_11854:
     memory16(_ds, 0x8E7C) = _si;                  //mov word_313AC, si
 loc_11873:                                        //loc_11873:
     memory16(_ds, _si) = 0;                       //mov word ptr [si], 0
-    _lea(_di, memory16(_ds, _si + 76));           //lea di, [si+4Ch]
+    _di = _si + 76;           //lea di, [si+4Ch]
     memory16(_ds, _si + 8) = _di;                 //mov [si+8], di
     _si = _di;                                    //mov si, di
     if (--_cx)                                    //loop loc_11873
@@ -701,22 +703,44 @@ void sub_11AAF()
     memory16(_ds, 0x91B2) = 0;                    //mov word_316E2, 0
 }
 
-void sub_10F5A()
+void sub_17AA8() { _ASSERT(0); }
+void sub_1D0DA() { _ASSERT(0); }
+
+void sub_10F5A() // stack problem
 {
+    _sync();
+    WORD _cs = seg000;
     memory16(_ds, 0x8E74) = _bx;                  //mov word_313A4, bx
     _bx = memory16(_ds, 0x991C);                  //mov bx, word_31E4C
     _bx <<= 1;                                    //shl bx, 1
     _push(memory16(_cs, _bx + 3948));             //push word ptr cs:[bx+0F6Ch]
+    _ASSERT(_bx == 2); // seg000:0f6e = 0x6284
     _bx = memory16(_ds, 0x8E74);                  //mov bx, word_313A4
+    // exit fix
+    switch (_pop())
+    {
+        case 0x6284: break; // retn
+        case 0x7aa8: sub_17AA8(); break;
+        case 0x99fa: break; // retn
+        case 0xd0da: sub_1D0DA(); break;
+        default: _ASSERT(0);
+    }
 }
 
+void sub_1758F();
 void sub_10F78()
 {
+    WORD _cs = seg000;
     memory16(_ds, 0x8E74) = _bx;                  //mov word_313A4, bx
     _bx = memory16(_ds, 0x991C);                  //mov bx, word_31E4C
     _bx <<= 1;                                    //shl bx, 1
     _push(memory16(_cs, _bx + 3978));             //push word ptr cs:[bx+0F8Ah]
     _bx = memory16(_ds, 0x8E74);                  //mov bx, word_313A4
+    switch (_pop())
+    {
+        case 0x758f: sub_1758F(); break;
+        default: _ASSERT(0);
+    }
 }
 
 void sub_15926()
@@ -757,6 +781,8 @@ void sub_20482()
     _si = 0x0000;                                 //mov si, 0
     _si = _si + memory16(_ds, 0x918E);            //add si, word_316BE
     _dx = memory16(_ds, 0x9196);                  //mov dx, word_316C6
+    _ASSERT(_dx < 0x1000);
+    
     _ax = 0xa000;                                 //mov ax, 0A000h
     _es = _ax;                                    //mov es, ax
     _cx = 0x10;                                   //mov cx, 10h
@@ -775,8 +801,8 @@ loc_204A4:                                        //loc_204A4:
     _push(_di);                                   //push di
     _push(_cx);                                   //push cx
 loc_204B6:                                        //loc_204B6:
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += 0x26;                                  //add di, 26h
     if (--_cx)                                    //loop loc_204B6
       goto loc_204B6;
@@ -801,53 +827,53 @@ loc_204D5:                                        //loc_204D5:
     _cx = _ds;                                    //mov cx, ds
     _ax = 0xa400;                                 //mov ax, 0A400h
     _ds = _ax;                                    //mov ds, ax
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
     _di -= 0x027e;                                //sub di, 27Eh
     _ds = _cx;                                    //mov ds, cx
@@ -874,8 +900,8 @@ loc_2053D:                                        //loc_2053D:
     _push(_di);                                   //push di
     _cx = _dx;                                    //mov cx, dx
 loc_2054C:                                        //loc_2054C:
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();          //movsb
     _di += _bp;                                   //add di, bp
     if (--_cx)                                    //loop loc_2054C
       goto loc_2054C;
@@ -939,9 +965,9 @@ loc_1F420:                                        //loc_1F420:
     _di = memory16(_ds, _di + -26818);            //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);           //add di, [si+2]
     _di += _bp;                                   //add di, bp
-    if (!(memory(_es, _di) & _bl))                //jz short loc_1F435
+    if (!(memoryVideoGet(_es, _di) & _bl))                //jz short loc_1F435
       goto loc_1F435;
-    memory(_es, _di) = _al;                       //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);                       //mov es:[di], al
 loc_1F435:                                        //loc_1F435:
     _si += 0x0006;                                //add si, 6
     if (--_cx)                                    //loop loc_1F420
@@ -955,9 +981,9 @@ loc_1F441:                                        //loc_1F441:
     _di = memory16(_ds, _di + -26818);            //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);           //add di, [si+2]
     _di += _bp;                                   //add di, bp
-    if (!(memory(_es, _di) & _bl))                //jz short loc_1F456
+    if (!(memoryVideoGet(_es, _di) & _bl))                //jz short loc_1F456
       goto loc_1F456;
-    memory(_es, _di) = _al;                       //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);                       //mov es:[di], al
 loc_1F456:                                        //loc_1F456:
     _si += 0x0006;                                //add si, 6
     if (--_cx)                                    //loop loc_1F441
@@ -971,9 +997,9 @@ loc_1F462:                                        //loc_1F462:
     _di = memory16(_ds, _di + -26818);            //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);           //add di, [si+2]
     _di += _bp;                                   //add di, bp
-    if (!(memory(_es, _di) & _bl))                //jz short loc_1F477
+    if (!(memoryVideoGet(_es, _di) & _bl))                //jz short loc_1F477
       goto loc_1F477;
-    memory(_es, _di) = _al;                       //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);                       //mov es:[di], al
 loc_1F477:                                        //loc_1F477:
     _si += 0x0006;                                //add si, 6
     if (--_cx)                                    //loop loc_1F462
@@ -1009,9 +1035,9 @@ void sub_1421C()
     _bp = _dx;                                    //mov bp, dx
 loc_14232:                                        //loc_14232:
     _bx = memory16(_ds, _si + 4);                 //mov bx, [si+4]
-    _flags.sign = (short)(_bx + _dx) < 0;         //add bx, dx
     _bx += _dx;
-    if (_flags.sign)                              //jns short loc_14247
+    _flags.sign = (short)(_bx) < 0;         //add bx, dx
+    if (!_flags.sign)                              //jns short loc_14247
       goto loc_14247;
 loc_14239:                                        //loc_14239:
     memory16(_ds, _si) -= 1;                      //dec word ptr [si]
@@ -1019,8 +1045,8 @@ loc_14239:                                        //loc_14239:
       goto loc_14241;
     memory16(_ds, _si) = 0xbf;                    //mov word ptr [si], 0BFh
 loc_14241:                                        //loc_14241:
-    _flags.sign = (short)(_bx + 0x0180) < 0;      //add bx, 180h
     _bx += 0x0180;
+    _flags.sign = (short)(_bx) < 0;      //add bx, 180h
     if (_flags.sign)                              //js short loc_14239
       goto loc_14239;
 loc_14247:                                        //loc_14247:
@@ -1079,9 +1105,11 @@ void sub_20854()
 {
     _ax = memory16(_ds, 0x9152);                  //mov ax, word_31682
     _dx = memory16(_ds, 0x9154);                  //mov dx, word_31684
-    _flags.sign = (short)(_ax - memory16(_ds, 0x9156)) < 0;
+    //_flags.sign = (short)(_ax - memory16(_ds, 0x9156)) < 0;
+    _flags.carry = _ax < memory16(_ds, 0x9156);
     _ax = _ax - memory16(_ds, 0x9156);
     _dx -= memory16(_ds, 0x9158) + _flags.carry;  //sbb dx, word_31688
+    _flags.sign = (short)_dx < 0;
     if (_flags.sign)                              //js short loc_208CF
       goto loc_208CF;
     if (_ax != 0)                                 //jnz short loc_2086B
@@ -1183,15 +1211,15 @@ void sub_2095F()
     _cx = 0x0008;                                 //mov cx, 8
 loc_20963:                                        //loc_20963:
     _lodsb<MemAuto, DirAuto>();                   //lodsb
-    memory(_es, _di) = _al;                       //mov es:[di], al
-    memory(_es, _di + 8192) = _al;                //mov es:[di+2000h], al
+    memoryVideoSet(_es, _di, _al);                       //mov es:[di], al
+    memoryVideoSet(_es, _di + 8192, _al);                //mov es:[di+2000h], al
     _di += 0x28;                                  //add di, 28h
     if (--_cx)                                    //loop loc_20963
       goto loc_20963;
     _di = _pop();                                 //pop di
 }
 
-void sub_10BA5()
+void sub_10BA5() // draw health bar
 {
     _bp = memory16(_ds, 0x3044);                  //mov bp, word_2B574
     _bp <<= 1;                                    //shl bp, 1
@@ -1208,31 +1236,97 @@ void sub_10BA5()
     }
 }
 
+void sub_14311();
+void sub_14759();
+void sub_14759();
+void sub_172C4();
+void sub_1480B();
+
 void sub_136FC()
 {
+    WORD ptr = -1;
+loc_136FC:
     if (memory16(_ds, _si) == 0)                  //jz short locret_1370A
       goto locret_1370A;
     _push(memory16(_ds, _si + 10));               //push word ptr [si+0Ah]
-    _STOP_("call word ptr [si+2]");               //call word ptr [si+2]
+    ptr = memory16(_ds, _si + 2);
+    
+    switch(ptr)
+    {
+        case 0x4311: sub_14311();
+            break;
+        case 0x4759: sub_14759();
+            break;
+        case 0x480B: sub_1480B();
+            break;
+        case 0x37df: sub_14759();
+            break;
+        case 0x72c4: sub_172C4();
+            break;
+        default:
+            std::cout << "not implemented PTR seg000:  " << std::hex << (int)(ptr) <<std::endl;
+            break;
+    }
     _si = _pop();                                 //pop si
-    sub_136FC();                               //jmp short sub_136FC
+    goto loc_136FC;                               //jmp short sub_136FC
 locret_1370A:                                     //locret_1370A:
     return;
 }
 
+void sub_1F57C()
+{
+    _cx = memory16(_ds, _si + 18);                //mov cx, [si+12h]
+    _dx = memory16(_ds, _si + 22);                //mov dx, [si+16h]
+    _si = memory16(_ds, _si + 12);                //mov si, [si+0Ch]
+}
+
+void sub_10853()
+{
+    _bp = memory16(_ds, 0x3044);
+    _bp <<= 2;
+    switch (_bp)
+    {
+        case 0: _ASSERT(0);
+        case 4: _ASSERT(0);
+        case 8: _ASSERT(0);
+        case 12: sub_1F57C(); break;
+        case 16: _ASSERT(0);
+        default:
+            _ASSERT(0);
+    }
+}
+
+void sub_10761()
+{
+}
+
+void sub_17520();
+
 void sub_1370B()
 {
+    WORD ptr = -1;
+    WORD _cs = seg000;
     if (memory16(_ds, _si) == 0)                  //jz short locret_13719
       goto locret_13719;
     _push(memory16(_ds, _si + 10));               //push word ptr [si+0Ah]
-    _STOP_("call word ptr [si+4]");               //call word ptr [si+4]
+    //_STOP_("call word ptr [si+4]");               //call word ptr [si+4]
+    ptr = memory16(_ds, _si+4);
+    switch (ptr)
+    {
+        case 0x0853: sub_10853(); break;
+        case 0x0761: sub_10761(); break;
+        case 0x7520: sub_17520(); break;
+        default:
+            std::cout << "sub_1370B: indirect call, [_si+4]=" << std::hex << (int)(ptr) << std::endl;
+            _ASSERT(0);
+    }
     _si = _pop();                                 //pop si
     sub_1370B();                               //jmp short sub_1370B
 locret_13719:                                     //locret_13719:
     return;
 }
 
-void sub_20AD0()
+void sub_20AD0() // draw health bar ds:9186 health (0..27h) ds:8faf =?
 {
     if (memory(_ds, 0x8FAF) != 0)                 //jnz short loc_20ADA
       goto loc_20ADA;
@@ -1277,12 +1371,17 @@ loc_20B18:                                        //loc_20B18:
     _ax = _pop();                                 //pop ax
 loc_20B27:                                        //loc_20B27:
     _out(_dx, _al);                               //out dx, al
-    memory(_es, _di) &= _al;                      //and es:[di], al
-    memory(_es, _di + 40) &= _al;                 //and es:[di+28h], al
-    memory(_es, _di + 80) &= _al;                 //and es:[di+50h], al
-    memory(_es, _di + 8192) &= _al;               //and es:[di+2000h], al
-    memory(_es, _di + 8232) &= _al;               //and es:[di+2028h], al
-    memory(_es, _di + 8272) &= _al;               //and es:[di+2050h], al
+    
+    // line overflows, problem with emulation?
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) & _al);                      //and es:[di], al
+    memoryVideoSet(_es, _di + 40, memoryVideoGet(_es, _di + 40) & _al);                 //and es:[di+28h], al
+    memoryVideoSet(_es, _di + 80, memoryVideoGet(_es, _di + 80) & _al);                 //and es:[di+50h], al
+    
+    //back buffer
+    memoryVideoSet(_es, _di + 8192, memoryVideoGet(_es, _di + 8192) & _al);               //and es:[di+2000h], al
+    memoryVideoSet(_es, _di + 8232, memoryVideoGet(_es, _di + 8232) & _al);               //and es:[di+2028h], al
+    memoryVideoSet(_es, _di + 8272, memoryVideoGet(_es, _di + 8272) & _al);               //and es:[di+2050h], al
+    
     _ror(_al, 1);                                  //ror al, 1
     _flags.carry = !!(_al & 0x80);
     if (!_flags.carry)                            //jnb short loc_20B47
@@ -1304,3 +1403,66 @@ locret_20B5A:                                     //locret_20B5A:
     return;
 }
 
+
+///////////
+void sub_15B10();
+void sub_15935();
+
+void sub_15B10()
+{
+    _si = 0x353f;                                 //mov si, 353Fh
+loc_15B13:                                        //loc_15B13:
+    _push(_si);                                   //push si
+    sub_15935();                                  //call sub_15935
+    _ax = 0x0c;                                   //mov ax, 0Ch
+    _si = _pop();                                 //pop si
+    _cx = 0x0001;                                 //mov cx, 1
+    sub_1595D();                               //jmp sub_1595D
+}
+
+void sub_15E24();
+void sub_15E35();
+
+void sub_15E24()
+{
+    _push(_dx);                                   //push dx
+    _ax = 0x3d00;                                 //mov ax, 3D00h
+    _interrupt(0x21);                             //int 21h
+    _dx = _pop();                                 //pop dx
+    if (!_flags.carry)                            //jnb short locret_15E34
+      goto locret_15E34;
+    _push(_dx);                                   //push dx
+    sub_15E35();                                  //call sub_15E35
+    _dx = _pop();                                 //pop dx
+    sub_15E24();                               //jmp short sub_15E24
+locret_15E34:                                     //locret_15E34:
+    return;
+}
+
+void sub_15E35()
+{
+    sub_15950();                                  //call sub_15950
+    sub_10D5F();                                  //call sub_10D5F
+    _si = 0x343b;                                 //mov si, 343Bh
+    memory(_ds, 0x374E) = 0xff;                   //mov byte_2BC7E, 0FFh
+    sub_15926();                                  //call sub_15926
+    memory(_ds, 0x374E) = 0;                      //mov byte_2BC7E, 0
+    sub_10D5F();                                  //call sub_10D5F
+    sub_15B10();                                  //call sub_15B10
+}
+
+void sub_15E52()
+{
+    _ah = 0x3f;                                   //mov ah, 3Fh
+    _interrupt(0x21);                             //int 21h
+    if (_flags.carry)                             //jb short loc_15E04
+    {
+        _ASSERT(0); //goto loc_15E04;
+    }
+}
+
+void sub_15E59()
+{
+    _ah = 0x3e;                                   //mov ah, 3Eh
+    _interrupt(0x21);                             //int 21h
+}

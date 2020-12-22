@@ -61,7 +61,7 @@ public:
 				_ASSERT(pAlu->m_op1.GetRegisterLength() == pAlu->m_op2.GetRegisterLength());
 				if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
 					m_strInsertion = "_flags.carry = (" + op1 + " + " + op2 + ") >= 0x100";
-				else if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
+				else if (pAlu->m_op1.GetRegisterLength() == CValue::r16)
 					m_strInsertion = "_flags.carry = (" + op1 + " + " + op2 + ") >= 0x10000";
 				else
 					_ASSERT(0);
@@ -214,13 +214,16 @@ public:
 			break;
                 
         case CIAlu::Ror:
-
-                m_strSrc = "_ror(" + op1 + ", " + op2 + ");";
-                if (pAlu->m_ExportInsertion == CIAlu::None) {}
-                else if (pAlu->m_ExportInsertion == CIAlu::Carry) {
-                    m_strSrc += "\n_flags.carry = !!("+op1+" & 0x80);";
-                } else _ASSERT(0);
-                break;
+            m_strSrc = "_ror(" + op1 + ", " + op2 + ");";
+            if (pAlu->m_ExportInsertion == CIAlu::None) {}
+            else if (pAlu->m_ExportInsertion == CIAlu::Carry) {
+                m_strSrc += "\n_flags.carry = !!("+op1+" & 0x80);";
+            } else _ASSERT(0);
+            break;
+                
+        case CIAlu::Sar:
+            m_strSrc = "_sar(" + op1 + ", " + op2 + ");";
+            break;
 
 		default:
 			_ASSERT(0);
@@ -399,6 +402,7 @@ public:
 		case CIZeroArgOp::popf: m_strOperation = "_popf()"; break;
 		case CIZeroArgOp::aaa: m_strOperation = "_ASSERT(0 /* check carry */); _aaa()"; break;
             case CIZeroArgOp::cwd: m_strOperation = "_cwd()"; break;
+            case CIZeroArgOp::cbw: m_strOperation = "_cbw()"; break;
 		default:
 				_ASSERT(0);
 		}
@@ -597,6 +601,12 @@ public:
 		else if ( dynamic_pointer_cast<CISingleArgOp>(pInstruction) && dynamic_pointer_cast<CISingleArgOp>(pInstruction)->m_eType == CISingleArgOp::interrupt )
             From(pCondition, dynamic_pointer_cast<CISingleArgOp>(pInstruction));
         else
+             if ( dynamic_pointer_cast<CIStop>(pInstruction) )
+                From(pCondition, CCConditionalJump::ZeroFlag);
+        else
+            if ( pCondition->m_eType == CIConditionalJump::jcxz )
+               From(pCondition);
+            else
 			_ASSERT(0);
 	}
 
@@ -635,6 +645,8 @@ public:
 		case CIConditionalJump::jbe: m_strCondition = "$a <= $b"; break;
 		case CIConditionalJump::ja: m_strCondition = "$a > $b"; break;
         case CIConditionalJump::jl: m_strCondition = "($type)$a < ($type)$b"; break;
+        case CIConditionalJump::js: m_strCondition = "($type)$a < 0 /*CHECK*/"; break;
+        case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0 /*CHECK*/"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -651,6 +663,22 @@ public:
 		{
 		case CIConditionalJump::jz: m_strCondition = "!($a & $b)"; break;
 		case CIConditionalJump::jnz: m_strCondition = "$a & $b"; break;
+        case CIConditionalJump::jns:
+            if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
+            {
+                m_strCondition = "(SIGNED?)$a >= 0";
+                break;
+            }
+            _ASSERT(0);
+            break;
+        case CIConditionalJump::js:
+            if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
+            {
+                m_strCondition = "(SIGNED?)$a < 0";
+                break;
+            }
+            _ASSERT(0);
+            break;
 		default:
 			_ASSERT(0);
 		}
@@ -681,6 +709,7 @@ public:
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
             case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0"; break; // TODO: verify?
+            case CIConditionalJump::js: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
 
 			default:
 				_ASSERT(0);
@@ -719,6 +748,11 @@ public:
             case CIConditionalJump::jns:
                     pAlu->m_ExportInsertion = CIAlu::Sign;
                     m_strCondition = "_flags.sign"; break;
+            
+            case CIConditionalJump::jg:
+                    m_strCondition = "(type)"+pAlu->m_op1.ToC() + " > 0 /*CHECK*/" ; break;
+
+            case CIConditionalJump::jle: m_strCondition = "(type)$a <= (type)$b /*CHECK*/"; break;
 
 			default:
 				_ASSERT(0);
@@ -759,6 +793,9 @@ public:
             default: _ASSERT(0);
             }
             break;
+        case CIAlu::Neg:
+                m_strCondition = "_FIXME_"; break;
+                break;
 
 
 		default:
@@ -809,11 +846,28 @@ public:
             case CIConditionalJump::jnb:
                 m_strCondition = "!_flags.carry";
                 break;
+            case CIConditionalJump::jb:
+                m_strCondition = "_flags.carry";
+                break;
             default:
                 _ASSERT(0);
             }            
         } else
             _ASSERT(0);
+    }
+
+    void From(shared_ptr<CIConditionalJump> pCondition)
+    {
+        m_strLabel = pCondition->m_label;
+        m_eLabelType = Label;
+        switch ( pCondition->m_eType )
+        {
+        case CIConditionalJump::jcxz:
+            m_strCondition = "_cx == 0";
+            break;
+        default:
+            _ASSERT(0);
+        }
     }
 
 	
@@ -1211,6 +1265,14 @@ public:
 	{
 		// TODO: how to optimize without gotos?
 		stringstream ss;
+        if (m_strSelector == "_bp" && m_arrLabels.size()==5 && m_type == CISwitch::EType::FarCall)
+        {
+            //Xenon2
+            ss << "_ASSERT(_bp == 12);" << endl;
+            ss << m_arrLabels[3] << "();" << endl;
+            return ss.str();
+        }
+        
 		ss << "switch (" << m_strSelector << ")" << endl;
 		ss << "{" << endl;
         switch (m_type)

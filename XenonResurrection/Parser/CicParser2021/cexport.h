@@ -168,6 +168,9 @@ public:
     
 	shared_ptr<CInstruction> TracebackCondition(CIConditionalJump::EType eType, vector<shared_ptr<CInstruction>>& arrInput, int nLine)
 	{
+        if (eType == CIConditionalJump::jcxz)
+            return nullptr;
+        
 		for (int nTraceBack=nLine; nTraceBack>=max(0, nLine-10); nTraceBack--)
 		{
 			shared_ptr<CInstruction> pPrev = nTraceBack > 0 ? arrInput[nTraceBack-1] : nullptr;
@@ -221,6 +224,9 @@ public:
                         // ends width "cmp, jz" and "stc", need to manually fix 10101 to clear carry
                         return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
                     } else
+                    {
+                        return make_shared<CIStop>(pInstruction);
+                    }
 
                 _ASSERT(0);
                 
