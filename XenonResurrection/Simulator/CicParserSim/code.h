@@ -463,8 +463,8 @@ loc_13D47:                                        //loc_13D47:
     
   sub_10FF0();                                    //call sub_10FF0
   sub_13682();                                    //call sub_13682
-    sub_1080F();                                    //call sub_1080F -- video maybe scroll?
-  sub_14675();                                    //call sub_14675
+    sub_1080F();                                    //call sub_1080F -- draw stars
+  sub_14675();                                    //call sub_14675     -- AAAAA
   sub_10A95();                                    //call sub_10A95
   sub_13615();                                    //call sub_13615
      

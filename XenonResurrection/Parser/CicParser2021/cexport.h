@@ -983,8 +983,18 @@ public:
 
 		int nBegin = FindLabel(arrCode, label);
 		_ASSERT(nBegin >= 0);
-		for (int i=nBegin+1; i<(int)arrCode.size() && !dynamic_pointer_cast<CIFunction>(arrCode[i]); i++)
+		for (int i=nBegin+1; i<(int)arrCode.size(); i++)
+        {
+            shared_ptr<CIFunction> pFunc = dynamic_pointer_cast<CIFunction>(arrCode[i]);
+            if (pFunc && pFunc->m_eBoundary == CIFunction::EndFail)
+            {
+                aux.push_back(make_shared<CIStop>(arrCode[i], "sp-trace-fail"));
+                aux.push_back(make_shared<CIStop>(arrCode[i+1], "continues"));
+            }
+            if (pFunc)
+                break;
 			aux.push_back(arrCode[i]);
+        }
 
 		return move(aux);
 	}

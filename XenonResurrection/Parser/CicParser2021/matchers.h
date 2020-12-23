@@ -19,6 +19,11 @@ public:
 			return make_shared<CIFunction>(CIFunction::Begin, strFunctionName);
 		}
 
+        if ( CUtils::match("^([\\w]*)[\\s]*endp_failed$", strLine, arrMatches) )
+        {
+            return make_shared<CIFunction>(CIFunction::EndFail);
+        }
+
 		if ( CUtils::match("^([\\w]*)[\\s]*endp$", strLine, arrMatches) )
 		{
 			return make_shared<CIFunction>(CIFunction::End);
@@ -265,10 +270,10 @@ class CIMFlow : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
 
-		if ( CUtils::match("^jmp\\s+cs:(off_code_\\w+)\\[(.*)\\]$", strLine, arrMatches) )
-		{
-			return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Jump);
-		}
+        if ( CUtils::match("^jmp\\s+cs:(off_code_\\w+)\\[(.*)\\]$", strLine, arrMatches) )
+        {
+            return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Jump);
+        }
 
 		if ( CUtils::match("^call\\s+cs:(off_code_\\w+)\\[(.*)\\]$", strLine, arrMatches) )
 		{
@@ -335,6 +340,16 @@ class CIMFlow : public CInstructionMatcher
         {
             return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
             //return make_shared<CIStop>();
+        }
+
+        if ( CUtils::match("^jmp short near ptr (sub.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CICall>(CLabel(arrMatches.back()), CICall::Jump);
+        }
+        
+        if ( CUtils::match("^jmp near ptr (sub.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CICall>(CLabel(arrMatches.back()), CICall::Jump);
         }
 
         if ( CUtils::match("^jmp(\\sshort)?\\s+(.*)$", strLine, arrMatches) )

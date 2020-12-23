@@ -318,6 +318,13 @@ void _rol(WORD& b, BYTE l)
     while (l--) b = rol<WORD>(b);    
 }
 
+void _ror(WORD & b, BYTE l)
+{
+    _ASSERT(l == 1);
+    b = ror<WORD>(b);
+}
+
+
 void _ror(BYTE& b, BYTE l)
 {
     _ASSERT(l == 1);
@@ -326,7 +333,7 @@ void _ror(BYTE& b, BYTE l)
 
 void _div(WORD& r)
 {
-    _ASSERT(_dx == 0);
+//    _ASSERT(_dx == 0);
     WORD result = _ax / r;
     WORD remain = _ax % r;
     _ax = result;

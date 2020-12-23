@@ -225,6 +225,10 @@ public:
             m_strSrc = "_sar(" + op1 + ", " + op2 + ");";
             break;
 
+        case CIAlu::IDiv:
+                m_strSrc = "_idiv(" + op1 + ");";
+                break;
+
 		default:
 			_ASSERT(0);
 		}
@@ -1012,6 +1016,10 @@ public:
             shared_ptr<CISingleArgOp> push = dynamic_pointer_cast<CISingleArgOp>(pPrevious);
             _ASSERT(push && push->m_eType == CISingleArgOp::push && push->m_rvalue.ToC() == "_cs");
             mDropPrevious = true;
+        }
+        if (pCall->m_type == CICall::Jump)
+        {
+            m_strCall = "{" + m_strCall + "; return; }";
         }
 	}
     

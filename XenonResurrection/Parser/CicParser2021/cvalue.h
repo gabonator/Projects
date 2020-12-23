@@ -1,6 +1,10 @@
 int FixDsOffset(int ofs)
 {
     //dseg
+    if (ofs >= 0x0000 && ofs < 0xffff)
+    {
+        return ofs;
+    }
     if (ofs >= 0x28530 && ofs < 0x28530 + 0xfd10)
     {
         const int dseg_begin = 0x28530;
@@ -16,6 +20,14 @@ int FixDsOffset(int ofs)
         _ASSERT(ofs >=0 && ofs <= 0xffff);
         return ofs;
     }
+    if (ofs >= 0x54890 && ofs < 0x54890 + 0x4000)
+    {
+        const int seg8_begin = 0x54890;
+        ofs -= seg8_begin;
+        _ASSERT(ofs >=0 && ofs <= 0xffff);
+        return ofs;
+    }
+
     _ASSERT(0);
     return ofs;
 }

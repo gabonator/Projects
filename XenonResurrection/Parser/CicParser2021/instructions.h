@@ -18,7 +18,8 @@ class CIFunction : public CInstruction
 public:
 	enum EBoundary {
 		Begin,
-		End
+		End,
+        EndFail
 	};
 
 	string m_strName;
@@ -445,7 +446,8 @@ class CICall : public CInstruction
 public:
     enum EType {
         Default,
-        NearPtr
+        NearPtr,
+        Jump
     } m_type;
 	CLabel m_label;
 

@@ -139,6 +139,11 @@ public:
 			
 			string _strLine = Trim(strLine);
 
+            if (strstr(strLine, "failed") != nullptr)
+            {
+                _strLine += "_failed";
+            }
+            
 			if ( _strLine.length() == 0 )
 				continue;
 

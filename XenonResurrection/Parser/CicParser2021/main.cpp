@@ -60,6 +60,9 @@ public:
         //
         D("sub_160EF", "Joystick")
         D("sub_1F492", "Starfields")
+        D("sub_2058D", "Clear screen")
+        D("sub_1595D", "Label with startfields")
+        D("sub_1F3D7", "Set palette")
         #undef D
         return "";
     }
@@ -92,6 +95,7 @@ int main(int argc, const char * argv[])
         "sub_102A8", "sub_104C9", "sub_102D4", "sub_10174", "sub_10373",
         "sub_1034C", "sub_103DD", "sub_103FD", "sub_10423",
          */
+        
         /*
         // code-intro.h
         "sub_16058", "sub_160EF", "sub_1426A", "sub_141A1", "sub_14191", "sub_10D5F",
@@ -102,8 +106,9 @@ int main(int argc, const char * argv[])
         "sub_160A5", "sub_2098C", "sub_20A2E", "sub_20A47", "sub_20A5C", "sub_20AC0",
         "sub_1F3C7", "sub_1F371", "sub_209E9", "sub_20A1D", "sub_20A3C", "sub_20973",
          */
-        /*
+        
         // code-pregame.h
+        /*
         "sub_15B21", "sub_109EB", "sub_15935", "sub_15C7C", "sub_10B83", "sub_10BC7",
         "sub_15950", "sub_10BE9", "sub_20B5B", "sub_20A39", "sub_10E2B", "sub_1F3B5",
         "sub_20B8A", "sub_15CC5", "sub_1F325", "sub_1F363", "sub_11827", "sub_20568",
@@ -111,7 +116,56 @@ int main(int argc, const char * argv[])
         "sub_10985", "sub_20482", "sub_1080F", "sub_1F3EF", "sub_10ED5", "sub_1421C",
         "sub_10A2F", "sub_10E4D", "sub_20854", "sub_20919", "sub_2095F", "sub_10BA5",
         "sub_136FC", "sub_1370B", "sub_20AD0",
-         */
+*/
+        /*
+        "sub_15B21",
+        "sub_109EB",
+        "sub_15935",
+        "sub_15C7C",
+        "sub_10B83",
+        "sub_10BC7",
+        "sub_15950",
+        "sub_10BE9",
+        "sub_20B5B",
+        "sub_20A39",
+        "sub_10E2B",
+        "sub_1F3B5",
+        "sub_20B8A",
+        "sub_15CC5",
+        "sub_1F325",
+        "sub_1F363",
+        "sub_11827",
+        "sub_20568",
+        "sub_11B43",
+        "sub_11A19",
+        "sub_11AAF",
+        "sub_10F5A",
+        "sub_10F78",
+        "sub_15926",
+        "sub_10985",
+        "sub_20482",
+        "sub_1080F",
+        "sub_1F3EF",
+        "sub_10ED5",
+        "sub_1421C",
+        "sub_10A2F",
+        "sub_10E4D",
+        "sub_20854",
+        "sub_20919",
+        "sub_2095F",
+        "sub_10BA5",
+        "sub_136FC",
+        "sub_1F57C",
+        "sub_10853",
+        //"sub_10761",
+        "sub_1370B",
+        "sub_20AD0",
+        "sub_15B10",
+        "sub_15E24",
+        "sub_15E35",
+        "sub_15E52",
+        "sub_15E59",
+*/
         //"sub_15E59"
         //"sub_10DC5", "sub_1F325"
         //"sub_10A73", "sub_205ED", "sub_20627", "sub_2217E", "sub_24178"
@@ -123,15 +177,18 @@ int main(int argc, const char * argv[])
         //"sub_10EF5", "sub_13326", "sub_13A39"
         //"sub_10875", "sub_1F585"
         
+        
     //"sub_14311", "sub_14759", "sub_14759"
         //"sub_11BEA", "sub_10F96", "sub_11C18", "sub_10F2F"
         //"sub_11E29", "sub_11D1E", "sub_11E02"
         //"sub_141B1"
         //"sub_20653", "sub_10EDD", "sub_10EE1", "sub_11CCC", "sub_13A36", "sub_10F96"
-        "sub_14865", "sub_14871"
+        //"sub_1FE70", "sub_1F6F8"
+//        "sub_20A39"
 
         
         // TODO: endp ; sp-analysis failed!!!!!!!!!
+        "sub_1F585"
 
 /*
  goto nearptr -> call
@@ -179,7 +236,9 @@ int main(int argc, const char * argv[])
             if (pJump && custom.GlobalExitLabel(pJump->m_label))
                 arrFunction[j] = make_shared<CIStop>(pJump, "exit program");
             
-            bool traceSegment = (arrFunction[j]->m_origin.find("cs") != string::npos);
+            bool traceSegment = (arrFunction[j]->m_origin.find("cs") != string::npos) &&
+            (arrFunction[j]->m_origin.find("push") == string::npos) &&
+            (arrFunction[j]->m_origin.find("call") == string::npos);
                 
             /*
             shared_ptr<CIAssignment> pAssign = dynamic_pointer_cast<CIAssignment>(arrFunction[j]);

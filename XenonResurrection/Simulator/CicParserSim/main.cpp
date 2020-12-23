@@ -281,10 +281,17 @@ void _xlat()
 }
 BYTE MemAuto::Get8(WORD seg, WORD ofs)
 {
+    if (seg == 0xa000 || seg == 0xa8000 || seg == 0xa400)
+        return memoryVideoGet(seg, ofs);
     return memory(seg, ofs);
 }
 void MemAuto::Set8(WORD seg, WORD ofs, BYTE data)
 {
+    if (seg == 0xa000 || seg == 0xa8000 || seg == 0xa400)
+    {
+        memoryVideoSet(seg, ofs, data);
+        return;
+    }
     memory(seg, ofs) = data;
 }
 
