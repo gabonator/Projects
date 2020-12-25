@@ -1,5 +1,28 @@
+struct segmenntInfo {
+    char name[32];
+    int begin;
+    int end;
+    int base;
+} segments[] =
+{
+    {"seg000", 0x0000, 0x3A56, 0x1000}, // CODE
+    {"dseg",   0x0006, 0x9570, 0x13A5}, // DATA
+    {"seg002", 0x0000, 0x0100, 0x1CFC}, // STACK
+    {"x",      0x0000, 0x8000, 0x0000}, // unref
+    {"", 0, 0, 0}
+};
+
 int FixDsOffset(int ofs)
 {
+    for (int i=0; segments[i].name[0]; i++)
+    {
+        if (ofs >= segments[i].base*16 + segments[i].begin &&
+            ofs <= segments[i].base*16 + segments[i].end)
+        {
+            return ofs - segments[i].base*16;
+        }
+    }
+    /*
     //dseg
     if (ofs >= 0x0000 && ofs < 0xffff)
     {
@@ -27,7 +50,7 @@ int FixDsOffset(int ofs)
         _ASSERT(ofs >=0 && ofs <= 0xffff);
         return ofs;
     }
-
+*/
     _ASSERT(0);
     return ofs;
 }
@@ -125,7 +148,12 @@ string CValue::ToC()
 
 	case CValue::segment:
 //		_ASSERT(m_eSegment == dseg);
+            if (m_eSegment == dseg)
+                return "_dseg";
+            if (m_eSegment == seg000)
+                return "_seg000";
             _ASSERT(0);
+
 		return "SEG_DATA";
 
 	case CValue::wordptrval:
@@ -343,7 +371,12 @@ string CValue::ToC()
         case CValue::bx_plus_di_plus:
             ss << "_bx + _di + " << m_nValue;
             return ss.str();
-
+        case CValue::stack_bp_plus:
+            ss << "stack16(_bp, " << m_nValue << ")";
+            return ss.str();
+        case CValue::bp_plus:
+            ss << "_bp + " << m_nValue;
+            return ss.str();
 	default:
 		_ASSERT(0);
 	}

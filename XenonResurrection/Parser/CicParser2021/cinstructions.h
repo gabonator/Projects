@@ -124,7 +124,10 @@ public:
                         pAlu->m_op2.GetRegisterLength() == CValue::r16)
                         prefix = "short";
                 else
-                    _ASSERT(0);
+                {
+                    //_ASSERT(0);
+                    prefix = "_FIXME_";
+                }
 
                 m_strInsertion = "_flags.sign = (" + prefix + ")(" + op1 + " - " + op2 + ") < 0";
             } else _ASSERT(0);
@@ -530,7 +533,8 @@ public:
 		Regular,
 		ZeroFlag,
 		ZeroCarryFlag,
-		CarryFlag
+		CarryFlag,
+        Fixme
 	};
 
 	string m_strOperand1;
@@ -611,7 +615,7 @@ public:
             if ( pCondition->m_eType == CIConditionalJump::jcxz )
                From(pCondition);
             else
-			_ASSERT(0);
+                From(pCondition, CCConditionalJump::Fixme);
 	}
 
 	void From(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CICompare> pCompare)
@@ -703,7 +707,8 @@ public:
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
 			case CIConditionalJump::jb: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
 			default:
-				_ASSERT(0);
+                    m_strCondition = "_FIXME_";
+				//_ASSERT(0);
 			}
 			break;
 
@@ -751,7 +756,7 @@ public:
 
             case CIConditionalJump::jns:
                     pAlu->m_ExportInsertion = CIAlu::Sign;
-                    m_strCondition = "_flags.sign"; break;
+                    m_strCondition = "!_flags.sign"; break;
             
             case CIConditionalJump::jg:
                     m_strCondition = "(type)"+pAlu->m_op1.ToC() + " > 0 /*CHECK*/" ; break;
@@ -811,6 +816,12 @@ public:
 	{
 		m_strLabel = pCondition->m_label;
 		m_eLabelType = Label;
+        
+        if (eCondition==Fixme)
+        {
+            m_strCondition = "_FIXME_";
+            return;
+        }
 
 		switch ( pCondition->m_eType )
 		{
@@ -1145,7 +1156,13 @@ public:
 
 	virtual string ToString() override
 	{
-		_ASSERT(m_nReduceStack == 0);
+		//_ASSERT(m_nReduceStack == 0);
+        stringstream ss;
+        if (m_nReduceStack)
+        {
+            ss << "_stackReduce(" << m_nReduceStack << ");\nreturn;";
+            return ss.str();
+        }
 		return "return;";
 	}
 };

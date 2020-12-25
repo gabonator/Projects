@@ -208,9 +208,10 @@ public:
 			if ( dynamic_pointer_cast<CILabel>(pInstruction) && dynamic_pointer_cast<CIJump>(pPrev) )
 			{
 				vector<int> arrRefs = FindReferences(arrInput, dynamic_pointer_cast<CILabel>(pInstruction)->m_label);
-				_ASSERT(arrRefs.size() == 1);
-
-				return TracebackCondition(eType, arrInput, arrRefs[0]);
+				if (arrRefs.size() == 1)
+                    return TracebackCondition(eType, arrInput, arrRefs[0]);
+                else
+                    return nullptr;
 			}
 			if (dynamic_pointer_cast<CICall>(pInstruction))
 			{

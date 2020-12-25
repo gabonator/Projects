@@ -490,7 +490,11 @@ class CIMSegment : public CInstructionMatcher
     virtual shared_ptr<CInstruction> Match(string strLine) override
     {
         vector<string> arrMatches;
-        if ( CUtils::match("^(seg.*) segment .*public.*$", strLine, arrMatches) )
+        if ( CUtils::match("^(.*seg.*) segment .*public.*$", strLine, arrMatches) )
+        {
+            return make_shared<CISegment>(arrMatches[0]);
+        }
+        if ( CUtils::match("^(.*seg.*) segment .*stack.*$", strLine, arrMatches) )
         {
             return make_shared<CISegment>(arrMatches[0]);
         }
@@ -518,7 +522,7 @@ class CIMNop : public CInstructionMatcher
 			return make_shared<CINop>(strLine);
 		}
 
-		if ( CUtils::match("^seg.*\\s+(end|ends)$", strLine) )
+		if ( CUtils::match("^.*seg.*\\s+(end|ends)$", strLine) )
 		{
 			return make_shared<CINop>(strLine);
 		}
