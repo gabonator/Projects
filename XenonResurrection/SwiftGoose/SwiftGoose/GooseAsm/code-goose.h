@@ -1,6 +1,6 @@
 void start();
-void sub_100A9();
-void sub_100CF();
+int sub_100A9(int);
+int sub_100CF(int);
 void sub_100FD();
 void sub_10442();
 void sub_10588();
@@ -10,7 +10,7 @@ void sub_10600();
 void sub_12762();
 void sub_1333C();
 void sub_1382A();
-void sub_10103();
+int sub_10103(int);
 void sub_101C0();
 void sub_10637();
 void sub_10644();
@@ -179,9 +179,23 @@ void sub_1241C();;
 void sub_12434();;
 void sub_1244C();;
 
+int _pc_sub_10103 = 0;
+int _pc_sub_100A9 = 0;
+int _pc_sub_100CF = 0;
 
-void start()
+
+int start(int _pc)
 {
+    switch (_pc)
+    {
+        case 0: break;
+        case 0x1008B: goto loc_1008B;
+        case 0x1008C: goto loc_1008C;
+        case 0x1008D: goto loc_1008D;
+        default:
+            _ASSERT(0);
+    }
+    
     _ax = _dseg;                                  //mov ax, seg dseg
     _ds = _ax;                                    //mov ds, ax
     _bx = 0x9670;                                 //mov bx, 9670h
@@ -230,15 +244,38 @@ loc_1006E:                                        //loc_1006E:
     sub_1382A();                                  //call sub_1382A
     memory(_ds, 0x9501) = 0;                      //mov byte_1CF51, 0
 loc_1008B:                                        //loc_1008B:
-    sub_100A9();                                  //call sub_100A9
-    sub_100CF();                                  //call sub_100CF
+    _pc_sub_100A9 = 0;
+loc_1008C:                                        //loc_1008B:
+    _pc_sub_100A9 = sub_100A9(_pc_sub_100A9);     //call sub_100A9 -- break;
+    if (_pc_sub_100A9 != -1)
+        return 0x1008C;
+    
+    _pc_sub_100CF = 0;
+loc_1008D:
+    _pc_sub_100CF = sub_100CF(_pc_sub_100CF);     //call sub_100CF
+    if (_pc_sub_100CF != -1)
+        return 0x1008D;
+
     sub_100FD();                                  //call sub_100FD
-    goto loc_1008B;                               //jmp short loc_1008B
+    return 0x1008B;
+//    goto loc_1008B;                               //jmp short loc_1008B
 }
 
-void sub_100A9()
+int sub_100A9(int _pc)
 {
-    sub_10103();                                  //call sub_10103
+    switch (_pc)
+    {
+        case 0: break;
+        case 0x100AA: goto loc_100AA;
+        default:
+            _ASSERT(0);
+    }
+    _pc_sub_10103 = 0;
+loc_100AA:
+    _pc_sub_10103 = sub_10103(_pc_sub_10103);     //call sub_10103
+    if (_pc_sub_10103 != -1)
+        return 0x100AA;
+    
     memory(_ds, 0x9500) = 0;                      //mov byte_1CF50, 0
     memory(_ds, 0x94FE) = 1;                      //mov byte_1CF4E, 1
     memory(_ds, 0x94FC) = 0x10;                   //mov byte ptr word_1CF4C, 10h
@@ -247,11 +284,19 @@ void sub_100A9()
     sub_10DA7();                                  //call sub_10DA7
     sub_13423();                                  //call sub_13423
     sub_121DC();                                  //call sub_121DC
+    return -1;
 }
 
-void sub_100CF() // Main game loop
+int sub_100CF(int _pc) // Main game loop
 {
-label_begin:
+    switch (_pc)
+    {
+        case 0: break;
+        case 0x100CF: goto loc_100CF;
+        default: _ASSERT(0);
+    }
+    
+loc_100CF:
     sub_101C0();                                  //call sub_101C0
     sub_10FDA();                                  //call sub_10FDA
     _al = memory(_ds, 0x94FF);                    //mov al, byte_1CF4F
@@ -271,9 +316,10 @@ loc_100ED:                                        //loc_100ED:
     if (_al != 0x00)                              //jnz short locret_100FC
       goto locret_100FC;
     // inject loop
-    goto label_begin;
+    //goto loc_100CF;
+    return 0x100CF;
 locret_100FC:                                     //locret_100FC:
-    return;
+    return -1;
 }
 
 void sub_100FD()
@@ -452,8 +498,15 @@ void sub_1382A()
     memory(_ds, 0x9505) = 0;                      //mov byte_1CF55, 0
 }
 
-void sub_10103()
+int sub_10103(int _pc)
 {
+    switch (_pc)
+    {
+        case 0: break;
+        case 0x10132: goto loc_10132;
+        default: _ASSERT(0);
+    }
+    
     _al = memory(_ds, 0x3A56);                    //mov al, byte_13A56
     if (_al == 0x00)                              //jz short loc_10115
       goto loc_10115;
@@ -516,9 +569,11 @@ loc_10189:                                        //loc_10189:
     sub_1019D();                                  //call sub_1019D
 loc_10195:                                        //loc_10195:
     /// inject loop
-    goto loc_10132;                               //jmp short loc_10132
+    return 0x10132;
+    //goto loc_10132;                               //jmp short loc_10132
 loc_10197:                                        //loc_10197:
     memory(_ds, 0x9503) = 0;                      //mov byte_1CF53, 0
+    return -1;
 }
 
 void sub_101C0()
@@ -608,7 +663,6 @@ loc_1027C:                                        //loc_1027C:
     if (_al == 0x00)                              //jz short loc_10289
       goto loc_10289;
     // exit game
-    std::cout << "Should exit\n";
     goto loc_10096;                               //jmp loc_10096
 loc_10289:                                        //loc_10289:
     sub_10529();                                  //call sub_10529
@@ -4412,172 +4466,6 @@ loc_137FA:                                        //loc_137FA:
       goto loc_137F3;
     goto loc_137D5;                               //jmp short loc_137D5
 }
-
-/*
-void sub_136D4() // draw line
-{
-    _push(_bp);                                   //push bp
-    _bp = _sp;                                    //mov bp, sp
-    
-    stack16(_bp, 4)  = 50;
-    stack16(_bp, 6)  = 50;
-    stack16(_bp, 8)  = 100;
-    stack16(_bp, 10)  = 100;
-
-    std::cout << std::dec << "line(" << stack16(_bp, 4) << ", "
-    << stack16(_bp, 6) << ", "
-    << stack16(_bp, 8) << ", "
-    << stack16(_bp, 10) << "\n";
-
-    _sp -= 0x0a;                                  //sub sp, 0Ah
-    
-    _ax = memory16(_ds, 0x94F4);                  //mov ax, word_1CF44
-    _es = _ax;                                    //mov es, ax
-    _ax = stack16(_bp, 8);                        //mov ax, [bp+arg_4]
-    if (_ax == 0x0000)                            //jz short loc_136FA
-      goto loc_136FA;
-    _bx = _ax;                                    //mov bx, ax
-    _ax <<= 1;                                    //shl ax, 1
-    _ax <<= 1;                                    //shl ax, 1
-    _ax += _bx;                                   //add ax, bx
-    _ax <<= 1;                                    //shl ax, 1
-    _ax += 0x0005;                                //add ax, 5
-    _bl = 0x0c;                                   //mov bl, 0Ch
-    _div(_bl);                                    //div bl
-    _ah = 0x00;                                   //mov ah, 0
-loc_136FA:                                        //loc_136FA:
-    stack16(_bp, 8) = _ax;                        //mov [bp+arg_4], ax
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
-    if (_ax == 0x0000)                            //jz short loc_13718
-      goto loc_13718;
-    _bx = _ax;                                    //mov bx, ax
-    _ax <<= 1;                                    //shl ax, 1
-    _ax <<= 1;                                    //shl ax, 1
-    _ax += _bx;                                   //add ax, bx
-    _ax <<= 1;                                    //shl ax, 1
-    _ax += 0x0005;                                //add ax, 5
-    _bl = 0x0c;                                   //mov bl, 0Ch
-    _div(_bl);                                    //div bl
-    _ah = 0x00;                                   //mov ah, 0
-loc_13718:                                        //loc_13718:
-    stack16(_bp, 4) = _ax;                        //mov [bp+arg_0], ax
-    _ax = stack16(_bp, 10);                       //mov ax, [bp+arg_6]
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
-    if (_bx >= _ax)                               //jnb short loc_13737
-      goto loc_13737;
-    stack16(_bp, 10) = _bx;                       //mov [bp+arg_6], bx
-    stack16(_bp, 6) = _ax;                        //mov [bp+arg_2], ax
-    _ax = stack16(_bp, 8);                        //mov ax, [bp+arg_4]
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
-    stack16(_bp, 8) = _bx;                        //mov [bp+arg_4], bx
-    stack16(_bp, 4) = _ax;                        //mov [bp+arg_0], ax
-loc_13737:                                        //loc_13737:
-    _ax = stack16(_bp, 6);                        //mov ax, [bp+arg_2]
-    _ax = _ax - stack16(_bp, 10);                 //sub ax, [bp+arg_6]
-    stack16(_bp, -2) = _ax;                       //mov [bp+var_2], ax
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
-    _flags.sign = (short)(_ax - stack16(_bp, 8)) < 0;//sub ax, [bp+arg_4]
-    _ax = _ax - stack16(_bp, 8);
-    if (!_flags.sign)                              //jns short loc_13751
-      goto loc_13751;
-    _ax = -_ax;                                   //neg ax
-    stack16(_bp, -10) = 0xffe0;                   //mov [bp+var_A], 0FFE0h
-    goto loc_13756;                               //jmp short loc_13756
-loc_13751:                                        //loc_13751:
-    stack16(_bp, -10) = 0x20;                     //mov [bp+var_A], 20h
-loc_13756:                                        //loc_13756:
-    stack16(_bp, -4) = _ax;                       //mov [bp+var_4], ax
-    _cx = stack16(_bp, -2);                       //mov cx, [bp+var_2]
-    if (_cx == 0x0000)                            //jz short loc_137DB
-      goto loc_137DB;
-    if (_ax != 0x0000)                            //jnz short loc_13769
-      goto loc_13769;
-    goto loc_137ED;                               //jmp loc_137ED
-loc_13769:                                        //loc_13769:
-    if (_ax >= stack16(_bp, -2))                  //jnb short loc_137A4
-      goto loc_137A4;
-    _ax = stack16(_bp, -2);                       //mov ax, [bp+var_2]
-    _ax >>= 1;                                    //shr ax, 1
-    stack16(_bp, -6) = _ax;                       //mov [bp+var_6], ax
-    sub_13801();                                  //call sub_13801
-    _cx = stack16(_bp, -2);                       //mov cx, [bp+var_2]
-loc_1377C:                                        //loc_1377C:
-    _al >>= 1;                                    //shr al, 1
-    if (_al != 0)                                 //jnz short loc_13783
-      goto loc_13783;
-    _al = 0x80;                                   //mov al, 80h
-    _di += 1;                                     //inc di
-loc_13783:                                        //loc_13783:
-    _bx = stack16(_bp, -6);                       //mov bx, [bp+var_6]
-    _bx = _bx + stack16(_bp, -4);                 //add bx, [bp+var_4]
-    stack16(_bp, -6) = _bx;                       //mov [bp+var_6], bx
-    if (_bx <= stack16(_bp, -2))                  //jbe short loc_1379D
-      goto loc_1379D;
-    _bx = _bx - stack16(_bp, -2);                 //sub bx, [bp+var_2]
-    stack16(_bp, -6) = _bx;                       //mov [bp+var_6], bx
-    _bx = stack16(_bp, -10);                      //mov bx, [bp+var_A]
-    _di = _di + stack16(_bp, -10);                //add di, [bp+var_A]
-loc_1379D:                                        //loc_1379D:
-    memory(_es, _di) |= _al;                      //or es:[di], al
-    if (--_cx)                                    //loop loc_1377C
-      goto loc_1377C;
-    goto loc_137D5;                               //jmp short loc_137D5
-loc_137A4:                                        //loc_137A4:
-    _ax = stack16(_bp, -4);                       //mov ax, [bp+var_4]
-    _ax >>= 1;                                    //shr ax, 1
-    stack16(_bp, -6) = _ax;                       //mov [bp+var_6], ax
-    sub_13801();                                  //call sub_13801
-    _cx = stack16(_bp, -4);                       //mov cx, [bp+var_4]
-loc_137B2:                                        //loc_137B2:
-    _di = _di + stack16(_bp, -10);                //add di, [bp+var_A]
-    _bx = stack16(_bp, -6);                       //mov bx, [bp+var_6]
-    _bx = _bx + stack16(_bp, -2);                 //add bx, [bp+var_2]
-    stack16(_bp, -6) = _bx;                       //mov [bp+var_6], bx
-    if (_bx <= stack16(_bp, -4))                  //jbe short loc_137D0
-      goto loc_137D0;
-    _bx = _bx - stack16(_bp, -4);                 //sub bx, [bp+var_4]
-    stack16(_bp, -6) = _bx;                       //mov [bp+var_6], bx
-    _al >>= 1;                                    //shr al, 1
-    if (_al != 0)                                 //jnz short loc_137D0
-      goto loc_137D0;
-    _al = 0x80;                                   //mov al, 80h
-    _di += 1;                                     //inc di
-loc_137D0:                                        //loc_137D0:
-    memory(_es, _di) |= _al;                      //or es:[di], al
-    if (--_cx)                                    //loop loc_137B2
-      goto loc_137B2;
-loc_137D5:                                        //loc_137D5:
-    _sp = _bp;                                    //mov sp, bp
-    _bp = _pop();                                 //pop bp
-    _stackReduce(8);                              //retn 8
-    return;
-loc_137DB:                                        //loc_137DB:
-    sub_13801();                                  //call sub_13801
-    _cx = stack16(_bp, -4);                       //mov cx, [bp+var_4]
-    if (_cx == 0)                                 //jcxz short loc_137D5
-      goto loc_137D5;
-loc_137E3:                                        //loc_137E3:
-    _di = _di + stack16(_bp, -10);                //add di, [bp+var_A]
-    memory(_es, _di) |= _al;                      //or es:[di], al
-    if (--_cx)                                    //loop loc_137E3
-      goto loc_137E3;
-    goto loc_137D5;                               //jmp short loc_137D5
-loc_137ED:                                        //loc_137ED:
-    sub_13801();                                  //call sub_13801
-    _cx = stack16(_bp, -2);                       //mov cx, [bp+var_2]
-loc_137F3:                                        //loc_137F3:
-    _al >>= 1;                                    //shr al, 1
-    if (_al != 0)                                 //jnz short loc_137FA
-      goto loc_137FA;
-    _al = 0x80;                                   //mov al, 80h
-    _di += 1;                                     //inc di
-loc_137FA:                                        //loc_137FA:
-    memory(_es, _di) |= _al;                      //or es:[di], al
-    if (--_cx)                                    //loop loc_137F3
-      goto loc_137F3;
-    goto loc_137D5;                               //jmp short loc_137D5
-}
-*/
 
 void sub_13840()
 {

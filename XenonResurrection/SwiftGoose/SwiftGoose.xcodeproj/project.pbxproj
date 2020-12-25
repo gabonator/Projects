@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2D832CE42595F72700597857 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE32595F72700597857 /* AppDelegate.swift */; };
+		2D832CE62595F72700597857 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE52595F72700597857 /* SceneDelegate.swift */; };
+		2D832CE82595F72700597857 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE72595F72700597857 /* ViewController.swift */; };
+		2D832CEB2595F72700597857 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D832CE92595F72700597857 /* Main.storyboard */; };
+		2D832CED2595F72900597857 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D832CEC2595F72900597857 /* Assets.xcassets */; };
+		2D832CF02595F72900597857 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D832CEE2595F72900597857 /* LaunchScreen.storyboard */; };
+		2D832D012595F7B800597857 /* goose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D832D002595F7B800597857 /* goose.cpp */; };
+		2D832D072595FCB400597857 /* goose.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2D832D062595FCB400597857 /* goose.mm */; };
+		2D832D22259602AC00597857 /* bird1.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D0C2595FE6C00597857 /* bird1.x */; };
+		2D832D23259602AC00597857 /* bird2.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D0F2595FE6C00597857 /* bird2.x */; };
+		2D832D24259602AC00597857 /* blox.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D0D2595FE6C00597857 /* blox.x */; };
+		2D832D25259602AC00597857 /* goose.dseg in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D0E2595FE6C00597857 /* goose.dseg */; };
+		2D832D26259602AC00597857 /* intro.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D122595FE6C00597857 /* intro.x */; };
+		2D832D27259602AC00597857 /* newbird.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D102595FE6C00597857 /* newbird.x */; };
+		2D832D28259602AC00597857 /* podz1.x in Resources */ = {isa = PBXBuildFile; fileRef = 2D832D112595FE6C00597857 /* podz1.x */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2D832CE02595F72700597857 /* SwiftGoose.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftGoose.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D832CE32595F72700597857 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2D832CE52595F72700597857 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		2D832CE72595F72700597857 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		2D832CEA2595F72700597857 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2D832CEC2595F72900597857 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D832CEF2595F72900597857 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		2D832CF12595F72900597857 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2D832CF92595F79B00597857 /* code-goose-3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-3.h"; sourceTree = "<group>"; };
+		2D832CFA2595F79B00597857 /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
+		2D832CFB2595F79B00597857 /* ega.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ega.h; sourceTree = "<group>"; };
+		2D832CFC2595F79B00597857 /* code-goose-4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-4.h"; sourceTree = "<group>"; };
+		2D832CFD2595F79B00597857 /* code-goose-2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-2.h"; sourceTree = "<group>"; };
+		2D832CFE2595F79B00597857 /* code-goose.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose.h"; sourceTree = "<group>"; };
+		2D832CFF2595F7B700597857 /* SwiftGoose-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftGoose-Bridging-Header.h"; sourceTree = "<group>"; };
+		2D832D002595F7B800597857 /* goose.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = goose.cpp; sourceTree = "<group>"; };
+		2D832D062595FCB400597857 /* goose.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = goose.mm; sourceTree = "<group>"; };
+		2D832D0C2595FE6C00597857 /* bird1.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird1.x; sourceTree = "<group>"; };
+		2D832D0D2595FE6C00597857 /* blox.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = blox.x; sourceTree = "<group>"; };
+		2D832D0E2595FE6C00597857 /* goose.dseg */ = {isa = PBXFileReference; lastKnownFileType = file; path = goose.dseg; sourceTree = "<group>"; };
+		2D832D0F2595FE6C00597857 /* bird2.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird2.x; sourceTree = "<group>"; };
+		2D832D102595FE6C00597857 /* newbird.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = newbird.x; sourceTree = "<group>"; };
+		2D832D112595FE6C00597857 /* podz1.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = podz1.x; sourceTree = "<group>"; };
+		2D832D122595FE6C00597857 /* intro.x */ = {isa = PBXFileReference; lastKnownFileType = file; path = intro.x; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2D832CDD2595F72700597857 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2D832CD72595F72700597857 = {
+			isa = PBXGroup;
+			children = (
+				2D832D0B2595FE4A00597857 /* Resources */,
+				2D832CE22595F72700597857 /* SwiftGoose */,
+				2D832CE12595F72700597857 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2D832CE12595F72700597857 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2D832CE02595F72700597857 /* SwiftGoose.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2D832CE22595F72700597857 /* SwiftGoose */ = {
+			isa = PBXGroup;
+			children = (
+				2D832CF82595F76700597857 /* GooseAsm */,
+				2D832CE32595F72700597857 /* AppDelegate.swift */,
+				2D832CE52595F72700597857 /* SceneDelegate.swift */,
+				2D832CE72595F72700597857 /* ViewController.swift */,
+				2D832CE92595F72700597857 /* Main.storyboard */,
+				2D832CEC2595F72900597857 /* Assets.xcassets */,
+				2D832CEE2595F72900597857 /* LaunchScreen.storyboard */,
+				2D832CF12595F72900597857 /* Info.plist */,
+			);
+			path = SwiftGoose;
+			sourceTree = "<group>";
+		};
+		2D832CF82595F76700597857 /* GooseAsm */ = {
+			isa = PBXGroup;
+			children = (
+				2D832D002595F7B800597857 /* goose.cpp */,
+				2D832D062595FCB400597857 /* goose.mm */,
+				2D832CFD2595F79B00597857 /* code-goose-2.h */,
+				2D832CF92595F79B00597857 /* code-goose-3.h */,
+				2D832CFC2595F79B00597857 /* code-goose-4.h */,
+				2D832CFE2595F79B00597857 /* code-goose.h */,
+				2D832CFA2595F79B00597857 /* cpu.h */,
+				2D832CFB2595F79B00597857 /* ega.h */,
+				2D832CFF2595F7B700597857 /* SwiftGoose-Bridging-Header.h */,
+			);
+			path = GooseAsm;
+			sourceTree = "<group>";
+		};
+		2D832D0B2595FE4A00597857 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2D832D0C2595FE6C00597857 /* bird1.x */,
+				2D832D0F2595FE6C00597857 /* bird2.x */,
+				2D832D0D2595FE6C00597857 /* blox.x */,
+				2D832D0E2595FE6C00597857 /* goose.dseg */,
+				2D832D122595FE6C00597857 /* intro.x */,
+				2D832D102595FE6C00597857 /* newbird.x */,
+				2D832D112595FE6C00597857 /* podz1.x */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2D832CDF2595F72700597857 /* SwiftGoose */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D832CF42595F72900597857 /* Build configuration list for PBXNativeTarget "SwiftGoose" */;
+			buildPhases = (
+				2D832CDC2595F72700597857 /* Sources */,
+				2D832CDD2595F72700597857 /* Frameworks */,
+				2D832CDE2595F72700597857 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftGoose;
+			productName = SwiftGoose;
+			productReference = 2D832CE02595F72700597857 /* SwiftGoose.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D832CD82595F72700597857 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1220;
+				LastUpgradeCheck = 1220;
+				TargetAttributes = {
+					2D832CDF2595F72700597857 = {
+						CreatedOnToolsVersion = 12.2;
+						LastSwiftMigration = 1220;
+					};
+				};
+			};
+			buildConfigurationList = 2D832CDB2595F72700597857 /* Build configuration list for PBXProject "SwiftGoose" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2D832CD72595F72700597857;
+			productRefGroup = 2D832CE12595F72700597857 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D832CDF2595F72700597857 /* SwiftGoose */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2D832CDE2595F72700597857 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D832D22259602AC00597857 /* bird1.x in Resources */,
+				2D832D23259602AC00597857 /* bird2.x in Resources */,
+				2D832D24259602AC00597857 /* blox.x in Resources */,
+				2D832D25259602AC00597857 /* goose.dseg in Resources */,
+				2D832D26259602AC00597857 /* intro.x in Resources */,
+				2D832D27259602AC00597857 /* newbird.x in Resources */,
+				2D832D28259602AC00597857 /* podz1.x in Resources */,
+				2D832CF02595F72900597857 /* LaunchScreen.storyboard in Resources */,
+				2D832CED2595F72900597857 /* Assets.xcassets in Resources */,
+				2D832CEB2595F72700597857 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D832CDC2595F72700597857 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D832D072595FCB400597857 /* goose.mm in Sources */,
+				2D832CE82595F72700597857 /* ViewController.swift in Sources */,
+				2D832D012595F7B800597857 /* goose.cpp in Sources */,
+				2D832CE42595F72700597857 /* AppDelegate.swift in Sources */,
+				2D832CE62595F72700597857 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2D832CE92595F72700597857 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2D832CEA2595F72700597857 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2D832CEE2595F72900597857 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2D832CEF2595F72900597857 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2D832CF22595F72900597857 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2D832CF32595F72900597857 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2D832CF52595F72900597857 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 854TMBK4HM;
+				INFOPLIST_FILE = SwiftGoose/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = stargoose;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftGoose/GooseAsm/SwiftGoose-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2D832CF62595F72900597857 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 854TMBK4HM;
+				INFOPLIST_FILE = SwiftGoose/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = stargoose;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftGoose/GooseAsm/SwiftGoose-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D832CDB2595F72700597857 /* Build configuration list for PBXProject "SwiftGoose" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D832CF22595F72900597857 /* Debug */,
+				2D832CF32595F72900597857 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D832CF42595F72900597857 /* Build configuration list for PBXNativeTarget "SwiftGoose" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D832CF52595F72900597857 /* Debug */,
+				2D832CF62595F72900597857 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D832CD82595F72700597857 /* Project object */;
+}

@@ -22,7 +22,7 @@ constexpr WORD _seg000 = 0x3A56;
 constexpr WORD _seg002 = 0x1CFC;
 constexpr WORD _dseg = 0x13A5;
 
-#include "code_goose.h"
+#include "code-goose.h"
 #include "code-goose-2.h"
 #include "code-goose-3.h"
 #include "code-goose-4.h"

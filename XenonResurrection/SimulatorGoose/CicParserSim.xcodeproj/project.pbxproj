@@ -23,21 +23,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2D0FF52D2590120A00ED76AE /* code-game.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-game.h"; sourceTree = "<group>"; };
-		2D832CAC2594C29200597857 /* code_goose.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = code_goose.h; sourceTree = "<group>"; };
+		2D832CAC2594C29200597857 /* code-goose.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose.h"; sourceTree = "<group>"; };
 		2D832CAE2594C8EE00597857 /* code-goose-2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-2.h"; sourceTree = "<group>"; };
 		2D832CB02595418600597857 /* code-goose-3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-3.h"; sourceTree = "<group>"; };
 		2D832CB2259542BA00597857 /* code-goose-4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-4.h"; sourceTree = "<group>"; };
-		2D9EAF1D258D667600297C9C /* code-intro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-intro.h"; sourceTree = "<group>"; };
 		2D9EAF1F258E6A4300297C9C /* sdl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl.h; sourceTree = "<group>"; };
 		2D9EAF26258E750E00297C9C /* CicParserSim.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CicParserSim.entitlements; sourceTree = "<group>"; };
-		2D9EAF28258E82E000297C9C /* code-loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-loader.h"; sourceTree = "<group>"; };
 		2DA6C5AC258AA66B002B1931 /* CicParserSim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CicParserSim; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DA6C5AF258AA66B002B1931 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		2DA6C5B7258AA67A002B1931 /* code.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = code.h; sourceTree = "<group>"; };
 		2DA6C5B8258AA6E3002B1931 /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
 		2DB9F18C258EA679000A3299 /* ega.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ega.h; sourceTree = "<group>"; };
-		2DB9F18E258EC12D000A3299 /* code-pregame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-pregame.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,16 +67,11 @@
 			children = (
 				2D9EAF26258E750E00297C9C /* CicParserSim.entitlements */,
 				2DA6C5AF258AA66B002B1931 /* main.cpp */,
-				2D832CAC2594C29200597857 /* code_goose.h */,
+				2D832CAC2594C29200597857 /* code-goose.h */,
 				2D832CB2259542BA00597857 /* code-goose-4.h */,
 				2D832CB02595418600597857 /* code-goose-3.h */,
 				2D832CAE2594C8EE00597857 /* code-goose-2.h */,
 				2D9EAF1F258E6A4300297C9C /* sdl.h */,
-				2DA6C5B7258AA67A002B1931 /* code.h */,
-				2D9EAF28258E82E000297C9C /* code-loader.h */,
-				2D9EAF1D258D667600297C9C /* code-intro.h */,
-				2DB9F18E258EC12D000A3299 /* code-pregame.h */,
-				2D0FF52D2590120A00ED76AE /* code-game.h */,
 				2DA6C5B8258AA6E3002B1931 /* cpu.h */,
 				2DB9F18C258EA679000A3299 /* ega.h */,
 			);
