@@ -66,8 +66,8 @@ void commonFileRead(uint8_t* ptr, int offset, int length)
 - (void) setPosition:(int)x
 {
     x = x-160+128;
-    x = std::max(std::max(0, x), 256);
-    memory(0x13A5, 0x1B8F) = x-160+128;
+    x = std::min(std::max(0, x), 256);
+    memory(0x13A5, 0x1B8F) = x;
 }
 
 @end
