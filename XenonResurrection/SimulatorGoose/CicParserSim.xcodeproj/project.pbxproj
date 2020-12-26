@@ -23,6 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2D8225262597DF96009BD3AC /* code-goose-sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-sound.h"; sourceTree = "<group>"; };
 		2D832CAC2594C29200597857 /* code-goose.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose.h"; sourceTree = "<group>"; };
 		2D832CAE2594C8EE00597857 /* code-goose-2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-2.h"; sourceTree = "<group>"; };
 		2D832CB02595418600597857 /* code-goose-3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-3.h"; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 				2D9EAF26258E750E00297C9C /* CicParserSim.entitlements */,
 				2DA6C5AF258AA66B002B1931 /* main.cpp */,
 				2D832CAC2594C29200597857 /* code-goose.h */,
+				2D8225262597DF96009BD3AC /* code-goose-sound.h */,
 				2D832CB2259542BA00597857 /* code-goose-4.h */,
 				2D832CB02595418600597857 /* code-goose-3.h */,
 				2D832CAE2594C8EE00597857 /* code-goose-2.h */,

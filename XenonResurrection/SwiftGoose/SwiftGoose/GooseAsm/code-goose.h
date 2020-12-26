@@ -245,6 +245,7 @@ loc_1006E:                                        //loc_1006E:
     memory(_ds, 0x9501) = 0;                      //mov byte_1CF51, 0
 loc_1008B:                                        //loc_1008B:
     _pc_sub_100A9 = 0;
+    scene = "intro";
 loc_1008C:                                        //loc_1008B:
     _pc_sub_100A9 = sub_100A9(_pc_sub_100A9);     //call sub_100A9 -- break;
     if (_pc_sub_100A9 != -1)
@@ -302,10 +303,12 @@ loc_100CF:
     _al = memory(_ds, 0x94FF);                    //mov al, byte_1CF4F
     if (_al != 0x00)                              //jnz short loc_100E4
       goto loc_100E4;
+    scene = "map";
     sub_132FE();                                  //call sub_132FE
     sub_10B8E();                                  //call sub_10B8E
     goto loc_100ED;                               //jmp short loc_100ED
 loc_100E4:                                        //loc_100E4:
+    scene = "tunnel";
     sub_134A8();                                  //call sub_134A8
     sub_131A4();                                  //call sub_131A4
     sub_10B8E();                                  //call sub_10B8E
@@ -315,9 +318,7 @@ loc_100ED:                                        //loc_100ED:
     _al = memory(_ds, 0x9500);                    //mov al, byte_1CF50
     if (_al != 0x00)                              //jnz short locret_100FC
       goto locret_100FC;
-    // inject loop
-    //goto loc_100CF;
-    return 0x100CF;
+    return 0x100CF;                               //Infinite loop: goto loc_100CF;
 locret_100FC:                                     //locret_100FC:
     return -1;
 }
@@ -2903,10 +2904,10 @@ void sub_118C7()
 loc_118E4:                                        //loc_118E4:
     _ax = memory16(_ds, 0x1B8F);                  //mov ax, word_155DF
     _ax = _ax - memory16(_ds, _si + 5);           //sub ax, [si+5]
-    _ASSERT(0);
+//    _ASSERT(0);
 //    _flags.sign = (_FIXME_)(_ax - 0x0c) < 0;      //sub ax, 0Ch
     _ax -= 0x0c;
-    if (!_flags.sign)                              //jns short loc_118F1
+    if ((short)_ax<0)                              //jns short loc_118F1
       goto loc_118F1;
     _ax = -_ax;                                   //neg ax
 loc_118F1:                                        //loc_118F1:
@@ -2943,10 +2944,10 @@ loc_1191D:                                        //loc_1191D:
       goto loc_1196B;
     _ax = memory16(_ds, 0x1B8F);                  //mov ax, word_155DF
     _ax = _ax - memory16(_ds, _si + 5);           //sub ax, [si+5]
-    _ASSERT(0);
+//    _ASSERT(0);
     //_flags.sign = (_FIXME_)(_ax - 0x0c) < 0;      //sub ax, 0Ch
     _ax -= 0x0c;
-    if (!_flags.sign)                              //jns short loc_11947
+    if ((short)_ax<0)                              //jns short loc_11947
       goto loc_11947;
     _ax = -_ax;                                   //neg ax
     if (_ax > 0x18)                               //ja short loc_11945

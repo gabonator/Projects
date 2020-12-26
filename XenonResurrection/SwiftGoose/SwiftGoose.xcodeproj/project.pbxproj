@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D8225292597E950009BD3AC /* ToneOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8225282597E950009BD3AC /* ToneOutput.swift */; };
 		2D832CE42595F72700597857 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE32595F72700597857 /* AppDelegate.swift */; };
 		2D832CE62595F72700597857 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE52595F72700597857 /* SceneDelegate.swift */; };
 		2D832CE82595F72700597857 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D832CE72595F72700597857 /* ViewController.swift */; };
@@ -25,6 +26,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2D8225282597E950009BD3AC /* ToneOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneOutput.swift; sourceTree = "<group>"; };
+		2D82252B2597E968009BD3AC /* code-goose-sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-goose-sound.h"; sourceTree = "<group>"; };
 		2D832CE02595F72700597857 /* SwiftGoose.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftGoose.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D832CE32595F72700597857 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2D832CE52595F72700597857 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -87,6 +90,7 @@
 				2D832CE52595F72700597857 /* SceneDelegate.swift */,
 				2D832CE72595F72700597857 /* ViewController.swift */,
 				2D832CE92595F72700597857 /* Main.storyboard */,
+				2D8225282597E950009BD3AC /* ToneOutput.swift */,
 				2D832CEC2595F72900597857 /* Assets.xcassets */,
 				2D832CEE2595F72900597857 /* LaunchScreen.storyboard */,
 				2D832CF12595F72900597857 /* Info.plist */,
@@ -102,6 +106,7 @@
 				2D832CFD2595F79B00597857 /* code-goose-2.h */,
 				2D832CF92595F79B00597857 /* code-goose-3.h */,
 				2D832CFC2595F79B00597857 /* code-goose-4.h */,
+				2D82252B2597E968009BD3AC /* code-goose-sound.h */,
 				2D832CFE2595F79B00597857 /* code-goose.h */,
 				2D832CFA2595F79B00597857 /* cpu.h */,
 				2D832CFB2595F79B00597857 /* ega.h */,
@@ -202,6 +207,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D8225292597E950009BD3AC /* ToneOutput.swift in Sources */,
 				2D832D072595FCB400597857 /* goose.mm in Sources */,
 				2D832CE82595F72700597857 /* ViewController.swift in Sources */,
 				2D832D012595F7B800597857 /* goose.cpp in Sources */,

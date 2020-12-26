@@ -8,43 +8,72 @@
 import UIKit
 
 class ViewController: UIViewController {
-    var timer: Timer? = nil
+    var timerGame: Timer? = nil
+    var timerSound: Timer? = nil
     let goose = GooseWrapper()
-    let image = UIImageView()
+    @IBOutlet weak var image: UIImageView!
+    var lastFreq: Int32 = 0
+    let toneOutput = ToneOutput()
+    var toneTimeout = 0
     
     override var shouldAutorotate: Bool {
         return true
     }
     
-    override var prefersHomeIndicatorAutoHidden: Bool {
-        return true
-    }
-    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        self.timer = Timer.scheduledTimer(timeInterval: 0.03, target: self, selector: #selector(handleTimer), userInfo: nil, repeats: true)
-        
-        image.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(image);
-        
-        NSLayoutConstraint.activate([
-            image.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            image.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            image.topAnchor.constraint(equalTo: self.view.topAnchor),
-            image.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-        ])
-
         let value = UIInterfaceOrientation.landscapeLeft.rawValue
         UIDevice.current.setValue(value, forKey: "orientation")
+        
+        super.viewDidLoad()
+        
+        goose.initApp()
+        
+        self.timerGame = Timer.scheduledTimer(timeInterval: 0.03, target: self, selector: #selector(self.onTimerGame), userInfo: nil, repeats: true)
+        self.timerSound = Timer.scheduledTimer(timeInterval: 0.02, target: self, selector: #selector(self.onTimerSound), userInfo: nil, repeats: true)
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let allTouches = event?.allTouches else { return }
+        
+        for touch in allTouches {
+            let touchPoint = touch.location(in: self.image)
+            let px = Int32(touchPoint.x / self.image.frame.width * 320)
+            let py = Int32(touchPoint.y / self.image.frame.height * 200)
+            if px > 20 && px < 320-20 && py > 100 {
+                goose.setPosition(px)
+            }
+        }
     }
 
-    @objc func handleTimer(_ timer: Timer) {
-        print("Timer ticking!")        
+    @objc func onTimerGame(_ timer: Timer) {
         goose.run()
-        image.image = imageFromARGB32Bitmap( data:goose.getImageData(), width:320, height:200)
+        image.image = imageFromRGBBitmap( data:goose.getImageData(), width:320, height:200)
     }
 
-    func imageFromARGB32Bitmap(data: Data, width: size_t, height: size_t) -> UIImage? {
+    @objc func onTimerSound(_ timer: Timer) {
+        goose.sound();
+        let freq = goose.getPlayFrequency()
+        if freq != lastFreq {
+            if freq > 0 {
+                toneOutput.setFrequency(freq: Double(freq))
+                toneOutput.setToneVolume(vol: 0.5)
+                toneOutput.enableSpeaker()
+                toneOutput.setToneTime(t: 300)
+                toneTimeout = 5
+            } else {
+//                toneOutput.stop()
+            }
+            lastFreq = freq
+        }
+        if freq == 0 && toneTimeout > 0 {
+            toneTimeout -= 1
+            if toneTimeout == 0 {
+                toneOutput.stop()
+            }
+        }
+    }
+
+    private func imageFromRGBBitmap(data: Data, width: size_t, height: size_t) -> UIImage? {
         let bitsPerComponent: size_t = 8
         let bitsPerPixel: size_t = 24
         let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
@@ -61,13 +90,36 @@ class ViewController: UIViewController {
         }
         return UIImage(cgImage: cgImage2)
     }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = event?.allTouches?.first
-        let touchPoint = touch?.location(in: self.image)
-        let rx = touchPoint!.x / self.image.frame.width
-        let px = Int32(rx*320)
-        goose.setPosition(px)
-    }
 }
 
+extension ViewController
+{
+    @IBAction func leftMissile(_ sender: Any) {
+        goose.pressKey(49)
+    }
+    @IBAction func leftMissileUp(_ sender: Any) {
+        goose.releaseKey(49)
+    }
+    @IBAction func rightMissile(_ sender: Any) {
+        goose.pressKey(50)
+    }
+    @IBAction func rightMissileUp(_ sender: Any) {
+        goose.releaseKey(50)
+    }
+    @IBAction func leftDown(_ sender: Any) {
+        goose.pressKey(57)
+        //goose.pressKey(75)
+    }
+    @IBAction func leftUp(_ sender: Any) {
+        goose.releaseKey(57)
+        //goose.releaseKey(75)
+    }
+    @IBAction func rightDown(_ sender: Any) {
+        goose.pressKey(57)
+        //goose.pressKey(77)
+    }
+    @IBAction func rightUp(_ sender: Any) {
+        goose.releaseKey(57)
+        //goose.releaseKey(77)
+    }
+}

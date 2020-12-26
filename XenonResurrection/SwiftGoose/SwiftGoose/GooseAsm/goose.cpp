@@ -7,11 +7,13 @@
 
 constexpr WORD _seg000 = 0x3A56;
 constexpr WORD _dseg = 0x13A5;
+const char* scene = "intro";
 
 #include "code-goose.h"
 #include "code-goose-2.h"
 #include "code-goose-3.h"
 #include "code-goose-4.h"
+#include "code-goose-sound.h"
 
 // 0x350c - 0x3a56
 MemVideo memoryVideo;
@@ -24,6 +26,83 @@ uint8_t pixelBuffer[320*200*3];
 
 bool commonFileOpen(char* name);
 void commonFileRead(uint8_t* ptr, int offset, int length);
+
+class CSound
+{
+public:
+    int mFrequency{0};
+    bool PortWrite8(WORD port, WORD val)
+    {
+        static int _p42 = 0;
+        static int _buffer42 = 0;
+        
+        
+        if (port == 0x61)
+        {
+            if ((val & 3) == 3)
+            {
+                // speaker on
+                return true;
+            }
+            if ((val & 3) == 0)
+            {
+                // speaker off
+                mFrequency = 0;
+                return true;
+            }
+            _ASSERT(0);
+            return false;
+        }
+        if ( port == 0x43 )
+        {
+            if ( val == 0x36 ) // play tone, channel 0
+            {
+                _p42 = 0;
+                _buffer42 = 0;
+            }
+          else if ( val == 0xB6 ) // play tone, channel 1/2?
+          {
+            _p42 = 0;
+            _buffer42 = 0;
+          } else if (val == 0x00)
+          {
+            //_buffer = (-getTick()*6) &0xffff;
+          } else
+              _ASSERT(0);
+            // 0x36 = 0 0 1 1  0 1 1 0
+            return true;
+        }
+        if ( port == 0x42 )
+        {
+          if ( _p42 == 0 )
+          {
+            _buffer42 = val;
+            _p42++;
+          } else if ( _p42 == 1 )
+          {
+            _buffer42 = (val<<8) | _buffer42;
+            _tone(/*1193180 /*/ _buffer42);
+              _p42 =0;
+          }
+            return true;
+        }
+        
+        return false;
+    }
+    void _tone(int divider)
+    {
+        mFrequency = 1193180 / divider;
+    }
+};
+
+CSound mSound;
+
+int getPlayFrequency()
+{
+    return mSound.mFrequency;
+}
+
+void gooseSound();
 
 void gooseInit()
 {
@@ -76,6 +155,14 @@ void gooseLoop()
                 plane3 <<= 1;
             }
         }
+}
+
+void gooseSound()
+{
+    _ax = _dseg;
+    _ds = _ax;
+    memory(_dseg, 0x1CF54-0x13A50)++;
+    sub_1387D();
 }
 
 BYTE memoryVideoGet(WORD seg, WORD ofs)
@@ -285,10 +372,13 @@ void _out(WORD port, BYTE val)
     {
         return;
     }
-    if (port == 0x43 || port == 0x40 || port == 0x201)
+    if (port == 0x40 || port == 0x201)
     {
         return;
     }
+    if (mSound.PortWrite8(port, val))
+        return;
+    _ASSERT(0);
 }
 
 void _out(WORD port, WORD val)

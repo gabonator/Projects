@@ -3,13 +3,18 @@
 
 void gooseInit();
 void gooseLoop();
+void gooseSound();
+
 extern uint8_t datasegment[0x10000*5];
 extern uint8_t segment0[0x10000];
 extern uint8_t pixelBuffer[320*200*3];
 extern uint8_t& memory(uint16_t segment, uint16_t offset);
+//bool keys[128] = {0};
+extern char* scene;
+extern int getPlayFrequency();
 
 NSData* commonFile;
-
+ 
 bool commonFileOpen(char* name)
 {
     NSString* strLocal = [NSString stringWithCString:name encoding:NSASCIIStringEncoding];
@@ -38,7 +43,6 @@ void commonFileRead(uint8_t* ptr, int offset, int length)
 - (id) init {
     self = [super init];
     if (self!=nil) {
-        [self initApp];
     }
     return self;
 }
@@ -56,7 +60,18 @@ void commonFileRead(uint8_t* ptr, int offset, int length)
 }
 
 - (void) run {
+    char* prevScene = scene;
     gooseLoop();
+    if (scene != prevScene)
+    {
+        //reset keyboard
+        memory(0x13A5, 0x8e8a+75) = 0;
+        memory(0x13A5, 0x8e8a+77) = 0;
+    }
+}
+
+- (void) sound {
+    gooseSound();
 }
 
 - (NSData*)getImageData {
@@ -65,9 +80,44 @@ void commonFileRead(uint8_t* ptr, int offset, int length)
 
 - (void) setPosition:(int)x
 {
-    x = x-160+128;
-    x = std::min(std::max(0, x), 256);
-    memory(0x13A5, 0x1B8F) = x;
+    if (strcmp(scene, "map") == 0)
+    {
+        x = x-160+128;
+        x = std::min(std::max(0, x), 256);
+        memory(0x13A5, 0x1B8F) = x;
+    }
+    if (strcmp(scene, "tunnel") == 0)
+    {
+        memory(0x13A5, 0x8e8a+75) = x < 160-10;
+        memory(0x13A5, 0x8e8a+77) = x > 160+10;
+    }
+}
+
+- (void)pressKey:(int)k
+{
+    //keys[k] = 1;
+    memory(0x13A5, 0x8e8a+k) = 1;
+//    if (keys[75] && keys[77]) // left & right
+//    {
+//        memory(0x13A5, 0x8e8a+75) = 0;
+//        memory(0x13A5, 0x8e8a+77) = 0;
+//    }
+}
+
+- (void)releaseKey:(int)k
+{
+    //keys[k] = 0;
+    memory(0x13A5, 0x8e8a+k) = 0;
+//    if (keys[75] && keys[77]) // left & right
+//    {
+//        memory(0x13A5, 0x8e8a+75) = 0;
+//        memory(0x13A5, 0x8e8a+77) = 0;
+//    }
+}
+
+- (int)getPlayFrequency
+{
+    return getPlayFrequency();
 }
 
 @end
