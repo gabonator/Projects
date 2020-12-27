@@ -22,10 +22,12 @@ constexpr WORD _seg000 = 0x3A56;
 constexpr WORD _seg002 = 0x1CFC;
 constexpr WORD _dseg = 0x13A5;
 
+
 #include "code-goose.h"
 #include "code-goose-2.h"
 #include "code-goose-3.h"
 #include "code-goose-4.h"
+#include "code-goose-sound.h"
 
 //constexpr WORD seg000 = 0x1000;
 //constexpr WORD seg002 = 0x24B9;
@@ -289,16 +291,80 @@ void _interrupt(BYTE i)
 
     _ASSERT(0);
 }
+extern uint32_t getTick();
+
+void _tone(int f)
+{
+    std::cout << "tone " << hex << f << " f=" << dec << (1193180/f) << "\n";
+}
 void _out(WORD port, BYTE val)
 {
     if (mVideo.PortWrite8(port, val))
     {
         return;
     }
-    if (port == 0x43 || port == 0x40 || port == 0x201)
+    if (port == 0x201 )
     {
         return;
     }
+    if (port == 0x40)
+    {
+        _ASSERT(0);
+        return;
+    }
+    
+    if (port == 0x61)
+    {
+        if ((val & 3) == 3)
+        {
+            // speaker on
+            return;
+        }
+        if ((val & 3) == 0)
+        {
+            // speaker ff
+            return;
+        }
+        _ASSERT(0);
+    }
+    
+    static int _p42 = 0;
+    static int _buffer42 = 0;
+    
+    if ( port == 0x43 )
+    {
+        if ( val == 0x36 ) // play tone, channel 0
+        {
+            _p42 = 0;
+            _buffer42 = 0;
+        }
+      else if ( val == 0xB6 ) // play tone, channel 1/2?
+      {
+        _p42 = 0;
+        _buffer42 = 0;
+      } else if (val == 0x00)
+      {
+        //_buffer = (-getTick()*6) &0xffff;
+      } else
+          _ASSERT(0);
+        // 0x36 = 0 0 1 1  0 1 1 0
+        return;
+    }
+    if ( port == 0x42 )
+    {
+      if ( _p42 == 0 )
+      {
+        _buffer42 = val;
+        _p42++;
+      } else if ( _p42 == 1 )
+      {
+        _buffer42 = (val<<8) | _buffer42;
+        _tone(/*1193180 /*/ _buffer42);
+          _p42 =0;
+      }
+        return;
+    }
+
     cout << "out8(" << std::hex << (int)port << ", " << (int)val << ")" << endl;
     _ASSERT(0);
 }
@@ -572,6 +638,14 @@ void _sync()
         //mSdl.SetPixel(x+320, y, mVideo.GetPixel(x, y, 0x0800));
     }
     mSdl.Loop();
+    _push(_ax); _push(_bx); _push(_cx); _push(_dx);
+    _push(_si); _push(_di); _push(_bp); _push(_ds);
+    _ax = _dseg;
+    _ds = _ax;
+    memory(_dseg, 0x1CF54-0x13A50)++;
+    sub_1387D();
+    _ds = _pop(); _bp = _pop(); _di = _pop(); _si = _pop();
+    _dx = _pop(); _cx = _pop(); _bx = _pop(); _ax = _pop();
 }
 //
 //void saveSegment(uint8_t* buffer, const char* suffix)
@@ -609,8 +683,8 @@ void _sync()
 //}
 //
 int main(int argc, const char * argv[]) {
-    m_arrStack.resize(2*32, 0);
-    _sp = 32;
+    m_arrStack.resize(2*64, 0);
+    _sp = 64;
     _ds = _es = _di = _bp = 0x6666;
     //_cs = seg000;
 //    loadSegment(datasegment, "dseg", 21815);
