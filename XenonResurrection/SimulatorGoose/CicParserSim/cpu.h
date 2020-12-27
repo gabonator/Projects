@@ -412,12 +412,17 @@ void _cbw()
         _ah = 0;
 }
 
-WORD& stack16(int seg, int ofs)
+WORD& _stack16(int ofs)
 {
-    int nOffset = seg+ofs;
+    int nOffset = ofs;
     _ASSERT(nOffset/2 >= 0 && nOffset/2 < (int)m_arrStack.size());
     _ASSERT((nOffset&1) == 0);
     return m_arrStack.data()[nOffset/2];
+}
+
+WORD& _stack16(int a, int b)
+{
+    return _stack16(a+b);
 }
 
 void _stackReduce(int n)

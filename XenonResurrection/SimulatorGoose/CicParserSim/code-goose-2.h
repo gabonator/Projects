@@ -86,11 +86,11 @@ void sub_129AE()
     _ax = memory16(_ds, 0x94F0);                  //mov ax, word_1CF40
     _es = _ax;                                    //mov es, ax
     _di = memory16(_ds, 0x944E);                  //mov di, word_1CE9E
-    _di = _di + stack16(_bp, 4);                  //add di, [bp+arg_0]
+    _di = _di + _stack16(_bp + 4);                  //add di, [bp+arg_0]
     _ax = memory16(_ds, 0x94EA);                  //mov ax, word_1CF3A
     _push(_ds);                                   //push ds
     _ds = _ax;                                    //mov ds, ax
-    _si = stack16(_bp, 6);                        //mov si, [bp+arg_2]
+    _si = _stack16(_bp, 6);                        //mov si, [bp+arg_2]
     _cx = 0x0b;                                   //mov cx, 0Bh
 loc_129C9:                                        //loc_129C9:
     _movsw<MemAuto, MemAuto, DirAuto>();          //movsw
@@ -195,10 +195,10 @@ void sub_13291() // clear scr
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     _es = _ax;                                    //mov es, ax
     _di = 0x0144;                                 //mov di, 144h
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
+    _bx = _stack16(_bp, 6);                        //mov bx, [bp+arg_2]
     _si = 0x0144;                                 //mov si, 144h
     _dx = 0x03ce;                                 //mov dx, 3CEh
     _ax = 0x0105;                                 //mov ax, 105h
@@ -379,10 +379,10 @@ void sub_109E9()
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
+    _bx = _stack16(_bp, 6);                        //mov bx, [bp+arg_2]
     _bx <<= 1;                                    //shl bx, 1
     _cx = memory16(_ds, _bx + 3307);              //mov cx, [bx+0CEBh]
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
+    _bx = _stack16(_bp, 4);                        //mov bx, [bp+arg_0]
     _bx <<= 1;                                    //shl bx, 1
     _al = memory(_ds, 0x9502);                    //mov al, byte_1CF52
     if (_al != 0x01)                              //jnz short loc_10A07
@@ -429,7 +429,7 @@ void sub_108BA()
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
+    _bx = _stack16(_bp, 4);                        //mov bx, [bp+arg_0]
     _bx <<= 1;                                    //shl bx, 1
     _ax = memory16(_ds, _bx + -28119);            //mov ax, [bx-6DD7h]
     if (_ax == 0x0000)                            //jz short loc_10946
@@ -460,7 +460,7 @@ loc_108F9:                                        //loc_108F9:
     memory16(_ds, _si + 15) = _ax;                //mov [si+0Fh], ax
 loc_10902:                                        //loc_10902:
     memory(_ds, _si + 19) = 0x0a;                 //mov byte ptr [si+13h], 0Ah
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     memory(_ds, _si + 20) = _al;                  //mov [si+14h], al
     _ax = _pop();                                 //pop ax
     _cx = 0x0a;                                   //mov cx, 0Ah
@@ -475,7 +475,7 @@ loc_10910:                                        //loc_10910:
     _al = memory(_ds, _si + 19);                  //mov al, [si+13h]
     _ah = 0x00;                                   //mov ah, 0
     _push(_ax);                                   //push ax
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     _push(_ax);                                   //push ax
     sub_109E9();                                  //call sub_109E9
     if (_ax == 0x0000)                            //jz short loc_10932
@@ -528,21 +528,21 @@ void sub_107FD()
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
     _sp -= 0x0008;                                //sub sp, 8
-    _ax = stack16(_bp, 6);                        //mov ax, [bp+arg_2]
+    _ax = _stack16(_bp, 6);                        //mov ax, [bp+arg_2]
     _ax += 0x10;                                  //add ax, 10h
     _cl = 0x18;                                   //mov cl, 18h
     _div(_cl);                                    //div cl
     _push(_ax);                                   //push ax
     _ah = 0x00;                                   //mov ah, 0
-    stack16(_bp, -2) = _ax;                       //mov [bp+var_2], ax
+    _stack16(_bp, -2) = _ax;                       //mov [bp+var_2], ax
     _ax = _pop();                                 //pop ax
     _al = _ah;                                    //mov al, ah
     _ah = 0x00;                                   //mov ah, 0
     _cl = 0x03;                                   //mov cl, 3
     _div(_cl);                                    //div cl
     _ah = 0x00;                                   //mov ah, 0
-    stack16(_bp, -4) = _ax;                       //mov [bp+var_4], ax
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _stack16(_bp, -4) = _ax;                       //mov [bp+var_4], ax
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     _ax &= 0x03ff;                                //and ax, 3FFh
     _ax >>= 1;                                    //shr ax, 1
     _ax >>= 1;                                    //shr ax, 1
@@ -550,12 +550,12 @@ void sub_107FD()
     _ax >>= 1;                                    //shr ax, 1
     _ax = -_ax;                                   //neg ax
     _ax += 0x3f;                                  //add ax, 3Fh
-    stack16(_bp, -6) = _ax;                       //mov [bp+var_6], ax
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _stack16(_bp, -6) = _ax;                       //mov [bp+var_6], ax
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     _ax &= 0x0f;                                  //and ax, 0Fh
     _ax >>= 1;                                    //shr ax, 1
-    stack16(_bp, -8) = _ax;                       //mov [bp+var_8], ax
-    _ax = stack16(_bp, -6);                       //mov ax, [bp+var_6]
+    _stack16(_bp, -8) = _ax;                       //mov [bp+var_8], ax
+    _ax = _stack16(_bp, -6);                       //mov ax, [bp+var_6]
     _ax <<= 1;                                    //shl ax, 1
     _ax <<= 1;                                    //shl ax, 1
     _bx = _ax;                                    //mov bx, ax
@@ -563,19 +563,19 @@ void sub_107FD()
     _bx += _ax;                                   //add bx, ax
     _bx += 0x8f29;                                //add bx, 8F29h
     _si = _bx;                                    //mov si, bx
-    _bx = _bx + stack16(_bp, -2);                 //add bx, [bp+var_2]
+    _bx = _bx + _stack16(_bp, -2);                 //add bx, [bp+var_2]
     _al = memory(_ds, _bx);                       //mov al, [bx]
     _ah = 0x00;                                   //mov ah, 0
     _push(_ax);                                   //push ax
     _ax <<= 1;                                    //shl ax, 1
     _bx = _ax;                                    //mov bx, ax
     _bx = memory16(_ds, _bx + 1603);              //mov bx, [bx+643h]
-    _ax = stack16(_bp, -8);                       //mov ax, [bp+var_8]
+    _ax = _stack16(_bp, -8);                       //mov ax, [bp+var_8]
     _ax <<= 1;                                    //shl ax, 1
     _ax <<= 1;                                    //shl ax, 1
     _ax <<= 1;                                    //shl ax, 1
     _bx += _ax;                                   //add bx, ax
-    _bx = _bx + stack16(_bp, -4);                 //add bx, [bp+var_4]
+    _bx = _bx + _stack16(_bp, -4);                 //add bx, [bp+var_4]
     _cl = memory(_ds, _bx);                       //mov cl, [bx]
     _push(_cx);                                   //push cx
     _cl &= 0x1f;                                  //and cl, 1Fh
@@ -583,7 +583,7 @@ void sub_107FD()
       goto loc_10881;
     _cl |= 0xe0;                                  //or cl, 0E0h
 loc_10881:                                        //loc_10881:
-    _dx = stack16(_bp, -2);                       //mov dx, [bp+var_2]
+    _dx = _stack16(_bp, -2);                       //mov dx, [bp+var_2]
     _flags.direction = false;                     //cld
 loc_10885:                                        //loc_10885:
     if (_dx == 0x0000)                            //jz short loc_10896
@@ -607,7 +607,7 @@ loc_108A6:                                        //loc_108A6:
     _bl = memory(_ds, _bx + 1477);                //mov bl, [bx+5C5h]
 loc_108AA:                                        //loc_108AA:
     _bh = 0x00;                                   //mov bh, 0
-    _cx = stack16(_bp, -6);                       //mov cx, [bp+var_6]
+    _cx = _stack16(_bp, -6);                       //mov cx, [bp+var_6]
     _cx = -_cx;                                   //neg cx
     _cx += 0x3f;                                  //add cx, 3Fh
     _sp = _bp;                                    //mov sp, bp
@@ -626,23 +626,23 @@ void sub_10C24() // draw bitmap!
       goto loc_10C32;
     goto loc_10CBC;                               //jmp loc_10CBC
 loc_10C32:                                        //loc_10C32:
-    _ax = stack16(_bp, 8);                        //mov ax, [bp+arg_4]
+    _ax = _stack16(_bp, 8);                        //mov ax, [bp+arg_4]
     _ax = _ax - memory16(_ds, 0x9528);            //sub ax, word_1CF78
     _ax &= 0x03ff;                                //and ax, 3FFh
     if (!(_ax & 0x0200))                          //jz short loc_10C44
       goto loc_10C44;
     _ax |= 0xfc00;                                //or ax, 0FC00h
 loc_10C44:                                        //loc_10C44:
-    stack16(_bp, 8) = _ax;                        //mov [bp+arg_4], ax
+    _stack16(_bp, 8) = _ax;                        //mov [bp+arg_4], ax
     if ((short)_ax >= (short)0x0000)              //jge short loc_10C77
       goto loc_10C77;
-    _flags.sign = (short)(stack16(_bp, 4) + _ax) < 0;//add [bp+arg_0], ax
-    stack16(_bp, 4) += _ax;
+    _flags.sign = (short)(_stack16(_bp, 4) + _ax) < 0;//add [bp+arg_0], ax
+    _stack16(_bp, 4) += _ax;
     if (!_flags.sign)                              //jns short loc_10C54
       goto loc_10C54;
     goto loc_10D8F;                               //jmp loc_10D8F
 loc_10C54:                                        //loc_10C54:
-    if (stack16(_bp, 4) != 0)                     //jnz short loc_10C59
+    if (_stack16(_bp, 4) != 0)                     //jnz short loc_10C59
       goto loc_10C59;
     goto loc_10D8F;                               //jmp loc_10D8F
 loc_10C59:                                        //loc_10C59:
@@ -658,41 +658,41 @@ loc_10C59:                                        //loc_10C59:
     _cx <<= 1;                                    //shl cx, 1
     _si += _cx;                                   //add si, cx
     _ax = 0x0000;                                 //mov ax, 0
-    stack16(_bp, 8) = _ax;                        //mov [bp+arg_4], ax
+    _stack16(_bp, 8) = _ax;                        //mov [bp+arg_4], ax
     goto loc_10C8F;                               //jmp short loc_10C8F
 loc_10C77:                                        //loc_10C77:
-    _ax = _ax + stack16(_bp, 4);                  //add ax, [bp+arg_0]
+    _ax = _ax + _stack16(_bp, 4);                  //add ax, [bp+arg_0]
     _ax -= 0xa0;
     _flags.sign = (short)_ax < 0;      //sub ax, 0A0h
     if (_flags.sign)                              //js short loc_10C8F
       goto loc_10C8F;
     _ax = -_ax;                                   //neg ax
-    _ax = _ax + stack16(_bp, 4);                  //add ax, [bp+arg_0]
+    _ax = _ax + _stack16(_bp, 4);                  //add ax, [bp+arg_0]
     if ((short)_ax > (short)0x0000)               //jg short loc_10C8C
       goto loc_10C8C;
     goto loc_10D8F;                               //jmp loc_10D8F
 loc_10C8C:                                        //loc_10C8C:
     /// height
     _ASSERT(_ax < 100);
-    stack16(_bp, 4) = _ax;                        //mov [bp+arg_0], ax
+    _stack16(_bp, 4) = _ax;                        //mov [bp+arg_0], ax
 loc_10C8F:                                        //loc_10C8F:
     _ax = 0x20;                                   //mov ax, 20h
-    stack16(_bp, 10) += _ax;                      //add [bp+arg_6], ax
+    _stack16(_bp, 10) += _ax;                      //add [bp+arg_6], ax
     _ax = 0x0008;                                 //mov ax, 8
-    stack16(_bp, 8) += _ax;                       //add [bp+arg_4], ax
-    _ax = stack16(_bp, 10);                       //mov ax, [bp+arg_6]
+    _stack16(_bp, 8) += _ax;                       //add [bp+arg_4], ax
+    _ax = _stack16(_bp, 10);                       //mov ax, [bp+arg_6]
     if ((short)_ax >= (short)0x20)                //jge short loc_10CAB
       goto loc_10CAB;
     _ax = 0x20;                                   //mov ax, 20h
-    stack16(_bp, 10) = _ax;                       //mov [bp+arg_6], ax
+    _stack16(_bp, 10) = _ax;                       //mov [bp+arg_6], ax
     goto loc_10CBC;                               //jmp short loc_10CBC
 loc_10CAB:                                        //loc_10CAB:
-    _ax = _ax + stack16(_bp, 6);                  //add ax, [bp+arg_2]
+    _ax = _ax + _stack16(_bp, 6);                  //add ax, [bp+arg_2]
     if ((short)_ax <= (short)0x0120)              //jle short loc_10CBC
       goto loc_10CBC;
     _ax = 0x0120;                                 //mov ax, 120h
-    _ax = _ax - stack16(_bp, 6);                  //sub ax, [bp+arg_2]
-    stack16(_bp, 10) = _ax;                       //mov [bp+arg_6], ax
+    _ax = _ax - _stack16(_bp, 6);                  //sub ax, [bp+arg_2]
+    _stack16(_bp, 10) = _ax;                       //mov [bp+arg_6], ax
     //std::cout << "draw sprite " << std::dec << (int) _ax << ", "  << "\n";
 
 loc_10CBC:                                        //loc_10CBC:
@@ -704,8 +704,8 @@ loc_10CBC:                                        //loc_10CBC:
     _out(_dx, _ax);                               //out dx, ax
     _ax = 0x0007;                                 //mov ax, 7
     _out(_dx, _ax);                               //out dx, ax
-    _ax = stack16(_bp, 10);                       //mov ax, [bp+arg_6]
-    _bx = stack16(_bp, 8);                        //mov bx, [bp+arg_4]
+    _ax = _stack16(_bp, 10);                       //mov ax, [bp+arg_6]
+    _bx = _stack16(_bp, 8);                        //mov bx, [bp+arg_4]
 //    std::cout << "draw sprite xxx " << std::dec << (int) _cx << "\n";
     _push(_cx);                                   //push cx
     _bx <<= 1;                                    //shl bx, 1
@@ -734,11 +734,11 @@ loc_10CE7:                                        //loc_10CE7:
     _bx = memory16(_ds, 0x942E);                  //mov bx, word_1CE7E
     _es = _bx;                                    //mov es, bx
     _cx = _pop();                                 //pop cx
-    _cx = stack16(_bp, 6);                        //mov cx, [bp+arg_2]
+    _cx = _stack16(_bp, 6);                        //mov cx, [bp+arg_2]
     _cx >>= 1;                                    //shr cx, 1
     _al = 0x08;                                   //mov al, 8
     _ds = _pop();                                 //pop ds
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
+    _bx = _stack16(_bp, 4);                        //mov bx, [bp+arg_0]
     
 //    std::cout << "draw sprite " << std::dec << (int) _cx << ", " << _bx << "\n";
     if (_bx > 100)

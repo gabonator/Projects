@@ -309,7 +309,6 @@ void _out(WORD port, BYTE val)
     }
     if (port == 0x40)
     {
-        _ASSERT(0);
         return;
     }
     

@@ -38,12 +38,12 @@ void sub_109B5()
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _si = stack16(_bp, 8);                        //mov si, [bp+arg_4]
+    _si = _stack16(_bp, 8);                        //mov si, [bp+arg_4]
     sub_10A1B();                                  //call sub_10A1B
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
+    _bx = _stack16(_bp, 6);                        //mov bx, [bp+arg_2]
     _bx <<= 1;                                    //shl bx, 1
     _cx = memory16(_ds, _bx + 3307);              //mov cx, [bx+0CEBh]
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
+    _bx = _stack16(_bp, 4);                        //mov bx, [bp+arg_0]
     _bx <<= 1;                                    //shl bx, 1
     _al = memory(_ds, 0x9502);                    //mov al, byte_1CF52
     if (_al != 0x01)                              //jnz short loc_109D9
@@ -68,16 +68,16 @@ void sub_125E3()
     _bp = _sp;                                    //mov bp, sp
     _ax = 0xa000;                                 //mov ax, 0A000h
     _es = _ax;                                    //mov es, ax
-    _ax = stack16(_bp, 6);                        //mov ax, [bp+arg_2]
+    _ax = _stack16(_bp, 6);                        //mov ax, [bp+arg_2]
     _ax >>= 1;                                    //shr ax, 1
     _ax >>= 1;                                    //shr ax, 1
     _ax >>= 1;                                    //shr ax, 1
-    _ax = _ax + stack16(_bp, 4);                  //add ax, [bp+arg_0]
+    _ax = _ax + _stack16(_bp, 4);                  //add ax, [bp+arg_0]
     _di = _ax;                                    //mov di, ax
     _dx = 0x03ce;                                 //mov dx, 3CEh
     _ax = 0x0805;                                 //mov ax, 805h
     _out(_dx, _ax);                               //out dx, ax
-    _cx = stack16(_bp, 6);                        //mov cx, [bp+arg_2]
+    _cx = _stack16(_bp, 6);                        //mov cx, [bp+arg_2]
     _cx &= 0x0007;                                //and cx, 7
     _ah = 0x80;                                   //mov ah, 80h
     _ah >>= _cl;                                  //shr ah, cl

@@ -169,7 +169,7 @@ void sub_10AD5()
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _bx = stack16(_bp, 4);                        //mov bx, [bp+arg_0]
+    _bx = _stack16(_bp, 4);                        //mov bx, [bp+arg_0]
     _bx <<= 1;                                    //shl bx, 1
     _si = _bx;                                    //mov si, bx
     _al = memory(_ds, 0x9502);                    //mov al, byte_1CF52
@@ -206,11 +206,11 @@ loc_10B28:                                        //loc_10B28:
       goto loc_10B48;
     _push(_bx);                                   //push bx
     _bx -= _dx;                                   //sub bx, dx
-    if ((short)_bx > (short)stack16(_bp, 6))      //jg short loc_10B47
+    if ((short)_bx > (short)_stack16(_bp, 6))      //jg short loc_10B47
       goto loc_10B47;
     _bx += _dx;                                   //add bx, dx
     _bx += _dx;                                   //add bx, dx
-    if ((short)_bx < (short)stack16(_bp, 6))      //jl short loc_10B47
+    if ((short)_bx < (short)_stack16(_bp, 6))      //jl short loc_10B47
       goto loc_10B47;
     _ax = _pop();                                 //pop ax
     _ax = 0x0001;                                 //mov ax, 1
@@ -334,8 +334,8 @@ void sub_11C0A()
 {
     _push(_bp);                                   //push bp
     _bp = _sp;                                    //mov bp, sp
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
-    _cx = stack16(_bp, 4);                        //mov cx, [bp+arg_0]
+    _bx = _stack16(_bp, 6);                        //mov bx, [bp+arg_2]
+    _cx = _stack16(_bp, 4);                        //mov cx, [bp+arg_0]
     _si = 0x1b8a;                                 //mov si, 1B8Ah
 loc_11C16:                                        //loc_11C16:
     _al = memory(_ds, _si);                       //mov al, [si]
@@ -1225,24 +1225,24 @@ void sub_12D9A()
     _bp = _sp;                                    //mov bp, sp
     _ax = 0xa000;                                 //mov ax, 0A000h
     _es = _ax;                                    //mov es, ax
-    _di = stack16(_bp, 10);                       //mov di, [bp+arg_6]
+    _di = _stack16(_bp, 10);                       //mov di, [bp+arg_6]
     _dx = 0x03ce;                                 //mov dx, 3CEh
-    _ax = stack16(_bp, 4);                        //mov ax, [bp+arg_0]
+    _ax = _stack16(_bp, 4);                        //mov ax, [bp+arg_0]
     _ah = _al;                                    //mov ah, al
     _al = 0x00;                                   //mov al, 0
     _out(_dx, _ax);                               //out dx, ax
     _ax = 0x0f01;                                 //mov ax, 0F01h
     _out(_dx, _ax);                               //out dx, ax
     _flags.direction = false;                     //cld
-    _bx = stack16(_bp, 6);                        //mov bx, [bp+arg_2]
+    _bx = _stack16(_bp, 6);                        //mov bx, [bp+arg_2]
 loc_12DB8:                                        //loc_12DB8:
     _push(_di);                                   //push di
-    _cx = stack16(_bp, 8);                        //mov cx, [bp+arg_4]
+    _cx = _stack16(_bp, 8);                        //mov cx, [bp+arg_4]
     _rep_stosb<MemAuto, DirAuto>();               //rep stosb
     _di = _pop();                                 //pop di
     _push(_di);                                   //push di
     _di += 0x2000;                                //add di, 2000h
-    _cx = stack16(_bp, 8);                        //mov cx, [bp+arg_4]
+    _cx = _stack16(_bp, 8);                        //mov cx, [bp+arg_4]
     _rep_stosb<MemAuto, DirAuto>();               //rep stosb
     _di = _pop();                                 //pop di
     _di += 0x28;                                  //add di, 28h
@@ -1480,7 +1480,7 @@ void sub_13801() // put pixel
     //std::cout << "putpixel " << memory16(_ds, _bp + 8) << ", " << memory16(_ds, _bp + 10) << "\n";
     // PROBLEM: stack access through memory!!!!
     ///_ax = memory16(_ds, _bp + 8);                 //mov ax, [bp+8]
-    _ax = stack16(_bp, 8);
+    _ax = _stack16(_bp, 8);
     _ax <<= 1;                                    //shl ax, 1
     _ax <<= 1;                                    //shl ax, 1
     _ax <<= 1;                                    //shl ax, 1
@@ -1488,13 +1488,13 @@ void sub_13801() // put pixel
     _ax <<= 1;                                    //shl ax, 1
     _di = _ax;                                    //mov di, ax
 //    _ax = memory16(_ds, _bp + 10);                //mov ax, [bp+0Ah]
-    _ax = stack16(_bp, 10);
+    _ax = _stack16(_bp, 10);
     _ax >>= 1;                                    //shr ax, 1
     _ax >>= 1;                                    //shr ax, 1
     _ax >>= 1;                                    //shr ax, 1
     _di += _ax;                                   //add di, ax
     //_cx = memory16(_ds, _bp + 10);                //mov cx, [bp+0Ah]
-    _cx = stack16(_bp, 10);
+    _cx = _stack16(_bp, 10);
 
     _cx &= 0x0007;                                //and cx, 7
     _al = 0x80;                                   //mov al, 80h
