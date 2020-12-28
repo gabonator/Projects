@@ -157,7 +157,6 @@ loc_1F708:                                      //loc_1F708:
     if ((char)_bl >= 0)                         //jns short loc_1F708
       goto loc_1F708;
     _di = _pop();                               //pop di
-    _sync();
 }
 
 void sub_10875()
@@ -1701,7 +1700,7 @@ void sub_16EEF()
 {
     WORD _cs = _seg000;
     _bx <<= 1;//shl bx, 1
-    _ASSERT(_bx == 0);
+  ///  _ASSERT(_bx == 0);
     //std::cout << "sub_16EEF check bx switch\n";
 
     switch (_bx)                                //jmp cs:off_16EF6[bx]
@@ -1729,10 +1728,11 @@ loc_135CE:
         _ax = memory16(_ds, 0x915C);                //mov ax, word_3168C
         memory16(_ds, 0x9168) = _ax;                //mov word_31698, ax
     return;
-loc_16F7F: _ASSERT(0);
-loc_16F00: _ASSERT(0);
-loc_16FE0: _ASSERT(0);
-loc_1705B: _ASSERT(0);
+loc_16F7F: //_ASSERT(0);
+loc_16F00: //_ASSERT(0);
+loc_16FE0: //_ASSERT(0);
+loc_1705B: //_ASSERT(0);
+    std::cout << "sub_16EEF: not implemented\n";
 }
 
 void sub_10FD2()

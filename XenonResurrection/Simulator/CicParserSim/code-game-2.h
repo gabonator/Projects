@@ -188,8 +188,190 @@ loc_1F8C8:                                      //loc_1F8C8:
     loc_1FE85();
 }
 
+void sub_1FD05();
+void sub_1FD84();
+
+void loc_1FD3E()
+{
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ah >>= _cl;                                //shr ah, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memory(_es, _di) |= _al;                    //or es:[di], al
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memory(_es, _di + 1) |= _al;                //or es:[di+1], al
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memory(_es, _di + 2) |= _al;                //or es:[di+2], al
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FD3E
+    {  loc_1FD3E(); return; }
+    _di = _pop();                               //pop di
+    sub_1FE70();                                //call sub_1FE70
+    _ah = 0x01;                                 //mov ah, 1
+    sub_1FD84();                                //call sub_1FD84
+    _ah = 0x02;                                 //mov ah, 2
+    sub_1FD84();                                //call sub_1FD84
+    _ah = 0x04;                                 //mov ah, 4
+    sub_1FD84();                                //call sub_1FD84
+    _ah = 0x08;                                 //mov ah, 8
+    sub_1FD84();                                //call sub_1FD84
+    loc_1FE85();                             //jmp loc_1FE85
+}
+
+void sub_1FE4D();
+
+void loc_1FE1D()
+{
+loc_1FE1D:
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = _al;                                  //mov ah, al
+    _ah >>= _cl;                                //shr ah, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) | _al);                    //or es:[di], al
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FE1D
+    { goto loc_1FE1D; }
+    _di = _pop();                               //pop di
+    sub_1FE70();                                //call sub_1FE70
+    _ah = 0x01;                                 //mov ah, 1
+    sub_1FE4D();                                //call sub_1FE4D
+    _ah = 0x02;                                 //mov ah, 2
+    sub_1FE4D();                                //call sub_1FE4D
+    _ah = 0x04;                                 //mov ah, 4
+    sub_1FE4D();                                //call sub_1FE4D
+    _ah = 0x08;                                 //mov ah, 8
+    sub_1FE4D();                                //call sub_1FE4D
+    loc_1FE85();                             //jmp short loc_1FE85
+}
+
+void sub_1FDF2();
+
+void loc_1FDB8()
+{
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ah >>= _cl;                                //shr ah, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) | _al);                    //or es:[di], al
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di+1, memoryVideoGet(_es, _di) | _al); //or es:[di+1], al
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FDB8
+    {loc_1FDB8(); return;}
+    _di = _pop();                               //pop di
+    sub_1FE70();                                //call sub_1FE70
+    _ah = 0x01;                                 //mov ah, 1
+    sub_1FDF2();                                //call sub_1FDF2
+    _ah = 0x02;                                 //mov ah, 2
+    sub_1FDF2();                                //call sub_1FDF2
+    _ah = 0x04;                                 //mov ah, 4
+    sub_1FDF2();                                //call sub_1FDF2
+    _ah = 0x08;                                 //mov ah, 8
+    sub_1FDF2();                                //call sub_1FDF2
+    loc_1FE85();                             //jmp loc_1FE85
+}
+
+
+void loc_1FC5C()
+{
+    _dx = _bp;                                  //mov dx, bp
+    _bp = 0x0140;                               //mov bp, 140h
+    _bp -= _cx;                                 //sub bp, cx
+    _ax = _bp;                                  //mov ax, bp
+    _ax += 0x0007;                              //add ax, 7
+    _dx += 0x0007;                              //add dx, 7
+    _dx &= 0xfff8;                              //and dx, 0FFF8h
+    _ax &= 0xfff8;                              //and ax, 0FFF8h
+    _dx -= _ax;                                 //sub dx, ax
+    _dx >>= 1;                                  //shr dx, 1
+    _dx >>= 1;                                  //shr dx, 1
+    _dx >>= 1;                                  //shr dx, 1
+    memory16(_ds, 0x4) = _dx;                   //mov ds:4, dx
+    _dx = _cx;                                  //mov dx, cx
+    _dx >>= 1;                                  //shr dx, 1
+    _dx >>= 1;                                  //shr dx, 1
+    _dx >>= 1;                                  //shr dx, 1
+    _di += _dx;                                 //add di, dx
+    _cx &= 0x0007;                              //and cx, 7
+    _ax = 0xa000;                               //mov ax, 0A000h
+    _es = _ax;                                  //mov es, ax
+    _dx = 0x03ce;                               //mov dx, 3CEh
+    _ax = 0x0f01;                               //mov ax, 0F01h
+    _out(_dx, _ax);                             //out dx, ax
+    _push(_di);                                 //push di
+    _bh = _bl;                                  //mov bh, bl
+    _ch = 0x08;                                 //mov ch, 8
+    _si = _si + memory16(_ds, 0x0);             //add si, word ptr unk_54890
+    if ((short)_bp > (short)0x0008)             //jg short loc_1FCA7
+      goto loc_1FCA7;
+    loc_1FE1D(); return;                             //jmp loc_1FE1D
+loc_1FCA7:                                      //loc_1FCA7:
+    if ((short)_bp > (short)0x10)               //jg short loc_1FCAF
+      goto loc_1FCAF;
+    loc_1FDB8(); return;                             //jmp loc_1FDB8
+loc_1FCAF:                                      //loc_1FCAF:
+    if ((short)_bp > (short)0x18)               //jg short loc_1FCB7
+      goto loc_1FCB7;
+    loc_1FD3E(); return;                             //jmp loc_1FD3E
+loc_1FCB7:                                      //loc_1FCB7:
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ah >>= _cl;                                //shr ah, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) | _al);                    //or es:[di], al
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di+1, memoryVideoGet(_es, _di+1) | _al);                //or es:[di+1], al
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di+2, memoryVideoGet(_es, _di+2) | _al);                //or es:[di+2], al
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    _al = _ch;                                  //mov al, ch
+    _out(_dx, _ax);                             //out dx, ax
+    memoryVideoSet(_es, _di+3, memoryVideoGet(_es, _di+3) | _al);                //or es:[di+3], al
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FCB7
+      goto loc_1FCB7;
+    _di = _pop();                               //pop di
+    sub_1FE70();                                //call sub_1FE70
+    _ah = 0x01;                                 //mov ah, 1
+    sub_1FD05();                                //call sub_1FD05
+    _ah = 0x02;                                 //mov ah, 2
+    sub_1FD05();                                //call sub_1FD05
+    _ah = 0x04;                                 //mov ah, 4
+    sub_1FD05();                                //call sub_1FD05
+    _ah = 0x08;                                 //mov ah, 8
+    sub_1FD05();                                //call sub_1FD05
+    loc_1FE85();                             //jmp loc_1FE85
+}
 void sub_1F585()
 {
+    int check = _sp;
     _ASSERT(_ds == 0x2853);
     _ax = 0x449b;                               //mov ax, 449Bh
     if (!(_si & 0x0001))                        //jz short loc_1F592
@@ -376,16 +558,23 @@ loc_1FE85:
     loc_1FE85();
     _ASSERT(_ds == 0x2853);
     return;
-loc_1F997:    _ASSERT(0);
-loc_1FA46:    _ASSERT(0);
 loc_1F8C1:
     //_ASSERT(_ds == 0x2853);
     loc_1F8C1();
     _ASSERT(_ds == 0x2853);
     return;
-loc_1F73C:    _ASSERT(0);
-loc_1FC5C:    _ASSERT(0);
-loc_1F7C0:    _ASSERT(0);
+loc_1FC5C:   loc_1FC5C(); return;
+loc_1F73C:
+loc_1F7C0:
+loc_1F997:
+loc_1FA46:
+    std::cout << "sub_1F585: not implemented\n";
+//    _ax = _pop();
+//    _ds = _ax;
+//    _es = _ax;
+    _sp = check;
+    _ds = _es = 0x2853;
+    _ASSERT(_ds == 0x2853);
 
 }
 
@@ -452,4 +641,108 @@ void sub_135CE()
 void sub_10761()
 {
     return;
+}
+
+void sub_1FD05()
+{
+    _dx = 0x03c4;                               //mov dx, 3C4h
+    _al = 0x02;                                 //mov al, 2
+    _out(_dx, _ax);                             //out dx, ax
+    _dx = 0x03ce;                               //mov dx, 3CEh
+    _push(_di);                                 //push di
+    _bl = _bh;                                  //mov bl, bh
+    _si = _si + memory16(_ds, 0x2);             //add si, ds:2
+loc_1FD15:                                      //loc_1FD15:
+    _al = memory(_ds, _si);                     //mov al, [si]
+    _al >>= _cl;                                //shr al, cl
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) & _al);                   //and es:[di], al
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    memoryVideoSet(_es, _di+1, memoryVideoGet(_es, _di+1) & _ah);                //and es:[di+1], ah
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    memoryVideoSet(_es, _di+2, memoryVideoGet(_es, _di+2) & _ah);                //and es:[di+2], ah
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    memoryVideoSet(_es, _di+3, memoryVideoGet(_es, _di+3) & _ah);                //and es:[di+3], ah
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FD15
+      goto loc_1FD15;
+    _di = _pop();                               //pop di
+}
+
+void sub_1FD84()
+{
+    _dx = 0x03c4;                               //mov dx, 3C4h
+    _al = 0x02;                                 //mov al, 2
+    _out(_dx, _ax);                             //out dx, ax
+    _dx = 0x03ce;                               //mov dx, 3CEh
+    _push(_di);                                 //push di
+    _si = _si + memory16(_ds, 0x2);             //add si, ds:2
+    _bl = _bh;                                  //mov bl, bh
+loc_1FD94:                                      //loc_1FD94:
+    _al = memory(_ds, _si);                     //mov al, [si]
+    _al >>= _cl;                                //shr al, cl
+    memory(_es, _di) &= _al;                    //and es:[di], al
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memory(_ds, _si);                     //mov ah, [si]
+    _ror(_ax, _cl);                             //ror ax, cl
+    memory(_es, _di + 1) &= _ah;                //and es:[di+1], ah
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    memory(_es, _di + 2) &= _ah;                //and es:[di+2], ah
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FD94
+      goto loc_1FD94;
+    _di = _pop();                               //pop di
+}
+
+void sub_1FDF2()
+{
+    _dx = 0x03c4;                               //mov dx, 3C4h
+    _al = 0x02;                                 //mov al, 2
+    _out(_dx, _ax);                             //out dx, ax
+    _dx = 0x03ce;                               //mov dx, 3CEh
+    _push(_di);                                 //push di
+    _si = _si + memory16(_ds, 0x2);             //add si, ds:2
+    _bl = _bh;                                  //mov bl, bh
+loc_1FE02:                                      //loc_1FE02:
+    _al = memory(_ds, _si);                     //mov al, [si]
+    _al >>= _cl;                                //shr al, cl
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) & _al); //and es:[di], al
+    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _ror(_ax, _cl);                             //ror ax, cl
+    memoryVideoSet(_es, _di+1, memoryVideoGet(_es, _di+1) & _ah);    //and es:[di+1], ah
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FE02
+      goto loc_1FE02;
+    _di = _pop();                               //pop di
+}
+
+void sub_1FE4D()
+{
+    _dx = 0x03c4;                               //mov dx, 3C4h
+    _al = 0x02;                                 //mov al, 2
+    _out(_dx, _ax);                             //out dx, ax
+    _dx = 0x03ce;                               //mov dx, 3CEh
+    _push(_di);                                 //push di
+    _si = _si + memory16(_ds, 0x2);             //add si, ds:2
+    _bl = _bh;                                  //mov bl, bh
+loc_1FE5D:                                      //loc_1FE5D:
+    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _al >>= _cl;                                //shr al, cl
+    memoryVideoSet(_es, _di, memoryVideoGet(_es, _di) & _al);                    //and es:[di], al
+    _si = _si + memory16(_ds, 0x4);             //add si, ds:4
+    _di += 0x28;                                //add di, 28h
+    _bl -= 1;                                   //dec bl
+    if ((char)_bl >= 0)                         //jns short loc_1FE5D
+      goto loc_1FE5D;
+    _di = _pop();                               //pop di
 }

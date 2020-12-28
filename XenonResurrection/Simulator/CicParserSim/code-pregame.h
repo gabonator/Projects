@@ -1192,6 +1192,27 @@ void sub_10BA5()
     sub_20AD0();
 }
 
+void sub_107A0()
+{
+    _push(_di);                                 //push di
+    _push(_bx);                                 //push bx
+    _di = memory16(_ds, _si + 8);               //mov di, [si+8]
+    _bx = memory16(_ds, _si + 10);              //mov bx, [si+0Ah]
+    memory16(_ds, _di + 10) = _bx;              //mov [di+0Ah], bx
+    memory16(_ds, _bx + 8) = _di;               //mov [bx+8], di
+    _bx = memory16(_ds, 0x8E7C);                //mov bx, word_313AC
+    memory16(_ds, _si + 8) = _bx;               //mov [si+8], bx
+    memory16(_ds, 0x8E7C) = _si;                //mov word_313AC, si
+    memory16(_ds, _si) = 0;                     //mov word ptr [si], 0
+    _bx = _pop();                               //pop bx
+    _di = _pop();                               //pop di
+}
+
+void sub_10F2B()
+{
+    sub_107A0();
+}
+
 void sub_136FC()
 {
 loc_136FC:
@@ -1212,13 +1233,17 @@ loc_136FC:
             break;
         case 0x72c4: sub_172C4();
             break;
+        case 0x0f2b: sub_10F2B();
+            break;
+        //case 0x37CA: sub_137CA();
+            //break;
         default:
             std::cout << "not implemented PTR:  " << std::hex << (int)memory16(_ds, _si + 2) <<std::endl;
+            break;
             _ASSERT(0);
             break;
     }
 
-    _sync();
     _si = _pop();                               //pop si
     goto loc_136FC;                        //jmp short sub_136FC
 locret_1370A:                                   //locret_1370A:
@@ -1263,7 +1288,6 @@ loc_1370B:
             _pop();
             return;
     }
-    _sync();
     _si = _pop();                               //pop si
     _ASSERT(_ds == 0x2853);
 

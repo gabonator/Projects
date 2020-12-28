@@ -322,10 +322,10 @@ void _rol(WORD& b, BYTE l)
 
 void _ror(WORD & b, BYTE l)
 {
-    if (l==0)
-        std::cout << "_ror 0\n";
+    //if (l==0)
+    //    std::cout << "_ror 0\n";
     
-    _ASSERT(l == 1 || l == 4 || l == 0 || l == 6);
+    //_ASSERT(l == 1 || l == 4 || l == 0 || l == 6);
     while (l--)
         b = ror<WORD>(b);
 }
