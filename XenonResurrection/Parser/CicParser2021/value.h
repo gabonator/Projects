@@ -1,5 +1,66 @@
 class CStaticAnalysis;
 
+struct segmenntInfo {
+    char name[32];
+    int begin;
+    int end;
+    int base;
+} segments[] =
+/*
+{
+    {"x",      0x0000, 0xF000, 0x0000}, // unref
+    {"", 0, 0, 0}
+};
+*/
+{ // xenon
+    {"dseg",   0x0000, 0xfd10, 0x2853},
+    {"seg000", 0x0000, 0xf290, 0x1000},
+    {"seg001", 0x0000, 0x5900, 0x1f29},
+    {"seg002", 0x0000, 0x0ac0, 0x24b9},
+    {"seg003", 0x0000, 0xe220, 0x2565},
+    {"seg005", 0x0000, 0xc570, 0x3824},
+    {"seg006", 0x0000, 0x0200, 0x447b}, // stack
+    {"seg007", 0x0000, 0x0001, 0x449B},
+    {"seg008", 0x0000, 0x0001, 0x5489},
+    {"seg009", 0x0000, 0x0001, 0x63D0},
+    {"seg010", 0x0000, 0x0001, 0x7218},
+    {"", 0, 0, 0}
+};
+
+/*
+{ // tetris
+    {"seg000", 0x0000, 0x0050, 0x1000},
+    {"seg001", 0x0000, 0x0080, 0x1005},
+    {"seg002", 0x0000, 0x82c0, 0x100d},
+    {"seg003", 0x0000, 0x2c80, 0x1839},
+    {"", 0, 0, 0}
+};
+*/
+/*
+ // jsgoose
+{
+    {"seg000", 0x0000, 0x3A56, 0x1000}, // CODE
+    {"dseg",   0x0006, 0x9570, 0x13A5}, // DATA
+    {"seg002", 0x0000, 0x0100, 0x1CFC}, // STACK
+    {"x",      0x0000, 0x8000, 0x0000}, // unref
+    {"", 0, 0, 0}
+};
+ */
+
+int FixPtr(int ofs)
+{
+    for (int i=0; segments[i].name[0]; i++)
+    {
+        if (ofs >= segments[i].base*16 + segments[i].begin &&
+            ofs <= segments[i].base*16 + segments[i].end)
+        {
+            return ofs - segments[i].base*16;
+        }
+    }
+    _ASSERT(0);
+    return ofs;
+}
+    
 class CValue : public CSerializable
 {
 public:
@@ -13,10 +74,10 @@ public:
 		
 		constant,
 		
-		wordptr, byteptr, dwordptr, wordptrasbyte,
-		byteptrval, wordptrval,
-        ss_wordptr,
-        ss_ptr,
+		//wordptr, byteptr, dwordptr, wordptrasbyte,
+		//byteptrval, wordptrval,
+        //ss_wordptr,
+        //ss_ptr,
 		
 		si_plus,
 		bx_plus,
@@ -24,8 +85,9 @@ public:
 		bp_plus,
 		di_plus,
 
-		codeword,
-		codebyte,
+        ds_ptr,
+        ss_ptr,
+        ds_ptr_value,
 
 		es_ptr_di,
         es_ptr_si,
@@ -60,6 +122,7 @@ public:
 		bx_plus_si_plus,
 		ds_ptr_bp_plus,
         bx_plus_di_plus,
+        bp_plus_di_plus,
 
         wordptr_es_di,
         wordptr_es_si,
@@ -85,7 +148,8 @@ public:
         seg006,
         seg007,
         seg008,
-        seg009
+        seg009,
+        seg001
 	};
 
 public:
@@ -108,6 +172,10 @@ public:
 	{
 		m_nValue = 0;
 		Parse(str, eRegLength);
+        if (!m_value && (str.find("byte_") != string::npos || str.find("word_") != string::npos))
+        {
+            _ASSERT(m_nValue >= 0x0000 && m_nValue <= 0xffff);
+        }
 	}
 
 	void Parse(const std::string& str, ERegLength eRegLength = unknown)
@@ -116,6 +184,7 @@ public:
 		m_eSegment = invalidsegment;
 		std::string value = CUtils::Trim(str);
 		
+        m_nValue = -999999;
 		m_eType = RegisterType8(value);
 		
 		if (m_eType != invalid)
@@ -147,94 +216,69 @@ public:
 			return;
 		}
 
-		if (str == "seg dseg" || str == "seg data")
-		{
-			m_nValue = 0;
-			m_eType = segment;
-			m_eSegment = dseg;
-			return;
-		}
-        if ( str == "seg seg000" )
+        if (str.substr(0, 4) == "seg ")
         {
             m_nValue = 0;
             m_eType = segment;
-            m_eSegment = seg000;
-            return;
-        }
-
-		if ( str == "seg seg003" )
-		{
-			m_nValue = 0;
-			m_eType = segment;
-			m_eSegment = seg003;
-			return;
-		}
-
-		if ( str == "seg seg002" )
-		{
-			m_nValue = 0;
-			m_eType = segment;
-			m_eSegment = seg002;
-			return;
-		}
-
-        if ( str == "seg seg005" )
-        {
-            m_nValue = 0;
-            m_eType = segment;
-            m_eSegment = seg005;
-            return;
-        }
-
-        if ( str == "seg seg007" )
-        {
-            m_nValue = 0;
-            m_eType = segment;
-            m_eSegment = seg007;
-            return;
-        }
-
-        if ( str == "seg seg008" )
-        {
-            m_nValue = 0;
-            m_eType = segment;
-            m_eSegment = seg008;
-            return;
-        }
-
-        if ( str == "seg seg009" )
-        {
-            m_nValue = 0;
-            m_eType = segment;
-            m_eSegment = seg009;
+            m_eSegment = invalidsegment;
+            
+            if (str == "seg dseg" || str == "seg data")
+                m_eSegment = dseg;
+            if (str == "seg seg000")
+                m_eSegment = seg000;
+            if (str == "seg seg001")
+                m_eSegment = seg001;
+            if (str == "seg seg002")
+                m_eSegment = seg002;
+            if (str == "seg seg003")
+                m_eSegment = seg003;
+            if (str == "seg seg004")
+                m_eSegment = seg004;
+            if (str == "seg seg005")
+                m_eSegment = seg005;
+            if (str == "seg seg006")
+                m_eSegment = seg006;
+            if (str == "seg seg007")
+                m_eSegment = seg007;
+            if (str == "seg seg008")
+                m_eSegment = seg008;
+            _ASSERT(m_eSegment != invalidsegment);
             return;
         }
 
 		vector<string> matches;
-		if ( CUtils::match("^word_data_(.+)\\+(.+)h$", value.c_str(), matches) )
+		if ( CUtils::match("^word_data_(.+)\\+(.+)$", value.c_str(), matches) )
 		{
-			m_eType = wordptr; // urcite ptr?
+			m_eType = ds_ptr; // urcite ptr?
 			m_eRegLength = r16;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral("0x" + matches[1]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]));
 			return;
 		}
 
 		if ( CUtils::match("^word_data_(.*)$", value.c_str(), matches) )
 		{
-			m_eType = wordptr; // urcite ptr?
+			m_eType = ds_ptr; // urcite ptr?
 			m_eRegLength = r16;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
 			return;
 		}
 
 		if ( CUtils::match("^byte ptr \\[(.*)\\]$", value.c_str(), matches) )
 		{
-			m_eType = byteptrval;
+			m_eType = ds_ptr;
 			m_eRegLength = r8;
 			m_value = make_shared<CValue>(matches[0]);
 			return;
 		}
-        
+
+        if ( CUtils::match("^byte ptr loc_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r8;
+            m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
         if ( CUtils::match("^word ptr \\[bp-(.*)\\]$", value.c_str(), matches) )
         {
             m_eType = wordptr_bp_plus;
@@ -246,7 +290,7 @@ public:
 
 		if ( CUtils::match("^word ptr \\[(.*)\\]$", value.c_str(), matches) )
 		{
-			m_eType = wordptrval;
+			m_eType = ds_ptr;
 			m_eRegLength = r16;
 			m_value = make_shared<CValue>(matches[0]);
 			return;
@@ -266,107 +310,61 @@ public:
             return;
         }
 
+        if ( CUtils::match("^word ptr (es):loc_(.+)$", value.c_str(), matches) )
+        {
+            m_eType = wordptr_es;
+            m_eRegLength = r16;
+            m_nValue = CUtils::ParseLiteral("0x"+matches[1]);
+            return;
+        }
+
 		if ( CUtils::match("^word ptr (es):(.+)$", value.c_str(), matches) )
 		{
 			m_eType = wordptr_es;
 			m_eRegLength = r16;
 			m_nValue = CUtils::ParseLiteral(matches[1]);
-			//m_value = make_shared<CValue>(matches[1], CValue::r16);
 			return;
 		}
 
-		if ( CUtils::match("^byte ptr word_data_(.+)\\+(.+)h$", value.c_str(), matches) )
+		if ( CUtils::match("^byte ptr word_data_(.+)\\+(.+)$", value.c_str(), matches) )
 		{
+            _ASSERT(0);
 			m_eRegLength = r8;
-			m_eType = wordptrasbyte;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral("0x" + matches[1]);
+			m_eType = ds_ptr;
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]));
 			return;
 		}
 
-        if ( CUtils::match("^word ptr ss:byte_(.+)\\+(.+)h$", value.c_str(), matches) )
+        if ( CUtils::match("^word ptr ss:byte_(.+)\\+(.+)$", value.c_str(), matches) )
         {
             m_eRegLength = r16;
-            m_eType = ss_wordptr;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral("0x" + matches[1]);
+            m_eType = ss_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;
         }
 
-
-		if ( CUtils::match("^word ptr byte_data_(.+)\\+(.+)h$", value.c_str(), matches) )
+////byteptrasword, wordptr, wordptrasbyte, byteptr, dwordptrx
+		if ( CUtils::match("^word ptr byte_data_(.+)\\+(.+)$", value.c_str(), matches) )
 		{
 			m_eRegLength = r16;
 			m_eType = byteptrasword;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral("0x" + matches[1]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]));
 			return;
 		}
 
 		if ( CUtils::match("^byte ptr word_data_(.*)$", value.c_str(), matches) )
 		{
 			m_eRegLength = r8;
-			m_eType = wordptrasbyte;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+			m_eType = ds_ptr;
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
 			return;
 		}
-
-		if ( CUtils::match("^word ptr dword_dseg_(.*)$", value.c_str(), matches) )
-		{
-			m_eRegLength = r16;
-			m_eType = dwordptrasword;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
 
 		if ( CUtils::match("^byte_data_(.*)$", value.c_str(), matches) )
 		{
-			m_eType = byteptr;
+			m_eType = ds_ptr;
 			m_eRegLength = r8;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
-		if ( CUtils::match("^byte_dseg_(.*)$", value.c_str(), matches) )
-		{
-			m_eType = byteptrseg;
-			m_eSegment = dseg;
-			m_eRegLength = r8;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
-		if ( CUtils::match("^byte_seg003_(.*)$", value.c_str(), matches) )
-		{
-			m_eType = byteptrseg;
-			m_eSegment = seg003;
-			m_eRegLength = r8;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
-		if ( CUtils::match("^word_dseg_(.*)$", value.c_str(), matches) )
-		{
-			m_eType = wordptrseg;
-			m_eSegment = dseg;
-			m_eRegLength = r16;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
-		if ( CUtils::match("^word_seg003_(.*)$", value.c_str(), matches) )
-		{
-			m_eType = wordptrseg;
-			m_eSegment = seg003;
-			m_eRegLength = r16;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
-			return;
-		}
-
-		if ( CUtils::match("^dword_dseg_(.*)$", value.c_str(), matches) )
-		{
-			m_eType = dwordptrseg;
-			m_eSegment = dseg;
-			m_eRegLength = r32;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
 			return;
 		}
 
@@ -379,37 +377,94 @@ public:
 			return;
 		}
 
-		if ( CUtils::match("^\\[bp\\+arg_(.*)\\]$", value.c_str(), matches) )
-		{
-			m_eType = stack_bp_plus;
-			m_nValue = CUtils::ParseLiteral("0x"+matches[0])+4;
-			_ASSERT(eRegLength == r16 || eRegLength == r8);
-			m_eRegLength = eRegLength;
-			return;
-		}
+        if (value.find("bp") != string::npos)
+        {
+            if ( CUtils::match("^\\[bp\\+arg_(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_plus;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0])+4;
+                _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
+                return;
+            }
 
-		if ( CUtils::match("^\\[bp\\+var_(.*)\\]$", value.c_str(), matches) )
-		{
-			m_eType = stack_bp_plus;
-			m_nValue = -CUtils::ParseLiteral("0x"+matches[0]);
-			m_eRegLength = r16;
-			return;
-		}
+            if ( CUtils::match("^\\[bp\\+var_(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_plus;
+                m_nValue = -CUtils::ParseLiteral("0x"+matches[0]);
+                m_eRegLength = r16;
+                return;
+            }
+            if ( CUtils::match("^\\[bp\\+(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_plus;
+                m_nValue = CUtils::ParseLiteral(matches[0]);
+                m_eRegLength = r16;
+                return;
+            }
+            if ( value == "word ptr ds:[bp+0]" )
+            {
+                m_eRegLength = r16;
+                m_eType = ds_ptr_bp;
+                return;
+            }
+            if ( value == "byte ptr ds:[bp+0]" )
+            {
+                m_eRegLength = r8;
+                m_eType = ds_ptr_bp;
+                return;
+            }
+            if ( value == "cs:[bp+0]" )
+            {
+                _ASSERT(eRegLength != unknown);
+                m_eRegLength = eRegLength;
+                m_eType = cs_ptr_bp;
+                return;
+            }
+
+            if ( value == "word ptr cs:[bp+0]" )
+            {
+                m_eRegLength = r16;
+                m_eType = cs_ptr_bp;
+                return;
+            }
+
+            if ( CUtils::match("^cs:\\[bp\\+si\\+(.*)\\]$", value.c_str(), matches) )
+            {
+                _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
+                m_eType = cs_ptr_bp_plus_si_plus;
+                m_nValue = CUtils::ParseLiteral(matches[0]);
+                return;
+            }
+
+            if ( CUtils::match("^cs:\\[bp\\+(.*)\\]$", value.c_str(), matches) )
+            {
+                _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
+                m_eType = cs_ptr_bp_plus;
+                m_nValue = CUtils::ParseLiteral(matches[0]);
+                return;
+            }
+
+
+            _ASSERT(0);
+        }
 
 		if ( CUtils::match("^\\[(.*)\\]$", value.c_str(), matches) )
 		{
 			_ASSERT(eRegLength != unknown);
 			if ( eRegLength == r8 )
 			{
-				m_value = make_shared<CValue>(matches[0], CValue::r16);
-				m_eType = byteptrval;
+				m_value = make_shared<CValue>(matches[0], CValue::r8);
+				m_eType = ds_ptr_value;
 				m_eRegLength = r8;
 				return;
 			}
 			if ( eRegLength == r16 )
 			{
 				m_value = make_shared<CValue>(matches[0], CValue::r16);
-				m_eType = wordptrval;
+				m_eType = ds_ptr_value;
 				m_eRegLength = r16;
 				return;
 			}
@@ -501,7 +556,7 @@ public:
         {
             m_eType = ss_byteptr;
             m_eRegLength = r8;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;
         }
 
@@ -509,24 +564,24 @@ public:
         {
             m_eType = ss_byteptr;
             m_eRegLength = r8;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         
 		if ( CUtils::match("^cs:word_code_(.*)$", value.c_str(), matches) )
 		{
-			m_eType = codeword;
+			m_eType = cs_ptr;
 			m_eRegLength = r16;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
 			return;
 		}
 
 		if ( CUtils::match("^cs:byte_code_(.*)$", value.c_str(), matches) )
 		{
-			m_eType = codebyte;
+			m_eType = cs_ptr;
 			m_eRegLength = r8;
-			m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
 			return;
 		}
 
@@ -546,13 +601,6 @@ public:
 			return;
 		}
 
-        if ( value == "word ptr ds:[bp+0]" )
-        {
-            m_eRegLength = r16;
-            m_eType = ds_ptr_bp;
-            return;
-        }
-
 		if ( value == "es:[di]" )
 		{
 			_ASSERT(eRegLength != unknown);
@@ -566,46 +614,6 @@ public:
             _ASSERT(eRegLength != unknown);
             m_eRegLength = eRegLength;
             m_eType = cs_ptr_bx;
-            return;
-        }
-
-        if ( value == "cs:[bp+0]" )
-        {
-            _ASSERT(eRegLength != unknown);
-            m_eRegLength = eRegLength;
-            m_eType = cs_ptr_bp;
-            return;
-        }
-
-        if ( value == "word ptr cs:[bp+0]" )
-        {
-            m_eRegLength = r16;
-            m_eType = cs_ptr_bp;
-            return;
-        }
-
-        if ( value == "byte ptr ds:[bp+0]" )
-        {
-            m_eRegLength = r8;
-            m_eType = ds_ptr_bp;
-            return;
-        }
-
-        if ( CUtils::match("^cs:\\[bp\\+si\\+(.*)\\]$", value.c_str(), matches) )
-        {
-            _ASSERT(eRegLength == r16 || eRegLength == r8);
-            m_eRegLength = eRegLength;
-            m_eType = cs_ptr_bp_plus_si_plus;
-            m_nValue = CUtils::ParseLiteral(matches[0]);
-            return;
-        }
-
-        if ( CUtils::match("^cs:\\[bp\\+(.*)\\]$", value.c_str(), matches) )
-        {
-            _ASSERT(eRegLength == r16 || eRegLength == r8);
-            m_eRegLength = eRegLength;
-            m_eType = cs_ptr_bp_plus;
-            m_nValue = CUtils::ParseLiteral(matches[0]);
             return;
         }
         
@@ -714,15 +722,14 @@ public:
 
 		if ( CUtils::match("^ds:(.*)$", value.c_str(), matches) )
 		{
+            m_eType = ds_ptr;
 			_ASSERT(eRegLength == r16 || eRegLength == r8);
 			if ( eRegLength == r16 )
 			{
-				m_eType = wordptr;
 				m_eRegLength = r16;
 			} else
 			if ( eRegLength == r8 )
 			{
-				m_eType = byteptr;
 				m_eRegLength = r8;
 			} else
 			{
@@ -735,20 +742,46 @@ public:
 
 		if ( CUtils::match("^byte ptr ds:(.*)$", value.c_str(), matches) )
 		{
-			m_eType = byteptr;
+			m_eType = ds_ptr;
 			m_eRegLength = r8;
 			m_nValue = CUtils::ParseLiteral(matches[0]);
 			return;
 		}
 
+        if ( CUtils::match("^word ptr byte_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
+        if ( CUtils::match("^word ptr byte_(.*)$", value.c_str(), matches) )
+        {
+            _ASSERT(0);
+            /*
+            m_eType = wordptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])); // WTF!!!
+             */
+            return;
+        }
+
 
 		if ( CUtils::match("^word ptr ds:(.*)$", value.c_str(), matches) )
 		{
-			m_eType = wordptr;
+			m_eType = ds_ptr;
 			m_eRegLength = r16;
 			m_nValue = CUtils::ParseLiteral(matches[0]);
 			return;
 		}
+        
+        if ( CUtils::match("^bp\\+di\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = bp_plus_di_plus;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
 
 		if ( CUtils::match("^bp\\+(.*)$", value.c_str(), matches) )
 		{
@@ -761,7 +794,7 @@ public:
 		{
 			m_eRegLength = r16;
 			m_eType = es_ptr;
-			m_nValue = CUtils::ParseLiteral("0x"+matches[0]) + CUtils::ParseLiteral(matches[1]);
+			m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])) + CUtils::ParseLiteral(matches[1]);
 			return;
 		}
 
@@ -769,7 +802,7 @@ public:
         {
             m_eRegLength = r16;
             m_eType = cs_ptr;
-            m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
             return;
         }
         
@@ -777,7 +810,7 @@ public:
         {
             m_eRegLength = r16;
             m_eType = es_ptr;
-            m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
             return;
         }
 
@@ -799,6 +832,14 @@ public:
             return;
         }
 
+        if ( CUtils::match("^es:byte_(.+)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r8;
+            m_eType = es_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])); // should be fixed!
+            return;
+        }
+
 		if ( CUtils::match("^es:(.+)$", value.c_str(), matches) )
 		{
 			_ASSERT(eRegLength == r8 || eRegLength == r16);
@@ -812,7 +853,7 @@ public:
         {            
             m_eRegLength = r8;
             m_eType = cs_ptr;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
@@ -832,76 +873,100 @@ public:
 		}
 
         //xenon
-        
+        if ( CUtils::match("^byte_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r8;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
         if ( CUtils::match("^byte_(.*)$", value.c_str(), matches) )
         {
-            m_eType = byteptr;
+            m_eType = ds_ptr;
             m_eRegLength = r8;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^word_(.*)\\+(.*)$", value.c_str(), matches) )
         {
-            m_eType = wordptr;
+            m_eType = ds_ptr;
             m_eRegLength = r16;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;
         }
 
         if ( CUtils::match("^seg_(.*)$", value.c_str(), matches) )
         {
-            m_eType = wordptr;
+            // seg_2C785 (memory where is segment value located)
+            m_eType = ds_ptr;
             m_eRegLength = r16;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^word_(.*)$", value.c_str(), matches) )
         {
-            m_eType = wordptr;
+            m_eType = ds_ptr;
             m_eRegLength = r16;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^dword_(.*)$", value.c_str(), matches) )
         {
-            m_eType = dwordptr;
+            m_eType = ds_ptr;
             m_eRegLength = r32;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^word ptr dword_(.*)$", value.c_str(), matches) )
         {
-            m_eType = wordptr;
+            m_eType = ds_ptr;
             m_eRegLength = r16;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^word ptr unk_(.*)$", value.c_str(), matches) )
         {
-            m_eType = wordptr;
+            m_eType = ds_ptr;
             m_eRegLength = r16;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
+            return;
+        }
+
+        if ( CUtils::match("^word ptr loc_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
+        if ( CUtils::match("^word ptr loc_(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
         if ( CUtils::match("^byte ptr word_(.*)\\+(.*)$", value.c_str(), matches) )
         {
-            m_eType = byteptr;
+            m_eType = ds_ptr;
             m_eRegLength = r8;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;
         }
 
         if ( CUtils::match("^byte ptr word_(.*)$", value.c_str(), matches) )
         {
-            m_eType = byteptr;
+            m_eType = ds_ptr;
             m_eRegLength = r8;
-            m_nValue = CUtils::ParseLiteral("0x" + matches[0]);
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
@@ -926,6 +991,14 @@ public:
             eRegLength = r16;
             m_eType = ss_ptr;
             m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+            return;
+        }
+
+        if ( CUtils::match("^dword ptr cs:word_(.*)$", value.c_str(), matches) )
+        {
+            eRegLength = r16;
+            m_eType = cs_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
             return;
         }
 
@@ -969,103 +1042,6 @@ public:
 		return m_eRegLength;
 	}
 
-	/*
-	void Fix(string& key)
-	{
-		vector<string> matches;
-		string out = key;
-
-		if ( key == "ax" || key == "bx" || key == "cx" || key == "dx" )
-			return string("r16[")+key+"]";
-		if ( key == "ah" || key == "bh" || key == "ch" || key == "dh" ||
-			 key == "al" || key == "bl" || key == "cl" || key == "dl" )
-			return string("r8[")+key+"]";
-
-		// decimal
-		if ( CUtils::match("^([0-9]*)$", key.c_str(), &matches) )
-			return out;
-		// hex
-		if ( CUtils::match("^([0-9A-F]+)h$", key.c_str(), &matches) )
-		{
-			out = string("0x") + matches[1];
-			return out;
-		}
-		//byte ptr ds:44D0h
-		if ( match("^cs:(.*)$", key.c_str(), &matches) )
-			return matches[1];
-		else if ( match("^seg\\s(.*)$", key.c_str(), &matches) )
-			out = string("seg_")+matches[1];
-		else if ( match("^byte_data_(.*)\\+(.*)$", key.c_str(), &matches) )
-			out = string("_data[") + toString(toNumber(string("0x") + matches[1]) + toNumber(_value(matches[2]))) + "]";
-		else if ( match("^word_data_(.*)\\+(.*)$", key.c_str(), &matches) )
-			out = string("*(WORD*)&_data[") + toString(toNumber(string("0x") + matches[1]) + toNumber(_value(matches[2]))) + "]";
-		else if ( match("^byte_data_(.*)$", key.c_str(), &matches) )
-			out = string("_data[0x") + _value(matches[1]) + string("]");
-		else if ( match("^word_data_(.*)$", key.c_str(), &matches) )
-			out = string("*(WORD*)&_data[0x") + _value(matches[1]) + string("]");
-		else if ( match("^es:\\[(.*)\\]", key.c_str(), &matches) ) // es:[di] ??
-			out = string("*(WORD*)&_data[ADR(es,") + _value(matches[1]) + string(")]");
-		else if ( match("^ds:\\[(.*)\\]", key.c_str(), &matches) ) // es:[di] ??
-			out = string("*(WORD*)&_data[ADR(ds,") + _value(matches[1]) + string(")]");
-
-		else if ( match("^(cs|ds|es):(.*)$", key.c_str(), &matches) )
-		{
-			out = _value(matches[2]);
-			if (out.find('[') != string::npos )
-			{
-				replacefirst(out, "[", format("[ADR(%s, ", matches[1].c_str()));
-				_ASSERT( out.substr(out.length()-1,1) == "]" );
-				out = out.substr(0, out.length()-1) + ")]";
-			}
-			else
-				out = format("*(WORD*)&_data[ADR(%s,%s)]", matches[1].c_str(), out.c_str());
-		}
-
-		else if ( match("^\\[(.*)\\+(.*)\\+(.*)\\]$", key.c_str(), &matches) )
-		{
-			if ( matches[1] == "si" )
-				out = string("*(WORD*)&_data[ADR(ds, ") + _value(matches[1]) + string(" + ") + _value(matches[2]) + string(" + ") + _value(matches[3]) + (")]");
-			else
-				out = string("*(WORD*)&_data[OFS(") + _value(matches[1]) + string(" + ") + _value(matches[2]) + string(" + ") + _value(matches[3]) + (")]");
-		}
-		else if ( match("^\\[(.*)\\+(.*)\\]$", key.c_str(), &matches) )
-		{
-			if ( matches[1] == "si" )
-				out = string("*(WORD*)&_data[ADR(ds, ") + _value(matches[1]) + string(" + ") + _value(matches[2]) + (")]");
-			else
-				out = string("*(WORD*)&_data[OFS(") + _value(matches[1]) + string(" + ") + _value(matches[2]) + (")]");
-		}
-		else if ( match("^\\[(.*)\\-(.*)\\]$", key.c_str(), &matches) )
-		{
-			if ( matches[1] == "si" )
-				out = string("*(WORD*)&_data[ADR(ds, ") + _value(matches[1]) + (")]");
-			else
-				out = string("*(WORD*)&_data[OFS(") + _value(matches[1]) + string(" - ") + _value(matches[2]) + (")]");
-		}
-		else if ( match("^\\[(.*)\\]$", key.c_str(), &matches) )
-		{
-			if ( matches[1] == "si" )
-				out = string("*(WORD*)&_data[ADR(ds, ") + _value(matches[1]) + (")]");
-			else
-				out = string("*(WORD*)&_data[") + _value(matches[1]) + ("]");
-		}
-		else if ( match("^word ptr (.*)$", key.c_str(), &matches) )
-		{
-			out = _value(matches[1]);
-			if ( out.find("*(WORD*)") == -1 )
-				out = string("*(WORD*)&") + out;
-			//out = string("*(WORD*)(") + value(matches[1]) + string(")");
-		}
-		else if ( match("^byte ptr (.*)$", key.c_str(), &matches) )
-		{
-			out = _value(matches[1]);
-			replace(out, "*(WORD*)&", "");
-		}	
-		if ( match("^offset\\s(.*)$", key.c_str(), &matches) )
-			out = string("&") + _value(matches[1]); 
-	
-		return out;
-	}*/
 
 	virtual void Serialize(CSerializer& s)
 	{

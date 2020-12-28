@@ -192,7 +192,7 @@ void sub_10D5F()
 
 void sub_21836()
 {
-    WORD _cs = seg001 ;
+    WORD _cs = _seg001 ;
     memory(_cs, 0x25A5) = 1;                      //mov cs:byte_21835, 1
 }
 
@@ -410,7 +410,7 @@ void sub_1F38C()
 
 void sub_1F3D7()
 {
-    WORD _cs = seg001 ;
+    WORD _cs = _seg001 ;
     if (memory(_cs, 0x136) == 0)                  //jz short locret_1F3EE
       goto locret_1F3EE;
     memory(_cs, 0x136) = 0;                       //mov cs:byte_1F3C6, 0
@@ -805,7 +805,7 @@ loc_20AC2:                                        //loc_20AC2:
 
 void sub_1F3C7()
 {
-    WORD _cs = seg001 ;
+    WORD _cs = _seg001 ;
     _ax = 0x1000;                                 //mov ax, 1000h
     _bl = 0x12;                                   //mov bl, 12h
     _bh = 0x00;                                   //mov bh, 0

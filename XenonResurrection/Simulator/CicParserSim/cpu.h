@@ -36,6 +36,7 @@ struct reg_t {
   WORD bp;
   WORD cs;
   WORD sp;
+  WORD ss;
 };
 
 extern reg_t _reg;
@@ -64,6 +65,7 @@ extern reg_t _reg;
 #define _bp _reg.bp
 //#define _cs _reg.cs
 #define _sp _reg.sp
+#define _ss _reg.ss
 
 #define _cli() _reg.flags.bit.intr = 0
 #define _sti() _reg.flags.bit.intr = 1
@@ -320,8 +322,12 @@ void _rol(WORD& b, BYTE l)
 
 void _ror(WORD & b, BYTE l)
 {
-    _ASSERT(l == 1);
-    b = ror<WORD>(b);
+    if (l==0)
+        std::cout << "_ror 0\n";
+    
+    _ASSERT(l == 1 || l == 4 || l == 0 || l == 6);
+    while (l--)
+        b = ror<WORD>(b);
 }
 
 

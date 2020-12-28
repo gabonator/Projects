@@ -490,6 +490,7 @@ public:
 		case CITwoArgOp::rol: m_strOperation = "_rol($arg1, $arg2)"; break;
 		case CITwoArgOp::les: m_strOperation = "_les($arg1, $arg2)"; break;
 		case CITwoArgOp::lea: m_strOperation = "_lea($arg1, $arg2)"; break;
+        case CITwoArgOp::lds: m_strOperation = "_lds($arg1, $arg2)"; break;
 		case CITwoArgOp::sbb:
             {
                 shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
@@ -674,7 +675,15 @@ public:
         case CIConditionalJump::jns:
             if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
             {
-                m_strCondition = "(SIGNED?)$a >= 0";
+                string sign = "_FIXME_";
+                if (pTest->m_op1.m_eRegLength == CValue::ERegLength::r8)
+                    sign = "char";
+                else if (pTest->m_op1.m_eRegLength == CValue::ERegLength::r16)
+                    sign = "short";
+                else
+                    _ASSERT(0);
+                
+                m_strCondition = string("(") + sign + ")$a >= 0";
                 break;
             }
             _ASSERT(0);
@@ -682,7 +691,15 @@ public:
         case CIConditionalJump::js:
             if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
             {
-                m_strCondition = "(SIGNED?)$a < 0";
+                string sign = "_FIXME_";
+                if (pTest->m_op1.m_eRegLength == CValue::ERegLength::r8)
+                    sign = "char";
+                else if (pTest->m_op1.m_eRegLength == CValue::ERegLength::r16)
+                    sign = "short";
+                else
+                    _ASSERT(0);
+
+                m_strCondition = "(sign)$a < 0";
                 break;
             }
             _ASSERT(0);
@@ -706,12 +723,15 @@ public:
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
 			case CIConditionalJump::jb: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
+            case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0"; break; // TODO: verify?
+            case CIConditionalJump::js: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
 			default:
                     m_strCondition = "_FIXME_";
 				//_ASSERT(0);
 			}
 			break;
 
+        case CIAlu::Sub:
 		case CIAlu::Decrement: // TODO: should change carry??
 			switch ( pCondition->m_eType )
 			{
@@ -721,13 +741,13 @@ public:
             case CIConditionalJump::js: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
 
 			default:
-				_ASSERT(0);
+                    m_strCondition = "_FIXME_";
+				//_ASSERT(0);
 			}
 			break;
 
 		case CIAlu::And:
 		case CIAlu::Or:
-		case CIAlu::Sub:
 		case CIAlu::Add:
 		case CIAlu::Xor:
 			switch ( pCondition->m_eType )
@@ -836,14 +856,21 @@ public:
 			break;
 
 		case CIConditionalJump::jnb: 
-			_ASSERT(eCondition == CarryFlag || eCondition == ZeroCarryFlag);
-			m_strCondition = "!_flags.carry";
+			//_ASSERT(eCondition == CarryFlag || eCondition == ZeroCarryFlag);
+            if (eCondition == CarryFlag || eCondition == ZeroCarryFlag)
+                m_strCondition = "!_flags.carry";
+            else
+                m_strCondition = "__FIXME__";
 			break;
 
 		case CIConditionalJump::jb: 
 			_ASSERT(eCondition == CarryFlag);
 			m_strCondition = "_flags.carry";
 			break;
+
+        case CIConditionalJump::jge:
+            m_strCondition = "__FIXME__";
+            break;
 
 		default:
 			_ASSERT(0);
@@ -916,12 +943,16 @@ public:
 	{
 		switch (m_eLabelType)
 		{
-		case Label: return "goto " + m_strLabel;
+		case Label:
+            if (m_strLabel.substr(0, 3) == "sub")
+                return string("{") + m_strLabel + "(); return; }";
+            else
+                return "goto " + m_strLabel;
 		case Return: return "return";
 		case Break: return "break";
 		case Continue: return "continue";
+        default: _ASSERT(0);
 		}
-		_ASSERT(0);
 		return "?";
 	}
 
@@ -1226,6 +1257,7 @@ public:
 		{
 		case CIString::rep: m_strRepeat = "rep"; break;
 		case CIString::repne: m_strRepeat = "repne"; break;
+        case CIString::repe: m_strRepeat = "repn"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -1240,6 +1272,7 @@ public:
 		case CIString::movsw: m_strOperation = "movsw"; break;
 		case CIString::scasb: m_strOperation = "scasb"; break;
 		case CIString::scasw: m_strOperation = "scasw"; break;
+        case CIString::cmpsb: m_strOperation = "cmpsb"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -1254,6 +1287,7 @@ public:
 		case CIString::movsw: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::movsw); break;
 		case CIString::scasb: m_strTemplate = ""; break;
 		case CIString::scasw: m_strTemplate = ""; break;
+        case CIString::cmpsb: m_strTemplate = ""; break;
 		default:
 			_ASSERT(0);
 		}
@@ -1276,7 +1310,10 @@ public:
 	CCSwitch(shared_ptr<CISwitch> pSwitch, vector<shared_ptr<CInstruction>> arrInstructions)
 	{
         m_type = pSwitch->m_eType;
-		m_strSelector = pSwitch->m_reg.ToC();
+        // TODO: goose
+		//m_strSelector = pSwitch->m_reg.ToC() + " << 1 /* CHECK */"; // TODO:!!!
+        // TODO: xenon
+        m_strSelector = pSwitch->m_reg.ToC();
 
 		for (int i=0; i<(int)arrInstructions.size(); i++)
 		{

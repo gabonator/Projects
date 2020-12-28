@@ -406,8 +406,9 @@ public:
 				return pInstruction;
 			}
 		}
-		_ASSERT(0);
-		return nullptr;
+        return make_shared<CIStop>();
+		//_ASSERT(0);
+		//return nullptr;
 	}
 
     void Convert(CLabel strFunction, vector<shared_ptr<CInstruction>>& arrInput, vector<shared_ptr<CCInstruction>>& arrOutput)
@@ -923,7 +924,7 @@ public:
                     first = false;
                     if (line.length() < 50)
                     {
-                        while (line.length() + strPad.length() < 50)
+                        while (line.length() + strPad.length() < 48)
                             line += " ";
                         line += "//" + arrOutput[i]->mOrigin;
                     }
@@ -973,6 +974,11 @@ public:
 			{
 				return i;
 			}
+            shared_ptr<CILabel> pLabel = dynamic_pointer_cast<CILabel>(arrCode[i]);
+            if (pLabel && pLabel->m_label == label)
+            {
+                return i;
+            }
 		}
 		_ASSERT(0);
 		return -1;

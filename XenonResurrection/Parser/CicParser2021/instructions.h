@@ -134,7 +134,7 @@ class CIZeroArgOp : public CInstruction
 public:
 	enum EType {
 		cli, sti, _std, stc, ctc, cld, aaa, cbw, lodsw, lodsb, stosw, stosb, movsw, movsb, clc, sahf, lahf, popf, pushf, xlat,
-        cwd,
+        cwd, cmc,
 		// TODO: Should be in separate fake instruction
 		FakeZeroTest, FakeCarryTest, FakeZeroCarryTest,
 		invalid
@@ -158,7 +158,7 @@ public:
 		CheckEnum(movsb);	CheckEnum(clc);		CheckEnum(sahf);	CheckEnum(lahf);
 		CheckEnum(popf);	CheckEnum(pushf);	CheckEnum(stosb);	CheckEnum(xlat);
         // numeric
-        CheckEnum(cwd);
+        CheckEnum(cwd); CheckEnum(cmc);
 		_ASSERT(0);
 		return invalid;
 	}
@@ -213,7 +213,7 @@ class CITwoArgOp : public CInstruction
 public:
 	enum EType {
 		out, in, xchg, rcr, rcl, rol,
-		les, lea, sbb, invalid
+		les, lea, sbb, lds, invalid
 	};
 
 public:
@@ -232,7 +232,7 @@ public:
 	static EType GetType(string str)
 	{
 		CheckEnum(out);	CheckEnum(in); CheckEnum(xchg); CheckEnum(rcr); CheckEnum(rcl);
-		CheckEnum(rol); CheckEnum(les); CheckEnum(lea); CheckEnum(sbb);
+        CheckEnum(rol); CheckEnum(les); CheckEnum(lea); CheckEnum(sbb); CheckEnum(lds);
 		_ASSERT(0);
 		return invalid;
 	}
@@ -252,12 +252,14 @@ public:
 	{
 		rep,
 		repne,
+        repe,
 		invalidrule
 	};
 
 	enum EOperation
 	{
 		stosb, lodsb, stosw, lodsw, movsw, movsb, scasw, scasb,
+        cmpsb,
 		invalidop
 	};
 
@@ -275,7 +277,7 @@ public:
 
 	static ERule GetRule(string str)
 	{
-		CheckEnum(rep);	CheckEnum(repne);
+        CheckEnum(rep);	CheckEnum(repne); CheckEnum(repe);
 		_ASSERT(0);
 		return invalidrule;
 	}
@@ -286,6 +288,7 @@ public:
 		CheckEnum(stosw);	CheckEnum(lodsw);
 		CheckEnum(movsw);	CheckEnum(movsb);
 		CheckEnum(scasw);	CheckEnum(scasb);
+        CheckEnum(cmpsb);
 		_ASSERT(0);
 		return invalidop;
 	}

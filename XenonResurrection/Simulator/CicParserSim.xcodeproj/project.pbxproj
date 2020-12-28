@@ -24,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		2D0FF52D2590120A00ED76AE /* code-game.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-game.h"; sourceTree = "<group>"; };
+		2D5004CA259A1D1600E0A1BA /* code-game-2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-game-2.h"; sourceTree = "<group>"; };
 		2D9EAF1D258D667600297C9C /* code-intro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "code-intro.h"; sourceTree = "<group>"; };
 		2D9EAF1F258E6A4300297C9C /* sdl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl.h; sourceTree = "<group>"; };
 		2D9EAF26258E750E00297C9C /* CicParserSim.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CicParserSim.entitlements; sourceTree = "<group>"; };
@@ -74,6 +75,7 @@
 				2D9EAF1D258D667600297C9C /* code-intro.h */,
 				2DB9F18E258EC12D000A3299 /* code-pregame.h */,
 				2D0FF52D2590120A00ED76AE /* code-game.h */,
+				2D5004CA259A1D1600E0A1BA /* code-game-2.h */,
 				2DA6C5B8258AA6E3002B1931 /* cpu.h */,
 				2DB9F18C258EA679000A3299 /* ega.h */,
 			);

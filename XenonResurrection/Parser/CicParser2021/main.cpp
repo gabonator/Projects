@@ -57,6 +57,17 @@ public:
         D("sub_1011C", "Opens and reads whole file");
         D("sub_104C9", "Read data")
         D("sub_10174", "Read data")
+        D("sub_100CF", "Main game loop")
+        D("sub_10FDA", "Draw sprite")
+        D("sub_132FE", "Draw map")
+        D("sub_13383", "Swap pages")
+        D("sub_133D7", "V sync")
+        D("sub_134A8", "Draw lines")
+        D("sub_1069A", "Draw map")
+        D("sub_10BDC", "Draw tile")
+        D("sub_12E02", "Tunnel grid")
+        D("sub_1300A", "Tunnel")
+          
         //
         D("sub_160EF", "Joystick")
         D("sub_1F492", "Starfields")
@@ -86,8 +97,15 @@ int main(int argc, const char * argv[])
 //
 //    return 0;
 
-//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
-    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.x");
+    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
+//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.x");
+//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.asm");
+//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
+//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
+        
+//        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/ETETRIS.asm");
+//        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
+//        sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
 
     CCExport e;
     e.SetSource(sp.m_arrCode);
@@ -95,238 +113,183 @@ int main(int argc, const char * argv[])
     string flist[] = {
         /*
         "start",
-        "sub_100A9",
-        "sub_100CF",
-        "sub_100FD",
-        "sub_10442",
-        "sub_10588",
-        "sub_10591",
-        "sub_105EC",
-        "sub_10600",
-        "sub_12762",
-        "sub_1333C",
-        "sub_1382A",
-        //
-        "sub_10103",
-        "sub_101C0",
-        "sub_10637",
-        "sub_10644",
-        "sub_10B8E",
-        "sub_10DA7",
-        "sub_10FDA",
-        "sub_121DC",
-        "sub_1220D",
-        "sub_131A4",
-        "sub_132FE",
-        "sub_13383",
-        "sub_133B3",
-        "sub_133D7",
-        "sub_13423",
-        "sub_134A8",
-        
-        "sub_1019D",
-        "sub_101AD",
-        "sub_1033B",
-        "sub_10529",
-        "sub_1064D",
-        "sub_1069A",
-        "sub_109A4",
-        "sub_10BDC",
-        "sub_10D98",
-        "sub_10DC0",
-        "sub_10E07",
-        "sub_10E3D",
-        "sub_10E84",
-        "sub_10F3C",
-        "sub_110C6",
-        "sub_110F3",
-        "sub_11108",
-        "sub_112A7",
-        "sub_112CB",
-        "sub_112EB",
-        "sub_11384",
-        "sub_113A8",
-        "sub_11429",
-        "sub_114F0",
-        "sub_115FC",
-        "sub_116D6",
-        "sub_116DF",
-        "sub_116FE",
-        "sub_1171F",
-        "sub_11740",
-        "sub_1176C",
-        "sub_11783",
-        "sub_117AC",
-        "sub_117D6",
-        "sub_117F4",
-        "sub_118A9",
-        "sub_118C7",
-        "sub_11993",
-        "sub_119C2",
-        "sub_11A9E",
-        "sub_11B09",
-        "sub_11B4A",
-        "sub_12200",
-        "sub_122B1",
-        "sub_1239B",
-        "sub_12464",
-        "sub_1252F",
-        "sub_12542",
-        "sub_12577",
-        "sub_1258A",
-        "sub_125BF",
-        "sub_125D2",
-        "sub_1264A",
-        "sub_1269E",
-        "sub_12714",
-        "sub_1279F",
-        "sub_128DA",
-        "sub_129DB",
-        "sub_12A7F",
-        "sub_12C45",
-        "sub_12CEA",
-        "sub_12E02",
-        "sub_12F50",
-        "sub_12FE8",
-        "sub_1300A",
-        "sub_131E7",
-        "sub_13209",
-        "sub_13439",
-        "sub_13472",
-        "sub_13498",
-        "sub_135BC",
-        "sub_136D4",
-        "sub_13840",
-        "sub_139B8",*/
-//        "sub_12959",
-//        "sub_1296F",
-//        "sub_129AE"
-//        "sub_12907",
-//        "sub_129AE",
-//        "sub_133E5",
-        //"sub_13291"
-        //"sub_10B7C"
-        //"sub_12121"
-//        "sub_10B58"
-        //"sub_108BA"
-        //"sub_1237C", "sub_123D4", "sub_123EC", "sub_12404", "sub_1241C", "sub_12434", "sub_1244C", "sub_12CEA"
+        //"sub_24B90",
+        "sub_105A3",
+        "sub_107ED",
+        "sub_15E8A",
+        "sub_15E5E",
+        "sub_13C75",
+        "sub_15EC3",
+        "sub_15E7A",
+        "sub_10000",
+        "sub_10101",
+        "sub_10067",
+        "sub_10089",
+        "sub_10097",
+        "sub_106FE",
+        "sub_1F2D5",
+        "sub_14311",
+        "sub_14759"
+         */
         /*
-        "sub_104F3",
-        "sub_10541",
-        "sub_10674",
-        "sub_10AD5",
-        "sub_1196F",
-        "sub_11A04",
-        "sub_11C0A",
-        "sub_11C56",
-        "sub_11CD9",
+        //game
+        "sub_1FE70",
+        "sub_1F787",
+        "sub_1F6F8",
+        "sub_1F585",
+        "sub_10875",
+        "sub_10DC5",
+        "sub_109A7",
+        "sub_10A73", //() // draw status bar health indicat",
+        "sub_205ED",
+        "sub_20627",
+        "sub_2217E",
+        "sub_24178",
+        "sub_24185",
+        "sub_24130",
+        "sub_116A9", //() // draw sco",
+        "sub_10E6F",
+        "sub_208DC",
+        "sub_116BA", //() // draw health - overflo",
+        "sub_10762",
+        "sub_1077C",
+        "sub_1078E",
+        "sub_11022",
+        "sub_12BCC",
+        "sub_135EB",
+        "sub_107DC",
+        "sub_107C0",
+        "sub_10E91",
+        "sub_208F9",
+        "sub_1373D",
+        "sub_11689",
+        "sub_10FF0",
+        "sub_13682",
+        "sub_10EF5",
+        "sub_13326",
+        "sub_13A39",
+        "sub_13AB2",
+        "sub_14675",
+        "sub_1465C",
+        "sub_1472D",
+        "sub_13589",
+        "sub_11BEA",
+        "sub_1714A",
+        "sub_10F96",
+        "sub_11C18",
+        "sub_10F2F",
+        "sub_144F3",
+        "sub_11E29",
         "sub_11D1E",
-        "sub_11DEF",
-        "sub_11F0B",
-        "sub_11FBA",
-        "sub_12005",
-        "sub_12047",
-        "sub_12092",
-        "sub_12099",
-        "sub_120DB",
-        "sub_1215B",
-        "sub_122C1",
-        "sub_122E1",
-        "sub_122F9",
-        "sub_12311",
-        "sub_12329",
-        "sub_1237C",
-        "sub_12536",
-        "sub_1257E",
-        "sub_125C6",
-        "sub_12662",
-        "sub_12676",
-        "sub_12809",
-        "sub_12A64",
-        "sub_12B28",
-        "sub_12C07",
-        "sub_12C9A",
-        "sub_12D9A",
-        "sub_12DDC",
-        "sub_12DF6",
-        "sub_13059",
-        "sub_13084",
-        "sub_1309D",
-        "sub_13130",
-        "sub_13801",
-        "sub_13914",
-        "sub_123D4",
-        "sub_123EC",
-        "sub_12404",
-        "sub_1241C",
-        "sub_12434",
-        "sub_1244C",*/
-        //"sub_1268A", "sub_1269E", "sub_122C1"
+        "sub_11E02",
+        "sub_141E2",
+        "sub_141B1",
+        "sub_10A95",
+        "sub_20653",
+        "sub_10EDD",
+        "sub_10EE1",
+        "sub_11CCC",
+        "sub_13A36",
+        "sub_13615",
+        //"sub_13360",
+        //"sub_17132",
+        //"sub_17138",
+        "sub_170F1",
+        "sub_10FB4",
+        "sub_16EEF",
+        "sub_10FD2",
+        "sub_1758F",
+        "sub_13389",
+        //"sub_16F7F",
+        //"sub_16F00",
+        //"sub_16FE0",
+        //"sub_1705B",
+        "sub_1655B",
+        "sub_172C4",
+        "sub_1EBD0",
+        "sub_10941",
+        "sub_17520",
+        //"sub_135CE",
+        "sub_1EC6F",
+        "sub_14871",
+        "sub_11BB4",
+        "sub_11BA2",
+        "sub_11B90",
+        "sub_11ED3",
+        "sub_14865",
+        "sub_1480B",
+         */
         /*
-        "sub_104F3",
-        "sub_10541",
-        "sub_10674",
-        "sub_10AD5",
-        "sub_1196F",
-        "sub_11A04",
-        "sub_11C0A",
-        "sub_11C56",
-        "sub_11CD9",
-        "sub_11D1E",
-        "sub_11DEF",
-        "sub_11F0B",
-        "sub_11FBA",
-        "sub_12005",
-        "sub_12047",
-        "sub_12092",
-        "sub_12099",
-        "sub_120DB",
-        "sub_1215B",
-        "sub_122C1",
-        "sub_122E1",
-        "sub_122F9",
-        "sub_12311",
-        "sub_12329",
-        "sub_1237C",
-        "sub_12536",
-        "sub_1257E",
-        "sub_125C6",
-        "sub_12662",
-        "sub_12676",
-        "sub_12809",
-        "sub_12A64",
-        "sub_12B28",
-        "sub_12C07",
-        "sub_12C9A",
-        "sub_12D9A",
-        "sub_12DDC",
-        "sub_12DF6",
-        "sub_13059",
-        "sub_13084",
-        "sub_1309D",
-        "sub_13130",
-        "sub_13801",
-        "sub_13914",
-        "sub_123D4",
-        "sub_123EC",
-        "sub_12404",
-        "sub_1241C",
-        "sub_12434",
-        "sub_1244C",
-        "sub_11E7D",
+        // pregame
+        "sub_15B21",
+        "sub_109EB",
+        "sub_15935",
+        "sub_15C7C",
+        "sub_10B83",
+        "sub_10BC7",
+        "sub_15950",
+        "sub_10BE9",
+        "sub_20B5B",
+        "sub_20A39",
+        "sub_10E2B",
+        "sub_1F3B5",
+        "sub_20B8A",
+        "sub_15CC5",
+        "sub_1F325",
+        "sub_1F363",
+        "sub_11827",
+        "sub_20568",
+        "sub_11B43",
+        "sub_11A19",
+        "sub_11AAF",
+        "sub_10F5A",
+        "sub_10F78",
+        "sub_15926",
+        "sub_10985",
+        "sub_20482",
+        "sub_1080F",
+        "sub_1F3EF",
+        "sub_10ED5",
+        "sub_1421C",
+        "sub_10A2F",
+        "sub_10E4D",
+        "sub_20854",
+        "sub_20919",
+        "sub_2095F",
+        "sub_10BA5",
+        "sub_136FC",
+        //"sub_1F585",
+        "sub_1F57C",
+        //"sub_1F6F8",
+        //"sub_1FE70",
+        "sub_10853",
+        "sub_1370B",
+        "sub_20AD0",
+        "sub_15B10",
+        "sub_15E24",
+        "sub_15E35",
+        "sub_15E52",
+        "sub_15E59",
 */
-        //"sub_13130"
-        //"sub_1315E", "sub_13167", "sub_13170", "sub_13178", "sub_13181", "sub_13188", "sub_13191", "sub_1319B"
-        //"sub_13170"
-        "sub_136D4"
+        //"sub_1F57C",
+        
+        
+        
+        //"loc_16F7F"
+//        "sub_1714A"
+        //"loc_1F93B"
+//        "sub_1F970"
+        //"loc_1F93B"
+        "loc_1FE85"
+
     };
     
     CCustomize custom;
     std::set<string> imports;
-    //ofstream output;
     auto& output = cout;
     
-    //output.open("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Simulator/CicParserSim/code-pregame.h");
+//    ofstream output;
+//    output.open("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/SimulatorGoose/CicParserSim/code-goose.h");
     
     for (int i=0; i<sizeof(flist)/sizeof(flist[0]); i++)
     {
@@ -422,7 +385,7 @@ int main(int argc, const char * argv[])
             output << "  // " << comment;
         output << endl << "{" << endl;
         if (!usingCs.empty())
-            output << "    WORD _cs = " << usingCs << ";" << endl;
+            output << "    WORD _cs = _" << usingCs << ";" << endl;
         e.DumpProgram(output, arrCFunction, 1);
         if (arrCFunction.size() > 0 && dynamic_pointer_cast<CCLabel>(arrCFunction[arrCFunction.size()-1]))
             output << "    return;" << endl;
@@ -440,6 +403,6 @@ int main(int argc, const char * argv[])
         output << "void " << s << "() { _ASSERT(0); }" << endl;
     }
     output << endl;
-    //output.close();
+//    output.close();
     return 0;
 }

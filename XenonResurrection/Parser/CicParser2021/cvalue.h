@@ -1,17 +1,5 @@
-struct segmenntInfo {
-    char name[32];
-    int begin;
-    int end;
-    int base;
-} segments[] =
-{
-    {"seg000", 0x0000, 0x3A56, 0x1000}, // CODE
-    {"dseg",   0x0006, 0x9570, 0x13A5}, // DATA
-    {"seg002", 0x0000, 0x0100, 0x1CFC}, // STACK
-    {"x",      0x0000, 0x8000, 0x0000}, // unref
-    {"", 0, 0, 0}
-};
 
+#if 0
 int FixDsOffset(int ofs)
 {
     for (int i=0; segments[i].name[0]; i++)
@@ -57,6 +45,12 @@ int FixDsOffset(int ofs)
 
 int FixCsOffset(int ofs)
 {
+    return FixDsOffset(ofs);
+    /*
+    if (ofs >= 0x0000 && ofs <= 0xD000)
+    {
+        return ofs;
+    }
     if (ofs >= 0x1000*16 && ofs <= 0x1000*16 + 0xf290 )
     {
         const int code_begin = 0x1000;
@@ -80,8 +74,9 @@ int FixCsOffset(int ofs)
     }
 
     _ASSERT(0);
-    return ofs;
+    return ofs;*/
 }
+#endif
 
 string CValue::ToC()
 {
@@ -121,6 +116,7 @@ string CValue::ToC()
 			sprintf(str, "%d", m_nValue); // TODO
 		return str;
 
+            /*
 	case CValue::byteptrasword:
 	case CValue::wordptr:
 		ss << "memory16(_ds, 0x" << hex << uppercase << FixDsOffset(m_nValue) << ")"; //ds
@@ -138,7 +134,7 @@ string CValue::ToC()
     case CValue::cs_ptr:
         ss << "memory(_cs, 0x" << hex << uppercase << FixCsOffset(m_nValue) << ")"; //ds
         return ss.str();
-
+*/
 	case CValue::bx_plus_si:
 		return "_bx + _si";
 
@@ -155,11 +151,11 @@ string CValue::ToC()
             _ASSERT(0);
 
 		return "SEG_DATA";
-
+/*
 	case CValue::wordptrval:
 		ss << "memory16(_ds, " << m_value->ToC() << ")"; //ds
 		return ss.str();
-
+*/
 	case CValue::es_ptr_di:
 		if ( m_eRegLength == CValue::r8 )
 			ss << "memory(_es, _di)";
@@ -180,13 +176,47 @@ string CValue::ToC()
 			_ASSERT(0);
 		return ss.str();
 
-	case CValue::es_ptr:
+    case CValue::ds_ptr:
+        if ( m_value )
+        {
+            _ASSERT(m_nValue == -999999);
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ds, " << m_value->ToC() << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ds, " << m_value->ToC() << ")";
+            else
+                _ASSERT(0);
+        } else
+        {
+            _ASSERT(m_nValue >= 0);
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ds, 0x" << uppercase << hex << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ds, 0x" << uppercase << hex << m_nValue << ")";
+            else
+                _ASSERT(0);
+        }
+        return ss.str();
+
+    case CValue::ds_ptr_value:
+        if ( m_eRegLength == CValue::r8 )
+            ss << "memory(_ds, " << m_value->ToC() << ")";
+        else
+        if ( m_eRegLength == CValue::r16 )
+            ss << "memory16(_ds, " << m_value->ToC() << ")";
+        else
+            _ASSERT(0);
+        return ss.str();
+
+    case CValue::es_ptr:
 		_ASSERT(m_nValue >= 0);
 		if ( m_eRegLength == CValue::r8 )
-			ss << "memory(_es, " << m_nValue << ")";
+			ss << "memory(_es, 0x" << uppercase << hex << m_nValue << ")";
 		else
 		if ( m_eRegLength == CValue::r16 )
-			ss << "memory16(_es, " << m_nValue << ")";
+			ss << "memory16(_es, 0x" << uppercase << hex << m_nValue << ")";
 		else
 			_ASSERT(0);
 		return ss.str();
@@ -197,7 +227,7 @@ string CValue::ToC()
             else
                 ss << "_si - " << (-m_nValue);
 		return ss.str();
-
+/*
 	case CValue::codebyte:
 		ss << "byte_code_" << std::hex << std::uppercase << m_nValue; 
 		return ss.str();
@@ -205,10 +235,10 @@ string CValue::ToC()
 	case CValue::codeword:
 		ss << "word_code_" << std::hex << std::uppercase << m_nValue; 
 		return ss.str();
-
+*/
 	case CValue::wordptr_es:
 		// TODO: what if value = 0xffff ?
-		ss << "memory16(_es, " << m_nValue << ")";
+		ss << "memory16(_es, 0x" << uppercase << hex << m_nValue << ")";
 		return ss.str();
 
 	case CValue::bx_plus_si_plus:
@@ -234,9 +264,9 @@ string CValue::ToC()
     case CValue::stop:
         return "_STOP_";
             
-    case CValue::ss_wordptr:
-        ss << "memory16(-1, -1)"; //TODO: neviem
-        return ss.str();
+//    case CValue::ss_wordptr:
+//        ss << "memory16(-1, -1)"; //TODO: neviem
+//        return ss.str();
 
     case CValue::cs_ptr_si:
         ss << "memory16(_cs, _si)"; //TODO: neviem
@@ -246,9 +276,9 @@ string CValue::ToC()
         ss << "memory16(_es, _di)";
         return ss.str();
 
-    case CValue::dwordptr:
-            ss << "0x" << hex << uppercase << FixCsOffset(m_nValue);
-            return ss.str();
+//    case CValue::dwordptr:
+//            ss << "0x" << hex << uppercase << FixCsOffset(m_nValue);
+//            return ss.str();
 
     case CValue::cs_ptr_bx_plus:
             _ASSERT(m_eRegLength == r16);
@@ -341,15 +371,15 @@ string CValue::ToC()
                 _ASSERT(0);
              */
             return ss.str();
-        case CValue::ss_byteptr:
-            if ( m_eRegLength == CValue::r8 )
-                ss << "memory(_ss, " << m_nValue << ")";
-            else
-            if ( m_eRegLength == CValue::r16 )
-                ss << "memory16(_ss, " << m_nValue << ")";
-            else
-                _ASSERT(0);
-            return ss.str();
+//        case CValue::ss_byteptr:
+//            if ( m_eRegLength == CValue::r8 )
+//                ss << "memory(_ss, " << m_nValue << ")";
+//            else
+//            if ( m_eRegLength == CValue::r16 )
+//                ss << "memory16(_ss, " << m_nValue << ")";
+//            else
+//                _ASSERT(0);
+//            return ss.str();
         case CValue::cs_ptr_bx_plus_di:
             if ( m_eRegLength == CValue::r8 )
                 ss << "memory(_cs, _bx + _di)";
@@ -368,15 +398,44 @@ string CValue::ToC()
             else
                 _ASSERT(0);
             return ss.str();
+        case CValue::cs_ptr:
+            _ASSERT(m_nValue >= 0);
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, 0x" << uppercase << hex << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, 0x" << uppercase << hex << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
         case CValue::bx_plus_di_plus:
             ss << "_bx + _di + " << m_nValue;
             return ss.str();
         case CValue::stack_bp_plus:
-            ss << "stack16(_bp, " << m_nValue << ")";
+            ss << "_stack16(_bp + " << m_nValue << ")";
             return ss.str();
         case CValue::bp_plus:
             ss << "_bp + " << m_nValue;
             return ss.str();
+        case CValue::bp_plus_di_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ds, _bp + _di + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ds, _bp + _di + " << m_nValue << ")";
+            else
+                ss << "memory_FIXME(_ds, _bp + _di + " << m_nValue << ")";
+            
+            //_ASSERT(0);
+            return ss.str();
+        case CValue::ss_byteptr:
+            _ASSERT(m_nValue >= 0);
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ss, 0x" << uppercase << hex << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+
 	default:
 		_ASSERT(0);
 	}

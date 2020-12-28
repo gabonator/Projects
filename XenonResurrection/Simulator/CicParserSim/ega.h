@@ -8,7 +8,7 @@ public:
 	virtual bool Interrupt(int ah, int al, int bh, int bl) = 0;
 	virtual void Write(DWORD dwAddr, BYTE bWrite) = 0;
 	virtual BYTE Read(DWORD dwAddr) = 0;
-	virtual DWORD GetPixel(int x, int y) = 0;
+	virtual DWORD GetPixel(int x, int y, int a) = 0;
 };
 /*
 class CTextMode : public CVideoAdapter
@@ -321,15 +321,16 @@ public:
         return false;
     }
 
-	virtual DWORD GetPixel(int x, int y) override
+	virtual DWORD GetPixel(int x, int y, int a) override
 	{
 		BYTE* _video = (BYTE*)memory;
 		DWORD off = (int)y * 40L + ((int)x / 8L);
 		//DWORD mem_addr = off;
 		int mask = 0x80 >> (x % 8);
 
-        int shift = cfgAddr*4;
-		BYTE b = 0;
+        int shift = (a == -1 ? cfgAddr : a)*4;
+
+        BYTE b = 0;
 		if ( _video[shift + off*4 + 0] & mask ) b |= 1;
 		if ( _video[shift + off*4 + 1] & mask ) b |= 2;
 		if ( _video[shift + off*4 + 2] & mask ) b |= 4;
@@ -406,7 +407,8 @@ public:
             int f = 9;
         }
  */
-        LoadLatch(dwAddr);
+        if (nWriteMode != 1)
+            LoadLatch(dwAddr);
         DWORD data = ModeOperation(bWrite);
 
 		TLatch pixels;
@@ -438,7 +440,8 @@ public:
 		}*/
 
 		_ASSERT( dwAddr < sizeof(memory) );
-		LoadLatch(dwAddr); //((DWORD*)&memory[dwAddr])[dwAddr]; 
+        //if (n)
+		LoadLatch(dwAddr); //((DWORD*)&memory[dwAddr])[dwAddr];
 		if ( nReadMode == 0 )
 			return uLatch.u8Data[cfgReadMapSelect];
 		if ( nReadMode == 1 )

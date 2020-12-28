@@ -18,15 +18,16 @@
 CEga mVideo;
 void _dump();
 
-constexpr WORD seg000 = 0x1000;
-constexpr WORD seg002 = 0x24B9;
-constexpr WORD dataseg = 0x2853;
-constexpr WORD seg001 = 0x1f29;
-constexpr WORD seg003 = 0x2565;
-constexpr WORD seg005 = 0x3824;
-constexpr WORD seg007 = 0x449b;
-constexpr WORD seg008 = 0x5489;
-constexpr WORD seg009 = 0x63d0;
+constexpr WORD _seg000 = 0x1000;
+constexpr WORD _seg002 = 0x24B9;
+constexpr WORD _dseg = 0x2853;
+constexpr WORD _seg001 = 0x1f29;
+constexpr WORD _seg003 = 0x2565;
+constexpr WORD _seg005 = 0x3824;
+constexpr WORD _seg007 = 0x449b;
+constexpr WORD _seg008 = 0x5489;
+constexpr WORD _seg009 = 0x63d0;
+constexpr WORD _seg006 = 0x447B; // stack
 constexpr WORD video = 0xa000;
 
 #include "code.h"
@@ -34,6 +35,8 @@ constexpr WORD video = 0xa000;
 #include "code-intro.h"
 #include "code-pregame.h"
 #include "code-game.h"
+#include "code-game-2.h"
+#include "code-interrupt.h"
 
 reg_t _reg;
 
@@ -46,6 +49,7 @@ uint8_t segment7[0x10000];
 uint8_t segment5[0x10000];
 uint8_t segment8[0x10000];
 uint8_t segment9[0x10000];
+uint8_t segment6[0x10000];
 //uint8_t videoram[0x10000];
 
 CSdl mSdl;
@@ -323,41 +327,45 @@ WORD& memory16(WORD segment, WORD offset)
     if (offset==0x236e) {
         int f = 9;
     }
-    if (segment == dataseg && offset == 0x9c80)
+    if (segment == _dseg && offset == 0x9c80)
     {
         int f = 9;
     }
-    if (segment == dataseg) // dseg
+    if (segment == _dseg) // dseg
     {
         return *(WORD*)(datasegment + offset);
     }
-    if (segment == seg002) // seg002
+    if (segment == _seg002) // seg002
     {
         return *(WORD*)(segment2 + offset);
     }
-    if (segment == seg003) // seg003
+    if (segment == _seg003) // seg003
     {
         return *(WORD*)(segment3 + offset);
     }
-    if (segment == seg005) // seg003
+    if (segment == _seg005) // seg003
     {
         return *(WORD*)(segment5 + offset);
     }
-    if (segment == seg007) // seg003
+    if (segment == _seg007) // seg003
     {
         return *(WORD*)(segment7 + offset);
     }
-    if (segment == seg008)
+    if (segment == _seg008)
     {
         return *(WORD*)(segment8 + offset);
     }
-    if (segment == seg009)
+    if (segment == _seg009)
     {
         return *(WORD*)(segment9 + offset);
     }
-    if (segment == seg000) // seg003
+    if (segment == _seg000) // seg003
     {
         return *(WORD*)(segment0 + offset);
+    }
+    if (segment == _seg006) // seg003
+    {
+        return *(WORD*)(segment6 + offset);
     }
     if (segment == 0x0000 && (offset == 512 || offset == 514)) // custom int 80h handler
     {
@@ -377,7 +385,7 @@ WORD& memory16(WORD segment, WORD offset)
 
 BYTE& memory(WORD segment, WORD offset)
 {
-    if (segment == dataseg && offset == 0x9c80)
+    if (segment == _dseg && offset == 0x9c80)
     {
         int f = 9;
     }
@@ -385,39 +393,39 @@ BYTE& memory(WORD segment, WORD offset)
     if (segment == 0x2565 && offset==0x2472) {
         int f = 9;
     }
-    if (segment == dataseg) // dseg
+    if (segment == _dseg) // dseg
     {
         return *(datasegment + offset);
     }
-    if (segment == seg002)
+    if (segment == _seg002)
     {
         return *(segment2 + offset);
     }
-    if (segment == seg003)
+    if (segment == _seg003)
     {
         return *(segment3 + offset);
     }
-    if (segment == seg005)
+    if (segment == _seg005)
     {
         return *(segment5 + offset);
     }
-    if (segment == seg007) // seg003
+    if (segment == _seg007) // seg003
     {
         return *(segment7 + offset);
     }
-    if (segment == seg008)
+    if (segment == _seg008)
     {
         return *(segment8 + offset);
     }
-    if (segment == seg009)
+    if (segment == _seg009)
     {
         return *(segment9 + offset);
     }
-    if (segment == seg000)
+    if (segment == _seg000)
     {
         return *(segment0 + offset);
     }
-    if (segment == seg001)
+    if (segment == _seg001)
     {
         return *(segment1 + offset);
     }
@@ -445,9 +453,9 @@ void onKey(int k)
         case SDL_SCANCODE_SPACE: code = 0x80; break;
             
         case SDL_SCANCODE_RETURN: code = 0x80;
-            memory(dataseg, 0x8f5b) = 0xff; break;
+            memory(_dseg, 0x8f5b) = 0xff; break;
     }
-    memory(dataseg, 0x8f59) = code;
+    memory(_dseg, 0x8f59) = code;
 }
 
 void loadSegment(uint8_t* buffer, const char* suffix, int len)
@@ -466,8 +474,9 @@ void _sync()
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
     {
-        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
-            
+        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y, -1));
+        //mSdl.SetPixel(x+320, y, mVideo.GetPixel(x, y, 0x4000));
+
     }
     mSdl.Loop();
 }
@@ -510,13 +519,15 @@ int main(int argc, const char * argv[]) {
     m_arrStack.resize(2*32, 0);
     _sp = 32;
     _ds = _es = _di = _bp = 0x6666;
-    //_cs = seg000;
+    _ss = _seg006;
+    //_cs = _seg000;
     loadSegment(datasegment, "dseg", 21815);
     loadSegment(segment2, "seg2", 2742);
     loadSegment(segment0, "seg0", 62096);
     loadSegment(segment3, "seg3", 11999); // ma byt 12000 !!!
     loadSegment(segment1, "seg1", 0x5900);
     memset(segment5, 0, 0x10000);
+    memset(segment6, 0, 0x10000);
     memset(segment7, 0, 0x10000);
     memset(segment8, 0, 0x10000);
     memset(segment9, 0, 0x10000);

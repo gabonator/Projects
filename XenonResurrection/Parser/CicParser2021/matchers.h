@@ -97,7 +97,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 			return make_shared<CISingleArgOp>(CISingleArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]));
 		}
 
-		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|clc|sahf|lahf|popf|pushf|xlat)$", strLine, arrMatches) )
+		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|clc|sahf|lahf|popf|pushf|xlat|cmc)$", strLine, arrMatches) )
 		{
 			return make_shared<CIZeroArgOp>(CIZeroArgOp::GetType(arrMatches[0]));
 		}
@@ -107,9 +107,9 @@ class CIMFixedArgOp : public CInstructionMatcher
             return make_shared<CIZeroArgOp>(CIZeroArgOp::GetType(arrMatches[0]));
         }
 
-		if ( CUtils::match("^(out|in|xchg|rcr|rcl|rol|les|lea|sbb)[\\s]+(.*),\\s*(.*)$", strLine, arrMatches) )
+		if ( CUtils::match("^(out|in|xchg|rcr|rcl|rol|les|lea|lds|sbb)[\\s]+(.*),\\s*(.*)$", strLine, arrMatches) )
 		{
-			if ( arrMatches[0] == "lea" )
+			if ( arrMatches[0] == "lea" || arrMatches[0] == "lds" )
 				return make_shared<CITwoArgOp>(CITwoArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]), CValue(arrMatches[2], CValue::r16));
 			else if ( arrMatches[0] == "xchg" )
 			{
@@ -131,7 +131,7 @@ class CIMStringOp : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
 
-		if ( CUtils::match("^(rep|repne)\\s+(stosb|lodsb|stosw|lodsw|movsw|movsb|scasw|scasb)$", strLine, arrMatches) )
+		if ( CUtils::match("^(rep|repne|repe)\\s+(stosb|lodsb|stosw|lodsw|movsw|movsb|scasw|scasb|cmpsb)$", strLine, arrMatches) )
 		{
 			return make_shared<CIString>(CIString::GetRule(arrMatches[0]), CIString::GetOperation(arrMatches[1]));
 		}
@@ -490,11 +490,11 @@ class CIMSegment : public CInstructionMatcher
     virtual shared_ptr<CInstruction> Match(string strLine) override
     {
         vector<string> arrMatches;
-        if ( CUtils::match("^(.*seg.*) segment .*public.*$", strLine, arrMatches) )
+        if ( CUtils::match("^(\\S+)\\s+segment .*public.*$", strLine, arrMatches) )
         {
             return make_shared<CISegment>(arrMatches[0]);
         }
-        if ( CUtils::match("^(.*seg.*) segment .*stack.*$", strLine, arrMatches) )
+        if ( CUtils::match("^(\\S+)\\s+segment .*stack.*$", strLine, arrMatches) )
         {
             return make_shared<CISegment>(arrMatches[0]);
         }
@@ -507,7 +507,8 @@ class CIMNop : public CInstructionMatcher
 	virtual shared_ptr<CInstruction> Match(string strLine) override
 	{
 		vector<string> arrMatches;
-        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" || /*strLine.substr(0, 4) == "seg0" || */ strLine.find(" db ") != string::npos || strLine == "align 20h")
+        if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" ||
+            strLine == ".model flat" || /*strLine.substr(0, 4) == "seg0" || */ strLine.find(" db ") != string::npos || strLine == "align 20h")
         {
             return make_shared<CINop>();
         }
@@ -542,7 +543,7 @@ class CIMNop : public CInstructionMatcher
 			return make_shared<CINop>(strLine);
 		}
 
-		if ( strLine == "align 10h" )
+		if ( strLine == "align 10h" ||  strLine == "align 800h" ||  strLine == "align 80h" )
 		{
 			return make_shared<CINop>(strLine);
 		}
@@ -557,7 +558,7 @@ class CIMNop : public CInstructionMatcher
 			return make_shared<CINop>(strLine);
 		}
 
-		if ( strLine == "code  ends" || strLine == "end start")
+		if ( strLine == "code  ends" || strLine == "end start" || strLine == "end")
 		{
 			return make_shared<CINop>(strLine);
 		}
