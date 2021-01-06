@@ -134,7 +134,7 @@ class CIZeroArgOp : public CInstruction
 public:
 	enum EType {
 		cli, sti, _std, stc, ctc, cld, aaa, cbw, lodsw, lodsb, stosw, stosb, movsw, movsb, clc, sahf, lahf, popf, pushf, xlat,
-        cwd, cmc,
+        cwd, cmc, scasb,
 		// TODO: Should be in separate fake instruction
 		FakeZeroTest, FakeCarryTest, FakeZeroCarryTest,
 		invalid
@@ -158,7 +158,7 @@ public:
 		CheckEnum(movsb);	CheckEnum(clc);		CheckEnum(sahf);	CheckEnum(lahf);
 		CheckEnum(popf);	CheckEnum(pushf);	CheckEnum(stosb);	CheckEnum(xlat);
         // numeric
-        CheckEnum(cwd); CheckEnum(cmc);
+        CheckEnum(cwd); CheckEnum(cmc); CheckEnum(scasb);
 		_ASSERT(0);
 		return invalid;
 	}

@@ -148,6 +148,14 @@ string CValue::ToC()
                 return "_dseg";
             if (m_eSegment == seg000)
                 return "_seg000";
+            if (m_eSegment == seg003)
+                return "_seg003";
+            if (m_eSegment == seg004)
+                return "_seg004";
+            if (m_eSegment == seg002)
+                return "_seg002";
+            if (m_eSegment == seg001)
+                return "_seg001";
             _ASSERT(0);
 
 		return "SEG_DATA";
@@ -434,6 +442,25 @@ string CValue::ToC()
                 ss << "memory(_ss, 0x" << uppercase << hex << m_nValue << ")";
             else
                 _ASSERT(0);
+            return ss.str();
+        
+        case CValue::ss:
+            return "_ss";
+        
+        case CValue::wordptr_es_si:
+            return "memory16(_es, _si)";
+
+        case CValue::es_bx:
+            if ( m_eRegLength == CValue::r16 )
+                return "memory16(_es, _bx)";
+            else if ( m_eRegLength == CValue::r8 )
+                return "memory(_es, _bx)";
+            else
+                _ASSERT(0);
+
+        case CValue::wordptr_es_di_plus:
+            ss << "memory(_es, _di + 0x" << uppercase << hex << m_nValue << ")";
+
             return ss.str();
 
 	default:

@@ -404,6 +404,7 @@ public:
 		case CIZeroArgOp::stosw: m_strOperation = "_stosw"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::movsb: m_strOperation = "_movsb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::movsw: m_strOperation = "_movsw"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
+        case CIZeroArgOp::scasb: m_strOperation = "_scasb()"; break;
 
 		case CIZeroArgOp::pushf: m_strOperation = "_pushf()"; break;
 		case CIZeroArgOp::popf: m_strOperation = "_popf()"; break;
@@ -484,8 +485,24 @@ public:
                     break;
                 }
             }
-            _ASSERT(0);
-            m_strOperation = "_rcl($arg1, $arg2)";
+            {
+                shared_ptr<CIZeroArgOp> zeroArg = dynamic_pointer_cast<CIZeroArgOp>(pPrevious);
+                if (zeroArg && (zeroArg->m_eType == CIZeroArgOp::stc || zeroArg->m_eType == CIZeroArgOp::clc))
+                {
+                    m_strOperation = "_ASSERT(0); /* stc-clc-CHECK */ _rcl($arg1, $arg2)";
+                    break;
+                }
+            }
+            {
+                shared_ptr<CIConditionalJump> jump = dynamic_pointer_cast<CIConditionalJump>(pPrevious);
+                if (jump && (jump->m_eType == CIConditionalJump::jb || jump->m_eType == CIConditionalJump::jnb))
+                {
+                    m_strOperation = "_ASSERT(0); /* cond-FIXME */ _rcl($arg1, $arg2)";
+                    break;
+                }
+            }
+            //_ASSERT(0);
+            m_strOperation = "_ASSERT(0); /* unk previous */ _rcl($arg1, $arg2)";
             break;
 		case CITwoArgOp::rol: m_strOperation = "_rol($arg1, $arg2)"; break;
 		case CITwoArgOp::les: m_strOperation = "_les($arg1, $arg2)"; break;
@@ -611,7 +628,7 @@ public:
             From(pCondition, dynamic_pointer_cast<CISingleArgOp>(pInstruction));
         else
              if ( dynamic_pointer_cast<CIStop>(pInstruction) )
-                From(pCondition, CCConditionalJump::ZeroFlag);
+                From(pCondition, CCConditionalJump::Fixme);
         else
             if ( pCondition->m_eType == CIConditionalJump::jcxz )
                From(pCondition);
@@ -890,6 +907,12 @@ public:
                 break;
             case CIConditionalJump::jb:
                 m_strCondition = "_flags.carry";
+                break;
+            case CIConditionalJump::jnz:
+                m_strCondition = "!_flags.zero";
+                break;
+            case CIConditionalJump::jz:
+                m_strCondition = "_flags.zero";
                 break;
             default:
                 _ASSERT(0);

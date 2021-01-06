@@ -118,6 +118,8 @@ public:
 	{
 		FILE* f = fopen(strFileName, "r");
 		int i = 0;
+        string skipDb("db    ");
+        
 		while (!feof(f))
 		{
             if ((i%1000) == 0)
@@ -131,13 +133,20 @@ public:
 
 			char strLine[1024];
 			fgets(strLine, 1023, f);
+            
+            if (i<100000)
+                continue;
+
 			if ( strLine[0] )
 			{
 				while ( strLine[strlen(strLine)-1] == 0x0d || strLine[strlen(strLine)-1] == 0x0a )
 					strLine[strlen(strLine)-1] = 0;
 			}
-			
+
+            
 			string _strLine = Trim(strLine);
+            if (_strLine.substr(0, 6) == skipDb)
+                continue;
 
             if (strstr(strLine, "failed") != nullptr)
             {

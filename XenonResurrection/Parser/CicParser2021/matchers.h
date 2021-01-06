@@ -97,7 +97,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 			return make_shared<CISingleArgOp>(CISingleArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]));
 		}
 
-		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|clc|sahf|lahf|popf|pushf|xlat|cmc)$", strLine, arrMatches) )
+		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|clc|sahf|lahf|popf|pushf|xlat|cmc|scasb)$", strLine, arrMatches) )
 		{
 			return make_shared<CIZeroArgOp>(CIZeroArgOp::GetType(arrMatches[0]));
 		}
@@ -394,6 +394,11 @@ class CIMFlow : public CInstructionMatcher
             return make_shared<CISwitch>(arrMatches[0], CValue(arrMatches[1]), CISwitch::Call);
         }
 
+        if ( CUtils::match("^call word ptr (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
+
 		if ( CUtils::match("^loop[\\s]+(.*)$", strLine, arrMatches) )
 		{
 			return make_shared<CILoop>(CILoop::Loop, CLabel(arrMatches[0]));
@@ -508,7 +513,7 @@ class CIMNop : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
         if ( strLine == ".686p" || strLine == ".mmx" || strLine == ".model large" ||
-            strLine == ".model flat" || /*strLine.substr(0, 4) == "seg0" || */ strLine.find(" db ") != string::npos || strLine == "align 20h")
+            strLine == ".model flat" || strLine == ".model tiny" || /*strLine.substr(0, 4) == "seg0" || */ strLine.find(" db ") != string::npos || strLine == "align 20h")
         {
             return make_shared<CINop>();
         }
