@@ -1,0 +1,10 @@
+functionTitles:{
+"sub_143FA":"Load map _bx=0/2/4",
+"loc_17F33":"Exit app"
+}
+
+functionBreakup:{
+["sub_181A3()", "loc_181A3:", "breakup-menu"]
+}
+
+"sub_180A7", "es", "0040"
