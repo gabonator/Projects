@@ -60,8 +60,8 @@ void sub_16B7E()
 void sub_16A2A()
 {
     _cl = memory(_ds, 0x1E4);
-    memory(_ds, 0x18E) = _cl;
-    memory(_ds, 0x18D) = _cl;
+    memory(_ds, 0x18E) = _cl; // new direction
+    memory(_ds, 0x18D) = _cl; // new direction
     _bp = memory16(_ds, 0x1da);
     memory16(_ds, 0x194) = _bp;
     _bp = memory16(_ds, 0x1d6);

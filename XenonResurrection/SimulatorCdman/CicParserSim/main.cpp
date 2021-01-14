@@ -13,6 +13,8 @@
 
 #include "cpu.h"
 
+constexpr WORD appBase = 0x1020;
+
 #include "ega.h"
 #include "sdl.h"
 
@@ -20,9 +22,9 @@ CEga mVideo;
 void _dump();
 
 std::list<int> keyboardBuffer;
-constexpr WORD _seg000 = 0x1000;
-constexpr WORD _seg001 = 0x1020;
-constexpr WORD _seg002 = 0x13EC;
+constexpr WORD _seg000 = 0x1000 - appBase;
+constexpr WORD _seg001 = 0x1020 - appBase;
+constexpr WORD _seg002 = 0x13EC - appBase;
 
 void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
 void memoryVideoOr16(WORD seg, WORD ofs, WORD x);
@@ -393,7 +395,7 @@ extern uint32_t getTick();
 
 void _tone(int f)
 {
-    std::cout << "tone " << hex << f << " f=" << dec << (1193180/f) << "\n";
+//    std::cout << "tone " << hex << f << " f=" << dec << (1193180/f) << "\n";
 }
 void _out(WORD port, BYTE val)
 {
@@ -569,6 +571,9 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
+    segment += appBase;
+    _ASSERT(segment == 0x1020 || segment == 0x2499);
+    
     _ASSERT(segment >= 0x1000);
     _ASSERT(segment >= 0x1000 && segment < 0xa000);
     int ofs = (segment-0x1000)*16 + offset;
@@ -578,6 +583,9 @@ WORD& memory16(WORD segment, WORD offset)
 
 BYTE& memory(WORD segment, WORD offset)
 {
+    segment += appBase;
+    _ASSERT(segment == 0x1020 || segment == 0x23ec || segment == 0x2499 || segment == 0x2411);
+
     _ASSERT(segment >= 0x1000 && segment < 0xa000);
     int ofs = (segment-0x1000)*16 + offset;
     _ASSERT(ofs >= 0 && ofs < sizeof(datasegment));
@@ -602,6 +610,10 @@ void onKey(int k, int p)
             case SDL_SCANCODE_RIGHT: key = 0x4d00; break;
             case SDL_SCANCODE_SPACE: key = 0x3920; break;
             case SDL_SCANCODE_RETURN: key = 0x1c0d; break;
+            case SDL_SCANCODE_1: memory(_ds, 0x18E) = 0; break;
+            case SDL_SCANCODE_2: memory(_ds, 0x18E) = 8; break;
+            case SDL_SCANCODE_3: memory(_ds, 0x18E) = 16; break;
+            case SDL_SCANCODE_4: memory(_ds, 0x18E) = 24; break;
         }
 
         if (key)
@@ -666,6 +678,55 @@ void _sync()
         //mSdl.SetPixel(x+320, y, mVideo.palette[((pix >> (7-(x&7))) & 1)*13] );
         //mSdl.SetPixel(x+320, y, mVideo.GetPixel(x, y, 0x0800));
     }
+    
+    int pos = memory16(_ds, 0x190);
+    int px = (pos - 22)%21;
+    int py = (pos - 22)/21;
+    if (px >= 0 && py >= 0 && px < 20 && py < 13)
+    for (int x=0; x<32; x++)
+        for (int y=0; y<24; y++)
+        {
+            if (((x>>1)+(y>>1))&1)
+                mSdl.SetPixel(px*32+x+16, py*24+y+58, 0xffffff);
+        }
+    
+    
+    static const char map[] = // 19x11
+      "rrrd    0 00   0   "
+      "u00d000 0    0   0 "
+      "u0dl  0 00000000 0 "
+      "u0d00 0       0  0 "
+      "u0d0    000 000 00 "
+      "ull  00 000 0 0 0  "
+      "00 0  0     0 0   0"
+      "00 0 00 000   00000"
+      "      0     0      "
+      " 00 0 0 0 0 000 00 "
+      "        0          ";
+    
+    int pp = py*19+px;
+    if (pp >= 0 && pp <= 19*11)
+    {
+        int d = -1;
+        char c = map[pp];
+        if (c == 'r')
+            d = 0;
+        if (c == 'l')
+            d = 8;
+        if (c == 'u')
+            d = 24;
+        if (c == 'd')
+            d = 16;
+        if (d!=-1)
+            memory(_ds, 0x18E) = d;
+    }
+    
+
+     //std::cout << (int)memory(_ds, 0x18D) << " ... " << (int)memory(_ds, 0x18E) << "\n";
+//    _dh = memory(_ds, 0x18D);                   //mov dh, ds:18Dh
+//    _dl = memory(_ds, 0x18E);                   //mov dl, ds:18Eh
+
+
     mSdl.Loop();/*
     _push(_ax); _push(_bx); _push(_cx); _push(_dx);
     _push(_si); _push(_di); _push(_bp); _push(_ds);
@@ -730,7 +791,7 @@ int main(int argc, const char * argv[]) {
     
     
     memset(datasegment, 0, sizeof(datasegment));
-    loadSegment(datasegment, "cdman.data", 33436);
+    loadSegment(datasegment, "cdman.data", 0x3ec0); //33436);
     mSdl.Init();
     start();
     mSdl.Deinit();

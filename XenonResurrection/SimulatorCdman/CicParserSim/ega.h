@@ -231,7 +231,7 @@ public:
         for (int _x=0; _x<8; _x++)
             for (int _y=0; _y<14; _y++)
             {
-                int d = (attr & 0x08) ? ::memory(0x1020, 0x2639 + c*14 + _y) : font[c*14 + _y];
+                int d = (attr & 0x08) ? ::memory(0x1020-appBase, 0x2639 + c*14 + _y) : font[c*14 + _y];
                 int b = (d << _x) & 128;
                 SetPixel(x+_x, y+_y, b ? (attr & 15) : (attr>>4));
             }

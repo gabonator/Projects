@@ -5131,7 +5131,7 @@ loc_16B42:                                      //loc_16B42:
         int x = (_bp - 22)%21;
         int y = (_bp - 22)/21;
         int mask = (int)memory(_ds, _bp + 124);
-        std::cout << "test " << x << "," << y << " mask: "<< !!(mask&64)  << !!(mask&16) << !!(mask&32) << !!(mask&128) << "\n";
+        //std::cout << "test " << x << "," << y << " mask: "<< !!(mask&64)  << !!(mask&16) << !!(mask&32) << !!(mask&128) << "\n";
     }
     if (!(memory(_ds, _bp + 124) & _al))        //jz short loc_16B6E
       goto loc_16B6E;
