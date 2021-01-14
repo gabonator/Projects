@@ -1,9 +1,10 @@
+int ttt = 0;
 void start();
-void sub_13F3D(int pc = 0);
+void sub_13F3D(int pc = 0); // breakup
 void sub_13FEE();
 void sub_140C1();
 void sub_140F6();
-void sub_14119();
+void sub_14119(); // breakup
 void sub_141D6();
 void sub_1431E();
 void loc_14327();
@@ -20,11 +21,11 @@ void sub_14639();
 void sub_14791();
 void sub_147BA();
 void sub_147E7();
-void sub_1487F();
+void sub_1487F(); // breakup
 void sub_14BA3();
 void sub_14BFA();
 void sub_14CE4();
-void sub_14D8C();
+void sub_14D8C(); // breakup
 void sub_14E49();
 void sub_14E74();
 void sub_14EE9();
@@ -141,8 +142,8 @@ void sub_17738();
 void sub_17772();
 void sub_1778E();
 void sub_17805();
-void sub_1787C();
-void sub_17885();
+void sub_1787C(); // breakup
+void sub_17885(); // breakup
 void sub_1793C();
 void sub_179E3();
 void sub_17A24();
@@ -176,7 +177,7 @@ void sub_180D2();
 void sub_180E0(int pc = 0);
 void sub_1813A();
 void loc_1819F();
-void sub_181A3();
+void sub_181A3(); // breakup
 void sub_181C1();
 void loc_181E6();
 void sub_181FA();
@@ -3617,12 +3618,24 @@ void sub_15DAA()
     _es = _pop();                               //pop es
 }
 
-void sub_15DB2()
+void sub_15DB2() // draw map
 {
     _bx = memory16(_ds, _bx + 1005);            //mov bx, [bx+3EDh]
     _es = memory16(_ds, 0x24B);                 //mov es, word ptr ds:24Bh
     _di = 0x1222;                               //mov di, 1222h
     _bx += 0x16;                                //add bx, 16h
+    
+    int index = 0;
+    for (int y=0; y<11; y++)
+    {
+        char line[100] = {0};
+        for (int x=0; x<21; x++)
+        {
+            uint8_t blk = memory(_ds, _bx+index++);
+            line[x] = blk;
+        }
+        std::cout << "mapline: " << line << "\n";
+    }
     _cx = 0x0b;                                 //mov cx, 0Bh
 loc_15DC3:                                      //loc_15DC3:
     _push(_cx);                                 //push cx
@@ -3633,7 +3646,10 @@ loc_15DC8:                                      //loc_15DC8:
       goto loc_15DE8;
     _push(_cx);                                 //push cx
     _si = 0x6da4;                               //mov si, 6DA4h
+    ttt=1;
+    // draw edible dot
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     _di -= 0x0780;                              //sub di, 780h
     _cx = _pop();                               //pop cx
     goto loc_15DE8;                             //jmp short loc_15DE8
@@ -3674,7 +3690,9 @@ loc_15E0B:                                      //loc_15E0B:
     _si = 0x6da0;                               //mov si, 6DA0h
 loc_15E1F:                                      //loc_15E1F:
     _push(_cx);                                 //push cx
+    ttt = 32;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     _di -= 0x0780;                              //sub di, 780h
     _cx = _pop();                               //pop cx
 loc_15E28:                                      //loc_15E28:
@@ -3692,7 +3710,9 @@ loc_15E28:                                      //loc_15E28:
       goto loc_15E4B;
     _si = memory16(_ds, 0x12);                  //mov si, ds:12h
     _di = memory16(_ds, 0x37);                  //mov di, ds:37h
+    ttt = 33;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
 loc_15E4B:                                      //loc_15E4B:
     if (memory(_ds, 0x3B) == 1)                 //jz short loc_15E64
       goto loc_15E64;
@@ -3709,9 +3729,10 @@ locret_15E6E:                                   //locret_15E6E:
     return;
 }
 
-void sub_15E6F()
+void sub_15E6F() // check move dir
 {
     _bx = memory16(_ds, _bx + 1005);            //mov bx, [bx+3EDh]
+    std::cout << "pos: " << std::dec << (_bx-0x889) << "\n";
     memory16(_ds, 0x66) = 0xd1;                 //mov word ptr ds:66h, 0D1h
     _lea(_di, _ds, 0x92);                       //lea di, ds:92h
     _bx += 0x16;                                //add bx, 16h
@@ -3866,21 +3887,25 @@ void sub_15F62()
       goto loc_15FA0;
     if (_ah != 0x48)                            //jnz short loc_15F74
       goto loc_15F74;
+    // key up
     memory(_ds, 0x18E) = 0x18;                  //mov byte ptr ds:18Eh, 18h
     return;                                     //retn
 loc_15F74:                                      //loc_15F74:
     if (_ah != 0x50)                            //jnz short loc_15F7F
       goto loc_15F7F;
+    // key down
     memory(_ds, 0x18E) = 0x10;                  //mov byte ptr ds:18Eh, 10h
     return;                                     //retn
 loc_15F7F:                                      //loc_15F7F:
     if (_ah != 0x4b)                            //jnz short loc_15F8A
       goto loc_15F8A;
+    // key left
     memory(_ds, 0x18E) = 8;                     //mov byte ptr ds:18Eh, 8
     return;                                     //retn
 loc_15F8A:                                      //loc_15F8A:
     if (_ah != 0x4d)                            //jnz short loc_15F95
       goto loc_15F95;
+    // key right
     memory(_ds, 0x18E) = 0;                     //mov byte ptr ds:18Eh, 0
     return;                                     //retn
 loc_15F95:                                      //loc_15F95:
@@ -4069,8 +4094,14 @@ loc_16109:                                      //loc_16109:
     memory(_ds, _bx + 410) = _ah;               //mov [bx+19Ah], ah
 }
 
-void sub_1610E()
+void sub_1610E() // draw sprite
 {
+//    if (ttt==1)
+//        return;
+//    //return;
+    //if (ttt == 4) return; // 2 - bonus, 1 = dot, 3=?
+    //std::cout << "draw char = " <<std::hex << ttt << "\n";
+    //_ASSERT(ttt>0);
     _cx = 0x18;                                 //mov cx, 18h
 loc_16111:                                      //loc_16111:
     _al = memoryVideoGet(_es, _si);             //mov al, es:[si]
@@ -4121,7 +4152,7 @@ loc_1616D:                                      //loc_1616D:
       goto loc_1616D;
 }
 
-void sub_16184()
+void sub_16184() // draw sprite2?
 {
     _cx = 0x18;                                 //mov cx, 18h
 loc_16187:                                      //loc_16187:
@@ -4157,7 +4188,7 @@ loc_161B9:                                      //loc_161B9:
       goto loc_161B9;
 }
 
-void sub_161D8()
+void sub_161D8() // draw sprite3?
 {
     _cx = 0x0c;                                 //mov cx, 0Ch
 loc_161DB:                                      //loc_161DB:
@@ -4256,7 +4287,9 @@ loc_162A5:                                      //loc_162A5:
     _si = memory16(_ds, 0x519);                 //mov si, ds:519h
     _si = _si + memory16(_ds, 0x19);            //add si, ds:19h
     _di = memory16(_ds, 0x51B);                 //mov di, ds:51Bh
+    ttt = 3;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     memory16(_ds, 0x19) += 4;                   //add word ptr ds:19h, 4
     if (memory16(_ds, 0x19) != 0x14)            //jnz short locret_162CB
       goto locret_162CB;
@@ -4316,7 +4349,9 @@ loc_1633E:                                      //loc_1633E:
     _si = memory16(_ds, 0x529);                 //mov si, ds:529h
     _si = _si + memory16(_ds, 0x26);            //add si, ds:26h
     _di = memory16(_ds, 0x52B);                 //mov di, ds:52Bh
+    ttt = 4;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     memory16(_ds, 0x26) += 4;                   //add word ptr ds:26h, 4
     if (memory16(_ds, 0x26) != 0x10)            //jnz short locret_16364
       goto locret_16364;
@@ -4442,7 +4477,9 @@ loc_16478:                                      //loc_16478:
     _si = memory16(_ds, 0x48);                  //mov si, ds:48h
     _si = _si + memory16(_ds, 0x4C);            //add si, ds:4Ch
     _di = memory16(_ds, 0x4A);                  //mov di, ds:4Ah
+    ttt = 11;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     return;                                     //retn
 loc_164A3:                                      //loc_164A3:
     if (memory16(_ds, 0x4C) == 0xfffc)          //jz short locret_164BE
@@ -4450,7 +4487,9 @@ loc_164A3:                                      //loc_164A3:
     _si = memory16(_ds, 0x48);                  //mov si, ds:48h
     _si = _si + memory16(_ds, 0x4C);            //add si, ds:4Ch
     _di = memory16(_ds, 0x4A);                  //mov di, ds:4Ah
+    ttt = 7;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     memory16(_ds, 0x4C) -= 4;                   //sub word ptr ds:4Ch, 4
 locret_164BE:                                   //locret_164BE:
     return;
@@ -4487,7 +4526,9 @@ loc_164C9:                                      //loc_164C9:
     _si = memory16(_ds, 0x12);                  //mov si, ds:12h
     memory16(_ds, 0x205) = _si;                 //mov ds:205h, si
     _di = memory16(_ds, 0x37);                  //mov di, ds:37h
+    ttt = 21;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     memory16(_ds, 0x5A8) = 0;                   //mov word ptr ds:5A8h, 0
     _lea(_ax, _ds, 0x5D0);                      //lea ax, ds:5D0h
     memory16(_ds, 0x5AA) = _ax;                 //mov ds:5AAh, ax
@@ -4556,7 +4597,9 @@ loc_165CA:                                      //loc_165CA:
     _si = memory16(_ds, 0x12);                  //mov si, ds:12h
     _di = memory16(_ds, _bx + 1617);            //mov di, [bx+651h]
     memory16(_ds, 0x37) = _di;                  //mov ds:37h, di
+    ttt = 17;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
 }
 
 void sub_165E5()
@@ -4646,7 +4689,9 @@ loc_166D8:                                      //loc_166D8:
     _si = memory16(_ds, 0x57D);                 //mov si, ds:57Dh
     _si = _si + memory16(_ds, _bx + 80);        //add si, [bx+50h]
     _di = memory16(_ds, _bx + 458);             //mov di, [bx+1CAh]
+    ttt = 2;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
 loc_166F7:                                      //loc_166F7:
     _bx += 0x0002;                              //add bx, 2
     if (_bx == 0x0008)                          //jz short locret_16702
@@ -4698,7 +4743,9 @@ loc_16751:                                      //loc_16751:
     _si = 0x6da4;                               //mov si, 6DA4h
 loc_16767:                                      //loc_16767:
     _di = memory16(_ds, 0x3F);                  //mov di, ds:3Fh
+    ttt = 21;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
     memory16(_ds, 0x14) = 0;                    //mov word ptr ds:14h, 0
     return;                                     //retn
 loc_16775:                                      //loc_16775:
@@ -4731,7 +4778,9 @@ loc_167A9:                                      //loc_167A9:
     memory16(_ds, 0x16) = _si;                  //mov ds:16h, si
     _di = memory16(_ds, _bx + 1617);            //mov di, [bx+651h]
     memory16(_ds, 0x3F) = _di;                  //mov ds:3Fh, di
+    ttt = 19;
     sub_1610E();                                //call sub_1610E
+    ttt = 0;
 }
 
 void sub_167C7()
@@ -4989,9 +5038,18 @@ loc_16A73:                                      //loc_16A73:
     memory(_ds, 0x233) = 0;                     //mov byte ptr ds:233h, 0
     _dh = memory(_ds, 0x18D);                   //mov dh, ds:18Dh
     _dl = memory(_ds, 0x18E);                   //mov dl, ds:18Eh
+    // right 0, left 8, down 16, up 24
+    {
+        int p = memory16(_ds, 0x194)-4882;
+        int x = p%640;
+        int y = p/640;
+        
+        //std::cout << "direction " << (int) _dh << "\n"; //(int)x<< "," << (int)y << "\n";
+    }
     if (_dh == _dl)                             //jz short loc_16A8B
       goto loc_16A8B;
     _dl = _dl ^ _dh;                            //xor dl, dh
+    // direction
     if (!(_dl & 0x10))                          //jz short loc_16AA6
       goto loc_16AA6;
 loc_16A8B:                                      //loc_16A8B:
@@ -5026,6 +5084,7 @@ loc_16AA6:                                      //loc_16AA6:
     memory16(_ds, 0x5C) &= 2;                   //and word ptr ds:5Ch, 2
     goto loc_16A8B;                             //jmp short loc_16A8B
 loc_16AE6:                                      //loc_16AE6:
+    // can go next dir
     _dh = memory(_ds, 0x18E);                   //mov dh, ds:18Eh
     memory(_ds, 0x18D) = _dh;                   //mov ds:18Dh, dh
     memory(_ds, 0x18F) = memory(_ds, 0x18F) ^ 0xff;//xor byte ptr ds:18Fh, 0FFh
@@ -5066,6 +5125,14 @@ loc_16B42:                                      //loc_16B42:
     _ror(_cl, 1);                               //ror cl, 1
     _al = 0x10;                                 //mov al, 10h
     _rol(_al, _cl);                             //rol al, cl
+    // test if can go
+    {
+        // pacman position
+        int x = (_bp - 22)%21;
+        int y = (_bp - 22)/21;
+        int mask = (int)memory(_ds, _bp + 124);
+        std::cout << "test " << x << "," << y << " mask: "<< !!(mask&64)  << !!(mask&16) << !!(mask&32) << !!(mask&128) << "\n";
+    }
     if (!(memory(_ds, _bp + 124) & _al))        //jz short loc_16B6E
       goto loc_16B6E;
     memory(_ds, 0x18D) = _dh;                   //mov ds:18Dh, dh
@@ -5120,6 +5187,7 @@ loc_16BE3:                                      //loc_16BE3:
     sub_16F07();                                //call sub_16F07
     _di -= 0x0870;                              //sub di, 870h
 loc_16BEE:                                      //loc_16BEE:
+    // move up pacman
     memory16(_ds, 0x194) = _di;                 //mov ds:194h, di
     sub_16CCD();                                //call sub_16CCD
     return;                                     //retn
@@ -5135,11 +5203,13 @@ loc_16BF6:                                      //loc_16BF6:
 loc_16C0F:                                      //loc_16C0F:
     sub_16F47();                                //call sub_16F47
 loc_16C12:                                      //loc_16C12:
+    // move down pac man
     memory16(_ds, 0x194) = _di;                 //mov ds:194h, di
     sub_16CCD();                                //call sub_16CCD
     return;                                     //retn
 loc_16C1A:                                      //loc_16C1A:
     _di = memory16(_ds, 0x194);                 //mov di, ds:194h
+    std::cout << "loc_16C1A " << std::dec << (int)memory(_ds, 0x5A) << "," << (int)memory(_ds, 0x5B) << "\n";
     if (memory(_ds, 0x5A) > 8)                  //ja short loc_16C2C
       goto loc_16C2C;
     if (memory(_ds, 0x5B) == 1)                 //jz short loc_16C3F
@@ -5147,9 +5217,12 @@ loc_16C1A:                                      //loc_16C1A:
 loc_16C2C:                                      //loc_16C2C:
     if (!(memory(_ds, 0x18F) & 1))              //jz short loc_16C4F
       goto loc_16C4F;
+    // clear
     sub_16F87();                                //call sub_16F87
     _di += 1;                                   //inc di
+    // move right pac man
     memory16(_ds, 0x194) = _di;                 //mov ds:194h, di
+    //draw
     sub_16CCD();                                //call sub_16CCD
     return;                                     //retn
 loc_16C3F:                                      //loc_16C3F:
@@ -5181,10 +5254,12 @@ loc_16C73:                                      //loc_16C73:
     return;                                     //retn
 loc_16C7E:                                      //loc_16C7E:
     _di -= 1;                                   //dec di
+    // move left pac man
     memory16(_ds, 0x194) = _di;                 //mov ds:194h, di
     sub_16E1B();                                //call sub_16E1B
     return;                                     //retn
 loc_16C87:                                      //loc_16C87:
+    //draw pacman
     _si = memory16(_ds, 0x1E9);                 //mov si, ds:1E9h
     _di = memory16(_ds, 0x194);                 //mov di, ds:194h
     _cx = 0x18;                                 //mov cx, 18h
@@ -5253,7 +5328,7 @@ loc_16D08:                                      //loc_16D08:
     sub_16D16();
 }
 
-void sub_16D16()
+void sub_16D16() // draw sprite: pacman up-down
 {
 loc_16D16:
     _al = memoryVideoGet(_es, _si);             //mov al, es:[si]
@@ -5404,7 +5479,7 @@ loc_16E46:                                      //loc_16E46:
     sub_16E59();
 }
 
-void sub_16E59()
+void sub_16E59() // draw sprite: pacman left-right
 {
 loc_16E59:
     _al = memoryVideoGet(_es, _si);             //mov al, es:[si]
@@ -5782,7 +5857,7 @@ loc_171A5:                                      //loc_171A5:
     _STOP_("continues");                        //sub_171AF proc near
 }
 
-void sub_171AF()
+void sub_171AF() // death
 {
     _bx = 0x0000;                               //mov bx, 0
     sub_15DFA();                                //call sub_15DFA
@@ -5817,9 +5892,11 @@ loc_17211:                                      //loc_17211:
     _push(_cx);                                 //push cx
     _push(_si);                                 //push si
     _push(_di);                                 //push di
+    ttt = 100;
     sub_1610E();                                //call sub_1610E
     sub_15ECC();                                //call sub_15ECC
     sub_16431();                                //call sub_16431
+    ttt = 0;
     memory16(_ds, 0x111E) = 0x64;               //mov word ptr ds:111Eh, 64h
     sub_1778E();                                //call sub_1778E
     _di = _pop();                               //pop di
@@ -5835,6 +5912,7 @@ loc_17231:                                      //loc_17231:
     sub_15ECC();                                //call sub_15ECC
     memory16(_ds, 0x111E) = 0x64;               //mov word ptr ds:111Eh, 64h
     sub_1778E();                                //call sub_1778E
+    _sync();
     _cx = _pop();                               //pop cx
     if (_al == 0x1b)                            //jz short locret_172B0
       goto locret_172B0;
@@ -6017,7 +6095,7 @@ loc_173F7:                                      //loc_173F7:
     sub_15D7C();                                //call sub_15D7C
 }
 
-void sub_1741F()
+void sub_1741F() // draw sprite 6?
 {
     _dh = 0x00;                                 //mov dh, 0
     _dl = memory(_ds, _bx + 414);               //mov dl, [bx+19Eh]
@@ -6090,7 +6168,7 @@ loc_174AA:                                      //loc_174AA:
       goto loc_174AA;
 }
 
-void sub_174D1()
+void sub_174D1() // draw sprite 8?
 {
     _ch = 0x00;                                 //mov ch, 0
     _cl = memory(_ds, _bx + 406);               //mov cl, [bx+196h]
@@ -6127,7 +6205,7 @@ loc_174FD:                                      //loc_174FD:
       goto loc_174FD;
 }
 
-void sub_1752C()
+void sub_1752C() // draw sprite 9?
 {
     _si = memory16(_ds, 0x205);                 //mov si, ds:205h
     _si += 0x0780;                              //add si, 780h
