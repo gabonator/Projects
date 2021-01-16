@@ -386,6 +386,7 @@ class CIJump : public CInstruction
 {
 public:
 	CLabel m_label;
+    bool m_stop{false};
 
 public:
 	CIJump() : m_label("") {}
@@ -414,6 +415,7 @@ public:
 public:
 	EType m_eType;
 	CLabel m_label;
+    bool m_stop{false};
 
 public:
 	CIConditionalJump() : m_label("") {}
@@ -511,6 +513,7 @@ public:
 public:
 	EType m_eType;
 	CLabel m_label;
+    bool m_stop{false};
 
 public:
 	CILoop() : m_label("") {}

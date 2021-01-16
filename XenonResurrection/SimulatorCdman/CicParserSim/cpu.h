@@ -344,7 +344,7 @@ void _ror(BYTE& b, BYTE l)
 
 void _div(WORD& r)
 {
-//    _ASSERT(_dx == 0);
+    _ASSERT(r != 0);
     WORD result = _ax / r;
     WORD remain = _ax % r;
     _ax = result;

@@ -411,6 +411,7 @@ public:
 		case CIZeroArgOp::aaa: m_strOperation = "_ASSERT(0 /* check carry */); _aaa()"; break;
             case CIZeroArgOp::cwd: m_strOperation = "_cwd()"; break;
             case CIZeroArgOp::cbw: m_strOperation = "_cbw()"; break;
+            case CIZeroArgOp::cmc: m_strOperation = "_cmc()"; break;
 		default:
 				_ASSERT(0);
 		}
@@ -466,7 +467,18 @@ public:
 		case CITwoArgOp::in: m_strOperation = "_in($arg1, $arg2)"; break;
 		case CITwoArgOp::out: m_strOperation = "_out($arg1, $arg2)"; break;
 		case CITwoArgOp::xchg: m_strOperation = "_xchg($arg1, $arg2)"; break;
-		case CITwoArgOp::rcr: m_strOperation = "_ASSERT(0 /* check carry */); _rcr($arg1, $arg2)"; break;
+		case CITwoArgOp::rcr:
+            {
+                shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
+                if (alu)
+                {
+                    alu->m_ExportInsertion = CIAlu::Carry;
+                    m_strOperation = "_rcr($arg1, $arg2)";
+                    break;
+                }
+            }
+                m_strOperation = "_ASSERT(0 /* check carry */); _rcr($arg1, $arg2)";
+                break;
 		case CITwoArgOp::rcl:
             {
                 shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
@@ -506,7 +518,9 @@ public:
             break;
 		case CITwoArgOp::rol: m_strOperation = "_rol($arg1, $arg2)"; break;
 		case CITwoArgOp::les: m_strOperation = "_les($arg1, $arg2)"; break;
-		case CITwoArgOp::lea: m_strOperation = "_lea($arg1, $arg2)"; break;
+		case CITwoArgOp::lea:
+                
+                m_strOperation = "_lea($arg1, $seg2, $ofs2)"; break;
         case CITwoArgOp::lds: m_strOperation = "_lds($arg1, $arg2)"; break;
 		case CITwoArgOp::sbb:
             {
@@ -529,9 +543,32 @@ public:
 
 	virtual string ToString() override
 	{
+        // TODO: should be in post process?
 		string strAux = m_strOperation;
 		CUtils::replace(strAux, "$arg1", m_strArgument1);
 		CUtils::replace(strAux, "$arg2", m_strArgument2);
+        if (strAux.find("$seg2") != string::npos || strAux.find("$ofs2") != string::npos)
+        {
+            vector<string> arrMatches;
+
+            if ( CUtils::match("^memory.*\\((.*), (.*)\\)$", m_strArgument2, arrMatches) )
+            {
+                CUtils::replace(strAux, "$seg2", arrMatches[0]);
+                CUtils::replace(strAux, "$ofs2", arrMatches[1]);
+
+            } else
+                if ( CUtils::match("^0x.*$", m_strArgument2, arrMatches) )
+                {
+                    CUtils::replace(strAux, "$seg2", "_ds");
+                    CUtils::replace(strAux, "$ofs2", m_strArgument2);
+                }
+                else
+                {
+                    
+                    _ASSERT(0);
+                }
+
+        }
 		return strAux + ";";
 	}
 };
@@ -561,6 +598,7 @@ public:
 	CLabel m_strLabel;
 	ELabelType m_eLabelType;
 	string m_strSigned;
+    bool m_stop{false};
 
 public:
 	CCConditionalJump(shared_ptr<CIJump> pJump) : m_strLabel("")
@@ -568,11 +606,13 @@ public:
 		m_strCondition = "true";
 		m_strLabel = pJump->m_label;
 		m_eLabelType = Label;
+        m_stop = pJump->m_stop;
 	}
 
 	CCConditionalJump(shared_ptr<CILoop> pLoop, shared_ptr<CInstruction> pCondition) : m_strLabel("")
 	{
 		string strExtraCondition;
+        m_stop = pLoop->m_stop;
 
 		switch (pLoop->m_eType)
 		{
@@ -612,6 +652,7 @@ public:
 
 	explicit CCConditionalJump(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CInstruction> pInstruction) : m_strLabel("")
 	{
+        m_stop = pCondition->m_stop;
 		if ( dynamic_pointer_cast<CIZeroArgOp>(pInstruction) && dynamic_pointer_cast<CIZeroArgOp>(pInstruction)->m_eType == CIZeroArgOp::FakeZeroTest )
 			From(pCondition, CCConditionalJump::ZeroFlag);
 		else if ( dynamic_pointer_cast<CIZeroArgOp>(pInstruction) && dynamic_pointer_cast<CIZeroArgOp>(pInstruction)->m_eType == CIZeroArgOp::FakeZeroCarryTest )
@@ -798,6 +839,9 @@ public:
             case CIConditionalJump::jg:
                     m_strCondition = "(type)"+pAlu->m_op1.ToC() + " > 0 /*CHECK*/" ; break;
 
+            case CIConditionalJump::jge:
+                    m_strCondition = "(type)"+pAlu->m_op1.ToC() + " >= 0 /*CHECK*/" ; break;
+
             case CIConditionalJump::jle: m_strCondition = "(type)$a <= (type)$b /*CHECK*/"; break;
 
 			default:
@@ -967,10 +1011,23 @@ public:
 		switch (m_eLabelType)
 		{
 		case Label:
-            if (m_strLabel.substr(0, 3) == "sub")
-                return string("{") + m_strLabel + "(); return; }";
+            if (m_strLabel.substr(0, 4) == "sub_")
+            {
+                string label = m_strLabel;
+                CUtils::replace(label, "sub_", "loc_");
+                
+                if (m_stop)
+                    return "_STOP_(\"goto " + label + "\")";
+                else
+                    return "goto " + label;
+            }
             else
-                return "goto " + m_strLabel;
+            {
+                if (m_stop)
+                    return "_STOP_(\"goto " + m_strLabel + "\")";
+                else
+                    return "goto " + m_strLabel;
+            }
 		case Return: return "return";
 		case Break: return "break";
 		case Continue: return "continue";
@@ -984,7 +1041,12 @@ public:
 		string strAux = GetCondition();
 
 		if ( strAux == "true" )
-			return Target() + ";";
+        {
+//            if (m_stop)
+//                return string("_STOP_(\"") + Target() + "\");";
+//            else
+                return Target() + ";";
+        }
 
 		return "if (" + strAux + ")\n  " + Target() + ";";
 	}
@@ -1074,7 +1136,11 @@ public:
 public:
 	CCCall(shared_ptr<CICall> pCall, shared_ptr<CInstruction> pPrevious = nullptr)
 	{
-		m_strCall = pCall->m_label + "()";
+        if (pCall->m_label == "di")
+            m_strCall = string("_indirectCall(_cs, _") + pCall->m_label + ")";
+        else
+            m_strCall = pCall->m_label + "()";
+        
         if (pCall->m_type == CICall::NearPtr)
         {
             // drop CS

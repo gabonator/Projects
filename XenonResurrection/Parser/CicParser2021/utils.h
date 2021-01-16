@@ -9,7 +9,7 @@ public:
 		if ( i == m_mapCache.end() )
 		{
 			regex newRegex(strRegex, std::regex_constants::ECMAScript);
-            //gg
+            //gg TODO!!!
 			//m_mapCache.insert(make_pair<string, regex>(strRegex, newRegex));
 
 			return match(newRegex, strInput, arrMatches);

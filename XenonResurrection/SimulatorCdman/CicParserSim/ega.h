@@ -506,6 +506,7 @@ public:
             text[y*160+x] = bWrite;
             x /= 2;
             DrawChar(x, y, text[y*160+x*2], text[y*160+x*2+1]);
+          //  _sync();
             return;
         }
 		dwAddr -= 0xa000 * 16;

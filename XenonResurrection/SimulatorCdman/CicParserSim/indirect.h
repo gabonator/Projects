@@ -17,6 +17,7 @@ void sub_16216();
 void sub_16F16();
 void sub_16A2A();
 void sub_16A07();
+void sub_1622F();
 
 // export
 void sub_17B46();
@@ -33,7 +34,7 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x3c54: sub_17B14(); break;
         case 0x3c0e: sub_17ACE(); break;
         case 0x3bcc: sub_17A8C(); break;
-        case 0x2cbe: sub_16B7E(); break;
+        //case 0x2cbe: sub_16B7E(); break;
         case 0x3bb1: sub_17A71(); break;
         case 0x3c50: sub_17B10(); break;
         case 0x3bed: sub_17AAD(); break;
@@ -44,7 +45,8 @@ void _indirectCall(WORD seg, WORD ptr)
             
         case 0x2356: sub_16216(); break;
         case 0x2b6a: sub_16A2A(); break; // ???
-        case 0x2b47: sub_16A07(); break; // ???
+        case 0x2b47: sub_16A07(); break; // ??? // 236f, 1622f
+        case 0x236f: sub_1622F(); break;
         default:
             std::cout << "Skip indirect " << std::hex << ptr << " addr = " << (ptr + 0x13EC0) << "\n";
             break;
@@ -52,10 +54,6 @@ void _indirectCall(WORD seg, WORD ptr)
     }
 }
 
-void sub_16B7E()
-{
-    // not impl!
-}
 
 void sub_16A2A()
 {

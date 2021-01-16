@@ -306,7 +306,7 @@ class CIMFlow : public CInstructionMatcher
             return make_shared<CIStop>();
         }        
 
-        if ( CUtils::match("^byte_(.*) db (.*)$", strLine, arrMatches) )
+        if ( CUtils::match("^(.*)_(.*) db (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
         }
@@ -553,10 +553,15 @@ class CIMNop : public CInstructionMatcher
 			return make_shared<CINop>(strLine);
 		}
 
-		if ( CUtils::match("^assume .*", strLine, arrMatches) )
+		if ( CUtils::match("^arg.*=.*", strLine, arrMatches) || CUtils::match("^var_.*=.*", strLine, arrMatches) || CUtils::match("^envp.*=.*", strLine, arrMatches) )
 		{
 			return make_shared<CINop>(strLine);
 		}
+
+        if ( CUtils::match("^assume .*", strLine, arrMatches) )
+        {
+            return make_shared<CINop>(strLine);
+        }
 
 		if ( CUtils::match("^(var|arg)_.* = (byte|word) ptr .*", strLine, arrMatches) )
 		{

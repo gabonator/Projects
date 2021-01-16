@@ -77,11 +77,46 @@ public:
         #undef D
         return "";
     }
-    bool GlobalExitLabel(string fname)
+    bool GlobalExitLabel(const string& fname)
     {
         // not implemented
         return fname == "loc_15E04";
     }
+    bool isUsingVideoEs(const string& fname)
+    {
+        static bool init=true;
+        static std::set<string> funcs;
+        if (init)
+        {
+            init = false;
+            std::vector<string> flist = {
+                "sub_1487F", "sub_1793C", "sub_17D17", "sub_179E3", "sub_17B9A", "sub_17BCB", "sub_17DD8",
+                "sub_17D32", "sub_17F7B", "sub_14791", "sub_147E7", "sub_14BFA", "sub_14CE4", "sub_14E74",
+                "sub_15C79", "sub_1610E", "sub_167C7", "sub_1763F", "sub_17680", "sub_14F52", "sub_168F2",
+                "loc_16D3D", "sub_16D16", "loc_16E88", "sub_16E59", "sub_16F07", "sub_16F47", "sub_16FAB",
+                "sub_1741F", "sub_174D1", "sub_1752C", "sub_1756C", "sub_175AC", "sub_175D0", "sub_176C7",
+                "sub_17738", "sub_16138", "sub_1616A", "sub_16184", "sub_161B6", "sub_161D8", "sub_16F87"
+            };
+            funcs.insert(flist.begin(), flist.end());
+        }
+        return funcs.find(fname) != funcs.end();
+    }
+    
+    bool isUsingBiosEs(const string& fname)
+    {
+        static bool init=true;
+        static std::set<string> funcs;
+        if (init)
+        {
+            init = false;
+            std::vector<string> flist = {
+                "sub_180A7"
+            };
+            funcs.insert(flist.begin(), flist.end());
+        }
+        return funcs.find(fname) != funcs.end();
+    }
+    
 };
 
 int main(int argc, const char * argv[])
@@ -101,7 +136,7 @@ int main(int argc, const char * argv[])
 //    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.x");
 //    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.asm");
 //    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
-//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
+    //sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
         
 //        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/ETETRIS.asm");
 //        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
@@ -114,216 +149,118 @@ int main(int argc, const char * argv[])
 
 //            sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.asm");
 //            sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.x");
-            sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.x");
+            //sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.x");
 
+//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/ETETRIS.asm");
+//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
+//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
+
+//        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/GOLD.asm");
+//        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/gold.x");
+//        sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/gold.x");
+
+//            sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/unpacked.asm");
+//            sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
+//            sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
+
+//                sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/CD-MAN.asm");
+//                sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/cdman.x");
+                sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/cdman.x");
+
+    
     CCExport e;
     e.SetSource(sp.m_arrCode);
     
-    string flist[] = {
-        /*
-        "start",
+    std::vector<string> flist;
 
-        "sub_2ACA5",
-        "sub_2ACB0",
-        "sub_2AD26",
-        "sub_2AFD0",
-        "sub_2AFF1",
-        "sub_2B06B",
-        "sub_2B093",
-        "sub_2B141",
-        "sub_2B355",
-        "sub_2B3AB",
-        "sub_2B4E8",
-        "sub_2B72B",
-        "sub_2B8E5",
-        "sub_2B94E",
-        "sub_2BCFE",
-        "sub_2BE32",
-        "sub_2C0D3",
-        "sub_2C129",
-        "sub_2C1A1",
-        "sub_2C493",
-        "sub_2CAD9",
-        "sub_2ECE0",
-        "sub_2F52D",
-        "sub_2F5DC",
-        "sub_2F69A",
-        "sub_2F700",
-        "sub_2F76F",
-        "sub_2F9B6",
-        "sub_2FA3A",
-        "sub_2FCB9",
-        "sub_2FCDC",
-        "sub_2FCFF",
-        "sub_2FD91",
-        "sub_2FDB6",
-        "sub_2FFE2",
-        "sub_30096",
-        "sub_300F6",
-        "sub_30205",
-        "sub_302A0",
-        "sub_30560",
-        
-        
-        "sub_2ACB7",
-        "sub_2B17E",
-        "sub_2B218",
-        "sub_2B531",
-        "sub_2B5E5",
-        "sub_2B884",
-        "sub_2BCAC",
-        "sub_2BCE5",
-        "sub_2BCF1",
-        "sub_2BF74",
-        "sub_2BFD8",
-        "sub_2C234",
-        "sub_2C262",
-        "sub_2C26C",
-        "sub_2C86F",
-        "sub_2CBE1",
-        "sub_2CC54",
-        "sub_2CCD9",
-        "sub_2CD29",
-        "sub_2CD68",
-        "sub_2CDA7",
-        "sub_2CE3A",
-        "sub_2CEA1",
-        "sub_2CEC9",
-        "sub_2CEFE",
-        "sub_2D09F",
-        "sub_2D3F7",
-        "sub_2D447",
-        "sub_2D4A1",
-        "sub_2DA3E",
-        "sub_2DB03",
-        "sub_2DD66",
-        "sub_2DE52",
-        "sub_2DE77",
-        "sub_2E288",
-        "sub_2E31B",
-        "sub_2E9B5",
-        "sub_2EDF4",
-        "sub_2F54F",
-        "sub_2F577",
-        "sub_2F79A",
-        "sub_2F957",
-        "sub_2F9DB",
-        "sub_2FA0A",
-        "sub_2FB78",
-        "sub_2FB93",
-        "sub_2FD60",
-        "sub_2FDD6",
-        "sub_300AA",
-        "sub_30663",
-        "sub_30676",
-        "sub_307A0",
-        "sub_307D5",
-        
-        "sub_2B1B8",
-        "sub_2B63D",
-        "sub_2C0C7",
-        "sub_2CA43",
-        "sub_2CA70",
-        "sub_2CF36",
-        "sub_2D16D",
-        "sub_2D375",
-        "sub_2DC8B",
-        "sub_2DCFD",
-        "sub_2EDD1",
-        "sub_2EE05",
-        "sub_2F8E1",
-        "sub_2F97D",
-        "sub_2FA24",
-        "sub_2FBC7",
-        "sub_2FBF3",
-        "sub_2FC11",
-        "sub_2FC39",
-        "sub_2FC65",
-        "sub_2FF37",
-        "sub_2FFAD",
-        "sub_30068",
-        "sub_30617",
-        "sub_306FD",
-        "sub_30856",
-        
-        "sub_2D3D7"
-*/
-        "sub_2E7CC"
-
-    };
-    
     CCustomize custom;
     std::set<string> imports;
     auto& output = cout;
     
+    flist = e.GetFunctionList(sp.m_arrCode);
+    
 //    ofstream output;
 //    output.open("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/SimulatorGoose/CicParserSim/code-goose.h");
     
-    for (int i=0; i<sizeof(flist)/sizeof(flist[0]); i++)
+    for (int i=0; i<flist.size(); i++)
     {
         CLabel testLabel(flist[i]);
         output << "void " << testLabel << "();" << endl;
     }
     std::cout << endl;
+    
+//    flist = {"sub_17A24"};
 
-    for (int i=0; i<sizeof(flist)/sizeof(flist[0]); i++)
+    for (int i=0; i<flist.size(); i++)
     {
         CLabel testLabel(flist[i]);
     
         vector<shared_ptr<CInstruction>> arrFunction = e.GetSubCode(sp.m_arrCode, testLabel);
         vector<shared_ptr<CCInstruction>> arrCFunction;
-        string usingCs;
-        
+        std::set<string> internalLabels;
+
         for (int j=0; j<arrFunction.size(); j++)
-        {/*
-            shared_ptr<CICall> pCall = dynamic_pointer_cast<CICall>(arrFunction[i]);
-            if (pCall)
-                imports.insert(pCall->m_label);
-            shared_ptr<CISwitch> pSwitch = dynamic_pointer_cast<CICall>(arrFunction[i]);
-            if (pSwitch)
+        {
+            shared_ptr<CILabel> pLabel = dynamic_pointer_cast<CILabel>(arrFunction[j]);
+            if (pLabel)
             {
-                for (int j=0; j<pSwitch->m_)
-                imports.insert(pCall->m_label);
-            }*/
+                internalLabels.insert(pLabel->m_label);
+            }
+
             shared_ptr<CIJump> pJump = dynamic_pointer_cast<CIJump>(arrFunction[j]);
             if (pJump && custom.GlobalExitLabel(pJump->m_label))
-                arrFunction[j] = make_shared<CIStop>(pJump, "exit program");
-            
-            bool traceSegment = (arrFunction[j]->m_origin.find("cs") != string::npos) &&
-            (arrFunction[j]->m_origin.find("push") == string::npos) &&
-            (arrFunction[j]->m_origin.find("call") == string::npos);
-                
-            /*
-            shared_ptr<CIAssignment> pAssign = dynamic_pointer_cast<CIAssignment>(arrFunction[j]);
-            if (pAssign)
             {
-                if (pAssign->m_valueFrom.ToC().find("_cs") != string::npos ||
-                    pAssign->m_valueTo.ToC().find("_cs") != string::npos)
+                arrFunction[j] = make_shared<CIStop>(pJump, "exit program");
+            }
+            
+        }
+        for (int j=0; j<arrFunction.size(); j++)
+        {
+            shared_ptr<CIJump> pJump = dynamic_pointer_cast<CIJump>(arrFunction[j]);
+            if (pJump)
+            {
+                if (internalLabels.find(pJump->m_label) == internalLabels.end())
                 {
-                    traceSegment = true;
+                    string labelAsFunction = pJump->m_label;
+                    CUtils::replace(labelAsFunction, "loc_", "sub_");
+
+                    if (pJump->m_label == testLabel)
+                    {
+                        
+                    } else
+                    if (std::find(flist.begin(), flist.end(), pJump->m_label) != flist.end())
+                    {
+                        // is function
+                        arrFunction[j] = make_shared<CICall>(pJump->m_label, CICall::Jump);
+                    } else
+                    if (std::find(flist.begin(), flist.end(), labelAsFunction) != flist.end())
+                    {
+                        // label as function
+                        arrFunction[j] = make_shared<CICall>(labelAsFunction, CICall::Jump);
+                    } else
+                        pJump->m_stop = true;
                 }
             }
-            shared_ptr<CIAssignment> pAssign = dynamic_pointer_cast<CISingleArgOp>(arrFunction[j]);
-            if (pAssign)*/
-
-            if (traceSegment)
+            shared_ptr<CIConditionalJump> pCond = dynamic_pointer_cast<CIConditionalJump>(arrFunction[j]);
+            if (pCond)
             {
-                int nBegin = e.FindLabel(sp.m_arrCode, testLabel);
-
-                for (int k=nBegin; k>=0; k--)
+                if (internalLabels.find(pCond->m_label) == internalLabels.end())
                 {
-                    shared_ptr<CISegment> pSegment = dynamic_pointer_cast<CISegment>(sp.m_arrCode[k]);
-                    if (pSegment)
-                    {
-                        usingCs = pSegment->m_strSegmentName;
-                        break;
-                    }
+                    if (pCond->m_label != testLabel)
+                        pCond->m_stop = true;
                 }
-                //cout << testLabel << "  -  " << usingCs << endl;
-                _ASSERT(!usingCs.empty());
+            }
+            shared_ptr<CILoop> pLoop = dynamic_pointer_cast<CILoop>(arrFunction[j]);
+            if (pLoop)
+            {
+                if (internalLabels.find(pLoop->m_label) == internalLabels.end())
+                {
+                    if (pLoop->m_label != testLabel)
+                        pLoop->m_stop = true;
+                }
             }
         }
-                    
+
         // Two pass for alu conditional injections
         e.Convert(testLabel, arrFunction, arrCFunction);
         arrCFunction.clear();
@@ -336,8 +273,19 @@ int main(int argc, const char * argv[])
             if (pCall)
             {
                 string label = pCall->m_strCall;
-                CUtils::replace(label, "()", "");
-                imports.insert(label);
+                
+                vector<string> arrMatches;
+
+                // assignment
+                if (label.find("indirect") != string::npos)
+                {
+                } else
+                if ( CUtils::match("^\\{?(.*)\\(\\).*$", label, arrMatches) )
+                {
+                    imports.insert(arrMatches[0]);
+                } else {
+                    _ASSERT(0);
+                }
             }
             shared_ptr<CCSwitch> pSwitch = dynamic_pointer_cast<CCSwitch>(arrCFunction[i]);
             if (pSwitch)
@@ -346,29 +294,159 @@ int main(int argc, const char * argv[])
                     imports.insert(pSwitch->m_arrLabels[j]);
             }
         }
+        
+        vector<string> outLines;
+        e.DumpProgram(outLines, arrCFunction, 1);
+        if (arrCFunction.size() > 0 && dynamic_pointer_cast<CCLabel>(arrCFunction[arrCFunction.size()-1]))
+            outLines.push_back("    return;");
+        
+        string entryLabel(testLabel);
+        CUtils::replace(entryLabel, "sub_", "loc_");
+
+        // post process
+        bool usingEntry = false;
+        bool usingCs = false;
+        bool usingVideoEs = custom.isUsingVideoEs(testLabel);
+        bool usingBiosEs = custom.isUsingBiosEs(testLabel);
+        string csValue;
+
+        for (int i=0; i<outLines.size(); i++)
+        {
+            string& line = outLines[i];
+            if (line.find(entryLabel) != string::npos)
+            {
+                if (line.find("//") == string::npos || line.find(entryLabel) < line.find("//"))
+                    // insert entry label
+                    usingEntry = true;
+            }
+            if (line.find("_cs") != string::npos)
+            {
+                usingCs = true;
+            }
+            
+            if (usingVideoEs)
+            {
+                vector<string> arrMatches;
+
+                // assignment
+                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\) = (.*);( *)//(.*)$", line, arrMatches) )
+                {
+                    // prefix, memory, offset, value, space, comment
+                    stringstream ss;
+                    ss << arrMatches[0];
+                    ss << (arrMatches[1] == "memory" ? "memoryVideoSet" : "memoryVideoSet16");
+                    ss << "(_es, " << arrMatches[2] << ", " << arrMatches[3] << ");";
+                    while (ss.str().length() < 48)
+                        ss << " ";
+                    ss << "//" << arrMatches[5];
+                    //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
+                    //line += string("(")
+                    line = ss.str();                    
+                }
+                
+                arrMatches.clear();
+                // read
+                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\)(.*?)( *)//(.*)$", line, arrMatches) )
+                {
+                    // prefix, memory, offset, suffix, space, comment
+                    stringstream ss;
+                    ss << arrMatches[0];
+                    ss << (arrMatches[1] == "memory" ? "memoryVideoGet" : "memoryVideoGet16");
+                    ss << "(_es, " << arrMatches[2] << ")" << arrMatches[3];
+                    while (ss.str().length() < 48)
+                        ss << " ";
+                    ss << "//" << arrMatches[5];
+                    //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
+                    //line += string("(")
+                    line = ss.str();
+                }
+            }
+
+            if (usingBiosEs)
+            {
+                vector<string> arrMatches;
+
+                // assignment
+                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\) = (.*);( *)//(.*)$", line, arrMatches) )
+                {
+                    // prefix, memory, offset, value, space, comment
+                    stringstream ss;
+                    ss << arrMatches[0];
+                    ss << (arrMatches[1] == "memory" ? "memoryBiosSet" : "memoryBiosSet16");
+                    ss << "(_es, " << arrMatches[2] << ", " << arrMatches[3] << ");";
+                    while (ss.str().length() < 48)
+                        ss << " ";
+                    ss << "//" << arrMatches[5];
+                    //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
+                    //line += string("(")
+                    line = ss.str();
+                }
+                
+                arrMatches.clear();
+                // read
+                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\)(.*?)( *)//(.*)$", line, arrMatches) )
+                {
+                    // prefix, memory, offset, suffix, space, comment
+                    stringstream ss;
+                    ss << arrMatches[0];
+                    ss << (arrMatches[1] == "memory" ? "memoryBiosGet" : "memoryBiosGet16");
+                    ss << "(_es, " << arrMatches[2] << ")" << arrMatches[3];
+                    while (ss.str().length() < 48)
+                        ss << " ";
+                    ss << "//" << arrMatches[5];
+                    //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
+                    //line += string("(")
+                    line = ss.str();
+                }
+            }
+
+        }
+                
+        if (usingCs)
+        {
+            int nBegin = e.FindLabel(sp.m_arrCode, testLabel);
+
+            for (int k=nBegin; k>=0; k--)
+            {
+                shared_ptr<CISegment> pSegment = dynamic_pointer_cast<CISegment>(sp.m_arrCode[k]);
+                if (pSegment)
+                {
+                    csValue = pSegment->m_strSegmentName;
+                    break;
+                }
+            }
+            _ASSERT(!csValue.empty());
+            stringstream ss;
+            ss << "    WORD _cs = _" << csValue << ";" << endl;
+            outLines.insert(outLines.begin(), ss.str());
+        }
+
+        if (usingEntry)
+        {
+            outLines.insert(outLines.begin(), entryLabel + ":");
+        }
 
         output << "void " << testLabel << "()";
         string comment = custom.GetFunctionDesc(testLabel);
         if (!comment.empty())
             output << "  // " << comment;
         output << endl << "{" << endl;
-        if (!usingCs.empty())
-            output << "    WORD _cs = _" << usingCs << ";" << endl;
-        e.DumpProgram(output, arrCFunction, 1);
-        if (arrCFunction.size() > 0 && dynamic_pointer_cast<CCLabel>(arrCFunction[arrCFunction.size()-1]))
-            output << "    return;" << endl;
+        for (int i=0; i<outLines.size(); i++)
+            output << outLines[i] << endl;
         output << "}" << endl << endl;
     }
     
-    for (int i=0; i<sizeof(flist)/sizeof(flist[0]); i++)
+    for (int i=0; i<flist.size(); i++)
     {
         imports.erase(flist[i]);
     }
-    
-    output << endl << "// imports" << endl;
-    for (const string& s : imports)
+    if (imports.size() > 0)
     {
-        output << "void " << s << "() { _ASSERT(0); }" << endl;
+        output << endl << "// imports" << endl;
+        for (const string& s : imports)
+        {
+            output << "void " << s << "() { _ASSERT(0); }" << endl;
+        }
     }
     output << endl;
 //    output.close();

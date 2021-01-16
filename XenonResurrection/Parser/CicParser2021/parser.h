@@ -134,12 +134,12 @@ public:
 			char strLine[1024];
 			fgets(strLine, 1023, f);
             
-            if (i<100000)
-                continue;
+//            if (i<100000)
+//                continue;
 
-			if ( strLine[0] )
+			if ( strLine[0])
 			{
-				while ( strLine[strlen(strLine)-1] == 0x0d || strLine[strlen(strLine)-1] == 0x0a )
+				while ( strlen(strLine) > 0 && (strLine[strlen(strLine)-1] == 0x0d || strLine[strlen(strLine)-1] == 0x0a))
 					strLine[strlen(strLine)-1] = 0;
 			}
 

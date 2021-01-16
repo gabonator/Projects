@@ -174,7 +174,7 @@ string CValue::ToC()
 		return ss.str();
 
 	case CValue::es_ptr_di_plus:
-		_ASSERT(m_nValue >= 0);
+		//_ASSERT(m_nValue >= 0);
 		if ( m_eRegLength == CValue::r8 )
 			ss << "memory(_es, _di + " << m_nValue << ")";
 		else
@@ -250,7 +250,7 @@ string CValue::ToC()
 		return ss.str();
 
 	case CValue::bx_plus_si_plus:
-		_ASSERT(m_eRegLength == r16);
+		//_ASSERT(m_eRegLength == r16);
 		ss << "_bx + _si + " << m_nValue;
 		return ss.str();
 
@@ -260,8 +260,13 @@ string CValue::ToC()
 		return ss.str();
 
 	case CValue::ds_ptr_bp_plus:
-		_ASSERT(m_eRegLength == r16);
-		ss << "memory16(_ds, _bp + " << m_nValue << ")";
+		if (m_eRegLength == r16)
+            ss << "memory16(_ds, _bp + " << m_nValue << ")";
+        else
+            if (m_eRegLength == r8)
+                ss << "memory(_ds, _bp + " << m_nValue << ")";
+            else
+                _ASSERT(0);
 		return ss.str();
 
 	case CValue::di_plus:
@@ -414,6 +419,9 @@ string CValue::ToC()
             if ( m_eRegLength == CValue::r16 )
                 ss << "memory16(_cs, 0x" << uppercase << hex << m_nValue << ")";
             else
+            if ( m_eRegLength == CValue::r32 )
+                ss << "memory32(_cs, 0x" << uppercase << hex << m_nValue << ")";
+            else
                 _ASSERT(0);
             return ss.str();
         case CValue::bx_plus_di_plus:
@@ -457,12 +465,45 @@ string CValue::ToC()
                 return "memory(_es, _bx)";
             else
                 _ASSERT(0);
+        
+        case CValue::es_ptr_bp:
+            if ( m_eRegLength == CValue::r16 )
+                return "memory16(_es, _bp)";
+            else if ( m_eRegLength == CValue::r8 )
+                return "memory(_es, _bp)";
+            else
+                _ASSERT(0);
+
+        case CValue::ds_ptr_bp_plus_di:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_ds, _bp + _di)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_ds, _bp + _di)";
+            return ss.str();
 
         case CValue::wordptr_es_di_plus:
             ss << "memory(_es, _di + 0x" << uppercase << hex << m_nValue << ")";
 
             return ss.str();
 
+        case CValue::es_ptr_value:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_es, " << m_value->ToC() << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_es, "  << m_value->ToC() << ")";
+            return ss.str();
+
+        case CValue::offset_bp_plus_di_plus:
+            ss << "_bp + _di + " << dec << m_nValue;
+            return ss.str();
+        case CValue::offset_bp_plus:
+            ss << "_bp + " << dec << m_nValue;
+            return ss.str();
+
+
+            
 	default:
 		_ASSERT(0);
 	}

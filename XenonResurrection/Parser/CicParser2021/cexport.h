@@ -161,8 +161,11 @@ public:
         if (pStop)
             pOutInstruction = make_shared<CCStop>(pStop);
 
-        pOutInstruction->mOrigin = pInInstruction->m_origin;
-		_ASSERT(pOutInstruction);
+        if (pOutInstruction)
+        {
+            pOutInstruction->mOrigin = pInInstruction->m_origin;
+            _ASSERT(pOutInstruction);
+        }
 		return pOutInstruction;
 	}
     
@@ -896,8 +899,9 @@ public:
 		}
 	}
 
-	void DumpProgram(ostream& out, vector<shared_ptr<CCInstruction>>& arrOutput, int nBaseIndent = 0)
+	void DumpProgram(vector<string>& out, vector<shared_ptr<CCInstruction>>& arrOutput, int nBaseIndent = 0)
 	{
+        //vector<string> outBuf;
 		int nIndent = 0;
 		for (int i=0; i<(int)arrOutput.size(); i++)
 		{	
@@ -926,11 +930,12 @@ public:
                     {
                         while (line.length() + strPad.length() < 48)
                             line += " ";
+                        //TODO: f call
                         line += "//" + arrOutput[i]->mOrigin;
                     }
                 }
                 
-				out << strPad << line << endl;
+				out.push_back(strPad+line);
             }
 
 			if ( !dynamic_pointer_cast<CCSwitch>(arrOutput[i]) )
@@ -984,6 +989,37 @@ public:
 		return -1;
 	}
 
+    vector<string> GetFunctionList(const vector<shared_ptr<CInstruction>>& arrCode)
+    {
+        vector<string> names;
+        
+        bool inFunction = false;
+        for (int i=0; (size_t)i<arrCode.size(); i++)
+        {
+            shared_ptr<CIFunction> pFunction = dynamic_pointer_cast<CIFunction>(arrCode[i]);
+            if (pFunction && pFunction->m_eBoundary == CIFunction::Begin)
+            {
+                names.push_back(pFunction->m_strName);
+                inFunction = true;
+            }
+            if (pFunction && pFunction->m_eBoundary == CIFunction::End)
+            {
+                inFunction = false;
+            }
+            
+            if (!inFunction)
+            {
+                shared_ptr<CILabel> pLabel = dynamic_pointer_cast<CILabel>(arrCode[i]);
+                if (pLabel)
+                {
+                    names.push_back(pLabel->m_label);
+                    inFunction = true;
+                }
+            }
+        }
+        return names;
+    }
+    
     vector<shared_ptr<CInstruction>> GetSubCode(const vector<shared_ptr<CInstruction>>& arrCode, CLabel label)
 	{
 		vector<shared_ptr<CInstruction>> aux;

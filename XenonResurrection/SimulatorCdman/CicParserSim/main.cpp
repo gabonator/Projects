@@ -583,6 +583,11 @@ WORD& memory16(WORD segment, WORD offset)
 
 BYTE& memory(WORD segment, WORD offset)
 {
+
+    if (segment == 0 && offset >= 0x2be &&offset <= 0x2be + 13)
+    {
+        int f = 9;
+    }
     segment += appBase;
     _ASSERT(segment == 0x1020 || segment == 0x23ec || segment == 0x2499 || segment == 0x2411);
 
@@ -614,6 +619,15 @@ void onKey(int k, int p)
             case SDL_SCANCODE_2: memory(_ds, 0x18E) = 8; break;
             case SDL_SCANCODE_3: memory(_ds, 0x18E) = 16; break;
             case SDL_SCANCODE_4: memory(_ds, 0x18E) = 24; break;
+            case SDL_SCANCODE_5:
+                for (int i=0; i<4; i++)
+                {
+                    memory(_ds, i + 104) = 0x4d;
+                    memory16(_ds, i*2 + 491) = memory16(_ds, 0x1059);
+                    memory16(_ds, i*2 + 499) = memory16(_ds, 0x1059 + 2);
+                    memory16(_ds, i*2 + 507) = memory16(_ds, 0x1059 + 4);
+                }
+                break;
         }
 
         if (key)
@@ -665,9 +679,10 @@ void loadSegment(uint8_t* buffer, const char* suffix, int len)
     fread(buffer, len, 1, f);
     fclose(f);
 }
-
+extern int synccalls;
 void _sync()
 {
+    synccalls = 0;
     for (int y=0; y<350; y++)
       for (int x=0; x<640; x++)
     {
@@ -678,19 +693,19 @@ void _sync()
         //mSdl.SetPixel(x+320, y, mVideo.palette[((pix >> (7-(x&7))) & 1)*13] );
         //mSdl.SetPixel(x+320, y, mVideo.GetPixel(x, y, 0x0800));
     }
-    
+    /*
     int pos = memory16(_ds, 0x190);
     int px = (pos - 22)%21;
     int py = (pos - 22)/21;
-    if (px >= 0 && py >= 0 && px < 20 && py < 13)
+    if (px >= 0 && py >= 0 && px < 19 && py < 13)
     for (int x=0; x<32; x++)
         for (int y=0; y<24; y++)
         {
             if (((x>>1)+(y>>1))&1)
                 mSdl.SetPixel(px*32+x+16, py*24+y+58, 0xffffff);
         }
-    
-    
+    */
+    /*
     static const char map[] = // 19x11
       "rrrd    0 00   0   "
       "u00d000 0    0   0 "
@@ -720,7 +735,18 @@ void _sync()
         if (d!=-1)
             memory(_ds, 0x18E) = d;
     }
+    */
     
+    // bonus mode
+    /*
+        for (int i=0; i<4; i++)
+        {
+            memory(_ds, i + 104) = 0x4d;
+            memory16(_ds, i*2 + 491) = memory16(_ds, 0x1059);
+            memory16(_ds, i*2 + 499) = memory16(_ds, 0x1059 + 2);
+            memory16(_ds, i*2 + 507) = memory16(_ds, 0x1059 + 4);
+        }
+*/
 
      //std::cout << (int)memory(_ds, 0x18D) << " ... " << (int)memory(_ds, 0x18E) << "\n";
 //    _dh = memory(_ds, 0x18D);                   //mov dh, ds:18Dh
@@ -793,7 +819,11 @@ int main(int argc, const char * argv[]) {
     memset(datasegment, 0, sizeof(datasegment));
     loadSegment(datasegment, "cdman.data", 0x3ec0); //33436);
     mSdl.Init();
-    start();
+    while (1)
+    {
+        start();
+        _sync();
+    }
     mSdl.Deinit();
     return 0;
 }
