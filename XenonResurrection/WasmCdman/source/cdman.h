@@ -3467,7 +3467,6 @@ loc_15A4F:                                      //loc_15A4F:
     _dh = 0x00;                                 //mov dh, 0
 
     //bug: div by zero!
-    std::cout << "Div by zero\n"; _cx = 1;
     
     _div(_cx);                                  //div cx
     _dx = _ax;                                  //mov dx, ax
@@ -3969,7 +3968,6 @@ locret_15E6E:                                   //locret_15E6E:
 void sub_15E6F() // check move dir
 {
     _bx = memory16(_ds, _bx + 1005);            //mov bx, [bx+3EDh]
-    std::cout << "pos: " << std::dec << (_bx-0x889) << "\n";
     memory16(_ds, 0x66) = 0xd1;                 //mov word ptr ds:66h, 0D1h
     _lea(_di, _ds, 0x92);                       //lea di, ds:92h
     _bx += 0x16;                                //add bx, 16h
