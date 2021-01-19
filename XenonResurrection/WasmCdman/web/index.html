@@ -1,6 +1,13 @@
-<canvas id="canvas" width="320" height="240" style="border: 1px solid #d0d0d0; transform:translate(160px, 120px) scale(2);"></canvas>
-<script src="cdman.wasm.js"></script>
-<script src="cdman.data.js"></script>
+<canvas id="canvas" width="640" height="350" style="border: 1px solid #d0d0d0; transform:translate(320px, 175px) scale(2);"></canvas>
+<script src="fs.cdman.wasm.js"></script>
+<script src="fs.cdman.data.js"></script>
+<script src="fs.title.cdm.js"></script>
+<script src="fs.graphic1.cdm.js"></script>
+<script src="fs.screen1.cdm.js"></script>
+<script src="fs.graphic2.cdm.js"></script>
+<script src="fs.screen2.cdm.js"></script>
+<script src="fs.graphic3.cdm.js"></script>
+<script src="fs.screen3.cdm.js"></script>
 <script>
 class MiniApp
 {
@@ -15,11 +22,11 @@ class MiniApp
         evt = evt || window.event;
         switch (evt.keyCode)
         {
-          case 37: this.lastKey = "-".charCodeAt(0); break;
-          case 39: this.lastKey = "+".charCodeAt(0); break;
-          case 38: this.lastKey = "<".charCodeAt(0); break;
-          case 40: this.lastKey = ">".charCodeAt(0); break;
-          case 13: this.lastKey = "1".charCodeAt(0); break;
+          case 38: this.lastKey = 0x4800; break;
+          case 40: this.lastKey = 0x5000; break;
+          case 37: this.lastKey = 0x4b00; break;
+          case 39: this.lastKey = 0x4d00; break;
+          case 13: this.lastKey = 0x1c0d; break;
         }
     }).bind(this);
   }
@@ -31,75 +38,54 @@ class MiniApp
     return aux;
   }
 
-  getPixel(x, y) 
-  { 
-    return 0;
-  }
-
-  loop() 
+  transfer(buffer, ptr)
   {
-    this.ctx.putImageData(this.imageData, 0, 0);
-  }
+    const data = new Uint8ClampedArray(buffer.buffer, ptr, 640 * 350 * 4);
+    const img = new ImageData(data, 640, 350);
+    this.ctx.putImageData(img, 0, 0);
+  } 
 
-  running()
-  {
-    return 1;
-  }
-
-  setPixel(x, y, rgb) 
-  { 
-    y = 240-y;
-    var p = (y*320+x)*4;
-    this.imageData.data[p++] = (((rgb)&0x1f)<<3);
-    this.imageData.data[p++] = ((((rgb)>>5)&0x3f)<<2);
-    this.imageData.data[p++] = ((((rgb)>>11)&0x1f)<<3);
-    this.imageData.data[p++] = 255;
-  }
-
-  ticks() 
-  { 
-    return new Date().getTime();
-  }
-
-  flashRead(ptr, ofs, size)
-  {
-    console.log(["flashRead", ptr, ofs, size]);
-  }
 }
 
 window.miniApp = new MiniApp()
 
 Module['noRun'] = true;	
 
+var curFile;
+var memoryPtr;
+var memory;
+var memoryKeyb;
+var memoryVideo;
+
 window.onload = () => {
   Module['imports'] = {
     _Z10_fileclosev: () => { 
-      throw "nemam" 
+      curFile = null;
     },
     _Z9_fileopenPc: (name) => { 
-      throw "nemam" 
+      var name = Module['imports'].getString(name);
+      curFile = Module[name];
+      return !!curFile;
     },
     _Z9_filereadiiii: (ofs, size, mseg, mofs) => { 
-      throw "nemam" 
+      var p = memoryPtr + mseg*16 + mofs;
+      for (var i=0; i<size; i++)
+        memory[p++] = curFile[ofs+i];
     },
     _Z9_filesizev: () => { 
-      throw "nemam" 
+      if (!curFile)
+        throw "no file opened";
+      return curFile.length;
     },
-    js_debug: (i) => { console.log(i); },
-    js_getKey: () => { return window.miniApp.getKey(); },
-    js_getPixel: (x, y) => { return window.miniApp.getPixel(); },
-    js_init : () => { return window.miniApp.init(); },
-    js_loop : () => { return window.miniApp.loop(); },
-    js_running : () => { return window.miniApp.running(); },
-    js_setPixel : (x, y, rgb) => { return window.miniApp.setPixel(x, y, rgb); },
-    js_ticks : () => { return window.miniApp.ticks(); },
-    js_flashRead : (ptr, ofs, size) => { return window.miniApp.flashRead(ptr, ofs, size); },
-    js_flashWrite : (ptr, ofs, size) => { return window.miniApp.flashWrite(ptr, ofs, size); },
-    js_log: (ptr) => {
+    _Z5_tonei: (freq) => {},
+
+    debugPrint: (i) => { console.log(Module['imports'].getString(i)); },
+    assertionHandler: (i) => { console.log(Module['imports'].getString(i)); throw "error"; },
+    getString: (ptr) => {
       var text = "";
       for (var i=0; i<100 && Module['memory'][ptr+i] != 0; i++)
         text += String.fromCharCode(Module['memory'][ptr+i]);
-      console.log(text); 
+      return text;
     }
   };
 
@@ -108,7 +94,8 @@ window.onload = () => {
     appInit: null,
     appLoop: null,
     appMemory: null,
-    appVideoBuffer: null
+    appVideoBuffer: null,
+    appKeyboardBuffer: null
   };
 
   if (Module['run']) 
@@ -118,23 +105,35 @@ window.onload = () => {
 Module['onRuntimeInitialized'] = () =>
 {
   Module.appInit();
-  console.log(Module.appMemory())
+
+  memory = Module['memory']
+  memoryPtr = Module.appMemory();
+  memoryKeyb = Module.appKeyboardBuffer();
+  memoryVideo = Module.appVideoBuffer();
 
   var data = Module['cdman.data'];
+  for (var i=0; i<data.length; i++)
+    memory[memoryPtr+i] = data[i];
 
-  var ptr = Module.appMemory();
-  var mem = Module['memory']
-  for (var i=0; i<0x3ec0; i++, ptr++)
-    mem[ptr+i] = data[i+0x200];
-
-    Module.appLoop();
-  console.log(Module.appVideoBuffer());
-
-  setInterval(() =>
+  window.miniApp.init();
+  
+  window.appInterval = setInterval(() =>
   {
-//    Module.appLoop();
-  }, 50);
+    var key = window.miniApp.getKey();
+    memory[memoryKeyb+1] = key >> 8;
+    memory[memoryKeyb] = key & 0xff;
+
+    window.miniApp.lastKey = 0;
+    try {
+      Module.appLoop();
+    } catch (e) {
+      clearInterval(window.appInterval);
+      console.log("application stopped");
+    }
+    window.miniApp.transfer(memory, memoryVideo)
+  }, 30);
 }
 </script>
 <script src="app.js"></script>
+<script src="extra.js"></script>
 

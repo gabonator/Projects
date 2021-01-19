@@ -1,28 +1,21 @@
 #include "app/cdman.h"
 #include "machine.h"
-
-extern "C" void appInit();
-extern "C" bool appLoop();
-extern "C" void appFinish();
-
-extern "C" uint8_t* appVideoBuffer();
-extern "C" uint8_t* appMemory();
+#include "interface.h"
 
 void appInit()
 {
-    js_debug(66);
-    js_debug(_sp);
     _sp = 64;
-//    _ds = _es = _di = _bp = 0x6666;
-    js_debug(77);
-    js_debug(_sp);
+    _ds = 0x6666;
+    _es = 0x6666;
+    _di = 0x6666;
+    _bp = 0x6666;
 }
 
 bool appLoop()
 {
-    js_debug(88);
-    js_debug(_sp);
-  return start();
+  bool b = start();
+  updateVideoBuffer();
+  return b;
 }
 
 void appFinish()

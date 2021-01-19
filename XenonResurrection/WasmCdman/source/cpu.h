@@ -1,9 +1,13 @@
 #pragma once
 
 #include <stdint.h>
-#include <cassert>
+//#include <stdio.h>
+#include "interface.h"
+
+#define assert(e) if (!(e)) {/*char info[256]; strcpy(info, __FILE__); sprintf(info, "%s [%d]: %s", __FILE__, __LINE__, #e);  assertionHandler(info); */ assertionHandler((char*)__FILE__);}
 
 #define _ASSERT assert
+
 
 typedef uint16_t WORD;
 typedef uint8_t BYTE;
@@ -247,41 +251,6 @@ void _lodsb()
     _al = SRC::Get8(_ds, DIR::Move(_si));
 }
 
-
-#if 0
-
-//
-//std::vector<WORD> m_arrStack;
-void StackWrite(int nOffset, WORD nData);
-/*
-{
-    _ASSERT(nOffset/2 >= 0 && nOffset/2 < (int)m_arrStack.size());
-    _ASSERT((nOffset&1) == 0);
-    m_arrStack[nOffset/2] = nData;
-}
-*/
-WORD StackRead(int nOffset);
-/*
-{
-    _ASSERT(nOffset/2 >= 0 && nOffset/2 < (int)m_arrStack.size());
-    _ASSERT((nOffset&1) == 0);
-    return m_arrStack[nOffset/2];
-}
-*/
-
-void _push(WORD data)
-{
-    StackWrite(_sp, data);
-    _sp -= 2;
-}
-
-WORD _pop()
-{
-    _sp += 2;
-    return StackRead(_sp);
-}
-
-#endif
 void _push(WORD data);
 WORD _pop();
 

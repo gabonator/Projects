@@ -4,8 +4,8 @@ var Module = typeof Module !== 'undefined' ? Module : {};
 function Main() 
 {
   var WASM_PAGE_SIZE = 65536;
-  var TOTAL_MEMORY = 65536*128;
-  var DYNAMICTOP_PTR = 11856;
+  var TOTAL_MEMORY = 65536*36;
+//  var DYNAMICTOP_PTR = 11856;
 
   var abort = (what) => { throw 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.'};
 
@@ -18,7 +18,7 @@ function Main()
        "emscripten_memcpy_big": abort, 
        "emscripten_resize_heap": abort,
        "abortOnCannotGrowMemory": abort, 
-       "DYNAMICTOP_PTR": DYNAMICTOP_PTR,
+//       "DYNAMICTOP_PTR": DYNAMICTOP_PTR,
        memory:new WebAssembly.Memory({ 'initial': TOTAL_MEMORY / WASM_PAGE_SIZE, 'maximum': TOTAL_MEMORY / WASM_PAGE_SIZE }),
        table:new WebAssembly.Table({'initial': 15,'maximum': 15,'element': 'anyfunc'}),
        '__memory_base': 1024, 

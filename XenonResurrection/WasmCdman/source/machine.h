@@ -1,7 +1,5 @@
 #include "cpu.h"
 
-extern "C" void js_debug(int);
-
 void _out(WORD port, WORD val);
 void _out(WORD port, BYTE val);
 void _interrupt(BYTE i);
@@ -13,5 +11,3 @@ BYTE& memory(WORD segment, WORD offset);
 WORD& memory16(WORD segment, WORD offset);
 void _push(WORD data);
 WORD _pop();
-
-//void updateVideoBuffer();

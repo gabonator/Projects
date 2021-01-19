@@ -192,9 +192,7 @@ bool start()
     static bool resume = false;
     if (resume)
         goto resume1;
-       js_debug(3);
     _push(_ds);                                 //push ds
-       js_debug(4);
     _ax = 0x0000;                               //mov ax, 0
     _push(_ax);                                 //push ax
     _ax = _seg001;                              //mov ax, seg seg001
@@ -882,7 +880,7 @@ loc_143ED:                                      //loc_143ED:
 
 void sub_143FA() // select map _bx = 0, 2, 4
 {
-    memory16(_ds, 0x3D3) = 4;
+//    memory16(_ds, 0x3D3) = 4;
     
     _bx = memory16(_ds, 0x3D3);                 //mov bx, word ptr unk_105D3
     _ax = memory16(_ds, _bx + 3801);            //mov ax, [bx+0ED9h]
@@ -6845,6 +6843,7 @@ loc_17802:                                      //loc_17802:
 
 void sub_17805()
 {
+return;
     memory(_ds, 0x1122) = 0;                    //mov byte ptr ds:1122h, 0
     if (memory16(_ds, 0x1120) > 1)              //ja short loc_17825
       goto loc_17825;

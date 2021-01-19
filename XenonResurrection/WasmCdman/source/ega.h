@@ -172,8 +172,8 @@ public:
 	DWORD full_not_enable_set_reset;
 
     DWORD palette[16] = {
-        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
-        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
+        0xff000000, 0xff0000b0, 0xff00b000, 0xff00b0b0, 0xffb00000, 0xffb000b0, 0xffb0b000, 0xffb0b0b0,
+        0xff808080, 0xff0000ff, 0xff00ff00, 0xff00ffff, 0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
 
 public:
 	CEga()
@@ -327,13 +327,14 @@ public:
 	
     void SetPaletteIndex(int index, int rgb)
     {
+        _ASSERT(index < 16);
         int r = ((rgb & 4) ? 2 : 0) + ((rgb & 32) ? 1 : 0);
         int g = ((rgb & 2) ? 2 : 0) + ((rgb & 16) ? 1 : 0);
         int b = ((rgb & 1) ? 2 : 0) + ((rgb & 8) ? 1 : 0);
         r = r * 255 / 3;
         g = g * 255 / 3;
         b = b * 255 / 3;
-        palette[index] = b | (g << 8) | (r << 16);
+        palette[index] = r | (g << 8) | (b << 16) | 0xff000000;
 
     }
     virtual bool PortWrite8(int port, int data) override
@@ -386,7 +387,8 @@ public:
 
         if (page== -1)
             page = cfgAddr;
-        
+        _ASSERT(page == 0);
+
         int shift = page*4;
 		BYTE b = 0;
 		if ( _video[shift + off*4 + 0] & mask ) b |= 1;

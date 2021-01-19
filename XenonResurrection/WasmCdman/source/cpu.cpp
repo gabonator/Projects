@@ -1,5 +1,7 @@
 #include "cpu.h"
 
+reg_t _reg;
+
 void _STOP_(const char*) { assert(0); }
 
 void _xchg(BYTE& a, BYTE& b) { BYTE t = a; a = b; b = t; }

@@ -1,20 +1,11 @@
 #include "machine.h"
 #include "ega.h"
+#include "interface.h"
 
 CEga mVideo;
 WORD _stack[64];
-BYTE memoryBuffer[0x1000*8];
-BYTE videoBuffer[640*480];
-
-int _filesize();
-int _fileopen(char* name);
-int _fileclose();
-int _fileread(int ofs, int size, int mseg, int mofs);
-
-void _tone(int f)
-{
-//    std::cout << "tone " << hex << f << " f=" << dec << (1193180/f) << "\n";
-}
+BYTE memoryBuffer[0x10000*3];
+WORD keyboardBuffer[1] = {0};
 
 void _out(WORD port, BYTE val)
 {
@@ -87,6 +78,7 @@ void _out(WORD port, WORD val)
 void _interrupt(BYTE i)
 {
     static int filePos = 0;
+//    js_debug(i*256+_ah);
 
     if (i == 0x21 && _ah == 0x3e)
     {
@@ -114,6 +106,10 @@ void _interrupt(BYTE i)
             filename[p++] = c;
         }
         filename[p] = 0;
+
+//char info[128];
+//sprintf(info, "open: %04x:%04x = %s", _ds, _dx, filename);
+//debugPrint(info);
         if (_fileopen(filename))
         {
           filePos = 0;
@@ -201,12 +197,19 @@ void _interrupt(BYTE i)
                 keyboardBuffer.pop_front();
             }
 */
-            _ax = 0;
+            if (keyboardBuffer[0] != 0)
+            {
+              _ax = keyboardBuffer[0];
+              keyboardBuffer[0] = 0; 
+            } else
+            {
+              _ax = 0;
+            }
             return;
         }
         if (_ah == 0x01)
         {
-            _flags.zero = true; //(keyboardBuffer.size() == 0);
+            _flags.zero = keyboardBuffer[0] == 0; //(keyboardBuffer.size() == 0);
         }
         return;
 
@@ -311,11 +314,28 @@ void _interrupt(BYTE i)
         _cx = 2035;
         return;        
     }
+    if (i == 0x21 && _ah == 0x09)
+    {
+        char text[128];
+        int i;
+        for (int i=0; i<120; i++)
+        {
+            char c = text[i] = memory(_ds, _dx+i);
+            if (!c || c == '$')
+                break;
+        }
+        text[i] = 0;
+        debugPrint(text);
+        return;        // print string
+    }
     if (i == 0x12)
     {
         _ax = 0x800;
         return;
     }
+//char info[128];
+//sprintf(info, "unhandled interrupt: %02x, ah=%02x, al=%02x", i, _ah, _al);
+//debugPrint(info);
 
     _ASSERT(0);
 }
@@ -332,6 +352,18 @@ void _in(BYTE& val, WORD port)
         val = 0xff;
         return;
     }
+    if (port == 0x3da) // ega
+    {
+        static int retrace = 0;
+        retrace++;
+        val = (retrace & 1) ? 8 : 0;
+        return;
+    }
+
+//char info[128];
+//sprintf(info, "unhandled port read: %04x", port);
+//debugPrint(info);
+
     _ASSERT(0);
 }
 
@@ -356,7 +388,13 @@ WORD memoryBiosGet16(WORD seg, WORD ofs)
 BYTE& memory(WORD segment, WORD offset) 
 { 
   int ofs = segment*16+offset;
-  assert(ofs < sizeof(memoryBuffer));
+  if (ofs >= sizeof(memoryBuffer))
+  {
+    //char info[128];
+    //sprintf(info, "out of bounds read %04x:%04x", segment, offset);
+    //debugPrint(info);
+    assert(ofs < sizeof(memoryBuffer));
+  }
   return memoryBuffer[ofs];
 }
 
@@ -369,8 +407,6 @@ WORD& memory16(WORD segment, WORD offset)
 
 void _push(WORD data)
 {
-js_debug(444);
-js_debug(_sp);
     assert(_sp/2 < sizeof(_stack));
     _stack[_sp/2] = data;
     _sp -= 2;
@@ -378,48 +414,17 @@ js_debug(_sp);
 
 WORD _pop()
 {
-js_debug(555);
-js_debug(_sp);
     _sp += 2;
     assert(_sp/2 < sizeof(_stack));
     return _stack[_sp/2];
 }
 
-extern "C" uint8_t* appVideoBuffer();
-extern "C" uint8_t* appMemory();
-
-uint8_t* appMemory()
-{  
-    return memoryBuffer;
-}
-
-uint8_t* appVideoBuffer()
+uint8_t* getEgaPlanes()
 {
-    int shift = mVideo.cfgAddr;
-    BYTE* planes = (BYTE*)(mVideo.memory + shift);
-        
-    BYTE* p = videoBuffer;
-    for (int y=0; y<350; y++)
-        for (int x=0; x<640/8; x++)
-        {
-            int plane0 = *planes++;
-            int plane1 = *planes++;
-            int plane2 = *planes++;
-            int plane3 = *planes++;
-
-            for (int i=0; i<8; i++)
-            {
-                int index = (plane0 & 128) + (plane1 & 128)*2 + (plane2 & 128)*4 + (plane3 & 128)*8;
-                int color = mVideo.palette[index >> 7];
-                *p++ = color >> 16;
-                *p++ = color >> 8;
-                *p++ = color >> 0;
-                plane0 <<= 1;
-                plane1 <<= 1;
-                plane2 <<= 1;
-                plane3 <<= 1;
-            }
-        }
-   return videoBuffer;
+    return (uint8_t*)(mVideo.memory/* + mVideo.cfgAddr*/);
 }
 
+uint32_t* getEgaPalette()
+{
+    return mVideo.palette;
+}
