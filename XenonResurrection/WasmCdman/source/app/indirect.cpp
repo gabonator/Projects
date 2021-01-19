@@ -1,3 +1,5 @@
+#include "cdman.h"
+
 // ------------- indirect
 
 // import

@@ -1,4 +1,4 @@
-mkdir build
+mkdir -p build
 cd build 
 
 PATH=$PATH:~/Documents/git/ext/emsdk/upstream/emscripten
@@ -8,15 +8,23 @@ INCLUDES=""
 
 SOURCE="\
   ../source/main.cpp \
+  ../source/app/cdman.cpp \
+  ../source/app/indirect.cpp \
+  ../source/cpu.cpp \
+  ../source/machine.cpp \
 "
 
 NAME=cdman
-BASE=http://localhost:8080/apps/
+BASE=http://localhost:8080/build/
+#BASE=/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/WasmCdman/build
 
-EXPORTED="['_appLoop', '_appInit', '_appFinish']"
-CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=65536 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=1"
+EXPORTED="['_appLoop', '_appInit', '_appFinish', '_appMemory', '_appVideoBuffer']"
+CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=8388608 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=1"
 DEFINES="-DEMSCRIPTEN"
-emcc $INCLUDES $SOURCE -g4 -O3 --std=c++11 $CONFIGURATION $DEFINES --source-map-base $BASE -s EXPORTED_FUNCTIONS="${EXPORTED}" -o $NAME.js || exit 1
+emcc -s ASSERTIONS=1 $INCLUDES $SOURCE -g4 -O3 --std=c++11 $CONFIGURATION $DEFINES --source-map-base $BASE -s EXPORTED_FUNCTIONS="${EXPORTED}" -o $NAME.js || exit 1
 #node ../../../os_platform/wasm/htmllite/package.js $NAME
 
-
+cd ../web
+node fat
+cd ..
+http-server .

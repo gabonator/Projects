@@ -1,3 +1,5 @@
+#include "cdman.h"
+
 bool start();
 bool sub_13F3D(int pc = 0); // breakup
 void sub_13FEE();
@@ -190,8 +192,9 @@ bool start()
     static bool resume = false;
     if (resume)
         goto resume1;
-
+       js_debug(3);
     _push(_ds);                                 //push ds
+       js_debug(4);
     _ax = 0x0000;                               //mov ax, 0
     _push(_ax);                                 //push ax
     _ax = _seg001;                              //mov ax, seg seg001
@@ -1104,7 +1107,7 @@ void sub_14601()
     _cx = 0x024b;                               //mov cx, 24Bh
 loc_14616:                                      //loc_14616:
     _flags.direction = false;                   //cld
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _es = _pop();                               //pop es
 }
 
@@ -1123,7 +1126,7 @@ loc_14629:                                      //loc_14629:
     _si = 0x0000;                               //mov si, 0
     _di = 0x0000;                               //mov di, 0
     _flags.direction = false;                   //cld
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _es = _pop();                               //pop es
     _ds = _pop();                               //pop ds
 }
@@ -3023,7 +3026,7 @@ void sub_15697()
     _bx >>= 1;                                  //shr bx, 1
     _cx -= _bx;                                 //sub cx, bx
     _flags.direction = true;                    //std
-    _rep_movsw<MemAuto, MemAuto, DirBackward>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirBackward>();    //rep movsw
     memory16(_ds, _di) = _ax;                   //mov [di], ax
     _lea(_si, _ds, 0x1DC2);                     //lea si, ds:1DC2h
     _di = _si;                                  //mov di, si
@@ -3038,7 +3041,7 @@ loc_156C2:                                      //loc_156C2:
     _push(_di);                                 //push di
     _cx = 0x3f;                                 //mov cx, 3Fh
     _flags.direction = false;                   //cld
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _di = _pop();                               //pop di
     _si = _pop();                               //pop si
     _si -= 0x49;                                //sub si, 49h
@@ -3396,7 +3399,7 @@ loc_159CA:                                      //loc_159CA:
     _push(_di);                                 //push di
     _cx = 0x2e;                                 //mov cx, 2Eh
     _flags.direction = false;                   //cld
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _di = _pop();                               //pop di
     _si = _pop();                               //pop si
     _si -= 0x34;                                //sub si, 34h
@@ -3856,7 +3859,7 @@ void sub_15DAA()
     _push(_ds);                                 //push ds
     _es = _pop();                               //pop es
     _flags.direction = false;                   //cld
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _es = _pop();                               //pop es
 }
 
@@ -4328,15 +4331,9 @@ loc_16101:                                      //loc_16101:
 loc_16109:                                      //loc_16109:
     memory(_ds, _bx + 410) = _ah;               //mov [bx+19Ah], ah
 }
-int synccalls = 0;
+
 void sub_1610E() // draw sprite
 {
-/*
-    if (synccalls++ == 10)
-    {
-        int f = 9;
-    }
-  */
     _cx = 0x18;                                 //mov cx, 18h
 loc_16111:                                      //loc_16111:
     _al = memoryVideoGet(_es, _si);             //mov al, es:[si]
@@ -6579,7 +6576,7 @@ void sub_175F8()
     _out(_dx, _ax);                             //out dx, ax
     _cx = 0x36b0;                               //mov cx, 36B0h
     _flags.direction = false;                   //cld
-    _rep_stosw<MemVideo, DirAuto>();             //rep stosw
+    _rep_stosw<MemVideo, DirForward>();             //rep stosw
     _ax = 0x0001;                               //mov ax, 1
     _out(_dx, _ax);                             //out dx, ax
     _ax = 0x0105;                               //mov ax, 105h
@@ -6879,7 +6876,8 @@ loc_1783D:                                      //loc_1783D:
 loc_17841:                                      //loc_17841:
     if (--_cx)                                  //loop loc_17841
       goto loc_17841;
-    _sync();//////////
+   _ASSERT(0);
+//    _sync();//////////
     if (memory(_ds, 0x1449) == 0)               //jz short loc_17853
       goto loc_17853;
     _ah = 0x01;                                 //mov ah, 1
@@ -7813,7 +7811,7 @@ void sub_17F7B()
     _out(_dx, _ax);                             //out dx, ax
     _cx = 0x6d60;                               //mov cx, 6D60h
     _flags.direction = false;                   //cld
-    _rep_stosb<MemVideo, DirAuto>();             //rep stosb
+    _rep_stosb<MemVideo, DirForward>();             //rep stosb
     _di = _di ^ _di;                            //xor di, di
     _ax = 0x0000;                               //mov ax, 0
     _out(_dx, _ax);                             //out dx, ax

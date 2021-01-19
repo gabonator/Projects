@@ -1,13 +1,5 @@
 #include "font.h"
-
-uint32_t getTick() {
-    struct timespec ts;
-    unsigned theTick = 0U;
-    clock_gettime( CLOCK_REALTIME, &ts );
-    theTick  = ts.tv_nsec / 1000000;
-    theTick += ts.tv_sec * 1000;
-    return theTick;
-}
+#include <string.h>
 
 typedef uint32_t DWORD;
 
@@ -142,7 +134,7 @@ public:
 class CEga : public CVideoAdapter
 {
 	enum {
-		MemSize = 0x10000*2
+		MemSize = 640*350//0x10000*2
 	};
 
 public:
@@ -179,7 +171,7 @@ public:
 	DWORD full_enable_set_reset;
 	DWORD full_not_enable_set_reset;
 
-    DWORD palette[128] = {
+    DWORD palette[16] = {
         0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
         0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
 
@@ -219,7 +211,7 @@ public:
 		full_not_map_mask			= ~full_map_mask;
 		full_bit_mask				= 0xffffffff;
     
-        memset(memory, 0, sizeof(memory));
+      //  memset(memory, 0, sizeof(memory));
 	}
     
     void DrawChar(int x, int y, uint8_t c, uint8_t attr)
@@ -231,7 +223,7 @@ public:
         for (int _x=0; _x<8; _x++)
             for (int _y=0; _y<14; _y++)
             {
-                int d = (attr & 0x08) ? ::memory(0x1020-appBase, 0x2639 + c*14 + _y) : font[c*14 + _y];
+                int d = (attr & 0x08) ? ::memory(0x1020-0x1020, 0x2639 + c*14 + _y) : font[c*14 + _y];
                 int b = (d << _x) & 128;
                 SetPixel(x+_x, y+_y, b ? (attr & 15) : (attr>>4));
             }
@@ -304,7 +296,6 @@ public:
 			if ( (data & 0x00ff) == 0x0c )
 			{
 				SetAddrHi( data >>8 );
-                _sync();
 				return true;
 			}
 			if ( (data & 0x00ff) == 0x0d )
@@ -523,12 +514,6 @@ public:
 
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
-        static int q = 0;
-        if (q++ > 5000)
-        {
-            _sync();
-            q= 0;
-        }
     }
 
 	virtual BYTE Read(DWORD dwAddr) override
@@ -639,85 +624,5 @@ public:
 	}
 };
 
-
-
-
-#if 0
-private:
-	Bitu readHandler(PhysPt start) {
-		vga.latch.d=((Bit32u*)vga.mem.linear)[start];
-		switch (vga.config.read_mode) {
-		case 0:
-			return (vga.latch.b[vga.config.read_map_select]);
-		case 1:
-			VGA_Latch templatch;
-			templatch.d=(vga.latch.d &	FillTable[vga.config.color_dont_care]) ^ FillTable[vga.config.color_compare & vga.config.color_dont_care];
-			return (Bit8u)~(templatch.b[0] | templatch.b[1] | templatch.b[2] | templatch.b[3]);
-		}
-		return 0;
-	}
-
-	INLINE static Bit32u ModeOperation(Bit8u val) {
-		Bit32u full;
-		switch (vga.config.write_mode) {
-		case 0x00:
-			// Write Mode 0: In this mode, the host data is first rotated as per the Rotate Count field, then the Enable Set/Reset mechanism selects data from this or the Set/Reset field. Then the selected Logical Operation is performed on the resulting data and the data in the latch register. Then the Bit Mask field is used to select which bits come from the resulting data and which come from the latch register. Finally, only the bit planes enabled by the Memory Plane Write Enable field are written to memory.
-			val=((val >> vga.config.data_rotate) | (val << (8-vga.config.data_rotate)));
-			full=ExpandTable[val];
-			full=(full & vga.config.full_not_enable_set_reset) | vga.config.full_enable_and_set_reset;
-			full=RasterOp(full,vga.config.full_bit_mask);
-			break;
-		case 0x01:
-			// Write Mode 1: In this mode, data is transferred directly from the 32 bit latch register to display memory, affected only by the Memory Plane Write Enable field. The host data is not used in this mode.
-			full=vga.latch.d;
-			break;
-		case 0x02:
-			//Write Mode 2: In this mode, the bits 3-0 of the host data are replicated across all 8 bits of their respective planes. Then the selected Logical Operation is performed on the resulting data and the data in the latch register. Then the Bit Mask field is used to select which bits come from the resulting data and which come from the latch register. Finally, only the bit planes enabled by the Memory Plane Write Enable field are written to memory.
-			full=RasterOp(FillTable[val&0xF],vga.config.full_bit_mask);
-			break;
-		case 0x03:
-			// Write Mode 3: In this mode, the data in the Set/Reset field is used as if the Enable Set/Reset field were set to 1111b. Then the host data is first rotated as per the Rotate Count field, then logical ANDed with the value of the Bit Mask field. The resulting value is used on the data obtained from the Set/Reset field in the same way that the Bit Mask field would ordinarily be used. to select which bits come from the expansion of the Set/Reset field and which come from the latch register. Finally, only the bit planes enabled by the Memory Plane Write Enable field are written to memory.
-			val=((val >> vga.config.data_rotate) | (val << (8-vga.config.data_rotate)));
-			full=RasterOp(vga.config.full_set_reset,ExpandTable[val] & vga.config.full_bit_mask);
-			break;
-		default:
-			LOG(LOG_VGAMISC,LOG_NORMAL)("VGA:Unsupported write mode %d",vga.config.write_mode);
-			full=0;
-			break;
-		}
-		return full;
-	}
-
-
-	void writeHandler(PhysPt start, Bit8u val) {
-		Bit32u data=ModeOperation(val);
-		/* Update video memory and the pixel buffer */
-		VGA_Latch pixels;
-		pixels.d=((Bit32u*)vga.mem.linear)[start];
-		pixels.d&=vga.config.full_not_map_mask;
-		pixels.d|=(data & vga.config.full_map_mask);
-		((Bit32u*)vga.mem.linear)[start]=pixels.d;
-
-		Bit8u * write_pixels=&vga.fastmem[start<<3];
-
-		Bit32u colors0_3, colors4_7;
-		VGA_Latch temp;
-		temp.d=(pixels.d>>4) & 0x0f0f0f0f;
-		colors0_3 =
-			Expand16Table[0][temp.b[0]] |
-			Expand16Table[1][temp.b[1]] |
-			Expand16Table[2][temp.b[2]] |
-			Expand16Table[3][temp.b[3]];
-		*(Bit32u *)write_pixels=colors0_3;
-
-		temp.d=pixels.d & 0x0f0f0f0f;
-		colors4_7 =
-			Expand16Table[0][temp.b[0]] |
-			Expand16Table[1][temp.b[1]] |
-			Expand16Table[2][temp.b[2]] |
-			Expand16Table[3][temp.b[3]];
-		*(Bit32u *)(write_pixels+4)=colors4_7;
-	}
-#endif
 
 

@@ -1,3 +1,10 @@
+#pragma once
+
+#include <stdint.h>
+#include <cassert>
+
+#define _ASSERT assert
+
 typedef uint16_t WORD;
 typedef uint8_t BYTE;
 typedef uint8_t FLAG;
@@ -96,10 +103,7 @@ template <class DST, class DIR> void _rep_stosw();
 template <class DST, class DIR> void _stosb();
 
 
-#define _ASSERT assert
-
-void _STOP_(const char*) { assert(0); }
-
+void _STOP_(const char*);
 
 void _xlat();
 void _in(BYTE& value, WORD port);
@@ -112,7 +116,7 @@ struct MemVideo
     static void Set16(WORD seg, WORD nAddr, WORD nData);
 };
 
-struct MemAuto
+struct MemData
 {
     static BYTE Get8(WORD seg, WORD nAddr);
     static void Set8(WORD seg, WORD nAddr, BYTE nData);
@@ -146,33 +150,12 @@ struct DirBackward
     }
 };
 
-struct DirAuto
-{
-    static void Assert()
-    {
-    }
-    template<class T>
-    static T Move(T& i)
-    {
-        if (_flags.direction)
-        {
-            _ASSERT(0);
-            return i--;
-        }
-        else
-            return i++;
-    }
-};
-
 template <class DST, class SRC, class DIR>
 void _movsb()
 {
-    //memory[adr(_es, _di)] = memory[adr(_ds, _si)];
     DIR::Assert();
     DST::Set8(_es, DIR::Move(_di), SRC::Get8(_ds, DIR::Move(_si)));
 }
-
-
 
 template <class DST, class SRC, class DIR>
 void _rep_movsb()
@@ -265,6 +248,7 @@ void _lodsb()
 }
 
 
+#if 0
 
 //
 //std::vector<WORD> m_arrStack;
@@ -284,6 +268,7 @@ WORD StackRead(int nOffset);
     return m_arrStack[nOffset/2];
 }
 */
+
 void _push(WORD data)
 {
     StackWrite(_sp, data);
@@ -296,155 +281,34 @@ WORD _pop()
     return StackRead(_sp);
 }
 
-void _xchg(BYTE& a, BYTE& b) { BYTE t = a; a = b; b = t; }
-void _xchg(WORD& a, WORD& b) { WORD t = a; a = b; b = t; }
-//void _lea(WORD& r, WORD o) { _ASSERT(0); }
-void _lea(WORD& r, WORD s, WORD o)
-{
-    r = o;
-}
+#endif
+void _push(WORD data);
+WORD _pop();
 
+
+void _xchg(BYTE& a, BYTE& b);
+void _xchg(WORD& a, WORD& b); 
+void _lea(WORD& r, WORD s, WORD o);
 void _repne_scasw();
-void _les(WORD& reg, WORD addr)
-{
-    reg = memory16(_ds, addr);
-    _es = memory16(_ds, addr+2);
-}
-template <typename INT>
-INT rol(INT val) {
-    return (val << 1) | (val >> (sizeof(INT)*8-1));
-}
-template <typename INT>
-INT ror(INT val) {
-    return (val >> 1) | (val << (sizeof(INT)*8-1));
-}
-
-void _rol(WORD& b, BYTE l)
-{
-    _ASSERT(l>=0 && l <= 7);
-    while (l--) b = rol<WORD>(b);    
-}
-
-void _rol(BYTE& b, BYTE l)
-{
-    _ASSERT(l>=0 && l <= 7);
-    while (l--) b = rol<BYTE>(b);
-}
-
-void _ror(WORD & b, BYTE l)
-{
-    _ASSERT(l == 1);
-    b = ror<WORD>(b);
-}
-
-
-void _ror(BYTE& b, BYTE l)
-{
-    _ASSERT(l == 1);
-    b = ror<BYTE>(b);
-}
-
-void _div(WORD& r)
-{
-    _ASSERT(r != 0);
-    WORD result = _ax / r;
-    WORD remain = _ax % r;
-    _ax = result;
-    _dx = remain;
-}
-
-void _rcl(WORD& r, BYTE c)
-{
-    _ASSERT(c == 1);
-    int newCarry = !!(r & 0x8000);
-    r <<= 1;
-    r |= _flags.carry;
-    _flags.carry = newCarry;
-}
-
-void _cwd()
-{
-    if (_ax & 0x8000)
-        _dx = 0xffff;
-    else
-        _dx = 0x0000;
-}
-
-void _rcl(BYTE& r, BYTE c)
-{
-    _ASSERT(c == 1);
-    int newCarry = !!(r & 0x80);
-    r <<= 1;
-    r |= _flags.carry;
-    _flags.carry = newCarry;
-}
-
-void _repne_scasb()
-{
-    _ASSERT(_flags.direction == 0);
-    _flags.zero = 0;
-    while ( _cx-- && _flags.zero == 0 )
-    {
-        _flags.zero = (_al - memory(_es, _di)) == 0;
-        _di++;
-    }
-}
-
+void _les(WORD& reg, WORD addr);
+void _rol(WORD& b, BYTE l);
+void _rol(BYTE& b, BYTE l);
+void _ror(WORD & b, BYTE l);
+void _ror(BYTE& b, BYTE l);
+void _div(WORD& r);
+void _rcl(WORD& r, BYTE c);
+void _cwd();
+void _rcl(BYTE& r, BYTE c);
+void _repne_scasb();
 BYTE memoryVideoGet(WORD seg, WORD ofs);
 void memoryVideoSet(WORD seg, WORD ofs, BYTE data);
 void _sync();
-void _idiv(WORD d)
-{
-    // DX:AX / d -> AX result, DX remainder
-    int32_t dw = (_dx << 16) | _ax;
-    WORD result = dw / d;
-    WORD remainder = dw % d;
-    _ax = result;
-    _dx = remainder;
-}
+void _idiv(WORD d);
+void _div(BYTE dby);
+void _sar(WORD& a, BYTE b);
+void _cbw();
+void _indirectCall(WORD seg, WORD ptr);
 
-void _div(BYTE dby)
-{
-  int res = _ax / dby;
-  int rem = _ax % dby;
-  _al = res;
-  _ah = rem;
-}
-
-void _sar(WORD& a, BYTE b)
-{
-    int16_t& sa = (short&)a;
-    sa >>= b;
-}
-
-void _cbw()
-{
-    if (_al & 0x80)
-        _ah = 0xff;
-    else
-        _ah = 0;
-}
-
-/*
-WORD& _stack16(int ofs)
-{
-    int nOffset = ofs;
-    _ASSERT(nOffset/2 >= 0 && nOffset/2 < (int)m_arrStack.size());
-    _ASSERT((nOffset&1) == 0);
-    return m_arrStack.data()[nOffset/2];
-}
-
-WORD& _stack16(int a, int b)
-{
-    return _stack16(a+b);
-}
-
-void _stackReduce(int n)
-{
-    _sp += n;
-    _ASSERT( _sp >= 0 && _sp < m_arrStack.size());
-}
-*/
 void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
 void memoryVideoOr16(WORD seg, WORD ofs, WORD x);
 void memoryVideoOr(WORD seg, WORD ofs, BYTE x);

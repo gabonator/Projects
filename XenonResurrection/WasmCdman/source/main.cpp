@@ -1,46 +1,28 @@
-#include <stdint.h>
-#include <cassert>
+#include "app/cdman.h"
+#include "machine.h"
 
 extern "C" void appInit();
 extern "C" bool appLoop();
 extern "C" void appFinish();
 
-typedef uint16_t WORD;
-constexpr WORD appBase = 0x1020;
-//constexpr WORD _seg000 = 0x1000 - appBase;
-constexpr WORD _seg001 = 0x1020 - appBase;
-constexpr WORD _seg002 = 0x13EC - appBase;
-
-#include "cpu.h"
-#include "indirect.h"
-#include "cdman.h"
-
-void StackWrite(int nOffset, WORD nData) {}
-WORD StackRead(int nOffset) { return 0; }
-void _out(WORD port, WORD val) {}
-void _out(WORD port, BYTE val) {}
-void _interrupt(BYTE i) {}
-void _in(BYTE& val, WORD port) {}
-WORD memoryVideoGet16(WORD seg, WORD ofs) { return 0;}
-void memoryVideoSet16(WORD seg, WORD ofs, WORD d) {}
-WORD memoryBiosGet16(WORD seg, WORD ofs) {return 0;}
-BYTE memoryVideoGet(WORD seg, WORD ofs) {return 0;}
-void memoryVideoSet(WORD seg, WORD ofs, BYTE b) {}
-BYTE& memory(WORD segment, WORD offset) { static BYTE b; return b; }
-WORD& memory16(WORD segment, WORD offset) { static WORD w; return w; }
-BYTE MemAuto::Get8(WORD seg, WORD ofs) { return 0; }
-void MemAuto::Set8(WORD seg, WORD ofs, BYTE data) { }
-BYTE MemVideo::Get8(WORD seg, WORD ofs) { return 0; }
-void MemVideo::Set8(WORD seg, WORD ofs, BYTE data) {}
-
+extern "C" uint8_t* appVideoBuffer();
+extern "C" uint8_t* appMemory();
 
 void appInit()
 {
+    js_debug(66);
+    js_debug(_sp);
+    _sp = 64;
+//    _ds = _es = _di = _bp = 0x6666;
+    js_debug(77);
+    js_debug(_sp);
 }
+
 bool appLoop()
 {
-  start();
-  return true;
+    js_debug(88);
+    js_debug(_sp);
+  return start();
 }
 
 void appFinish()
