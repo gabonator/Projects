@@ -86,6 +86,8 @@ function pacClear()
 
 function pacClick(sx, sy)
 {
+  window.miniApp.lastKey = 0x1c0d;
+
   pacClear();
   pacMap[sy][sx] = 'S';
   var pac = pacPos();
