@@ -28,7 +28,7 @@ GPS Module label:
 GPS connector pinout (sockets):
 
 +-+ +---+ +-+
-| | |   | | |
+| |_|   |_| |
 |           |
 |  =======  |
 |  3  2  1  |
@@ -37,7 +37,7 @@ GPS connector pinout (sockets):
 |  o  o  o  |
 |           |
 |           |
-+----- -----+
++-----_-----+
 
 pinout:
 1 (gps module RX) - headunit to gps module
