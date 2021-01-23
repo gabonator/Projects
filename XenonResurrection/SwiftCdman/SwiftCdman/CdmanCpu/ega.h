@@ -520,22 +520,10 @@ public:
 
 	virtual BYTE Read(DWORD dwAddr) override
 	{
-        if (dwAddr >= 0xb8000)
-        {
-            int f = 9;
-            return 0;
-        }
-
 		dwAddr -= 0xa000 * 16;
-/*
-		if ( nReadMode == 1 || nReadMode == 0 )
-		{
-			LoadLatch(dwAddr);
-			return 0;
-		}
-*/
-		_ASSERT( dwAddr < sizeof(memory) );
-		LoadLatch(dwAddr); //((DWORD*)&memory[dwAddr])[dwAddr]; 
+
+        _ASSERT( dwAddr < sizeof(memory) );
+		LoadLatch(dwAddr); 
 		if ( nReadMode == 0 )
 			return uLatch.u8Data[cfgReadMapSelect];
 		if ( nReadMode == 1 )

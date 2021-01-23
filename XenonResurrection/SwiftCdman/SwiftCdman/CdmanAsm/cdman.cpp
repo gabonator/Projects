@@ -5270,13 +5270,6 @@ loc_16A73:                                      //loc_16A73:
     _dh = memory(_ds, 0x18D);                   //mov dh, ds:18Dh
     _dl = memory(_ds, 0x18E);                   //mov dl, ds:18Eh
     // right 0, left 8, down 16, up 24
-    {
-        int p = memory16(_ds, 0x194)-4882;
-        int x = p%640;
-        int y = p/640;
-        
-        //std::cout << "direction " << (int) _dh << "\n"; //(int)x<< "," << (int)y << "\n";
-    }
     if (_dh == _dl)                             //jz short loc_16A8B
       goto loc_16A8B;
     _dl = _dl ^ _dh;                            //xor dl, dh

@@ -187,16 +187,8 @@ void _interrupt(BYTE i)
     if (i == 0x16) // keyboard
     {
         // TODO
-        static int simEnter = 0;
         if (_ah == 0x00)
         {
-/*
-            if (keyboardBuffer.size() > 0)
-            {
-                _ax = keyboardBuffer.front();
-                keyboardBuffer.pop_front();
-            }
-*/
             if (keyboardBuffer[0] != 0)
             {
               _ax = keyboardBuffer[0];

@@ -8,6 +8,7 @@ uint8_t* appVideoBuffer();
 uint16_t* appKeyboardBuffer();
 
 extern uint8_t& memory(uint16_t segment, uint16_t offset);
+extern uint16_t& memory16(uint16_t segment, uint16_t offset);
 //bool keys[128] = {0};
 extern int getPlayFrequency();
 
@@ -100,31 +101,101 @@ void assertionHandler(char*)
     appKeyboardBuffer()[0] = 0x1c0d;
 }
 
-- (void)pressKey:(int)k
+- (void)pressKey:(CdmanKey)k
 {
-    //keys[k] = 1;
-    memory(0x13A5, 0x8e8a+k) = 1;
-//    if (keys[75] && keys[77]) // left & right
-//    {
-//        memory(0x13A5, 0x8e8a+75) = 0;
-//        memory(0x13A5, 0x8e8a+77) = 0;
-//    }
+    switch (k)
+    {
+        case CdmanKeyEnter:
+            appKeyboardBuffer()[0] = 0x1c0d;
+            break;
+        case CdmanKeyUp:
+            appKeyboardBuffer()[0] = 0x5000;
+            break;
+        case CdmanKeyDown:
+            appKeyboardBuffer()[0] = 0x4800;
+            break;
+        case CdmanKeyLeft:
+            appKeyboardBuffer()[0] = 0x4b00;
+            break;
+        case CdmanKeyRight:
+            appKeyboardBuffer()[0] = 0x4d00;
+            break;
+
+    }
 }
 
-- (void)releaseKey:(int)k
+- (void)releaseKey:(CdmanKey)k
 {
-    //keys[k] = 0;
-    memory(0x13A5, 0x8e8a+k) = 0;
-//    if (keys[75] && keys[77]) // left & right
-//    {
-//        memory(0x13A5, 0x8e8a+75) = 0;
-//        memory(0x13A5, 0x8e8a+77) = 0;
-//    }
 }
 
 - (int)getPlayFrequency
 {
     return 0;
+}
+
+// extension extra
+
+- (nullable CdmanPos*)pacPos
+{
+    int pos = memory16(0x0000, 0x0190) - 22;
+    int px = pos % 21;
+    int py = pos / 21;
+    if (px >= 0 && py >= 0 && px < 19 && py < 13)
+        return [[CdmanPos alloc] initWithX:px y:py];
+    return nil;
+}
+
+- (CdmanDirection)pacGraphAt:(nullable CdmanPos*)pos
+{
+    CdmanDirection dir = 0;
+    
+    if (!pos)
+        return dir;
+        
+    NSInteger ptr = pos.y*21+pos.x+22;
+    int mask = memory(0x0000, ptr + 124);
+    
+    if (mask & 128)
+        dir |= CdmanDirectionUp;
+    if (mask & 64)
+        dir |= CdmanDirectionDown;
+    if (mask & 32)
+        dir |= CdmanDirectionLeft;
+    if (mask & 16)
+        dir |= CdmanDirectionRight;
+    return dir;
+}
+
+- (void)pacGo:(CdmanDirection)dir
+{
+    switch (dir)
+    {
+        case CdmanDirectionUp:
+            memory(0x0000, 0x018E) = 24;
+            break;
+        case CdmanDirectionDown:
+            memory(0x0000, 0x018E) = 16;
+            break;
+        case CdmanDirectionLeft:
+            memory(0x0000, 0x018E) = 8;
+            break;
+        case CdmanDirectionRight:
+            memory(0x0000, 0x018E) = 0;
+            break;
+    }
+}
+
+@end
+
+@implementation CdmanPos
+- (instancetype)initWithX: (NSInteger)x y:(NSInteger)y
+{
+    if (self = [super init])
+    {
+        self.x = x;
+        self.y = y;
+    }
+    return self;
 }
 
 @end
