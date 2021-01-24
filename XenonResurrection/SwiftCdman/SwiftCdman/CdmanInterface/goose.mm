@@ -133,7 +133,9 @@ void assertionHandler(char*)
     return 0;
 }
 
-// extension extra
+@end
+
+@implementation CdmanWrapper (navigation)
 
 - (nullable CdmanPos*)pacPos
 {
@@ -188,6 +190,7 @@ void assertionHandler(char*)
 @end
 
 @implementation CdmanPos
+
 - (instancetype)initWithX: (NSInteger)x y:(NSInteger)y
 {
     if (self = [super init])

@@ -30,7 +30,9 @@ typedef NS_OPTIONS(NSUInteger, CdmanKey) {
 - (void)pressKey:(CdmanKey)k;
 - (void)releaseKey:(CdmanKey)k;
 - (int)getPlayFrequency;
+@end
 
+@interface CdmanWrapper (navigation)
 - (nullable CdmanPos*)pacPos;
 - (CdmanDirection)pacGraphAt:(nullable CdmanPos*)pos;
 - (void)pacGo:(CdmanDirection)dir;

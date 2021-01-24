@@ -25,7 +25,7 @@
       "size" : "29x29"
     },
     {
-      "filename" : "logo87.png",
+      "filename" : "AppIcon29x29@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
@@ -37,7 +37,7 @@
       "size" : "40x40"
     },
     {
-      "filename" : "logofinal-1.png",
+      "filename" : "AppIcon40x40@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
@@ -53,7 +53,7 @@
       "size" : "57x57"
     },
     {
-      "filename" : "logofinal.png",
+      "filename" : "AppIcon60x60@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"

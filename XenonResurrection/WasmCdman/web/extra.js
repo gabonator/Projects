@@ -1,13 +1,21 @@
+var lpos = {x:0, y:0};
 var pacMap = [];
 pacClear();
 
-  setInterval(() => {
-    pacAuto();
-  }, 100);
+setInterval(() => {
+  pacAuto();
+}, 100);
 
 function pacAuto()
 {
-    var ppos = pacPos();
+    var ppos = pacPos(); 
+    if (!ppos)
+      return;
+    if (ppos.x != lpos.x || ppos.y != lpos.y)
+    {
+      pacMap[lpos.y][lpos.x] = ' ';
+      lpos = {...ppos};      
+    }
     if (ppos && pacMap[ppos.y][ppos.x] != ' ')
     {
       if (pacMap[ppos.y][ppos.x] == 'S')
@@ -15,7 +23,6 @@ function pacAuto()
       else
         pacGo(pacMap[ppos.y][ppos.x]);
     }
-
 }
 
 function pacPos()
@@ -54,26 +61,6 @@ function pacGo(dir)
            memory[memoryPtr+0x18E] = d;
 }
 
-function pacMapSet(x, y, v)
-{          
-//  if (v>=15)
-//    return;          
-  if (pacMap[y][x] != ' ')
-    return;
-  pacMap[y][x] = v;
-  var path = pacPath(x, y);
-
-  v++;
-  if (path.up)
-    pacMapSet(x, y-1, 'd');
-  if (path.down)
-    pacMapSet(x, y+1, 'u');
-  if (path.left)
-    pacMapSet(x-1, y, 'r');
-  if (path.right)
-    pacMapSet(x+1, y, 'l');
-}
-
 function pacClear()
 {
   for (var y=0; y<13; y++)
@@ -87,10 +74,12 @@ function pacClear()
 function pacClick(sx, sy)
 {
   window.miniApp.lastKey = 0x1c0d;
+  var pac = pacPos();
+  if (!pac)
+    return;
 
   pacClear();
   pacMap[sy][sx] = 'S';
-  var pac = pacPos();
 
   for (var i=0; i<30; i++)
   {
@@ -116,10 +105,6 @@ function pacClick(sx, sy)
      if (pacMap[pac.y][pac.x] != ' ')
        break;     
   }
-
-
-//  for(var y=0; y<13; y++)
-//    console.log(pacMap[y].join(""));
 }
 
 
@@ -129,18 +114,19 @@ function pacClick(sx, sy)
 
 function mousepos(evt)
 {
-  var rect = document.querySelector("#canvas").getBoundingClientRect();
+  var rect = canvas.getBoundingClientRect();
   var x = evt.clientX, y = evt.clientY;
   if ( evt.changedTouches ) 
   {
-    x = evt.changedTouches[0].screenX*2; // iphone4
-    y = evt.changedTouches[0].screenY*2;
+    x = evt.changedTouches[0].clientX*2;
+    y = evt.changedTouches[0].clientY*2;
   }
   x = (x - rect.left)*640/rect.width;
   y = (y - rect.top)*350/rect.height;
   return {x:Math.floor(x), y:Math.floor(y)};
 }
 
+canvas = document.querySelector("#canvas");
 canvas.addEventListener('mousedown', _mousedown, false);
 canvas.addEventListener('touchstart', _mousedown, false);
 canvas.addEventListener('mouseup', _mouseup, false);
@@ -153,7 +139,9 @@ function _mousedown(evt)
   
   var x = Math.floor((pos.x - 16)/32);
   var y = Math.floor((pos.y - 58)/24);
-  pacClick(x, y);
+
+  if (x>=0 && x<19 && y>=0 && y<13)
+    pacClick(x, y);
 }
 
 function _mouseup(evt)

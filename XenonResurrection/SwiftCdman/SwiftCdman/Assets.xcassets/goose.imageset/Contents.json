@@ -1,14 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "goose.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "goose@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "goose@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
