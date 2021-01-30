@@ -1,1 +1,0 @@
-dd skip=$((0xB0)) count=$((133472-0xB0)) if=POPCORN.EXE of=popcorn.data bs=1
