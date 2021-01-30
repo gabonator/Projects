@@ -1,0 +1,7 @@
+dd conv=notrunc if=vga.drv bs=1 seek=$((0x600)) of=MAIN.EXE
+
+dd skip=$((0x200)) count=$((50927-0x200)) if=MAIN.EXE of=rick2.data bs=1
+
+#dd conv=notrunc if=MAIN.EXE bs=$((0x600) count=$((50927-0x600)) of=rick2.data
+#dd conv=notrunc if=vga.drv seek=$((0x600) count=4480 of=MAIN.EXE
+#dd conv=notrunc if=cga.drv seek=$((0x600)) count=4480 of=MAIN.EXE
