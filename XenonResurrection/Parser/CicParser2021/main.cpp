@@ -31,7 +31,6 @@ std::map<string, regex> CUtils::m_mapCache;
 
 class CMachine;
 
-#include "reganalysis.h"
 #include "instructions.h"
 #include "matchers.h"
 
@@ -39,148 +38,130 @@ class CMachine;
 #include "parser.h"
 #include "dummy.h"
 
-
-
 // Export
 #include "cinstructions.h"
 #include "cexport.h"
 #include "cvalue.h"
 
+#include "json.h"
+
 class CCustomize
 {
 public:
+    struct segmentInfo_t {
+        char name[32];
+        int begin;
+        int end;
+        int base;
+    };
+    
+    vector<segmentInfo_t> mSegments;
+    vector<pair<string, string>> mFuncDescription;
+    set<string> mFuncGlobalExit;
+    set<string> mFuncVideoEs;
+    set<string> mFuncVideoDs;
+    set<string> mFuncBiosEs;
+    vector<string> mArguments;
+    vector<string> mFuncList;
+    vector<string> mNewArguments;
+
+    void addSegmentInfo(string name, int begin, int end, int base)
+    {
+        segmentInfo_t newSegment;
+        _ASSERT(name.length() < sizeof(newSegment.name)-1);
+        strcpy(newSegment.name, name.c_str());
+        newSegment.begin = begin;
+        newSegment.end = end;
+        newSegment.base = base;
+        
+        mSegments.push_back(newSegment);
+    }
+
     string GetFunctionDesc(string fname)
     {
-        #define D(sub, comment) if (fname == sub) return comment;
-        D("sub_15C8B", "load all files: x2spr.dat, x2weaps.dat, shop.dat, gr.dat");
-        D("sub_10DA3", "Fix bitmap?");
-        D("sub_1011C", "Opens and reads whole file");
-        D("sub_104C9", "Read data")
-        D("sub_10174", "Read data")
-        D("sub_100CF", "Main game loop")
-        D("sub_10FDA", "Draw sprite")
-        D("sub_132FE", "Draw map")
-        D("sub_13383", "Swap pages")
-        D("sub_133D7", "V sync")
-        D("sub_134A8", "Draw lines")
-        D("sub_1069A", "Draw map")
-        D("sub_10BDC", "Draw tile")
-        D("sub_12E02", "Tunnel grid")
-        D("sub_1300A", "Tunnel")
-          
-        //
-        D("sub_160EF", "Joystick")
-        D("sub_1F492", "Starfields")
-        D("sub_2058D", "Clear screen")
-        D("sub_1595D", "Label with startfields")
-        D("sub_1F3D7", "Set palette")
-        #undef D
+        for (auto iter = mFuncDescription.begin(); iter != mFuncDescription.end(); iter++)
+            if (iter->first == fname)
+                return iter->second;
         return "";
     }
     bool GlobalExitLabel(const string& fname)
     {
-        // not implemented
-        return fname == "loc_15E04";
+        return mFuncGlobalExit.find(fname) != mFuncGlobalExit.end();
     }
     bool isUsingVideoEs(const string& fname)
     {
-        static bool init=true;
-        static std::set<string> funcs;
-        if (init)
-        {
-            init = false;
-            std::vector<string> flist = {
-                "sub_1487F", "sub_1793C", "sub_17D17", "sub_179E3", "sub_17B9A", "sub_17BCB", "sub_17DD8",
-                "sub_17D32", "sub_17F7B", "sub_14791", "sub_147E7", "sub_14BFA", "sub_14CE4", "sub_14E74",
-                "sub_15C79", "sub_1610E", "sub_167C7", "sub_1763F", "sub_17680", "sub_14F52", "sub_168F2",
-                "loc_16D3D", "sub_16D16", "loc_16E88", "sub_16E59", "sub_16F07", "sub_16F47", "sub_16FAB",
-                "sub_1741F", "sub_174D1", "sub_1752C", "sub_1756C", "sub_175AC", "sub_175D0", "sub_176C7",
-                "sub_17738", "sub_16138", "sub_1616A", "sub_16184", "sub_161B6", "sub_161D8", "sub_16F87"
-            };
-            funcs.insert(flist.begin(), flist.end());
-        }
-        return funcs.find(fname) != funcs.end();
+        return mFuncVideoEs.find(fname) != mFuncVideoEs.end();
     }
-    
+    bool isUsingVideoDs(const string& fname)
+    {
+        return mFuncVideoDs.find(fname) != mFuncVideoDs.end();
+    }
     bool isUsingBiosEs(const string& fname)
     {
-        static bool init=true;
-        static std::set<string> funcs;
-        if (init)
-        {
-            init = false;
-            std::vector<string> flist = {
-                "sub_180A7"
-            };
-            funcs.insert(flist.begin(), flist.end());
-        }
-        return funcs.find(fname) != funcs.end();
+        return mFuncBiosEs.find(fname) != mFuncBiosEs.end();
     }
-    
+    int fixPtr(int ofs)
+    {
+        for (int i=0; i<mSegments.size(); i++)
+        {
+            if (ofs >= mSegments[i].base*16 + mSegments[i].begin &&
+                ofs <= mSegments[i].base*16 + mSegments[i].end)
+            {
+                return ofs - mSegments[i].base*16;
+            }
+        }
+        _ASSERT(0);
+        return ofs;
+    }
+
 };
+/*
+{ // rick2
+"seg000", 0, 0x10400-0x10000, 0x1000,
+"seg001", 0, 0x1c4ef-0x10400, 0x1040,
+    {"", 0, 0, 0}
+};
+*/
 
-int main(int argc, const char * argv[])
+CSourceParser sp;
+CCExport e;
+CCustomize custom;
+
+int FixPtr(int ofs)
 {
-    // insert code here...
-    
-    CSourceParser sp;
+    return custom.fixPtr(ofs);
+}
 
-//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.asm");
-//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
-//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.asm");
-//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.x");
-//
-//    return 0;
+bool doParse(string asmPath)
+{
+    sp.Parse(asmPath.c_str());
+    return true;
+}
 
-    //sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/xenon5.x");
-//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/GOOSE.x");
-//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.asm");
-//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
-    //sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputJbird/jbird.x");
-        
-//        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/ETETRIS.asm");
-//        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
-//        sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
+bool doSave(string xPath)
+{
+    sp.Save(xPath.c_str());
+    return true;
+}
 
-    
-//        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.asm");
-//        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
-//        sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
+bool doLoad(string xPath)
+{
+    sp.Load(xPath.c_str());
+    return true;
+}
 
-//            sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.asm");
-//            sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.x");
-            //sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputPopcorn/popcorn.x");
+bool doGetAllFunctions(std::vector<string>& flist)
+{
+    e.SetSource(sp.m_arrCode);
+    flist = e.GetFunctionList(sp.m_arrCode);
+    return true;
+}
 
-//    sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/ETETRIS.asm");
-//    sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
-//    sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputTetris/tetris.x");
-
-//        sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/GOLD.asm");
-//        sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/gold.x");
-//        sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGolden/gold.x");
-
-//            sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/unpacked.asm");
-//            sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
-//            sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/fox.x");
-
-//                sp.Parse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/CD-MAN.asm");
-//                sp.Save("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/cdman.x");
-                sp.Load("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/cdman.x");
-
-    
-    CCExport e;
+bool doExport(ostream& output, std::vector<string>& flist)
+{
     e.SetSource(sp.m_arrCode);
     
-    std::vector<string> flist;
-
-    CCustomize custom;
     std::set<string> imports;
-    auto& output = cout;
-    
-    flist = e.GetFunctionList(sp.m_arrCode);
-    
-//    ofstream output;
-//    output.open("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/SimulatorGoose/CicParserSim/code-goose.h");
     
     for (int i=0; i<flist.size(); i++)
     {
@@ -189,8 +170,6 @@ int main(int argc, const char * argv[])
     }
     std::cout << endl;
     
-//    flist = {"sub_17A24"};
-
     for (int i=0; i<flist.size(); i++)
     {
         CLabel testLabel(flist[i]);
@@ -266,7 +245,6 @@ int main(int argc, const char * argv[])
         arrCFunction.clear();
         e.Convert(testLabel, arrFunction, arrCFunction);
         
-        
         for (int i=0; i<arrCFunction.size(); i++)
         {
             shared_ptr<CCCall> pCall = dynamic_pointer_cast<CCCall>(arrCFunction[i]);
@@ -307,6 +285,7 @@ int main(int argc, const char * argv[])
         bool usingEntry = false;
         bool usingCs = false;
         bool usingVideoEs = custom.isUsingVideoEs(testLabel);
+        bool usingVideoDs = custom.isUsingVideoDs(testLabel);
         bool usingBiosEs = custom.isUsingBiosEs(testLabel);
         string csValue;
 
@@ -341,7 +320,7 @@ int main(int argc, const char * argv[])
                     ss << "//" << arrMatches[5];
                     //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
                     //line += string("(")
-                    line = ss.str();                    
+                    line = ss.str();
                 }
                 
                 arrMatches.clear();
@@ -360,8 +339,39 @@ int main(int argc, const char * argv[])
                     //line += string("(")
                     line = ss.str();
                 }
+                
+                arrMatches.clear();
+                if ( CUtils::match("^(.*)<(.*), (.*), (Dir.*)>\\(\\);.*$", line, arrMatches) )
+                {
+                    arrMatches[1] = "MemVideo";
+                    line = arrMatches[0] + "<" + arrMatches[1] + ", " + arrMatches[2] + ", " + arrMatches[3] + ">();";
+                }
+
+                arrMatches.clear();
+                if ( CUtils::match("^(.*sto.*)<(.*), (Dir.*)>\\(\\);.*$", line, arrMatches) )
+                {
+                    arrMatches[1] = "MemVideo";
+                    line = arrMatches[0] + "<" + arrMatches[1] + ", " + arrMatches[2] + ">();";
+                }
             }
 
+            if (usingVideoDs)
+            {
+                vector<string> arrMatches;
+                if ( CUtils::match("^(.*)<(.*), (.*), (Dir.*)>\\(\\);.*$", line, arrMatches) )
+                {
+                    arrMatches[2] = "MemVideo";
+                    line = arrMatches[0] + "<" + arrMatches[1] + ", " + arrMatches[2] + ", " + arrMatches[3] + ">();";
+                }
+
+                arrMatches.clear();
+                if ( CUtils::match("^(.*lod.*)<(.*), (Dir.*)>\\(\\);.*$", line, arrMatches) )
+                {
+                    arrMatches[1] = "MemVideo";
+                    line = arrMatches[0] + "<" + arrMatches[1] + ", " + arrMatches[2] + ">();";
+                }
+            }
+            
             if (usingBiosEs)
             {
                 vector<string> arrMatches;
@@ -449,6 +459,170 @@ int main(int argc, const char * argv[])
         }
     }
     output << endl;
-//    output.close();
+    return true;
+}
+
+void doConfig(const string& jsonFile)
+{
+    std::ifstream t(jsonFile);
+    std::string strConfig((std::istreambuf_iterator<char>(t)),
+                     std::istreambuf_iterator<char>());
+    
+    CJson json(strConfig.c_str());
+    if (json["segments"])
+    {
+        json["segments"].ForEach([](const CSubstring& sub){
+            CJson segment(sub);
+            
+            CCustomize::segmentInfo_t seg;
+            
+            strcpy(seg.name, segment["name"].GetString());
+            seg.begin = 0; //segment["begin"].GetNumber();
+            seg.end = segment["end"].GetNumber() - segment["begin"].GetNumber();
+            seg.base = segment["begin"].GetNumber() / 16;
+            
+            custom.mSegments.push_back(seg);
+        });
+    }
+    if (json["cli"])
+    {
+        custom.mNewArguments.clear();
+        json["cli"].ForEach([](const CSubstring& sub){
+            custom.mNewArguments.push_back(CJson(sub).GetString());
+        });
+    }
+    if (json["hints"])
+    {
+        json["hints"].ForEach([](const CSubstring& func, const CSubstring& attrsSub){
+            char funcName[64];
+            func.ToString(funcName, 64);
+            CJson attrs(attrsSub);
+            if (string(attrs["es"].GetString()) == "video")
+                custom.mFuncVideoEs.insert(funcName);
+            if (string(attrs["ds"].GetString()) == "video")
+                custom.mFuncVideoDs.insert(funcName);
+            if (string(attrs["es"].GetString()) == "bios")
+                custom.mFuncBiosEs.insert(funcName);
+        });
+    }
+}
+
+vector<string> explode(string const & s, char delim)
+{
+    vector<string> result;
+    istringstream iss(s);
+
+    for (string token; getline(iss, token, delim); )
+        result.push_back(move(token));
+
+    return result;
+}
+
+void doFunctions(string funcs)
+{
+    custom.mFuncList.clear();
+    if (funcs == "all")
+    {
+        doGetAllFunctions(custom.mFuncList);
+        return;
+    }
+    
+    custom.mFuncList = explode(funcs, ',');
+    _ASSERT(custom.mFuncList.size() > 0);
+}
+
+int main(int argc, const char * argv[])
+{
+    ofstream outputFile;
+    ostream* output = &cout;
+        
+    for (int i=1; i<argc; i++)
+        custom.mArguments.push_back(argv[i]);
+    
+    // TEST:
+    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
+    
+    for (auto it = custom.mArguments.begin(); it != custom.mArguments.end(); )
+    {
+        if (*it == "-config")
+        {
+            it++;
+            doConfig(*it);
+            if (custom.mNewArguments.size())
+            {
+                custom.mArguments = std::move(custom.mNewArguments);
+                it = custom.mArguments.begin();
+                continue;
+            }
+            it++;
+            continue;
+        }
+        if (*it == "-parse")
+        {
+            it++;
+            doParse(*it);
+            it++;
+            continue;
+        }
+        if (*it == "-save")
+        {
+            it++;
+            doSave(*it);
+            it++;
+            continue;
+        }
+        if (*it == "-load")
+        {
+            it++;
+            doLoad(*it);
+            it++;
+            continue;
+        }
+        if (*it == "-functions")
+        {
+            it++;
+            doFunctions(*it);
+            it++;
+            continue;
+        }
+        if (*it == "-export")
+        {
+            it++;
+            if (it != custom.mArguments.end() && it->c_str()[0] != '-')
+            {
+                // export to file
+                outputFile.open(*it);
+                it++;
+                
+                output = &outputFile;
+            }
+            
+            doExport(*output, custom.mFuncList);
+            
+            if (outputFile.is_open())
+                outputFile.close();
+            
+            output = &cout;
+            continue;
+        }
+        
+        cout << "Unsupported command: " << *it;
+        return 1;
+    }
+    /*
+    // -c config -p parse.asm -s interm.x
+    // -l interm.x -f all -x [out.cpp]
+    
+    //doConfig("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg");
+    //doParse("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/input.asm");
+    //doSave("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/input.x");
+    doLoad("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/input.x");
+    
+    std::vector<string> flist;
+    doGetAllFunctions(flist);
+    ostream& out = cout;
+    
+    doExport(out, flist);
+    */
     return 0;
 }

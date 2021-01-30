@@ -16,6 +16,7 @@ class CCAssignment : public CCInstruction
 	string m_strDst;
 	string m_strSrc;
 	string m_strInsertion;
+    string m_strPostsertion;
 
 public:
 	CCAssignment(shared_ptr<CIAssignment> pAssignment)
@@ -23,7 +24,7 @@ public:
 		CValue& vTo = pAssignment->m_valueTo;
 		CValue& vFrom = pAssignment->m_valueFrom;
 
-		m_strDst = vTo.SetC(&pAssignment->m_analysis);
+		m_strDst = vTo.SetC();
 /*
 		if ( vFrom.m_eType == CValue::es_ptr && vFrom.GetRegisterLength() == CValue::r8 )
 		{
@@ -34,7 +35,7 @@ public:
 				return;
 			}
 		}*/
-		m_strSrc = vFrom.GetC(&pAssignment->m_analysis);
+		m_strSrc = vFrom.GetC();
 	}
 
 	CCAssignment(shared_ptr<CIAlu> pAlu, shared_ptr<CInstruction> pPrevious)
@@ -89,7 +90,25 @@ public:
 		case CIAlu::AddWithCarry:
             {
                 bool problem = false;
-                _ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
+                _ASSERT(pAlu->m_ExportInsertion == CIAlu::None || pAlu->m_ExportInsertion == CIAlu::Carry);
+                
+                if (pAlu->m_ExportInsertion == CIAlu::Carry)
+                {
+                    _ASSERT(pAlu->m_op1.GetRegisterLength() == pAlu->m_op2.GetRegisterLength());
+                    if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
+                    {
+                        m_strInsertion = "_flags.carry2 = (" + op1 + " + " + op2 + " + _flags.carry) >= 0x100";
+                        m_strPostsertion = "_flags.carry = flags.carry2";
+                    }
+                    else if (pAlu->m_op1.GetRegisterLength() == CValue::r16)
+                    {
+                        m_strInsertion = "_flags.carry2 = (" + op1 + " + " + op2 + " + _flags.carry) >= 0x10000";
+                        m_strPostsertion = "_flags.carry = flags.carry2";
+                    }
+                    else
+                        _ASSERT(0);
+                }
+                
                 {
                     shared_ptr<CIAlu> pPrevAlu = dynamic_pointer_cast<CIAlu>(pPrevious);
                     if (pPrevAlu)
@@ -101,9 +120,10 @@ public:
                     
                 // TODO CARRY!!! ODKIAL??
                 m_strDst = op1;
-                m_strSrc = op1 + " + " + op2 + " + _flags.carry;";
+                m_strSrc = op1 + " + " + op2 + " + _flags.carry";
+                
                 if (problem)
-                    m_strSrc += " _ASSERT(0); ";
+                    m_strSrc += "; _ASSERT(0)";
             }
 			break;
 		case CIAlu::Sub:
@@ -154,7 +174,17 @@ public:
             if (pAlu->m_ExportInsertion == CIAlu::Sign)
             {
                 if (op1 == "_ax" && op2 == "_ax")
-                    m_strInsertion = "_flags.sign = _ax & 0x8000";
+                    m_strInsertion = "_flags.sign = !!(_ax & 0x8000)";
+                else if (op1 == "_bx" && op2 == "_bx")
+                    m_strInsertion = "_flags.sign = !!(_bx & 0x8000)";
+                else if (op1 == "_dx" && op2 == "_dx")
+                    m_strInsertion = "_flags.sign = !!(_dx & 0x8000)";
+                else if (op1 == "_bp" && op2 == "_bp")
+                    m_strInsertion = "_flags.sign = !!(_bp & 0x8000)";
+                else if (op1 == "_al" && op2 == "_al")
+                    m_strInsertion = "_flags.sign = !!(_al & 0x80)";
+                else if (op1 == "_ah" && op2 == "_ah")
+                    m_strInsertion = "_flags.sign = !!(_ah & 0x80)";
                 else
                     _ASSERT(0);
             } else _ASSERT(0);
@@ -246,6 +276,7 @@ public:
         }
         
 		string strInsertion = m_strInsertion.empty() ? "" : m_strInsertion + ";\n";
+        string strPostsertion = m_strPostsertion.empty() ? "" : m_strPostsertion + ";\n";
 		vector<string> arrMatches;
 		string strTest = m_strSrc;
         _ASSERT(!m_strDst.empty());
@@ -268,7 +299,7 @@ public:
                 if (arrMatches[0] == "|" || arrMatches[0] == "&")
                     return " ";
             }*/
-			return strInsertion + m_strDst + " " + arrMatches[0] + "= " + arrMatches[1] + ";";
+			return strInsertion + m_strDst + " " + arrMatches[0] + "= " + arrMatches[1] + ";" + strPostsertion;
 		}
 
 		if (m_strDst.find("($value)") != string::npos)
@@ -278,7 +309,7 @@ public:
 			return strInsertion + strTemp + ";";
 		}
 
-		return strInsertion + m_strDst + " = " + m_strSrc + ";";
+		return strInsertion + m_strDst + " = " + m_strSrc + ";" + strPostsertion;
 	}
 
 	virtual bool TryJoin(shared_ptr<CCInstruction> pInstruction) override
@@ -325,8 +356,8 @@ class CCZeroArgOp : public CCInstruction
 	string m_strOperation;
 
 public:
-	static string RegToC(CStaticAnalysis::CPossibleValue& pv)
-	{
+	static string RegToC(/*CStaticAnalysis::CPossibleValue& pv*/)
+	{/*
 		switch(pv.GetValue())
 		{
 			case -1: 
@@ -339,12 +370,13 @@ public:
 				return "MemData";
 			default:
 				_ASSERT(0);
-		}
+		}*/
 		return "MemAuto";
 	}
 
-	static string DirToC(CStaticAnalysis::CPossibleValue& pv)
+	static string DirToC(/*CStaticAnalysis::CPossibleValue& pv*/)
 	{
+        /*
 		switch(pv.GetValue())
 		{
 			case -1: 
@@ -355,15 +387,15 @@ public:
 				return "DirBackward";
 			default:
 				_ASSERT(0);
-		}
+		}*/
 		return "DirAuto";
 	}
 
-	static string GetTemplate(CStaticAnalysis& anal, CIZeroArgOp::EType op)
+	static string GetTemplate(/*CStaticAnalysis& anal,*/ CIZeroArgOp::EType op)
 	{
-		string _ds = RegToC(anal.m_ds);
-		string _es = RegToC(anal.m_es);
-		string _dir = DirToC(anal.m_direction);
+		string _ds = RegToC(/*anal.m_ds*/);
+		string _es = RegToC(/*anal.m_es*/);
+		string _dir = DirToC(/*anal.m_direction*/);
 
 		switch (op)
 		{
@@ -398,12 +430,12 @@ public:
 		case CIZeroArgOp::sahf: m_strOperation = "_flags.fromByte(_ah)"; break;
         case CIZeroArgOp::xlat: m_strOperation = "_xlat()"; break;
 
-		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
-		case CIZeroArgOp::stosb: m_strOperation = "_stosb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
-		case CIZeroArgOp::lodsw: m_strOperation = "_lodsw"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
-		case CIZeroArgOp::stosw: m_strOperation = "_stosw"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
-		case CIZeroArgOp::movsb: m_strOperation = "_movsb"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
-		case CIZeroArgOp::movsw: m_strOperation = "_movsw"+GetTemplate(pInstruction->m_analysis, pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::stosb: m_strOperation = "_stosb"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::lodsw: m_strOperation = "_lodsw"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::stosw: m_strOperation = "_stosw"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::movsb: m_strOperation = "_movsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::movsw: m_strOperation = "_movsw"+GetTemplate(pInstruction->m_eType)+"()"; break;
         case CIZeroArgOp::scasb: m_strOperation = "_scasb()"; break;
 
 		case CIZeroArgOp::pushf: m_strOperation = "_pushf()"; break;
@@ -476,9 +508,24 @@ public:
                     m_strOperation = "_rcr($arg1, $arg2)";
                     break;
                 }
-            }
+
+                shared_ptr<CIZeroArgOp> zero = dynamic_pointer_cast<CIZeroArgOp>(pPrevious);
+                if (zero && (zero->m_eType == CIZeroArgOp::clc || zero->m_eType == CIZeroArgOp::stc))
+                {
+                    m_strOperation = "_rcr($arg1, $arg2)";
+                    break;
+                }
+
+                shared_ptr<CITwoArgOp> two = dynamic_pointer_cast<CITwoArgOp>(pPrevious);
+                if (two && two->m_eType == CITwoArgOp::rcr)
+                {
+                    m_strOperation = "_rcr($arg1, $arg2)";
+                    break;
+                }
+
                 m_strOperation = "_ASSERT(0 /* check carry */); _rcr($arg1, $arg2)";
                 break;
+            }
 		case CITwoArgOp::rcl:
             {
                 shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
@@ -667,14 +714,12 @@ public:
 			From(pCondition, dynamic_pointer_cast<CIAlu>(pInstruction));
 		else if ( dynamic_pointer_cast<CISingleArgOp>(pInstruction) && dynamic_pointer_cast<CISingleArgOp>(pInstruction)->m_eType == CISingleArgOp::interrupt )
             From(pCondition, dynamic_pointer_cast<CISingleArgOp>(pInstruction));
+        else if ( dynamic_pointer_cast<CIStop>(pInstruction) )
+            From(pCondition, CCConditionalJump::Fixme);
+        else if ( pCondition->m_eType == CIConditionalJump::jcxz )
+            From(pCondition);
         else
-             if ( dynamic_pointer_cast<CIStop>(pInstruction) )
-                From(pCondition, CCConditionalJump::Fixme);
-        else
-            if ( pCondition->m_eType == CIConditionalJump::jcxz )
-               From(pCondition);
-            else
-                From(pCondition, CCConditionalJump::Fixme);
+            From(pCondition, CCConditionalJump::Fixme);
 	}
 
 	void From(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CICompare> pCompare)
@@ -712,8 +757,10 @@ public:
 		case CIConditionalJump::jbe: m_strCondition = "$a <= $b"; break;
 		case CIConditionalJump::ja: m_strCondition = "$a > $b"; break;
         case CIConditionalJump::jl: m_strCondition = "($type)$a < ($type)$b"; break;
-        case CIConditionalJump::js: m_strCondition = "($type)$a < 0 /*CHECK*/"; break;
-        case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0 /*CHECK*/"; break;
+        case CIConditionalJump::js:
+                m_strCondition = "($type)$a < 0 /*CHECK*/"; break;
+        case CIConditionalJump::jns:
+                m_strCondition = "($type)$a >= 0 /*CHECK*/"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -837,12 +884,12 @@ public:
                     m_strCondition = "!_flags.sign"; break;
             
             case CIConditionalJump::jg:
-                    m_strCondition = "(type)"+pAlu->m_op1.ToC() + " > 0 /*CHECK*/" ; break;
+                    m_strCondition = "("+m_strSigned+")"+pAlu->m_op1.ToC() + " > 0" ; break;
 
             case CIConditionalJump::jge:
-                    m_strCondition = "(type)"+pAlu->m_op1.ToC() + " >= 0 /*CHECK*/" ; break;
+                    m_strCondition = "("+m_strSigned+")"+pAlu->m_op1.ToC() + " >= 0" ; break;
 
-            case CIConditionalJump::jle: m_strCondition = "(type)$a <= (type)$b /*CHECK*/"; break;
+            case CIConditionalJump::jle: m_strCondition = "("+m_strSigned+")$a <= ("+m_strSigned+")$b"; break;
 
 			default:
 				_ASSERT(0);
@@ -921,7 +968,7 @@ public:
             if (eCondition == CarryFlag || eCondition == ZeroCarryFlag)
                 m_strCondition = "!_flags.carry";
             else
-                m_strCondition = "__FIXME__";
+                m_strCondition = "_FIXME_";
 			break;
 
 		case CIConditionalJump::jb: 
@@ -930,7 +977,7 @@ public:
 			break;
 
         case CIConditionalJump::jge:
-            m_strCondition = "__FIXME__";
+            m_strCondition = "_FIXME_";
             break;
 
 		default:
@@ -1145,8 +1192,14 @@ public:
         {
             // drop CS
             shared_ptr<CISingleArgOp> push = dynamic_pointer_cast<CISingleArgOp>(pPrevious);
-            _ASSERT(push && push->m_eType == CISingleArgOp::push && push->m_rvalue.ToC() == "_cs");
-            mDropPrevious = true;
+            if (push)
+            {
+                _ASSERT(push && push->m_eType == CISingleArgOp::push && push->m_rvalue.ToC() == "_cs");
+                mDropPrevious = true;
+            } else {
+                m_strCall = "_STOP(\""+m_strCall+"\");";
+                
+            }
         }
         if (pCall->m_type == CICall::Jump)
         {
@@ -1162,6 +1215,25 @@ public:
 	{
 		return m_strCall + ";";
 	}
+};
+
+class CCIndirectCall : public CCInstruction
+{
+public:
+    string m_strCall;
+
+public:
+    CCIndirectCall(shared_ptr<CIIndirectCall> pCall)
+    {
+        _ASSERT(pCall->m_type == CIIndirectCall::WordPtr);
+        
+        m_strCall = string("_indirectCall(_ds, ") + pCall->m_value.ToC() + ")";
+    }
+    
+    virtual string ToString() override
+    {
+        return m_strCall + ";";
+    }
 };
 
 class CCLoop : public CCInstruction
@@ -1368,12 +1440,12 @@ public:
 
 		switch (pInstruction->m_operation)		
 		{
-		case CIString::lodsb: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::lodsb); break;
-		case CIString::stosb: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::stosb); break;
-		case CIString::lodsw: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::lodsw); break;
-		case CIString::stosw: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::stosw); break;
-		case CIString::movsb: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::movsb); break;
-		case CIString::movsw: m_strTemplate = CCZeroArgOp::GetTemplate(pInstruction->m_analysis, CIZeroArgOp::movsw); break;
+		case CIString::lodsb: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::lodsb); break;
+		case CIString::stosb: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::stosb); break;
+		case CIString::lodsw: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::lodsw); break;
+		case CIString::stosw: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::stosw); break;
+		case CIString::movsb: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::movsb); break;
+		case CIString::movsw: m_strTemplate = CCZeroArgOp::GetTemplate(CIZeroArgOp::movsw); break;
 		case CIString::scasb: m_strTemplate = ""; break;
 		case CIString::scasw: m_strTemplate = ""; break;
         case CIString::cmpsb: m_strTemplate = ""; break;

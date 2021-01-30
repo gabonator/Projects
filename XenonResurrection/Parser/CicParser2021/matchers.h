@@ -111,7 +111,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 		{
 			if ( arrMatches[0] == "lea" || arrMatches[0] == "lds" )
 				return make_shared<CITwoArgOp>(CITwoArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]), CValue(arrMatches[2], CValue::r16));
-			else if ( arrMatches[0] == "xchg" )
+			else if ( arrMatches[0] == "xchg" || arrMatches[0] == "sbb")
 			{
 				CValue op1, op2;
 				CValue::SameOperands(op1, op2, arrMatches[1], arrMatches[2]);
@@ -300,6 +300,11 @@ class CIMFlow : public CInstructionMatcher
             return make_shared<CIStop>();
         }
 
+        if ( CUtils::match("^call word ptr (ds:.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIIndirectCall>(CIIndirectCall::WordPtr, CValue(arrMatches[0], CValue::ERegLength::r16));
+        }
+
         // data - switch options, or internal variable
         if ( CUtils::match("^word_(.*) dw (.*)$", strLine, arrMatches) )
         {
@@ -307,6 +312,11 @@ class CIMFlow : public CInstructionMatcher
         }        
 
         if ( CUtils::match("^(.*)_(.*) db (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
+        
+        if ( CUtils::match("^(.*)_(.*) dw (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
         }

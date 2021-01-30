@@ -139,6 +139,10 @@ public:
 		if (pCall)
 			pOutInstruction = make_shared<CCCall>( pCall, pPrevious );
 
+        shared_ptr<CIIndirectCall> pIndirectCall = dynamic_pointer_cast<CIIndirectCall>(pInInstruction);
+        if (pIndirectCall)
+            pOutInstruction = make_shared<CCIndirectCall>(pIndirectCall);
+
 		shared_ptr<CISwitch> pSwitch = dynamic_pointer_cast<CISwitch>(pInInstruction);
 		if (pSwitch)
 		{
@@ -168,6 +172,29 @@ public:
         }
 		return pOutInstruction;
 	}
+    
+    bool CheckCarryReturn(shared_ptr<CInstruction>& instr)
+    {
+        shared_ptr<CIZeroArgOp> zeroOp = dynamic_pointer_cast<CIZeroArgOp>(instr);
+        if (!zeroOp)
+            return false;
+        return zeroOp->m_eType == CIZeroArgOp::stc || zeroOp->m_eType == CIZeroArgOp::clc;
+    }
+    
+    bool CheckCarryReturn(CLabel label)
+    {
+        vector<shared_ptr<CInstruction>> arrFunction = GetSubCode(m_arrSource, label);
+        _ASSERT(arrFunction.size() > 0);
+        for (int i=1; i<arrFunction.size(); i++)
+        {
+            if (dynamic_pointer_cast<CIReturn>(arrFunction[i]))
+            {
+                if (!CheckCarryReturn(arrFunction[i-1]))
+                    return false;
+            }
+        }
+        return true;
+    }
     
 	shared_ptr<CInstruction> TracebackCondition(CIConditionalJump::EType eType, vector<shared_ptr<CInstruction>>& arrInput, int nLine)
 	{
@@ -218,6 +245,7 @@ public:
 			}
 			if (dynamic_pointer_cast<CICall>(pInstruction))
 			{
+                /*
                 if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_15C0F" )
                 {
                     // ends width xor ax, ax; or dec ax
@@ -229,183 +257,18 @@ public:
                         return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
                     } else
                     {
-                        return make_shared<CIStop>(pInstruction);
+                        return make_shared<CIStop>(pInstruction); //TODO
                     }
 
-                _ASSERT(0);
+                _ASSERT(0);*/
+                if (CheckCarryReturn(dynamic_pointer_cast<CICall>(pInstruction)->m_label))
+                    return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
+                else
+                {
+                    //_ASSERT(0);
+                    return make_shared<CIStop>(pInstruction);
+                }
                 
-                /*
-				// Toto musime manualne!!!
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_13D8" ) // alu op -> AL
-				{
-					return make_shared<CIAlu>(CIAlu::And, CValue("al"), CValue("8", CValue::r8));
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_658" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeZeroTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_34A0" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeZeroCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_1B7A" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_20F5" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_FC9" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_1608" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_22F7" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_1657" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_2E29" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_3C43" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_1B05" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_1B4C" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_265E" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_2567" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_33BA" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_21E0" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_3E52" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_3E6E" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_4065" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_42DB" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_42FC" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_431C" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_4557" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_4786" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_44E7" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_473E" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_47B0" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_502D" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_4DD0" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_5FE5" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_600F" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_62A6" ) // need to use FLAGS!!!
-				{
-					//TODO: totally fake instruction just to let know that we need to use flag test
-					return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-				} else
-				{
-					//vector<shared_ptr<CInstruction>> arrSub = GetSubCode(arrSource, pFunction->m_strName)
-					//dynamic_pointer_cast<CICall>(pInstruction)->m_label
-
-					_ASSERT(0);
-				}*/
 				return pInstruction;
 			}
 		}

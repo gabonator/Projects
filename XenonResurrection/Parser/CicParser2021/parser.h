@@ -161,6 +161,7 @@ public:
 			MatchLine(i, _strLine);
 		}
 		fclose(f);
+        printf("\n");
 	}
 
 	string Trim(string strLine)

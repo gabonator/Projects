@@ -494,6 +494,14 @@ string CValue::ToC()
             if ( m_eRegLength == CValue::r16 )
                 ss << "memory16(_es, "  << m_value->ToC() << ")";
             return ss.str();
+        
+        case CValue::cs_ptr_value:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, " << m_value->ToC() << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, "  << m_value->ToC() << ")";
+            return ss.str();
 
         case CValue::offset_bp_plus_di_plus:
             ss << "_bp + _di + " << dec << m_nValue;
@@ -511,7 +519,7 @@ string CValue::ToC()
 }
 
 
-string CValue::GetC(CStaticAnalysis* pAnalysis)
+string CValue::GetC(/*CStaticAnalysis* pAnalysis*/)
 {
     return ToC();
     /*
@@ -561,7 +569,7 @@ string CValue::GetC(CStaticAnalysis* pAnalysis)
      */
 }
 
-string CValue::SetC(CStaticAnalysis* pAnalysis)
+string CValue::SetC(/*CStaticAnalysis* pAnalysis*/)
 {
     return ToC();
     /*

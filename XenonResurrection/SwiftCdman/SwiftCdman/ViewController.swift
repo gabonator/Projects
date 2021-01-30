@@ -40,7 +40,7 @@ class ViewController: UIViewController {
         self.timerGame = Timer.scheduledTimer(timeInterval: 0.03, target: self, selector: #selector(self.onTimerGame), userInfo: nil, repeats: true)
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let allTouches = event?.allTouches else { return }
         
         for touch in allTouches {
@@ -136,6 +136,7 @@ extension ViewController {
             }
         }
     }
+    
     private func navigate() {
         guard let pacPos = cdman.pacPos(),
               map.count > 0
@@ -162,6 +163,8 @@ extension ViewController {
             cdman.pacGo(.left)
         case .right:
             cdman.pacGo(.right)
+        case .stop:
+            navigateClear()
         default:
             break
         }

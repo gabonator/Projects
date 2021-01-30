@@ -1,97 +1,8 @@
-class CStaticAnalysis;
+//class CStaticAnalysis;
 
-struct segmenntInfo {
-    char name[32];
-    int begin;
-    int end;
-    int base;
-} segments[] =
-/*
-{
-    {"x",      0x0000, 0xF000, 0x0000}, // unref
-    {"", 0, 0, 0}
-};
-*/
-/*
-{ // xenon
-    {"dseg",   0x0000, 0xfd10, 0x2853},
-    {"seg000", 0x0000, 0xf290, 0x1000},
-    {"seg001", 0x0000, 0x5900, 0x1f29},
-    {"seg002", 0x0000, 0x0ac0, 0x24b9},
-    {"seg003", 0x0000, 0xe220, 0x2565},
-    {"seg005", 0x0000, 0xc570, 0x3824},
-    {"seg006", 0x0000, 0x0200, 0x447b}, // stack
-    {"seg007", 0x0000, 0x0001, 0x449B},
-    {"seg008", 0x0000, 0x0001, 0x5489},
-    {"seg009", 0x0000, 0x0001, 0x63D0},
-    {"seg010", 0x0000, 0x0001, 0x7218},
-    {"", 0, 0, 0}
-};*/
 
-/*
-{ // popcorn
-    "seg000", 0, 0x1c460-0x10000, 0x1000,
-    "seg001", 0, 0x24a10-0x1c460, 0x1c46,
-    "seg002", 0, 0x2aa20-0x24a10, 0x24a1,
-    "seg003", 0, 0x2ac20-0x2aa20, 0x2aa2,
-    "seg004", 0, 0x308b0-0x2ac20, 0x2ac2,
-    {"", 0, 0, 0}
-};*/
+int FixPtr(int ofs);
 
-/*
-{ // tetris
-    "seg000", 0, 0x10050-0x10000, 0x1000,
-    "seg001", 0, 0x100d0-0x10050, 0x1005,
-    "seg002", 0, 0x18390-0x100d0, 0x100d,
-    "seg003", 0, 0x1b010-0x18390, 0x1839,
-    {"", 0, 0, 0}
-};*/
-
-/*
-{ // com
-    "seg000", 0, 0x1ae65-0x10000, 0x0000,
-    {"", 0, 0, 0}
-};
-*/
-{ // cdman
-"seg000", 0, 0x10200-0x10000, 0x1000,
-"seg001", 0, 0x13ec0-0x10200, 0x1020,
-"seg002", 0, 0x1829c-0x13ec0, 0x13ec,
-    {"", 0, 0, 0}
-};
-/*
-{ // tetris
-    {"seg000", 0x0000, 0x0050, 0x1000},
-    {"seg001", 0x0000, 0x0080, 0x1005},
-    {"seg002", 0x0000, 0x82c0, 0x100d},
-    {"seg003", 0x0000, 0x2c80, 0x1839},
-    {"", 0, 0, 0}
-};
-*/
-/*
- // jsgoose
-{
-    {"seg000", 0x0000, 0x3A56, 0x1000}, // CODE
-    {"dseg",   0x0006, 0x9570, 0x13A5}, // DATA
-    {"seg002", 0x0000, 0x0100, 0x1CFC}, // STACK
-    {"x",      0x0000, 0x8000, 0x0000}, // unref
-    {"", 0, 0, 0}
-};
- */
-
-int FixPtr(int ofs)
-{
-    for (int i=0; segments[i].name[0]; i++)
-    {
-        if (ofs >= segments[i].base*16 + segments[i].begin &&
-            ofs <= segments[i].base*16 + segments[i].end)
-        {
-            return ofs - segments[i].base*16;
-        }
-    }
-    _ASSERT(0);
-    return ofs;
-}
     
 class CValue : public CSerializable
 {
@@ -127,6 +38,7 @@ public:
 		es_ptr_di_plus,
         es_ptr_si_plus,
 		stack_bp_plus,
+        stack_bp_plus_si,
         cs_ptr_bx_plus,
         cs_ptr_bx_plus_di,
         cs_ptr_bx_plus_di_plus,
@@ -167,9 +79,11 @@ public:
         wordptr_es_di_plus,
         
         es_ptr_value,
+        cs_ptr_value,
 
         
         offset_bp_plus_di_plus,
+        offset_bp_plus_si_plus,
         offset_bp_plus,
         
         stop, // need to be fixed manually
@@ -257,6 +171,7 @@ public:
 				m_eRegLength = r16;
 			
 			m_eType = constant;
+            m_eRegLength = eRegLength;
 			return;
 		}
 
@@ -295,14 +210,21 @@ public:
         if ( CUtils::match("^bp\\+di\\+(.*)$", value.c_str(), matches) )
         {
             m_eType = offset_bp_plus_di_plus;
-            m_eRegLength = r8;
+            m_eRegLength = unknown;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+        if ( CUtils::match("^bp\\+si\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = offset_bp_plus_si_plus;
+            m_eRegLength = unknown;
             m_nValue = CUtils::ParseLiteral(matches[0]);
             return;
         }
         if ( CUtils::match("^bp\\+(.*)$", value.c_str(), matches) )
         {
             m_eType = offset_bp_plus;
-            m_eRegLength = r8;
+            m_eRegLength = unknown;
             m_nValue = CUtils::ParseLiteral(matches[0]);
             return;
         }
@@ -515,9 +437,25 @@ public:
             if ( CUtils::match("^\\[bp\\+di\\+(.*)\\]$", value.c_str(), matches) )
             {
                 _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
                 m_eType = bp_plus_di_plus;
                 m_nValue = CUtils::ParseLiteral(matches[0]);
                 //m_eRegLength = r16;
+                return;
+            }
+            if ( CUtils::match("^\\[bp\\+di\\]$", value.c_str(), matches) )
+            {
+                _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
+                m_eType = bp_plus_di_plus;
+                m_nValue = 0;
+                return;
+            }
+            if ( CUtils::match("^\\[bp\\+si\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_plus_si;
+                _ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = eRegLength;
                 return;
             }
             if ( CUtils::match("^\\[bp\\+(.*)\\]$", value.c_str(), matches) )
@@ -554,13 +492,22 @@ public:
                 return;
             }
 
+            if ( CUtils::match("^word ptr cs:\\[bp\\+(.*)\\]$", value.c_str(), matches) )
+            {
+                //_ASSERT(eRegLength == r16 || eRegLength == r8);
+                m_eRegLength = r16;
+                m_eType = cs_ptr_bp_plus;
+                m_nValue = CUtils::ParseLiteral(matches[0]);
+                return;
+            }
+/*
             if ( value == "word ptr cs:[bp+0]" )
             {
                 m_eRegLength = r16;
                 m_eType = cs_ptr_bp;
                 return;
             }
-
+*/
             if ( value == "es:[bp+0]" )
             {
                 _ASSERT(eRegLength != unknown);
@@ -656,6 +603,20 @@ public:
         {
             m_eType = bx_plus_di_plus;
             m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
+        if ( CUtils::match("^bx\\+si\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = bx_plus_si_plus;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
+        if ( CUtils::match("^bx\\+si\\-(.*)$", value.c_str(), matches) )
+        {
+            m_eType = bx_plus_si_plus;
+            m_nValue = -CUtils::ParseLiteral(matches[0]);
             return;
         }
 
@@ -1161,6 +1122,14 @@ public:
             return;
         }
 
+        if ( CUtils::match("^byte ptr cs:loc_(.*)$", value.c_str(), matches) )
+        {
+            m_eType = cs_ptr;
+            m_eRegLength = r8;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
+            return;
+        }
+
         if ( CUtils::match("^offset loc_(.*)$", value.c_str(), matches) )
         {
             m_eType = stop;
@@ -1217,11 +1186,36 @@ public:
             return;
         }
 
+        if ( CUtils::match("^word ptr cs:byte_(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r8;
+            m_eType = cs_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
+            return;
+        }
+
         if ( CUtils::match("^unk_(.*)$", value.c_str(), matches) )
         {
             m_eRegLength = r16;
             m_eType = constant;
             m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
+            return;
+        }
+
+        if ( CUtils::match("^cs:\\[(.*)\\]$", value.c_str(), matches) )
+        {
+            _ASSERT(eRegLength == r16 || eRegLength == r8);
+            m_eRegLength = eRegLength;
+            m_eType = cs_ptr_value;
+            m_value = make_shared<CValue>(matches[0]);
+            return;
+        }
+        if ( CUtils::match("^cs:seg_(.*)$", value.c_str(), matches) )
+        {
+            //TODO: relocation!!!!!!!
+            m_eType = cs_ptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
             return;
         }
 
@@ -1231,6 +1225,7 @@ public:
 
 	static void SameOperands(CValue& op1, CValue& op2, string str1, string str2)
 	{
+        // tuto
 		if (str1.length() == 2)
 		{
 			op1.Parse(str1);
@@ -1239,6 +1234,8 @@ public:
 		{
 			op2.Parse(str2);
 			op1.Parse(str1, op2.GetRegisterLength());
+            if (op2.GetRegisterLength() == unknown && op1.GetRegisterLength() != unknown)
+                op2.Parse(str2, op1.GetRegisterLength());
 		}
 	}
 
@@ -1272,6 +1269,6 @@ public:
 	}
 
 	string ToC();
-	string GetC(CStaticAnalysis* pAnalysis);
-	string SetC(CStaticAnalysis* pAnalysis);
+	string GetC(/*CStaticAnalysis* pAnalysis*/);
+	string SetC(/*CStaticAnalysis* pAnalysis*/);
 };

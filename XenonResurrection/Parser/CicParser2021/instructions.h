@@ -1,15 +1,10 @@
-//#pragma once
-//#include "machine.h"
-
 class CInstruction : public CSerializable
 {
 public:
-	CStaticAnalysis m_analysis;
     string m_origin;
     int m_line;
 
 	virtual ~CInstruction() {}
-	virtual void Eval(CMachine& m) { _ASSERT(0); }
 	static CInstruction* FromName(string strClassName);
 };
 
@@ -166,7 +161,7 @@ public:
 
 	virtual void Serialize(CSerializer& s)
 	{
-		s << _enum(m_eType) << m_analysis;
+		s << _enum(m_eType) /*<< m_analysis*/;
 	}
 };
 
@@ -303,7 +298,7 @@ public:
 
 	virtual void Serialize(CSerializer& s)
 	{
-		s << _enum(m_rule) << _enum(m_operation) << m_analysis;
+		s << _enum(m_rule) << _enum(m_operation) /*<< m_analysis*/;
 	}
 };
 
@@ -325,7 +320,7 @@ public:
 
 	virtual void Serialize(CSerializer& s)
 	{
-		s << m_valueTo << m_valueFrom << m_analysis;
+		s << m_valueTo << m_valueFrom /*<< m_analysis*/;
 	}
 };
 
@@ -470,6 +465,29 @@ public:
 	{
 		s << m_label << _enum(m_type);
 	}
+};
+
+class CIIndirectCall : public CInstruction
+{
+public:
+    enum EType {
+        Undefined,
+        WordPtr,
+    } m_type;
+    CValue m_value;
+
+public:
+    CIIndirectCall() : m_type(Undefined) {}
+
+    CIIndirectCall(EType type, CValue value) :
+      m_value(value), m_type(type)
+    {
+    }
+
+    virtual void Serialize(CSerializer& s)
+    {
+        s << m_value << _enum(m_type);
+    }
 };
 
 class CISwitch : public CInstruction
@@ -666,6 +684,8 @@ CInstruction* CInstruction::FromName(string strClassName)
 		return new CIConditionalJump();
 	if (strClassName == "class CICall")
 		return new CICall();
+    if (strClassName == "class CIIndirectCall")
+        return new CIIndirectCall();
 	if (strClassName == "class CISwitch")
 		return new CISwitch();
 	if (strClassName == "class CILoop")
