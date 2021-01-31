@@ -134,10 +134,14 @@ console.log("problem: '" + l + "'");
 function replaceTemplate(arg)
 {
   if (arg == "MemAuto")
-    arg = "data";
+    arg = "auto";
   if (arg == "MemVideo")
     arg = "video";
+  if (arg == "MemData")
+    arg = "data";
   if (arg == "DirAuto")
+    arg = "auto";
+  if (arg == "DirForward")
     arg = "forward";
   if (arg == "DirBackward")
     arg = "backward";
@@ -149,13 +153,7 @@ function convert(l)
     return l;
 
   var r;
-/*
-  let if1 = new RegExp("if \\(.*\\)")
-  if (l.match(if1))
-  {
-    return l;
-  }
-*/
+
   while (r = l.match(new RegExp("_([abcd][hl])")))
     l = l.replace(r[0], "r8["+r[1]+"]");
   while (r = l.match(new RegExp("_([abcd]x)")))
@@ -235,6 +233,13 @@ function convert(l)
     l = l.replace(r[0], "signed16("+r[1]+")");
   while (r = l.match(new RegExp("\\(char\\)\([0-9a-fx]*)")))
     l = l.replace(r[0], "signed8("+r[1]+")");
+
+//  if (r = l.match(new RegExp("\\{(.*\\(\\)); return; \\}.*")))
+//  {
+    
+//  }
+//    l = l.replace(r[0], "indirectCall");
+//{loc_1C3B0(); return; };
 
   return l;  
 }
@@ -329,6 +334,7 @@ function cleanupReturn(input)
     }
     if (r = l.match(new RegExp("loc_(.*):")))
     {
+      console.log(l);
       throw "problem";
     }
     if (r = l.match(new RegExp("locret_(.*):")))
@@ -411,10 +417,17 @@ function findFunctions(input, handler)
       lines = [];
       fname = r[1];
     }
-    balance -= l.countOf("}");
-    if (balance >= 0)
-      lines.push(l);
-    balance += l.countOf("{");
+    if (l.countOf("}") == l.countOf("{"))
+    {
+      if (balance >= 0)
+        lines.push(l);
+    } else
+    {
+      balance -= l.countOf("}");
+      if (balance >= 0)
+        lines.push(l);
+      balance += l.countOf("{");
+    }
     if (balance < 0 && lines.length > 0)
     {
 //       console.log(fname);

@@ -151,7 +151,7 @@ void _interrupt(BYTE i)
         uint8_t* buf = new uint8_t[_cx];
         int c = fread(buf, 1, _cx, f);
         for (int i=0; i<c; i++)
-            MemAuto::Set8(_ds, _dx+i, buf[i]);
+            MemData::Set8(_ds, _dx+i, buf[i]);
             //memory(_ds, _dx+i) = buf[i];
         delete[] buf;
         std::cout << "read " << _cx << " (" << c << ")" << endl;
@@ -562,17 +562,19 @@ void _xlat()
 {
     _al = memory(_ds, _bx+_al);
 }
-BYTE MemAuto::Get8(WORD seg, WORD ofs)
+BYTE MemData::Get8(WORD seg, WORD ofs)
 {
     if (seg >= 0xa000 && seg <= 0xd000)
-        return memoryVideoGet(seg, ofs);
+        _ASSERT(0);
+        //return memoryVideoGet(seg, ofs);
     return memory(seg, ofs);
 }
-void MemAuto::Set8(WORD seg, WORD ofs, BYTE data)
+void MemData::Set8(WORD seg, WORD ofs, BYTE data)
 {
     if (seg >= 0xa000)
     {
-        memoryVideoSet(seg, ofs, data);
+        _ASSERT(0);
+        //memoryVideoSet(seg, ofs, data);
         return;
     }
     memory(seg, ofs) = data;

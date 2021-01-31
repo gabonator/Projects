@@ -541,7 +541,7 @@ function sub_108F7() {
         ds = memory16get(cs*16+0x56);
     case 0x1090F:
         r16[cx] = bp;
-        rep_movsb_data_data_forward();
+        rep_movsb_video_video_forward();
         di += r16[bx];
         r16[dx] -= 1;
         if (r16[dx] != 0) {
@@ -782,21 +782,21 @@ function sub_10A67() {
         r16[dx] <<= 1;
         r16[dx] <<= 1;
         si = r16[dx];
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x001f;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         es = pop();
         ds = pop();
     case 0x10AD2:
@@ -895,21 +895,21 @@ function sub_10AE7() {
         r16[ax] <<= 1;
         r16[ax] <<= 1;
         si = r16[ax];
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
         di = pop();
         si = pop();
@@ -944,7 +944,7 @@ function sub_10AE7() {
         si = r16[ax];
         push(r16[dx]);
     case 0x10BA0:
-        movsb_data_data_forward();
+        movsb_video_video_forward();
         di += 0x0027;
         r16[dx] -= 1;
         if (r16s[dx] >= 0) {
@@ -1081,13 +1081,13 @@ function sub_10C98() {
         r16[dx] = memory16get(ds*16+0x5C);
     case 0x10CAD:
         ds = r16[ax];
-        movsb_data_data_forward();
-        movsb_data_data_forward();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         ds = r16[dx];
         push(si);
         si = r16[bx];
         r16[cx] = 0x001e;
-        rep_movsb_data_data_forward();
+        rep_movsb_video_video_forward();
         r16[bx] = si;
         si = pop();
         r16[bx] += 0x000a;
@@ -1120,12 +1120,12 @@ function sub_10CCD() {
         push(si);
         si = r16[bx];
         r16[cx] = 0x001e;
-        rep_movsb_data_data_forward();
+        rep_movsb_video_video_forward();
         r16[bx] = si;
         si = pop();
         ds = r16[ax];
-        movsb_data_data_forward();
-        movsb_data_data_forward();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[bx] += 0x000a;
         si += 0x0026;
         di += 0x0008;
@@ -1370,7 +1370,7 @@ function sub_10E7F() {
         r16[cx] = 0x0020;
         push(si);
         push(di);
-        rep_movsb_data_data_forward();
+        rep_movsb_video_video_forward();
         di = pop();
         si = pop();
         si += 0x0028;
@@ -1393,10 +1393,10 @@ function sub_10EA6() {
     ds = r16[ax];
     es = memory16get(cs*16+0x56);
     si = 0x0100;
-    lodsb_data_forward();
+    lodsb_video_forward();
     di = di ^ di;
     r16[cx] = 0x1f40;
-    rep_stosb_data_forward();
+    rep_stosb_video_forward();
     es = pop();
     ds = pop();
 }
@@ -3071,6 +3071,7 @@ function sub_16591() {
             pc = 0x165DF;
             break;
         }
+    {sub_16174(); return; };
     case 0x165DF:
         if (!(r8[al] & 0x10)) {
             pc = 0x165BA;
@@ -3161,6 +3162,7 @@ function sub_16591() {
             pc = 0x16659;
             break;
         }
+    {sub_1615F(); return; };
     case 0x16659:
         r16[bx] = r16[cx];
         r16[bx] -= 1;
@@ -3286,6 +3288,7 @@ function sub_16591() {
             pc = 0x16748;
             break;
         }
+    {sub_168A8(); return; };
     case 0x16748:
         r8[al] = memory[ds*16+si + 50];
         if (!(r8[al] & 0x40)) {
@@ -3321,6 +3324,7 @@ function sub_16591() {
         }
         return;
     case 0x16771:
+    {sub_16174(); return; };
     case 0x16774:
         r8[al] = memory[ds*16+si];
         r8[al] &= 0x1c;
@@ -3343,6 +3347,7 @@ function sub_16591() {
             pc = 0x1678D;
             break;
         }
+    {sub_16174(); return; };
     case 0x1678D:
         if (!(r8[al] & 0x08)) {
             pc = 0x167CA;
@@ -3524,7 +3529,7 @@ function sub_168A8() {
             return;
         if (memory[ds*16+0x9804] == 0x01)
             return;
-        memory16set(ds*16+0x6614, memory16get(ds*16+0x6614) - 1);
+        //std::cout << "-- infinite lives\n";
         return;
     } while (1);
 }
@@ -3776,7 +3781,7 @@ function* sub_16B9B() {
         }
         return;
     case 0x16BC4:
-        loc_1C3B0(); // TODO: !!! MISSING
+    {loc_1C3B0(); return; };
         return;
     } while (1);
 }
@@ -3996,7 +4001,7 @@ function sub_16CB8() {
         return;
     } while (1);
 }
-function* sub_16CD7() {
+function sub_16CD7() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4067,7 +4072,7 @@ function* sub_16CD7() {
         memory[ds*16+0x97DA] = 0x01;
         r16[cx] = 0x01e0;
     case 0x16D57:
-        yield* _sync();
+        _sync();
         push(r16[cx]);
         sub_19B1C();
         sub_19BDC();
@@ -4082,6 +4087,7 @@ function* sub_16CD7() {
         }
         return;
     case 0x16D66:
+    {loc_1C3B0(); return; };
         return;
     } while (1);
 }
@@ -4718,6 +4724,7 @@ function sub_17222() {
             pc = 0x17240;
             break;
         }
+    {loc_176A0(); return; };
     case 0x17240:
         memory16set(ds*16+0x6E20, 0x0001);
     case 0x17246:
@@ -4727,6 +4734,7 @@ function sub_17222() {
             pc = 0x17259;
             break;
         }
+    {loc_176A0(); return; };
     case 0x17259:
         if (memory16get(ds*16+si + 42) != 0x0001) {
             pc = 0x17262;
@@ -4783,6 +4791,7 @@ function sub_17222() {
             pc = 0x172DA;
             break;
         }
+    {sub_17674(); return; };
     case 0x172DA:
         if (!(r8[ch] & 0x40)) {
             pc = 0x1733D;
@@ -4806,6 +4815,7 @@ function sub_17222() {
             pc = 0x17315;
             break;
         }
+    {sub_17674(); return; };
     case 0x17315:
         r8[ch] &= 0x06;
         if (r8[ch] == 0) {
@@ -4835,6 +4845,7 @@ function sub_17222() {
             pc = 0x17346;
             break;
         }
+    {sub_17674(); return; };
     case 0x17346:
         if (r8[ch] & 0x04) {
             pc = 0x1736D;
@@ -5122,6 +5133,7 @@ function sub_17222() {
             pc = 0x17544;
             break;
         }
+    {sub_17674(); return; };
     case 0x17544:
         if (!(r8[ch] & 0x02)) {
             pc = 0x17573;
@@ -5207,6 +5219,7 @@ function sub_17222() {
             pc = 0x175DE;
             break;
         }
+    {sub_168A8(); return; };
     case 0x175DE:
         if (memory16get(ds*16+0xB00) != 0x0001) {
             pc = 0x175FF;
@@ -5222,6 +5235,7 @@ function sub_17222() {
             break;
         }
         memory16set(ds*16+0xB00, 0x0000);
+    {sub_17674(); return; };
         _STOP_("db 90h");
     case 0x175FF:
         if (memory16get(ds*16+0xB38) != 0x0002)
@@ -5256,6 +5270,7 @@ function sub_17222() {
         si = 0x670b;
         sub_16BC7();
         si = pop();
+    {sub_17674(); return; };
         _STOP_("db 90h");
         return;
     case 0x17644:
@@ -6815,6 +6830,7 @@ function sub_18351() {
             pc = 0x1835B;
             break;
         }
+    {loc_18F9A(); return; };
     case 0x1835B:
         sub_19C05();
         r16[ax] = memory16get(ds*16+0xB20);
@@ -6840,6 +6856,7 @@ function sub_18351() {
             pc = 0x183A0;
             break;
         }
+    {loc_18B03(); return; };
     case 0x183A0:
         r16[ax] = memory16get(ds*16+0x7E06);
         r16[ax] |= r16[ax];
@@ -6934,6 +6951,7 @@ function sub_18351() {
             pc = 0x1846F;
             break;
         }
+    {sub_168A8(); return; };
     case 0x1846F:
         r8[ch] &= 0x06;
         if (r8[ch] == 0) {
@@ -6954,6 +6972,7 @@ function sub_18351() {
             pc = 0x1848D;
             break;
         }
+    {sub_168A8(); return; };
     case 0x1848D:
         if (r8[ch] & 0x04) {
             pc = 0x184DA;
@@ -7380,6 +7399,7 @@ function sub_18351() {
             pc = 0x187EA;
             break;
         }
+    {sub_168A8(); return; };
     case 0x187EA:
         if (!(r8[ch] & 0x02)) {
             pc = 0x18815;
@@ -7841,6 +7861,7 @@ function loc_18B03() {
             pc = 0x18BBE;
             break;
         }
+    {sub_168A8(); return; };
     case 0x18BBE:
         if (r8[ch] & 0x04) {
             pc = 0x18BEB;
@@ -7950,6 +7971,7 @@ function sub_18C83() {
             return;
         if (memory16get(ds*16+0xB00) == 0x0001)
             return;
+    {sub_18A9A(); return; };
         return;
     } while (1);
 }
@@ -8787,6 +8809,7 @@ function sub_194C4() {
             pc = 0x1950A;
             break;
         }
+    {loc_19650(); return; };
     case 0x1950A:
         if (!(r8[al] & 0x40)) {
             pc = 0x19514;
@@ -9036,6 +9059,7 @@ function loc_19650() {
         }
         r16[ax] = 0x0001;
         sub_1A257();
+    {loc_19F12(); return; };
     case 0x19673:
         memory16get(ds*16+0x8BEC) += 1;
         if (memory16get(ds*16+0x8BEC) != 0x0005) {
@@ -9059,9 +9083,11 @@ function loc_19650() {
         memory16set(ds*16+0x95C4, 0x0001);
         r16[ax] = 0x0001;
         sub_1A257();
+    {loc_19F12(); return; };
     case 0x196A7:
         memory16get(ds*16+0x8BEC) += 1;
         _STOP_("goto loc_1C3B9");
+    {loc_19F12(); return; };
         _STOP_("db 4Dh, 65h, 6Dh, 6Fh, 72h, 79h, 20h, 41h,...");
         _STOP_("db 6Fh, 63h, 61h, 74h, 69h, 6Fh, 6Eh, 20h,...");
         _STOP_("db 6Fh, 72h, 3Ah, 20h, 43h, 61h, 2 dup(6Eh...");
@@ -9244,7 +9270,7 @@ function* sub_199C8() {
     case 0x19A45:
         memory[ds*16+0x97DA] = 0x01;
     case 0x19A4B:
-        yield* _sync();
+        _sync();
         sub_19BDC();
         if (!(r8[al] & 0x10)) {
             pc = 0x19A55;
@@ -9578,7 +9604,7 @@ function* sub_19E18() {
         di += r16[ax];
         di = memory16get(ds*16+di);
     case 0x19E4B:
-        yield* _sync();
+        yield* _sync(1);
         sub_1BF7C();
         r16[bx] &= 0x0003;
         if (r16[bx] != 0) {
@@ -10356,6 +10382,7 @@ function sub_1A69D() {
             pc = 0x1A719;
             break;
         }
+    {loc_196F3(); return; };
         return;
     } while (1);
 }
@@ -10643,6 +10670,7 @@ function sub_1AECD() {
             pc = 0x1AED5;
             break;
         }
+    {loc_1BB82(); return; };
     case 0x1AED5:
         if (memory16get(ds*16+0xAB2B) == 0x0001) {
             pc = 0x1AEE0;
@@ -11783,7 +11811,11 @@ function sub_1C164() {
     } while (1);
 }
 function loc_1C1A2() {
+    if (memory[_seg001*16+0xBDA2] == 0xC3)
+        return;
+    //std::cout << "altered function\n";
     r16[ax] = _seg001;
+    sub_1C1A5();
 }
 function sub_1C1A5() {
     var pc = 0;
@@ -11974,6 +12006,7 @@ function* start() {
         off_1040A();
         off_1043A();
         sub_1A592();
+        //std::cout << "skip keyboard settings\n";
         memory[cs*16+0xBDA2] = 0xc3;
         flags.carry = false;
         if (!flags.carry) {
@@ -12076,6 +12109,7 @@ function loc_1C3B0() {
             pc = 0x1C465;
             break;
         }
+    {loc_19F12(); return; };
     case 0x1C465:
         pc = 0x1C439;
         break;
@@ -12112,6 +12146,7 @@ function loc_1C3B0() {
             pc = 0x1C445;
             break;
         }
+    {loc_196F3(); return; };
         return;
     } while (1);
 }

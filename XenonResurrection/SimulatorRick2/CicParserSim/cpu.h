@@ -118,7 +118,7 @@ struct MemVideo
     static void Set16(WORD seg, WORD nAddr, WORD nData);
 };
 
-struct MemAuto
+struct MemData
 {
     static BYTE Get8(WORD seg, WORD nAddr);
     static void Set8(WORD seg, WORD nAddr, BYTE nData);
