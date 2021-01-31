@@ -58,8 +58,6 @@ public:
 
   void begin() 
   {
-    Serial.print("spi.begin\n");
-    
       PinMode(CPinIoBase::CS, CPinIoBase::Output);
       PinMode(CPinIoBase::SCK, CPinIoBase::Output);
       PinMode(CPinIoBase::MOSI, CPinIoBase::Output);

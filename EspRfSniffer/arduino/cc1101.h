@@ -301,7 +301,7 @@ public:
         return Load(nullptr);
     }
 
-    int GetOscFrequency()
+    int32_t GetOscFrequency()
     {
         return 26e6; // 26 MHz
     }
@@ -515,15 +515,26 @@ public:
         return (GetOscFrequency() / 8 / (4 + CHANBW_M)) >> CHANBW_E;
     }
 
-    void SetBandwidth(int bw)
+    void SetBandwidth(int32_t bw)
     {
-        const int root2[] = {0, 1, 2, 2, 3, 3, 3, 3};
-        int t = GetOscFrequency() / 8 / bw;
-        int e = root2[min(t/12, 7)];
+        const int32_t root2[] = {0, 1, 2, 2, 3, 3, 3, 3};
+        int32_t t = (int32_t)GetOscFrequency() / 8L / bw;
+        Serial.print("bw=");Serial.print(bw);
+        Serial.print(",t=");Serial.print(t);
+        int32_t e = root2[min(t/12, 7)];
+        
+        int32_t m = (t >> e) - 4;
+        if (m>3)
+        {
+          e++;
+          m = (t >> e) - 4;
+        }
+        
         e = min(max(0, e), 3);
-        int m = (t >> e) - 4;
-        m = min(max(0, e), 3);
-
+        m = min(max(0, m), 3);
+Serial.print(",e=");Serial.print(e);
+Serial.print(",m=");Serial.print(m);
+Serial.print("\n");
         assert(m >= 0 && m <= 3 && e >= 0 && e <= 3);
         mRegisters[MDMCFG4] &= 0x0f;    // eemm....
         mRegisters[MDMCFG4] |= m << 4;

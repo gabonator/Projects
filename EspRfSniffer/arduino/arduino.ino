@@ -95,7 +95,11 @@ char lastError[128] = {0};
 #include "wifiRequest.h"
 #include "wifiUploader.h"
 
+CDeviceCC1101Interface cc1101;
+
+bool modemInit = false;
 int32_t packetsOk = 0, packetsUnk = 0, packetsNoise =0, overruns = 0;
+int32_t netOk = 0, netError = 0;
 int32_t uptime = 0;
 struct {
   int temp10;
@@ -127,9 +131,7 @@ struct {
 
 class CMyRequest : public CHttpRequestJsonStream
 {
-  char mTemp[32];
-//  long mUptime;
-  
+  char mTemp[32];  
 public:
     CMyRequest() : 
       CHttpRequestJsonStream(apiServer, apiPath)
@@ -154,8 +156,6 @@ public:
 
     char* getUid()
     {
-      //uint64_t mac = ESP.getEfuseMac();
-      strcpy(mTemp, "00gabo00");
       uint8_t mac[6];
       WiFi.macAddress(mac);
       sprintf(mTemp, "%02x%02x%02x", mac[0], mac[1], mac[2]);
@@ -168,11 +168,12 @@ public:
         << "\"id\":\"" << getUid() << "\""
         << ",\"class\":\"rfsniff-meteo-2021\""
         << ",\"uptime\":" << uptime
-        << ",\"debug\":[" << packetsOk << "," << packetsUnk << "," << packetsNoise << "," << overruns << "]"
+        << ",\"debug\":[" << packetsOk << "," << packetsUnk << "," << packetsNoise << "," << overruns << "," << modemInit << "]"
+        << ",\"netdebug\":[" << netOk << "," << netError << "]"
         << ",\"lasterror\":\"" << lastError << "\"";
 
       int32_t now = millis();
-      if (tempHum.ts != 0 && now-tempHum.ts < 2*60000L)
+      if (tempHum.ts != 0 && now-tempHum.ts < 1*60000L)
       {
         s << ",\"temp\":" << float1(tempHum.temp10/10.0f);
         s << ",\"hum\":" << tempHum.humidity;
@@ -203,6 +204,61 @@ public:
 
 CUploader uploader;
 
+void initModem()
+{
+  Serial.print("Modem init...\n");
+  if ((modemInit = cc1101.Init()) == true)
+    Serial.print("Modem init ok\n");
+  else    
+  {
+    Serial.print("Modem init error\n");
+    return;
+  }
+
+#ifdef _SERED
+  cc1101.SetFrequency(433940000);
+    cc1101.SetGain(-17);
+    cc1101.SetDataRate(4000);
+#endif
+#ifdef _GALVANIHO
+//sen1
+//  cc1101.SetFrequency(433940000);
+//  cc1101.SetBandwidth(67000);
+    //cc1101.SetGain(-17);
+    //cc1101.SetDataRate(4000);
+    //sen2
+    Serial.print("Set galvaniho\n");
+    // -40khz (0/0/5)      0
+    // -20khz - (3/0/10)   0.3
+    // -10khz   (3/10)     0.3
+    // +0khz - 6/21        0.28
+    // +20khz - (1/3/5)    0.2
+  cc1101.SetFrequency(433940000 - 10000);
+  cc1101.SetBandwidth(67708); // 67khz
+  //cc1101.SetBandwidth(81250); // 81 -> error -> 116khz
+    //cc1101.SetGain(-12);
+    //cc1101.SetGain(-20); // (-17) -> 0
+    //cc1101.SetGain(-9); // (-7)   -> 
+    cc1101.SetDataRate(4000);
+    cc1101.SetGain(-17);
+#endif
+  //cc1101.SetFrequency(433876000UL);
+
+  Serial.print("Frequency = ");
+  Serial.print(cc1101.GetFrequency() / 1000);
+  Serial.print("kHz, Bandwidth = ");
+  Serial.print(cc1101.GetBandwidth() / 1000);
+  Serial.print("kHz, Gain = ");
+  Serial.print(cc1101.GetGain());
+  Serial.print("db, Data rate = ");
+  Serial.print(cc1101.GetDataRate());
+  Serial.print("bps\n");
+
+
+  cc1101.SetIdleState();
+  delay(100);
+  cc1101.SetRxState();
+}
 
 void onMinuteHandler()
 {
@@ -213,6 +269,11 @@ void onMinuteHandler()
     return;
   }
   */
+    if (!modemInit)
+    {
+      initModem();
+    }
+    
     CMyRequest req;
 
     CPrintStream stream1(Serial);
@@ -222,10 +283,12 @@ void onMinuteHandler()
      if (!uploader.sendRequest(&req))
     {
       Serial.print("Upload fail!\n");
+      netError++;
     }
     else
     {
       Serial.print("Upload ok!\n");
+      netOk++;
     }
 
 }
@@ -262,8 +325,8 @@ void analyse(CArray<uint16_t>& pulse)
               for (int i=0; i<sizeof(info) && info[i]; i++)
                 if (info[i] == 0xf8)
                   info[i] = ' ';
-
-              if (attributes.indexOf("$model") != -1)
+#ifdef _SERED
+              if (protocols[i] == &oregon && attributes.indexOf("$model") != -1)
               {
                 if (attributes["$model"] == oregon.String_THGR810)
                 {
@@ -293,7 +356,20 @@ void analyse(CArray<uint16_t>& pulse)
                    packetsUnk++;              
               } else 
                 packetsUnk++;              
+#endif
 
+#ifdef _GALVANIHO
+              if (protocols[i] == &nexus && attributes["id"] == 198) // 71/198
+              {
+                 tempHum.ts = millis();
+                 tempHum.temp10 = attributes["temperature10"];
+                 tempHum.humidity = attributes.indexOf("humidity") != -1 ? attributes["humidity"] : 0;
+                 tempHum.crc = attributes["crc"];
+                 packetsOk++;                 
+              } else              
+                 packetsUnk++;              
+
+#endif
               Serial.print(name);
               Serial.print(": ");
               Serial.print(info);
@@ -306,9 +382,6 @@ void analyse(CArray<uint16_t>& pulse)
         Serial.print(".");
         packetsNoise++;
 }
-
-
-CDeviceCC1101Interface cc1101;
 
 class CTimer
 {
@@ -375,32 +448,7 @@ void setup() {
 
   uploader.setup();
 
-  Serial.print("Modem init...\n");
-  if (cc1101.Init())
-    Serial.print("Modem init ok\n");
-  else    
-    Serial.print("Modem init error\n");
-
-  cc1101.SetFrequency(433940000);
-  //cc1101.SetFrequency(433876000UL);
-    cc1101.SetGain(-17);
-    cc1101.SetDataRate(4000);
-
-  Serial.print("Frequency = ");
-  Serial.print(cc1101.GetFrequency() / 1000);
-  Serial.print("kHz, Bandwidth = ");
-  Serial.print(cc1101.GetBandwidth() / 1000);
-  Serial.print("kHz, Gain = ");
-  Serial.print(cc1101.GetGain());
-  Serial.print(", Data rate = ");
-  Serial.print(cc1101.GetDataRate());
-  Serial.print("bps\n");
-
-
-  cc1101.SetIdleState();
-  delay(100);
-  cc1101.SetRxState();
-
+  initModem();
 
   pinMode(D8, INPUT);
   

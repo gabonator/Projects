@@ -107,6 +107,9 @@ public:
         /* Nibble 6,7 is humidity */
         attributes["humidity"] = (uint8_t)(((b[3]&0x0F)<<4)|(b[4]>>4));
 
+        attributes["crc"] = 1; // we do not have crc !?
+        // packet (36 bits) is sent 12 times, we should check contents if matching
+
     return true;
   }
 
@@ -242,14 +245,14 @@ private:
     {
         if (attributes.indexOf("temperature10") != -1)
         {
-            if (attributes["humidity"] == 0)
+            if (attributes["humidity"] != 0)
             {
-                sprintf(desc, "Ch: <%d> Temp: <%d.%d\xf8""C> Humidity: <%d%%>",
-                (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)attributes["temperature10"] % 10, (int)attributes["humidity"]);
+                sprintf(desc, "Id:%d Ch: <%d> Temp: <%d.%d\xf8""C> Humidity: <%d%%>%s",
+                (int)attributes["id"], (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)attributes["temperature10"] % 10, (int)attributes["humidity"], attributes["crc"] ? "" : " Crc error");
             } else
             {
-                sprintf(desc, "Ch: <%d> Temp: <%d.%d\xf8""C>",
-                (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)attributes["temperature10"] % 10);
+                sprintf(desc, "Id:%d Ch: <%d> Temp: <%d.%d\xf8""C>%s",
+                (int)attributes["id"], (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)attributes["temperature10"] % 10, attributes["crc"] ? "" : " Crc error");
             }
         } else
         {
@@ -258,5 +261,39 @@ private:
         }
     }
     virtual const char* GetString(int i) override { return nullptr; }
-};
 
+
+ private:
+ /*
+  // rtl433
+  bool rubicson_crc_check(CArray<uint8_t>& bb) 
+  {
+    uint8_t tmp[5];
+    tmp[0] = bb[0];            // Byte 0 is nibble 0 and 1
+    tmp[1] = bb[1];            // Byte 1 is nibble 2 and 3
+    tmp[2] = bb[2];            // Byte 2 is nibble 4 and 5
+    tmp[3] = bb[3]&0xf0;       // Byte 3 is nibble 6 and 0-padding
+    tmp[4] = (bb[3]&0x0f)<<4 | // CRC is nibble 7 and 8
+             (bb[4]&0xf0)>>4;
+    return crc8(tmp, 5, 0x31, 0x6c) == 0;
+  }
+  
+  uint8_t crc8(uint8_t const message[], unsigned nBytes, uint8_t polynomial, uint8_t init)
+  {
+      uint8_t remainder = init;
+      unsigned byte, bit;
+  
+      for (byte = 0; byte < nBytes; ++byte) {
+          remainder ^= message[byte];
+          for (bit = 0; bit < 8; ++bit) {
+              if (remainder & 0x80) {
+                  remainder = (remainder << 1) ^ polynomial;
+              } else {
+                  remainder = (remainder << 1);
+              }
+          }
+      }
+      return remainder;
+  }
+  */
+};
