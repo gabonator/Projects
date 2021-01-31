@@ -60,7 +60,7 @@ WORD memoryBiosGet16(WORD seg, WORD ofs)
 
 reg_t _reg;
 
-uint8_t datasegment[0x10000*20];
+uint8_t datasegment[0x10000*3];
 
 CSdl mSdl;
 /*

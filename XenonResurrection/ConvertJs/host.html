@@ -1,0 +1,471 @@
+<canvas id="canvas" style="border:1px #808080 dashed; width:960px; height:600px;"></canvas><br>
+
+<script>
+function off_10402() { indirectCall(_seg001, 0x0002); }
+function off_10404() { indirectCall(_seg001, 0x0004); }
+function off_10406() { indirectCall(_seg001, 0x0006); }
+function off_10408() { indirectCall(_seg001, 0x0008); }
+function off_1040A() { indirectCall(_seg001, 0x000A); }
+function off_1040C() { indirectCall(_seg001, 0x000C); }
+function off_1040E() { indirectCall(_seg001, 0x000E); }
+function off_1041A() { indirectCall(_seg001, 0x001A); }
+function off_1041C() { indirectCall(_seg001, 0x001C); }
+function off_1041E() { indirectCall(_seg001, 0x001E); }
+function off_10424() { indirectCall(_seg001, 0x0024); }
+function off_10426() { indirectCall(_seg001, 0x0026); }
+function off_10428() { indirectCall(_seg001, 0x0028); }
+function off_1042A() { indirectCall(_seg001, 0x002A); }
+function off_10438() { indirectCall(_seg001, 0x0038); }
+function off_1043A() { indirectCall(_seg001, 0x003A); }
+function off_1043C() { indirectCall(_seg001, 0x003C); }
+function off_1043E() { indirectCall(_seg001, 0x003E); }
+function off_10442() { indirectCall(_seg001, 0x0042); }
+function off_10446() { indirectCall(_seg001, 0x0046); }
+function off_10448() { indirectCall(_seg001, 0x0048); }
+
+function indirectCall(seg, ptr)
+{
+    for (var i=0; i<0x4C; i+=2)
+        if (memory16get(_seg001*16+i) == ptr)
+        {
+            ptr = i;
+            break;
+        }
+    
+    switch(ptr)
+    {
+        case 0x0000: sub_10524(); break;
+        case 0x0002: sub_10533(); break;
+        case 0x0004: sub_10594(); break;
+        case 0x0006: sub_105A1(); break;
+        case 0x0008: sub_105CC(); break;
+        case 0x000A: sub_10702(); break;
+        case 0x000C: sub_107F1(); break;
+        case 0x000E: sub_10836(); break;
+        case 0x0010: sub_1087B(); break;
+        case 0x0018: sub_109C4(); break;
+        case 0x001A: sub_109D3(); break;
+        case 0x001C: sub_109EE(); break;
+        case 0x001E: sub_10A67(); break;
+        case 0x0024: sub_1091B(); break;
+        case 0x0026: sub_10D03(); break;
+        case 0x0028: sub_10DF8(); break;
+        case 0x002A: sub_10D3D(); break;
+        case 0x002C: sub_10E23(); break;
+        case 0x002E: sub_10E40(); break;
+        case 0x0038: break;
+        case 0x003A: break;
+        case 0x003C: break;
+        case 0x003E: sub_11162(); break;
+        case 0x0042: sub_112D6(); break;
+        case 0x0044: sub_11376(); break;
+        case 0x0046: sub_107AC(); break;
+        case 0x0048: break;
+        case 0x0012: sub_108DD(); break;
+        case 0x0040: sub_111F1(); break;
+        case 0x0020: sub_10BC4(); break;
+        case 0x0022: sub_10C2E(); break;
+        case 0x004A: sub_10EE8(); break;
+        case 0x0016: sub_109A5(); break;
+        case 0x0014: sub_10986(); break;
+        case 0x0030: sub_10EA6(); break;
+        case 0x0032: sub_10EC0(); break;
+        case 0x0034: sub_10E7F(); break;
+        case 0x9d68: sub_1A168(); break;
+        case 0x9d21: sub_1A121(); break;
+        case 0x9d55: sub_1A155(); break;
+        case 0x9d37: sub_1A137(); break;
+        case 0x9dbc: sub_1A1BC(); break;
+        case 0x9de4: sub_1A1E4(); break;
+        case 0x9ef6: sub_1A2F6(); break;
+        case 0x9e3e: sub_1A23E(); break;
+        case 0x9DE6: sub_1A1E6(); break;
+        case 0x9D3F: sub_1A13F(); break;            
+        default:
+            throw "wrong indirect";
+    }
+}
+function nullsub_5() {}
+</script>
+
+<script src="rick2.js"></script>
+<script src="rick2.resources.js"></script>
+<script src="ega.js"></script>
+
+<script>
+var _datab = new ArrayBuffer(0x10000*80);
+var memory = new Uint8Array(_datab, 0, 0x40000);
+var memorys = new Int8Array(_datab, 0, 0x40000);
+
+//var _video = new Uint8Array(0x12000);
+
+var _stackb = new ArrayBuffer(0x100*2);
+var _stack = new Uint16Array(_stackb, 0, 0x100);
+var _stacks = new Int16Array(_stackb, 0, 0x100);
+
+var r0 = new ArrayBuffer(10);
+var r16 = new Uint16Array(r0, 0, 5);
+var r16s = new Int16Array(r0, 0, 5);
+var r8 = new Uint8Array(r0, 0, 10);
+var r8s = new Int8Array(r0, 0, 10);
+
+// index -> r16
+var ax = 0, bx = 1, cx = 2, dx = 3, tx = 4;
+// index -> r8
+var al = 0, ah = 1, bl = 2, bh = 3, cl = 4, ch = 5, dl = 6, dh = 7, tl = 8, th = 9;
+// other registers
+var ds = 0, es = 0, di = 0;
+var bp = 0, sp = 0x100;
+
+flags = {carry:0, direction:0, zero:0};
+var _seg001 = 0x1040;
+
+  var data = Module['rick2.data'];
+  for (var i=0; i<data.length; i++)
+    memory[0x1000*16+i] = data[i];
+
+  EGA.init();
+
+//start();
+
+var _freeMem = 0x2000;
+var _currentFile;
+
+function interrupt(i)
+{
+    if (i == 0x21 && r8[ah] == 0x4a)
+    {   // resize block
+        flags.carry = false;
+        return;
+    }
+    if (i == 0x21 && r8[ah] == 0x48)
+    {   // malloc
+        r16[ax] = _freeMem;
+        _freeMem += r16[bx];
+        flags.carry = false;
+        return;
+    }
+    if (i == 0x21 && r8[ah] == 0x25)
+        return; // set int vect
+    if (i == 0x21 && r8[ah] == 0x35)
+        return; // get int vect
+    if (i == 0x21 && r8[ah] == 0x3d)
+    {   // open file
+        var filename = "";
+        var dot = false;
+        for (var i=0; i<100; i++)
+        {
+            var c = String.fromCharCode(memory[ds*16+r16[dx]+i]);
+            if (c==' ')
+                continue;
+            if (c=='\0')
+                break;
+            filename += c;
+        }
+        console.log("Open: " + filename);
+        if (!Module[filename])
+          throw "resource not found";
+        _currentFile = {ofs:0, len:Module[filename].length, data:Module[filename]};
+        flags.carry = 0;
+        r16[ax] = 1;
+        return; 
+    }
+    if (i == 0x21 && r8[ah] == 0x3f)
+    {
+        var bytes = Math.min(r16[cx], _currentFile.len); 
+        var wptr = ds*16+r16[dx];
+        var rptr = _currentFile.ofs;
+        _currentFile.ofs += bytes;
+        while(bytes--)
+            memory[wptr++] = _currentFile.data[rptr++];
+        flags.carry = 0;
+        return;
+    }
+
+    if (i == 0x21 && r8[ah] == 0x3e)
+    {   // close file
+        _currentFile = null;
+        return;
+    }
+
+    if (i == 0x10 && r8[ah] == 0x0f)
+        return;
+    if (i == 0x10 && r8[ah] == 0x00)
+        return;
+    if (i == 0x10 && r8[ah] == 0x1a)
+    {
+        //https://dos4gw.org/INT_10H_1aH_Set_or_Query_Display_Combination_Code
+        r8[al] = 0x1a;
+        r8[bl] = 0x08; // vga color
+        return;            
+    }
+    if (i == 0x10 && r8[ah] == 0x10 && r8[al] == 0)
+    {
+        //EGA.SetPaletteIndex(r8[bl], r8[bh]);
+        return;
+    }
+    if (i == 0x10 && r16[ax] == 0x1012)
+    {
+      for (var i=0; i<r16[cx]; i++)
+      {
+        var r = memory[es*16+r16[dx]+i*3]*4;
+        var g = memory[es*16+r16[dx]+i*3+1]*4;
+        var b = memory[es*16+r16[dx]+i*3+2]*4;
+        EGA.palette[i] = b | (g << 8) | (r << 16);
+      }
+    }
+}
+
+function out8(p, v)
+{
+    if (EGA.PortWrite8(p, v))
+        return;
+    console.log("out8: "+p.toString(16) + " <- " + v.toString(16));
+}
+function out16(p, v)
+{
+if (p==0x3d4)
+{
+  console.log("3d4 <- "+v.toString(16));
+throw "bla";
+}
+    if (EGA.PortWrite16(p, v))
+        return;
+    console.log("out16: "+p.toString(16) + " <- " + v.toString(16));
+}
+
+function lodsb_data_forward()
+{
+  assert(ds < 0xa000);
+  r8[al] = memory[ds*16 + si++];
+}
+
+function lodsb_video_forward()
+{
+  assert(ds >= 0xa000);
+  r8[al] = EGA.read(ds*16 + si++);
+}
+
+function movsb_video_video_forward()
+{
+  assert(es >= 0xa000 && ds >= 0xa000);
+  EGA.write(es*16 + di++, EGA.read(ds*16 + si++));
+}
+
+function rep_stosb_data_forward()
+{
+  assert(es < 0xa000 && r16[cx] > 0);
+
+  while (r16[cx]--)              
+    memory[es*16 + di++] = r8[al];
+  r16[cx] = 0;
+}
+
+function rep_stosb_video_forward()
+{
+  assert(es >= 0xa000 && r16[cx] > 0);
+
+  while (r16[cx]--)
+    EGA.write(es*16 + di++, r8[al]); 
+  r16[cx] = 0;
+}
+
+function rep_movsb_data_data_forward()
+{
+  assert(es < 0xa000 && ds < 0xa000 && r16[cx] > 0);
+
+  while (r16[cx]--) 
+    memory[es*16 + di++] = memory[ds*16 + si++];
+  r16[cx] = 0;
+}
+
+function rep_movsb_video_video_forward()
+{
+  assert(es >= 0xa000 && ds >= 0xa000 && r16[cx] > 0);
+
+  while (r16[cx]--) 
+    EGA.write(es*16 + di++, EGA.read(ds*16 + si++));
+  r16[cx] = 0;
+}
+
+
+function rep_movsw_video_data_forward()
+{
+  assert(es >= 0xa000 && ds < 0xa000 && r16[cx] > 0);
+//  si += 16*2;
+  while (r16[cx]--) 
+  {
+    var a = memory[ds*16 + si++];
+    var b = memory[ds*16 + si++];
+//    console.log(a, b);
+    EGA.write(es*16 + di++, a);
+    EGA.write(es*16 + di++, b);
+
+//    EGA.write(es*16 + di++, memory[ds*16 + si++]);
+//    EGA.write(es*16 + di++, memory[ds*16 + si++]);
+  }
+  r16[cx] = 0;
+}
+
+function stosw_data_forward()
+{
+    assert(es < 0xa000);
+    memory[es*16 + di++] = r8[al];
+    memory[es*16 + di++] = r8[ah];
+}
+
+function push(i)
+{
+  _stack[sp>>1] = i;
+  sp -= 2;
+}
+function pop()
+{
+  sp += 2;
+  return _stack[sp>>1];
+}
+function memory16set(i, v)
+{
+  memory[i] = v & 0xff;
+  memory[i+1] = v >> 8;
+}
+function memory16get(i)
+{
+  return memory[i] | (memory[i+1]<<8);
+}
+
+function signed8(v)
+{
+  r8[th] = v;
+  return r8s[th];
+}
+
+function signed16(v)
+{
+  r16[tx] = v;
+  return r16s[tx];
+}
+
+function memoryBiosGet16(seg, ofs)
+{
+    if (seg == 0x0040 && ofs == 0x0063)
+        return 0x3d4;
+    throw "not supported";
+}
+
+function memoryBiosSet16(seg, ofs, data)
+{
+    //word 0040:004E  Offset to the current display page
+    if (ofs == 0x4E)
+        return;
+    throw "not supported";
+}
+
+var _retrace = 0;
+function in8(port)
+{
+/*
+    //cout << "in(" << std::hex << (int)port << ")" << endl;
+    if (port == 0x40)
+    {
+        val = 0;
+        return;
+    }
+    if (port == 0x61) // speaker
+    {
+        val = 0;
+        return;
+    }
+    if (port == 0x201) // joystick
+    {
+        val = 0xff;
+        return;
+    }
+*/
+    if (port == 0x3da)
+    {
+        return (_retrace++ & 1) ? 8 : 0;;
+    }
+    console.log("in " + port.toString(16) + " not supported")
+    throw "error";
+}
+
+var can = document.getElementById("canvas");
+var ctx = can.getContext('2d');
+can.width = 320;
+can.height = 200;
+var data = ctx.createImageData(can.width, can.height);
+
+function display()
+{
+  var p = 0;
+  var pixels = data.data;
+  for (var y=0; y<200; y++)
+    for (var x=0; x<320; x++)
+    {
+      var c = EGA.getPixel(x, y);
+      pixels[p++] = c>>16;
+      pixels[p++] = (c>>8)&0xff;
+      pixels[p++] = c & 0xff;
+      pixels[p++] = 255;
+    }
+  ctx.putImageData(data, 0, 0);
+}
+var _iter = 0;
+function* _sync(k)
+{
+  if (!k)
+    throw "unpaired sync";
+
+  yield 0;
+}
+
+var sequence = start();
+//function run()
+{
+  setInterval( () =>
+  {
+    sequence.next();
+    display();
+  }, 200);
+}
+
+///{
+ // display();
+//  if (_iter++ > 1)
+//    throw new Error("Something went badly wrong!");
+//}
+function assert(x)
+{
+  if (!x) throw new Error("assertion failed");
+}
+
+var _k = 0;
+    document.onkeydown = function(evt) {
+        evt = evt || window.event;
+        switch (evt.keyCode)
+        {
+          case 38: _k |= 8; break;
+          case 40: _k |= 4; break;
+          case 37: _k |= 2; break;
+          case 39: _k |= 1; break;
+          case 13: _k |= 16; break;
+          case 32: _k |= 16; break;
+        }
+        memory[_seg001*16+0xB884] = _k;
+    }
+    document.onkeyup = function(evt) {
+        evt = evt || window.event;
+        switch (evt.keyCode)
+        {
+          case 38: _k &= ~8; break;
+          case 40: _k &= ~4; break;
+          case 37: _k &= ~2; break;
+          case 39: _k &= ~1; break;
+          case 13: _k &= ~16; break;
+          case 32: _k &= ~16; break;
+        }
+        memory[_seg001*16+0xB884] = _k;
+    }
+
+</script>

@@ -331,7 +331,7 @@ public:
 			if ( (data & 0x00ff) == 0x0c )
 			{
 				SetAddrHi( data >>8 );
-                _sync();
+                //_sync();
 				return true;
 			}
 			if ( (data & 0x00ff) == 0x0d )
@@ -571,7 +571,7 @@ public:
         static int q = 0;
         if (q++ > 5000*2)
         {
-            _sync();
+            //_sync();
             q= 0;
         }
     }

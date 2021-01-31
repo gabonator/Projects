@@ -97,10 +97,10 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x0010: sub_1087B(); break; // 47b
         case 0x0018: sub_109C4(); break;
         case 0x001A: sub_109D3(); break;
-        case 0x001C: sub_109EE(); break;
+        case 0x001C: sub_109EE(); _sync(); break;
         case 0x001E: sub_10A67(); break;
         case 0x0024: sub_1091B(); break;
-        case 0x0026: sub_10D03(); break;
+        case 0x0026: sub_10D03(); /*_sync();*/ break;
         case 0x0028: sub_10DF8(); break;
         case 0x002A: sub_10D3D(); break;
         case 0x002C: sub_10E23(); break;

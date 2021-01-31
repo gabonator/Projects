@@ -3226,8 +3226,8 @@ loc_168D1:                                      //loc_168D1:
       goto locret_168E3;
     if (memory(_ds, 0x9804) == 0x01)            //jz short locret_168E3
       goto locret_168E3;
-    std::cout << "-- infinite lives\n";
-    //memory16(_ds, 0x6614) -= 1;                 //dec word ptr ds:6614h
+//    std::cout << "-- infinite lives\n";
+    memory16(_ds, 0x6614) -= 1;                 //dec word ptr ds:6614h
 locret_168E3:                                   //locret_168E3:
     return;
 }
@@ -3429,7 +3429,7 @@ loc_16BAC:                                      //loc_16BAC:
     _push(_cx);                                 //push cx
     _sync();
     sub_19B1C();                                //call sub_19B1C
-    sub_19BDC();                                 //call sub_19BDC
+    sub_19BDC();                                //call sub_19BDC
     if (_al & 0x10)                             //jnz short loc_16BC4
       goto loc_16BC4;
     _al = memory(_ds, 0xB888);                  //mov al, ds:0B888h
@@ -8083,7 +8083,6 @@ loc_19E4B:                                      //loc_19E4B:
       goto loc_19E4B;
     if (_ah != 0x01)                            //jnz short loc_19E6C
       goto loc_19E6C;
-    // TODO:!!!!
     memory(_cs, 0xBDA2) = 0xc3;                 //mov byte ptr cs:loc_1C1A2, 0C3h
     _flags.carry = false;                       //clc
     return;                                     //retn
@@ -8191,7 +8190,10 @@ void loc_19F12()
     start(0x1C359);
     return;
     //_STOP_("goto loc_1C359");                   //jmp loc_1C359
-loc_19F37:                                      //loc_19F37:
+}
+
+void loc_19F37()                                      //loc_19F37:
+{
     off_1043A();                                //call off_1043A
     _ax = 0x0004;                               //mov ax, 4
     memory16(_ds, 0xBDF2) = _ax;                //mov word_1C1F2, ax
@@ -9955,7 +9957,6 @@ void sub_1C164()
     _cx |= _dx;                                 //or cx, dx
     if (_cx != 0)                               //jnz short loc_1C175
       goto loc_1C175;
-    // TODO:!!!!
     memory(_cs, 0xBDA2) = 0xc3;                 //mov byte ptr cs:loc_1C1A2, 0C3h
     return;                                     //retn
 loc_1C175:                                      //loc_1C175:
@@ -9979,12 +9980,7 @@ loc_1C175:                                      //loc_1C175:
 
 void loc_1C1A2()
 {
-    // TODO: !!!
-    if (memory(_seg001, 0xBDA2) == 0xC3)
-        return;
-    std::cout << "altered function\n";
     _ax = _seg001;                              //mov ax, seg seg001
-    sub_1C1A5();
 }
 
 void sub_1C1A5()
@@ -10128,12 +10124,12 @@ loc_1C31F:                                      //loc_1C31F:
     off_1040A();                                //call off_1040A
     off_1043A();                                //call off_1043A
     sub_1A592();                                //call sub_1A592
-    
-    std::cout << "skip keyboard settings\n";
+
+    //std::cout << "skip keyboard settings\n";
     memory(_cs, 0xBDA2) = 0xc3; // inserted
     _flags.carry = false; // inserted
-    
     //sub_19E18();                                //call sub_19E18
+
     if (!_flags.carry)                          //jnb short loc_1C34B
       goto loc_1C34B;
     sub_1C164();                                //call sub_1C164

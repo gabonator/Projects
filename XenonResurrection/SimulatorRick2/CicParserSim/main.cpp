@@ -678,6 +678,8 @@ void onKey(int k, int p)
         case SDL_SCANCODE_LEFT: keys = p ? keys | 2 : keys & ~2; break;
         case SDL_SCANCODE_RIGHT: keys = p ? keys | 1 : keys & ~1; break;
         case SDL_SCANCODE_RSHIFT:
+        case SDL_SCANCODE_LSHIFT:
+        case SDL_SCANCODE_Z:
         case SDL_SCANCODE_SPACE: keys = p ? keys | 16 : keys & ~16; break;
     }
     //memory(_seg001, 0xA85E) = p ? 0 : 255;
@@ -728,9 +730,9 @@ void onKey(int k, int p)
 
         if (key)
         {
-            memory(_seg001, 0xB888) = key >> 8;
+            //memory(_seg001, 0xB888) = key >> 8;
             
-            keyboardBuffer.push_back(key);
+            //keyboardBuffer.push_back(key);
         }
     } else {
         //memory(_seg001, 0xB884) = 0;
