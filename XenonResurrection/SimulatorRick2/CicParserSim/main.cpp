@@ -438,6 +438,10 @@ void _interrupt(BYTE i)
         _flags.carry = false;
         return;
     }
+    if (i == 0x21 && _ah == 0x4c)
+    {
+        // end program
+    }
 
     _ASSERT(0);
 }
@@ -626,6 +630,12 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
+    _ASSERT(segment != 0);
+    /*
+    if (segment==_seg001 && (offset==0xB369 || offset==0xB37D || offset==0xB391))
+    {
+        int f = 9;
+    }*/
     segment += appBase;
     //_ASSERT(segment == 0x1020 || segment == 0x2499);
     
@@ -638,6 +648,14 @@ WORD& memory16(WORD segment, WORD offset)
 
 BYTE& memory(WORD segment, WORD offset)
 {
+    if (segment==_seg001 && (offset==0xB369 || offset==0xB37D || offset==0xB391))
+    {
+        int f = 9;
+    }
+//    if (segment == _seg001 && offset == 0xA85E)
+//    {
+//        int f=9;
+//    }
     segment += appBase;
     _ASSERT(segment >= 0x1000 && segment < 0xa000);
     int ofs = (segment-0x1000)*16 + offset;
@@ -662,6 +680,7 @@ void onKey(int k, int p)
         case SDL_SCANCODE_RSHIFT:
         case SDL_SCANCODE_SPACE: keys = p ? keys | 16 : keys & ~16; break;
     }
+    //memory(_seg001, 0xA85E) = p ? 0 : 255;
     memory(_seg001, 0xB884) = keys;
     
     if (p)
@@ -763,6 +782,7 @@ void loadSegment(uint8_t* buffer, const char* suffix, int len)
 //extern int synccalls;
 void _sync()
 {
+    /*
     static int calls = 0;
     if (calls++ > 20)
     {
@@ -771,6 +791,11 @@ void _sync()
     } else
         memory(_seg001, 0xA85E) = 0xff;
     
+    if (memory(_seg001, 0xA85E) > 0)
+    {
+        memory(_seg001, 0xA85E)--;
+    }*/
+
 //    synccalls = 0;
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
