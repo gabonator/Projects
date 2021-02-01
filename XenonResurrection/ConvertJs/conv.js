@@ -234,6 +234,20 @@ function convert(l)
   while (r = l.match(new RegExp("\\(char\\)\([0-9a-fx]*)")))
     l = l.replace(r[0], "signed8("+r[1]+")");
 
+  if (r = l.match(new RegExp("_rcr\\(r8\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "rcr8("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_rcr\\(r16\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "rcr16("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_sar\\(r8\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "sar8("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_sar\\(r16\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "sar16("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_xchg\\(r16\\[(.*)\\], r16\\[(.*)\\]\\)")))
+    l = l.replace(r[0], "xchg16("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_xchg\\(r8\\[(.*)\\], r8\\[(.*)\\]\\)")))
+    l = l.replace(r[0], "xchg8("+r[1]+", "+r[2]+")");
+
+
 //  if (r = l.match(new RegExp("\\{(.*\\(\\)); return; \\}.*")))
 //  {
     

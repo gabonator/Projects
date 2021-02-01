@@ -9,7 +9,7 @@ function off_1040A() { indirectCall(_seg001, 0x000A); }
 function off_1040C() { indirectCall(_seg001, 0x000C); }
 function off_1040E() { indirectCall(_seg001, 0x000E); }
 function off_1041A() { indirectCall(_seg001, 0x001A); }
-function off_1041C() { indirectCall(_seg001, 0x001C); }
+function* off_1041C() { indirectCall(_seg001, 0x001C); yield* _sync(1); }
 function off_1041E() { indirectCall(_seg001, 0x001E); }
 function off_10424() { indirectCall(_seg001, 0x0024); }
 function off_10426() { indirectCall(_seg001, 0x0026); }
@@ -346,6 +346,43 @@ function signed16(v)
   return r16s[tx];
 }
 
+function rcr8(r, c)
+{
+    assert(c == 1);
+    var newCarry = !!(r8[r] & 0x1);
+    r8[r] >>= 1;
+    r8[r] |= flags.carry ? 0x80 : 0;
+    flags.carry = newCarry;
+}
+
+function sar8(r, c)
+{
+    r8s[r] >>= c;
+}
+
+function sar16(r, c)
+{
+    r16s[r] >>= c;
+}
+
+function _cbw()
+{
+    r8[ah] = (r8[al] & 0x80) ? 0xff : 0x00;
+}
+
+function xchg8(a, b)
+{
+  var t = r8[a];
+  r8[a] = r8[b];
+  r8[b] = t;
+}
+
+function memory16gets(i)
+{
+    r16[tx] = memory[i] | (memory[i+1]<<8);
+    return r16s[tx];
+}
+
 function memoryBiosGet16(seg, ofs)
 {
     if (seg == 0x0040 && ofs == 0x0063)
@@ -359,6 +396,28 @@ function memoryBiosSet16(seg, ofs, data)
     if (ofs == 0x4E)
         return;
     throw "not supported";
+}
+
+function memoryVideoGet(seg, ofs)
+{
+    return EGA.read(seg*16+ofs);
+}
+
+function memoryVideoSet(seg, ofs, v)
+{
+    return EGA.write(seg*16+ofs, v);
+}
+
+function pushf()
+{
+  push(flags.carry*1 + flags.zero*2);
+}
+
+function popf()
+{
+  var m = pop();
+  flags.carry = m & 1;
+  flags.zero = !!(m & 2);
 }
 
 var _retrace = 0;
@@ -427,7 +486,7 @@ var sequence = start();
   {
     sequence.next();
     display();
-  }, 200);
+  }, 50);
 }
 
 ///{
