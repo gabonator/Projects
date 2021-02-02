@@ -48,7 +48,7 @@ var EGA = {
   },
   init : function()
   {
-    this.memory = new Uint32Array(0x10000*2);
+    this.memory = new Uint32Array(0x10000*8);
     this.aLatchb = new ArrayBuffer(8);
     this.aLatch32 = new Uint32Array(this.aLatchb, 0, 2);
     this.aLatch8 = new Uint8Array(this.aLatchb, 0, 8);
@@ -278,7 +278,7 @@ var EGA = {
             lastData = data;
             return true;
         }
-        if (port == 0x3cf)
+        if (port == 0x3cf)                                                             
         {
             return PortWrite16 ( lastPort, (data<<8)|lastData);
         }

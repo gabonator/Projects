@@ -168,6 +168,14 @@ function convert(l)
     //console.log(l);
   }
 
+  if (r = l.match(new RegExp("memory16\\((.*), (.*)\\) ([\\+\\-\\|\\^\\&])= (.*);")))
+  {
+    var adr = r[1] + "*16+" + r[2];
+    var repl = "memory16set(" + adr + ", memory16get(" + adr + ") " + r[3]+ " " + r[4] + ");";
+    l = l.replace(r[0], repl);
+//console.log(l);
+  }
+
   if (r = l.match(new RegExp("memory16\\((.*), (.*)\\) = (.*);")))
   {
     var repl = "memory16set(" + r[1] + "*16+" + r[2] + ", " + r[3] + ");";
@@ -217,7 +225,7 @@ function convert(l)
   if (r = l.match(new RegExp("_in\\((.*), (r16.*)\\)")))
     l = l.replace(r[0], r[1] + " = in8("+r[2]+")");
   if (r = l.match(new RegExp("_indirectCall")))
-    l = l.replace(r[0], "indirectCall");
+    l = l.replace(r[0], "yield* indirectCall");
 
   while (r = l.match(new RegExp("\\(short\\)r16")))
     l = l.replace(r[0], "r16s");
@@ -247,6 +255,14 @@ function convert(l)
   if (r = l.match(new RegExp("_xchg\\(r8\\[(.*)\\], r8\\[(.*)\\]\\)")))
     l = l.replace(r[0], "xchg8("+r[1]+", "+r[2]+")");
 
+
+  if (r = l.match(new RegExp("(nullsub|sub|loc|off)_.*\\(\\);")))
+    l = l.replace(r[0], "yield* "+r[0]);
+  if (r = l.match(new RegExp("_sync\\(\\);")))
+    l = l.replace(r[0], "yield* "+r[0]);
+
+  if (r = l.match(new RegExp("std::")))
+    l = "// "+l;
 
 //  if (r = l.match(new RegExp("\\{(.*\\(\\)); return; \\}.*")))
 //  {
@@ -457,7 +473,7 @@ var fs = require("fs");
 var input = fs.readFileSync("rick2.h");
 var input = input.toString().split("\n");
 input = findFunctions(input, (name, body) => {
-  return ["function "+name+"() {", ...processFunctionBody(body), "}"];
+  return ["function* "+name+"() {", ...processFunctionBody(body), "}"];
 });
 
 input = format(input);
