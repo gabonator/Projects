@@ -281,9 +281,18 @@ function rep_movsb_data_data_forward()
   r16[cx] = 0;
 }
 
+function movsb_data_data_forward()
+{
+  assert(es < 0xa000 && ds < 0xa000);
+
+  memory[es*16 + di++] = memory[ds*16 + si++];
+}
+
 function rep_movsw_data_data_forward()
 {
-  assert(es < 0xa000 && ds < 0xa000 && r16[cx] > 0 && si <= 0xffff && di <= 0xffff);
+  assert(ds && es)
+
+  assert(es < 0xa000 && ds < 0xa000 && r16[cx] > 0);
   assert(ds*16 + si < memory.length && es*16 + di < memory.length);
 
   while (r16[cx]--)

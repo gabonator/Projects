@@ -1010,7 +1010,7 @@ function* sub_10BC4() {
         yield* indirectCall(ds, memory16get(ds*16+0x1C));
         si = pop();
         r16[cx] = pop();
-        si += 0xfffe;  si &= 0xffff;
+        si += 0xfffe; si &= 0xffff;
         if (--r16[cx]) {
             pc = 0x10C15;
             break;
@@ -1659,7 +1659,9 @@ function* sub_111F1() {
         }
         di += bp;
         r16[cx] = pop();
+
         r16[cx] -= 1;
+assert(r16s[cx] >= 0);
         if (r16[cx] != 0) {
             pc = 0x1128D;
             break;
@@ -6130,6 +6132,7 @@ function* sub_17D53() {
     } while (1);
 }
 function* sub_17D70() {
+//return;
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -6162,18 +6165,18 @@ function* sub_17D70() {
         r16[ax] = r16[ax] ^ r16[ax];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001d;
         r8[bl] &= 0x02;
         if (r8[bl] == 0)
             {
-            sub_17DFB(0x17E2F);
+            yield* sub_17DFB(0x17E2F);
             return;
         }
         memory16set(ds*16+0x7E02, 0x0001);
@@ -6184,36 +6187,36 @@ function* sub_17D70() {
         r16[ax] = r16[ax] ^ r16[ax];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001e;
         r8[bl] &= 0x02;
         if (r8[bl] != 0) {
             pc = 0x17DF2;
             break;
         }
-        sub_17DFB(0x17E8A);
+        yield* sub_17DFB(0x17E8A);
         return;
     case 0x17DF2:
         memory16set(ds*16+0x7E02, 0x0001);
-        sub_17DFB(0x17E8A);
+        yield* sub_17DFB(0x17E8A);
         return;
     } while (1);
 }
-function* sub_17DFB() {
-    var pc = 0;
+function* sub_17DFB(pc) {
+if (!pc) pc = 0;
+else        if (pc == 0x17E8A) {
+            pc = 0x17E8A;
+        }
+else        if (pc == 0x17E2F) {
+            pc = 0x17E2F;
+        }
+else assert(0)
+//    var pc = 0;
     do switch (pc) {
     case 0:
-        if (pc == 0x17E8A) {
-            pc = 0x17E8A;
-            break;
-        }
-        if (pc == 0x17E2F) {
-            pc = 0x17E2F;
-            break;
-        }
         push(si);
         push(r16[ax]);
         push(r16[bx]);
@@ -6246,13 +6249,13 @@ function* sub_17DFB() {
     case 0x17E36:
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bh] = r8[bh] | memory[ds*16+di + 21492];
+        r8[bh] = r8[bh] | memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001d;
     case 0x17E4E:
         if (--r16[cx]) {
@@ -6265,13 +6268,13 @@ function* sub_17DFB() {
         memory[ds*16+0x796A] |= r8[bh];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bh] = memory[ds*16+di + 21492];
+        r8[bh] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         r8[bl] &= 0x27;
         r8[bh] &= 0x7f;
         memory[ds*16+0x796A] |= r8[bl];
@@ -6289,10 +6292,10 @@ function* sub_17DFB() {
     case 0x17E91:
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001e;
     case 0x17EA2:
         if (--r16[cx]) {
@@ -6303,10 +6306,10 @@ function* sub_17DFB() {
         memory[ds*16+0x796A] = r8[bl];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         r8[bl] &= 0x7f;
         memory[ds*16+0x796A] |= r8[bl];
         r8[al] = memory[ds*16+0x796A];
@@ -6520,7 +6523,7 @@ function* sub_18014() {
     r16[ax] = r16[ax] ^ r16[ax];
     lodsb_data_forward();
     di = r16[ax];
-    r8[al] = memory[ds*16+di + 21492];
+    r8[al] = memory[ds*16+((di + 21492)&0xffff)];
     memory[ds*16+0x7963] = r8[al];
     yield* sub_181C6();
     r16[dx] = pop();
@@ -6558,10 +6561,10 @@ function* sub_1802D() {
     case 0x18051:
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001e;
     case 0x18062:
         if (--r16[cx]) {
@@ -6572,10 +6575,10 @@ function* sub_1802D() {
         r8[bh] = r8[bl];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         r8[bl] &= 0x27;
         r8[bh] |= r8[bl];
         memory[ds*16+0x7963] = r8[bh];
@@ -6590,7 +6593,7 @@ function* sub_1802D() {
     case 0x1808A:
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = r8[bl] | memory[ds*16+di + 21492];
+        r8[bl] = r8[bl] | memory[ds*16+((di + 21492)&0xffff)];
         si += 0x001f;
     case 0x18094:
         if (--r16[cx]) {
@@ -6601,7 +6604,7 @@ function* sub_1802D() {
         r8[bh] = r8[bl];
         lodsb_data_forward();
         di = r16[ax];
-        r8[bl] = memory[ds*16+di + 21492];
+        r8[bl] = memory[ds*16+((di + 21492)&0xffff)];
         r8[bl] &= 0x27;
         r8[bh] |= r8[bl];
         memory[ds*16+0x7963] = r8[bh];
@@ -8583,7 +8586,7 @@ function* sub_192AE() {
             pc = 0x192B1;
             break;
         }
-        di += 0x0060;        
+        di += 0x0060;
         return;
     } while (1);
 }
@@ -10035,8 +10038,6 @@ function* sub_1A257() {
             pc = 0x1A2A6;
             break;
         }
-// skip intro
-/*
     case 0x1A2AF:
         r16[ax] = r16[ax] ^ r16[ax];
         r8[al] = memory[ds*16+r16[bx]];
@@ -10049,7 +10050,6 @@ function* sub_1A257() {
         yield* indirectCall(ds, memory16get(ds*16+si));
         pc = 0x1A2AF;
         break;
-*/
         return;
     } while (1);
 }
