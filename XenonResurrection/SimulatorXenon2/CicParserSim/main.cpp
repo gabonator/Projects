@@ -12,6 +12,7 @@
 #include <list>
 
 #include "cpu.h"
+void debugPoint(int, int);
 
 constexpr WORD appBase = 0x0000; //0x1020;
 
@@ -33,7 +34,7 @@ constexpr WORD _seg007= 0x449b;
 constexpr WORD _seg008= 0x5489;
 constexpr WORD _seg009= 0x63d0;
 constexpr WORD _seg010= 0x7218;
-
+//byte_447B0   447b- 0x447b
 
 void memoryVideoAnd(WORD seg, WORD ofs, BYTE a)
 {
@@ -649,6 +650,10 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
+    if (segment == 0x2853 && offset == 0xa114+12)
+    {
+        int f = 9;
+    }
     _ASSERT(offset <= 0xffff && offset >= 0);
     _ASSERT(segment != 0);
     /*
@@ -670,6 +675,16 @@ BYTE& memory(WORD segment, WORD offset)
 {
     _ASSERT(offset <= 0xffff && offset >= 0);
     
+    
+    if (segment == 0x2853 && offset == 0xa114+12)
+    {
+        int f = 9;
+    }
+    if (segment == 0x2853 && offset == 0xa114+13)
+    {
+        int f = 9;
+    }
+
     if (segment == 0x3824 && offset==0xaf80) {
         int f = 9;
     }
@@ -708,13 +723,19 @@ void onKey(int k, int p)
         case SDL_SCANCODE_UP: code = 1; break;
         case SDL_SCANCODE_DOWN: code = 2; break;
         case SDL_SCANCODE_LEFT: code = 4; break;
-        case SDL_SCANCODE_RIGHT: code = 5; break;
+        case SDL_SCANCODE_RIGHT: code = 8; break;
         case SDL_SCANCODE_SPACE: code = 0x80; break;
+        case SDL_SCANCODE_A: code = 0x10; break;
+        case SDL_SCANCODE_B: code = 0x20; break;
+        case SDL_SCANCODE_C: code = 0x40; break;
             
         case SDL_SCANCODE_RETURN: code = 0x80;
             memory(_dseg, 0x8f5b) = 0xff; break;
     }
-    memory(_dseg, 0x8f59) = code;
+    if (p)
+        memory(_dseg, 0x8f59) |= code;
+    else
+        memory(_dseg, 0x8f59) &= ~code;
 }
 
 void loadSegment(uint8_t* buffer, const char* suffix, int len)
@@ -729,6 +750,15 @@ void loadSegment(uint8_t* buffer, const char* suffix, int len)
     fclose(f);
 }
 //extern int synccalls;
+
+int dbgx = 0;
+int dbgy = 0;
+void debugPoint(int a, int b)
+{
+    dbgx = a;
+    dbgy = b;
+}
+
 void _sync()
 {
     /*
@@ -760,8 +790,7 @@ void _sync()
       for (int x=0; x<320; x++)
       {
         mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
-        
-          
+                  
           BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
           //DWORD off = (int)y * 40L + ((int)x / 8L);
           
@@ -783,6 +812,14 @@ void _sync()
 
           //int c = memory(0x2000, x)
       }
+
+    if (dbgx > 3 && dbgy > 3 && dbgy < 190)
+    {
+        mSdl.SetPixel(dbgx, dbgy,   0xff00ffff);
+        mSdl.SetPixel(dbgx+1, dbgy, 0xff00ffff);
+        mSdl.SetPixel(dbgx, dbgy+1, 0xff00ffff);
+    }
+        
 
     mSdl.Loop();
 }
