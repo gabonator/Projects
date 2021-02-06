@@ -105,7 +105,7 @@ public:
         for (int i=0; i<mSegments.size(); i++)
         {
             if (ofs >= mSegments[i].base*16 + mSegments[i].begin &&
-                ofs <= mSegments[i].base*16 + mSegments[i].end)
+                ofs < mSegments[i].base*16 + mSegments[i].end)
             {
                 return ofs - mSegments[i].base*16;
             }
@@ -308,18 +308,24 @@ bool doExport(ostream& output, std::vector<string>& flist)
                 vector<string> arrMatches;
 
                 // assignment
-                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\) = (.*);( *)//(.*)$", line, arrMatches) )
+                if ( CUtils::match("^(.*)(memory|memory16)\\(_es, (.*)\\) (=|&=|\\|=|\\^=) (.*);( *)//(.*)$", line, arrMatches) )
                 {
                     // prefix, memory, offset, value, space, comment
                     stringstream ss;
                     ss << arrMatches[0];
-                    ss << (arrMatches[1] == "memory" ? "memoryVideoSet" : "memoryVideoSet16");
-                    ss << "(_es, " << arrMatches[2] << ", " << arrMatches[3] << ");";
+                    if (arrMatches[3] == "=")
+                        ss << (arrMatches[1] == "memory" ? "memoryVideoSet" : "memoryVideoSet16");
+                    else if (arrMatches[3] == "|=")
+                        ss << (arrMatches[1] == "memory" ? "memoryVideoOr" : "memoryVideoOr16");
+                    else if (arrMatches[3] == "&=")
+                        ss << (arrMatches[1] == "memory" ? "memoryVideoAnd" : "memoryVideoAnd16");
+                    else if (arrMatches[3] == "^=")
+                        ss << (arrMatches[1] == "memory" ? "memoryVideoXor" : "memoryVideoXor16");
+
+                    ss << "(_es, " << arrMatches[2] << ", " << arrMatches[4] << ");";
                     while (ss.str().length() < 48)
                         ss << " ";
-                    ss << "//" << arrMatches[5];
-                    //line = arrMatches[0] + (arrMatches[1] == "memory") ? "memoryVideoSet" : "memoryVideoSet16";
-                    //line += string("(")
+                    ss << "//" << arrMatches[6];
                     line = ss.str();
                 }
                 

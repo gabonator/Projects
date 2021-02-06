@@ -572,10 +572,12 @@ public:
 		case CITwoArgOp::sbb:
             {
                 shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
-                _ASSERT(alu);
                 if (alu)
                 {
                     alu->m_ExportInsertion = CIAlu::Carry; // TODO: safe?
+                } else {
+                    m_strOperation = "_FIXME_";
+                    break;
                 }
                 if (m_strArgument2 == "0")
                     m_strOperation = "$arg1 -= _flags.carry";
@@ -804,7 +806,7 @@ public:
                 else
                     _ASSERT(0);
 
-                m_strCondition = "(sign)$a < 0";
+                m_strCondition = string("(") + sign + ")$a < 0";
                 break;
             }
             _ASSERT(0);
@@ -927,10 +929,16 @@ public:
             case CIConditionalJump::jnb:
                 pAlu->m_ExportInsertion = CIAlu::Carry;
                 m_strCondition = "!_flags.carry"; break;
+            case CIConditionalJump::jb:
+                pAlu->m_ExportInsertion = CIAlu::Carry;
+                m_strCondition = "_flags.carry"; break;
             default: _ASSERT(0);
             }
             break;
         case CIAlu::Neg:
+                m_strCondition = "_FIXME_"; break;
+                break;
+        case CIAlu::Sar:
                 m_strCondition = "_FIXME_"; break;
                 break;
 

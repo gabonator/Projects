@@ -201,6 +201,8 @@ public:
                 m_eSegment = seg007;
             if (str == "seg seg008")
                 m_eSegment = seg008;
+            if (str == "seg seg009")
+                m_eSegment = seg009;
             _ASSERT(m_eSegment != invalidsegment);
             return;
         }
@@ -1141,6 +1143,7 @@ public:
         if ( CUtils::match("^ss:(.*)h$", value.c_str(), matches) )
         {
             _ASSERT(eRegLength == r8 || eRegLength == r16);
+            m_eRegLength = eRegLength;
             m_eType = ss_ptr;
             m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
             return;
@@ -1186,6 +1189,14 @@ public:
             return;
         }
 
+        if ( CUtils::match("^word ptr cs:byte_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r8;
+            m_eType = cs_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])+CUtils::ParseLiteral(matches[1]));
+            return;
+        }
+
         if ( CUtils::match("^word ptr cs:byte_(.*)$", value.c_str(), matches) )
         {
             m_eRegLength = r8;
@@ -1216,6 +1227,22 @@ public:
             m_eType = cs_ptr;
             m_eRegLength = r16;
             m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]));
+            return;
+        }
+        
+        if ( CUtils::match("^word ptr es:(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r16;
+            m_eType = es_ptr;
+            m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+
+        if ( CUtils::match("^offset (.*_.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r16;
+            m_eType = stop;
+            m_nValue = 0;
             return;
         }
 

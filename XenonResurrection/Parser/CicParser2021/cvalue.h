@@ -156,6 +156,14 @@ string CValue::ToC()
                 return "_seg002";
             if (m_eSegment == seg001)
                 return "_seg001";
+            if (m_eSegment == seg007)
+                return "_seg007";
+            if (m_eSegment == seg008)
+                return "_seg008";
+            if (m_eSegment == seg009)
+                return "_seg009";
+            if (m_eSegment == seg005)
+                return "_seg005";
             _ASSERT(0);
 
 		return "SEG_DATA";
@@ -203,6 +211,9 @@ string CValue::ToC()
             else
             if ( m_eRegLength == CValue::r16 )
                 ss << "memory16(_ds, 0x" << uppercase << hex << m_nValue << ")";
+            else
+                if ( m_eRegLength == CValue::r32 )
+                    ss << "memory32(_ds, 0x" << uppercase << hex << m_nValue << ")";
             else
                 _ASSERT(0);
         }
@@ -373,8 +384,6 @@ string CValue::ToC()
                 _ASSERT(0);
             return ss.str();
         case CValue::ss_ptr:
-            ss << "_FIXME_";
-            /*
             if ( m_eRegLength == CValue::r8 )
                 ss << "memory(_ss, " << m_nValue << ")";
             else
@@ -382,7 +391,6 @@ string CValue::ToC()
                 ss << "memory16(_ss, " << m_nValue << ")";
             else
                 _ASSERT(0);
-             */
             return ss.str();
 //        case CValue::ss_byteptr:
 //            if ( m_eRegLength == CValue::r8 )

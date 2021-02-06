@@ -109,7 +109,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 
 		if ( CUtils::match("^(out|in|xchg|rcr|rcl|rol|les|lea|lds|sbb)[\\s]+(.*),\\s*(.*)$", strLine, arrMatches) )
 		{
-			if ( arrMatches[0] == "lea" || arrMatches[0] == "lds" )
+			if ( arrMatches[0] == "lea" || arrMatches[0] == "lds" || arrMatches[0] == "les")
 				return make_shared<CITwoArgOp>(CITwoArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]), CValue(arrMatches[2], CValue::r16));
 			else if ( arrMatches[0] == "xchg" || arrMatches[0] == "sbb")
 			{
@@ -297,7 +297,7 @@ class CIMFlow : public CInstructionMatcher
 
         if ( CUtils::match("^call word ptr \\[(.*)\\]$", strLine, arrMatches) )
         {
-            return make_shared<CIStop>();
+            return make_shared<CIIndirectCall>(CIIndirectCall::WordPtr, CValue(arrMatches[0], CValue::ERegLength::r16));
         }
 
         if ( CUtils::match("^call word ptr (ds:.*)$", strLine, arrMatches) )
@@ -306,6 +306,12 @@ class CIMFlow : public CInstructionMatcher
         }
 
         // data - switch options, or internal variable
+        if ( CUtils::match("^(.+) dw offset (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
+        }
+
+
         if ( CUtils::match("^word_(.*) dw (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
@@ -320,17 +326,17 @@ class CIMFlow : public CInstructionMatcher
         {
             return make_shared<CIStop>();
         }
+
+        if ( CUtils::match("^(.*)_(.*) label byte$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
 /*
         if ( CUtils::match("^db (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();
         }
 */
-        if ( CUtils::match("^(.+) dw offset (.*)$", strLine, arrMatches) )
-        {
-            return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
-        }
-
         if ( CUtils::match("^dw offset (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
@@ -349,7 +355,11 @@ class CIMFlow : public CInstructionMatcher
         if ( CUtils::match("^(off_.*) dd (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIData>(CIData::Function, arrMatches[0], arrMatches[1]);
-            //return make_shared<CIStop>();
+        }
+
+        if ( CUtils::match("^(.*)_(.*) dd (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
         }
 
         if ( CUtils::match("^jmp short near ptr (sub.*)$", strLine, arrMatches) )
@@ -543,25 +553,10 @@ class CIMNop : public CInstructionMatcher
 			return make_shared<CINop>(strLine);
 		}
 
-		if ( strLine == "align 2" )
-		{
-			return make_shared<CINop>(strLine);
-		}
-
-		if ( strLine == "align 4" )
-		{
-			return make_shared<CINop>(strLine);
-		}
-
-		if ( strLine == "align 8" )
-		{
-			return make_shared<CINop>(strLine);
-		}
-
-		if ( strLine == "align 10h" ||  strLine == "align 800h" ||  strLine == "align 80h" )
-		{
-			return make_shared<CINop>(strLine);
-		}
+        if ( CUtils::match("^align .*", strLine, arrMatches) )
+        {
+            return make_shared<CINop>(strLine);
+        }
 
 		if ( CUtils::match("^arg.*=.*", strLine, arrMatches) || CUtils::match("^var_.*=.*", strLine, arrMatches) || CUtils::match("^envp.*=.*", strLine, arrMatches) )
 		{

@@ -18,7 +18,7 @@ public:
 				aux.push_back(i);
 		}
 
-		return move(aux);
+		return aux;
 	}
 
 	vector<shared_ptr<CInstruction>> GetDataStarting(CLabel label)

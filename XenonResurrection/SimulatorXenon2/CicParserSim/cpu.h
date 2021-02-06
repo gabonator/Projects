@@ -485,7 +485,7 @@ bool& _fixme_()
     static bool x = false;
     x = false;
     std::cout << " ====== fixme =======";
-    _ASSERT(0);
+    //_ASSERT(0);
     return x;
 }
 

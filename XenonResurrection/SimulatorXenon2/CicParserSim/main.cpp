@@ -36,6 +36,7 @@ constexpr WORD _seg009= 0x63d0;
 constexpr WORD _seg010= 0x7218;
 //byte_447B0   447b- 0x447b
 
+constexpr WORD _ss = _seg006;
 void memoryVideoAnd(WORD seg, WORD ofs, BYTE a)
 {
     memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & a);
@@ -242,6 +243,7 @@ void _interrupt(BYTE i)
                 _ah = 0;
             simEnter++;
              */
+            _sync();
             if (keyboardBuffer.size() > 0)
             {
                 _ax = keyboardBuffer.front();

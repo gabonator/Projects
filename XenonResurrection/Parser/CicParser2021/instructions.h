@@ -228,6 +228,7 @@ public:
 	{
 		CheckEnum(out);	CheckEnum(in); CheckEnum(xchg); CheckEnum(rcr); CheckEnum(rcl);
         CheckEnum(rol); CheckEnum(les); CheckEnum(lea); CheckEnum(sbb); CheckEnum(lds);
+        CheckEnum(les);
 		_ASSERT(0);
 		return invalid;
 	}
