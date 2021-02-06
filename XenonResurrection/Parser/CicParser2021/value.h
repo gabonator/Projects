@@ -77,6 +77,7 @@ public:
         wordptr_es_si,
         wordptr_bp_plus,
         wordptr_es_di_plus,
+        wordptr_cs_di,
         
         es_ptr_value,
         cs_ptr_value,
@@ -286,6 +287,13 @@ public:
         {
             m_eRegLength = r16;
             m_eType = wordptr_es_di;
+            return;
+        }
+        
+        if ( value == "word ptr cs:[di]" )  //xenon
+        {
+            m_eRegLength = r16;
+            m_eType = wordptr_cs_di;
             return;
         }
 
@@ -677,6 +685,14 @@ public:
         if ( CUtils::match("^ss:byte_(.*)\\+(.*)$", value.c_str(), matches) )
         {
             m_eType = ss_byteptr;
+            m_eRegLength = r8;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
+        if ( CUtils::match("^cs:byte_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = cs_ptr;
             m_eRegLength = r8;
             m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;

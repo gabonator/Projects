@@ -495,6 +495,9 @@ string CValue::ToC()
 
             return ss.str();
 
+        case CValue::wordptr_cs_di:
+            return "memory(_cs, _di)";
+
         case CValue::es_ptr_value:
             if ( m_eRegLength == CValue::r8 )
                 ss << "memory(_es, " << m_value->ToC() << ")";
