@@ -98,12 +98,12 @@ public:
                     if (pAlu->m_op1.GetRegisterLength() == CValue::r8)
                     {
                         m_strInsertion = "_flags.carry2 = (" + op1 + " + " + op2 + " + _flags.carry) >= 0x100";
-                        m_strPostsertion = "_flags.carry = flags.carry2";
+                        m_strPostsertion = "_flags.carry = _flags.carry2";
                     }
                     else if (pAlu->m_op1.GetRegisterLength() == CValue::r16)
                     {
                         m_strInsertion = "_flags.carry2 = (" + op1 + " + " + op2 + " + _flags.carry) >= 0x10000";
-                        m_strPostsertion = "_flags.carry = flags.carry2";
+                        m_strPostsertion = "_flags.carry = _flags.carry2";
                     }
                     else
                         _ASSERT(0);
@@ -564,11 +564,9 @@ public:
             m_strOperation = "_ASSERT(0); /* unk previous */ _rcl($arg1, $arg2)";
             break;
 		case CITwoArgOp::rol: m_strOperation = "_rol($arg1, $arg2)"; break;
-		case CITwoArgOp::les: m_strOperation = "_les($arg1, $arg2)"; break;
-		case CITwoArgOp::lea:
-                
-                m_strOperation = "_lea($arg1, $seg2, $ofs2)"; break;
-        case CITwoArgOp::lds: m_strOperation = "_lds($arg1, $arg2)"; break;
+		case CITwoArgOp::les: m_strOperation = "_les($arg1, $seg2, $ofs2)"; break;
+		case CITwoArgOp::lea: m_strOperation = "_lea($arg1, $seg2, $ofs2)"; break;
+        case CITwoArgOp::lds: m_strOperation = "_lds($arg1, $seg2, $ofs2)"; break;
 		case CITwoArgOp::sbb:
             {
                 shared_ptr<CIAlu> alu = dynamic_pointer_cast<CIAlu>(pPrevious);
@@ -941,6 +939,9 @@ public:
         case CIAlu::Sar:
                 m_strCondition = "_FIXME_"; break;
                 break;
+            case CIAlu::AddWithCarry:
+                    m_strCondition = "_FIXME_"; break;
+                    break;
 
 
 		default:
@@ -1205,7 +1206,7 @@ public:
                 _ASSERT(push && push->m_eType == CISingleArgOp::push && push->m_rvalue.ToC() == "_cs");
                 mDropPrevious = true;
             } else {
-                m_strCall = "_STOP(\""+m_strCall+"\");";
+                m_strCall = "_STOP_(\""+m_strCall+"\")";
                 
             }
         }

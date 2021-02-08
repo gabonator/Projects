@@ -520,9 +520,15 @@ string CValue::ToC()
         case CValue::offset_bp_plus:
             ss << "_bp + " << dec << m_nValue;
             return ss.str();
-
-
-            
+        case CValue::wordptr_cs_si:
+            if ( m_eRegLength == CValue::r8 )
+                return "memory(_cs, _si)";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                return "memory16(_cs, _si)";
+            else
+                _ASSERT(0);
+                    
 	default:
 		_ASSERT(0);
 	}

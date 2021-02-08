@@ -9,8 +9,8 @@ public:
 		if ( i == m_mapCache.end() )
 		{
 			regex newRegex(strRegex, std::regex_constants::ECMAScript);
-            //gg TODO!!!
-			//m_mapCache.insert(make_pair<string, regex>(strRegex, newRegex));
+            std::pair<string, regex> iv(strRegex, newRegex);
+			m_mapCache.insert(iv/*make_pair<string, regex>(strRegex, newRegex)*/);
 
 			return match(newRegex, strInput, arrMatches);
 		}

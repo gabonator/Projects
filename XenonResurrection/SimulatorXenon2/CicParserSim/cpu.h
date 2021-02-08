@@ -313,7 +313,7 @@ void _lea(WORD& r, WORD s, WORD o)
 }
 
 void _repne_scasw();
-void _les(WORD& reg, WORD addr)
+void _les(WORD& reg, WORD seg, WORD addr)
 {
     reg = memory16(_ds, addr);
     _es = memory16(_ds, addr+2);

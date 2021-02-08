@@ -678,7 +678,7 @@ BYTE& memory(WORD segment, WORD offset)
     _ASSERT(offset <= 0xffff && offset >= 0);
     
     
-    if (segment == 0x2853 && offset == 0xa114+12)
+    if (segment == _dseg && offset == 0x8F5B)
     {
         int f = 9;
     }
@@ -726,7 +726,18 @@ void onKey(int k, int p)
         case SDL_SCANCODE_DOWN: code = 2; break;
         case SDL_SCANCODE_LEFT: code = 4; break;
         case SDL_SCANCODE_RIGHT: code = 8; break;
-        case SDL_SCANCODE_SPACE: code = 0x80; break;
+        case SDL_SCANCODE_SPACE: code = 0x80;
+            
+            //memory(_ds, 0x8F5B) = !p ? 0xff : 0;
+            // 8 -32 skip level
+            // 0-16 ready player 2
+            //for (int i=9; i<=0xe; i++)
+            //memory(_dseg, 0x8f5b) = 0xff;
+            //memory(_dseg, 0x8f58) = -32;
+            //return;
+            if (p && !(memory(_dseg, 0x8f59) & 0x80))
+                memory(_dseg, 0x8F5B) = 0xff;
+            break;
         case SDL_SCANCODE_A: code = 0x10; break;
         case SDL_SCANCODE_B: code = 0x20; break;
         case SDL_SCANCODE_C: code = 0x40; break;
@@ -738,6 +749,8 @@ void onKey(int k, int p)
         memory(_dseg, 0x8f59) |= code;
     else
         memory(_dseg, 0x8f59) &= ~code;
+    
+//    memory(_dseg, 0x8f5A) = memory(_dseg, 0x8f59);
 }
 
 void loadSegment(uint8_t* buffer, const char* suffix, int len)
@@ -763,6 +776,7 @@ void debugPoint(int a, int b)
 
 void _sync()
 {
+    //memory(_dseg, 0x8f58) = memory(_dseg, 0x8f59);
     /*
     static int calls = 0;
     if (calls++ > 20)
@@ -788,40 +802,41 @@ void _sync()
         //memory(0x2000, k+0x1800) = 0xff;
         //memory(0x2000, k+0x2000) = 0xff;
     }
+
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
       {
         mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
-                  
-          BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
-          //DWORD off = (int)y * 40L + ((int)x / 8L);
-          
-          //DWORD mem_addr = off;
-          int mask = 0x80 >> (x % 8);
-
-          //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
-          //int page = 0;
-      
-          int off = 0x800;
-          int shift = (int)y * 1L + ((int)x / 8L)*180;
-          BYTE b = 0;
-          if ( _video[shift + off*0] & mask ) b |= 1;
-          if ( _video[shift + off*1] & mask ) b |= 2;
-          if ( _video[shift + off*2] & mask ) b |= 4;
-          if ( _video[shift + off*3] & mask ) b |= 8;
-
-          mSdl.SetPixel(x+320, y, mVideo.palette[b]);
+//
+//          BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
+//          //DWORD off = (int)y * 40L + ((int)x / 8L);
+//
+//          //DWORD mem_addr = off;
+//          int mask = 0x80 >> (x % 8);
+//
+//          //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
+//          //int page = 0;
+//
+//          int off = 0x800;
+//          int shift = (int)y * 1L + ((int)x / 8L)*180;
+//          BYTE b = 0;
+//          if ( _video[shift + off*0] & mask ) b |= 1;
+//          if ( _video[shift + off*1] & mask ) b |= 2;
+//          if ( _video[shift + off*2] & mask ) b |= 4;
+//          if ( _video[shift + off*3] & mask ) b |= 8;
+//
+//          mSdl.SetPixel(x+320, y, mVideo.palette[b]);
 
           //int c = memory(0x2000, x)
       }
-
-    if (dbgx > 3 && dbgy > 3 && dbgy < 190)
-    {
-        mSdl.SetPixel(dbgx, dbgy,   0xff00ffff);
-        mSdl.SetPixel(dbgx+1, dbgy, 0xff00ffff);
-        mSdl.SetPixel(dbgx, dbgy+1, 0xff00ffff);
-    }
-        
+//
+//    if (dbgx > 3 && dbgy > 3 && dbgy < 190)
+//    {
+//        mSdl.SetPixel(dbgx, dbgy,   0xff00ffff);
+//        mSdl.SetPixel(dbgx+1, dbgy, 0xff00ffff);
+//        mSdl.SetPixel(dbgx, dbgy+1, 0xff00ffff);
+//    }
+//
 
     mSdl.Loop();
 }
