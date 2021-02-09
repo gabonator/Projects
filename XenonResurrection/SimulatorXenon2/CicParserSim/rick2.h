@@ -7130,8 +7130,8 @@ loc_14B8E:                                      //loc_14B8E:
       goto loc_14BC0;
     _ax = memory16(_ds, 0x3048);                //mov ax, word_2B578
 loc_14BAB:                                      //loc_14BAB:
-    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
-      goto loc_14BAB;
+//    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
+//      goto loc_14BAB;
     sub_10985();                                //call sub_10985
     sub_1080F();                                //call sub_1080F
     sub_10A51();                                //call sub_10A51
@@ -8301,7 +8301,7 @@ loc_15697:                                      //loc_15697:
     goto loc_156B2;                             //jmp short loc_156B2
 loc_156A3:                                      //loc_156A3:
     memory16(_ds, _si) -= 1;                    //dec word ptr [si]
-    if (_FIXME_)                                //jg short loc_156B2
+    if ((short)memory16(_ds, _si) > 0)          //jg short loc_156B2
       goto loc_156B2;
     sub_14191();                                //call sub_14191
     _ax &= 0x00ff;                              //and ax, 0FFh
@@ -19830,27 +19830,27 @@ loc_20EAD:                                      //loc_20EAD:
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0002;                              //add di, 2
     if (--_cx)                                  //loop loc_20EAD
       goto loc_20EAD;
@@ -19874,27 +19874,27 @@ loc_20F08:                                      //loc_20F08:
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    memory(_es, _di + 1) = _al;                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0002;                              //add di, 2
     if (--_cx)                                  //loop loc_20F08
       goto loc_20F08;
@@ -20205,10 +20205,10 @@ void sub_211B0()
     _cx = 0x0008;                               //mov cx, 8
 loc_211B4:                                      //loc_211B4:
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _ah = memory(_es, _di);                     //mov ah, es:[di]
-    memory(_es, _di) = _al;                     //mov es:[di], al
-    _ah = memory(_es, _di + 8192);              //mov ah, es:[di+2000h]
-    memory(_es, _di + 8192) = _al;              //mov es:[di+2000h], al
+    _ah = memoryVideoGet(_es, _di);                     //mov ah, es:[di]
+    memoryVideoSet(_es, _di, _al);                     //mov es:[di], al
+    _ah = memoryVideoGet(_es, _di + 8192);              //mov ah, es:[di+2000h]
+    memoryVideoSet(_es, _di + 8192, _al);              //mov es:[di+2000h], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_211B4
       goto loc_211B4;
