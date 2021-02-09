@@ -21,6 +21,9 @@ void sub_11E61();
 void sub_107C0();
 void sub_128DF();
 void sub_16F00();
+void sub_13B76();
+void sub_16AAD();
+void sub_13BDF();
 
 void sub_16EEF() {
     _bx <<= 1;
@@ -55,10 +58,14 @@ void sub_13998();
 void sub_1655B();
 void loc_1308C();
 void sub_141FB();
-void sub_11F4D() {}
-void sub_13835() {}
-void sub_13B7F() {}
-void unk_16807() {}
+void sub_11F4D();
+void sub_13835();
+void sub_13B7F() {_ASSERT(0);}
+void sub_16A0A();
+void sub_125A8();
+void sub_16AAD();
+void sub_16696();
+void sub_169D0() {}
 
 void _indirectCall(WORD seg, WORD ptr)
 {
@@ -97,17 +104,29 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x6d22: sub_16D22(); break;
         case 0x3a39: sub_13A39(); break;
         case 0x308C: loc_1308C(); break;
-        case 0x39ee: sub_139EE(); break;
-        case 0x091f: sub_1091F(); break;
+        case 0x39ee:
+            sub_139EE(); break; // draw fire
+        case 0x091f: sub_1091F(); break; // draw fire
         case 0x0897: sub_10897(); break;
         case 0x3998: sub_13998(); break;
         case 0x41fb: sub_141FB(); break;
         case 0x1f4d: sub_11F4D(); break;
         case 0x3835: sub_13835(); break;
-        case 0x3b7f: sub_13B7F(); break;
+        case 0x3B76: sub_13B76(); break;
+        //case 0x3b7f: sub_13B7F(); break;
+        case 0x6a0a: sub_16A0A(); break;
+        case 0x25a8: sub_125A8(); break;
+        case 0x6aad: sub_16AAD(); break;
+        case 0x3bdf: sub_13BDF(); break;
+        case 0x6696: sub_16696(); break;
+        case 0x69D0: sub_169D0(); break;
+            
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";
     }
     //_ASSERT(0);
 }
+
+
+

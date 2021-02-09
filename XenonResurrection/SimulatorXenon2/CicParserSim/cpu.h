@@ -349,8 +349,9 @@ void _ror(WORD & b, BYTE l)
 
 void _ror(BYTE& b, BYTE l)
 {
-    _ASSERT(l == 1);
-    b = ror<BYTE>(b);
+    _ASSERT(l >= 0 && l < 8);
+    while (l--)
+        b = ror<BYTE>(b);
 }
 
 void _div(WORD& r)

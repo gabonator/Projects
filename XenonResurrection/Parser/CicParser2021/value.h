@@ -410,6 +410,21 @@ public:
             return;
         }
 
+        if ( CUtils::match("^(byte|word) ptr ds:\\[bp\\-(.+)\\]$", value.c_str(), matches) )
+        {
+            if (matches[0] == "byte")
+                m_eRegLength = r8;
+            else
+                if (matches[0] == "word")
+                    m_eRegLength = r16;
+                else
+                    _ASSERT(0);
+            
+            m_eType = ds_ptr_bp_plus;
+            m_nValue = CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
         if ( CUtils::match("^(byte|word) ptr ds:\\[(.+)\\]$", value.c_str(), matches) )
         {
             if (matches[0] == "byte")
@@ -424,7 +439,6 @@ public:
             m_value = make_shared<CValue>(matches[1]);
             return;
         }
-
 
         if (value.find("bp") != string::npos)
         {

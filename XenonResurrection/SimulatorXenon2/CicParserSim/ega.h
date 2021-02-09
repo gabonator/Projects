@@ -357,7 +357,10 @@ public:
 				_ASSERT(0);
 			}
 		}
-        _ASSERT(0);
+       // _ASSERT(0);
+        std::cout << "Unknown EGA reg\n";
+        return true;
+
 		return false;
 	}
 	
@@ -556,6 +559,9 @@ public:
         }*/
 		dwAddr -= 0xa000 * 16;
 
+//        if (bWrite == 0xff)
+//            bWrite = 0xaa;
+        
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
 

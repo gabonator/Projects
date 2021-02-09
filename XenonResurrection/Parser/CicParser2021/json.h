@@ -477,10 +477,9 @@ private:
 
             CSubstring valueBegin(s);
             
-            
             if (!TraverseAny(s))
             {
-                for (int i=0; i<10; i++)
+                    for (int i=0; i<20; i++)
                     printf("%c", valueBegin[i]);
                 printf("\n");
                 assert(0);

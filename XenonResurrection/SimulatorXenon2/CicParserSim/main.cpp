@@ -12,8 +12,11 @@
 #include <list>
 
 #include "cpu.h"
-void debugPoint(int, int);
+void __debugRect(int, int, int, int);
+void __debugPoint(int, int);
 
+void debugPoint(int, int);
+int __fireptr = 0xffee;
 constexpr WORD appBase = 0x0000; //0x1020;
 
 #include "ega.h"
@@ -594,6 +597,7 @@ void MemData::Set8(WORD seg, WORD ofs, BYTE data)
     if (seg >= 0xa000)
     {
         //_ASSERT(0);
+        //data ^= 0xff;
         memoryVideoSet(seg, ofs, data);
         return;
     }
@@ -652,7 +656,7 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
-    if (segment == 0x2853 && offset == 0xa114+12)
+    if (segment == 0x2853 && offset == __fireptr)
     {
         int f = 9;
     }
@@ -768,10 +772,24 @@ void loadSegment(uint8_t* buffer, const char* suffix, int len)
 
 int dbgx = 0;
 int dbgy = 0;
+int dbgl = 0, dbgt = 0, dbgr = 0, dbgb = 0;
 void debugPoint(int a, int b)
 {
     dbgx = a;
     dbgy = b;
+}
+void __debugPoint(int a, int b)
+{
+    dbgx = a;
+    dbgy = b;
+//    _sync();
+}
+void __debugRect(int a, int b, int c, int d)
+{
+    dbgl = a;
+    dbgt = b;
+    dbgr = c;
+    dbgb = d;
 }
 
 void _sync()
@@ -830,12 +848,18 @@ void _sync()
           //int c = memory(0x2000, x)
       }
 //
-//    if (dbgx > 3 && dbgy > 3 && dbgy < 190)
-//    {
-//        mSdl.SetPixel(dbgx, dbgy,   0xff00ffff);
-//        mSdl.SetPixel(dbgx+1, dbgy, 0xff00ffff);
-//        mSdl.SetPixel(dbgx, dbgy+1, 0xff00ffff);
-//    }
+    if (dbgx > 3 && dbgy > 3 && dbgy < 190)
+    {
+        mSdl.SetPixel(dbgx, dbgy,   0xff00ffff);
+        mSdl.SetPixel(dbgx+1, dbgy, 0xff00ffff);
+        mSdl.SetPixel(dbgx, dbgy+1, 0xff00ffff);
+    }
+    if (dbgr > 0 && dbgl > 0 && dbgt > 0 && dbgb > 0 && dbgb < 200)
+    {
+        for (int y=dbgt; y<dbgb; y+=2)
+        for (int x=dbgl; x<dbgr; x+=2)
+        mSdl.SetPixel(x, y, 0xff00ffff);
+    }
 //
 
     mSdl.Loop();
