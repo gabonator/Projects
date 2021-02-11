@@ -60,12 +60,14 @@ void loc_1308C();
 void sub_141FB();
 void sub_11F4D();
 void sub_13835();
-void sub_13B7F() {_ASSERT(0);}
 void sub_16A0A();
 void sub_125A8();
 void sub_16AAD();
 void sub_16696();
-void sub_169D0() {}
+void sub_169D0();
+void sub_166A6();
+void sub_16AC7() {}
+void sub_16BCA() {}
 
 void _indirectCall(WORD seg, WORD ptr)
 {
@@ -82,7 +84,7 @@ void _indirectCall(WORD seg, WORD ptr)
             sub_137DF(); break;
         case 0x72c4: sub_172C4(); break;
         case 0x758f: sub_1758F(); break;
-        case 0x655b: sub_1655B(); break;
+        case 0x655b: sub_1655B(); break; // enter shop
         case 0x0853: sub_10853(); break;
         case 0x0761: sub_10761(); break;
         case 0x7520: sub_17520(); break;
@@ -93,7 +95,7 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x714A: sub_1714A(); break;
         case 0x08B9: sub_108B9(); break;
         case 0x0f2b: sub_10F2B(); break;
-        case 0x37ca: sub_137CA(); break;
+        case 0x37ca: sub_137CA(); break; // swingtail
 //        case 0x3e1a: /*sub_13E1A();*/ _ASSERT(0); break;
 //        case 0x078B: sub_1078B(); break;
         case 0x1e61: sub_11E61(); break;
@@ -102,25 +104,27 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x3aa7: sub_13AA7(); break;
         case 0x2a6e: sub_12A6E(); break;
         case 0x6d22: sub_16D22(); break;
-        case 0x3a39: sub_13A39(); break;
+        case 0x3a39: sub_13A39(); break; // swingtail hit
         case 0x308C: loc_1308C(); break;
-        case 0x39ee:
-            sub_139EE(); break; // draw fire
+        case 0x39ee: sub_139EE(); break; // draw fire
         case 0x091f: sub_1091F(); break; // draw fire
         case 0x0897: sub_10897(); break;
-        case 0x3998: sub_13998(); break;
-        case 0x41fb: sub_141FB(); break;
-        case 0x1f4d: sub_11F4D(); break;
+
+        case 0x3998: sub_13998(); break; // explosion anim
+        case 0x41fb: sub_141FB(); break; // explosion cleanup
+        case 0x1f4d: sub_11F4D(); break; // tree bulet move
         case 0x3835: sub_13835(); break;
-        case 0x3B76: sub_13B76(); break;
-        //case 0x3b7f: sub_13B7F(); break;
-        case 0x6a0a: sub_16A0A(); break;
-        case 0x25a8: sub_125A8(); break;
+            
+        case 0x3B76: sub_13B76(); break;// tree hit 
+        case 0x6a0a: sub_16A0A(); break;//
+        case 0x25a8: sub_125A8(); break;//
         case 0x6aad: sub_16AAD(); break;
         case 0x3bdf: sub_13BDF(); break;
-        case 0x6696: sub_16696(); break;
-        case 0x69D0: sub_169D0(); break;
-            
+        case 0x6696: sub_16696(); break; // worm hit
+        case 0x69D0: sub_169D0(); break; // worm segment fly
+        case 0x66a6: sub_166A6(); break;
+        case 0x6ac7: sub_16AC7(); break;
+        case 0x6bca: sub_16BCA(); break;
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";

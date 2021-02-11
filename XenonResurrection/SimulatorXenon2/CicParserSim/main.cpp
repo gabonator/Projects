@@ -17,6 +17,7 @@ void __debugPoint(int, int);
 
 void debugPoint(int, int);
 int __fireptr = 0xffee;
+bool __sync = false;
 constexpr WORD appBase = 0x0000; //0x1020;
 
 #include "ega.h"
@@ -232,9 +233,15 @@ void _interrupt(BYTE i)
     if (i == 0x16) // keyboard
     {
         // TODO
-        static int simEnter = 0;
+        static int simEnter = 1;
         if (_ah == 0x00)
         {
+            if (simEnter)
+            {
+                simEnter = 0;
+                _ah = 0x1c;
+                return;
+            }
             /*
             // returns ah = scan code
             // 0x1c=enter, 0x41=F7?, 0x39=space, 0x50=down, 0x4d=right, 0x48=up, 0x4b=left
@@ -246,7 +253,7 @@ void _interrupt(BYTE i)
                 _ah = 0;
             simEnter++;
              */
-            _sync();
+            //_sync();
             if (keyboardBuffer.size() > 0)
             {
                 _ax = keyboardBuffer.front();
@@ -794,6 +801,7 @@ void __debugRect(int a, int b, int c, int d)
 
 void _sync()
 {
+    assert(__sync);
     //memory(_dseg, 0x8f58) = memory(_dseg, 0x8f59);
     /*
     static int calls = 0;

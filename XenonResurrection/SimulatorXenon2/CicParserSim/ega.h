@@ -325,7 +325,17 @@ public:
 				SetMapMask( data>>8); // 3c5.2
 				return true;
 			}
-		}	
+            if ( (data & 0x00ff) == 0x01 )
+            {
+                // clocking mode??
+                return true;
+            }
+            if ( (data & 0x00ff) == 0x08 )
+            {
+                // undocumented??
+                return true;
+            }
+		}
 		if ( port == 0x3d4 )
 		{
 			if ( (data & 0x00ff) == 0x0c )
@@ -587,12 +597,12 @@ public:
 
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
-        static int q = 0;
-        if (q++ > 500)
-        {
-            //_sync();
-            q= 0;
-        }
+//        static int q = 0;
+//        if (q++ > 500)
+//        {
+//            //_sync();
+//            q= 0;
+//        }
     }
 
 	virtual BYTE Read(DWORD dwAddr) override
