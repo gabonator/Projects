@@ -289,6 +289,17 @@ public:
 
             return true;
         }
+        if (_ax == 0x1010)
+        {
+            //http://www.techhelpmanual.com/144-int_10h_1010h__set_one_dac_color_register.html
+            _ASSERT(_bx < 16);
+            int r = _ch * 4;
+            int g = _cl * 4;
+            int b = _dh * 4;
+            palette[_bx] = b | (g << 8) | (r << 16);
+            return true;
+        }
+
         if (_ah == 0x0b)
         {
             std::cout << "set pallete not impl\n";

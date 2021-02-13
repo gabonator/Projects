@@ -1,3 +1,7 @@
+// problem:   memory16set(ds*16+0x2, memory16get(ds*16+0x2) - 0x0000 + flags.carry);
+//         r16[bx] = memory16get(ds*16+(r16[bx] + -8656)&0xffff);
+// imul16, lea as asign! bp=lea	
+//   memory16get(ds*16+0x0) <<= 1;
 /*
 var input = `
 void sub_10661()
@@ -158,6 +162,8 @@ function convert(l)
     l = l.replace(r[0], "r8["+r[1]+"]");
   while (r = l.match(new RegExp("_([abcd]x)")))
     l = l.replace(r[0], "r16["+r[1]+"]");
+  while (r = l.match(new RegExp("_(si|di)")))
+    l = l.replace(r[0], "r16["+r[1]+"]");
   while (r = l.match(new RegExp("_(si|di|ds|es|bp|sp|cs|flags)")))
     l = l.replace(r[0], r[1]);
 
@@ -237,10 +243,16 @@ function convert(l)
   while (r = l.match(new RegExp("\\(char\\)memory")))
     l = l.replace(r[0], "memorys");
 
-  while (r = l.match(new RegExp("\\(short\\)([0-9a-z]*)")))
+  while (r = l.match(new RegExp("= \\(short\\)(.*) \\<")))
+    l = l.replace(r[0], "signed16"+r[1]+" <");
+  while (r = l.match(new RegExp("= \\(char\\)(.*) \\<")))
+    l = l.replace(r[0], "signed8"+r[1]+" <");
+
+  while (r = l.match(new RegExp("\\(short\\)([0-9a-z]+)")))
     l = l.replace(r[0], "signed16("+r[1]+")");
-  while (r = l.match(new RegExp("\\(char\\)\([0-9a-fx]*)")))
+  while (r = l.match(new RegExp("\\(char\\)\([0-9a-fx]+)")))
     l = l.replace(r[0], "signed8("+r[1]+")");
+//!!! signed16bp
 
   if (r = l.match(new RegExp("_rcr\\(r8\\[(.*)\\], (.*)\\)")))
     l = l.replace(r[0], "rcr8("+r[1]+", "+r[2]+")");
@@ -254,6 +266,14 @@ function convert(l)
     l = l.replace(r[0], "xchg16("+r[1]+", "+r[2]+")");
   if (r = l.match(new RegExp("_xchg\\(r8\\[(.*)\\], r8\\[(.*)\\]\\)")))
     l = l.replace(r[0], "xchg8("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_rol\\(r16\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "rol16("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_ror\\(r16\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "ror16("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_rol\\(r8\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "rol8("+r[1]+", "+r[2]+")");
+  if (r = l.match(new RegExp("_ror\\(r8\\[(.*)\\], (.*)\\)")))
+    l = l.replace(r[0], "ror8("+r[1]+", "+r[2]+")");
 
 
   if (r = l.match(new RegExp("(nullsub|sub|loc|off)_.*\\(\\);")))
@@ -264,6 +284,8 @@ function convert(l)
   if (r = l.match(new RegExp("std::")))
     l = "// "+l;
 
+if (l.indexOf("flags.sign = ") != -1)
+  console.log(l);
 //  if (r = l.match(new RegExp("\\{(.*\\(\\)); return; \\}.*")))
 //  {
     
@@ -364,8 +386,8 @@ function cleanupReturn(input)
     }
     if (r = l.match(new RegExp("loc_(.*):")))
     {
-      console.log(l);
-      throw "problem";
+      console.log("Should not use labels: " + l);
+      //throw "problem";
     }
     if (r = l.match(new RegExp("locret_(.*):")))
     {

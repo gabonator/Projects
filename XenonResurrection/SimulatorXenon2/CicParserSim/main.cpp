@@ -287,7 +287,7 @@ void _interrupt(BYTE i)
             mVideo.Interrupt();
             return;
         }
-        if (_ah == 0x0b)
+        if (_ah == 0x0b || _ax == 0x1010)
         {
             mVideo.Interrupt();
             return;
@@ -663,6 +663,11 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
+    if (segment == _dseg && offset == 0xa1ac+58)
+    {
+        int f = 9;
+    }
+
     if (segment == 0x2853 && offset == __fireptr)
     {
         int f = 9;
@@ -689,7 +694,7 @@ BYTE& memory(WORD segment, WORD offset)
     _ASSERT(offset <= 0xffff && offset >= 0);
     
     
-    if (segment == _dseg && offset == 0x8F5B)
+    if (segment == _dseg && offset == 0xa1ac+58)
     {
         int f = 9;
     }
@@ -749,7 +754,7 @@ void onKey(int k, int p)
             if (p && !(memory(_dseg, 0x8f59) & 0x80))
                 memory(_dseg, 0x8F5B) = 0xff;
             break;
-        case SDL_SCANCODE_A: code = 0x10; break;
+        case SDL_SCANCODE_A: memory16(_dseg, 0x9190) -= 0x100; break;
         case SDL_SCANCODE_B: code = 0x20; break;
         case SDL_SCANCODE_C: code = 0x40; break;
             
@@ -801,7 +806,7 @@ void __debugRect(int a, int b, int c, int d)
 
 void _sync()
 {
-    assert(__sync);
+    //assert(__sync);
     //memory(_dseg, 0x8f58) = memory(_dseg, 0x8f59);
     /*
     static int calls = 0;

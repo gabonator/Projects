@@ -305,8 +305,13 @@ string CValue::ToC()
 //            return ss.str();
 
     case CValue::cs_ptr_bx_plus:
-            _ASSERT(m_eRegLength == r16);
-            ss << "memory16(_cs, _bx + " << m_nValue << ")";
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _bx + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _bx + " << m_nValue << ")";
+            else
+                _ASSERT(0);
             return ss.str();
 
         case CValue::cs_ptr_di:
@@ -437,6 +442,9 @@ string CValue::ToC()
             return ss.str();
         case CValue::stack_bp_plus:
             ss << "_stack16(_bp + " << m_nValue << ")";
+            return ss.str();
+        case CValue::stack_bp_plus_di_plus:
+            ss << "_stack16(_bp + _di + " << m_nValue << ")";
             return ss.str();
         case CValue::bp_plus:
             ss << "_bp + " << m_nValue;

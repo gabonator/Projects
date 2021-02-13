@@ -1,7 +1,7 @@
 void sub_1F2BA();
 void sub_14311();
 void sub_14759();
-void sub_1480B();
+void sub_1480B(int pc);
 void sub_14759();
 void sub_172C4();
 void sub_1758F();
@@ -11,6 +11,7 @@ void sub_10853();
 void sub_10761() { /* ret */ }
 void sub_17520();
 void sub_170F1();
+void sub_1705B();
 
 void loc_135CE();
 void sub_16F7F();
@@ -33,12 +34,12 @@ void sub_16EEF() {
         case 2: sub_16F7F(); return;
         case 4: sub_16F00(); return;
         case 6: sub_16FE0(); return;
-        case 8: loc_1705B(); return;
+        case 8: sub_1705B(); return;
     }
 }
 void sub_170F1();
 void sub_141E2();
-void sub_1480B();
+void sub_1480B(int pc);
 void sub_108B9();
 void sub_107A0();
 void sub_10F2B();
@@ -66,8 +67,23 @@ void sub_16AAD();
 void sub_16696();
 void sub_169D0();
 void sub_166A6();
-void sub_16AC7() {}
-void sub_16BCA() {}
+void sub_16AC7();
+void sub_16BCA();
+void sub_12AD0();
+void sub_16E2C();
+void sub_171DD();
+void sub_12A48();
+void sub_1714D();
+void sub_169C8();
+void sub_13246();
+void sub_13A99();
+void sub_17569();
+void sub_1F732();
+void sub_18CA7();
+void sub_17F32();
+void sub_18CA7();
+void sub_17F79();
+void sub_18E01();
 
 void _indirectCall(WORD seg, WORD ptr)
 {
@@ -91,7 +107,7 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x70f1: sub_170F1(); break;
         case 0x6EEF: sub_16EEF(); break;
         case 0x41E2: sub_141E2(); break;
-        case 0x480b: sub_1480B(); break;
+        case 0x480b: sub_1480B(0); break;
         case 0x714A: sub_1714A(); break;
         case 0x08B9: sub_108B9(); break;
         case 0x0f2b: sub_10F2B(); break;
@@ -125,6 +141,27 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x66a6: sub_166A6(); break;
         case 0x6ac7: sub_16AC7(); break;
         case 0x6bca: sub_16BCA(); break;
+        case 0x2ad0: sub_12AD0(); break;
+        //case 0x5e2c: break;
+        case 0x6e2c: sub_16E2C(); break;
+        case 0x71dd: sub_171DD(); break;
+        case 0x2a48: sub_12A48(); break;
+        case 0x714d: sub_1714D(); break;
+        case 0x69C8: sub_169C8(); break;
+        case 0x3246: sub_13246(); break;
+        case 0x3a99: sub_13A99(); break;
+        case 0x7569: sub_17569(); break;
+        //case 0xf732: sub_1F732(); break;
+        case 0x8ca7: sub_18CA7(); break; // zero!
+        case 0x7f32: sub_17F32(); break;
+        case 0x7f79: sub_17F79(); break;
+        case 0x8e01: sub_18E01(); break;
+
+            // 88a9 89ae 8c3e
+//            Not implemented 69c8
+//            Not implemented 3246
+            // 7569, f732 ?, 0x8ca7 (zero flag!!!)
+            // L2: 7f32, 8ca7, 7f79,
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";
