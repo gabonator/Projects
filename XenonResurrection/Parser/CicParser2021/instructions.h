@@ -173,6 +173,7 @@ public:
 		pop,
 		interrupt,
 		div,
+        lods,
 		invalid
 	};
 
@@ -191,7 +192,8 @@ public:
 	static EType GetType(string str)
 	{
 		CheckEnum(push);	CheckEnum(pop);	CheckEnum(div);
-		CheckEnum2("int", interrupt);		
+		CheckEnum2("int", interrupt);
+        CheckEnum(lods);
 		_ASSERT(0);
 		return invalid;
 	}
@@ -255,7 +257,7 @@ public:
 	enum EOperation
 	{
 		stosb, lodsb, stosw, lodsw, movsw, movsb, scasw, scasb,
-        cmpsb,
+        cmpsb, outsb,
 		invalidop
 	};
 
@@ -284,7 +286,7 @@ public:
 		CheckEnum(stosw);	CheckEnum(lodsw);
 		CheckEnum(movsw);	CheckEnum(movsb);
 		CheckEnum(scasw);	CheckEnum(scasb);
-        CheckEnum(cmpsb);
+        CheckEnum(cmpsb);   CheckEnum(outsb);
 		_ASSERT(0);
 		return invalidop;
 	}

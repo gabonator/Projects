@@ -470,6 +470,7 @@ public:
 			case CISingleArgOp::pop: m_strOperation = "$arg = _pop()"; break;
 			case CISingleArgOp::interrupt: m_strOperation = "_interrupt($arg)"; break;
 			case CISingleArgOp::div: m_strOperation = "_div($arg)"; break;
+            case CISingleArgOp::lods: m_strOperation = "_lods($arg)"; break;
 			default:
 				_ASSERT(0);
 		}
@@ -1443,6 +1444,7 @@ public:
 		case CIString::scasb: m_strOperation = "scasb"; break;
 		case CIString::scasw: m_strOperation = "scasw"; break;
         case CIString::cmpsb: m_strOperation = "cmpsb"; break;
+        case CIString::outsb: m_strOperation = "outsb"; break;
 		default:
 			_ASSERT(0);
 		}
@@ -1458,6 +1460,7 @@ public:
 		case CIString::scasb: m_strTemplate = ""; break;
 		case CIString::scasw: m_strTemplate = ""; break;
         case CIString::cmpsb: m_strTemplate = ""; break;
+        case CIString::outsb: m_strTemplate = ""; break;
 		default:
 			_ASSERT(0);
 		}

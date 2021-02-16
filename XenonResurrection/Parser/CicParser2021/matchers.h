@@ -92,7 +92,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
 
-		if ( CUtils::match("^(push|pop|int|div)[\\s]+(.*)$", strLine, arrMatches) )
+		if ( CUtils::match("^(push|pop|int|div|lods)[\\s]+(.*)$", strLine, arrMatches) )
 		{
 			return make_shared<CISingleArgOp>(CISingleArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]));
 		}
@@ -131,7 +131,7 @@ class CIMStringOp : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
 
-		if ( CUtils::match("^(rep|repne|repe)\\s+(stosb|lodsb|stosw|lodsw|movsw|movsb|scasw|scasb|cmpsb)$", strLine, arrMatches) )
+		if ( CUtils::match("^(rep|repne|repe)\\s+(stosb|lodsb|stosw|lodsw|movsw|movsb|scasw|scasb|cmpsb|outsb)$", strLine, arrMatches) )
 		{
 			return make_shared<CIString>(CIString::GetRule(arrMatches[0]), CIString::GetOperation(arrMatches[1]));
 		}
