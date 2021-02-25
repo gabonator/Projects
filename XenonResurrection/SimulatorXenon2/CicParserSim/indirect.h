@@ -85,6 +85,11 @@ void sub_18CA7();
 void sub_17F79();
 void sub_18E01();
 
+void sub_189AE();
+void sub_188A9();
+void sub_18C3E();
+void sub_17DDE();
+
 void _indirectCall(WORD seg, WORD ptr)
 {
     if (seg==_seg000 && ptr==0x002a) //0x000c)
@@ -109,17 +114,15 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x41E2: sub_141E2(); break;
         case 0x480b: sub_1480B(0); break;
         case 0x714A: sub_1714A(); break;
-        case 0x08B9: sub_108B9(); break;
+        case 0x08B9: /*sub_108B9();*/ break; // strom?
         case 0x0f2b: sub_10F2B(); break;
         case 0x37ca: sub_137CA(); break; // swingtail
-//        case 0x3e1a: /*sub_13E1A();*/ _ASSERT(0); break;
-//        case 0x078B: sub_1078B(); break;
         case 0x1e61: sub_11E61(); break;
         case 0x28df: sub_128DF(); break;
         case 0x2ab2: sub_12AB2(); break;
         case 0x3aa7: sub_13AA7(); break;
         case 0x2a6e: sub_12A6E(); break;
-        case 0x6d22: sub_16D22(); break;
+        case 0x6d22: sub_16D22(); break; // tree - animation
         case 0x3a39: sub_13A39(); break; // swingtail hit
         case 0x308C: loc_1308C(); break;
         case 0x39ee: sub_139EE(); break; // draw fire
@@ -157,16 +160,15 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x7f79: sub_17F79(); break;
         case 0x8e01: sub_18E01(); break;
 
-            // 88a9 89ae 8c3e
-//            Not implemented 69c8
-//            Not implemented 3246
-            // 7569, f732 ?, 0x8ca7 (zero flag!!!)
-            // L2: 7f32, 8ca7, 7f79,
+        case 0x89AE: sub_189AE(); break;
+        case 0x88A9: sub_188A9(); break;
+        case 0x8C3E: sub_18C3E(); break;
+        case 0x7DDE: sub_17DDE(); break;
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";
     }
-    //_ASSERT(0);
+
 }
 
 

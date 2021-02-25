@@ -7,7 +7,7 @@ void onKey(int k, int p);
 class CSdl
 {
     enum {
-        Width = 320*2,
+        Width = 320,
         Height = 200
     };
     std::vector< unsigned char > pixels;
@@ -101,7 +101,7 @@ public:
         //const double seconds = ( end - start ) / static_cast< double >( freq );
         //std::cout << "Frame time: " << seconds * 1000.0 << "ms" << std::endl;
         if (running)
-            SDL_Delay(40);
+            SDL_Delay(10);
 
     }
     

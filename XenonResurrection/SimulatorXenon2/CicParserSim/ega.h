@@ -468,6 +468,26 @@ public:
 		return palette[b];
 	}
 
+    DWORD GetPixelA(int x, int y, int base)
+    {
+        BYTE* _video = (BYTE*)memory;
+        DWORD off = (int)y * 40L + ((int)x / 8L);
+        
+        //DWORD mem_addr = off;
+        int mask = 0x80 >> (x % 8);
+
+        //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
+        int page = base;
+    
+        int shift = page*4;
+        BYTE b = 0;
+        if ( _video[shift + off*4 + 0] & mask ) b |= 1;
+        if ( _video[shift + off*4 + 1] & mask ) b |= 2;
+        if ( _video[shift + off*4 + 2] & mask ) b |= 4;
+        if ( _video[shift + off*4 + 3] & mask ) b |= 8;
+        return palette[b];
+    }
+
     virtual void SetPixel(int x, int y, int c) override
     {
         BYTE* _video = (BYTE*)memory;
