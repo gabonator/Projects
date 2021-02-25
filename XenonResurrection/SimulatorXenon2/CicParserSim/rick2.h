@@ -126,6 +126,8 @@ void sub_10FF0();
 void sub_1100E();
 void sub_11022();
 void loc_1109A();
+void sub_11588();
+void sub_115E4();
 void sub_11689();
 void sub_116A9();
 void sub_116BA();
@@ -151,14 +153,16 @@ void sub_11E02();
 void sub_11E29();
 void sub_11E61();
 void sub_11ED3();
+void sub_11F4D();
+void sub_125A8();
 void loc_127E7();
 void sub_128DF();
 void sub_129D7();
-void loc_12A4D();
+void sub_12A48();
 void sub_12A6E();
 void locret_12AAF();
 void sub_12AB2();
-void loc_12ADD();
+void sub_12AD0();
 void sub_12B22();
 void loc_12BC5();
 void sub_12BCC();
@@ -195,6 +199,8 @@ void sub_137A9();
 void sub_137CA();
 void sub_137DF();
 void loc_13809();
+void sub_13835();
+void loc_1387A();
 void sub_13998();
 void sub_1399C();
 void sub_139D3();
@@ -202,7 +208,9 @@ void sub_139EE();
 void sub_13A33();
 void sub_13A36();
 void sub_13A39();
-void locret_13AA6();
+void sub_13A8E();
+void sub_13A94();
+void sub_13A99();
 void sub_13AA7();
 void sub_13AB2();
 void sub_13B55();
@@ -235,7 +243,8 @@ void sub_14871();
 void sub_149F1();
 void sub_149F9();
 void sub_14A06();
-void loc_14A48();
+void sub_14A36();
+void loc_14A4F();
 void sub_14A69();
 void sub_14BC7();
 void loc_14BD4();
@@ -243,7 +252,7 @@ void sub_14C48();
 void sub_14C59();
 void sub_14CAD();
 void sub_14CFA();
-void sub_14D0D(int pc = 0);
+void sub_14D0D();
 void sub_14D38();
 void sub_14E12();
 void sub_14E29();
@@ -302,13 +311,22 @@ void sub_16058();
 void sub_160A5();
 void sub_160EF();
 void sub_1655B();
-void sub_165F6();
+void sub_16696();
+void sub_166A6();
+void sub_16807();
+void sub_16823();
+void sub_169C8();
+void sub_169D0();
+void sub_16A0A();
+void sub_16AAD();
+void sub_16AC7();
+void sub_16BCA();
 void sub_16D22();
+void sub_16E2C();
 void sub_16F00();
 void sub_16F7F();
 void sub_16FE0();
-void loc_1705B();
-void sub_170CA();
+void sub_1705B();
 void sub_170F1();
 void sub_1714A();
 void sub_1714D();
@@ -317,12 +335,21 @@ void sub_172C4();
 void sub_17520();
 void sub_17569();
 void sub_1758F();
-void loc_18B81();
+void sub_17DDE();
+void sub_17F32();
+void sub_17F79();
+void sub_1818C();
+void sub_181BE();
+void loc_181E7();
+void sub_188A9();
+void sub_189AE();
+void sub_18C3E();
 void sub_18C5F();
 void sub_18C85();
-void loc_18CC6();
+void sub_18CA7();
+void loc_18D8E();
 void sub_18DF0();
-void loc_18E72();
+void sub_18E01();
 void sub_19E89();
 void loc_19EB6();
 void sub_19F02();
@@ -331,7 +358,7 @@ void sub_1A027();
 void sub_1A090();
 void sub_1A0E5();
 void loc_1A1F4();
-void sub_1EBD0(int pc = 0);
+void sub_1EBD0();
 void sub_1EC6F();
 void sub_1EDE0();
 void sub_1EE78();
@@ -608,9 +635,6 @@ void sub_24E8B();
 void sub_24EFC();
 void sub_24F05();
 void sub_24F12();
-void sub_115E4();
-void sub_11588();
-
 void sub_10000()
 {
     _ax = _ds;                                  //mov ax, ds
@@ -852,7 +876,7 @@ loc_101B2:                                      //loc_101B2:
     _di = _pop();                               //pop di
     _push(_es);                                 //push es
     _push(_di);                                 //push di
-    _les(_di, _ds, 0x236C);           //les di, dword_2A89C
+    _les(_di, _ds, 0x236C);                     //les di, dword_2A89C
     _stosb<MemAuto, DirAuto>();                 //stosb
     memory16(_ds, 0x236C) = _di;                //mov word ptr dword_2A89C, di
     _di = _pop();                               //pop di
@@ -885,7 +909,7 @@ loc_101FC:                                      //loc_101FC:
     _di &= 0x0fff;                              //and di, 0FFFh
     _push(_es);                                 //push es
     _push(_di);                                 //push di
-    _les(_di, _ds, 0x236C);           //les di, dword_2A89C
+    _les(_di, _ds, 0x236C);                     //les di, dword_2A89C
     _stosb<MemAuto, DirAuto>();                 //stosb
     memory16(_ds, 0x236C) = _di;                //mov word ptr dword_2A89C, di
     _di = _pop();                               //pop di
@@ -1373,7 +1397,6 @@ loc_10605:                                      //loc_10605:
     sub_106FE();                                //call sub_106FE
 loc_10608:                                      //loc_10608:
     _ah = _ah ^ _ah;                            //xor ah, ah
-    //__sync = true; _sync(); __sync = false;
     _interrupt(22);                             //int 16h
     if (_ah == 0x1c)                            //jz short loc_10657
       goto loc_10657;
@@ -1613,7 +1636,6 @@ void sub_107ED()
     _bp <<= 1;                                  //shl bp, 1
     _bp <<= 1;                                  //shl bp, 1
     _indirectCall(_seg000, memory16(_seg000, _bp+0x7FB));
-    //_STOP_("call dword ptr cs:[bp+7FBh]");      //call dword ptr cs:[bp+7FBh]
 }
 
 void sub_1080F()
@@ -1766,7 +1788,7 @@ void sub_10A2F()
     _bp <<= 1;                                  //shl bp, 1
     _bp <<= 1;                                  //shl bp, 1
     _ASSERT(_bp == 12);                         //call cs:off_10A3D[bp]
-    __sync = true;  sub_205AE(); __sync = false;
+    sub_205AE();
 }
 
 void sub_10A51()
@@ -1775,7 +1797,7 @@ void sub_10A51()
     _bp <<= 1;                                  //shl bp, 1
     _bp <<= 1;                                  //shl bp, 1
     _ASSERT(_bp == 12);                         //call cs:off_10A5F[bp]
-    __sync = true;  sub_205AE(); __sync = false;
+    sub_205AE();
 }
 
 void sub_10A73()
@@ -2171,10 +2193,10 @@ void sub_10F5A()
     _bx <<= 1;                                  //shl bx, 1
     _push(memory16(_cs, _bx + 3948));           //push word ptr cs:[bx+0F6Ch]
     _bx = memory16(_ds, 0x8E74);                //mov bx, word_313A4
+    _indirectCall(_cs, _pop());
 //    return;                                     //retn
 //    _STOP_("sp-trace-fail");                    //sub_10F5A endp_failed
 //    _STOP_("continues");                        //db 84h, 62h, 0A8h, 7Ah, 0FAh, 99h, 54h, 0B...
-    sub_10F78();
 }
 
 void sub_10F78()
@@ -2192,7 +2214,7 @@ void sub_10F78()
     _indirectCall(_seg000, _pop());
 }
 
-void sub_10F96()
+void sub_10F96() // warning: returns zero
 {
     WORD _cs = _seg000;
 
@@ -2204,7 +2226,6 @@ void sub_10F96()
 //    return;                                     //retn
 //    _STOP_("sp-trace-fail");                    //sub_10F96 endp_failed
 //    _STOP_("continues");                        //db 4Ah, 71h, 0A7h, 8Ch, 4Bh, 0ACh, 9Ch, 0C...
-    int k = _pop(); _push(k); _ASSERT(k == 0x714A || k == 0x8ca7); // check zero!
     _indirectCall(_cs, _pop());
 }
 
@@ -2238,7 +2259,7 @@ void sub_10FD2()
     _indirectCall(_cs, _pop());
 }
 
-void sub_10FF0() // shop check
+void sub_10FF0()
 {
     WORD _cs = _seg000;
 
@@ -2250,7 +2271,6 @@ void sub_10FF0() // shop check
 //    return;                                     //retn
 //    _STOP_("sp-trace-fail");                    //sub_10FF0 endp_failed
 //    _STOP_("continues");                        //db 5Bh, 65h, 32h, 7Fh, 99h, 9Ah, 55h, 0B5h...
-    int k = _pop(); _push(k); _ASSERT(0x655b == k || 0x7f32 == k);
     _indirectCall(_seg000, _pop());
 }
 
@@ -2447,37 +2467,154 @@ loc_110D7:                                      //loc_110D7:
     _STOP_("db 50h, 1, 3 dup(0), 0E2h, 41h, 0F4h, 14h,...");
     _STOP_("db 0, 5Eh, 54h, 1, 0, 0Eh, 55h, 1, 0, 0BEh...");
     _STOP_("db 6Eh, 56h, 1, 0, 0BEh");          //db 6Eh, 56h, 1, 0, 0BEh
-    _STOP_("byte_1152F db 55h, 1, 0, 0Eh, 55h, 1, 0, 5...");
-    _STOP_("db 41h, 1Ah, 15h, 1Eh, 57h, 1, 0, 0CEh, 57...");
-    _STOP_("db 58h, 1, 0, 2Eh, 59h, 1, 0, 0DEh, 59h, 1...");
-    _STOP_("db 1, 0, 7Eh, 58h, 1, 0, 0CEh, 57h, 1, 3 d...");
-    _STOP_("db 41h, 40h, 15h, 0C0h, 96h, 2 dup(0), 70h...");
-    _STOP_("db 0E4h, 97h, 1, 0, 62h, 98h, 1, 0, 0EAh, ...");
-    _STOP_("db 99h, 1, 0, 18h, 9Ah, 1, 3 dup(0), 0E2h,...");
-    _STOP_("db 56h, 51h, 8Bh, 0C8h, 0E8h, 93h, 0FAh, 5...");
-    _STOP_("db 90h, 0E8h, 0E6h, 0F1h, 5Fh, 0C7h, 4, 0C...");
-    _STOP_("db 2, 98h, 39h, 0C7h, 44h, 4, 53h, 8, 8Bh,...");
-    _STOP_("db 0F7h, 2Bh, 3, 0C1h, 89h, 44h, 12h, 8Bh,...");
-    _STOP_("db 0EDh, 2Bh, 3, 0C3h, 89h, 44h, 16h, 2Eh,...");
-    _STOP_("db 89h, 44h, 0Ch, 2Eh, 8Bh, 46h, 2, 89h, 4...");
-    _STOP_("db 0C5h, 4, 89h, 6Ch, 10h, 83h, 0EDh, 4, 8...");
-    _STOP_("db 49h, 79h, 0B3h, 5Eh, 0C7h, 6, 88h, 8Eh,...");
-    _STOP_("db 6, 8Ah, 8Eh, 6, 0, 0C3h, 56h, 0E8h, 3Ah...");
-    _STOP_("db 96h, 90h, 0E8h, 0A0h, 0F1h, 0BFh, 0F2h,...");
-    _STOP_("db 60h, 0, 0C7h, 44h, 2, 0DFh, 28h, 0C7h, ...");
-    _STOP_("db 8, 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh...");
-    _STOP_("db 44h, 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, ...");
-    _STOP_("db 0E8h, 89h, 2Bh, 5, 0Ah, 0, 89h, 44h, 12...");
-    _STOP_("db 0, 0E8h, 7Dh, 2Bh, 5, 6, 0, 89h, 44h, 1...");
-    _STOP_("db 1Ah, 7, 0, 0FFh, 6, 64h, 91h, 0E8h, 0EC...");
-    _STOP_("db 96h, 90h, 0E8h, 52h, 0F1h, 0BFh, 0B4h, ...");
-    _STOP_("db 18h, 0, 0C7h, 44h, 2, 0DFh, 28h, 0C7h, ...");
-    _STOP_("db 8, 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh...");
-    _STOP_("db 44h, 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, ...");
-    _STOP_("db 0E8h, 3Bh, 2Bh, 5, 0Ah, 0, 89h, 44h, 12...");
-    _STOP_("db 0, 0E8h, 2Fh, 2Bh, 5, 6, 0, 89h, 44h, 1...");
-    _STOP_("db 1Ah, 7, 0, 0FFh, 6, 64h, 91h, 49h, 78h,...");
-    _STOP_("db 0FFh, 5Eh, 0C3h");               //db 0FFh, 5Eh, 0C3h
+    _STOP_("db  55h");                          //db  55h
+    _STOP_("db  0Eh");                          //db  0Eh
+    _STOP_("db  55h");                          //db  55h
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db  54h");                          //db  54h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db  41h");                          //db  41h
+    _STOP_("db  1Ah");                          //db  1Ah
+    _STOP_("db  15h");                          //db  15h
+    _STOP_("db  1Eh");                          //db  1Eh
+    _STOP_("db  57h");                          //db  57h
+    _STOP_("db 0CEh");                          //db 0CEh
+    _STOP_("db  57h");                          //db  57h
+    _STOP_("db  7Eh");                          //db  7Eh
+    _STOP_("db  58h");                          //db  58h
+    _STOP_("db  2Eh");                          //db  2Eh
+    _STOP_("db  59h");                          //db  59h
+    _STOP_("db 0DEh");                          //db 0DEh
+    _STOP_("db  59h");                          //db  59h
+    _STOP_("db  2Eh");                          //db  2Eh
+    _STOP_("db  59h");                          //db  59h
+    _STOP_("db  7Eh");                          //db  7Eh
+    _STOP_("db  58h");                          //db  58h
+    _STOP_("db 0CEh");                          //db 0CEh
+    _STOP_("db  57h");                          //db  57h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db  41h");                          //db  41h
+    _STOP_("db  40h");                          //db  40h
+    _STOP_("db  15h");                          //db  15h
+    _STOP_("db 0C0h");                          //db 0C0h
+    _STOP_("db  96h");                          //db  96h
+    _STOP_("db  70h");                          //db  70h
+    _STOP_("db  97h");                          //db  97h
+    _STOP_("db 0E4h");                          //db 0E4h
+    _STOP_("db  97h");                          //db  97h
+    _STOP_("db  62h");                          //db  62h
+    _STOP_("db  98h");                          //db  98h
+    _STOP_("db 0EAh");                          //db 0EAh
+    _STOP_("db  98h");                          //db  98h
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  99h");                          //db  99h
+    _STOP_("db  18h");                          //db  18h
+    _STOP_("db  9Ah");                          //db  9Ah
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db  41h");                          //db  41h
+    _STOP_("db  66h");                          //db  66h
+    _STOP_("db  15h");                          //db  15h
+}
+
+void sub_11588()
+{
+    WORD _cs = _seg000;
+
+    _push(_si);                                 //push si
+loc_11589:                                      //loc_11589:
+    _push(_cx);                                 //push cx
+    _cx = _ax;                                  //mov cx, ax
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x9096;                               //mov di, 9096h
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    memory16(_ds, _si) = 0x000c;                //mov word ptr [si], 0Ch
+    memory16(_ds, _si + 2) = 0x3998;            //mov word ptr [si+2], 3998h
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    _ax = _dx;                                  //mov ax, dx
+    sub_141A1();                                //call sub_141A1
+    _ax += _cx;                                 //add ax, cx
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = _di;                                  //mov ax, di
+    sub_141A1();                                //call sub_141A1
+    _ax += _bx;                                 //add ax, bx
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _ax = memory16(_cs, _bp + 2);               //mov ax, cs:[bp+2]
+    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
+    _bp += 0x0004;                              //add bp, 4
+    memory16(_ds, _si + 16) = _bp;              //mov [si+10h], bp
+    _bp -= 0x0004;                              //sub bp, 4
+    _ax = _cx;                                  //mov ax, cx
+    _cx = _pop();                               //pop cx
+    _cx -= 1;                                   //dec cx
+    if ((short)_cx >= 0)                        //jns short loc_11589
+      goto loc_11589;
+    _si = _pop();                               //pop si
+    memory16(_ds, 0x8E88) = 0x0006;             //mov word_313B8, 6
+    memory16(_ds, 0x8E8A) = 0x0006;             //mov word_313BA, 6
+}
+
+void sub_115E4()
+{
+    WORD _cs = _seg000;
+
+    _push(_si);                                 //push si
+loc_115E5:                                      //loc_115E5:
+    sub_11022();                                //call sub_11022
+    _di = 0x9096;                               //mov di, 9096h
+    sub_1078E();                                //call sub_1078E
+    _di = 0x11f2;                               //mov di, 11F2h
+    memory16(_ds, _si) = 0x0060;                //mov word ptr [si], 60h
+    memory16(_ds, _si + 2) = 0x28df;            //mov word ptr [si+2], 28DFh
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
+    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
+    _di += 0x0004;                              //add di, 4
+    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
+    _ax = 0x012c;                               //mov ax, 12Ch
+    sub_141A1();                                //call sub_141A1
+    _ax += 0x000a;                              //add ax, 0Ah
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = 0x00b4;                               //mov ax, 0B4h
+    sub_141A1();                                //call sub_141A1
+    _ax += 0x0006;                              //add ax, 6
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    memory16(_ds, _si + 26) = 0x0007;           //mov word ptr [si+1Ah], 7
+    memory16(_ds, 0x9164) += 1;                 //inc word_31694
+    sub_11022();                                //call sub_11022
+    _di = 0x9096;                               //mov di, 9096h
+    sub_1078E();                                //call sub_1078E
+    _di = 0x11b4;                               //mov di, 11B4h
+    memory16(_ds, _si) = 0x0018;                //mov word ptr [si], 18h
+    memory16(_ds, _si + 2) = 0x28df;            //mov word ptr [si+2], 28DFh
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
+    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
+    _di += 0x0004;                              //add di, 4
+    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
+    _ax = 0x012c;                               //mov ax, 12Ch
+    sub_141A1();                                //call sub_141A1
+    _ax += 0x000a;                              //add ax, 0Ah
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = 0x00b4;                               //mov ax, 0B4h
+    sub_141A1();                                //call sub_141A1
+    _ax += 0x0006;                              //add ax, 6
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    memory16(_ds, _si + 26) = 0x0007;           //mov word ptr [si+1Ah], 7
+    memory16(_ds, 0x9164) += 1;                 //inc word_31694
+    _cx -= 1;                                   //dec cx
+    if ((short)_cx < 0)                         //js short loc_11687
+      goto loc_11687;
+    goto loc_115E5;                             //jmp loc_115E5
+loc_11687:                                      //loc_11687:
+    _si = _pop();                               //pop si
 }
 
 void sub_11689()
@@ -2600,7 +2737,7 @@ loc_11709:                                      //loc_11709:
     sub_10BA5();                                //call sub_10BA5
 }
 
-void sub_11827()
+void sub_11827() // draw score
 {
     memory(_ds, 0x8F5C) = 0x00;                 //mov byte_3148C, 0
     memory(_ds, 0x8F5D) = 0xff;                 //mov byte_3148D, 0FFh
@@ -2614,7 +2751,9 @@ void sub_11827()
 loc_11854:                                      //loc_11854:
     memory(_ds, 0x8F5F) = 0x00;                 //mov byte_3148F, 0
     memory(_ds, 0x8F60) = 0x00;                 //mov byte_31490, 0
+    // draw score frame
     sub_109A7();                                //call sub_109A7
+    // draw health
     sub_10A73();                                //call sub_10A73
     memory(_ds, 0x8F61) = 0x00;                 //mov byte_31491, 0
     _si = 0x9f4c;                               //mov si, 9F4Ch
@@ -2633,6 +2772,7 @@ loc_11873:                                      //loc_11873:
     _ax = 0xffff;                               //mov ax, 0FFFFh
     _cx = 0x0140;                               //mov cx, 140h
     _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    // draw score
     sub_116A9();                                //call sub_116A9
     sub_116BA();                                //call sub_116BA
     if (memory(_ds, 0x8F5E) == 0x00)            //jz short loc_118AD
@@ -2830,12 +2970,12 @@ void sub_11A62()
 void sub_11A65()
 {
     _bx = memory16(_ds, 0x8E7A);                //mov bx, word_313AA
-    if (memory(_ds, _bx + -28835) == 0x00)      //jz short loc_11A8E
+    if (memory(_ds, _bx + -28835 + 65536) == 0x00)      //jz short loc_11A8E
       goto loc_11A8E;
     _bx = _bx ^ 0x0001;                         //xor bx, 1
-    if (memory(_ds, _bx + -28835) == 0x00)      //jz short loc_11A84
+    if (memory(_ds, _bx + -28835 + 65536) == 0x00)      //jz short loc_11A84
       goto loc_11A84;
-    if (memory(_ds, _bx + -28833) != 0x00)      //jnz short loc_11A84
+    if (memory(_ds, _bx + -28833 + 65536) != 0x00)      //jnz short loc_11A84
       goto loc_11A84;
     sub_11A19();                                //call sub_11A19
 loc_11A84:                                      //loc_11A84:
@@ -2845,7 +2985,7 @@ loc_11A84:                                      //loc_11A84:
 loc_11A8E:                                      //loc_11A8E:
     sub_11A19();                                //call sub_11A19
     _bx = memory16(_ds, 0x8E7A);                //mov bx, word_313AA
-    if (memory(_ds, _bx + -28833) == 0x00)      //jz short loc_11A84
+    if (memory(_ds, _bx + -28833 + 65536) == 0x00)      //jz short loc_11A84
       goto loc_11A84;
     memory(_ds, 0x8F61) = 0xff;                 //mov byte_31491, 0FFh
     if (memory16(_ds, 0x991C) != 0x0005)        //jnz short loc_11A84
@@ -3045,7 +3185,7 @@ loc_11C76:
     WORD _cs = _seg000;
 
     sub_11C18();                                //call sub_11C18
-    if (_FIXME_)                                //jz short loc_11CC1
+    if (_flags.zero)                                //jz short loc_11CC1
       goto loc_11CC1;
     memory16(_ds, 0xFCC6) = _si;                //mov word_381F6, si
     _si = _di;                                  //mov si, di
@@ -3079,7 +3219,7 @@ locret_11CC9:                                   //locret_11CC9:
     _STOP_("word_11CCA dw 0");                  //word_11CCA dw 0
 }
 
-void sub_11CCC() // boundary check collision
+void sub_11CCC()
 {
     _di = memory16(_ds, 0x9054);                //mov di, word_31584
     memory16(_ds, 0x8EB4) = _ax;                //mov word_313E4, ax
@@ -3089,13 +3229,6 @@ void sub_11CCC() // boundary check collision
 loc_11CDE:                                      //loc_11CDE:
     if (memory16(_ds, _di) == 0x0000)           //jz short loc_11D0C
       goto loc_11D0C;
-    
-    
-//    _flags.zero = true; return; //ggg
-    __debugRect((short)memory16(_ds, _di + 40), (short)memory16(_ds, _di + 42),
-                (short)memory16(_ds, _di + 44), (short)memory16(_ds, _di + 46));
-    __debugPoint(_ax, _bx);
-    
     if ((short)_ax < (short)memory16(_ds, _di + 40))//jl short loc_11CFE
       goto loc_11CFE;
     if ((short)_ax > (short)memory16(_ds, _di + 44))//jg short loc_11CFE
@@ -3274,30 +3407,6 @@ loc_11E5C:                                      //loc_11E5C:
     _flags.zero = false;
 }
 
-void loc_11E98()
-{
-    WORD _cs = _seg000;
-
-    memory16(_ds, 0x8E88) = _dx;                //mov word_313B8, dx
-    memory16(_ds, _si + 2) = 0x28df;            //mov word ptr [si+2], 28DFh
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = memory16(_ds, _di + 18);              //mov ax, [di+12h]
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, _di + 22);              //mov ax, [di+16h]
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _bx = memory16(_ds, _bx);                   //mov bx, [bx]
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _bx += 0x0004;                              //add bx, 4
-    memory16(_ds, _si + 16) = _bx;              //mov [si+10h], bx
-    memory16(_ds, _si + 26) = 0x0007;           //mov word ptr [si+1Ah], 7
-    _si = _di;                                  //mov si, di
-    sub_107C0();                                //call sub_107C0
-    _si = _pop();                               //pop si
-}
-
 void sub_11E61()
 {
     WORD _cs = _seg000;
@@ -3364,6 +3473,111 @@ void sub_11ED3()
     memory16(_ds, _di + 66) = _dx;              //mov [di+42h], dx
     memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
     memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
+}
+
+void sub_11F4D()
+{
+    WORD _cs = _seg000;
+
+    sub_141B1();                                //call sub_141B1
+    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
+    _bx <<= 1;                                  //shl bx, 1
+    _ax = memory16(_cs, _bx + 7949);            //mov ax, cs:[bx+1F0Dh]
+    _imul(memory16(_ds, _si + 66));        //imul word ptr [si+42h]
+    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
+    _ax <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
+    _ax <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = (memory16(_ds, _si + 20) + _ax) >= 0x10000;
+    memory16(_ds, _si + 20) += _ax;
+    memory16(_ds, _si + 18) = memory16(_ds, _si + 18) + _dx + _flags.carry;
+    _ax = memory16(_cs, _bx + 7981);            //mov ax, cs:[bx+1F2Dh]
+    _imul(memory16(_ds, _si + 66));        //imul word ptr [si+42h]
+    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
+    _ax <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
+    _ax <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = (memory16(_ds, _si + 24) + _ax) >= 0x10000;
+    memory16(_ds, _si + 24) += _ax;
+    memory16(_ds, _si + 22) = memory16(_ds, _si + 22) + _dx + _flags.carry;
+    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
+    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
+    if (memory16(_ds, _si + 18) >= 0x0140)      //jnb short loc_11FB0
+      goto loc_11FB0;
+    if (memory16(_ds, _si + 22) >= 0x00c0)      //jnb short loc_11FB0
+      goto loc_11FB0;
+    sub_13589();                                //call sub_13589
+    sub_142AE();                                //call sub_142AE
+    if (_flags.zero)                                //jz short locret_11FB3
+      goto locret_11FB3;
+    if (memory16(_ds, 0x9188) != 0x0000)        //jnz short loc_11FB0
+      goto loc_11FB0;
+    _ax = 0x0004;                               //mov ax, 4
+    sub_13C4F();                                //call sub_13C4F
+    memory16(_ds, 0x9F04) = 0x08b9;             //mov word_32434, 8B9h
+loc_11FB0:                                      //loc_11FB0:
+    sub_107C0();                                //call sub_107C0
+locret_11FB3:                                   //locret_11FB3:
+    return;
+}
+
+void sub_125A8()
+{
+    _di = memory16(_ds, _si + 68);              //mov di, [si+44h]
+    _bp = memory16(_ds, _di + 10);              //mov bp, [di+0Ah]
+    if (_bp == _si)                             //jz short loc_12624
+      goto loc_12624;
+loc_125B2:                                      //loc_125B2:
+    if (memory16(_ds, _bp + 4) != 0x0761)       //jnz short loc_125CD
+      goto loc_125CD;
+    _bp = memory16(_ds, _bp + 10);              //mov bp, ds:[bp+0Ah]
+    if (_bp != _si)                             //jnz short loc_125B2
+      goto loc_125B2;
+    memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
+    memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
+    return;                                     //retn
+loc_125CD:                                      //loc_125CD:
+    _ax = memory16(_ds, _bp + 40);              //mov ax, ds:[bp+28h]
+    _bx = memory16(_ds, _bp + 42);              //mov bx, ds:[bp+2Ah]
+    _cx = memory16(_ds, _bp + 44);              //mov cx, ds:[bp+2Ch]
+    _dx = memory16(_ds, _bp + 46);              //mov dx, ds:[bp+2Eh]
+loc_125DD:                                      //loc_125DD:
+    _bp = memory16(_ds, _bp + 10);              //mov bp, ds:[bp+0Ah]
+    if (_si == _bp)                             //jz short loc_12617
+      goto loc_12617;
+    if (memory16(_ds, _bp + 4) == 0x0761)       //jz short loc_125DD
+      goto loc_125DD;
+    if ((short)_ax <= (short)memory16(_ds, _bp + 40))//jle short loc_125F7
+      goto loc_125F7;
+    _ax = memory16(_ds, _bp + 40);              //mov ax, ds:[bp+28h]
+loc_125F7:                                      //loc_125F7:
+    if ((short)_bx <= (short)memory16(_ds, _bp + 42))//jle short loc_12601
+      goto loc_12601;
+    _bx = memory16(_ds, _bp + 42);              //mov bx, ds:[bp+2Ah]
+loc_12601:                                      //loc_12601:
+    if ((short)_cx >= (short)memory16(_ds, _bp + 44))//jge short loc_1260B
+      goto loc_1260B;
+    _cx = memory16(_ds, _bp + 44);              //mov cx, ds:[bp+2Ch]
+loc_1260B:                                      //loc_1260B:
+    if ((short)_dx >= (short)memory16(_ds, _bp + 46))//jge short loc_125DD
+      goto loc_125DD;
+    _dx = memory16(_ds, _bp + 46);              //mov dx, ds:[bp+2Eh]
+    goto loc_125DD;                             //jmp short loc_125DD
+loc_12617:                                      //loc_12617:
+    memory16(_ds, _di + 40) = _ax;              //mov [di+28h], ax
+    memory16(_ds, _di + 42) = _bx;              //mov [di+2Ah], bx
+    memory16(_ds, _di + 44) = _cx;              //mov [di+2Ch], cx
+    memory16(_ds, _di + 46) = _dx;              //mov [di+2Eh], dx
+    return;                                     //retn
+loc_12624:                                      //loc_12624:
+    _push(_di);                                 //push di
+    sub_107C0();                                //call sub_107C0
+    _si = _pop();                               //pop si
+    sub_107C0();                                //call sub_107C0
 }
 
 void loc_127E7()
@@ -3471,7 +3685,7 @@ loc_128C2:                                      //loc_128C2:
 loc_128CF:                                      //loc_128CF:
     sub_13589();                                //call sub_13589
     sub_11BEA();                                //call sub_11BEA
-    if (_FIXME_)                                //jz short locret_128DE
+    if (_flags.zero)                                //jz short locret_128DE
       goto locret_128DE;
     _ax = memory16(_cs, 0x13DA4);               //mov ax, word ptr cs:unk_13DA4
 {sub_13A36(); return; };                        //
@@ -3523,14 +3737,15 @@ loc_12937:                                      //loc_12937:
     memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
     _ax = 0x00a0;                               //mov ax, 0A0h
     _ax = _ax - memory16(_ds, _si + 18);        //sub ax, [si+12h]
-    //_ax = _ax * _al;                            //imul ax
+//    _ax = _ax * _al;                            //imul ax
     _imul(_ax);
     _bx = _ax;                                  //mov bx, ax
     _cx = _dx;                                  //mov cx, dx
     _ax = 0x0064;                               //mov ax, 64h
     _ax = _ax - memory16(_ds, _si + 22);        //sub ax, [si+16h]
-    //_ax = _ax * _al;                            //imul ax
+//    _ax = _ax * _al;                            //imul ax
     _imul(_ax);
+
     _flags.carry = (_ax + _bx) >= 0x10000;      //add ax, bx
     _ax += _bx;
     _dx = _dx + _cx + _flags.carry;             //adc dx, cx
@@ -3589,7 +3804,7 @@ loc_129B5:                                      //loc_129B5:
 loc_129CF:                                      //loc_129CF:
     memory16(_ds, 0x8E88) = _ax;                //mov word_313B8, ax
     _push(_si);                                 //push si
-    _indirectCall(_cs, _di);                    //call di
+    _indirectCall(_cs, memory16(_ds, _di));                    //call di
     _si = _pop();                               //pop si
 }
 
@@ -3597,7 +3812,7 @@ void sub_129D7()
 {
     if (_ax != 0x0044)                          //jnz short loc_129DF
       goto loc_129DF;
-    _STOP_("goto loc_1308C");                   //jmp loc_1308C  --level2
+    _STOP_("goto loc_1308C");                   //jmp loc_1308C
 loc_129DF:                                      //loc_129DF:
     if (_ax != 0x0098)                          //jnz short loc_129E7
       goto loc_129E7;
@@ -3654,18 +3869,16 @@ locret_12A47:                                   //locret_12A47:
     return;
 }
 
-void loc_12A4D()
+void sub_12A48()
 {
-loc_12A4D:
+    memory16(_ds, 0x9186) += 0x0014;            //add word_316B6, 14h
+loc_12A4D:                                      //loc_12A4D:
     memory16(_ds, 0x8E88) = 0x0012;             //mov word_313B8, 12h
     if ((short)memory16(_ds, 0x9186) <= (short)0x0027)
       goto loc_12A60;
     memory16(_ds, 0x9186) = 0x0027;             //mov word_316B6, 27h
 loc_12A60:                                      //loc_12A60:
     memory(_ds, 0x8FAF) = 0xff;                 //mov byte_314DF, 0FFh
-    return;                                     //retn
-    memory16(_ds, 0x9186) += 0x0028;            //add word_316B6, 28h
-    goto loc_12A4D;                             //jmp short loc_12A4D
 }
 
 void sub_12A6E()
@@ -3711,9 +3924,12 @@ locret_12ABD:                                   //locret_12ABD:
     return;
 }
 
-void loc_12ADD()
+void sub_12AD0()
 {
-loc_12ADD:
+    memory16(_ds, 0x8E88) = 0x000b;             //mov word_313B8, 0Bh
+    sub_10EB3();                                //call sub_10EB3
+    _di = memory16(_ds, 0x9054);                //mov di, word_31584
+loc_12ADD:                                      //loc_12ADD:
     _ax = memory16(_ds, _di);                   //mov ax, [di]
     if (!(_ax & _ax))                           //jz short loc_12AFE
       goto loc_12AFE;
@@ -4200,10 +4416,10 @@ loc_13018:                                      //loc_13018:
     return;                                     //retn
 }
 
-void loc_1308C() {
+void loc_1308C()                                      //loc_1308C:
+{
     WORD _cs = _seg000;
 
-loc_1308C:                                      //loc_1308C:
     if (memory16(_ds, 0x9148) != 0x0044)        //jnz short loc_13096
       goto loc_13096;
     _STOP_("goto loc_12EF8");                   //jmp loc_12EF8
@@ -4371,7 +4587,7 @@ void sub_13246()
 
     _ax = 0x0034;                               //mov ax, 34h
     sub_13117();                                //call sub_13117
-    if (!_flags.zero)                                //jnz short loc_13251
+    if (_FIXME_)                                //jnz short loc_13251
       goto loc_13251;
 {sub_13319(); return; };                        //
 loc_13251:                                      //loc_13251:
@@ -4557,7 +4773,7 @@ loc_13433:                                      //loc_13433:
     _bx = memory16(_ds, _di + 6);               //mov bx, [di+6]
     _bx -= 1;                                   //dec bx
     _bx <<= 1;                                  //shl bx, 1
-    _bx = memory16(_ds, _bx + -8656);           //mov bx, [bx-21D0h]
+    _bx = memory16(_ds, _bx + -8656 + 65536);           //mov bx, [bx-21D0h]
     memory16(_ds, _si + 56) = _bx;              //mov [si+38h], bx
     if (memory16(_ds, _bx) != 0x000a)           //jnz short loc_13461
       goto loc_13461;
@@ -4670,6 +4886,7 @@ void sub_13529()
     sub_1077C();                                //call sub_1077C
     _di = _pop();                               //pop di
     goto loc_13541;                             //jmp short loc_13541
+loc_13536:                                      //loc_13536:
     sub_11022();                                //call sub_11022
     _push(_di);                                 //push di
     _di = 0x90e2;                               //mov di, 90E2h
@@ -5027,7 +5244,7 @@ void sub_137CA()
 {sub_13589(); return; };                        //
 }
 
-void sub_137DF() // fire
+void sub_137DF()
 {
     if (memory16(_ds, 0x8E80) == 0x0000)        //jz short loc_137E7
       goto loc_137E7;
@@ -5047,8 +5264,6 @@ locret_13800:                                   //locret_13800:
 
 void loc_13809()
 {
-    WORD _cs = _seg000;
-
     if (memory(_ds, 0x8FAE) == 0x00)            //jz short locret_13834
       goto locret_13834;
     _ax = 0xfff7;                               //mov ax, 0FFF7h
@@ -5064,7 +5279,11 @@ void loc_13809()
     _bp = 0x12be;                               //mov bp, 12BEh
     sub_145F4();                                //call sub_145F4
 locret_13834:                                   //locret_13834:
-    return;                                     //retn
+    return;
+}
+
+void sub_13835()
+{
     sub_141B1();                                //call sub_141B1
     _ax = memory16(_ds, 0x9F12);                //mov ax, word_32442
     memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
@@ -5085,11 +5304,13 @@ loc_1384E:                                      //loc_1384E:
     _bp = 0x12c4;                               //mov bp, 12C4h
     sub_145F4();                                //call sub_145F4
 locret_13871:                                   //locret_13871:
-    return;                                     //retn
-    if (memory16(_ds, 0x8E80) == 0x0000)        //jz short loc_1387A
-      goto loc_1387A;
-    return;                                     //retn
-loc_1387A:                                      //loc_1387A:
+    return;
+}
+
+void loc_1387A()
+{
+    WORD _cs = _seg000;
+
     if ((short)memory16(_ds, _si + 72) < 0 /*CHECK*/)//js short loc_13883
       goto loc_13883;
     memory16(_ds, _si + 72) -= 1;               //dec word ptr [si+48h]
@@ -5231,6 +5452,8 @@ loc_139B6:                                      //loc_139B6:
       _STOP_("goto loc_139D3");
 loc_139CF:                                      //loc_139CF:
     sub_107C0();                                //call sub_107C0
+    _STOP_("sp-trace-fail");                    //sub_1399C endp_failed
+    _STOP_("continues");                        //sub_139D3 proc near
 }
 
 void sub_139D3()
@@ -5241,7 +5464,7 @@ void sub_139D3()
       _STOP_("goto nullsub_5");
     sub_13589();                                //call sub_13589
     sub_11BEA();                                //call sub_11BEA
-    if (_FIXME_)                                //jz short nullsub_5
+    if (_flags.zero)                                //jz short nullsub_5
       _STOP_("goto nullsub_5");
     _ax = memory16(_ds, _si + 52);              //mov ax, [si+34h]
     _ax = _ax + memory16(_cs, 0x3DAC);          //add ax, cs:word_13DAC
@@ -5249,7 +5472,7 @@ void sub_139D3()
 {sub_13A36(); return; };                        //
 }
 
-void sub_139EE() // collision
+void sub_139EE()
 {
     WORD _cs = _seg000;
 
@@ -5272,7 +5495,7 @@ loc_13A16:                                      //loc_13A16:
     _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
     sub_11CCC();                                //call sub_11CCC
     if (_flags.zero)                                //jz short locret_13A2E
-      goto locret_13A2E; // hit test
+      goto locret_13A2E;
     _ax = memory16(_ds, _si + 52);              //mov ax, [si+34h]
     _ax = _ax + memory16(_cs, 0x3DAA);          //add ax, cs:word_13DAA
     sub_107C0();                                //call sub_107C0
@@ -5293,8 +5516,8 @@ void sub_13A33()
 
 void sub_13A36()
 {
-    _indirectCall(_seg000, memory16(_ds, _di+6));
 //    _STOP_("goto word ptr [di+6]");             //jmp word ptr [di+6]
+    _indirectCall(_seg000, memory16(_ds, _di+6));
 }
 
 void sub_13A39()
@@ -5346,11 +5569,30 @@ loc_13A8C:                                      //loc_13A8C:
     _di = _pop();                               //pop di
 }
 
-void locret_13AA6()
+void sub_13A8E()
 {
+    memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
 }
 
-void sub_13AA7()
+void sub_13A94()
+{
+    memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
+    _STOP_("sp-trace-fail");                    //sub_13A94 endp_failed
+    _STOP_("continues");                        //sub_13A99 proc near
+}
+
+void sub_13A99()
+{
+    if (memory16(_ds, _si) == 0x0000)           //jz short locret_13AA6
+      goto locret_13AA6;
+    if (memory16(_ds, _si) == 0x0008)           //jz short locret_13AA6
+      goto locret_13AA6;
+    sub_107C0();                                //call sub_107C0
+locret_13AA6:                                   //locret_13AA6:
+    return;
+}
+
+void sub_13AA7() // hittest?
 {
     memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
     _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
@@ -5550,7 +5792,7 @@ locret_13C4E:                                   //locret_13C4E:
     return;
 }
 
-void sub_13C4F()
+void sub_13C4F() // hit
 {
     if (memory(_ds, 0x8F56) != 0x00)            //jnz short locret_13C74
       goto locret_13C74;
@@ -5561,10 +5803,13 @@ void sub_13C4F()
     _ax >>= 1;                                  //shr ax, 1
 loc_13C66:                                      //loc_13C66:
     memory(_ds, 0x8FAF) = 0xff;                 //mov byte_314DF, 0FFh
+    _flags.carry2 = memory16(_ds, 0x9186) > _ax;
     memory16(_ds, 0x9186) -= _ax;               //sub word_316B6, ax
-    if (memory16(_ds, 0x9186) > 0)                                //ja short locret_13C74
+    if (_flags.carry2)                                //ja short locret_13C74
       goto locret_13C74;
-    sub_13C01();                                //call sub_13C01
+    std::cout << "----- skip die\n";
+    memory16(_ds, 0x9186) = 0x27;
+    //sub_13C01();                                //call sub_13C01
 locret_13C74:                                   //locret_13C74:
     return;
 }
@@ -5653,7 +5898,7 @@ loc_13D75:                                      //loc_13D75:
     _si = 0x3d8f;                               //mov si, 3D8Fh
     memory(_cs, 0x3D9B) = _al;                  //mov cs:byte_13D9B, al
 loc_13D81:                                      //loc_13D81:
-    if (_al == memory(_cs, _si))              //jz short loc_13D8B
+    if (_al == memory16(_cs, _si))              //jz short loc_13D8B
       goto loc_13D8B;
     _si += 0x0003;                              //add si, 3
     goto loc_13D81;                             //jmp short loc_13D81
@@ -5842,7 +6087,7 @@ loc_13FAA:                                      //loc_13FAA:
     goto loc_13D26;                             //jmp loc_13D26
 loc_13FB4:                                      //loc_13FB4:
     if (memory(_ds, 0x8FB0) != 0x00)            //jnz short loc_13FC8
-      goto loc_13FC8; // enter shop
+      goto loc_13FC8;
     if (memory(_ds, 0x8F61) == 0x00)            //jz short loc_13FC5
       goto loc_13FC5;
     goto loc_140A7;                             //jmp loc_140A7
@@ -6029,7 +6274,7 @@ void sub_141A1()
     _dx = _pop();                               //pop dx
 }
 
-void sub_141B1() // animation
+void sub_141B1()
 {
     WORD _cs = _seg000;
 
@@ -6044,7 +6289,7 @@ void sub_141B1() // animation
     if (_ax & _ax)                              //jnz short loc_141CC
       goto loc_141CC;
     _di += 0x0002;                              //add di, 2
-    //_STOP_("goto word ptr cs:[di-2]");          //jmp word ptr cs:[di-2]
+//    _STOP_("goto word ptr cs:[di-2]");          //jmp word ptr cs:[di-2]
     _indirectCall(_cs, memory16(_cs, _di-2));
     return;
 loc_141CC:                                      //loc_141CC:
@@ -6102,7 +6347,7 @@ void sub_1421C()
     _dx <<= _cl;                                //shl dx, cl
     _bx = _ax;                                  //mov bx, ax
     _bx <<= 1;                                  //shl bx, 1
-    _ax = memory16(_ds, _bx + 12422);           //mov ax, [bx+3086h]
+    _ax = memory16(_ds, (_bx + 12422) & 65535);           //mov ax, [bx+3086h]
     _cx = 0x0030;                               //mov cx, 30h
     _bp = _dx;                                  //mov bp, dx
 loc_14232:                                      //loc_14232:
@@ -6207,9 +6452,11 @@ void sub_142EB()
       goto loc_1430E;
     _ax = _ax ^ _ax;                            //xor ax, ax
     _ax -= 1;                                   //dec ax
+    _flags.zero = false;
     return;                                     //retn
 loc_1430E:                                      //loc_1430E:
     _ax = _ax ^ _ax;                            //xor ax, ax
+    _flags.zero = true;
 }
 
 void sub_14311()
@@ -6249,7 +6496,7 @@ loc_14356:                                      //loc_14356:
     _ax += 0x0080;                              //add ax, 80h
     memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
     sub_11BEA();                                //call sub_11BEA
-    if (_FIXME_)                                //jz short loc_1437C
+    if (_flags.zero)                                //jz short loc_1437C
       goto loc_1437C;
     sub_13A33();                                //call sub_13A33
 loc_1437C:                                      //loc_1437C:
@@ -6500,7 +6747,7 @@ locret_145F3:                                   //locret_145F3:
     return;
 }
 
-void sub_145F4() /// new fire
+void sub_145F4()
 {
     WORD _cs = _seg000;
 
@@ -6533,11 +6780,6 @@ loc_14613:                                      //loc_14613:
     memory16(_ds, _di + 2) = 0x39ee;            //mov word ptr [di+2], 39EEh
     memory16(_ds, _di + 4) = 0x091f;            //mov word ptr [di+4], 91Fh
     _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
-//    if (_ax == 0x4546)
-//    {
-//        __fireptr = _di+40;
-//        std::cout << "fire " << (int)(_di+12) << "\n";
-//    }
     memory16(_ds, _di + 12) = _ax;              //mov [di+0Ch], ax
     memory16(_ds, _di + 14) = 0x0000;           //mov word ptr [di+0Eh], 0
     memory16(_ds, _di + 26) = 0x0000;           //mov word ptr [di+1Ah], 0
@@ -6619,8 +6861,9 @@ loc_14709:                                      //loc_14709:
     return;                                     //retn
 loc_14717:                                      //loc_14717:
     _ax = memory16(_ds, 0x9132);                //mov ax, word_31662
+    _flags.carry2 = memory16(_ds, 0x912E) > _ax;
     memory16(_ds, 0x912E) -= _ax;               //sub word_3165E, ax
-    if (memory16(_ds, 0x912E) > 0)                                //jg short locret_1472C
+    if (_flags.carry2)                                //jg short locret_1472C
       goto locret_1472C;
     _ax = memory16(_ds, 0x9130);                //mov ax, word_31660
     memory16(_ds, 0x912E) += _ax;               //add word_3165E, ax
@@ -6706,13 +6949,11 @@ loc_147B6:                                      //loc_147B6:
     _di -= _bx;                                 //sub di, bx
     _bp = _ax;                                  //mov bp, ax
     _ax = memory16(_ds, 0x991E);                //mov ax, word_31E4E
-    //_ax = _cx * _al;                            //imul cx
-    _imul(_cx);
+    _imul(_cx);                            //imul cx
     _ax += _bp;                                 //add ax, bp
     memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
     _ax = memory16(_ds, 0x991E);                //mov ax, word_31E4E
-    //_ax = _di * _al;                            //imul di
-    _imul(_di);
+    _imul(_di);                            //imul di
     _ax += _bx;                                 //add ax, bx
     memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
     return;                                     //retn
@@ -6738,9 +6979,7 @@ void sub_147E9()
 
 void sub_1480B(int pc)
 {
-    if (pc == 0x1480e)
-        goto loc_1480E;
-    
+    _ASSERT(pc == 0);
     sub_141B1();                                //call sub_141B1
 loc_1480E:                                      //loc_1480E:
     sub_14865();                                //call sub_14865
@@ -6842,6 +7081,45 @@ loc_1489E:                                      //loc_1489E:
     memory16(_ds, 0xFCF8) = _dx;                //mov word_38228, dx
     goto loc_1492D;                             //jmp short loc_1492D
 loc_148DE:                                      //loc_148DE:
+    /*
+    _bx = memory16(_ds, 0xFCEE);                //mov bx, word_3821E
+    _ah = memory(_cs, _bx + _di);               //mov ah, cs:[bx+di]
+    _cwd();                                     //cwd
+    _flags.carry = !!(_ah & 0x80);              //shl ah, 1
+    _ah <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = !!(_ah & 0x80);              //shl ah, 1
+    _ah <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = (memory(_ds, 0xFCE9) + _ah) >= 0x100;
+    memory(_ds, 0xFCE9) += _ah;
+    memory16(_ds, 0xFCE6) = memory16(_ds, 0xFCE6) + _dx + _flags.carry;
+    _ah = memory(_cs, _bx + _di + 64);          //mov ah, cs:[bx+di+40h]
+    _cwd();                                     //cwd
+    _flags.carry = !!(_ah & 0x80);              //shl ah, 1
+    _ah <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = !!(_ah & 0x80);              //shl ah, 1
+    _ah <<= 1;
+    _rcl(_dx, 1);                               //rcl dx, 1
+    _flags.carry = (memory(_ds, 0xFCE5) + _ah) >= 0x100;
+    memory(_ds, 0xFCE5) += _ah;
+    memory16(_ds, 0xFCE2) = memory16(_ds, 0xFCE2) + _dx + _flags.carry;
+    _ax = memory16(_ds, 0xFCF2);                //mov ax, word_38222
+    
+    _flags.carry = (memory16(_ds, 0xFCF0) + _ax) >= 0x10000;
+    memory16(_ds, 0xFCF0) += _ax;               //add word_38220, ax
+    _ax = memory16(_ds, 0xFCF4);                //mov ax, word_38224
+    memory16(_ds, 0xFCEE) = memory16(_ds, 0xFCEE) + _ax + _flags.carry;
+    memory16(_ds, 0xFCEE) &= 0x00ff;            //and word_3821E, 0FFh
+    _ax = memory16(_ds, 0xFCF6);                //mov ax, word_38226
+    
+    _flags.carry = (memory16(_ds, 0xFCF2) + _ax) >= 0x10000;
+    
+    memory16(_ds, 0xFCF2) += _ax;               //add word_38222, ax
+    _ax = memory16(_ds, 0xFCF8);                //mov ax, word_38228
+    memory16(_ds, 0xFCF4) = memory16(_ds, 0xFCF4) + _ax + _flags.carry;
+     */
     _bx = memory16(_ds, 0xFCEE);                //mov bx, word_3821E
     _ah = memory(_cs, _bx + _di);               //mov ah, cs:[bx+di]
     _cwd();                                     //cwd
@@ -6880,7 +7158,7 @@ loc_148DE:                                      //loc_148DE:
     memory16(_ds, 0xFCF2) += _ax;               //add word_38222, ax
     _ax = memory16(_ds, 0xFCF8);                //mov ax, word_38228
     memory16(_ds, 0xFCF4) = memory16(_ds, 0xFCF4) + _ax + _flags.carry;
-    
+
 loc_1492D:                                      //loc_1492D:
     memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
     if ((short)memory16(_ds, 0xFCFE) < 0)       //js short loc_1496E
@@ -6932,9 +7210,7 @@ loc_1499F:                                      //loc_1499F:
       case 0: goto loc_149B5;
       case 2: goto loc_14A06;
       case 4: goto loc_14A36;
-//      case 6: goto loc_14A4F;
       case 8: goto loc_149F9;
-//      case 10: goto loc_149F1;
       default:
         _ASSERT(0);
     }
@@ -6978,7 +7254,7 @@ loc_149E3:                                      //loc_149E3:
     if (_di & _di)                              //jnz short loc_149E3
       goto loc_149E3;
     return;
-
+    
 loc_14A06:
     _ax = memory16(_ds, _di + 2);               //mov ax, [di+2]
     memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
@@ -7039,15 +7315,42 @@ void sub_149F9()
 
 void sub_14A06()
 {
-    _ASSERT(0);
+    _ax = memory16(_ds, _di + 2);               //mov ax, [di+2]
+    memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
+    memory16(_ds, _si + 30) = 0x0000;           //mov word ptr [si+1Eh], 0
+    _ax = memory16(_ds, _di + 4);               //mov ax, [di+4]
+    _cwd();                                     //cwd
+    _dl = _ah;                                  //mov dl, ah
+    _ah = _al;                                  //mov ah, al
+    _al = _al ^ _al;                            //xor al, al
+    memory16(_ds, _si + 60) = _ax;              //mov [si+3Ch], ax
+    memory16(_ds, _si + 62) = _dx;              //mov [si+3Eh], dx
+    _ax = memory16(_ds, _di + 6);               //mov ax, [di+6]
+    memory16(_ds, _si + 64) = _ax;              //mov [si+40h], ax
+    _ax = memory16(_ds, _di + 8);               //mov ax, [di+8]
+    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
+    _di += 0x000a;                              //add di, 0Ah
+    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
+    _STOP_("goto loc_1489E");                   //jmp loc_1489E
 }
 
-void loc_14A48()
+void sub_14A36()
 {
+    _ax = memory16(_ds, _di + 2);               //mov ax, [di+2]
+    _di += 0x0004;                              //add di, 4
+    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
+    memory16(_ds, 0xFCFE) -= _ax;               //sub word_3822E, ax
+    if (_FIXME_)                                //jle short loc_14A48
+      goto loc_14A48;
+    _STOP_("goto loc_1499F");                   //jmp loc_1499F
+loc_14A48:                                      //loc_14A48:
     _ax = memory16(_ds, 0xFCFE);                //mov ax, word_3822E
     memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
-    return;                                     //retn
-loc_14A4F:                                      //loc_14A4F:
+}
+
+void loc_14A4F()
+{
+loc_14A4F:
     sub_14191();                                //call sub_14191
     _ax &= 0x000e;                              //and ax, 0Eh
     _bx = _ax;                                  //mov bx, ax
@@ -7157,8 +7460,8 @@ loc_14B8E:                                      //loc_14B8E:
       goto loc_14BC0;
     _ax = memory16(_ds, 0x3048);                //mov ax, word_2B578
 loc_14BAB:                                      //loc_14BAB:
-//    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
-//      goto loc_14BAB;
+    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
+      goto loc_14BAB;
     sub_10985();                                //call sub_10985
     sub_1080F();                                //call sub_1080F
     sub_10A51();                                //call sub_10A51
@@ -7172,9 +7475,9 @@ void sub_14BC7()
 {
     _ax = memory16(_ds, 0x3046);                //mov ax, word_2B576
     _ax += 0x0009;                              //add ax, 9
-//loc_14BCD:                                      //loc_14BCD:
-//    if (_ax != memory16(_ds, 0x3046))           //jnz short loc_14BCD
-//      goto loc_14BCD;
+loc_14BCD:                                      //loc_14BCD:
+    if (_ax != memory16(_ds, 0x3046))           //jnz short loc_14BCD
+      goto loc_14BCD;
 }
 
 void loc_14BD4()
@@ -7308,16 +7611,13 @@ void sub_14CFA()
     _dx = 0x0004;                               //mov dx, 4
     _si = 0xb144;                               //mov si, 0B144h
     if (!(memory16(_ds, 0x8F3C) & 0x0004))      //jz short loc_14D1E
-    {sub_14D0D(0x14D1E); return;}
+      _STOP_("goto loc_14D1E");
     _si = 0xb1ae;                               //mov si, 0B1AEh
-    {sub_14D0D(0x14D1E); return;}                   //jmp short loc_14D1E
+    _STOP_("goto loc_14D1E");                   //jmp short loc_14D1E
 }
 
-void sub_14D0D(int pc)
+void sub_14D0D()
 {
-    if (pc == 0x14D1E)
-        goto loc_14D1E;
-    
     _dx = 0x006d;                               //mov dx, 6Dh
     _si = 0xb144;                               //mov si, 0B144h
     if (!(memory16(_ds, 0x8F3E) & 0x0004))      //jz short loc_14D1E
@@ -7558,7 +7858,7 @@ loc_14F27:                                      //loc_14F27:
     goto loc_14E93;                             //jmp loc_14E93
 loc_14F37:                                      //loc_14F37:
     sub_14FE3();                                //call sub_14FE3
-    if (_flags.zero)                                //jz short loc_14F80
+    if (_FIXME_)                                //jz short loc_14F80
       goto loc_14F80;
     sub_1576D();                                //call sub_1576D
     _si = 0x3952;                               //mov si, 3952h
@@ -7571,7 +7871,7 @@ loc_14F37:                                      //loc_14F37:
     _si = memory16(_ds, 0x39B4);                //mov si, word_2BEE4
     _bx = memory16(_ds, _si + 6);               //mov bx, [si+6]
     _bx <<= 1;                                  //shl bx, 1
-    _indirectCall(_ds, _bx + 14362);            //call word ptr [bx+381Ah]
+    _indirectCall(_ds, memory16(_ds, _bx + 14362));            //call word ptr [bx+381Ah]
     memory16(_ds, 0x39B2) = 0xffff;             //mov word_2BEE2, 0FFFFh
     sub_1577D();                                //call sub_1577D
     sub_14E29();                                //call sub_14E29
@@ -8330,7 +8630,7 @@ loc_15697:                                      //loc_15697:
     goto loc_156B2;                             //jmp short loc_156B2
 loc_156A3:                                      //loc_156A3:
     memory16(_ds, _si) -= 1;                    //dec word ptr [si]
-    if ((short)memory16(_ds, _si) > 0)          //jg short loc_156B2
+    if (_FIXME_)                                //jg short loc_156B2
       goto loc_156B2;
     sub_14191();                                //call sub_14191
     _ax &= 0x00ff;                              //and ax, 0FFh
@@ -8517,9 +8817,8 @@ void sub_157FA()
     sub_156B8();                                //call sub_156B8
     sub_10C93();                                //call sub_10C93
     _ax = _pop();                               //pop ax
-//    _STOP_("sp-trace-fail");                    //sub_157FA endp_failed
-//    _STOP_("continues");                        //sub_1580D proc near
-    sub_1580D();
+    _STOP_("sp-trace-fail");                    //sub_157FA endp_failed
+    _STOP_("continues");                        //sub_1580D proc near
 }
 
 void sub_1580D()
@@ -9042,6 +9341,7 @@ loc_15C27:                                      //loc_15C27:
     _sp += 0x0002;                              //add sp, 2
     sub_15950();                                //call sub_15950
     _ax = _ax ^ _ax;                            //xor ax, ax
+    _flags.zero = true;
     return;                                     //retn
 loc_15C6D:                                      //loc_15C6D:
     _sp += 0x0002;                              //add sp, 2
@@ -9049,6 +9349,7 @@ loc_15C6D:                                      //loc_15C6D:
     memory(_ds, 0x8F5B) = 0x00;                 //mov byte_3148B, 0
     _ax = _ax ^ _ax;                            //xor ax, ax
     _ax -= 1;                                   //dec ax
+    _flags.zero = false;
 }
 
 void sub_15C7C()
@@ -9600,7 +9901,7 @@ loc_16114:                                      //loc_16114:
     _flags.interrupt = true;                    //sti
 }
 
-void sub_1655B() // shop
+void sub_1655B() // check enter shop
 {
     WORD _cs = _seg000;
 
@@ -9610,7 +9911,6 @@ void sub_1655B() // shop
     _ax = _ax + memory16(_ds, 0x9F16);          //add ax, word_32446
     if ((short)_ax >= (short)0x0a80)            //jge short loc_16590
       goto loc_16590;
-    std::cout << "enter shop\n";
     memory(_ds, 0x8FB0) = 0xff;                 //mov byte_314E0, 0FFh
     memory(_ds, 0x922C) = 0xff;                 //mov byte_3175C, 0FFh
     memory16(_ds, 0x9190) = 0x09c0;             //mov word_316C0, 9C0h
@@ -9626,7 +9926,7 @@ loc_16590:                                      //loc_16590:
       goto loc_165AE;
     memory16(_ds, 0x91AA) = 0x0d10;             //mov word_316DA, 0D10h
 loc_165AE:                                      //loc_165AE:
-    sub_16807();                      //call near ptr unk_16807
+    sub_16807();                                //call sub_16807
     _di = 0x91d4;                               //mov di, 91D4h
     _si = 0x65f6;                               //mov si, 65F6h
     _cx = 0x0010;                               //mov cx, 10h
@@ -9654,99 +9954,22 @@ loc_165DC:                                      //loc_165DC:
     memory(_ds, 0x922A) = 0x00;                 //mov byte_3175A, 0
 }
 
-void sub_165F6()
+void sub_16696()
+{
+    memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
+    memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
+    if (_FIXME_)                                //jbe short loc_166A1
+      goto loc_166A1;
+    return;                                     //retn
+loc_166A1:                                      //loc_166A1:
+    _bp = 0x650d;                               //mov bp, 650Dh
+    _STOP_("goto loc_166B6");                   //jmp short loc_166B6
+}
+
+void sub_166A6()
 {
     WORD _cs = _seg000;
 
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _FIXME_;                                    //sbb ax, cx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _si + 65) += _dx;             //add [si+41h], dx
-    _push(_sp);                                 //push sp
-    _flags.carry = (memory16(_ds, _si - 100) + _dx) >= 0x10000;
-    memory16(_ds, _si - 100) += _dx;
-    _al -= 0xc1 + _flags.carry;                 //sbb al, 0C1h
-    _push(_bx);                                 //push bx
-    memory16(_ds, _si + 65) += _dx;             //add [si+41h], dx
-    _push(_sp);                                 //push sp
-    memory16(_ds, _si + 4) += _dx;              //add [si+4], dx
-    _push(_ds);                                 //push ds
-    _ASSERT(0); /* unk previous */ _rcl(memory16(_ds, _bp + _di + 1), 84);
-    _cx += 1;                                   //inc cx
-    _push(_sp);                                 //push sp
-    _flags.carry = (memory16(_ds, _si - 92) + _dx) >= 0x10000;
-    memory16(_ds, _si - 92) += _dx;
-    _ax -= memory16(_ds, _bx + _di) + _flags.carry;//sbb ax, [bx+di]
-    _push(_bx);                                 //push bx
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    _flags.carry2 = (memory16(_ds, _bp + _di + 65) + 0x1a53 + _flags.carry) >= 0x10000;
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x1a53 + _flags.carry; _ASSERT(0);_flags.carry = _flags.carry2;
-    _al -= 0x01 + _flags.carry;                 //sbb al, 1
-    _push(_bx);                                 //push bx
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    _flags.carry2 = (memory16(_ds, _bp + _di + 65) + 0x9453 + _flags.carry) >= 0x10000;
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x9453 + _flags.carry; _ASSERT(0);_flags.carry = _flags.carry2;
-    _al -= 0x01 + _flags.carry;                 //sbb al, 1
-    _push(_bx);                                 //push bx
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    _flags.carry2 = (memory16(_ds, _bp + _di + 65) + 0x5853 + _flags.carry) >= 0x10000;
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x5853 + _flags.carry; _ASSERT(0);_flags.carry = _flags.carry2;
-    _ax -= 0x5301 + _flags.carry;               //sbb ax, 5301h
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x7653 + _flags.carry; _ASSERT(0);
-    _ds = _pop();                               //pop ds
-    memory16(_ds, _bp + _di + 65) += _dx;       //add [bp+di+41h], dx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0xec53 + _flags.carry; _ASSERT(0);
-    _ds = _pop();                               //pop ds
-    memory16(_ds, _bp + _di + 65) += _dx;       //add [bp+di+41h], dx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x6653 + _flags.carry; _ASSERT(0);
-    memory(_ds, _bx + _di) &= _al;              //and [bx+di], al
-    _push(_bx);                                 //push bx
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x5a53 + _flags.carry; _ASSERT(0);
-    _ds = _pop();                               //pop ds
-    _ASSERT(0); /* unk previous */ _rcl(memory16(_ds, _bp + _di + 1), 84);
-    _cx += 1;                                   //inc cx
-    _push(_sp);                                 //push sp
-    memory16(_ds, _si + 60) += _dx;             //add [si+3Ch], dx
-    _ds = _pop();                               //pop ds
-    memory16(_ds, _bp + _di + 65) += _dx;       //add [bp+di+41h], dx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0xf853 + _flags.carry; _ASSERT(0);
-    _ds = _pop();                               //pop ds
-    _ASSERT(0); /* unk previous */ _rcl(memory16(_ds, _bp + _di + 1), 84);
-    _cx += 1;                                   //inc cx
-    _push(_sp);                                 //push sp
-    memory16(_ds, _si - 78) += _dx;             //add [si-4Eh], dx
-    _ds = _pop();                               //pop ds
-    memory16(_ds, _bp + _di + 65) += _dx;       //add [bp+di+41h], dx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0x4a53 + _flags.carry; _ASSERT(0);
-    _cl &= _al;                                 //and cl, al
-    _push(_bx);                                 //push bx
-    memory16(_ds, _si + 65) += _dx;             //add [si+41h], dx
-    _push(_sp);                                 //push sp
-    memory16(_ds, _si + 44) += _dx;             //add [si+2Ch], dx
-    memory(_ds, _bx + _di) &= _al;              //and [bx+di], al
-    _push(_bx);                                 //push bx
-    _cx += 1;                                   //inc cx
-    _push(_bx);                                 //push bx
-    memory16(_ds, _bp + _di + 65) = memory16(_ds, _bp + _di + 65) + 0xc753 + _flags.carry; _ASSERT(0);
-    _bp += 1;                                   //inc bp
-    _al += 0xb9;                                //add al, 0B9h
-    memory(_ds, _bx + _di) |= _ch;              //or [bx+di], ch
-    _bp += 1;                                   //inc bp
-    _al &= 0x76;                                //and al, 76h
-    _bx += _ax;                                 //add bx, ax
-    _bp = 0x650d;                               //mov bp, 650Dh
-    loc_166B6(); return;                             //jmp short loc_166B6
     memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
     memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
     if (_FIXME_)                                //jbe short loc_166B1
@@ -9755,12 +9978,7 @@ void sub_165F6()
 loc_166B1:                                      //loc_166B1:
     _bp = 0x6523;                               //mov bp, 6523h
     _STOP_("goto $+2");                         //jmp short $+2
-}
-
-void loc_166B6()                                      //loc_166B6:
-{
-    WORD _cs = _seg000;
-
+loc_166B6:                                      //loc_166B6:
     _push(_si);                                 //push si
     sub_11022();                                //call sub_11022
     _push(_di);                                 //push di
@@ -9791,10 +10009,409 @@ void loc_166B6()                                      //loc_166B6:
     _si = _di;                                  //mov si, di
     sub_107C0();                                //call sub_107C0
     _si = _pop();                               //pop si
-//    return;                                     //retn
-//    _STOP_("sp-trace-fail");                    //sub_165F6 endp_failed
-//    _STOP_("continues");                        //db  0Bh
-    //???? stack?
+}
+
+void sub_16807()
+{
+    _si = 0x9226;                               //mov si, 9226h
+    _cx = _cx ^ _cx;                            //xor cx, cx
+loc_1680C:                                      //loc_1680C:
+    if (memory(_ds, _si) != 0x00)               //jnz short loc_1681B
+      goto loc_1681B;
+    memory(_ds, _si) = 0xff;                    //mov byte ptr [si], 0FFh
+    _push(_si);                                 //push si
+    _push(_cx);                                 //push cx
+    sub_16823();                                //call sub_16823
+    _cx = _pop();                               //pop cx
+    _si = _pop();                               //pop si
+loc_1681B:                                      //loc_1681B:
+    _si += 1;                                   //inc si
+    _cx += 1;                                   //inc cx
+    if ((short)_cx < (short)0x0005)             //jl short loc_1680C
+      goto loc_1680C;
+}
+
+void sub_16823()
+{
+    WORD _cs = _seg000;
+
+    _bx = _cx;                                  //mov bx, cx
+    memory16(_ds, 0xFCFA) = _cx;                //mov word_3822A, cx
+    _bx <<= 1;                                  //shl bx, 1
+    _ax = memory16(_ds, _bx + -28172 + 65536);          //mov ax, [bx-6E0Ch]
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    memory16(_ds, _bx + -28172 + 65536) = _ax;          //mov [bx-6E0Ch], ax
+    _ax &= 0x000f;                              //and ax, 0Fh
+    _bx = _ax;                                  //mov bx, ax
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax += _bx;                                 //add ax, bx
+    _ax <<= 1;                                  //shl ax, 1
+    _di = 0x6767;                               //mov di, 6767h
+    _di += _ax;                                 //add di, ax
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
+    _bx = memory16(_cs, _di + 2);               //mov bx, cs:[di+2]
+    _bx = _bx - memory16(_ds, 0x919A);          //sub bx, word_316CA
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    memory16(_ds, 0xFCE6) = _bx;                //mov word_38216, bx
+    _bp = memory16(_cs, _di + 4);               //mov bp, cs:[di+4]
+    _bp <<= 1;                                  //shl bp, 1
+    if (memory16(_ds, _bp + 28204) != 0x0000)   //jnz short loc_16876
+      goto loc_16876;
+    memory16(_ds, _bp + 28204) = 0x0014;        //mov word ptr ds:[bp-6E2Ch], 14h
+loc_16876:                                      //loc_16876:
+    _dx = memory16(_cs, _di + 6);               //mov dx, cs:[di+6]
+    memory16(_ds, 0xFCEE) = _dx;                //mov word_3821E, dx
+    memory16(_ds, 0xFCEA) = 0x0000;             //mov word_3821A, 0
+    _di = memory16(_cs, _di + 8);               //mov di, cs:[di+8]
+    _di <<= 1;                                  //shl di, 1
+    _di = memory16(_ds, _di + -8482 + 65536);           //mov di, [di-2122h]
+    _bx = 0x670d;                               //mov bx, 670Dh
+    _cx = memory16(_cs, _bx);                   //mov cx, cs:[bx]
+    _bx += 0x0002;                              //add bx, 2
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    _push(_si);                                 //push si
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    memory16(_ds, _si) = 0x010c;                //mov word ptr [si], 10Ch
+    memory16(_ds, _si + 2) = 0x6aad;            //mov word ptr [si+2], 6AADh
+    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
+    memory16(_ds, _si + 6) = 0x69c8;            //mov word ptr [si+6], 69C8h
+    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
+    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
+    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
+    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
+    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
+    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
+    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
+    _ax = memory(_cs, 0x6282);                  //mov ax, word ptr cs:byte_16260+22h
+    memory16(_ds, _si + 66) = _ax;              //mov [si+42h], ax
+    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
+    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
+    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
+    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
+    memory16(_ds, _si + 52) = 0x0000;           //mov word ptr [si+34h], 0
+loc_16900:                                      //loc_16900:
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si) = _ax;                   //mov [si], ax
+    memory16(_ds, _si + 2) = 0x6a0a;            //mov word ptr [si+2], 6A0Ah
+    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _si + 6) = _ax;               //mov [si+6], ax
+    _ax = memory16(_cs, _bx + 4);               //mov ax, cs:[bx+4]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _ax = memory16(_cs, _bx + 6);               //mov ax, cs:[bx+6]
+    memory16(_ds, _si + 52) = _ax;              //mov [si+34h], ax
+    _bx += 0x0008;                              //add bx, 8
+    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
+    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
+    memory16(_ds, _si + 36) = 0x0001;           //mov word ptr [si+24h], 1
+    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
+    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
+    memory16(_ds, _si + 14) = 0x0000;           //mov word ptr [si+0Eh], 0
+    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
+    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
+    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
+    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
+    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
+    memory16(_ds, _si + 66) = 0x0004;           //mov word ptr [si+42h], 4
+    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
+    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
+    memory16(_ds, 0xFCEA) -= 0x0007;            //sub word_3821A, 7
+    sub_13589();                                //call sub_13589
+    if (--_cx)                                  //loop loc_16900
+      goto loc_16900;
+    sub_11022();                                //call sub_11022
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    memory16(_ds, _si) = 0x00b8;                //mov word ptr [si], 0B8h
+    memory16(_ds, _si + 2) = 0x0761;            //mov word ptr [si+2], 761h
+    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
+    memory16(_ds, _si + 6) = 0x0761;            //mov word ptr [si+6], 761h
+    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
+    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
+    memory16(_ds, _si + 70) = _di;              //mov [si+46h], di
+    memory16(_ds, _di) = 0x00bc;                //mov word ptr [di], 0BCh
+    memory16(_ds, _di + 2) = 0x25a8;            //mov word ptr [di+2], 25A8h
+    memory16(_ds, _di + 4) = 0x0761;            //mov word ptr [di+4], 761h
+    memory16(_ds, _di + 6) = 0x0761;            //mov word ptr [di+6], 761h
+    memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
+    memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
+    memory16(_ds, _di + 68) = _si;              //mov [di+44h], si
+}
+
+void sub_169C8()
+{
+    _push(_si);                                 //push si
+    _si = _di;                                  //mov si, di
+    sub_107C0();                                //call sub_107C0
+    _si = _pop();                               //pop si
+}
+
+void sub_169D0()
+{
+    WORD _cs = _seg000;
+
+    sub_141B1();                                //call sub_141B1
+    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
+    _al = memory(_cs, _bx + 24854);             //mov al, cs:[bx+6116h]
+    _cbw();                                     //cbw
+    _sar(_ax, 1);                               //sar ax, 1
+    _sar(_ax, 1);                               //sar ax, 1
+    _ax = _ax + memory16(_ds, _si + 22);        //add ax, [si+16h]
+    if (_ax >= 0x00c0)                          //jnb short loc_16A06
+      goto loc_16A06;
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    _al = memory(_cs, _bx + 24918);             //mov al, cs:[bx+6156h]
+    _cbw();                                     //cbw
+    _sar(_ax, 1);                               //sar ax, 1
+    _sar(_ax, 1);                               //sar ax, 1
+    _ax = _ax + memory16(_ds, _si + 18);        //add ax, [si+12h]
+    if (_ax >= 0x0140)                          //jnb short loc_16A06
+      goto loc_16A06;
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    return;                                     //retn
+loc_16A06:                                      //loc_16A06:
+    sub_107C0();                                //call sub_107C0
+}
+
+void sub_16A0A()
+{
+    WORD _cs = _seg000;
+
+    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
+    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
+    _di = memory16(_ds, _si + 10);              //mov di, [si+0Ah]
+    if (memory16(_ds, _di) != 0x00bc)           //jnz short loc_16A33
+      goto loc_16A33;
+    _bx = memory16(_ds, _si + 32);              //mov bx, [si+20h]
+    _bx <<= 1;                                  //shl bx, 1
+    if (memory16(_ds, _bx + -28204) != 0x0000)  //jnz short loc_16A2D
+      goto loc_16A2D;
+    memory16(_ds, _bx + -28204) = 0x0014;       //mov word ptr [bx-6E2Ch], 14h
+loc_16A2D:                                      //loc_16A2D:
+    sub_107C0();                                //call sub_107C0
+    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+loc_16A33:                                      //loc_16A33:
+    _ax = memory16(_ds, _di + 18);              //mov ax, [di+12h]
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = memory16(_ds, _di + 22);              //mov ax, [di+16h]
+    _ax = _ax + memory16(_ds, 0x9198);          //add ax, word_316C8
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    _ax = memory16(_ds, _di + 28);              //mov ax, [di+1Ch]
+    memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
+    _ax = memory16(_ds, _di + 30);              //mov ax, [di+1Eh]
+    memory16(_ds, _si + 30) = _ax;              //mov [si+1Eh], ax
+    _ax = memory16(_ds, _di + 26);              //mov ax, [di+1Ah]
+    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
+    if (memory16(_ds, _si + 4) != 0x0761)       //jnz short loc_16A67
+      goto loc_16A67;
+    if ((short)memory16(_ds, _si + 26) < 0 /*CHECK*/)//js short loc_16A67
+      goto loc_16A67;
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+loc_16A67:                                      //loc_16A67:
+    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
+    _bx += 0x0010;                              //add bx, 10h
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx &= 0x000e;                              //and bx, 0Eh
+    _di = 0x6a8d;                               //mov di, 6A8Dh
+    if (memory16(_ds, _si) != 0x0110)           //jnz short loc_16A84
+      goto loc_16A84;
+    _di = 0x6a9d;                               //mov di, 6A9Dh
+loc_16A84:                                      //loc_16A84:
+    _ax = memory16(_cs, _bx + _di);             //mov ax, cs:[bx+di]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+{sub_13589(); return; };                        //
+}
+
+void sub_16AAD()
+{
+    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
+    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
+    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
+    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
+    sub_14871();                                //call sub_14871
+    if (memory16(_ds, _si) != 0x0004)           //jnz short locret_16AC6
+      goto locret_16AC6;
+    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+locret_16AC6:                                   //locret_16AC6:
+    return;
+}
+
+void sub_16AC7()
+{
+    WORD _cs = _seg000;
+
+    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
+    _ax += 0x00d0;                              //add ax, 0D0h
+    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16AD5
+      goto loc_16AD5;
+    goto loc_16B76;                             //jmp loc_16B76
+loc_16AD5:                                      //loc_16AD5:
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax += 0x0004;                              //add ax, 4
+    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
+    _ax += 0x0018;                              //add ax, 18h
+    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    _ax += 0x0004;                              //add ax, 4
+    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
+    _ax += 0x0018;                              //add ax, 18h
+    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
+    _bx = memory16(_ds, _si + 26);              //mov bx, [si+1Ah]
+    _bx <<= 1;                                  //shl bx, 1
+    _bx <<= 1;                                  //shl bx, 1
+    _bx <<= 1;                                  //shl bx, 1
+    _di = 0x6b7a;                               //mov di, 6B7Ah
+    if (memory16(_ds, _si) == 0x00e0)           //jz short loc_16B0C
+      goto loc_16B0C;
+    _di = 0x6b9a;                               //mov di, 6B9Ah
+loc_16B0C:                                      //loc_16B0C:
+    _bx += _di;                                 //add bx, di
+    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di) = _ax;                   //mov [di], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _di + 2) = _ax;               //mov [di+2], ax
+    _ax = memory16(_cs, _bx + 4);               //mov ax, cs:[bx+4]
+    memory16(_ds, _di + 40) = _ax;              //mov [di+28h], ax
+    _ax = memory16(_cs, _bx + 6);               //mov ax, cs:[bx+6]
+    memory16(_ds, _di + 42) = _ax;              //mov [di+2Ah], ax
+    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
+    memory16(_ds, _si + 26) &= 0x0003;          //and word ptr [si+1Ah], 3
+    _al = memory(_cs, 0x6262);                  //mov al, cs:byte_16260+2
+    _flags.carry = (memory(_ds, _si + 72) + _al) >= 0x100;
+    memory(_ds, _si + 72) += _al;
+    if (!_flags.carry)                          //jnb short locret_16B79
+      goto locret_16B79;
+    sub_14191();                                //call sub_14191
+    _al &= 0x3f;                                //and al, 3Fh
+    memory(_ds, _si + 72) = _al;                //mov [si+48h], al
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax += 0x0010;                              //add ax, 10h
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    _bx += 0x000e;                              //add bx, 0Eh
+    _cx = 0x0002;                               //mov cx, 2
+    _bp = memory(_cs, 0x6264);                  //mov bp, word ptr cs:byte_16260+4
+    _bp <<= 1;                                  //shl bp, 1
+    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
+    if (memory16(_ds, _si) == 0x00e4)           //jz short loc_16B6E
+      goto loc_16B6E;
+    _cx = 0x0006;                               //mov cx, 6
+    _ax -= 0x0010;                              //sub ax, 10h
+loc_16B6E:                                      //loc_16B6E:
+    _dx = memory(_cs, 0x6266);                  //mov dx, word ptr cs:byte_16260+6
+{sub_11ED3(); return; };                        //
+loc_16B76:                                      //loc_16B76:
+    sub_107C0();                                //call sub_107C0
+locret_16B79:                                   //locret_16B79:
+    return;
+}
+
+void sub_16BCA()
+{
+    WORD _cs = _seg000;
+
+    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
+    _ax += 0x00d0;                              //add ax, 0D0h
+    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16BD8
+      goto loc_16BD8;
+    goto loc_16C7E;                             //jmp loc_16C7E
+loc_16BD8:                                      //loc_16BD8:
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax += 0x0008;                              //add ax, 8
+    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
+    _ax += 0x0010;                              //add ax, 10h
+    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    _ax += 0x0008;                              //add ax, 8
+    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
+    _ax += 0x0010;                              //add ax, 10h
+    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
+    _bx = memory16(_ds, _si + 26);              //mov bx, [si+1Ah]
+    _bx &= 0xfffe;                              //and bx, 0FFFEh
+    _bx <<= 1;                                  //shl bx, 1
+    _di = 0x6cd2;                               //mov di, 6CD2h
+    if (memory16(_ds, _si) == 0x00d8)           //jz short loc_16C0E
+      goto loc_16C0E;
+    _di = 0x6c82;                               //mov di, 6C82h
+loc_16C0E:                                      //loc_16C0E:
+    _bx += _di;                                 //add bx, di
+    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di) = _ax;                   //mov [di], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _di + 2) = _ax;               //mov [di+2], ax
+    if (memory16(_ds, _si + 26) != 0x0000)      //jnz short loc_16C36
+      goto loc_16C36;
+    _al = memory(_cs, 0x6268);                  //mov al, cs:byte_16260+8
+    _flags.carry = (memory(_ds, _si + 72) + _al) >= 0x100;
+    memory(_ds, _si + 72) += _al;
+    if (!_flags.carry)                          //jnb short locret_16C81
+      goto locret_16C81;
+    sub_14191();                                //call sub_14191
+    _al &= 0x3f;                                //and al, 3Fh
+    memory(_ds, _si + 72) = _al;                //mov [si+48h], al
+loc_16C36:                                      //loc_16C36:
+    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
+    if (memory16(_ds, _si + 26) != 0x0028)      //jnz short loc_16C45
+      goto loc_16C45;
+    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
+    return;                                     //retn
+loc_16C45:                                      //loc_16C45:
+    if (memory16(_ds, _si + 26) != 0x0018)      //jnz short locret_16C81
+      goto locret_16C81;
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax += 0x001a;                              //add ax, 1Ah
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    _bx += 0x0002;                              //add bx, 2
+    _bp = memory(_cs, 0x626A);                  //mov bp, word ptr cs:byte_16260+0Ah
+    _bp <<= 1;                                  //shl bp, 1
+    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
+    _cx = 0x0002;                               //mov cx, 2
+    if (memory16(_ds, _si) == 0x00dc)           //jz short loc_16C76
+      goto loc_16C76;
+    _cx = 0x0006;                               //mov cx, 6
+    _ax -= 0x001a;                              //sub ax, 1Ah
+loc_16C76:                                      //loc_16C76:
+    _dx = memory(_cs, 0x626C);                  //mov dx, word ptr cs:byte_16260+0Ch
+{sub_11ED3(); return; };                        //
+loc_16C7E:                                      //loc_16C7E:
+    sub_107C0();                                //call sub_107C0
+locret_16C81:                                   //locret_16C81:
+    return;
 }
 
 void sub_16D22()
@@ -9866,6 +10483,88 @@ loc_16DD0:                                      //loc_16DD0:
     sub_107C0();                                //call sub_107C0
 locret_16DD3:                                   //locret_16DD3:
     return;
+}
+
+void sub_16E2C()
+{
+    WORD _cs = _seg000;
+
+    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
+    _ax += 0x00d0;                              //add ax, 0D0h
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16E3E
+      goto loc_16E3E;
+    goto loc_16EEB;                             //jmp loc_16EEB
+loc_16E3E:                                      //loc_16E3E:
+    sub_141B1();                                //call sub_141B1
+    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
+    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
+    if (memory16(_ds, _si + 26) != 0x0000)      //jnz short loc_16E50
+      goto loc_16E50;
+    goto locret_16ED0;                          //jmp locret_16ED0
+loc_16E50:                                      //loc_16E50:
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax = _ax - memory16(_ds, 0x9F16);          //sub ax, word_32446
+    if ((short)_ax > (short)0x000a)             //jg short loc_16ED1
+      goto loc_16ED1;
+    if ((short)_ax < (short)0xffe2)             //jl short loc_16ED1
+      goto loc_16ED1;
+    sub_14191();                                //call sub_14191
+    if (_al >= 0x32)                            //jnb short loc_16ED1
+      goto loc_16ED1;
+    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
+    sub_107DC();                                //call sub_107DC
+    _di = 0x9096;                               //mov di, 9096h
+    sub_1077C();                                //call sub_1077C
+    _di = 0x64fd;                               //mov di, 64FDh
+    if (memory16(_ds, _si) == 0x00d4)           //jz short loc_16E82
+      goto loc_16E82;
+    _di = 0x64d7;                               //mov di, 64D7h
+loc_16E82:                                      //loc_16E82:
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _di += 0x0002;                              //add di, 2
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
+    _di += 0x0002;                              //add di, 2
+    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
+    memory16(_ds, 0xFCFE) = 0x0002;             //mov word_3822E, 2
+loc_16E9D:                                      //loc_16E9D:
+    _bp = memory(_cs, 0x6274);                  //mov bp, word ptr cs:byte_16260+14h
+    _bp <<= 1;                                  //shl bp, 1
+    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx += 0x0007;                              //add bx, 7
+    _cx = 0x0005;                               //mov cx, 5
+    if (memory16(_ds, _si) == 0x00d4)           //jz short loc_16EBE
+      goto loc_16EBE;
+    _cx = 0x0001;                               //mov cx, 1
+loc_16EBE:                                      //loc_16EBE:
+    _cx = _cx + memory16(_ds, 0xFCFE);          //add cx, word_3822E
+    _dx = memory(_cs, 0x6276);                  //mov dx, word ptr cs:byte_16260+16h
+    sub_11ED3();                                //call sub_11ED3
+    memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
+    if ((short)memory16(_ds, 0xFCFE) >= 0)      //jns short loc_16E9D
+      goto loc_16E9D;
+locret_16ED0:                                   //locret_16ED0:
+    return;                                     //retn
+loc_16ED1:                                      //loc_16ED1:
+    _ax = memory16(_ds, _si + 26);              //mov ax, [si+1Ah]
+    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
+    memory16(_ds, _si + 34) += _ax;             //add [si+22h], ax
+    if (memory16(_ds, _si + 34) == 0)           //jz short loc_16EE4
+      goto loc_16EE4;
+    _ax = memory16(_ds, _si + 34);              //mov ax, [si+22h]
+    if (_ax != memory16(_ds, _si + 28))         //jnz short loc_16EE7
+      goto loc_16EE7;
+loc_16EE4:                                      //loc_16EE4:
+    memory16(_ds, _si + 26) = -memory16(_ds, _si + 26);
+loc_16EE7:                                      //loc_16EE7:
+    sub_13589();                                //call sub_13589
+    return;                                     //retn
+loc_16EEB:                                      //loc_16EEB:
+    sub_107C0();                                //call sub_107C0
 }
 
 void sub_16F00()
@@ -10045,7 +10744,7 @@ void sub_170F1()
     _bx <<= 1;                                  //shl bx, 1
     switch (_bx)                                //jmp cs:off_170F8[bx]
     {
-      case 0: loc_13360(); return;
+        case 0: loc_13360(); return;
       case 2: goto loc_1710E;
       case 4: goto loc_17114;
       case 6: goto loc_1711A;
@@ -10121,13 +10820,12 @@ void sub_1714D()
     memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
     memory16(_ds, 0xFCFE) += 0x000e;            //add word_3822E, 0Eh
     sub_10F2F();                                //call sub_10F2F
-    if (_flags.zero)                                //jz short loc_171A7
+    if (_FIXME_)                                //jz short loc_171A7
       goto loc_171A7;
     _ax = _pop();                               //pop ax
     memory16(_ds, _di + 4) = 0x7569;            //mov word ptr [di+4], 7569h
-    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
     memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_flags.carry2)                                //jbe short loc_171A9
+    if (_FIXME_)                                //jbe short loc_171A9
       goto loc_171A9;
     return;                                     //retn
 loc_171A7:                                      //loc_171A7:
@@ -10140,14 +10838,14 @@ loc_171A9:                                      //loc_171A9:
     _si = _di;                                  //mov si, di
     sub_107C0();                                //call sub_107C0
     _cx = 0x0008;                               //mov cx, 8
-    sub_115E4();
+    sub_115E4();                                //call sub_115E4
     _cx = 0x0013;                               //mov cx, 13h
     _ax = 0x0000;                               //mov ax, 0
     _bx = 0x0000;                               //mov bx, 0
     _dx = 0x0140;                               //mov dx, 140h
     _di = 0x00c0;                               //mov di, 0C0h
     _bp = 0x124c;                               //mov bp, 124Ch
-    sub_11588();
+    sub_11588();                                //call sub_11588
     _si = memory16(_ds, 0x9054);                //mov si, word_31584
     sub_13760();                                //call sub_13760
     _si = _pop();                               //pop si
@@ -10566,10 +11264,1104 @@ void sub_1758F()
     memory16(_ds, 0x8E72) = 0x3463;             //mov word_313A2, 3463h
 }
 
-void loc_18B81()
+void sub_17DDE()
 {
     WORD _cs = _seg000;
 
+    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
+    _ax += 0x00d0;                              //add ax, 0D0h
+    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_17DEC
+      goto loc_17DEC;
+    goto loc_17E83;                             //jmp loc_17E83
+loc_17DEC:                                      //loc_17DEC:
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax -= 0x0008;                              //sub ax, 8
+    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
+    _ax += 0x0014;                              //add ax, 14h
+    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    _ax += 0x0004;                              //add ax, 4
+    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
+    _ax += 0x0008;                              //add ax, 8
+    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
+    _ax = memory16(_ds, _si + 26);              //mov ax, [si+1Ah]
+    if (_ax & _ax)                              //jnz short loc_17E25
+      goto loc_17E25;
+    sub_14191();                                //call sub_14191
+    if (_al >= memory(_cs, 0x7714))             //jnb short locret_17E24
+      goto locret_17E24;
+    memory16(_ds, _si + 26) = 0x0001;           //mov word ptr [si+1Ah], 1
+locret_17E24:                                   //locret_17E24:
+    return;                                     //retn
+loc_17E25:                                      //loc_17E25:
+    _bx = _ax;                                  //mov bx, ax
+    _bx <<= 1;                                  //shl bx, 1
+    _bx += 0x90c1;                              //add bx, 90C1h
+    if (memory16(_ds, _si) == 0x00e8)           //jz short loc_17E36
+      goto loc_17E36;
+    _bx += 0x001e;                              //add bx, 1Eh
+loc_17E36:                                      //loc_17E36:
+    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di) = _ax;                   //mov [di], ax
+    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
+    if (memory16(_ds, _si + 26) == 0x0007)      //jz short loc_17E53
+      goto loc_17E53;
+    if (memory16(_ds, _si + 26) != 0x000f)      //jnz short locret_17E52
+      goto locret_17E52;
+    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
+locret_17E52:                                   //locret_17E52:
+    return;                                     //retn
+loc_17E53:                                      //loc_17E53:
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    _ax += 0x0008;                              //add ax, 8
+    _bx += 0x0008;                              //add bx, 8
+    _di = memory(_cs, 0x7716);                  //mov di, word ptr cs:byte_176E6+30h
+    _di <<= 1;                                  //shl di, 1
+    _bp = memory16(_cs, _di + -27991);          //mov bp, cs:[di-6D57h]
+    _cx = 0x0002;                               //mov cx, 2
+    if (memory16(_ds, _si) == 0x00ec)           //jz short loc_17E7B
+      goto loc_17E7B;
+    _cx = 0x0006;                               //mov cx, 6
+loc_17E7B:                                      //loc_17E7B:
+    _dx = memory(_cs, 0x7718);                  //mov dx, word ptr cs:byte_176E6+32h
+{sub_11ED3(); return; };                        //
+loc_17E83:                                      //loc_17E83:
+    sub_107C0();                                //call sub_107C0
+}
+
+void sub_17F32()
+{
+    if (memory(_ds, 0x9230) != 0x00)            //jnz short loc_17F4E
+      goto loc_17F4E;
+    if ((short)memory16(_ds, 0x9190) < (short)0x09d0)//jl short loc_17F6E
+      goto loc_17F6E;
+    if ((short)memory16(_ds, 0x9190) > (short)0x0b50)//jg short loc_17F6E
+      goto loc_17F6E;
+    sub_1818C();                                //call sub_1818C
+    goto loc_17F6E;                             //jmp short loc_17F6E
+loc_17F4E:                                      //loc_17F4E:
+    if ((short)memory16(_ds, 0x9190) <= (short)0x09f0)
+      goto loc_17F6E;
+    memory16(_ds, 0x9190) = 0x09f0;             //mov word_316C0, 9F0h
+    memory16(_ds, 0x91AA) = 0x09f0;             //mov word_316DA, 9F0h
+    memory16(_ds, 0x918E) = 0x18d8;             //mov word_316BE, 18D8h
+    memory16(_ds, 0x9196) = 0x0000;             //mov word_316C6, 0
+loc_17F6E:                                      //loc_17F6E:
+    memory(_ds, 0x922D) = 0x00;                 //mov byte_3175D, 0
+    memory(_ds, 0x922E) = 0x00;                 //mov byte_3175E, 0
+}
+
+void sub_17F79()
+{
+    WORD _cs = _seg000;
+
+    _di = _si;                                  //mov di, si
+    _bx <<= 1;                                  //shl bx, 1
+    switch (_bx)                                //jmp cs:off_190FD[bx]
+    {
+        case 0: loc_135CE(); return;
+      case 2: goto loc_17F82;
+      case 4: goto loc_17FDB;
+      case 6: goto loc_18018;
+      case 8: goto loc_180A3;
+      case 10: goto loc_180BB;
+        case 12: assert(0); //goto loc_13360;
+      case 14: goto loc_180D1;
+      case 16: goto loc_180D7;
+      case 18: goto loc_180DD;
+      case 20: goto loc_180E3;
+      case 22: goto loc_180E9;
+      case 24: goto loc_180EF;
+      default:
+        _ASSERT(0);
+    }
+loc_17F82:                                      //loc_17F82:
+    _ax = 0x00e8;                               //mov ax, 0E8h
+    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17F8E
+      goto loc_17F8E;
+    _ax = 0x00ec;                               //mov ax, 0ECh
+loc_17F8E:                                      //loc_17F8E:
+    _bx = 0x7dde;                               //mov bx, 7DDEh
+    sub_13529();                                //call sub_13529
+    memory16(_ds, _si + 6) = 0x3b76;            //mov word ptr [si+6], 3B76h
+    _ax = memory(_cs, 0x771C);                  //mov ax, word ptr cs:byte_176E6+36h
+    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
+    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
+    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
+    _bx = memory16(_ds, _si + 56);              //mov bx, [si+38h]
+    _bp = 0x90df;                               //mov bp, 90DFh
+    _dx = 0x90bf;                               //mov dx, 90BFh
+    if (memory16(_ds, _di + 12) == 0x0000)      //jz short loc_17FBF
+      goto loc_17FBF;
+    _bp = 0x90c1;                               //mov bp, 90C1h
+    _dx = 0x90bd;                               //mov dx, 90BDh
+loc_17FBF:                                      //loc_17FBF:
+    memory16(_ds, _si + 12) = _bp;              //mov [si+0Ch], bp
+    memory16(_ds, _si + 16) = _dx;              //mov [si+10h], dx
+    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
+    memory16(_ds, _bx) = _ax;                   //mov [bx], ax
+    memory16(_ds, _si + 52) = 0x0064;           //mov word ptr [si+34h], 64h
+    memory16(_ds, _si + 48) = 0x0000;           //mov word ptr [si+30h], 0
+    memory16(_ds, _si + 50) = 0x0000;           //mov word ptr [si+32h], 0
+    return;                                     //retn
+loc_17FDB:                                      //loc_17FDB:
+    _ax = 0x00f0;                               //mov ax, 0F0h
+    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17FE7
+      goto loc_17FE7;
+    _ax = 0x00f4;                               //mov ax, 0F4h
+loc_17FE7:                                      //loc_17FE7:
+    _bx = 0x7ce6;                               //mov bx, 7CE6h
+    assert(0); //loc_13536();                                //call loc_13536
+    _bx = memory16(_ds, _si + 56);              //mov bx, [si+38h]
+    _bp = 0x906d;                               //mov bp, 906Dh
+    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17FFC
+      goto loc_17FFC;
+    _bp = 0x9095;                               //mov bp, 9095h
+loc_17FFC:                                      //loc_17FFC:
+    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
+    memory16(_ds, _bx) = _ax;                   //mov [bx], ax
+    _ax = memory16(_cs, _bp + 2);               //mov ax, cs:[bp+2]
+    memory16(_ds, _bx + 2) = _ax;               //mov [bx+2], ax
+    _ax = memory16(_cs, _bp + 4);               //mov ax, cs:[bp+4]
+    memory16(_ds, _bx + 40) = _ax;              //mov [bx+28h], ax
+    _ax = memory16(_cs, _bp + 6);               //mov ax, cs:[bp+6]
+    memory16(_ds, _bx + 42) = _ax;              //mov [bx+2Ah], ax
+    return;                                     //retn
+loc_18018:                                      //loc_18018:
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    memory16(_ds, _si) = 0x0100;                //mov word ptr [si], 100h
+    _bx = 0x7a56;                               //mov bx, 7A56h
+    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_18037
+      goto loc_18037;
+    memory16(_ds, _si) = 0x0104;                //mov word ptr [si], 104h
+    _bx = 0x7a2c;                               //mov bx, 7A2Ch
+loc_18037:                                      //loc_18037:
+    memory16(_ds, _si + 2) = 0x7e87;            //mov word ptr [si+2], 7E87h
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
+    _bx += 0x0004;                              //add bx, 4
+    memory16(_ds, _si + 16) = _bx;              //mov [si+10h], bx
+    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
+    memory16(_ds, _si + 6) = 0x3aa7;            //mov word ptr [si+6], 3AA7h
+    _ax = memory(_cs, 0x771E);                  //mov ax, word ptr cs:byte_176E6+38h
+    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
+    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
+    memory16(_ds, _si + 52) = 0x00c8;           //mov word ptr [si+34h], 0C8h
+    _ax = memory16(_ds, _di + 8);               //mov ax, [di+8]
+    _ax -= 0x0008;                              //sub ax, 8
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = memory16(_ds, _di + 10);              //mov ax, [di+0Ah]
+    _ax -= 0x0008;                              //sub ax, 8
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    memory16(_ds, _si + 26) = 0xffff;           //mov word ptr [si+1Ah], 0FFFFh
+    _ax = memory16(_ds, _di + 4);               //mov ax, [di+4]
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
+    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
+    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
+    sub_13589();                                //call sub_13589
+    return;                                     //retn
+loc_180A3:                                      //loc_180A3:
+    _ax = 0x00fc;                               //mov ax, 0FCh
+    _bx = 0x7bef;                               //mov bx, 7BEFh
+    assert(0); //loc_13536();                                //call loc_13536
+    memory16(_ds, _si + 34) = 0x0001;           //mov word ptr [si+22h], 1
+    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
+    _ax = memory16(_cs, 0x8FD7);                //mov ax, cs:word_18FD7
+    memory16(_ds, _di) = _ax;                   //mov [di], ax
+    return;                                     //retn
+loc_180BB:                                      //loc_180BB:
+    _ax = 0x00f8;                               //mov ax, 0F8h
+    _bx = 0x7ac4;                               //mov bx, 7AC4h
+    assert(0); //loc_13536();                                //call loc_13536
+    memory16(_ds, _si + 34) = 0x0001;           //mov word ptr [si+22h], 1
+    return;                                     //retn
+    _bx <<= 1;                                  //shl bx, 1
+    switch (_bx)                                //jmp cs:off_19109[bx]
+    {
+        case 0: assert(0); //goto loc_13360;
+      case 2: goto loc_180D1;
+      case 4: goto loc_180D7;
+      case 6: goto loc_180DD;
+      case 8: goto loc_180E3;
+      case 10: goto loc_180E9;
+      case 12: goto loc_180EF;
+      default:
+        _ASSERT(0);
+    }
+loc_180D1:                                      //loc_180D1:
+    _bx = 0x7736;                               //mov bx, 7736h
+{sub_13389(); return; };                        //
+loc_180D7:                                      //loc_180D7:
+    _bx = 0x7748;                               //mov bx, 7748h
+{sub_13389(); return; };                        //
+loc_180DD:                                      //loc_180DD:
+    _bx = 0x775a;                               //mov bx, 775Ah
+{sub_13389(); return; };                        //
+loc_180E3:                                      //loc_180E3:
+    _bx = 0x776c;                               //mov bx, 776Ch
+{sub_13389(); return; };                        //
+loc_180E9:                                      //loc_180E9:
+    _bx = 0x777e;                               //mov bx, 777Eh
+{sub_13389(); return; };                        //
+loc_180EF:                                      //loc_180EF:
+    _bx = 0x7790;                               //mov bx, 7790h
+{sub_13389(); return; };                        //
+    _STOP_("sp-trace-fail");                    //sub_17F79 endp_failed
+    _STOP_("continues");                        //mov word ptr [di+4], 8B9h
+}
+
+void sub_1818C()
+{
+    if (memory(_ds, 0x9230) != 0x00)            //jnz short locret_181BD
+      goto locret_181BD;
+    if (memory(_ds, 0x922D) != 0x00)            //jnz short loc_181A8
+      goto loc_181A8;
+    memory16(_ds, 0xFCFA) = 0x0000;             //mov word_3822A, 0
+    loc_181E7();                                //call loc_181E7
+    memory(_ds, 0x922D) = 0xff;                 //mov byte_3175D, 0FFh
+loc_181A8:                                      //loc_181A8:
+    if (memory(_ds, 0x922E) != 0x00)            //jnz short locret_181BD
+      goto locret_181BD;
+    memory16(_ds, 0xFCFA) = 0x0001;             //mov word_3822A, 1
+    loc_181E7();                                //call loc_181E7
+    memory(_ds, 0x922E) = 0xff;                 //mov byte_3175E, 0FFh
+locret_181BD:                                   //locret_181BD:
+    return;
+}
+
+void sub_181BE()
+{
+    if (memory16(_ds, 0xFCFA) != 0x0000)        //jnz short loc_181D6
+      goto loc_181D6;
+    _ax = memory16(_ds, 0x91F4);                //mov ax, word_31724
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    memory16(_ds, 0x91F4) = _ax;                //mov word_31724, ax
+    return;                                     //retn
+loc_181D6:                                      //loc_181D6:
+    _ax = memory16(_ds, 0x91F6);                //mov ax, word_31726
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    _ror(_ax, 1);                               //ror ax, 1
+    memory16(_ds, 0x91F6) = _ax;                //mov word_31726, ax
+}
+
+void loc_181E7()
+{
+    WORD _cs = _seg000;
+
+    if (memory16(_ds, 0x9200) == 0x0001)        //jz short loc_181F9
+      goto loc_181F9;
+    if (memory(_ds, 0x922F) == 0x00)            //jz short loc_18201
+      goto loc_18201;
+    memory(_ds, 0x922F) -= 1;                   //dec byte_3175F
+loc_181F9:                                      //loc_181F9:
+    sub_181BE();                                //call sub_181BE
+    _ax &= 0x0006;                              //and ax, 6
+    goto loc_1820A;                             //jmp short loc_1820A
+loc_18201:                                      //loc_18201:
+    sub_181BE();                                //call sub_181BE
+    _ax &= 0x0006;                              //and ax, 6
+    _ax += 0x0008;                              //add ax, 8
+loc_1820A:                                      //loc_1820A:
+    _ax = _ax + memory16(_ds, 0xFCFA);          //add ax, word_3822A
+    _dx = 0x000a;                               //mov dx, 0Ah
+    _ax = _dx * _al;                            //mul dx
+    _di = 0x9179;                               //mov di, 9179h
+    _di += _ax;                                 //add di, ax
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
+    _di += 0x0002;                              //add di, 2
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, 0xFCE6) = _ax;                //mov word_38216, ax
+    _di += 0x0002;                              //add di, 2
+    _ax = memory16(_ds, 0x919A);                //mov ax, word_316CA
+    memory16(_ds, 0xFCE6) -= _ax;               //sub word_38216, ax
+    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
+    memory16(_ds, 0xFCE6) -= _ax;               //sub word_38216, ax
+    _bx = memory16(_cs, _di);                   //mov bx, cs:[di]
+    _di += 0x0002;                              //add di, 2
+    _bx <<= 1;                                  //shl bx, 1
+    if (memory16(_ds, _bx + -28206) != 0x0000)  //jnz short loc_1824D
+      goto loc_1824D;
+    memory16(_ds, _bx + -28206) = 0x0018;       //mov word ptr [bx-6E2Eh], 18h
+loc_1824D:                                      //loc_1824D:
+    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
+    memory16(_ds, 0xFCEE) = _ax;                //mov word_3821E, ax
+    _di += 0x0002;                              //add di, 2
+    memory16(_ds, 0xFCEA) = 0x0000;             //mov word_3821A, 0
+    _di = memory16(_cs, _di);                   //mov di, cs:[di]
+    _di <<= 1;                                  //shl di, 1
+    _di = memory16(_ds, _di + -8524);           //mov di, [di-214Ch]
+    _bx = 0x9117;                               //mov bx, 9117h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
+    _bx += 0x0002;                              //add bx, 2
+loc_18271:                                      //loc_18271:
+    sub_11022();                                //call sub_11022
+    _push(_di);                                 //push di
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _pop();                               //pop di
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si) = _ax;                   //mov [si], ax
+    _bx += 0x0002;                              //add bx, 2
+    memory16(_ds, _si + 2) = 0x866d;            //mov word ptr [si+2], 866Dh
+    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si + 6) = _ax;               //mov [si+6], ax
+    _bx += 0x0002;                              //add bx, 2
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+    _bx += 0x0002;                              //add bx, 2
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _si + 52) = _ax;              //mov [si+34h], ax
+    _bx += 0x0002;                              //add bx, 2
+    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
+    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
+    _ax = memory(_cs, 0x7720);                  //mov ax, word ptr cs:byte_176E6+3Ah
+    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
+    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
+    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
+    memory16(_ds, _si + 14) = 0x0000;           //mov word ptr [si+0Eh], 0
+    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
+    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
+    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
+    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
+    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
+    _ax = memory(_cs, 0x7722);                  //mov ax, word ptr cs:byte_176E6+3Ch
+    memory16(_ds, _si + 66) = _ax;              //mov [si+42h], ax
+    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
+    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
+    memory16(_ds, 0xFCEA) -= 0x000a;            //sub word_3821A, 0Ah
+    sub_13589();                                //call sub_13589
+    memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
+    if ((short)memory16(_ds, 0xFCFE) < 0)       //js short near ptr unk_182FF
+      _STOP_("goto near ptr unk_182FF");
+    goto loc_18271;                             //jmp loc_18271
+    _STOP_("unk_182FF db 0B0h");                //unk_182FF db 0B0h
+    _stack16(_bp + _di + -1522) += _cx;         //add [bp+di-5F2h], cx
+    _flags.direction = false;                   //cld
+    _al <<= _cl;                                //shl al, cl
+    memory(_ds, 0x9202) |= _al;                 //or byte ptr word_31732, al
+    return;                                     //retn
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db 0A2h");                          //db 0A2h
+    _STOP_("db 0BEh");                          //db 0BEh
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  1Ah");                          //db  1Ah
+    _STOP_("db  74h");                          //db  74h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db  87h");                          //db  87h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db  32h");                          //db  32h
+    _STOP_("db  7Fh");                          //db  7Fh
+    _STOP_("db  41h");                          //db  41h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db  2Bh");                          //db  2Bh
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db  9Fh");                          //db  9Fh
+    _STOP_("db  79h");                          //db  79h
+    _STOP_("db 0F7h");                          //db 0F7h
+    _STOP_("db 0D8h");                          //db 0D8h
+    _STOP_("db  3Dh");                          //db  3Dh
+    _STOP_("db  0Ah");                          //db  0Ah
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  4Ah");                          //db  4Ah
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db  3Bh");                          //db  3Bh
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db  9Fh");                          //db  9Fh
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  22h");                          //db  22h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  6Ch");                          //db  6Ch
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  1Eh");                          //db  1Eh
+    _STOP_("db  9Ch");                          //db  9Ch
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db 0DEh");                          //db 0DEh
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0E3h");                          //db 0E3h
+    _STOP_("db  0Eh");                          //db  0Eh
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  87h");                          //db  87h
+    _STOP_("db 0CEh");                          //db 0CEh
+    _STOP_("db  32h");                          //db  32h
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db  3Dh");                          //db  3Dh
+    _STOP_("db  32h");                          //db  32h
+    _STOP_("db  7Eh");                          //db  7Eh
+    _STOP_("db 0B8h");                          //db 0B8h
+    _STOP_("db  32h");                          //db  32h
+    _STOP_("db  89h");                          //db  89h
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db  30h");                          //db  30h
+    _STOP_("db 0B2h");                          //db 0B2h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0EBh");                          //db 0EBh
+    _STOP_("db 0DCh");                          //db 0DCh
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  6Ch");                          //db  6Ch
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  1Eh");                          //db  1Eh
+    _STOP_("db  9Ch");                          //db  9Ch
+    _STOP_("db 91h, 3, 0DEh, 0D1h, 0EBh, 83h, 0E3h, 0E...");
+    _STOP_("db 0CEh, 32h, 1, 44h, 12h, 0E9h, 11h, 0B2h...");
+    _STOP_("db 1Ah, 1, 0, 0BFh, 4Ch, 78h, 81h, 3Ch, 0E...");
+    _STOP_("db 0BFh, 60h, 78h, 2Eh, 8Bh, 5, 89h, 44h, ...");
+    _STOP_("db 45h, 2, 89h, 44h, 0Eh, 83h, 0C7h, 4, 89...");
+    _STOP_("db 0E9h, 0EAh, 0B1h, 83h, 44h, 16h, 0Ch, 8...");
+    _STOP_("db 0A0h, 0, 7Ch, 0F2h, 0C7h, 44h, 1Ah, 2 d...");
+    _STOP_("db 3Eh, 78h, 81h, 3Ch, 0E0h, 0, 74h, 0D1h,...");
+    _STOP_("db 0EBh, 0CCh, 0E8h, 0F1h, 0BDh, 0A1h, 98h...");
+    _STOP_("db 16h, 8Bh, 44h, 1Ah, 85h, 0C0h, 75h, 6Bh...");
+    _STOP_("db 0D1h, 0E3h, 8Bh, 44h, 12h, 3, 87h, 0DEh...");
+    _STOP_("db 16h, 3, 8Fh, 0EEh, 32h, 3Dh, 74h, 0, 7F...");
+    _STOP_("db 74h, 0, 0C7h, 44h, 1Ah, 1, 0, 0C7h, 44h...");
+    _STOP_("db 3Dh, 0CCh, 0, 7Ch, 0Dh, 0B8h, 0CCh, 0, ...");
+    _STOP_("db 1, 0, 0C7h, 44h, 1Ch, 2 dup(0), 3, 0Eh,...");
+    _STOP_("db 0F9h, 6Ch, 7Fh, 0Dh, 0B9h, 6Ch, 0, 0C7h...");
+    _STOP_("db 0, 0C7h, 44h, 1Ch, 6, 0, 81h, 0F9h, 54h...");
+    _STOP_("db 0B9h, 54h, 1, 0C7h, 44h, 1Ah, 1, 0, 0C7...");
+    _STOP_("db 2, 0, 89h, 44h, 12h, 2Bh, 0Eh, 90h, 91h...");
+    _STOP_("db 0C3h, 3Dh, 1, 0, 75h, 24h, 0E8h, 51h, 0...");
+    _STOP_("db 0, 75h, 1Bh, 0C7h, 44h, 1Ah, 2, 0, 0BFh...");
+    _STOP_("db 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 4...");
+    _STOP_("db 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, 0C3h,...");
+    _STOP_("db 3Bh, 3Ch, 75h, 78h, 56h, 0E8h, 0B6h, 8B...");
+    _STOP_("db 90h, 0E8h, 0Ah, 83h, 8Bh, 0FEh, 5Eh, 0C...");
+    _STOP_("db 0C7h, 45h, 2, 0E1h, 84h, 0C7h, 45h, 4, ...");
+    _STOP_("db 45h, 6, 0A7h, 3Ah, 2Eh, 0A1h, 24h, 77h,...");
+    _STOP_("db 0C6h, 45h, 27h, 0, 0C7h, 45h, 48h, 2 du...");
+    _STOP_("db 34h, 1Eh, 0, 0C7h, 45h, 36h, 2 dup(0), ...");
+    _STOP_("db 0D1h, 0E3h, 2Eh, 8Bh, 9Fh, 0Bh, 95h, 2E...");
+    _STOP_("db 45h, 0Ch, 2Eh, 8Bh, 47h, 2, 89h, 45h, 0...");
+    _STOP_("db 4, 89h, 5Dh, 10h, 8Bh, 44h, 12h, 89h, 4...");
+    _STOP_("db 44h, 16h, 89h, 45h, 16h, 8Bh, 44h, 1Ch,...");
+    _STOP_("db 0C7h, 45h, 1Ah, 2 dup(0FFh), 87h, 0FEh,...");
+    _STOP_("db 0B0h, 87h, 0FEh, 0E8h, 0E0h, 82h, 0C3h,...");
+    _STOP_("db 0BCh, 0A1h, 98h, 91h, 1, 44h, 16h, 8Bh,...");
+    _STOP_("db 0C0h, 78h, 4Ch, 0F7h, 6, 9Ch, 91h, 1, 0...");
+    _STOP_("db 44h, 1Ch, 74h, 3Ah, 79h, 3, 5, 8, 0, 3D...");
+    _STOP_("db 9, 0FFh, 4Ch, 1Ch, 83h, 64h, 1Ch, 7, 0E...");
+    _STOP_("db 44h, 1Ch, 83h, 64h, 1Ch, 7, 8Bh, 5Ch, 1...");
+    _STOP_("db 2Eh, 8Bh, 9Fh, 0Bh, 95h, 2Eh, 8Bh, 7, 8...");
+    _STOP_("db 2Eh, 8Bh, 47h, 2, 89h, 44h, 0Eh, 83h, 0...");
+    _STOP_("db 5Ch, 10h, 0E9h, 51h, 0B0h, 0C7h, 44h, 1...");
+    _STOP_("db 81h, 7Ch, 16h, 0C0h, 0, 73h, 3Dh, 2Eh, ...");
+    _STOP_("db 0, 44h, 48h, 73h, 34h, 0E8h, 41h, 0BCh,...");
+    _STOP_("db 44h, 48h, 0A1h, 12h, 9Fh, 8Bh, 1Eh, 16h...");
+    _STOP_("db 12h, 2Bh, 5Ch, 16h, 0E8h, 2Bh, 96h, 8Bh...");
+    _STOP_("db 8Bh, 1Eh, 28h, 77h");            //db 8Bh, 1Eh, 28h, 77h
+    _STOP_("db 0D1h, 0E3h, 2Eh, 8Bh, 0AFh, 0A9h, 92h, ...");
+    _STOP_("db 8Bh, 5Ch, 16h, 2Eh, 8Bh, 16h, 2Ah, 77h,...");
+    _STOP_("db 8Bh, 5Ch, 1Ch, 0D1h, 0E3h, 8Bh, 44h, 12...");
+    _STOP_("db 16h, 3, 87h, 0FEh, 32h, 3, 8Fh, 0Eh, 33...");
+    _STOP_("db 12h, 89h, 4Ch, 16h, 3, 0Eh, 90h, 91h, 0...");
+    _STOP_("db 8Bh, 15h, 83h, 0C7h, 2, 3Bh, 5, 75h, 1A...");
+    _STOP_("db 2, 75h, 15h, 0E8h, 0DFh, 0BBh, 25h, 3, ...");
+    _STOP_("db 8Bh, 0D8h, 0D1h, 0E3h, 8Bh, 51h, 2, 89h...");
+    _STOP_("db 0C5h, 0AFh, 83h, 0C7h, 0Ah, 4Ah, 79h, 0...");
+    _STOP_("db 0AFh, 0E9h, 8Fh, 7, 0E8h, 0DEh, 0BBh, 0...");
+    _STOP_("db 8Bh, 44h, 1Ah, 3Dh, 50h, 0, 7Dh, 7Fh, 2...");
+    _STOP_("db 34h, 0A1h, 12h, 9Fh, 8Bh, 1Eh, 16h, 9Fh...");
+    _STOP_("db 2Bh, 5Ch, 16h, 0E8h, 9Dh, 95h, 0F7h, 0D...");
+    _STOP_("db 89h, 44h, 1Ch, 8Bh, 0D8h, 0D1h, 0E3h, 2...");
+    _STOP_("db 1Bh, 95h, 2Eh, 8Bh, 7, 89h, 44h, 0Ch, 2...");
+    _STOP_("db 2, 89h, 44h, 0Eh, 83h, 0C3h, 4, 89h, 5C...");
+    _STOP_("db 5Ch, 1Ch, 0D1h, 0E3h, 8Bh, 87h, 90h, 33...");
+    _STOP_("db 3Dh, 40h, 1, 73h, 31h, 89h, 44h, 12h, 8...");
+    _STOP_("db 33h, 3, 44h, 16h, 3, 6, 98h, 91h, 3Dh, ...");
+    _STOP_("db 1Eh, 89h, 44h, 16h, 0E8h, 48h, 0AFh, 0E...");
+    _STOP_("db 74h, 16h, 83h, 3Eh, 88h, 91h, 0, 75h, 1...");
+    _STOP_("db 4, 9Fh, 0B9h, 8, 0B8h, 4, 0, 0E8h, 0F6h...");
+    _STOP_("db 64h, 81h, 0C3h, 0E8h, 95h, 88h, 0BAh, 5...");
+    _STOP_("db 30h, 12h, 0E8h, 0BDh, 0ACh, 0E8h, 54h, ...");
+    _STOP_("db 7Ch, 1Ah, 0, 80h, 75h, 3Ah, 0E8h, 3Ah, ...");
+    _STOP_("db 1Ch, 2Eh, 8Ah, 87h, 16h, 61h, 98h, 0D1h...");
+    _STOP_("db 0F8h, 3, 44h, 16h, 3Dh, 0C0h, 0, 73h, 1...");
+    _STOP_("db 16h, 2Eh, 8Ah, 87h, 56h, 61h, 98h, 0D1h...");
+    _STOP_("db 0F8h, 3, 44h, 12h, 3Dh, 40h, 1, 73h, 9,...");
+    _STOP_("db 0C7h, 44h, 4, 53h, 8, 0C3h, 0E8h, 13h, ...");
+    _STOP_("db 98h, 91h, 1, 44h, 16h, 8Bh, 5Ch, 22h, 0...");
+    _STOP_("db 92h, 0FFh, 0E8h, 4Fh, 0C1h, 83h, 3Ch, 4...");
+    _STOP_("db 5Ch, 20h, 0D1h, 0E3h, 83h, 0BFh, 0D2h, ...");
+    _STOP_("db 6, 0C7h, 87h, 0D2h, 91h, 18h, 0, 0C3h, ...");
+    _STOP_("db 61h, 7, 74h, 2Dh, 81h, 7Ch, 4, 97h, 8, ...");
+    _STOP_("db 7Ch, 3Ah, 83h, 3Dh, 0, 75h, 29h, 0C7h, ...");
+    _STOP_("db 8, 0EBh, 22h, 8Bh, 7Ch, 3Ah, 83h, 3Dh, ...");
+    _STOP_("db 83h, 0EFh, 0Ah, 3Bh, 7Ch, 38h, 74h, 12h...");
+    _STOP_("db 4, 53h, 8, 0EBh, 0Bh, 83h, 7Ch, 1Ah, 0,...");
+    _STOP_("db 44h, 4, 97h, 8, 8Bh, 5Ch, 1Ch, 83h, 0C3...");
+    _STOP_("db 0EBh, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h, 0EB...");
+    _STOP_("db 0Eh, 0BFh, 2Bh, 95h, 81h, 3Ch, 18h, 1, ...");
+    _STOP_("db 3Bh, 95h, 81h, 3Ch, 1Ch, 1, 75h, 3, 0BF...");
+    _STOP_("db 2Eh, 8Bh, 1, 89h, 44h, 0Ch, 0E9h, 44h, ...");
+    _STOP_("db 4, 5Fh, 8Ch, 29h, 45h, 24h, 76h, 1, 0C3...");
+    _STOP_("db 0F7h, 0E8h, 6Ah, 80h, 0B9h, 9, 0, 0E8h,...");
+    _STOP_("db 1Dh, 0, 0B8h, 50h, 0, 8Bh, 5Dh, 16h, 2B...");
+    _STOP_("db 91h, 0BAh, 0A0h, 0");            //db 91h, 0BAh, 0A0h, 0
+    _STOP_("db 0BDh");                          //db 0BDh
+    _STOP_("db  4Ch");                          //db  4Ch
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db  13h");                          //db  13h
+    _STOP_("db  8Eh");                          //db  8Eh
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  36h");                          //db  36h
+    _STOP_("db  54h");                          //db  54h
+    _STOP_("db  90h");                          //db  90h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db 0E4h");                          //db 0E4h
+    _STOP_("db 0AFh");                          //db 0AFh
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db 0C6h");                          //db 0C6h
+    _STOP_("db  61h");                          //db  61h
+    _STOP_("db  8Fh");                          //db  8Fh
+    _STOP_("db 0FFh");                          //db 0FFh
+    _STOP_("db 0C3h");                          //db 0C3h
+    _STOP_("db  56h");                          //db  56h
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  44h");                          //db  44h
+    _STOP_("db  61h");                          //db  61h
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db 0B8h");                          //db 0B8h
+    _STOP_("db 0BBh");                          //db 0BBh
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  4Ch");                          //db  4Ch
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E1h");                          //db 0E1h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E1h");                          //db 0E1h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E1h");                          //db 0E1h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db  10h");                          //db  10h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  54h");                          //db  54h
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db 0D1h");                          //db 0D1h
+    _STOP_("db 0E2h");                          //db 0E2h
+    _STOP_("db  2Bh");                          //db  2Bh
+    _STOP_("db  16h");                          //db  16h
+    _STOP_("db  90h");                          //db  90h
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0EAh");                          //db 0EAh
+    _STOP_("db  10h");                          //db  10h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  22h");                          //db  22h
+    _STOP_("db  74h");                          //db  74h
+    _STOP_("db  18h");                          //db  18h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0C1h");                          //db 0C1h
+    _STOP_("db  10h");                          //db  10h
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db 0B3h");                          //db 0B3h
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  7Ch");                          //db  7Ch
+    _STOP_("db  22h");                          //db  22h
+    _STOP_("db  74h");                          //db  74h
+    _STOP_("db  0Ch");                          //db  0Ch
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db 0CBh");                          //db 0CBh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db 0BBh");                          //db 0BBh
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0EAh");                          //db 0EAh
+    _STOP_("db  10h");                          //db  10h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db 0F7h");                          //db 0F7h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db  90h");                          //db  90h
+    _STOP_("db  81h");                          //db  81h
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db 0C3h");                          //db 0C3h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  3Eh");                          //db  3Eh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  75h");                          //db  75h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db 0C9h");                          //db 0C9h
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  45h");                          //db  45h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  87h");                          //db  87h
+    _STOP_("db  29h");                          //db  29h
+    _STOP_("db  45h");                          //db  45h
+    _STOP_("db  24h");                          //db  24h
+    _STOP_("db  76h");                          //db  76h
+    _STOP_("db 0E9h");                          //db 0E9h
+    _STOP_("db 0BCh");                          //db 0BCh
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  5Dh");                          //db  5Dh
+    _STOP_("db  0Ch");                          //db  0Ch
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db 0C1h");                          //db 0C1h
+    _STOP_("db  62h");                          //db  62h
+    _STOP_("db 0BAh");                          //db 0BAh
+    _STOP_("db  53h");                          //db  53h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  45h");                          //db  45h
+    _STOP_("db  28h");                          //db  28h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  5Dh");                          //db  5Dh
+    _STOP_("db  2Ah");                          //db  2Ah
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db 0C3h");                          //db 0C3h
+    _STOP_("db 0BDh");                          //db 0BDh
+    _STOP_("db  30h");                          //db  30h
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db  18h");                          //db  18h
+    _STOP_("db 0ABh");                          //db 0ABh
+    _STOP_("db  56h");                          //db  56h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db 0F7h");                          //db 0F7h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db 0ACh");                          //db 0ACh
+    _STOP_("db  7Fh");                          //db  7Fh
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db 0FFh");                          //db 0FFh
+    _STOP_("db  0Eh");                          //db  0Eh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  3Eh");                          //db  3Eh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  75h");                          //db  75h
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  8Ch");                          //db  8Ch
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db 0FFh");                          //db 0FFh
+    _STOP_("db 0FFh");                          //db 0FFh
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db 0F4h");                          //db 0F4h
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db  51h");                          //db  51h
+    _STOP_("db 0D2h");                          //db 0D2h
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db 0F6h");                          //db 0F6h
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db  4Dh");                          //db  4Dh
+    _STOP_("db  89h");                          //db  89h
+    _STOP_("db  83h");                          //db  83h
+    _STOP_("db  3Eh");                          //db  3Eh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db  75h");                          //db  75h
+    _STOP_("db  6Fh");                          //db  6Fh
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  8Ch");                          //db  8Ch
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db  57h");                          //db  57h
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db  81h");                          //db  81h
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db  50h");                          //db  50h
+    _STOP_("db  19h");                          //db  19h
+    _STOP_("db 0B9h");                          //db 0B9h
+    _STOP_("db 0CCh");                          //db 0CCh
+    _STOP_("db  33h");                          //db  33h
+    _STOP_("db 0C0h");                          //db 0C0h
+    _STOP_("db 0F3h");                          //db 0F3h
+    _STOP_("db 0ABh");                          //db 0ABh
+    _STOP_("db  56h");                          //db  56h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  36h");                          //db  36h
+    _STOP_("db  54h");                          //db  54h
+    _STOP_("db  90h");                          //db  90h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db  85h");                          //db  85h
+    _STOP_("db 0C0h");                          //db 0C0h
+    _STOP_("db  74h");                          //db  74h
+    _STOP_("db  13h");                          //db  13h
+    _STOP_("db  50h");                          //db  50h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db  2Ch");                          //db  2Ch
+    _STOP_("db  8Eh");                          //db  8Eh
+    _STOP_("db  58h");                          //db  58h
+    _STOP_("db  57h");                          //db  57h
+    _STOP_("db  3Dh");                          //db  3Dh
+    _STOP_("db  50h");                          //db  50h
+    _STOP_("db  74h");                          //db  74h
+    _STOP_("db  8Bh");                          //db  8Bh
+    _STOP_("db 0FEh");                          //db 0FEh
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db 0CAh");                          //db 0CAh
+    _STOP_("db 0B1h");                          //db 0B1h
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db 0EBh");                          //db 0EBh
+    _STOP_("db 0E7h");                          //db 0E7h
+    _STOP_("db 0C6h");                          //db 0C6h
+    _STOP_("db  2Dh");                          //db  2Dh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db 0C6h");                          //db 0C6h
+    _STOP_("db  2Eh");                          //db  2Eh
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db  8Ch");                          //db  8Ch
+    _STOP_("db  8Eh");                          //db  8Eh
+    _STOP_("db 0B9h");                          //db 0B9h
+    _STOP_("db  10h");                          //db  10h
+    _STOP_("db  33h");                          //db  33h
+    _STOP_("db 0C0h");                          //db 0C0h
+    _STOP_("db 0F3h");                          //db 0F3h
+    _STOP_("db 0ABh");                          //db 0ABh
+    _STOP_("db 0B9h");                          //db 0B9h
+    _STOP_("db  27h");                          //db  27h
+    _STOP_("db 0B8h");                          //db 0B8h
+    _STOP_("db 0BBh");                          //db 0BBh
+    _STOP_("db 0BAh");                          //db 0BAh
+    _STOP_("db  40h");                          //db  40h
+    _STOP_("db 0BFh");                          //db 0BFh
+    _STOP_("db 0C0h");                          //db 0C0h
+    _STOP_("db 0BDh");                          //db 0BDh
+    _STOP_("db  4Ch");                          //db  4Ch
+    _STOP_("db  12h");                          //db  12h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db 0F3h");                          //db 0F3h
+    _STOP_("db  8Ch");                          //db  8Ch
+    _STOP_("db 0B9h");                          //db 0B9h
+    _STOP_("db 0E8h");                          //db 0E8h
+    _STOP_("db  49h");                          //db  49h
+    _STOP_("db  8Dh");                          //db  8Dh
+    _STOP_("db  5Eh");                          //db  5Eh
+    _STOP_("db  5Fh");                          //db  5Fh
+    _STOP_("db 0C7h");                          //db 0C7h
+    _STOP_("db 0A8h");                          //db 0A8h
+    _STOP_("db  91h");                          //db  91h
+    _STOP_("db 0C6h");                          //db 0C6h
+    _STOP_("db  30h");                          //db  30h
+    _STOP_("db  92h");                          //db  92h
+    _STOP_("db 0FFh");                          //db 0FFh
+    _STOP_("db 0C3h");                          //db 0C3h
+}
+
+void sub_188A9()
+{
+    WORD _cs = _seg000;
+
+    if ((short)memory16(_ds, 0x918C) >= 0 /*CHECK*/)//jns short loc_188BE
+      goto loc_188BE;
+    if ((short)memory16(_ds, 0x91AA) > (short)0x0b40)//jg short loc_188BE
+      goto loc_188BE;
+    memory16(_ds, 0x91AA) = 0x0b40;             //mov word_316DA, 0B40h
+loc_188BE:                                      //loc_188BE:
+    if (memory16(_ds, _si + 34) != 0x0002)      //jnz short loc_188CD
+      goto loc_188CD;
+    if (memory16(_ds, 0x9200) != 0x0001)        //jnz short loc_188EC
+      goto loc_188EC;
+    goto loc_188F8;                             //jmp short loc_188F8
+loc_188CD:                                      //loc_188CD:
+    if (memory16(_ds, _si + 34) != 0x0001)      //jnz short loc_188DD
+      goto loc_188DD;
+    if ((short)memory16(_ds, 0x9F12) >= (short)0x00a0)
+      goto loc_188EC;
+    goto loc_188E5;                             //jmp short loc_188E5
+loc_188DD:                                      //loc_188DD:
+    if ((short)memory16(_ds, 0x9F12) < (short)0x00a0)//jl short loc_188EC
+      goto loc_188EC;
+loc_188E5:                                      //loc_188E5:
+    if (memory16(_ds, 0x9202) != 0x0003)        //jnz short loc_188F8
+      goto loc_188F8;
+loc_188EC:                                      //loc_188EC:
+    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
+    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
+    goto loc_18931;                             //jmp short loc_18931
+loc_188F8:                                      //loc_188F8:
+    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
+    _ax += 0x000f;                              //add ax, 0Fh
+    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax <<= 1;                                  //shl ax, 1
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
+    _ax += 0x000f;                              //add ax, 0Fh
+    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
+    if (memory16(_ds, _si + 26) != 0x0004)      //jnz short loc_18931
+      goto loc_18931;
+    if (memory16(_ds, 0x9202) != 0x0003)        //jnz short loc_18940
+      goto loc_18940;
+loc_18931:                                      //loc_18931:
+    if (memory16(_ds, 0x919C) & 0x0001)         //jnz short loc_18940
+      goto loc_18940;
+    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
+    memory16(_ds, _si + 26) &= 0x0007;          //and word ptr [si+1Ah], 7
+loc_18940:                                      //loc_18940:
+    _bx = memory16(_ds, _si + 26);              //mov bx, [si+1Ah]
+    if ((short)_bx <= (short)0x0004)            //jle short loc_1894D
+      goto loc_1894D;
+    _bx -= 0x0008;                              //sub bx, 8
+    _bx = -_bx;                                 //neg bx
+loc_1894D:                                      //loc_1894D:
+    _bx <<= 1;                                  //shl bx, 1
+    _di = memory16(_ds, _si + 12);              //mov di, [si+0Ch]
+    _ax = memory16(_cs, _bx + -27939);          //mov ax, cs:[bx-6D23h]
+    memory16(_ds, _di) = _ax;                   //mov [di], ax
+    if (memory16(_ds, _si + 34) != 0x0002)      //jnz short locret_189AD
+      goto locret_189AD;
+    _bp = 0x91d4;                               //mov bp, 91D4h
+    _di = 0x9219;                               //mov di, 9219h
+    _cx = 0x0008;                               //mov cx, 8
+loc_18968:                                      //loc_18968:
+    if (memory16(_ds, _bp + 0) == 0x0000)       //jz short loc_189A5
+      goto loc_189A5;
+    _bx = 0x0000;                               //mov bx, 0
+    _bx = _bx + memory16(_cs, _di);             //add bx, cs:[di]
+    memory16(_ds, _bp + 0) -= 1;                //dec word ptr ds:[bp+0]
+    _push(_si);                                 //push si
+    if (memory16(_ds, _bp + 0) & 0x0002)        //jnz short loc_18987
+      goto loc_18987;
+    _lea(_si, _ds, _di + 2);                    //lea si, [di+2]
+    goto loc_1898A;                             //jmp short loc_1898A
+loc_18987:                                      //loc_18987:
+    _lea(_si, _ds, _di + 10);                   //lea si, [di+0Ah]
+loc_1898A:                                      //loc_1898A:
+    _ax = memory16(_cs, _si);                   //mov ax, cs:[si]
+    memory16(_ds, _bx) = _ax;                   //mov [bx], ax
+    _ax = memory16(_cs, _si + 2);               //mov ax, cs:[si+2]
+    memory16(_ds, _bx + 2) = _ax;               //mov [bx+2], ax
+    _ax = memory16(_cs, _si + 4);               //mov ax, cs:[si+4]
+    memory16(_ds, _bx + 40) = _ax;              //mov [bx+28h], ax
+    _ax = memory16(_cs, _si + 6);               //mov ax, cs:[si+6]
+    memory16(_ds, _bx + 42) = _ax;              //mov [bx+2Ah], ax
+    _si = _pop();                               //pop si
+loc_189A5:                                      //loc_189A5:
+    _bp += 0x0002;                              //add bp, 2
+    _di += 0x0012;                              //add di, 12h
+    if (--_cx)                                  //loop loc_18968
+      goto loc_18968;
+locret_189AD:                                   //locret_189AD:
+    return;
+}
+
+void sub_189AE()
+{
+    WORD _cs = _seg000;
+
+    if ((short)memory16(_ds, 0x91AA) > (short)0x0120)//jg short loc_189BC
+      goto loc_189BC;
+    memory16(_ds, 0x91AA) = 0x0120;             //mov word_316DA, 120h
+loc_189BC:                                      //loc_189BC:
+    if (memory16(_ds, _si + 32) != 0x0000)      //jnz short loc_18A0F
+      goto loc_18A0F;
+    if ((short)memory16(_ds, _si + 26) >= 0 /*CHECK*/)
+      goto loc_189FB;
+    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
+    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
+    _ax = memory16(_ds, 0x9F16);                //mov ax, word_32446
+    _ax = _ax + memory16(_ds, 0x9190);          //add ax, word_316C0
+    if ((short)_ax > (short)0x00b0)             //jg short locret_189FA
+      goto locret_189FA;
+    _ax = memory16(_ds, 0x9F12);                //mov ax, word_32442
+    if ((short)_ax < (short)0x0000)             //jl short locret_189FA
+      goto locret_189FA;
+    if ((short)_ax > (short)0x013f)             //jg short locret_189FA
+      goto locret_189FA;
+    memory16(_ds, _si + 32) = 0x03e8;           //mov word ptr [si+20h], 3E8h
+    memory16(_ds, _si + 28) = 0x0003;           //mov word ptr [si+1Ch], 3
+    memory16(_ds, _si + 26) = 0x0154;           //mov word ptr [si+1Ah], 154h
+locret_189FA:                                   //locret_189FA:
+    return;                                     //retn
+loc_189FB:                                      //loc_189FB:
+    memory16(_ds, _si + 26) -= 1;               //dec word ptr [si+1Ah]
+    if ((short)memory16(_ds, _si + 26) >= 0)    //jns short loc_18A0F
+      goto loc_18A0F;
+    memory16(_ds, _si + 48) = 0x0000;           //mov word ptr [si+30h], 0
+    memory16(_ds, _si + 32) = 0x03e8;           //mov word ptr [si+20h], 3E8h
+    memory16(_ds, _si + 28) = 0xfffd;           //mov word ptr [si+1Ch], 0FFFDh
+loc_18A0F:                                      //loc_18A0F:
+    _al = memory(_cs, 0x7732);                  //mov al, cs:byte_176E6+4Ch
+    _flags.carry = (memory(_ds, _si + 72) + _al) >= 0x100;
+    memory(_ds, _si + 72) += _al;
+    if (!_flags.carry)                          //jnb short loc_18A8B
+      goto loc_18A8B;
+    sub_14191();                                //call sub_14191
+    _al &= 0x3f;                                //and al, 3Fh
+    memory(_ds, _si + 72) = _al;                //mov [si+48h], al
+    sub_14191();                                //call sub_14191
+    _ax &= 0x0003;                              //and ax, 3
+    if (_ax == 0)                               //jz short loc_18A58
+      goto loc_18A58;
+    _ax = 0x00a0;                               //mov ax, 0A0h
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    _bx += 0x0070;                              //add bx, 70h
+    _cx = 0x0004;                               //mov cx, 4
+    _dx = memory(_cs, 0x7734);                  //mov dx, word ptr cs:byte_176E6+4Eh
+    sub_11ED3();                                //call sub_11ED3
+    _bx = 0x7a80;                               //mov bx, 7A80h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di + 12) = _ax;              //mov [di+0Ch], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _di + 14) = _ax;              //mov [di+0Eh], ax
+    _bx += 0x0004;                              //add bx, 4
+    memory16(_ds, _di + 16) = _bx;              //mov [di+10h], bx
+    goto loc_18A8B;                             //jmp short loc_18A8B
+loc_18A58:                                      //loc_18A58:
+    _cx = 0x0010;                               //mov cx, 10h
+loc_18A5B:                                      //loc_18A5B:
+    _push(_cx);                                 //push cx
+    _ax = 0x00a0;                               //mov ax, 0A0h
+    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
+    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
+    _bx += 0x0070;                              //add bx, 70h
+    _cx -= 1;                                   //dec cx
+    _dx = memory(_cs, 0x7734);                  //mov dx, word ptr cs:byte_176E6+4Eh
+    sub_11ED3();                                //call sub_11ED3
+    _bx = 0x7a92;                               //mov bx, 7A92h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di + 12) = _ax;              //mov [di+0Ch], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _di + 14) = _ax;              //mov [di+0Eh], ax
+    _bx += 0x0004;                              //add bx, 4
+    memory16(_ds, _di + 16) = _bx;              //mov [di+10h], bx
+    _cx = _pop();                               //pop cx
+    if (--_cx)                                  //loop loc_18A5B
+      goto loc_18A5B;
+loc_18A8B:                                      //loc_18A8B:
+    memory16(_ds, 0xFCF2) = 0x0098;             //mov word_38222, 98h
+    memory16(_ds, 0xFCFA) = 0x00a7;             //mov word_3822A, 0A7h
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    memory16(_ds, 0xFCF6) = _ax;                //mov word_38226, ax
+    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
+    memory16(_ds, 0xFCF6) -= _ax;               //sub word_38226, ax
+    memory16(_ds, 0xFCF6) += 0x0070;            //add word_38226, 70h
+    _ax = memory16(_ds, 0xFCF6);                //mov ax, word_38226
+    memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
+    memory16(_ds, 0xFCFE) += 0x000a;            //add word_3822E, 0Ah
+    _ax = memory16(_ds, 0xFCF2);                //mov ax, word_38222
+    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
+    _ax = memory16(_ds, 0xFCF6);                //mov ax, word_38226
+    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
+    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
+    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
+    _ax = memory16(_ds, 0xFCFE);                //mov ax, word_3822E
+    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
+    if ((short)memory16(_ds, 0x9190) < (short)0x0160)//jl short loc_18AD7
+      goto loc_18AD7;
+    goto locret_18C3D;                          //jmp locret_18C3D
+loc_18AD7:                                      //loc_18AD7:
+    if (memory16(_ds, _si + 48) != 0x0000)      //jnz short loc_18AE0
+      goto loc_18AE0;
+    goto loc_18B78;                             //jmp loc_18B78
+loc_18AE0:                                      //loc_18AE0:
+    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
+    _bx += 0x0002;                              //add bx, 2
+    _bx &= 0x0006;                              //and bx, 6
+    memory16(_ds, _si + 34) = _bx;              //mov [si+22h], bx
+    _bx = memory16(_cs, _bx + -27405);          //mov bx, cs:[bx-6B0Dh]
+    _di = 0x9333;                               //mov di, 9333h
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_cs, _di) = _ax;                   //mov cs:[di], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_cs, _di + 2) = _ax;               //mov cs:[di+2], ax
+    _ax = memory16(_cs, _bx + 4);               //mov ax, cs:[bx+4]
+    memory16(_cs, _di + 12) = _ax;              //mov cs:[di+0Ch], ax
+    _ax = memory16(_cs, _bx + 6);               //mov ax, cs:[bx+6]
+    memory16(_cs, _di + 14) = _ax;              //mov cs:[di+0Eh], ax
+    memory16(_ds, _si + 48) -= 1;               //dec word ptr [si+30h]
+    if (memory16(_ds, _si + 48) != 0)           //jnz short locret_18B77
+      goto locret_18B77;
+    _push(_si);                                 //push si
+    sub_11022();                                //call sub_11022
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    _di = _si;                                  //mov di, si
+    _si = _pop();                               //pop si
+    memory16(_ds, _di) = 0x010c;                //mov word ptr [di], 10Ch
+    memory16(_ds, _di + 2) = 0x83bd;            //mov word ptr [di+2], 83BDh
+    memory16(_ds, _di + 4) = 0x0853;            //mov word ptr [di+4], 853h
+    memory16(_ds, _di + 6) = 0x0761;            //mov word ptr [di+6], 761h
+    memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
+    memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
+    memory16(_ds, _di + 18) = 0x00a0;           //mov word ptr [di+12h], 0A0h
+    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
+    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
+    _ax += 0x0080;                              //add ax, 80h
+    memory16(_ds, _di + 22) = _ax;              //mov [di+16h], ax
+    _bx = 0x78de;                               //mov bx, 78DEh
+    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
+    memory16(_ds, _di + 12) = _ax;              //mov [di+0Ch], ax
+    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
+    memory16(_ds, _di + 14) = _ax;              //mov [di+0Eh], ax
+    _bx += 0x0004;                              //add bx, 4
+    memory16(_ds, _di + 16) = _bx;              //mov [di+10h], bx
+    memory16(_ds, _di + 26) = 0x0000;           //mov word ptr [di+1Ah], 0
+    sub_14191();                                //call sub_14191
+    _ax &= 0x0007;                              //and ax, 7
+    memory16(_ds, _di + 28) = _ax;              //mov [di+1Ch], ax
+locret_18B77:                                   //locret_18B77:
+    return;                                     //retn
+loc_18B78:                                      //loc_18B78:
+    if (memory16(_ds, _si + 32) != 0x0000)      //jnz short loc_18B81
+      goto loc_18B81;
+    goto loc_18C0D;                             //jmp loc_18C0D
+loc_18B81:                                      //loc_18B81:
     _ah = 0x11;                                 //mov ah, 11h
     _interrupt(128);                            //int 80h
     if (_al & _al)                              //jnz short loc_18B8F
@@ -10636,7 +12428,12 @@ loc_18C31:                                      //loc_18C31:
     _ax += 0x0008;                              //add ax, 8
     memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
     memory16(_ds, _si + 28) = _dx;              //mov [si+1Ch], dx
-    return;                                     //retn
+locret_18C3D:                                   //locret_18C3D:
+    return;
+}
+
+void sub_18C3E()
+{
     if ((short)memory16(_ds, 0x9190) >= (short)0x0160)
       goto locret_18C5E;
     _push(_si);                                 //push si
@@ -10687,11 +12484,20 @@ loc_18C9D:                                      //loc_18C9D:
     _di += 0x938b;                              //add di, 938Bh
 }
 
-void loc_18CC6()
+void sub_18CA7()
 {
-loc_18CC6:
     WORD _cs = _seg000;
 
+    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
+    memory16(_ds, 0xFCE6) += _ax;               //add word_38216, ax
+    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
+    memory16(_ds, 0xFCEE) += _ax;               //add word_3821E, ax
+    if ((short)memory16(_ds, 0xFCE6) >= (short)0x01b0)
+      goto loc_18D08;
+    sub_18C85();                                //call sub_18C85
+    _cx = memory16(_cs, _di);                   //mov cx, cs:[di]
+    _di += 0x0002;                              //add di, 2
+loc_18CC6:                                      //loc_18CC6:
     _push(_cx);                                 //push cx
     if (memory(_cs, _di) == 0x0000)             //jz short loc_18CFF
       goto loc_18CFF;
@@ -10721,6 +12527,7 @@ loc_18D07:                                      //loc_18D07:
     _cx = _pop();                               //pop cx
 loc_18D08:                                      //loc_18D08:
     _ax = _ax ^ _ax;                            //xor ax, ax
+    _flags.zero = true;
     return;                                     //retn
 loc_18D0B:                                      //loc_18D0B:
     _bx = 0x98ce;                               //mov bx, 98CEh
@@ -10729,46 +12536,14 @@ loc_18D0B:                                      //loc_18D0B:
     _cx = _pop();                               //pop cx
     _ax = _ax ^ _ax;                            //xor ax, ax
     _ax -= 1;                                   //dec ax
-    return;                                     //retn
-    _bx = 0x98ce;                               //mov bx, 98CEh
-    _di = memory16(_ds, _bx + 12);              //mov di, [bx+0Ch]
-    memory(_cs, _di) = 0x0000;                  //mov word ptr cs:[di], 0
-    _bx = memory16(_cs, _di + 2);               //mov bx, cs:[di+2]
-    _ax = memory16(_cs, _di + 4);               //mov ax, cs:[di+4]
-    _ax >>= 1;                                  //shr ax, 1
-    _ax >>= 1;                                  //shr ax, 1
-    _ax >>= 1;                                  //shr ax, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _dx = 0x0014;                               //mov dx, 14h
-    _ax = _dx * _al;                            //mul dx
-    _bx += _ax;                                 //add bx, ax
-    memory16(_ds, _bx + 0) = 0x0000;            //mov word ptr [bx+0], 0
-    _dx = 0x0853;                               //mov dx, 853h
-    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
-    _ax += 0x0008;                              //add ax, 8
-    _bx = memory16(_cs, _di + 4);               //mov bx, cs:[di+4]
-    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
-    _bx += 0x0008;                              //add bx, 8
-    _bp = 0x1230;                               //mov bp, 1230h
-{sub_13326(); return; };                        //
-    _ax = memory16(_ds, _si + 40);              //mov ax, [si+28h]
-    memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
-    _ax = memory16(_ds, _si + 42);              //mov ax, [si+2Ah]
-    memory16(_ds, 0xFCE6) = _ax;                //mov word_38216, ax
-    _ax = memory16(_ds, _si + 44);              //mov ax, [si+2Ch]
-    memory16(_ds, 0xFCEA) = _ax;                //mov word_3821A, ax
-    _ax = memory16(_ds, _si + 46);              //mov ax, [si+2Eh]
-    memory16(_ds, 0xFCEE) = _ax;                //mov word_3821E, ax
-    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    memory16(_ds, 0xFCE6) += _ax;               //add word_38216, ax
-    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    memory16(_ds, 0xFCEE) += _ax;               //add word_3821E, ax
-    sub_18C85();                                //call sub_18C85
-    _cx = memory16(_cs, _di);                   //mov cx, cs:[di]
-    _di += 0x0002;                              //add di, 2
-loc_18D8E:                                      //loc_18D8E:
+    _flags.zero = false;
+}
+
+void loc_18D8E()
+{
+loc_18D8E:
+    WORD _cs = _seg000;
+
     _push(_cx);                                 //push cx
     if (memory(_cs, _di) != 0x0000)             //jnz short loc_18DE7
       goto loc_18DE7;
@@ -10823,11 +12598,36 @@ loc_18DF6:                                      //loc_18DF6:
       goto loc_18DF6;
 }
 
-void loc_18E72()
+void sub_18E01()
 {
-loc_18E72:
     WORD _cs = _seg000;
 
+    memory16(_ds, 0x91A8) = 0x09e0;             //mov word_316D8, 9E0h
+    memory16(_ds, 0x91AA) = 0x11ff;             //mov word_316DA, 11FFh
+    memory16(_ds, 0x8EAC) = 0x0fa0;             //mov word_313DC, 0FA0h
+    memory16(_ds, 0x8EAE) = 0x04b0;             //mov word_313DE, 4B0h
+    memory(_ds, 0x9230) = 0x00;                 //mov byte_31760, 0
+    sub_11022();                                //call sub_11022
+    _di = 0x904a;                               //mov di, 904Ah
+    sub_1077C();                                //call sub_1077C
+    memory16(_ds, _si) = 0x0050;                //mov word ptr [si], 50h
+    memory16(_ds, _si + 2) = 0x89ae;            //mov word ptr [si+2], 89AEh
+    memory16(_ds, _si + 4) = 0x8c3e;            //mov word ptr [si+4], 8C3Eh
+    memory16(_ds, _si + 6) = 0x8745;            //mov word ptr [si+6], 8745h
+    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
+    memory(_ds, _si + 74) = 0xff;               //mov byte ptr [si+4Ah], 0FFh
+    memory(_ds, _si + 75) = 0xff;               //mov byte ptr [si+4Bh], 0FFh
+    memory16(_ds, _si + 22) = 0x0060;           //mov word ptr [si+16h], 60h
+    _ax = memory(_cs, 0x772C);                  //mov ax, word ptr cs:byte_176E6+46h
+    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
+    memory16(_ds, _si + 26) = 0xffff;           //mov word ptr [si+1Ah], 0FFFFh
+    memory16(_ds, _si + 32) = 0x0000;           //mov word ptr [si+20h], 0
+    memory16(_ds, _si + 48) = 0x0000;           //mov word ptr [si+30h], 0
+    memory16(_ds, _si + 34) = 0x0000;           //mov word ptr [si+22h], 0
+    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
+    _cx = 0x0003;                               //mov cx, 3
+    _di = 0x33b0;                               //mov di, 33B0h
+loc_18E72:                                      //loc_18E72:
     sub_11022();                                //call sub_11022
     _push(_di);                                 //push di
     _di = 0x904a;                               //mov di, 904Ah
@@ -10909,1002 +12709,6 @@ loc_18F7F:                                      //loc_18F7F:
     if (--_cx)                                  //loop loc_18F7F
       goto loc_18F7F;
     memory16(_ds, 0x8E72) = 0x1b55;             //mov word_313A2, 1B55h
-    return;                                     //retn
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  49h");                          //db  49h
-    _STOP_("db  4Ah");                          //db  4Ah
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  4Bh");                          //db  4Bh
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  4Bh");                          //db  4Bh
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  4Ah");                          //db  4Ah
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  4Ah");                          //db  4Ah
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  4Bh");                          //db  4Bh
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  4Ah");                          //db  4Ah
-    _STOP_("db  4Bh");                          //db  4Bh
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db  4Dh");                          //db  4Dh
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  4Fh");                          //db  4Fh
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  4Dh");                          //db  4Dh
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  4Dh");                          //db  4Dh
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  52h");                          //db  52h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  55h");                          //db  55h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  55h");                          //db  55h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  55h");                          //db  55h
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db  57h");                          //db  57h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  29h");                          //db  29h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  29h");                          //db  29h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  5Fh");                          //db  5Fh
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  5Fh");                          //db  5Fh
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  61h");                          //db  61h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0FCh");                          //db 0FCh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0FDh");                          //db 0FDh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0A8h");                          //db 0A8h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0BEh");                          //db 0BEh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0D4h");                          //db 0D4h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0EAh");                          //db 0EAh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0FDh");                          //db 0FDh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db  7Ah");                          //db  7Ah
-    _STOP_("db 0FCh");                          //db 0FCh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  7Ah");                          //db  7Ah
-    _STOP_("db 0FCh");                          //db 0FCh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FDh");                          //db 0FDh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  7Dh");                          //db  7Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  85h");                          //db  85h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  8Dh");                          //db  8Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  9Dh");                          //db  9Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  9Dh");                          //db  9Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  9Dh");                          //db  9Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  9Dh");                          //db  9Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  95h");                          //db  95h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  9Dh");                          //db  9Dh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0A5h");                          //db 0A5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0ADh");                          //db 0ADh
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  3Dh");                          //db  3Dh
-    _STOP_("db  3Eh");                          //db  3Eh
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  46h");                          //db  46h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  42h");                          //db  42h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  46h");                          //db  46h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  46h");                          //db  46h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  42h");                          //db  42h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  42h");                          //db  42h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  46h");                          //db  46h
-    _STOP_("db  47h");                          //db  47h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  42h");                          //db  42h
-    _STOP_("db  43h");                          //db  43h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  47h");                          //db  47h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  47h");                          //db  47h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  43h");                          //db  43h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  43h");                          //db  43h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  47h");                          //db  47h
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  43h");                          //db  43h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db  49h");                          //db  49h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  49h");                          //db  49h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  49h");                          //db  49h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  5Ch");                          //db  5Ch
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  57h");                          //db  57h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  57h");                          //db  57h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db  5Ah");                          //db  5Ah
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  59h");                          //db  59h
-    _STOP_("db 0CEh");                          //db 0CEh
-    _STOP_("db  35h");                          //db  35h
-    _STOP_("db  82h");                          //db  82h
-    _STOP_("db  7Fh");                          //db  7Fh
-    _STOP_("db 0DBh");                          //db 0DBh
-    _STOP_("db  7Fh");                          //db  7Fh
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0A3h");                          //db 0A3h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  33h");                          //db  33h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0D7h");                          //db 0D7h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0DDh");                          //db 0DDh
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0E3h");                          //db 0E3h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db 0EFh");                          //db 0EFh
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db 0F5h");                          //db 0F5h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  2Ah");                          //db  2Ah
-    _STOP_("db 0FAh");                          //db 0FAh
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  1Ch");                          //db  1Ch
-    _STOP_("db  26h");                          //db  26h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  85h");                          //db  85h
-    _STOP_("db  2Fh");                          //db  2Fh
-    _STOP_("db  64h");                          //db  64h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  68h");                          //db  68h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db 0D8h");                          //db 0D8h
-    _STOP_("db  68h");                          //db  68h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  13h");                          //db  13h
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  68h");                          //db  68h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db 0D8h");                          //db 0D8h
-    _STOP_("db  68h");                          //db  68h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db 0, 3, 0, 12h, 0, 68h, 0, 88h, 0Bh, 4, 0...");
-    _STOP_("db 0C8h, 0, 88h, 0Bh, 5, 0, 4, 0, 11h, 0, ...");
-    _STOP_("db 0Bh, 4, 0, 6, 0, 3, 0, 0C8h, 0, 88h, 0B...");
-    _STOP_("db 10h, 0, 58h, 0, 68h, 0Ah, 1, 0, 8, 0, 4...");
-    _STOP_("db 68h, 0Ah, 8, 0, 1, 0, 0Ah, 0, 58h, 0, 6...");
-    _STOP_("db 8, 0, 4, 0, 0D8h, 0, 68h, 0Ah, 8, 0, 1,...");
-    _STOP_("db 0, 68h, 0Ah, 1, 0, 8, 0, 4, 0, 0D8h, 0,...");
-    _STOP_("db 0, 1, 0, 0Ah, 0, 58h, 0, 68h, 0Ah, 1, 0...");
-    _STOP_("db 0D8h, 0, 68h, 0Ah, 8, 0, 1, 0, 0Ah, 0, ...");
-    _STOP_("db 3Bh, 1, 3Ch, 41h, 3Eh, 81h, 3Eh, 41h, 3...");
-    _STOP_("db 0C1h, 3Eh, 1, 3Fh, 0EAh, 1Ah, 0C1h, 3Bh...");
-    _STOP_("db 3Eh, 81h, 3Eh, 41h, 3Ch, 81h, 3Ch, 0C1h...");
-    _STOP_("db 52h, 1Ch, 0C1h, 3Bh, 1, 3Ch, 41h, 3Eh, ...");
-    _STOP_("db 3Ch, 81h, 3Ch, 0C1h, 3Eh, 1, 3Fh, 0A4h,...");
-    _STOP_("db 1, 3Ch, 41h, 3Eh, 81h, 3Eh, 41h, 3Ch, 8...");
-    _STOP_("db 3Eh, 1, 3Fh, 0AEh, 1Ch, 0C1h, 3Ch, 1, 3...");
-    _STOP_("db 81h, 3Fh, 41h, 3Dh, 81h, 3Dh, 0C1h, 3Fh...");
-    _STOP_("db 1Ch, 0C1h, 3Ch, 1, 3Dh, 41h, 3Fh, 81h, ...");
-    _STOP_("db 81h, 3Dh, 0C1h, 3Fh, 1, 40h, 0F8h, 1Ah,...");
-    _STOP_("db 3Dh, 41h, 3Fh, 81h, 3Fh, 41h, 3Dh, 81h,...");
-    _STOP_("db 1, 40h, 0E0h, 19h, 0C1h, 3Ch, 1, 3Dh, 4...");
-    _STOP_("db 3Fh, 41h, 3Dh, 81h, 3Dh, 0C1h, 3Fh, 1, ...");
-    _STOP_("db 13h, 51h, 0EDh, 52h, 36h, 68h, 5Ah, 68h...");
-    _STOP_("db 61h, 0C1h, 61h, 41h, 5Ch, 4 dup(0), 1, ...");
-    _STOP_("db 81h, 62h, 4 dup(0), 41h, 5Ch, 2 dup(0),...");
-    _STOP_("db 80h, 15h, 2 dup(0), 41h, 0Dh, 41h, 5Ch,...");
-    _STOP_("db 5Ch, 81h, 5Ch, 0C1h, 5Ch, 1, 5Dh, 41h, ...");
-    _STOP_("db 1, 34h, 4 dup(0), 41h, 3Ah, 4 dup(0), 1...");
-    _STOP_("db 81h, 3Ah, 2 dup(0), 0C1h, 1Ch, 1, 1Dh, ...");
-    _STOP_("db 1Dh, 0C1h, 1Dh, 1, 1Eh, 0C1h, 21h, 1, 2...");
-    _STOP_("db 80h, 22h, 0C1h, 22h, 1, 23h, 0C1h, 26h,...");
-    _STOP_("db 27h, 80h, 27h, 0C0h, 27h, 1, 28h, 0C1h,...");
-    _STOP_("db 40h, 2Ch, 80h, 2Ch, 0C0h, 2Ch, 1, 2Dh, ...");
-    _STOP_("db 31h, 41h, 31h, 81h, 31h, 0C1h, 31h, 1, ...");
-    _STOP_("db 1, 36h, 41h, 36h, 81h, 36h, 0C1h, 36h, ...");
-    _STOP_("db 3Ah, 1, 3Bh, 4 dup(0), 41h, 3Bh, 81h, 3...");
-    _STOP_("db 1, 36h, 0C1h, 3Ah, 1, 3Bh, 0C1h, 4Eh, 1...");
-    _STOP_("db 51h, 1, 52h, 0C1h, 36h, 1, 37h, 41h, 3B...");
-    _STOP_("db 41h, 4Fh, 81h, 4Fh, 41h, 52h, 81h, 52h,...");
-    _STOP_("db 31h, 41h, 36h, 81h, 36h, 0C1h, 4Dh, 1, ...");
-    _STOP_("db 1, 51h, 41h, 4Eh, 81h, 4Eh, 41h, 51h, 8...");
-    _STOP_("db 3 dup(0), 20h, 0, 0A0h, 1, 0C1h, 39h, 2...");
-    _STOP_("db 0, 90h, 1, 81h, 39h, 2 dup(0), 30h, 0, ...");
-    _STOP_("db 39h, 2 dup(0), 30h, 0, 80h, 1, 81h, 39h...");
-    _STOP_("db 0, 80h, 1, 0C1h, 39h, 2 dup(0), 40h, 0,...");
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0D0h");                          //db 0D0h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0D0h");                          //db 0D0h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0F0h");                          //db 0F0h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0F0h");                          //db 0F0h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  80h");                          //db  80h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db 0A0h");                          //db 0A0h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  0Ah");                          //db  0Ah
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  20h");                          //db  20h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  0Ah");                          //db  0Ah
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  70h");                          //db  70h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0D0h");                          //db 0D0h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0D0h");                          //db 0D0h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0F0h");                          //db 0F0h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db 0F0h");                          //db 0F0h
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  20h");                          //db  20h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  73h");                          //db  73h
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  7Bh");                          //db  7Bh
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  7Bh");                          //db  7Bh
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  63h");                          //db  63h
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  6Bh");                          //db  6Bh
-    _STOP_("db  93h");                          //db  93h
-    _STOP_("db  62h");                          //db  62h
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db 0C4h");                          //db 0C4h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  28h");                          //db  28h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  1Ah");                          //db  1Ah
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  6Eh");                          //db  6Eh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  60h");                          //db  60h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  52h");                          //db  52h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  7Ah");                          //db  7Ah
-    _STOP_("db  7Ah");                          //db  7Ah
-    _STOP_("db 0EAh");                          //db 0EAh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0D4h");                          //db 0D4h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0BEh");                          //db 0BEh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0A8h");                          //db 0A8h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db  65h");                          //db  65h
-    _STOP_("db  2Bh");                          //db  2Bh
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  2Ah");                          //db  2Ah
-    _STOP_("db  2Ah");                          //db  2Ah
-    _STOP_("db 0D5h");                          //db 0D5h
-    _STOP_("db  2Eh");                          //db  2Eh
-    _STOP_("db  25h");                          //db  25h
-    _STOP_("db  2Eh");                          //db  2Eh
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  2Dh");                          //db  2Dh
-    _STOP_("db 0C5h");                          //db 0C5h
-    _STOP_("db  2Ch");                          //db  2Ch
-    _STOP_("db  15h");                          //db  15h
-    _STOP_("db  2Ch");                          //db  2Ch
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  35h");                          //db  35h
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db 0B5h");                          //db 0B5h
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("db  5Bh");                          //db  5Bh
-    _STOP_("db  35h");                          //db  35h
-    _STOP_("db  73h");                          //db  73h
-    _STOP_("db  33h");                          //db  33h
-    _STOP_("db 0CDh");                          //db 0CDh
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  1Dh");                          //db  1Dh
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  77h");                          //db  77h
-    _STOP_("db  31h");                          //db  31h
-    _STOP_("db 0DBh");                          //db 0DBh
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  35h");                          //db  35h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  85h");                          //db  85h
-    _STOP_("db  2Fh");                          //db  2Fh
-    _STOP_("db  0Fh");                          //db  0Fh
-    _STOP_("db  34h");                          //db  34h
-    _STOP_("unk_19564 db    6");                //unk_19564 db    6
-    _STOP_("unk_19566 db  0Ch");                //unk_19566 db  0Ch
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  28h");                          //db  28h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  14h");                          //db  14h
-    _STOP_("unk_19596 db  1Eh");                //unk_19596 db  1Eh
-    _STOP_("db  0Ah");                          //db  0Ah
-    _STOP_("db 0D4h");                          //db 0D4h
-    _STOP_("db  2Ch");                          //db  2Ch
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db 0A7h");                          //db 0A7h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db 0E0h");                          //db 0E0h
-    _STOP_("db  2Ch");                          //db  2Ch
-    _STOP_("db  0Bh");                          //db  0Bh
-    _STOP_("db  48h");                          //db  48h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db 0A7h");                          //db 0A7h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  7Ah");                          //db  7Ah
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db 0F4h");                          //db 0F4h
-    _STOP_("db 0FBh");                          //db 0FBh
-    _STOP_("db  99h");                          //db  99h
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db  0Eh");                          //db  0Eh
-    _STOP_("db  9Ah");                          //db  9Ah
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  94h");                          //db  94h
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db  1Ch");                          //db  1Ch
-    _STOP_("db  9Ah");                          //db  9Ah
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  94h");                          //db  94h
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db  2Ah");                          //db  2Ah
-    _STOP_("db  9Ah");                          //db  9Ah
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  39h");                          //db  39h
-    _STOP_("db  3Ah");                          //db  3Ah
-    _STOP_("db  94h");                          //db  94h
-    _STOP_("db  96h");                          //db  96h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db 38h, 0, 3, 9Ah, 53h, 8, 39h, 3Ah, 94h, ...");
-    _STOP_("db 2 dup(0FFh), 0E4h, 0, 46h, 0, 3, 9Ah, 5...");
-    _STOP_("db 94h, 96h, 0Ch, 0, 2 dup(0FFh), 0E4h, 0,...");
-    _STOP_("db 9Ah, 53h, 8, 39h, 3Ah, 98h, 96h, 0Ch, 0...");
-    _STOP_("db 2 dup(0), 0E8h, 0, 0C8h, 0, 2Bh, 9Ah, 5...");
-    _STOP_("db 3Ah, 9Ch, 96h, 3, 5 dup(0), 0ECh, 0, 64...");
-    _STOP_("db 53h, 8, 0A7h, 3Ah, 0A0h, 96h, 3, 5 dup(...");
-    _STOP_("db 1, 0, 85h, 0DFh, 1, 0, 0D5h, 0E0h, 1, 0...");
-    _STOP_("db 1, 0, 61h, 0E3h, 1, 0, 0B1h, 0E4h, 1, 0...");
-    _STOP_("db 0, 47h, 0E7h, 1, 3 dup(0), 0E2h, 41h, 5...");
-    _STOP_("db 0E8h, 3, 0, 0C9h, 0E9h, 3, 0, 0F1h, 0EA...");
-    _STOP_("db 0ECh, 3, 3 dup(0), 0E2h, 41h, 7Ah, 96h,...");
-    _STOP_("db 9Fh, 6Bh, 2 dup(0), 5Fh, 6Eh, 2 dup(0),...");
-    _STOP_("db 95h, 41h, 1, 0, 45h, 42h, 1, 0, 0F5h, 4...");
-    _STOP_("db 43h, 1, 0, 55h, 44h, 1, 0, 5, 45h, 1, 0...");
-    _STOP_("db 1, 0, 65h, 46h, 1, 3 dup(0), 0E2h, 41h,...");
-    _STOP_("db 88h, 2, 0, 0C1h, 88h, 2, 0, 5Dh, 89h, 2...");
-    _STOP_("db 2, 3 dup(0), 0E2h, 41h, 0C6h, 96h, 21h,...");
-    _STOP_("db 80h, 2, 0, 77h, 81h, 2, 0, 27h, 82h, 2,...");
-    _STOP_("db 41h, 0DCh, 96h, 79h, 85h, 2, 0, 15h, 86...");
-    _STOP_("db 86h, 2, 0, 61h, 87h, 2, 3 dup(0), 0E2h,...");
-    _STOP_("db 0CDh, 82h, 2, 0, 7Dh, 83h, 2, 0, 23h, 8...");
-    _STOP_("db 84h, 2, 3 dup(0), 0E2h, 41h, 8, 97h, 0C...");
-    _STOP_("db 0, 75h, 0DCh, 2, 0, 11h, 0DDh, 2, 0, 99...");
-    _STOP_("db 0E2h, 41h, 1Eh, 97h, 0A5h, 0B4h, 2, 0, ...");
-    _STOP_("db 0, 0B1h, 0B9h, 2, 0, 35h, 0B7h, 2, 3 du...");
-    _STOP_("db 34h, 97h, 3Dh, 0B2h, 2 dup(0), 8Dh, 0AA...");
-    _STOP_("db 0ADh, 2, 0, 0ADh, 0AFh, 2, 0, 1Dh, 0ADh...");
-    _STOP_("db 0E2h, 41h, 4Eh, 97h, 0B5h, 0BBh, 2 dup(...");
-    _STOP_("db 2, 0, 7Dh, 0A3h, 2, 0, 0F9h, 0A5h, 2, 0...");
-    _STOP_("db 2, 3 dup(0), 0E2h, 41h, 68h, 97h, 0F5h,...");
-    _STOP_("db 45h, 0BEh, 2, 0, 0D5h, 0C0h, 2, 0, 65h,...");
-    _STOP_("db 0D5h, 0C0h, 2, 3 dup(0), 0E2h, 41h, 82h...");
-    _STOP_("db 0A7h, 2 dup(0), 0E7h, 5Dh, 2, 0, 97h, 5...");
-    _STOP_("db 5Fh, 2, 0, 0EDh, 5Fh, 2, 3 dup(0), 0E2h...");
-    _STOP_("db 7Bh, 58h, 2, 0, 2Bh, 59h, 2, 0, 0DBh, 5...");
-    _STOP_("db 5Ah, 2, 3 dup(0), 0E2h, 41h, 0B2h, 97h,...");
-    _STOP_("db 0B9h, 66h, 2, 0, 5Fh, 67h, 2, 0, 0Fh, 6...");
-    _STOP_("db 0E2h, 41h, 0C8h, 97h, 53h, 63h, 2, 0, 3...");
-    _STOP_("db 0B3h, 64h, 2, 0, 59h, 65h, 2, 3 dup(0),...");
-    _STOP_("db 97h, 0C5h, 55h, 2, 0, 75h, 56h, 2, 0, 1...");
-    _STOP_("db 0CBh, 57h, 2, 3 dup(0), 0E2h, 41h, 0F4h...");
-    _STOP_("db 2, 0, 0E1h, 5Bh, 2, 0, 87h, 5Ch, 2, 0, ...");
-    _STOP_("db 3 dup(0), 0E2h, 41h, 0Ah, 98h, 9Dh, 60h...");
-    _STOP_("db 61h, 2, 0, 0FDh, 61h, 2, 0, 0A3h, 62h, ...");
-    _STOP_("db 0E2h, 41h, 20h, 98h, 0BFh, 68h, 2, 0");
-    _STOP_("db 6Fh, 69h, 2, 0, 15h, 6Ah, 2, 0, 0C5h, 6...");
-    _STOP_("db 0E2h, 41h, 36h, 98h, 0A9h, 8Ah, 4, 0, 0...");
-    _STOP_("db 3 dup(0), 0E2h, 41h, 4Ch, 98h, 61h, 93h...");
-    _STOP_("db 98h, 4, 0, 69h, 9Ch, 4, 3 dup(0), 0E2h,...");
-    _STOP_("db 9, 7Bh, 2 dup(0), 91h, 7Bh, 2, 0, 19h, ...");
-    _STOP_("db 7Ch, 14h, 0, 19h, 7Ch, 2, 0, 91h, 7Bh, ...");
-    _STOP_("db 0E2h, 41h, 6Ch, 98h, 7Fh, 79h, 2 dup(0)...");
-    _STOP_("db 3, 0, 15h, 2Eh, 3, 3 dup(0), 0E2h, 41h,...");
-    _STOP_("db 0EDh, 1, 0, 0C9h, 0EDh, 1, 0, 5Bh, 0EEh...");
-    _STOP_("db 0EEh, 1, 3 dup(0), 0E2h, 41h, 9Ch, 98h,...");
-    _STOP_("db 0D9h, 39h, 2, 0, 79h, 3Bh, 1, 0, 69h, 3...");
-    _STOP_("db 79h, 3Bh, 2, 3 dup(0), 0E2h, 41h, 0B2h,...");
-    _STOP_("db 2 dup(0), 1Dh, 34h, 2, 0, 0BDh, 35h, 1,...");
-    _STOP_("db 2 dup(0), 0BDh, 35h, 2, 3 dup(0), 0E2h,...");
-    _STOP_("db 35h, 9, 3, 0, 71h, 0Ah, 3, 0, 0ADh, 0Bh...");
-    _STOP_("db 0Ah, 3, 3 dup(0), 0E2h, 41h, 0E6h, 98h,...");
-    _STOP_("db 0, 0E9h, 0Ch, 3, 0, 89h, 0Eh, 3, 0, 29h...");
-    _STOP_("db 89h, 0Eh, 3, 0, 0E9h, 0Ch, 3, 0, 0ADh, ...");
-    _STOP_("db 29h, 0, 3, 0, 65h, 1, 3, 0, 0A1h, 2, 3,...");
-    _STOP_("db 3 dup(0), 0E2h, 41h, 18h, 99h, 0A1h, 2,...");
-    _STOP_("db 2 dup(3), 0, 7Dh, 5, 3, 0, 1Dh, 7, 3, 0...");
-    _STOP_("db 0, 0DDh, 2 dup(3), 0, 0A1h, 2, 2 dup(0)...");
-    _STOP_("db 0, 0BBh, 47h, 1, 0, 43h, 48h, 1, 0, 0BB...");
-    _STOP_("db 0E2h, 41h, 4Ah, 99h, 0ADh, 48h, 1, 0, 5...");
-    _STOP_("db 0EFh, 49h, 1, 0, 5Dh, 49h, 1, 3 dup(0),...");
-    _STOP_("db 99h, 77h, 4Ah, 1, 0, 27h, 4Bh, 1, 0, 0D...");
-    _STOP_("db 27h, 4Bh, 1, 3 dup(0), 0E2h, 41h, 76h, ...");
-    _STOP_("db 1, 0, 37h, 4Dh, 1, 0, 0C9h, 4Dh, 1, 0, ...");
-    _STOP_("db 3 dup(0), 0E2h, 41h, 8Ch, 99h, 51h, 4Eh...");
-    _STOP_("db 4Eh, 1, 0, 7Fh, 4Fh, 1, 0, 0F7h, 4Eh, 1...");
-    _STOP_("db 41h, 0A2h, 99h, 0E9h, 4Fh, 1, 0, 99h, 5...");
-    _STOP_("db 51h, 1, 0, 99h, 50h, 1, 3 dup(0), 0E2h,...");
-    _STOP_("db 0B3h, 51h, 1, 0, 63h, 52h, 1, 0, 13h, 5...");
-    _STOP_("db 52h, 1, 3 dup(0), 0E2h, 41h, 0CEh, 99h,...");
-    _STOP_("db 0, 73h, 54h, 1, 0, 5, 55h, 1, 0, 73h, 5...");
-    _STOP_("db 0E2h, 41h, 0E4h, 99h, 0C3h, 0E8h, 10h, ...");
-    _STOP_("db 0ACh, 0EBh, 0Eh, 0E8h, 8, 0AEh, 0BFh, 0...");
-    _STOP_("db 6, 0E8h, 0, 0AEh, 0BFh, 9, 0ADh, 8Bh, 5...");
-    _STOP_("db 0C3h, 10h, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h...");
-    _STOP_("db 0EBh, 83h, 0E3h, 0Eh, 2Eh, 8Bh, 1, 89h,...");
-    _STOP_("db 5Eh, 9Bh, 0E8h, 0DDh, 0ADh, 8Bh, 44h, 1...");
-    _STOP_("db 79h, 15h, 8Bh, 5Ch, 16h, 85h, 0DBh, 79h...");
-    _STOP_("db 7Ch, 5, 0BBh, 2 dup(0), 0EBh, 34h, 0BBh...");
-    _STOP_("db 2Fh, 8Bh, 5Ch, 16h, 85h, 0DBh, 79h, 1Ah...");
-    _STOP_("db 0F7h, 0D8h, 3Bh, 0D8h, 7Ch, 0EBh, 0BBh,...");
-    _STOP_("db 1Ah, 81h, 0EBh, 0C0h, 0, 0F7h, 0DBh, 3B...");
-    _STOP_("db 0Dh, 0EBh");                     //db 0Dh, 0EBh
-    _STOP_("db 0D5h, 2Dh, 40h, 1, 81h, 0EBh, 0C0h, 0, ...");
-    _STOP_("db 0E4h, 0BBh, 6, 0, 2Eh, 8Bh, 0BFh, 19h, ...");
-    _STOP_("db 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 45h, 2, 89h...");
-    _STOP_("db 0C7h, 4, 89h, 7Ch, 10h, 0C7h, 44h, 2, 0...");
-    _STOP_("db 0F0h, 9Ah, 81h, 3Eh, 0A8h, 91h, 0F0h, 0...");
-    _STOP_("db 81h, 3Eh, 90h, 91h, 0F0h, 0Ah, 75h, 26h...");
-    _STOP_("db 91h, 0F0h, 0Ah, 0A1h, 9Ah, 91h, 0E8h, 6...");
-    _STOP_("db 6, 9Ah, 91h, 2 dup(0), 80h, 3Eh, 35h, 9...");
-    _STOP_("db 0C6h, 6, 35h, 92h, 0, 0EBh, 6, 0C7h, 6,...");
-    _STOP_("db 81h, 3Eh, 90h, 91h, 0D0h, 0, 7Fh, 3Ch, ...");
-    _STOP_("db 91h, 20h, 7Dh, 6, 0C7h, 6, 0AAh, 91h, 2...");
-    _STOP_("db 3Bh, 0, 0C6h, 6, 33h, 92h, 0, 0C6h, 6, ...");
-    _STOP_("db 80h, 3Eh, 31h, 92h, 0, 74h, 29h, 80h, 3...");
-    _STOP_("db 0, 74h, 22h, 80h, 3Eh, 61h, 8Fh, 0, 75h...");
-    _STOP_("db 9, 0, 0E8h, 0D8h, 7Ah, 0C6h, 6, 61h, 8F...");
-    _STOP_("db 0Eh, 81h, 3Eh, 0AAh, 91h, 30h, 0Ah, 7Dh...");
-    _STOP_("db 0AAh, 91h, 30h, 0Ah, 0C3h, 80h, 3Eh, 31...");
-    _STOP_("db 10h, 80h, 3Eh, 33h, 92h, 0, 75h, 9, 0C7...");
-    _STOP_("db 2 dup(0), 0E8h, 2Ah, 0, 0C3h, 83h, 3Eh,...");
-    _STOP_("db 0, 75h, 11h, 0A1h, 0F4h, 91h, 0D1h, 0C8...");
-    _STOP_("db 0D1h, 0C8h, 0D1h, 0C8h, 0D1h, 0C8h, 0A3...");
-    _STOP_("db 0C3h, 0A1h, 0F6h, 91h, 0D1h, 0C8h, 0D1h...");
-    _STOP_("db 0C8h, 0D1h, 0C8h, 0D1h, 0C8h, 0A3h, 0F6...");
-    _STOP_("db 83h, 3Eh, 8, 92h, 1, 74h, 9, 0A1h, 8, 9...");
-    _STOP_("db 8, 92h, 0EBh, 10h, 0E8h, 0C4h, 0FFh, 25...");
-    _STOP_("db 1, 0, 7Ch, 0F5h, 3Dh, 7, 0, 74h, 0F0h, ...");
-    _STOP_("db 0A8h, 0DEh, 3, 0F8h, 0C7h, 6, 0EAh, 0FC...");
-    _STOP_("db 8Bh, 3Dh, 8Bh, 45h, 2, 0A3h, 0E2h, 0FCh...");
-    _STOP_("db 2Bh, 6, 90h, 91h, 2Bh, 6, 9Ah, 91h, 0A3...");
-    _STOP_("db 0BBh, 21h, 0ADh, 2Eh, 8Bh, 17h, 83h, 0C...");
-    _STOP_("db 70h, 74h, 8Bh, 0EEh, 0C7h, 44h, 6, 4Dh,...");
-    _STOP_("db 57h, 8Bh, 0FEh, 0E8h, 61h, 74h, 89h, 75...");
-    _STOP_("db 0C7h, 44h, 6, 99h, 3Ah, 57h, 0BFh, 4Ah,...");
-    _STOP_("db 6Bh, 5Fh, 0C7h, 4, 50h, 0, 0A1h, 0EAh, ...");
-    _STOP_("db 1Ah, 2Eh, 8Bh, 7, 29h, 6, 0EAh, 0FCh, 8...");
-    _STOP_("db 2Eh, 8Bh, 7, 89h, 44h, 2, 83h, 0C3h, 2,...");
-    _STOP_("db 53h, 8, 2Eh, 8Bh, 7, 89h, 44h, 0Ch, 83h...");
-    _STOP_("db 44h, 34h, 0D0h, 7, 0C7h, 44h, 48h, 2 du...");
-    _STOP_("db 27h, 0, 0C6h, 44h, 26h, 0, 0C7h, 44h, 0...");
-    _STOP_("db 89h, 7Ch, 38h, 89h, 7Ch, 3Ah, 0C7h, 44h...");
-    _STOP_("db 0, 0A1h, 0E2h, 0FCh, 89h, 44h, 12h, 0A1...");
-    _STOP_("db 89h, 44h, 16h, 0C7h, 44h, 36h, 2 dup(0)...");
-    _STOP_("db 60h, 95h, 89h, 44h, 42h, 0A1h, 0FAh, 0F...");
-    _STOP_("db 22h, 0E8h, 49h, 99h, 89h, 6Ch, 44h, 0C7...");
-    _STOP_("db 2 dup(0), 4Ah, 78h, 3, 0E9h, 6Dh, 0FFh,...");
-    _STOP_("db 98h, 91h, 1, 44h, 16h, 0FFh, 74h, 1Ch, ...");
-    _STOP_("db 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D1h, 0E...");
-    _STOP_("db 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h, 0Eh,...");
-    _STOP_("db 0, 0D1h, 0E8h");                 //db 0, 0D1h, 0E8h
-    _STOP_("db 0D1h, 0E8h, 0D1h, 0E8h, 0D1h, 0E8h, 25h...");
-    _STOP_("db 0C3h, 74h, 18h, 2Eh, 8Bh, 0BFh, 65h, 0A...");
-    _STOP_("db 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 45h, 2, 89h...");
-    _STOP_("db 0C7h, 4, 89h, 7Ch, 10h, 2Eh, 0A0h, 8Ch,...");
-    _STOP_("db 48h, 73h, 33h, 8Bh, 44h, 12h, 8Bh, 5Ch,...");
-    _STOP_("db 0, 2Eh, 8Bh, 16h, 8Eh, 95h, 50h, 53h, 5...");
-    _STOP_("db 1Eh, 82h, 0BDh, 1Eh, 97h, 2Eh, 8Bh, 46h...");
-    _STOP_("db 0Ch, 2Eh, 8Bh, 46h, 0, 89h, 45h, 0Eh, 8...");
-    _STOP_("db 89h, 6Dh, 10h, 5Ah, 59h, 5Bh, 58h, 49h,...");
-    _STOP_("db 0B3h, 98h, 0A1h, 98h, 91h, 1, 44h, 16h,...");
-    _STOP_("db 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D1h, 0E...");
-    _STOP_("db 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h, 0Eh,...");
-    _STOP_("db 75h, 0ADh, 89h, 44h, 0Ch, 0E9h, 8Eh, 98...");
-    _STOP_("db 91h, 1, 44h, 16h, 0E8h, 0Ah, 0ABh, 8Bh,...");
-    _STOP_("db 0C3h, 10h, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h...");
-    _STOP_("db 0EBh, 83h, 0E3h, 0Eh, 2Eh, 8Bh, 87h, 85...");
-    _STOP_("db 44h, 0Ch, 0E9h, 69h, 98h, 0A1h, 98h, 91...");
-    _STOP_("db 8Bh, 5Ch, 22h, 0C6h, 87h, 33h, 92h, 0FF...");
-    _STOP_("db 0AAh, 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D...");
-    _STOP_("db 0EBh, 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h...");
-    _STOP_("db 87h, 95h, 0ADh, 89h, 44h, 0Ch, 0E9h, 3C...");
-    _STOP_("db 0DFh, 0C7h, 47h, 4, 0B9h, 8, 83h, 7Fh, ...");
-    _STOP_("db 5, 8Bh, 5Fh, 46h, 0EBh, 0F0h, 0BBh, 0Ah...");
-    _STOP_("db 22h, 3, 5Dh, 22h, 29h, 7, 76h, 1, 0C3h,...");
-    _STOP_("db 92h, 3, 5Dh, 22h, 0C6h, 7, 0FFh, 0C6h, ...");
-    _STOP_("db 75h, 46h, 56h, 8Bh, 0F7h, 0E8h, 3Ch, 6A...");
-    _STOP_("db 85h, 0FFh, 75h, 0F1h, 0B9h, 13h, 0, 0B8...");
-    _STOP_("db 0BBh, 2 dup(0), 0BAh, 40h, 1, 0BFh, 0C0...");
-    _STOP_("db 12h, 0E8h, 0E9h, 77h, 56h, 8Bh, 36h, 54...");
-    _STOP_("db 0B9h, 99h, 5Eh, 5Fh, 0C3h, 8Bh, 0FEh, 0...");
-    _STOP_("db 0FFh, 0A7h, 0A5h, 0ADh, 0E8h, 6Ch, 72h,...");
-    _STOP_("db 90h, 0E8h, 0BFh, 69h, 5Fh, 0C7h, 4, 0DC...");
-    _STOP_("db 2, 69h, 0A4h, 0C7h, 44h, 4, 53h, 8, 8Bh...");
-    _STOP_("db 5Ch, 1Ch, 0D1h, 0E3h, 0C7h, 44h, 48h, 2...");
-    _STOP_("db 45h, 8, 2Dh, 8, 0, 3, 87h, 62h, 40h, 89...");
-    _STOP_("db 8Bh, 45h, 0Ah, 2Dh, 8, 0, 2Bh, 6, 90h, ...");
-    _STOP_("db 72h, 40h, 89h, 44h, 16h, 2Eh, 8Bh, 0AFh...");
-    _STOP_("db 2Eh, 8Bh, 46h, 0, 89h, 44h, 0Ch, 2Eh, 8...");
-    _STOP_("db 44h, 0Eh, 83h, 0C5h, 4, 89h, 6Ch, 10h, ...");
-    _STOP_("db 0A7h, 3Ah, 2Eh, 0A1h, 62h, 95h, 89h, 44...");
-    _STOP_("db 44h, 27h, 0, 0C7h, 44h, 34h, 64h, 0, 0C...");
-    _STOP_("db 2 dup(0), 0C7h, 44h, 36h, 2 dup(0), 0E9...");
-    _STOP_("db 0C6h, 6, 35h, 92h, 0FFh, 0E8h, 0D1h, 0A...");
-    _STOP_("db 92h, 95h, 0, 44h, 48h, 73h, 45h, 0E8h, ...");
-    _STOP_("db 3Fh, 88h, 44h, 48h, 0A1h, 12h, 9Fh, 8Bh...");
-    _STOP_("db 2Bh, 44h, 12h, 2Bh, 5Ch, 16h, 0E8h, 35h...");
-    _STOP_("db 8Bh, 44h, 12h, 8Bh, 5Ch, 16h, 5, 10h, 0...");
-    _STOP_("db 3Ch, 2Eh, 8Bh, 16h, 94h, 95h, 0E8h, 62h...");
-    _STOP_("db 9Ch, 98h, 2Eh, 8Bh, 46h");       //db 9Ch, 98h, 2Eh, 8Bh, 46h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db  2Eh");                          //db  2Eh
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  46h");                          //db  46h
-    _STOP_("db  89h");                          //db  89h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  0Eh");                          //db  0Eh
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0C5h");                          //db 0C5h
-    _STOP_("db  89h");                          //db  89h
-    _STOP_("db  6Dh");                          //db  6Dh
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db 0C3h");                          //db 0C3h
 }
 
 void sub_19E89()
@@ -12008,7 +12812,7 @@ loc_19F65:                                      //loc_19F65:
     _ax = 0x0001;                               //mov ax, 1
     sub_13A39();                                //call sub_13A39
     _cx = 0x0004;                               //mov cx, 4
-    _STOP_("call near ptr byte_1152F+0B5h");    //call near ptr byte_1152F+0B5h
+    sub_115E4();                                //call sub_115E4
     memory(_ds, 0x9225) = 0x00;                 //mov byte_31755, 0
     return;                                     //retn
     sub_19E89();                                //call sub_19E89
@@ -12205,7 +13009,6 @@ loc_1A105:                                      //loc_1A105:
     memory16(_ds, _si + 30) = 0x0000;           //mov word ptr [si+1Eh], 0
     memory16(_ds, _si + 64) = 0x0000;           //mov word ptr [si+40h], 0
     memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
-    _ASSERT(0); // problem, kokotina
     _ax = memory16(_cs, 0x19564);               //mov ax, word ptr cs:unk_19564
     memory16(_ds, _si + 66) = _ax;              //mov [si+42h], ax
     sub_13589();                                //call sub_13589
@@ -15007,20 +15810,22 @@ loc_1A2F2:                                      //loc_1A2F2:
     _STOP_("db 0E4h, 0C1h, 98h, 0F5h, 98h, 36h, 68h, 5...");
 }
 
-void loc_1EBD7()
+void loc_1EBDC();
+
+void sub_1EBD0()
 {
-    sub_1EBD0(0x1EBD7);
-}
-void sub_1EBD0(int pc)
-{
-    if (pc == 0x1EBD7)
-        goto loc_1EBD7;
-    
     memory(_ds, 0x8F52) = 0x00;                 //mov byte_31482, 0
-    goto loc_1EBDC;                             //jmp short loc_1EBDC
-loc_1EBD7:                                      //loc_1EBD7:
+    loc_1EBDC();
+}
+
+void loc_1EBD7()                                      //loc_1EBD7:
+{
     memory(_ds, 0x8F52) = 0xff;                 //mov byte_31482, 0FFh
-loc_1EBDC:                                      //loc_1EBDC:
+    loc_1EBDC();
+}
+
+void loc_1EBDC()                                      //loc_1EBDC:
+{
     _bp = 0xa000;                               //mov bp, 0A000h
     _es = _bp;                                  //mov es, bp
 loc_1EBE1:                                      //loc_1EBE1:
@@ -15095,7 +15900,7 @@ loc_1EC48:                                      //loc_1EC48:
     _div(_bp);                                  //div bp
     _ax -= 0x000f;                              //sub ax, 0Fh
     _ax = -_ax;                                 //neg ax
-    if ((short)_ax<=0)                                //jle short loc_1EC6A
+    if (_FIXME_)                                //jle short loc_1EC6A
       goto loc_1EC6A;
 loc_1EC5C:                                      //loc_1EC5C:
     _push(_cx);                                 //push cx
@@ -15137,8 +15942,8 @@ loc_1EC7D:                                      //loc_1EC7D:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1EC94:                                      //loc_1EC94:
-    memoryVideoSet(_es, _di, _al);                     //mov es:[di], al
-    memoryVideoSet(_es, _di + 1, _al);                 //mov es:[di+1], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_1EC94
       goto loc_1EC94;
@@ -15165,8 +15970,8 @@ loc_1ECAE:                                      //loc_1ECAE:
     _ax = 0x0105;                               //mov ax, 105h
     _out(_dx, _ax);                             //out dx, ax
 loc_1ECC5:                                      //loc_1ECC5:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += 0x0026;                              //add di, 26h
     if (--_cx)                                  //loop loc_1ECC5
       goto loc_1ECC5;
@@ -15198,14 +16003,14 @@ loc_1ECD8:                                      //loc_1ECD8:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1ECFC:                                      //loc_1ECFC:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirAuto>();
     _out(_dx, _al);                             //out dx, al
-    _ah = memoryVideoGet(_es, _di);                     //mov ah, es:[di]
-    memoryVideoSet(_es, _di, _al);                     //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
+    _lodsb<MemData, DirAuto>();
     _out(_dx, _al);                             //out dx, al
-    _ah = memoryVideoGet(_es, _di + 1);                 //mov ah, es:[di+1]
-    memoryVideoSet(_es, _di + 1, _al);                 //mov es:[di+1], al
+    _ah = memoryVideoGet(_es, _di + 1);         //mov ah, es:[di+1]
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_1ECFC
       goto loc_1ECFC;
@@ -15240,12 +16045,12 @@ loc_1ED27:                                      //loc_1ED27:
     _push(_cx);                                 //push cx
     _si += 0x5538;                              //add si, 5538h
 loc_1ED43:                                      //loc_1ED43:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirAuto>();
     _out(_dx, _al);                             //out dx, al
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
+    _lodsb<MemData, DirAuto>();
     _out(_dx, _al);                             //out dx, al
-    memoryVideoAnd(_es, _di + 1, _al);                //and es:[di+1], al
+    memoryVideoAnd(_es, _di + 1, _al);          //and es:[di+1], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_1ED43
       goto loc_1ED43;
@@ -15277,12 +16082,12 @@ loc_1ED75:                                      //loc_1ED75:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1ED8E:                                      //loc_1ED8E:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _ah = memoryVideoGet(_es, _di);                     //mov ah, es:[di]
-    memoryVideoSet(_es, _di, _al);                     //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _ah = memoryVideoGet(_es, _di + 1);                 //mov ah, es:[di+1]
-    memoryVideoSet(_es, _di + 1, _al);                 //mov es:[di+1], al
+    _lodsb<MemData, DirAuto>();
+    _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
+    _lodsb<MemData, DirAuto>();
+    _ah = memoryVideoGet(_es, _di + 1);         //mov ah, es:[di+1]
+    memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_1ED8E
       goto loc_1ED8E;
@@ -15356,7 +16161,7 @@ loc_1EE26:                                      //loc_1EE26:
     _ax = _dx;                                  //mov ax, dx
     _xchg(_di, _dx);                            //xchg di, dx
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di += _dx;                                 //add di, dx
     _dx = _ax;                                  //mov dx, ax
 loc_1EE34:                                      //loc_1EE34:
@@ -15661,7 +16466,7 @@ loc_1F033:                                      //loc_1F033:
     _ax = _dx;                                  //mov ax, dx
     _xchg(_di, _dx);                            //xchg di, dx
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di += _dx;                                 //add di, dx
     _dx = _ax;                                  //mov dx, ax
 loc_1F041:                                      //loc_1F041:
@@ -16096,7 +16901,7 @@ void sub_1F2BA()
     _interrupt(16);                             //int 10h
     _ax = 0x0040;                               //mov ax, 40h
     _es = _ax;                                  //mov es, ax
-    _dx = memoryBiosGet16(_es, 0x63);                  //mov dx, es:63h
+    _dx = memoryBiosGet16(_es, 0x63);           //mov dx, es:63h
     memory16(_ds, 0x4257) = _dx;                //mov word_2C787, dx
     _ax = _ds;                                  //mov ax, ds
     _es = _ax;                                  //mov es, ax
@@ -16192,8 +16997,8 @@ void sub_1F363()
     _push(_di);                                 //push di
     _cx = 0x1c90;                               //mov cx, 1C90h
 loc_1F368:                                      //loc_1F368:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemAuto, DirAuto>();
+    _movsb<MemVideo, MemAuto, DirAuto>();
     _si += 0x0006;                              //add si, 6
     if (--_cx)                                  //loop loc_1F368
       goto loc_1F368;
@@ -16308,7 +17113,7 @@ void sub_1F3EF()
 loc_1F420:                                      //loc_1F420:
     _di = memory16(_ds, _si);                   //mov di, [si]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);         //add di, [si+2]
     _di += _bp;                                 //add di, bp
     if (!(memoryVideoGet(_es, _di) & _bl))      //jz short loc_1F435
@@ -16324,7 +17129,7 @@ loc_1F435:                                      //loc_1F435:
 loc_1F441:                                      //loc_1F441:
     _di = memory16(_ds, _si);                   //mov di, [si]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);         //add di, [si+2]
     _di += _bp;                                 //add di, bp
     if (!(memoryVideoGet(_es, _di) & _bl))      //jz short loc_1F456
@@ -16340,7 +17145,7 @@ loc_1F456:                                      //loc_1F456:
 loc_1F462:                                      //loc_1F462:
     _di = memory16(_ds, _si);                   //mov di, [si]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);         //add di, [si+2]
     _di += _bp;                                 //add di, bp
     if (!(memoryVideoGet(_es, _di) & _bl))      //jz short loc_1F477
@@ -16666,7 +17471,6 @@ loc_1FE9B:                                      //loc_1FE9B:
     _ax = _pop();                               //pop ax
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
-
 }
 
 void sub_1F6F8()
@@ -17041,7 +17845,7 @@ void loc_1F997()
     _bp += _cx;                                 //add bp, cx
     if ((short)_bp <= (short)0x0008)            //jle short loc_1F9FD
     {
-      loc_1F9FD();
+        loc_1F9FD();
         return;
     }
 loc_1F99E:                                      //loc_1F99E:
@@ -17179,25 +17983,25 @@ loc_1FA8A:                                      //loc_1FA8A:
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di, _al);                    //or es:[di], al
+    memory(_es, _di) |= _al;                    //or es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di + 1, _al);                //or es:[di+1], al
+    memory(_es, _di + 1) |= _al;                //or es:[di+1], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di + 2, _al);                //or es:[di+2], al
+    memory(_es, _di + 2) |= _al;                //or es:[di+2], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di + 3, _al);                //or es:[di+3], al
+    memory(_es, _di + 3) |= _al;                //or es:[di+3], al
     _di += 0x0028;                              //add di, 28h
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_1FA8A
@@ -17229,19 +18033,19 @@ loc_1FAEB:                                      //loc_1FAEB:
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di, _ah);                    //and es:[di], ah
+    memory(_es, _di) &= _ah;                    //and es:[di], ah
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di + 1, _ah);                //and es:[di+1], ah
+    memory(_es, _di + 1) &= _ah;                //and es:[di+1], ah
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di + 2, _ah);                //and es:[di+2], ah
+    memory(_es, _di + 2) &= _ah;                //and es:[di+2], ah
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di + 3, _ah);                //and es:[di+3], ah
+    memory(_es, _di + 3) &= _ah;                //and es:[di+3], ah
     _di += 0x0028;                              //add di, 28h
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_1FAEB
@@ -17258,19 +18062,19 @@ loc_1FB1B:
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di, _al);                    //or es:[di], al
+    memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di + 1, _al);                //or es:[di+1], al
+    memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoOr(_es, _di + 2, _al);                //or es:[di+2], al
+    memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
     _di += 0x0028;                              //add di, 28h
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_1FB1B
@@ -17302,15 +18106,15 @@ loc_1FB74:                                      //loc_1FB74:
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di, _ah);                    //and es:[di], ah
+    memoryVideoAnd(_es, _di, _ah);              //and es:[di], ah
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di + 1, _ah);                //and es:[di+1], ah
+    memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
     _lodsb<MemAuto, DirAuto>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
-    memoryVideoAnd(_es, _di + 2, _ah);                //and es:[di+2], ah
+    memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
     _di += 0x0028;                              //add di, 28h
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_1FB74
@@ -18411,7 +19215,7 @@ loc_203D4:                                      //loc_203D4:
     _es = _ax;                                  //mov es, ax
 }
 
-void sub_203DA() // draw bullet
+void sub_203DA()
 {
     _bx = memory16(_ds, _si + 18);              //mov bx, [si+12h]
     _dx = memory16(_ds, _si + 22);              //mov dx, [si+16h]
@@ -18443,11 +19247,12 @@ loc_203FA:                                      //loc_203FA:
 loc_20417:                                      //loc_20417:
     _bx = _dx;                                  //mov bx, dx
     _bx += _cx;                                 //add bx, cx
+    _flags.carry2 = (short)_bx <= (short)0x00c0;
     _bx -= 0x00c0;                              //sub bx, 0C0h
-    if ((short)_bx <= 0)                                //jle short loc_20425
+    if (_flags.carry2)                                //jle short loc_20425
       goto loc_20425;
     _cx -= _bx;                                 //sub cx, bx
-    if ((short)_cx <= 0)                                //jle short locret_20481
+    if (_FIXME_)                                //jle short locret_20481
       goto locret_20481;
 loc_20425:                                      //loc_20425:
     _bx = _ax;                                  //mov bx, ax
@@ -18519,7 +19324,7 @@ void sub_20482()
     _cx -= _dx;                                 //sub cx, dx
     _bl = 0x14;                                 //mov bl, 14h
 loc_204A4:                                      //loc_204A4:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirAuto>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -18531,8 +19336,8 @@ loc_204A4:                                      //loc_204A4:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_204B6:                                      //loc_204B6:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += 0x0026;                              //add di, 26h
     if (--_cx)                                  //loop loc_204B6
       goto loc_204B6;
@@ -18550,60 +19355,60 @@ loc_204B6:                                      //loc_204B6:
     _bx = 0x0b14;                               //mov bx, 0B14h
     _bp = 0x0026;                               //mov bp, 26h
 loc_204D5:                                      //loc_204D5:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirAuto>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
     _cx = _ds;                                  //mov cx, ds
     _ax = 0xa400;                               //mov ax, 0A400h
     _ds = _ax;                                  //mov ds, ax
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
     _di -= 0x027e;                              //sub di, 27Eh
     _ds = _cx;                                  //mov ds, cx
@@ -18620,7 +19425,7 @@ loc_204D5:                                      //loc_204D5:
       goto loc_2055C;
     _bl = 0x14;                                 //mov bl, 14h
 loc_2053D:                                      //loc_2053D:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirAuto>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -18630,8 +19435,8 @@ loc_2053D:                                      //loc_2053D:
     _push(_di);                                 //push di
     _cx = _dx;                                  //mov cx, dx
 loc_2054C:                                      //loc_2054C:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirAuto>();
     _di += _bp;                                 //add di, bp
     if (--_cx)                                  //loop loc_2054C
       goto loc_2054C;
@@ -18664,7 +19469,7 @@ void sub_20568()
     memory16(_ds, 0x4259) = _ax;                //mov word_2C789, ax
 }
 
-void sub_2058D() // clear
+void sub_2058D()
 {
     _push(_es);                                 //push es
     _ax = 0xa000;                               //mov ax, 0A000h
@@ -18674,7 +19479,7 @@ void sub_2058D() // clear
     _out(_dx, _ax);                             //out dx, ax
     _di = memory16(_ds, 0x425B);                //mov di, word_2C78B
     _cx = 0x1f40;                               //mov cx, 1F40h
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemVideo, DirAuto>();
     _ax = 0x0001;                               //mov ax, 1
     _out(_dx, _ax);                             //out dx, ax
     _es = _pop();                               //pop es
@@ -18748,26 +19553,26 @@ void sub_20627()
     _push(_di);                                 //push di
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemAuto, DirAuto>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _push(_cx);                                 //push cx
     _push(_di);                                 //push di
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemAuto, DirAuto>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _push(_cx);                                 //push cx
     _push(_di);                                 //push di
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemAuto, DirAuto>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemAuto, DirAuto>();
     _ax = 0x0f02;                               //mov ax, 0F02h
     _out(_dx, _ax);                             //out dx, ax
 }
@@ -19045,7 +19850,6 @@ loc_20887:                                      //loc_20887:
 loc_20894:                                      //loc_20894:
     _bx = 0x9221;                               //mov bx, 9221h
     _di = 0x1e08;                               //mov di, 1E08h
-    _flags.carry = (memory16(_ds, 0x9156) + 0x000a) >= 0x10000;
     memory16(_ds, 0x9156) += 0x000a;            //add word_31686, 0Ah
 loc_2089F:                                      //loc_2089F:
     memory16(_ds, 0x9158) = memory16(_ds, 0x9158) + 0x0000 + _flags.carry;
@@ -19200,11 +20004,9 @@ loc_209B6:                                      //loc_209B6:
     _dx = _dx ^ _dx;                            //xor dx, dx
 loc_209BD:                                      //loc_209BD:
     _ax = memory16(_ds, _bx);                   //mov ax, [bx]
-    _flags.carry = memory16(_ds, 0xFCE2) < _ax;
     memory16(_ds, 0xFCE2) -= _ax;               //sub word_38212, ax
     _ax = memory16(_ds, _bx + 2);               //mov ax, [bx+2]
-    memory16(_ds, 0xFCE4) -= _ax + _flags.carry;
-    //_FIXME_;                                    //sbb word_38214, ax // boss
+    _FIXME_;                                    //sbb word_38214, ax
     if ((short)memory16(_ds, 0xFCE2) < 0)       //js short loc_209CF
       goto loc_209CF;
     _dx += 1;                                   //inc dx
@@ -19215,7 +20017,6 @@ loc_209CF:                                      //loc_209CF:
     memory16(_ds, 0xFCE2) += _ax;               //add word_38212, ax
     _ax = memory16(_ds, _bx + 2);               //mov ax, [bx+2]
     memory16(_ds, 0xFCE4) = memory16(_ds, 0xFCE4) + _ax + _flags.carry;
-    // boss
     _bx += 0x0004;                              //add bx, 4
     _al = _dl;                                  //mov al, dl
     sub_20919();                                //call near ptr sub_20919
@@ -19247,7 +20048,7 @@ loc_20A03:                                      //loc_20A03:
     if (--_cx)                                  //loop loc_20A03
       goto loc_20A03;
     sub_1F492();                                //call near ptr sub_1F492
-    {__sync = true; sub_205AE(); __sync = false; return; };                        //jmp near ptr sub_205AE
+{sub_205AE(); return; };                        //jmp near ptr sub_205AE
 }
 
 void sub_20A1D()
@@ -19366,7 +20167,7 @@ loc_20AC2:                                      //loc_20AC2:
     _di = _pop();                               //pop di
 }
 
-void sub_20AD0()
+void sub_20AD0() // draw health
 {
     if (memory(_ds, 0x8FAF) != 0x00)            //jnz short loc_20ADA
       goto loc_20ADA;
@@ -19452,7 +20253,7 @@ void sub_20B5B()
     _si = 0x1e00;                               //mov si, 1E00h
     _di = 0xfec0;                               //mov di, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemVideo, MemAuto, DirAuto>();
+    _rep_movsb<MemVideo, MemVideo, DirAuto>();
     _ax = 0x0005;                               //mov ax, 5
     _out(_dx, _ax);                             //out dx, ax
     _ax = _pop();                               //pop ax
@@ -19477,11 +20278,11 @@ void sub_20B8A()
     _di = 0x1e00;                               //mov di, 1E00h
     _si = 0xfec0;                               //mov si, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemVideo, DirAuto>();
     _di = 0x3e00;                               //mov di, 3E00h
     _si = 0xfec0;                               //mov si, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemVideo, DirAuto>();
     _ax = 0x0005;                               //mov ax, 5
     _out(_dx, _ax);                             //out dx, ax
     _ax = _pop();                               //pop ax
@@ -19503,7 +20304,7 @@ void sub_20BBF()
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
     _cx = 0x1f40;                               //mov cx, 1F40h
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemVideo, MemVideo, DirAuto>();
     _ax = _pop();                               //pop ax
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -19647,7 +20448,7 @@ void sub_20CBB()
     _es = _ax;                                  //mov es, ax
 }
 
-void sub_20CFE() // draw logo
+void sub_20CFE()
 {
     _push(_si);                                 //push si
     _push(_di);                                 //push di
@@ -19657,8 +20458,8 @@ loc_20D02:                                      //loc_20D02:
     _push(_di);                                 //push di
     _push(_bp);                                 //push bp
 loc_20D04:                                      //loc_20D04:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemVideo, MemAuto, DirAuto>();
+    _movsb<MemVideo, MemAuto, DirAuto>();
     _si += 0x0006;                              //add si, 6
     _bp -= 1;                                   //dec bp
     if (_bp != 0)                               //jnz short loc_20D04
@@ -19699,46 +20500,45 @@ void loc_20D45()
 {
     _ax = 0x0108;                               //mov ax, 108h
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
     _ax = 0xff08;                               //mov ax, 0FF08h
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 1;                                   //inc di
     _ax = 0xfe08;                               //mov ax, 0FE08h
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _di, _al);                    //and es:[di], al
+    memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 0x001c;                              //add di, 1Ch
 }
 
 void sub_20D87()
 {
     if (--_cx)                                  //loop loc_20D45
-    { loc_20D45(); return; }
+      _STOP_("goto loc_20D45");
 //    return;                                     //retf
-    //_STOP_("sp-trace-fail");                    //sub_20D87 endp_failed
-    //_STOP_("continues");                        //sub_20D8A proc far
-    sub_20D8A();
+    _STOP_("sp-trace-fail");                    //sub_20D87 endp_failed
+    _STOP_("continues");                        //sub_20D8A proc far
 }
 
 void sub_20D8A()
@@ -20118,19 +20918,19 @@ loc_210BD:                                      //loc_210BD:
     _ah = _bh;                                  //mov ah, bh
     _ah >>= _cl;                                //shr ah, cl
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si, _al);                    //and es:[si], al
+    memoryVideoAnd(_es, _si, _al);              //and es:[si], al
     _ah = _bh;                                  //mov ah, bh
     _ror(_ah, _cl);                             //ror ah, cl
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si + 1, _al);                //and es:[si+1], al
-    memoryVideoAnd(_es, _si + 2, _al);                //and es:[si+2], al
-    memoryVideoAnd(_es, _si + 3, _al);                //and es:[si+3], al
+    memoryVideoAnd(_es, _si + 1, _al);          //and es:[si+1], al
+    memoryVideoAnd(_es, _si + 2, _al);          //and es:[si+2], al
+    memoryVideoAnd(_es, _si + 3, _al);          //and es:[si+3], al
     _al = _bh;                                  //mov al, bh
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = 0x08;                                 //mov al, 8
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si + 4, _al);                //and es:[si+4], al
+    memoryVideoAnd(_es, _si + 4, _al);          //and es:[si+4], al
     _ax = 0x0000;                               //mov ax, 0
     _out(_dx, _ax);                             //out dx, ax
     _bh = (~_bh);                               //not bh
@@ -20138,19 +20938,19 @@ loc_210BD:                                      //loc_210BD:
     _ah = _bh;                                  //mov ah, bh
     _ah >>= _cl;                                //shr ah, cl
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si, _al);                    //and es:[si], al
+    memoryVideoAnd(_es, _si, _al);              //and es:[si], al
     _ah = _bh;                                  //mov ah, bh
     _ror(_ah, _cl);                             //ror ah, cl
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si + 1, _al);                //and es:[si+1], al
-    memoryVideoAnd(_es, _si + 2, _al);                //and es:[si+2], al
-    memoryVideoAnd(_es, _si + 3, _al);                //and es:[si+3], al
+    memoryVideoAnd(_es, _si + 1, _al);          //and es:[si+1], al
+    memoryVideoAnd(_es, _si + 2, _al);          //and es:[si+2], al
+    memoryVideoAnd(_es, _si + 3, _al);          //and es:[si+3], al
     _al = _bh;                                  //mov al, bh
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = 0x08;                                 //mov al, 8
     _out(_dx, _ax);                             //out dx, ax
-    memoryVideoAnd(_es, _si + 4, _al);                //and es:[si+4], al
+    memoryVideoAnd(_es, _si + 4, _al);          //and es:[si+4], al
     _si += 0x0028;                              //add si, 28h
     _bl -= 1;                                   //dec bl
     if (_bl != 0)                               //jnz short loc_210BD
@@ -20228,10 +21028,10 @@ void sub_211B0()
     _cx = 0x0008;                               //mov cx, 8
 loc_211B4:                                      //loc_211B4:
     _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _ah = memoryVideoGet(_es, _di);                     //mov ah, es:[di]
-    memoryVideoSet(_es, _di, _al);                     //mov es:[di], al
-    _ah = memoryVideoGet(_es, _di + 8192);              //mov ah, es:[di+2000h]
-    memoryVideoSet(_es, _di + 8192, _al);              //mov es:[di+2000h], al
+    _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
+    _ah = memoryVideoGet(_es, _di + 8192);      //mov ah, es:[di+2000h]
+    memoryVideoSet(_es, _di + 8192, _al);       //mov es:[di+2000h], al
     _di += 0x0028;                              //add di, 28h
     if (--_cx)                                  //loop loc_211B4
       goto loc_211B4;
@@ -21061,7 +21861,7 @@ void sub_21844()
 loc_2185A:                                      //loc_2185A:
     _di = memory16(_ds, _si);                   //mov di, [si]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);         //add di, [si+2]
     memory(_es, _di) |= 0x18;                   //or byte ptr es:[di], 18h
     _si += 0x0006;                              //add si, 6
@@ -21132,7 +21932,7 @@ loc_218A5:                                      //loc_218A5:
       goto loc_21889;
     _di = _ax;                                  //mov di, ax
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _push(_cx);                                 //push cx
     _cx = _bx;                                  //mov cx, bx
     _cx &= 0x0003;                              //and cx, 3
@@ -21243,7 +22043,7 @@ loc_219A4:                                      //loc_219A4:
     _push(_ds);                                 //push ds
     _ax = _dseg;                                //mov ax, seg dseg
     _ds = _ax;                                  //mov ds, ax
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x4255);                //mov ax, seg_2C785
     _es = _ax;                                  //mov es, ax
     _ds = _pop();                               //pop ds
@@ -21775,7 +22575,7 @@ loc_21DD7:                                      //loc_21DD7:
     _push(_ds);                                 //push ds
     _ax = _dseg;                                //mov ax, seg dseg
     _ds = _ax;                                  //mov ds, ax
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x4255);                //mov ax, seg_2C785
     _es = _ax;                                  //mov es, ax
     _ds = _pop();                               //pop ds
@@ -22010,7 +22810,7 @@ loc_21F90:                                      //loc_21F90:
     _bx = _ax;                                  //mov bx, ax
     _di = _dx;                                  //mov di, dx
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _bx >>= 1;                                  //shr bx, 1
     _bx >>= 1;                                  //shr bx, 1
     _di += _bx;                                 //add di, bx
@@ -22371,7 +23171,7 @@ loc_221EC:                                      //loc_221EC:
     _dx = _pop();                               //pop dx
     _di = _dx;                                  //mov di, dx
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = _pop();                               //pop ax
     _push(_cx);                                 //push cx
     _cx = _ax;                                  //mov cx, ax
@@ -22469,7 +23269,7 @@ loc_222B5:                                      //loc_222B5:
     _es = _ax;                                  //mov es, ax
     _di = memory16(_ds, 0x32BC);                //mov di, word_2B7EC
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x32BA);                //mov ax, word_2B7EA
     _sar(_ax, 1);                               //sar ax, 1
     _sar(_ax, 1);                               //sar ax, 1
@@ -22702,7 +23502,7 @@ void sub_22495()
 {
     _di = memory16(_ds, 0x3752);                //mov di, word_2BC82
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _push(memory16(_ds, _si + 20));             //push word ptr [si+14h]
     _push(_si);                                 //push si
     memory(_ds, _si + 20) = 0x00;               //mov byte ptr [si+14h], 0
@@ -23334,7 +24134,7 @@ void sub_22979()
 loc_22982:                                      //loc_22982:
     _di = memory16(_ds, 0x8F48);                //mov di, word_31478
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, 0x8F46);          //add di, word_31476
     _al -= 0x20;                                //sub al, 20h
     _ah = _ah ^ _ah;                            //xor ah, ah
@@ -23423,7 +24223,7 @@ loc_22A68:                                      //loc_22A68:
     _es = _ax;                                  //mov es, ax
     _di = memory16(_ds, 0x32BC);                //mov di, word_2B7EC
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x32BA);                //mov ax, word_2B7EA
     _sar(_ax, 1);                               //sar ax, 1
     _sar(_ax, 1);                               //sar ax, 1
@@ -24040,7 +24840,7 @@ void sub_23046()
 loc_2305C:                                      //loc_2305C:
     _di = memory16(_ds, _si);                   //mov di, [si]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di = _di + memory16(_ds, _si + 2);         //add di, [si+2]
     if (memory(_es, _di) != 0x00)               //jnz short loc_23070
       goto loc_23070;
@@ -24114,7 +24914,7 @@ loc_230AC:                                      //loc_230AC:
       goto loc_23090;
     _di = _ax;                                  //mov di, ax
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _push(_cx);                                 //push cx
     _cx = _bx;                                  //mov cx, bx
     _cx &= 0x0001;                              //and cx, 1
@@ -24593,7 +25393,7 @@ loc_233A2:                                      //loc_233A2:
     _ax = _dseg;                                //mov ax, seg dseg
     _ds = _ax;                                  //mov ds, ax
     _ax = memory16(_ds, _di + -26816);          //mov ax, [di-68C0h]
-    _ax = _ax - memory16(_ds, _di + -26818);    //sub ax, [di-68C2h]
+    _ax = _ax - memory16(_ds, _di + 38718);    //sub ax, [di-68C2h]
     memory16(_ss, 32) = _ax;                    //mov ss:20h, ax
     _ax = memory16(_ds, _di + -26814);          //mov ax, [di-68BEh]
     _ax = _ax - memory16(_ds, _di + -26816);    //sub ax, [di-68C0h]
@@ -24604,7 +25404,7 @@ loc_233A2:                                      //loc_233A2:
     _ax = memory16(_ds, _di + -26810);          //mov ax, [di-68BAh]
     _ax = _ax - memory16(_ds, _di + -26812);    //sub ax, [di-68BCh]
     memory16(_ss, 38) = _ax;                    //mov ss:26h, ax
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ds = _pop();                               //pop ds
     if ((short)_cx >= 0)                        //jns short loc_233E8
       goto loc_233E8;
@@ -26115,7 +26915,7 @@ loc_23DAF:                                      //loc_23DAF:
     _push(_ds);                                 //push ds
     _ax = _dseg;                                //mov ax, seg dseg
     _ds = _ax;                                  //mov ds, ax
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ds = _pop();                               //pop ds
     if ((short)_cx >= 0)                        //jns short loc_23DC5
       goto loc_23DC5;
@@ -26237,7 +27037,7 @@ loc_23E89:                                      //loc_23E89:
 loc_23E97:                                      //loc_23E97:
     _di = _dx;                                  //mov di, dx
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax >>= 1;                                  //shr ax, 1
     _di += _ax;                                 //add di, ax
     _bx = 0xb800;                               //mov bx, 0B800h
@@ -26325,7 +27125,7 @@ loc_23F0F:                                      //loc_23F0F:
     _bx = _bx - memory16(_ds, 0x9196);          //sub bx, word_316C6
     _bx <<= 1;                                  //shl bx, 1
     _ax = memory16(_ds, _bx + -26816);          //mov ax, [bx-68C0h]
-    _ax = _ax - memory16(_ds, _bx + -26818);    //sub ax, [bx-68C2h]
+    _ax = _ax - memory16(_ds, _bx + 38718);    //sub ax, [bx-68C2h]
     _ax -= 0x0008;                              //sub ax, 8
     memory16(_ss, 32) = _ax;                    //mov ss:20h, ax
     _ax = memory16(_ds, _bx + -26814);          //mov ax, [bx-68BEh]
@@ -26737,7 +27537,7 @@ loc_24205:                                      //loc_24205:
     _di = _pop();                               //pop di
     _ax = _pop();                               //pop ax
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax >>= 1;                                  //shr ax, 1
     _di += _ax;                                 //add di, ax
     memory(_es, _di) = 0x77;                    //mov byte ptr es:[di], 77h
@@ -26826,7 +27626,7 @@ loc_242BA:                                      //loc_242BA:
     _es = _ax;                                  //mov es, ax
     _di = memory16(_ds, 0x32BC);                //mov di, word_2B7EC
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _bx = memory16(_ds, 0x32C0);                //mov bx, word_2B7F0
     _bx <<= 1;                                  //shl bx, 1
     _cx = memory16(_ds, _bx + 13252);           //mov cx, [bx+33C4h]
@@ -27056,7 +27856,7 @@ void sub_24488()
 {
     _di = memory16(_ds, 0x3752);                //mov di, word_2BC82
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _push(memory16(_ds, _si + 20));             //push word ptr [si+14h]
     _push(_si);                                 //push si
     memory(_ds, _si + 20) = 0x00;               //mov byte ptr [si+14h], 0
@@ -27413,7 +28213,7 @@ loc_246EC:                                      //loc_246EC:
     _di = memory16(_cs, _si);                   //mov di, cs:[si]
     _si += 0x0002;                              //add si, 2
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di += _ax;                                 //add di, ax
     _dx = memory16(_cs, _si);                   //mov dx, cs:[si]
     _si += 0x0002;                              //add si, 2
@@ -27625,7 +28425,7 @@ loc_24894:                                      //loc_24894:
     _di = 0x0071;                               //mov di, 71h
     _di = _di - memory16(_ds, 0x8F3C);          //sub di, word_3146C
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _di += 0x0068;                              //add di, 68h
     _si = 0x64d8;                               //mov si, 64D8h
     _cx = memory16(_ds, 0x8F3C);                //mov cx, word_3146C
@@ -27825,7 +28625,7 @@ loc_24A38:                                      //loc_24A38:
     _push(_ax);                                 //push ax
     _di = memory16(_ds, 0x8F48);                //mov di, word_31478
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x8F46);                //mov ax, word_31476
     _ax <<= 1;                                  //shl ax, 1
     _di += _ax;                                 //add di, ax
@@ -27946,7 +28746,7 @@ loc_24B66:                                      //loc_24B66:
     _es = _ax;                                  //mov es, ax
     _di = memory16(_ds, 0x32BC);                //mov di, word_2B7EC
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -26818);          //mov di, [di-68C2h]
+    _di = memory16(_ds, _di + 38718);          //mov di, [di-68C2h]
     _ax = memory16(_ds, 0x32BA);                //mov ax, word_2B7EA
     _ax >>= 1;                                  //shr ax, 1
     _di += _ax;                                 //add di, ax
@@ -27973,9 +28773,9 @@ void sub_24B90()
     _ds = _pop();                               //pop ds
     _bh = _bh ^ _bh;                            //xor bh, bh
     _bl = _ah;                                  //mov bl, ah
-    _flags.carry2 = _ah <= 0x10;
+    _flags.carry = _ah <= 0x10;
     _ah -= 0x10;                                //sub ah, 10h
-    if (_flags.carry2)                                //jbe short loc_24BA5
+    if (_flags.carry)                                //jbe short loc_24BA5
       goto loc_24BA5;
     goto loc_24CC0;                             //jmp loc_24CC0
 loc_24BA5:                                      //loc_24BA5:
@@ -28017,9 +28817,9 @@ loc_24BAB:                                      //loc_24BAB:
     _STOP_("db 1, 0CBh, 1, 0B1h, 1, 99h, 1, 82h, 1, 6C...");
     _STOP_("db 44h, 1, 32h, 1, 21h, 1, 30h dup(0)");//db 44h, 1, 32h, 1, 21h, 1, 30h dup(0)
 loc_24CC0:                                      //loc_24CC0:
-    _flags.carry2 = _bl < 0x20;
+    _flags.carry = _bl < 0x20;
     _bl -= 0x20;                                //sub bl, 20h
-    if (_flags.carry2)                                //jb short loc_24CCC
+    if (_flags.carry)                                //jb short loc_24CCC
       goto loc_24CCC;
     memory(_ds, _bx + 34) = _al;                //mov [bx+22h], al
     goto loc_24BAB;                             //jmp loc_24BAB
@@ -28380,1359 +29180,3 @@ locret_24F9C:                                   //locret_24F9C:
     return;
 }
 
-
-
-
-void sub_11F4D()
-{
-    WORD _cs = _seg000;
-
-    sub_141B1();                                //call sub_141B1
-    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
-    _bx <<= 1;                                  //shl bx, 1
-    _ax = memory16(_cs, _bx + 7949);            //mov ax, cs:[bx+1F0Dh]
-    _imul(memory16(_ds, _si + 66));
-    //_ax = (short)memory16(_ds, _si + 66) * (char)_al;        //imul word ptr [si+42h]
-    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
-    _ax <<= 1;
-    _rcl(_dx, 1);                               //rcl dx, 1
-    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
-    _ax <<= 1;
-    _rcl(_dx, 1);                               //rcl dx, 1
-    _flags.carry = (memory16(_ds, _si + 20) + _ax) >= 0x10000;
-    memory16(_ds, _si + 20) += _ax;
-    memory16(_ds, _si + 18) = memory16(_ds, _si + 18) + _dx + _flags.carry;
-    _ax = memory16(_cs, _bx + 7981);            //mov ax, cs:[bx+1F2Dh]
-    _imul(memory16(_ds, _si + 66));        //imul word ptr [si+42h]
-    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
-    _ax <<= 1;
-    _rcl(_dx, 1);                               //rcl dx, 1
-    _flags.carry = !!(_ax & 0x8000);            //shl ax, 1
-    _ax <<= 1;
-    _rcl(_dx, 1);                               //rcl dx, 1
-    _flags.carry = (memory16(_ds, _si + 24) + _ax) >= 0x10000;
-    memory16(_ds, _si + 24) += _ax;
-    memory16(_ds, _si + 22) = memory16(_ds, _si + 22) + _dx + _flags.carry;
-    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
-    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
-    if (memory16(_ds, _si + 18) >= 0x0140)      //jnb short loc_11FB0
-      goto loc_11FB0;
-    if (memory16(_ds, _si + 22) >= 0x00c0)      //jnb short loc_11FB0
-      goto loc_11FB0;
-    sub_13589();                                //call sub_13589
-    sub_142AE();                                //call sub_142AE
-    if (_flags.zero)                                //jz short locret_11FB3
-      goto locret_11FB3;
-    if (memory16(_ds, 0x9188) != 0x0000)        //jnz short loc_11FB0
-      goto loc_11FB0;
-    _ax = 0x0004;                               //mov ax, 4
-    sub_13C4F();                                //call sub_13C4F
-    memory16(_ds, 0x9F04) = 0x08b9;             //mov word_32434, 8B9h
-loc_11FB0:                                      //loc_11FB0:
-    sub_107C0();                                //call sub_107C0
-locret_11FB3:                                   //locret_11FB3:
-    return;
-}
-
-void sub_13835()
-{
-    sub_141B1();                                //call sub_141B1
-    _ax = memory16(_ds, 0x9F12);                //mov ax, word_32442
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, 0x9F16);                //mov ax, word_32446
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    if (memory16(_ds, 0x991E) == 0x0000)        //jz short loc_1384E
-      goto loc_1384E;
-{loc_147A9(); return; };                        //
-loc_1384E:                                      //loc_1384E:
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    if (memory(_ds, 0x8FAE) == 0x00)            //jz short locret_13871
-      goto locret_13871;
-    memory16(_ds, _si + 14) = 0x0001;           //mov word ptr [si+0Eh], 1
-    _ax = 0x0000;                               //mov ax, 0
-    _bx = 0x0009;                               //mov bx, 9
-    _cx = 0x0000;                               //mov cx, 0
-    _dx = 0x0012;                               //mov dx, 12h
-    _bp = 0x12c4;                               //mov bp, 12C4h
-    sub_145F4();                                //call sub_145F4
-locret_13871:                                   //locret_13871:
-    return;
-}
-
-void sub_16823();
-
-void sub_16807()
-{
-    _si = 0x9226;                               //mov si, 9226h
-    _cx = _cx ^ _cx;                            //xor cx, cx
-loc_1680C:                                      //loc_1680C:
-    if (memory(_ds, _si) != 0x00)               //jnz short loc_1681B
-      goto loc_1681B;
-    memory(_ds, _si) = 0xff;                    //mov byte ptr [si], 0FFh
-    _push(_si);                                 //push si
-    _push(_cx);                                 //push cx
-    sub_16823();                                //call sub_16823
-    _cx = _pop();                               //pop cx
-    _si = _pop();                               //pop si
-loc_1681B:                                      //loc_1681B:
-    _si += 1;                                   //inc si
-    _cx += 1;                                   //inc cx
-    if ((short)_cx < (short)0x0005)             //jl short loc_1680C
-      goto loc_1680C;
-}
-
-void sub_16823()
-{
-    WORD _cs = _seg000;
-
-    _bx = _cx;                                  //mov bx, cx
-    memory16(_ds, 0xFCFA) = _cx;                //mov word_3822A, cx
-    _bx <<= 1;                                  //shl bx, 1
-    _ax = memory16(_ds, _bx + -28172);          //mov ax, [bx-6E0Ch]
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    memory16(_ds, _bx + -28172) = _ax;          //mov [bx-6E0Ch], ax
-    _ax &= 0x000f;                              //and ax, 0Fh
-    _bx = _ax;                                  //mov bx, ax
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    _ax += _bx;                                 //add ax, bx
-    _ax <<= 1;                                  //shl ax, 1
-    _di = 0x6767;                               //mov di, 6767h
-    _di += _ax;                                 //add di, ax
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
-    _bx = memory16(_cs, _di + 2);               //mov bx, cs:[di+2]
-    _bx = _bx - memory16(_ds, 0x919A);          //sub bx, word_316CA
-    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
-    memory16(_ds, 0xFCE6) = _bx;                //mov word_38216, bx
-    _bp = memory16(_cs, _di + 4);               //mov bp, cs:[di+4]
-    _bp <<= 1;                                  //shl bp, 1
-    if (memory16(_ds, _bp + 28204) != 0x0000)   //jnz short loc_16876
-      goto loc_16876;
-    memory16(_ds, _bp + 28204) = 0x0014;        //mov word ptr ds:[bp-6E2Ch], 14h
-loc_16876:                                      //loc_16876:
-    _dx = memory16(_cs, _di + 6);               //mov dx, cs:[di+6]
-    memory16(_ds, 0xFCEE) = _dx;                //mov word_3821E, dx
-    memory16(_ds, 0xFCEA) = 0x0000;             //mov word_3821A, 0
-    _di = memory16(_cs, _di + 8);               //mov di, cs:[di+8]
-    _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -8482);           //mov di, [di-2122h]
-    _bx = 0x670d;                               //mov bx, 670Dh
-    _cx = memory16(_cs, _bx);                   //mov cx, cs:[bx]
-    _bx += 0x0002;                              //add bx, 2
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    _push(_si);                                 //push si
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    memory16(_ds, _si) = 0x010c;                //mov word ptr [si], 10Ch
-    memory16(_ds, _si + 2) = 0x6aad;            //mov word ptr [si+2], 6AADh
-    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
-    memory16(_ds, _si + 6) = 0x69c8;            //mov word ptr [si+6], 69C8h
-    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
-    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
-    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
-    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
-    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
-    _ax = memory(_cs, 0x6282);                  //mov ax, word ptr cs:byte_16260+22h
-    memory16(_ds, _si + 66) = _ax;              //mov [si+42h], ax
-    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
-    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
-    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
-    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
-    memory16(_ds, _si + 52) = 0x0000;           //mov word ptr [si+34h], 0
-loc_16900:                                      //loc_16900:
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si) = _ax;                   //mov [si], ax
-    memory16(_ds, _si + 2) = 0x6a0a;            //mov word ptr [si+2], 6A0Ah
-    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
-    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
-    memory16(_ds, _si + 6) = _ax;               //mov [si+6], ax
-    _ax = memory16(_cs, _bx + 4);               //mov ax, cs:[bx+4]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _bx + 6);               //mov ax, cs:[bx+6]
-    memory16(_ds, _si + 52) = _ax;              //mov [si+34h], ax
-    _bx += 0x0008;                              //add bx, 8
-    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
-    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
-    memory16(_ds, _si + 36) = 0x0001;           //mov word ptr [si+24h], 1
-    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    memory16(_ds, _si + 14) = 0x0000;           //mov word ptr [si+0Eh], 0
-    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
-    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
-    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
-    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
-    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
-    memory16(_ds, _si + 66) = 0x0004;           //mov word ptr [si+42h], 4
-    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
-    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
-    memory16(_ds, 0xFCEA) -= 0x0007;            //sub word_3821A, 7
-    sub_13589();                                //call sub_13589
-    if (--_cx)                                  //loop loc_16900
-      goto loc_16900;
-    sub_11022();                                //call sub_11022
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    memory16(_ds, _si) = 0x00b8;                //mov word ptr [si], 0B8h
-    memory16(_ds, _si + 2) = 0x0761;            //mov word ptr [si+2], 761h
-    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
-    memory16(_ds, _si + 6) = 0x0761;            //mov word ptr [si+6], 761h
-    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
-    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
-    memory16(_ds, _si + 70) = _di;              //mov [si+46h], di
-    memory16(_ds, _di) = 0x00bc;                //mov word ptr [di], 0BCh
-    memory16(_ds, _di + 2) = 0x25a8;            //mov word ptr [di+2], 25A8h
-    memory16(_ds, _di + 4) = 0x0761;            //mov word ptr [di+4], 761h
-    memory16(_ds, _di + 6) = 0x0761;            //mov word ptr [di+6], 761h
-    memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
-    memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
-    memory16(_ds, _di + 68) = _si;              //mov [di+44h], si
-}
-
-void sub_16A0A()
-{
-    WORD _cs = _seg000;
-
-    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
-    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
-    _di = memory16(_ds, _si + 10);              //mov di, [si+0Ah]
-    if (memory16(_ds, _di) != 0x00bc)           //jnz short loc_16A33
-      goto loc_16A33;
-    _bx = memory16(_ds, _si + 32);              //mov bx, [si+20h]
-    _bx <<= 1;                                  //shl bx, 1
-    if (memory16(_ds, _bx + -28204) != 0x0000)  //jnz short loc_16A2D
-      goto loc_16A2D;
-    memory16(_ds, _bx + -28204) = 0x0014;       //mov word ptr [bx-6E2Ch], 14h
-loc_16A2D:                                      //loc_16A2D:
-    sub_107C0();                                //call sub_107C0
-    _indirectCall(_seg000, memory16(_ds, _si+2));
-    return;
-    //_STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
-loc_16A33:                                      //loc_16A33:
-    _ax = memory16(_ds, _di + 18);              //mov ax, [di+12h]
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, _di + 22);              //mov ax, [di+16h]
-    _ax = _ax + memory16(_ds, 0x9198);          //add ax, word_316C8
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _ax = memory16(_ds, _di + 28);              //mov ax, [di+1Ch]
-    memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
-    _ax = memory16(_ds, _di + 30);              //mov ax, [di+1Eh]
-    memory16(_ds, _si + 30) = _ax;              //mov [si+1Eh], ax
-    _ax = memory16(_ds, _di + 26);              //mov ax, [di+1Ah]
-    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
-    if (memory16(_ds, _si + 4) != 0x0761)       //jnz short loc_16A67
-      goto loc_16A67;
-    if ((short)memory16(_ds, _si + 26) < 0 /*CHECK*/)//js short loc_16A67
-      goto loc_16A67;
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-loc_16A67:                                      //loc_16A67:
-    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
-    _bx += 0x0010;                              //add bx, 10h
-    _bx >>= 1;                                  //shr bx, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _bx >>= 1;                                  //shr bx, 1
-    _bx &= 0x000e;                              //and bx, 0Eh
-    _di = 0x6a8d;                               //mov di, 6A8Dh
-    if (memory16(_ds, _si) != 0x0110)           //jnz short loc_16A84
-      goto loc_16A84;
-    _di = 0x6a9d;                               //mov di, 6A9Dh
-loc_16A84:                                      //loc_16A84:
-    _ax = memory16(_cs, _bx + _di);             //mov ax, cs:[bx+di]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-{sub_13589(); return; };                        //
-}
-
-void sub_125A8()
-{
-    _di = memory16(_ds, _si + 68);              //mov di, [si+44h]
-    _bp = memory16(_ds, _di + 10);              //mov bp, [di+0Ah]
-    if (_bp == _si)                             //jz short loc_12624
-      goto loc_12624;
-loc_125B2:                                      //loc_125B2:
-    if (memory16(_ds, _bp + 4) != 0x0761)       //jnz short loc_125CD
-      goto loc_125CD;
-    _bp = memory16(_ds, _bp + 10);              //mov bp, ds:[bp+0Ah]
-    if (_bp != _si)                             //jnz short loc_125B2
-      goto loc_125B2;
-    memory16(_ds, _di + 40) = 0x03e8;           //mov word ptr [di+28h], 3E8h
-    memory16(_ds, _di + 44) = 0x03e8;           //mov word ptr [di+2Ch], 3E8h
-    return;                                     //retn
-loc_125CD:                                      //loc_125CD:
-    _ax = memory16(_ds, _bp + 40);              //mov ax, ds:[bp+28h]
-    _bx = memory16(_ds, _bp + 42);              //mov bx, ds:[bp+2Ah]
-    _cx = memory16(_ds, _bp + 44);              //mov cx, ds:[bp+2Ch]
-    _dx = memory16(_ds, _bp + 46);              //mov dx, ds:[bp+2Eh]
-loc_125DD:                                      //loc_125DD:
-    _bp = memory16(_ds, _bp + 10);              //mov bp, ds:[bp+0Ah]
-    if (_si == _bp)                             //jz short loc_12617
-      goto loc_12617;
-    if (memory16(_ds, _bp + 4) == 0x0761)       //jz short loc_125DD
-      goto loc_125DD;
-    if ((short)_ax <= (short)memory16(_ds, _bp + 40))//jle short loc_125F7
-      goto loc_125F7;
-    _ax = memory16(_ds, _bp + 40);              //mov ax, ds:[bp+28h]
-loc_125F7:                                      //loc_125F7:
-    if ((short)_bx <= (short)memory16(_ds, _bp + 42))//jle short loc_12601
-      goto loc_12601;
-    _bx = memory16(_ds, _bp + 42);              //mov bx, ds:[bp+2Ah]
-loc_12601:                                      //loc_12601:
-    if ((short)_cx >= (short)memory16(_ds, _bp + 44))//jge short loc_1260B
-      goto loc_1260B;
-    _cx = memory16(_ds, _bp + 44);              //mov cx, ds:[bp+2Ch]
-loc_1260B:                                      //loc_1260B:
-    if ((short)_dx >= (short)memory16(_ds, _bp + 46))//jge short loc_125DD
-      goto loc_125DD;
-    _dx = memory16(_ds, _bp + 46);              //mov dx, ds:[bp+2Eh]
-    goto loc_125DD;                             //jmp short loc_125DD
-loc_12617:                                      //loc_12617:
-    memory16(_ds, _di + 40) = _ax;              //mov [di+28h], ax
-    memory16(_ds, _di + 42) = _bx;              //mov [di+2Ah], bx
-    memory16(_ds, _di + 44) = _cx;              //mov [di+2Ch], cx
-    memory16(_ds, _di + 46) = _dx;              //mov [di+2Eh], dx
-    return;                                     //retn
-loc_12624:                                      //loc_12624:
-    _push(_di);                                 //push di
-    sub_107C0();                                //call sub_107C0
-    _si = _pop();                               //pop si
-    sub_107C0();                                //call sub_107C0
-}
-
-void sub_16AAD()
-{
-    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
-    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
-    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
-    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
-    sub_14871();                                //call sub_14871
-    if (memory16(_ds, _si) != 0x0004)           //jnz short locret_16AC6
-      goto locret_16AC6;
-    _indirectCall(_seg000, memory16(_ds, _si+2));
-//    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
-locret_16AC6:                                   //locret_16AC6:
-    return;
-}
-
-void sub_16696()
-{
-    memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
-    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
-    memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_flags.carry2)                                //jbe short loc_166A1
-      goto loc_166A1;
-    return;                                     //retn
-loc_166A1:                                      //loc_166A1:
-    _bp = 0x650d;                               //mov bp, 650Dh
-    loc_166B6();
-    //_STOP_("goto loc_166B6");                   //jmp short loc_166B6
-}
-
-void sub_169D0()
-{
-    WORD _cs = _seg000;
-
-    sub_141B1();                                //call sub_141B1
-    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
-    _al = memory(_cs, _bx + 24854);             //mov al, cs:[bx+6116h]
-    _cbw();                                     //cbw
-    _sar(_ax, 1);                               //sar ax, 1
-    _sar(_ax, 1);                               //sar ax, 1
-    _ax = _ax + memory16(_ds, _si + 22);        //add ax, [si+16h]
-    if (_ax >= 0x00c0)                          //jnb short loc_16A06
-      goto loc_16A06;
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _al = memory(_cs, _bx + 24918);             //mov al, cs:[bx+6156h]
-    _cbw();                                     //cbw
-    _sar(_ax, 1);                               //sar ax, 1
-    _sar(_ax, 1);                               //sar ax, 1
-    _ax = _ax + memory16(_ds, _si + 18);        //add ax, [si+12h]
-    if (_ax >= 0x0140)                          //jnb short loc_16A06
-      goto loc_16A06;
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    return;                                     //retn
-loc_16A06:                                      //loc_16A06:
-    sub_107C0();                                //call sub_107C0
-}
-
-void sub_166A6()
-{
-    WORD _cs = _seg000;
-
-    memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
-    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
-    memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_flags.carry2)                                //jbe short loc_166B1
-      goto loc_166B1;
-    return;                                     //retn
-loc_166B1:                                      //loc_166B1:
-    _bp = 0x6523;                               //mov bp, 6523h
-    //_STOP_("goto $+2");                         //jmp short $+2
-loc_166B6:                                      //loc_166B6:
-    _push(_si);                                 //push si
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x9096;                               //mov di, 9096h
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    _ax = memory16(_ds, _di);                   //mov ax, [di]
-    memory16(_ds, _si) = _ax;                   //mov [si], ax
-    memory16(_ds, _si + 2) = 0x69d0;            //mov word ptr [si+2], 69D0h
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = memory16(_ds, _di + 18);              //mov ax, [di+12h]
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, _di + 22);              //mov ax, [di+16h]
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _bp + 2);               //mov ax, cs:[bp+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _bp += 0x0004;                              //add bp, 4
-    memory16(_ds, _si + 16) = _bp;              //mov [si+10h], bp
-    sub_14191();                                //call sub_14191
-    memory(_ds, _si + 28) = _al;                //mov [si+1Ch], al
-    memory(_ds, _si + 29) = 0x00;               //mov byte ptr [si+1Dh], 0
-    _ax = memory16(_ds, _di + 52);              //mov ax, [di+34h]
-    _flags.carry = (memory16(_ds, 0x9152) + _ax) >= 0x10000;
-    memory16(_ds, 0x9152) += _ax;
-    memory16(_ds, 0x9154) = memory16(_ds, 0x9154) + 0x0000 + _flags.carry;
-    _si = _di;                                  //mov si, di
-    sub_107C0();                                //call sub_107C0
-    _si = _pop();                               //pop si
-}
-
-void sub_12AD0()
-{
-    memory16(_ds, 0x8E88) = 0x000b;             //mov word_313B8, 0Bh
-    sub_10EB3();                                //call sub_10EB3
-    _di = memory16(_ds, 0x9054);                //mov di, word_31584
-loc_12ADD:                                      //loc_12ADD:
-    _ax = memory16(_ds, _di);                   //mov ax, [di]
-    if (!(_ax & _ax))                           //jz short loc_12AFE
-      goto loc_12AFE;
-    _si = _di;                                  //mov si, di
-    sub_11689();                                //call sub_11689
-    _push(_di);                                 //push di
-    if (_ax == 0x0050)                          //jz short loc_12AFB
-      goto loc_12AFB;
-    if (_ax == 0x0054)                          //jz short loc_12AFB
-      goto loc_12AFB;
-    _di = _si;                                  //mov di, si
-    _si = 0x8ffe;                               //mov si, 8FFEh
-    sub_13A33();                                //call sub_13A33
-loc_12AFB:                                      //loc_12AFB:
-    _di = _pop();                               //pop di
-    goto loc_12ADD;                             //jmp short loc_12ADD
-loc_12AFE:                                      //loc_12AFE:
-    _di = memory16(_ds, 0x90A0);                //mov di, word_315D0
-loc_12B02:                                      //loc_12B02:
-    if (memory16(_ds, _di) == 0x0000)           //jz short loc_12B17
-      goto loc_12B17;
-    _push(memory16(_ds, _di + 10));             //push word ptr [di+0Ah]
-    if (memory16(_ds, _di) != 0x0014)           //jnz short loc_12B14
-      goto loc_12B14;
-    _si = _di;                                  //mov si, di
-    sub_107C0();                                //call sub_107C0
-loc_12B14:                                      //loc_12B14:
-    _di = _pop();                               //pop di
-    goto loc_12B02;                             //jmp short loc_12B02
-loc_12B17:                                      //loc_12B17:
-    _di = 0x8e8c;                               //mov di, 8E8Ch
-    _ax = _ax ^ _ax;                            //xor ax, ax
-    _cx = 0x0010;                               //mov cx, 10h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
-}
-
-void sub_16E2C()
-{
-    WORD _cs = _seg000;
-
-    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
-    _ax += 0x00d0;                              //add ax, 0D0h
-    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
-    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16E3E
-      goto loc_16E3E;
-    goto loc_16EEB;                             //jmp loc_16EEB
-loc_16E3E:                                      //loc_16E3E:
-    sub_141B1();                                //call sub_141B1
-    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
-    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
-    if (memory16(_ds, _si + 26) != 0x0000)      //jnz short loc_16E50
-      goto loc_16E50;
-    goto locret_16ED0;                          //jmp locret_16ED0
-loc_16E50:                                      //loc_16E50:
-    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
-    _ax = _ax - memory16(_ds, 0x9F16);          //sub ax, word_32446
-    if ((short)_ax > (short)0x000a)             //jg short loc_16ED1
-      goto loc_16ED1;
-    if ((short)_ax < (short)0xffe2)             //jl short loc_16ED1
-      goto loc_16ED1;
-    sub_14191();                                //call sub_14191
-    if (_al >= 0x32)                            //jnb short loc_16ED1
-      goto loc_16ED1;
-    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
-    sub_107DC();                                //call sub_107DC
-    _di = 0x9096;                               //mov di, 9096h
-    sub_1077C();                                //call sub_1077C
-    _di = 0x64fd;                               //mov di, 64FDh
-    if (memory16(_ds, _si) == 0x00d4)           //jz short loc_16E82
-      goto loc_16E82;
-    _di = 0x64d7;                               //mov di, 64D7h
-loc_16E82:                                      //loc_16E82:
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _di += 0x0002;                              //add di, 2
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _di += 0x0002;                              //add di, 2
-    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
-    memory16(_ds, 0xFCFE) = 0x0002;             //mov word_3822E, 2
-loc_16E9D:                                      //loc_16E9D:
-    _bp = memory(_cs, 0x6274);                  //mov bp, word ptr cs:byte_16260+14h
-    _bp <<= 1;                                  //shl bp, 1
-    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
-    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
-    _bx += 0x0007;                              //add bx, 7
-    _cx = 0x0005;                               //mov cx, 5
-    if (memory16(_ds, _si) == 0x00d4)           //jz short loc_16EBE
-      goto loc_16EBE;
-    _cx = 0x0001;                               //mov cx, 1
-loc_16EBE:                                      //loc_16EBE:
-    _cx = _cx + memory16(_ds, 0xFCFE);          //add cx, word_3822E
-    _dx = memory(_cs, 0x6276);                  //mov dx, word ptr cs:byte_16260+16h
-    sub_11ED3();                                //call sub_11ED3
-    memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
-    if ((short)memory16(_ds, 0xFCFE) >= 0)      //jns short loc_16E9D
-      goto loc_16E9D;
-locret_16ED0:                                   //locret_16ED0:
-    return;                                     //retn
-loc_16ED1:                                      //loc_16ED1:
-    _ax = memory16(_ds, _si + 26);              //mov ax, [si+1Ah]
-    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
-    memory16(_ds, _si + 34) += _ax;             //add [si+22h], ax
-    if (memory16(_ds, _si + 34) == 0)           //jz short loc_16EE4
-      goto loc_16EE4;
-    _ax = memory16(_ds, _si + 34);              //mov ax, [si+22h]
-    if (_ax != memory16(_ds, _si + 28))         //jnz short loc_16EE7
-      goto loc_16EE7;
-loc_16EE4:                                      //loc_16EE4:
-    memory16(_ds, _si + 26) = -memory16(_ds, _si + 26);
-loc_16EE7:                                      //loc_16EE7:
-    sub_13589();                                //call sub_13589
-    return;                                     //retn
-loc_16EEB:                                      //loc_16EEB:
-    sub_107C0();                                //call sub_107C0
-}
-
-
-void sub_12A48()
-{
-    memory16(_ds, 0x9186) += 0x0014;            //add word_316B6, 14h
-loc_12A4D:                                      //loc_12A4D:
-    memory16(_ds, 0x8E88) = 0x0012;             //mov word_313B8, 12h
-    if ((short)memory16(_ds, 0x9186) <= (short)0x0027)
-      goto loc_12A60;
-    memory16(_ds, 0x9186) = 0x0027;             //mov word_316B6, 27h
-loc_12A60:                                      //loc_12A60:
-    memory(_ds, 0x8FAF) = 0xff;                 //mov byte_314DF, 0FFh
-}
-
-void sub_16AC7()
-{
-    WORD _cs = _seg000;
-
-    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
-    _ax += 0x00d0;                              //add ax, 0D0h
-    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16AD5
-      goto loc_16AD5;
-    goto loc_16B76;                             //jmp loc_16B76
-loc_16AD5:                                      //loc_16AD5:
-    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _ax += 0x0004;                              //add ax, 4
-    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
-    _ax += 0x0018;                              //add ax, 18h
-    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
-    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
-    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
-    _ax += 0x0004;                              //add ax, 4
-    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
-    _ax += 0x0018;                              //add ax, 18h
-    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
-    _bx = memory16(_ds, _si + 26);              //mov bx, [si+1Ah]
-    _bx <<= 1;                                  //shl bx, 1
-    _bx <<= 1;                                  //shl bx, 1
-    _bx <<= 1;                                  //shl bx, 1
-    _di = 0x6b7a;                               //mov di, 6B7Ah
-    if (memory16(_ds, _si) == 0x00e0)           //jz short loc_16B0C
-      goto loc_16B0C;
-    _di = 0x6b9a;                               //mov di, 6B9Ah
-loc_16B0C:                                      //loc_16B0C:
-    _bx += _di;                                 //add bx, di
-    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _di) = _ax;                   //mov [di], ax
-    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
-    memory16(_ds, _di + 2) = _ax;               //mov [di+2], ax
-    _ax = memory16(_cs, _bx + 4);               //mov ax, cs:[bx+4]
-    memory16(_ds, _di + 40) = _ax;              //mov [di+28h], ax
-    _ax = memory16(_cs, _bx + 6);               //mov ax, cs:[bx+6]
-    memory16(_ds, _di + 42) = _ax;              //mov [di+2Ah], ax
-    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
-    memory16(_ds, _si + 26) &= 0x0003;          //and word ptr [si+1Ah], 3
-    _al = memory(_cs, 0x6262);                  //mov al, cs:byte_16260+2
-    _flags.carry = (memory(_ds, _si + 72) + _al) >= 0x100;
-    memory(_ds, _si + 72) += _al;
-    if (!_flags.carry)                          //jnb short locret_16B79
-      goto locret_16B79;
-    sub_14191();                                //call sub_14191
-    _al &= 0x3f;                                //and al, 3Fh
-    memory(_ds, _si + 72) = _al;                //mov [si+48h], al
-    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _ax += 0x0010;                              //add ax, 10h
-    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
-    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
-    _bx += 0x000e;                              //add bx, 0Eh
-    _cx = 0x0002;                               //mov cx, 2
-    _bp = memory(_cs, 0x6264);                  //mov bp, word ptr cs:byte_16260+4
-    _bp <<= 1;                                  //shl bp, 1
-    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
-    if (memory16(_ds, _si) == 0x00e4)           //jz short loc_16B6E
-      goto loc_16B6E;
-    _cx = 0x0006;                               //mov cx, 6
-    _ax -= 0x0010;                              //sub ax, 10h
-loc_16B6E:                                      //loc_16B6E:
-    _dx = memory(_cs, 0x6266);                  //mov dx, word ptr cs:byte_16260+6
-{sub_11ED3(); return; };                        //
-loc_16B76:                                      //loc_16B76:
-    sub_107C0();                                //call sub_107C0
-locret_16B79:                                   //locret_16B79:
-    return;
-}
-
-void sub_16BCA()
-{
-    WORD _cs = _seg000;
-
-    _ax = memory16(_ds, 0x91AA);                //mov ax, word_316DA
-    _ax += 0x00d0;                              //add ax, 0D0h
-    if ((short)_ax >= (short)memory16(_ds, _si + 22))//jge short loc_16BD8
-      goto loc_16BD8;
-    goto loc_16C7E;                             //jmp loc_16C7E
-loc_16BD8:                                      //loc_16BD8:
-    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _ax += 0x0008;                              //add ax, 8
-    memory16(_ds, _si + 40) = _ax;              //mov [si+28h], ax
-    _ax += 0x0010;                              //add ax, 10h
-    memory16(_ds, _si + 44) = _ax;              //mov [si+2Ch], ax
-    _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
-    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
-    _ax += 0x0008;                              //add ax, 8
-    memory16(_ds, _si + 42) = _ax;              //mov [si+2Ah], ax
-    _ax += 0x0010;                              //add ax, 10h
-    memory16(_ds, _si + 46) = _ax;              //mov [si+2Eh], ax
-    _bx = memory16(_ds, _si + 26);              //mov bx, [si+1Ah]
-    _bx &= 0xfffe;                              //and bx, 0FFFEh
-    _bx <<= 1;                                  //shl bx, 1
-    _di = 0x6cd2;                               //mov di, 6CD2h
-    if (memory16(_ds, _si) == 0x00d8)           //jz short loc_16C0E
-      goto loc_16C0E;
-    _di = 0x6c82;                               //mov di, 6C82h
-loc_16C0E:                                      //loc_16C0E:
-    _bx += _di;                                 //add bx, di
-    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _di) = _ax;                   //mov [di], ax
-    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
-    memory16(_ds, _di + 2) = _ax;               //mov [di+2], ax
-    if (memory16(_ds, _si + 26) != 0x0000)      //jnz short loc_16C36
-      goto loc_16C36;
-    _al = memory(_cs, 0x6268);                  //mov al, cs:byte_16260+8
-    _flags.carry = (memory(_ds, _si + 72) + _al) >= 0x100;
-    memory(_ds, _si + 72) += _al;
-    if (!_flags.carry)                          //jnb short locret_16C81
-      goto locret_16C81;
-    sub_14191();                                //call sub_14191
-    _al &= 0x3f;                                //and al, 3Fh
-    memory(_ds, _si + 72) = _al;                //mov [si+48h], al
-loc_16C36:                                      //loc_16C36:
-    memory16(_ds, _si + 26) += 1;               //inc word ptr [si+1Ah]
-    if (memory16(_ds, _si + 26) != 0x0028)      //jnz short loc_16C45
-      goto loc_16C45;
-    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
-    return;                                     //retn
-loc_16C45:                                      //loc_16C45:
-    if (memory16(_ds, _si + 26) != 0x0018)      //jnz short locret_16C81
-      goto locret_16C81;
-    _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _ax += 0x001a;                              //add ax, 1Ah
-    _bx = memory16(_ds, _si + 22);              //mov bx, [si+16h]
-    _bx = _bx - memory16(_ds, 0x9190);          //sub bx, word_316C0
-    _bx += 0x0002;                              //add bx, 2
-    _bp = memory(_cs, 0x626A);                  //mov bp, word ptr cs:byte_16260+0Ah
-    _bp <<= 1;                                  //shl bp, 1
-    _bp = memory16(_cs, _bp + 30294);           //mov bp, cs:[bp+7656h]
-    _cx = 0x0002;                               //mov cx, 2
-    if (memory16(_ds, _si) == 0x00dc)           //jz short loc_16C76
-      goto loc_16C76;
-    _cx = 0x0006;                               //mov cx, 6
-    _ax -= 0x001a;                              //sub ax, 1Ah
-loc_16C76:                                      //loc_16C76:
-    _dx = memory(_cs, 0x626C);                  //mov dx, word ptr cs:byte_16260+0Ch
-{sub_11ED3(); return; };                        //
-loc_16C7E:                                      //loc_16C7E:
-    sub_107C0();                                //call sub_107C0
-locret_16C81:                                   //locret_16C81:
-    return;
-}
-
-void sub_169C8()
-{
-    _push(_si);                                 //push si
-    _si = _di;                                  //mov si, di
-    sub_107C0();                                //call sub_107C0
-    _si = _pop();                               //pop si
-}
-
-void sub_13A99()
-{
-    if (memory16(_ds, _si) == 0x0000)           //jz short locret_13AA6
-      goto locret_13AA6;
-    if (memory16(_ds, _si) == 0x0008)           //jz short locret_13AA6
-      goto locret_13AA6;
-    sub_107C0();                                //call sub_107C0
-locret_13AA6:                                   //locret_13AA6:
-    return;
-}
-
-void sub_115E4()
-{
-    WORD _cs = _seg000;
-
-    _push(_si);                                 //push si
-loc_115E5:                                      //loc_115E5:
-    sub_11022();                                //call sub_11022
-    _di = 0x9096;                               //mov di, 9096h
-    sub_1078E();                                //call sub_1078E
-    _di = 0x11f2;                               //mov di, 11F2h
-    memory16(_ds, _si) = 0x0060;                //mov word ptr [si], 60h
-    memory16(_ds, _si + 2) = 0x28df;            //mov word ptr [si+2], 28DFh
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _di += 0x0004;                              //add di, 4
-    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
-    _ax = 0x012c;                               //mov ax, 12Ch
-    sub_141A1();                                //call sub_141A1
-    _ax += 0x000a;                              //add ax, 0Ah
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = 0x00b4;                               //mov ax, 0B4h
-    sub_141A1();                                //call sub_141A1
-    _ax += 0x0006;                              //add ax, 6
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    memory16(_ds, _si + 26) = 0x0007;           //mov word ptr [si+1Ah], 7
-    memory16(_ds, 0x9164) += 1;                 //inc word_31694
-    sub_11022();                                //call sub_11022
-    _di = 0x9096;                               //mov di, 9096h
-    sub_1078E();                                //call sub_1078E
-    _di = 0x11b4;                               //mov di, 11B4h
-    memory16(_ds, _si) = 0x0018;                //mov word ptr [si], 18h
-    memory16(_ds, _si + 2) = 0x28df;            //mov word ptr [si+2], 28DFh
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _di += 0x0004;                              //add di, 4
-    memory16(_ds, _si + 16) = _di;              //mov [si+10h], di
-    _ax = 0x012c;                               //mov ax, 12Ch
-    sub_141A1();                                //call sub_141A1
-    _ax += 0x000a;                              //add ax, 0Ah
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = 0x00b4;                               //mov ax, 0B4h
-    sub_141A1();                                //call sub_141A1
-    _ax += 0x0006;                              //add ax, 6
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    memory16(_ds, _si + 26) = 0x0007;           //mov word ptr [si+1Ah], 7
-    memory16(_ds, 0x9164) += 1;                 //inc word_31694
-    _cx -= 1;                                   //dec cx
-    if ((short)_cx < 0)                         //js short loc_11687
-      goto loc_11687;
-    goto loc_115E5;                             //jmp loc_115E5
-loc_11687:                                      //loc_11687:
-    _si = _pop();                               //pop si
-}
-
-void sub_11588()
-{
-    WORD _cs = _seg000;
-
-    _push(_si);                                 //push si
-loc_11589:                                      //loc_11589:
-    _push(_cx);                                 //push cx
-    _cx = _ax;                                  //mov cx, ax
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x9096;                               //mov di, 9096h
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    memory16(_ds, _si) = 0x000c;                //mov word ptr [si], 0Ch
-    memory16(_ds, _si + 2) = 0x3998;            //mov word ptr [si+2], 3998h
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = _dx;                                  //mov ax, dx
-    sub_141A1();                                //call sub_141A1
-    _ax += _cx;                                 //add ax, cx
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = _di;                                  //mov ax, di
-    sub_141A1();                                //call sub_141A1
-    _ax += _bx;                                 //add ax, bx
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _bp + 2);               //mov ax, cs:[bp+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _bp += 0x0004;                              //add bp, 4
-    memory16(_ds, _si + 16) = _bp;              //mov [si+10h], bp
-    _bp -= 0x0004;                              //sub bp, 4
-    _ax = _cx;                                  //mov ax, cx
-    _cx = _pop();                               //pop cx
-    _cx -= 1;                                   //dec cx
-    if ((short)_cx >= 0)                        //jns short loc_11589
-      goto loc_11589;
-    _si = _pop();                               //pop si
-    memory16(_ds, 0x8E88) = 0x0006;             //mov word_313B8, 6
-    memory16(_ds, 0x8E8A) = 0x0006;             //mov word_313BA, 6
-}
-
-void sub_18CA7()
-{
-    WORD _cs = _seg000;
-
-    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    memory16(_ds, 0xFCE6) += _ax;               //add word_38216, ax
-    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    memory16(_ds, 0xFCEE) += _ax;               //add word_3821E, ax
-    if ((short)memory16(_ds, 0xFCE6) >= (short)0x01b0)
-      goto loc_18D08;
-    sub_18C85();                                //call sub_18C85
-    _cx = memory16(_cs, _di);                   //mov cx, cs:[di]
-    _di += 0x0002;                              //add di, 2
-loc_18CC6:                                      //loc_18CC6:
-    _push(_cx);                                 //push cx
-    if (memory(_cs, _di) == 0x0000)             //jz short loc_18CFF
-      goto loc_18CFF;
-    _ax = memory16(_cs, _di + 2);               //mov ax, cs:[di+2]
-    memory16(_ds, 0xFCF2) = _ax;                //mov word_38222, ax
-    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
-    if ((short)memory16(_ds, 0xFCF2) > (short)_ax)//jg short loc_18D07
-      goto loc_18D07;
-    _ax = memory16(_cs, _di + 4);               //mov ax, cs:[di+4]
-    memory16(_ds, 0xFCF6) = _ax;                //mov word_38226, ax
-    _ax = memory16(_ds, 0xFCF2);                //mov ax, word_38222
-    memory16(_ds, 0xFCFA) = _ax;                //mov word_3822A, ax
-    memory16(_ds, 0xFCFA) += 0x000f;            //add word_3822A, 0Fh
-    _ax = memory16(_ds, 0xFCF6);                //mov ax, word_38226
-    memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
-    memory16(_ds, 0xFCFE) += 0x000f;            //add word_3822E, 0Fh
-    sub_10F2F();                                //call sub_10F2F
-    if (!_flags.zero)                                //jnz short loc_18D0B
-      goto loc_18D0B;
-loc_18CFF:                                      //loc_18CFF:
-    _di += 0x0008;                              //add di, 8
-    _cx = _pop();                               //pop cx
-    if (--_cx)                                  //loop loc_18CC6
-      goto loc_18CC6;
-    goto loc_18D08;                             //jmp short loc_18D08
-loc_18D07:                                      //loc_18D07:
-    _cx = _pop();                               //pop cx
-loc_18D08:                                      //loc_18D08:
-    _ax = _ax ^ _ax;                            //xor ax, ax
-    _flags.zero = true;
-    return;                                     //retn
-loc_18D0B:                                      //loc_18D0B:
-    _bx = 0x98ce;                               //mov bx, 98CEh
-    memory16(_ds, _bx + 12) = _di;              //mov [bx+0Ch], di
-    _di = _bx;                                  //mov di, bx
-    _cx = _pop();                               //pop cx
-    _ax = _ax ^ _ax;                            //xor ax, ax
-    _ax -= 1;                                   //dec ax
-    _flags.zero = false;
-}
-
-void sub_17F79()
-{
-    WORD _cs = _seg000;
-
-    _di = _si;                                  //mov di, si
-    _bx <<= 1;                                  //shl bx, 1
-    switch (_bx)                                //jmp cs:off_190FD[bx]
-    {
-        case 0: loc_135CE(); return;
-      case 2: goto loc_17F82;
-      case 4: goto loc_17FDB;
-      case 6: goto loc_18018;
-      case 8: goto loc_180A3;
-      case 10: goto loc_180BB;
-      case 12: assert(0); //goto loc_13360;
-      case 14: goto loc_180D1;
-      case 16: goto loc_180D7;
-      case 18: goto loc_180DD;
-      case 20: goto loc_180E3;
-      case 22: goto loc_180E9;
-      case 24: goto loc_180EF;
-      default:
-        _ASSERT(0);
-    }
-loc_17F82:                                      //loc_17F82:
-    _ax = 0x00e8;                               //mov ax, 0E8h
-    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17F8E
-      goto loc_17F8E;
-    _ax = 0x00ec;                               //mov ax, 0ECh
-loc_17F8E:                                      //loc_17F8E:
-    _bx = 0x7dde;                               //mov bx, 7DDEh
-    sub_13529();                                //call sub_13529
-    memory16(_ds, _si + 6) = 0x3b76;            //mov word ptr [si+6], 3B76h
-    _ax = memory(_cs, 0x771C);                  //mov ax, word ptr cs:byte_176E6+36h
-    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
-    memory16(_ds, _si + 40) = 0x03e8;           //mov word ptr [si+28h], 3E8h
-    memory16(_ds, _si + 44) = 0x03e8;           //mov word ptr [si+2Ch], 3E8h
-    _bx = memory16(_ds, _si + 56);              //mov bx, [si+38h]
-    _bp = 0x90df;                               //mov bp, 90DFh
-    _dx = 0x90bf;                               //mov dx, 90BFh
-    if (memory16(_ds, _di + 12) == 0x0000)      //jz short loc_17FBF
-      goto loc_17FBF;
-    _bp = 0x90c1;                               //mov bp, 90C1h
-    _dx = 0x90bd;                               //mov dx, 90BDh
-loc_17FBF:                                      //loc_17FBF:
-    memory16(_ds, _si + 12) = _bp;              //mov [si+0Ch], bp
-    memory16(_ds, _si + 16) = _dx;              //mov [si+10h], dx
-    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
-    memory16(_ds, _bx) = _ax;                   //mov [bx], ax
-    memory16(_ds, _si + 52) = 0x0064;           //mov word ptr [si+34h], 64h
-    memory16(_ds, _si + 48) = 0x0000;           //mov word ptr [si+30h], 0
-    memory16(_ds, _si + 50) = 0x0000;           //mov word ptr [si+32h], 0
-    return;                                     //retn
-loc_17FDB:                                      //loc_17FDB:
-    _ax = 0x00f0;                               //mov ax, 0F0h
-    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17FE7
-      goto loc_17FE7;
-    _ax = 0x00f4;                               //mov ax, 0F4h
-loc_17FE7:                                      //loc_17FE7:
-    _bx = 0x7ce6;                               //mov bx, 7CE6h
-    assert(0); //loc_13536();                                //call loc_13536
-    _bx = memory16(_ds, _si + 56);              //mov bx, [si+38h]
-    _bp = 0x906d;                               //mov bp, 906Dh
-    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_17FFC
-      goto loc_17FFC;
-    _bp = 0x9095;                               //mov bp, 9095h
-loc_17FFC:                                      //loc_17FFC:
-    _ax = memory16(_cs, _bp);                   //mov ax, cs:[bp+0]
-    memory16(_ds, _bx) = _ax;                   //mov [bx], ax
-    _ax = memory16(_cs, _bp + 2);               //mov ax, cs:[bp+2]
-    memory16(_ds, _bx + 2) = _ax;               //mov [bx+2], ax
-    _ax = memory16(_cs, _bp + 4);               //mov ax, cs:[bp+4]
-    memory16(_ds, _bx + 40) = _ax;              //mov [bx+28h], ax
-    _ax = memory16(_cs, _bp + 6);               //mov ax, cs:[bp+6]
-    memory16(_ds, _bx + 42) = _ax;              //mov [bx+2Ah], ax
-    return;                                     //retn
-loc_18018:                                      //loc_18018:
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    memory16(_ds, _si) = 0x0100;                //mov word ptr [si], 100h
-    _bx = 0x7a56;                               //mov bx, 7A56h
-    if (memory16(_ds, _di + 12) != 0x0000)      //jnz short loc_18037
-      goto loc_18037;
-    memory16(_ds, _si) = 0x0104;                //mov word ptr [si], 104h
-    _bx = 0x7a2c;                               //mov bx, 7A2Ch
-loc_18037:                                      //loc_18037:
-    memory16(_ds, _si + 2) = 0x7e87;            //mov word ptr [si+2], 7E87h
-    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _ax = memory16(_cs, _bx + 2);               //mov ax, cs:[bx+2]
-    memory16(_ds, _si + 14) = _ax;              //mov [si+0Eh], ax
-    _bx += 0x0004;                              //add bx, 4
-    memory16(_ds, _si + 16) = _bx;              //mov [si+10h], bx
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    memory16(_ds, _si + 6) = 0x3aa7;            //mov word ptr [si+6], 3AA7h
-    _ax = memory(_cs, 0x771E);                  //mov ax, word ptr cs:byte_176E6+38h
-    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
-    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
-    memory16(_ds, _si + 52) = 0x00c8;           //mov word ptr [si+34h], 0C8h
-    _ax = memory16(_ds, _di + 8);               //mov ax, [di+8]
-    _ax -= 0x0008;                              //sub ax, 8
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, _di + 10);              //mov ax, [di+0Ah]
-    _ax -= 0x0008;                              //sub ax, 8
-    _ax = _ax - memory16(_ds, 0x9190);          //sub ax, word_316C0
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    memory16(_ds, _si + 26) = 0xffff;           //mov word ptr [si+1Ah], 0FFFFh
-    _ax = memory16(_ds, _di + 4);               //mov ax, [di+4]
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    memory16(_ds, _si + 28) = _ax;              //mov [si+1Ch], ax
-    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
-    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
-    sub_13589();                                //call sub_13589
-    return;                                     //retn
-loc_180A3:                                      //loc_180A3:
-    _ax = 0x00fc;                               //mov ax, 0FCh
-    _bx = 0x7bef;                               //mov bx, 7BEFh
-    assert(0); //loc_13536();                                //call loc_13536
-    memory16(_ds, _si + 34) = 0x0001;           //mov word ptr [si+22h], 1
-    _di = memory16(_ds, _si + 56);              //mov di, [si+38h]
-    _ax = memory16(_cs, 0x8FD7);                //mov ax, cs:word_18FD7
-    memory16(_ds, _di) = _ax;                   //mov [di], ax
-    return;                                     //retn
-loc_180BB:                                      //loc_180BB:
-    _ax = 0x00f8;                               //mov ax, 0F8h
-    _bx = 0x7ac4;                               //mov bx, 7AC4h
-    assert(0); //loc_13536();                                //call loc_13536
-    memory16(_ds, _si + 34) = 0x0001;           //mov word ptr [si+22h], 1
-    return;                                     //retn
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E3h");                          //db 0E3h
-    _STOP_("db  2Eh");                          //db  2Eh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0A7h");                          //db 0A7h
-    _STOP_("db  91h");                          //db  91h
-loc_180D1:                                      //loc_180D1:
-    _bx = 0x7736;                               //mov bx, 7736h
-{sub_13389(); return; };                        //
-loc_180D7:                                      //loc_180D7:
-    _bx = 0x7748;                               //mov bx, 7748h
-{sub_13389(); return; };                        //
-loc_180DD:                                      //loc_180DD:
-    _bx = 0x775a;                               //mov bx, 775Ah
-{sub_13389(); return; };                        //
-loc_180E3:                                      //loc_180E3:
-    _bx = 0x776c;                               //mov bx, 776Ch
-{sub_13389(); return; };                        //
-loc_180E9:                                      //loc_180E9:
-    _bx = 0x777e;                               //mov bx, 777Eh
-{sub_13389(); return; };                        //
-loc_180EF:                                      //loc_180EF:
-    _bx = 0x7790;                               //mov bx, 7790h
-{sub_13389(); return; };                        //
-    _STOP_("sp-trace-fail");                    //sub_17F79 endp_failed
-    _STOP_("continues");                        //db 0C7h
-}
-
-void sub_1818C();
-
-void sub_17F32()
-{
-    if (memory(_ds, 0x9230) != 0x00)            //jnz short loc_17F4E
-      goto loc_17F4E;
-    if ((short)memory16(_ds, 0x9190) < (short)0x09d0)//jl short loc_17F6E
-      goto loc_17F6E;
-    if ((short)memory16(_ds, 0x9190) > (short)0x0b50)//jg short loc_17F6E
-      goto loc_17F6E;
-    sub_1818C();                                //call sub_1818C
-    goto loc_17F6E;                             //jmp short loc_17F6E
-loc_17F4E:                                      //loc_17F4E:
-    if ((short)memory16(_ds, 0x9190) <= (short)0x09f0)
-      goto loc_17F6E;
-    memory16(_ds, 0x9190) = 0x09f0;             //mov word_316C0, 9F0h
-    memory16(_ds, 0x91AA) = 0x09f0;             //mov word_316DA, 9F0h
-    memory16(_ds, 0x918E) = 0x18d8;             //mov word_316BE, 18D8h
-    memory16(_ds, 0x9196) = 0x0000;             //mov word_316C6, 0
-loc_17F6E:                                      //loc_17F6E:
-    memory(_ds, 0x922D) = 0x00;                 //mov byte_3175D, 0
-    memory(_ds, 0x922E) = 0x00;                 //mov byte_3175E, 0
-}
-
-void loc_181E7();
-
-void sub_1818C()
-{
-    if (memory(_ds, 0x9230) != 0x00)            //jnz short locret_181BD
-      goto locret_181BD;
-    if (memory(_ds, 0x922D) != 0x00)            //jnz short loc_181A8
-      goto loc_181A8;
-    memory16(_ds, 0xFCFA) = 0x0000;             //mov word_3822A, 0
-    loc_181E7();                                //call loc_181E7
-    memory(_ds, 0x922D) = 0xff;                 //mov byte_3175D, 0FFh
-loc_181A8:                                      //loc_181A8:
-    if (memory(_ds, 0x922E) != 0x00)            //jnz short locret_181BD
-      goto locret_181BD;
-    memory16(_ds, 0xFCFA) = 0x0001;             //mov word_3822A, 1
-    loc_181E7();                                //call loc_181E7
-    memory(_ds, 0x922E) = 0xff;                 //mov byte_3175E, 0FFh
-locret_181BD:                                   //locret_181BD:
-    return;
-}
-
-void sub_181BE();
-
-void loc_181E7()
-{
-    WORD _cs = _seg000;
-
-    if (memory16(_ds, 0x9200) == 0x0001)        //jz short loc_181F9
-      goto loc_181F9;
-    if (memory(_ds, 0x922F) == 0x00)            //jz short loc_18201
-      goto loc_18201;
-    memory(_ds, 0x922F) -= 1;                   //dec byte_3175F
-loc_181F9:                                      //loc_181F9:
-    sub_181BE();                                //call sub_181BE
-    _ax &= 0x0006;                              //and ax, 6
-    goto loc_1820A;                             //jmp short loc_1820A
-loc_18201:                                      //loc_18201:
-    sub_181BE();                                //call sub_181BE
-    _ax &= 0x0006;                              //and ax, 6
-    _ax += 0x0008;                              //add ax, 8
-loc_1820A:                                      //loc_1820A:
-    _ax = _ax + memory16(_ds, 0xFCFA);          //add ax, word_3822A
-    _dx = 0x000a;                               //mov dx, 0Ah
-    _ax = _dx * _al;                            //mul dx
-    _di = 0x9179;                               //mov di, 9179h
-    _di += _ax;                                 //add di, ax
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
-    _di += 0x0002;                              //add di, 2
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, 0xFCE6) = _ax;                //mov word_38216, ax
-    _di += 0x0002;                              //add di, 2
-    _ax = memory16(_ds, 0x919A);                //mov ax, word_316CA
-    memory16(_ds, 0xFCE6) -= _ax;               //sub word_38216, ax
-    _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    memory16(_ds, 0xFCE6) -= _ax;               //sub word_38216, ax
-    _bx = memory16(_cs, _di);                   //mov bx, cs:[di]
-    _di += 0x0002;                              //add di, 2
-    _bx <<= 1;                                  //shl bx, 1
-    if (memory16(_ds, _bx + -28206) != 0x0000)  //jnz short loc_1824D
-      goto loc_1824D;
-    memory16(_ds, _bx + -28206) = 0x0018;       //mov word ptr [bx-6E2Eh], 18h
-loc_1824D:                                      //loc_1824D:
-    _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
-    memory16(_ds, 0xFCEE) = _ax;                //mov word_3821E, ax
-    _di += 0x0002;                              //add di, 2
-    memory16(_ds, 0xFCEA) = 0x0000;             //mov word_3821A, 0
-    _di = memory16(_cs, _di);                   //mov di, cs:[di]
-    _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -8524);           //mov di, [di-214Ch]
-    _bx = 0x9117;                               //mov bx, 9117h
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
-    _bx += 0x0002;                              //add bx, 2
-loc_18271:                                      //loc_18271:
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si) = _ax;                   //mov [si], ax
-    _bx += 0x0002;                              //add bx, 2
-    memory16(_ds, _si + 2) = 0x866d;            //mov word ptr [si+2], 866Dh
-    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si + 6) = _ax;               //mov [si+6], ax
-    _bx += 0x0002;                              //add bx, 2
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    _bx += 0x0002;                              //add bx, 2
-    _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
-    memory16(_ds, _si + 52) = _ax;              //mov [si+34h], ax
-    _bx += 0x0002;                              //add bx, 2
-    _ax = memory16(_ds, 0xFCEE);                //mov ax, word_3821E
-    memory16(_ds, _si + 32) = _ax;              //mov [si+20h], ax
-    _ax = memory(_cs, 0x7720);                  //mov ax, word ptr cs:byte_176E6+3Ah
-    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    memory(_ds, _si + 39) = 0x00;               //mov byte ptr [si+27h], 0
-    memory16(_ds, _si + 14) = 0x0000;           //mov word ptr [si+0Eh], 0
-    memory16(_ds, _si + 56) = _di;              //mov [si+38h], di
-    memory16(_ds, _si + 58) = _di;              //mov [si+3Ah], di
-    _ax = memory16(_ds, 0xFCE2);                //mov ax, word_38212
-    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
-    _ax = memory16(_ds, 0xFCE6);                //mov ax, word_38216
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
-    _ax = memory16(_ds, 0xFCEA);                //mov ax, word_3821A
-    memory16(_ds, _si + 26) = _ax;              //mov [si+1Ah], ax
-    _ax = memory(_cs, 0x7722);                  //mov ax, word ptr cs:byte_176E6+3Ch
-    memory16(_ds, _si + 66) = _ax;              //mov [si+42h], ax
-    _ax = memory16(_ds, 0xFCFA);                //mov ax, word_3822A
-    memory16(_ds, _si + 34) = _ax;              //mov [si+22h], ax
-    memory16(_ds, 0xFCEA) -= 0x000a;            //sub word_3821A, 0Ah
-    sub_13589();                                //call sub_13589
-    memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
-    if ((short)memory16(_ds, 0xFCFE) < 0)       //js short near ptr unk_182FF
-      _STOP_("goto near ptr unk_182FF");
-    goto loc_18271;                             //jmp loc_18271
-    _STOP_("unk_182FF db 0B0h");                //unk_182FF db 0B0h
-    _stack16(_bp + _di + -1522) += _cx;         //add [bp+di-5F2h], cx
-    _flags.direction = false;                   //cld
-    _al <<= _cl;                                //shl al, cl
-    memory(_ds, 0x9202) |= _al;                 //or byte ptr word_31732, al
-    return;                                     //retn
-}
-
-void sub_181BE()
-{
-    if (memory16(_ds, 0xFCFA) != 0x0000)        //jnz short loc_181D6
-      goto loc_181D6;
-    _ax = memory16(_ds, 0x91F4);                //mov ax, word_31724
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    memory16(_ds, 0x91F4) = _ax;                //mov word_31724, ax
-    return;                                     //retn
-loc_181D6:                                      //loc_181D6:
-    _ax = memory16(_ds, 0x91F6);                //mov ax, word_31726
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    _ror(_ax, 1);                               //ror ax, 1
-    memory16(_ds, 0x91F6) = _ax;                //mov word_31726, ax
-}
-
-void sub_18E01()
-{
-    WORD _cs = _seg000;
-
-    memory16(_ds, 0x91A8) = 0x09e0;             //mov word_316D8, 9E0h
-    memory16(_ds, 0x91AA) = 0x11ff;             //mov word_316DA, 11FFh
-    memory16(_ds, 0x8EAC) = 0x0fa0;             //mov word_313DC, 0FA0h
-    memory16(_ds, 0x8EAE) = 0x04b0;             //mov word_313DE, 4B0h
-    memory(_ds, 0x9230) = 0x00;                 //mov byte_31760, 0
-    sub_11022();                                //call sub_11022
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    memory16(_ds, _si) = 0x0050;                //mov word ptr [si], 50h
-    memory16(_ds, _si + 2) = 0x89ae;            //mov word ptr [si+2], 89AEh
-    memory16(_ds, _si + 4) = 0x8c3e;            //mov word ptr [si+4], 8C3Eh
-    memory16(_ds, _si + 6) = 0x8745;            //mov word ptr [si+6], 8745h
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    memory(_ds, _si + 74) = 0xff;               //mov byte ptr [si+4Ah], 0FFh
-    memory(_ds, _si + 75) = 0xff;               //mov byte ptr [si+4Bh], 0FFh
-    memory16(_ds, _si + 22) = 0x0060;           //mov word ptr [si+16h], 60h
-    _ax = memory(_cs, 0x772C);                  //mov ax, word ptr cs:byte_176E6+46h
-    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
-    memory16(_ds, _si + 26) = 0xffff;           //mov word ptr [si+1Ah], 0FFFFh
-    memory16(_ds, _si + 32) = 0x0000;           //mov word ptr [si+20h], 0
-    memory16(_ds, _si + 48) = 0x0000;           //mov word ptr [si+30h], 0
-    memory16(_ds, _si + 34) = 0x0000;           //mov word ptr [si+22h], 0
-    memory16(_ds, _si + 54) = 0x0000;           //mov word ptr [si+36h], 0
-    _cx = 0x0003;                               //mov cx, 3
-    _di = 0x33b0;                               //mov di, 33B0h
-loc_18E72:                                      //loc_18E72:
-    sub_11022();                                //call sub_11022
-    _push(_di);                                 //push di
-    _di = 0x904a;                               //mov di, 904Ah
-    sub_1077C();                                //call sub_1077C
-    _di = _pop();                               //pop di
-    memory16(_ds, _si) = 0x0054;                //mov word ptr [si], 54h
-    memory16(_ds, _si + 2) = 0x88a9;            //mov word ptr [si+2], 88A9h
-    memory16(_ds, _si + 4) = 0x0761;            //mov word ptr [si+4], 761h
-    memory16(_ds, _si + 6) = 0x87d5;            //mov word ptr [si+6], 87D5h
-    _ax = memory(_cs, 0x772E);                  //mov ax, word ptr cs:byte_176E6+48h
-    memory16(_ds, _si + 36) = _ax;              //mov [si+24h], ax
-    memory(_ds, _si + 74) = 0xff;               //mov byte ptr [si+4Ah], 0FFh
-    memory(_ds, _si + 75) = 0xff;               //mov byte ptr [si+4Bh], 0FFh
-    memory16(_ds, _si + 72) = 0x0000;           //mov word ptr [si+48h], 0
-    _bx = memory16(_ds, _di);                   //mov bx, [di]
-    _di += 0x0002;                              //add di, 2
-    memory16(_ds, _si + 18) = _bx;              //mov [si+12h], bx
-    _ax = memory16(_ds, _di);                   //mov ax, [di]
-    _di += 0x0002;                              //add di, 2
-    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
-    _dx = 0x0014;                               //mov dx, 14h
-    _ax = _dx * _al;                            //mul dx
-    _ax += _bx;                                 //add ax, bx
-    _ax <<= 1;                                  //shl ax, 1
-    _ax += 0x0000;                              //add ax, 0
-    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
-    memory16(_ds, _si + 26) = 0x0000;           //mov word ptr [si+1Ah], 0
-    _cx -= 1;                                   //dec cx
-    memory16(_ds, _si + 34) = _cx;              //mov [si+22h], cx
-    _cx += 1;                                   //inc cx
-    if (--_cx)                                  //loop loc_18E72
-      goto loc_18E72;
-    memory16(_ds, 0x9200) = 0x0003;             //mov word_31730, 3
-    memory16(_ds, 0x9202) = 0x0000;             //mov word_31732, 0
-    memory(_ds, 0x922D) = 0x00;                 //mov byte_3175D, 0
-    memory(_ds, 0x922E) = 0x00;                 //mov byte_3175E, 0
-    memory(_ds, 0x922F) = 0x02;                 //mov byte_3175F, 2
-    memory16(_ds, 0x91D4) = 0x0000;             //mov word_31704, 0
-    memory16(_ds, 0x91D6) = 0x0000;             //mov word_31706, 0
-    memory16(_ds, 0x91D8) = 0x0000;             //mov word_31708, 0
-    memory16(_ds, 0x91DA) = 0x0000;             //mov word_3170A, 0
-    memory16(_ds, 0x91DC) = 0x0000;             //mov word_3170C, 0
-    memory16(_ds, 0x91DE) = 0x0000;             //mov word_3170E, 0
-    memory16(_ds, 0x91E0) = 0x0000;             //mov word_31710, 0
-    memory16(_ds, 0x91E2) = 0x0000;             //mov word_31712, 0
-    _si = 0x938b;                               //mov si, 938Bh
-    _si += 0x0000;                              //add si, 0
-    sub_18DF0();                                //call sub_18DF0
-    _si = 0x938b;                               //mov si, 938Bh
-    _si += 0x0062;                              //add si, 62h
-    sub_18DF0();                                //call sub_18DF0
-    _si = 0x938b;                               //mov si, 938Bh
-    _si += 0x00c4;                              //add si, 0C4h
-    sub_18DF0();                                //call sub_18DF0
-    _si = 0x938b;                               //mov si, 938Bh
-    _si += 0x0116;                              //add si, 116h
-    sub_18DF0();                                //call sub_18DF0
-    _bx = 0x98ce;                               //mov bx, 98CEh
-    memory16(_ds, _bx) = 0x0000;                //mov word ptr [bx], 0
-    memory16(_ds, _bx + 10) = _bx;              //mov [bx+0Ah], bx
-    memory16(_ds, _bx + 8) = _bx;               //mov [bx+8], bx
-    memory16(_ds, _bx + 2) = 0x0761;            //mov word ptr [bx+2], 761h
-    memory16(_ds, _bx + 4) = 0x0761;            //mov word ptr [bx+4], 761h
-    memory16(_ds, _bx + 6) = 0x8d18;            //mov word ptr [bx+6], 8D18h
-    memory16(_ds, 0x91F4) = 0x45d2;             //mov word_31724, 45D2h
-    memory16(_ds, 0x91F6) = 0xaa6a;             //mov word_31726, 0AA6Ah
-    _ax = memory16(_ds, 0x991A);                //mov ax, word_31E4A
-    memory16(_ds, 0x8E76) = _ax;                //mov word_313A6, ax
-    _ax = memory16(_ds, 0x991A);                //mov ax, word_31E4A
-    _ax <<= 1;                                  //shl ax, 1
-    memory16(_ds, 0x8E78) = _ax;                //mov word_313A8, ax
-    _si = 0x938b;                               //mov si, 938Bh
-    _di = 0xd10c;                               //mov di, 0D10Ch
-    _cx = 0x00b4;                               //mov cx, 0B4h
-loc_18F7F:                                      //loc_18F7F:
-    _ax = memory16(_cs, _si);                   //mov ax, cs:[si]
-    _si += 0x0002;                              //add si, 2
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    if (--_cx)                                  //loop loc_18F7F
-      goto loc_18F7F;
-    memory16(_ds, 0x8E72) = 0x1b55;             //mov word_313A2, 1B55h
-}
