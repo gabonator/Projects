@@ -1,0 +1,28 @@
+<div id="container" style="background:white"></div>
+<script>
+// 1280x1024
+var c = document.querySelector("#container");
+y = 540;
+for (var x=-1040; x<=-40; x+=40*2)
+  for (var y=20; y<=580; y+=40*2)
+//for (var x=-40-40*5; x<=-40; x+=40)
+  {  
+    alpha = 1;
+    w=200;
+    h=160;
+    var pleft=(-x)*0.84;
+    var ptop=y*0.84;
+    var src=x + "_" + y;
+
+    c.innerHTML += `
+      <img src="_temp/f/`+src+`.png" style="
+        position:absolute; left:`+pleft+`px; top:`+ptop+`px; 
+        width:`+w+`px; height:`+h+`px; 
+        opacity:`+alpha+`; 
+        mix-blend-mode: darken; 
+        transform: rotate(-3.7deg);
+        clip-path: circle(42%);
+      ">
+`;
+  }
+</script>

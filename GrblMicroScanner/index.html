@@ -1,0 +1,293 @@
+<html>
+<title>websocket test</title>
+<head>
+</head>
+
+<style>
+</style>
+<h1>Websocket test</h1>
+
+<video autoplay="true" id="videoElement" width="640"></video>
+<script>
+var video = document.querySelector("#videoElement");
+
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true, deviceId: {exact:"xpF8z9ZoV0hOmCoiWBShFWMdLRoml0kfW1hj"} })
+    .then(function (stream) {
+console.log(stream);
+      video.srcObject = stream;
+//      video.videoHeight = 480;
+//      video.videoWidth = 640;
+    })
+    .catch(function (error) {
+      console.log("Something went wrong!");
+    });
+}
+</script>
+
+<canvas id="canvas" style="border:1px #808080 dashed; width:800px; height:400px;"></canvas>
+<canvas id="tcanvas" style="display:none"></canvas>
+
+<textarea rows="10" cols="50" id="log">
+</textarea>
+<br>
+<input type="text" id="send" value="$$"><input type="button" value="Posli prikaz" onClick="onSend()">
+<input type="button" value="Config" onClick="_send('$$')">
+<input type="button" value="Refs" onClick="_send('$#')">
+<br>
+<input id="position" type="text" disabled value="">
+<input type="button" value="Stop" onClick="_send('!')">
+<input type="button" value="Resume" onClick="_send('~')">
+<input type="button" value="Speed 8000" onClick="_send(['$110=8000', '$111=8000', '$112=8000'])">
+<input type="button" value="Speed 800" onClick="_send(['$110=800', '$111=800', '$112=800'])">
+<input type="button" value="Speed 80" onClick="_send(['$110=80', '$111=80', '$112=80'])">
+<br>
+<input type="button" value="L30" onClick="go(30, 0)">
+<input type="button" value="R30" onClick="go(-30, 0)">
+<input type="button" value="U30" onClick="go(0, -30)">
+<input type="button" value="D30" onClick="go(0, 30)">
+<input type="button" value="Demo" onClick="demo()">
+
+<script>
+  var globalInfo = false;
+  var globalInfoReceived = 0;
+
+  var first = true;
+  var buffer = "";
+  socket = new WebSocket("ws://localhost:2222");
+  socket.onopen = function()
+  {
+    console.log("Connected!");
+if(1)
+    setInterval( () =>
+    {
+      socket.send("?\r\n");
+    }, 200);
+  }
+
+  socket.onclose = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onerror = function()
+  {
+    console.log("Connection lost!");
+  }
+  socket.onmessage = function(msg)
+  {
+    buffer += new String(msg.data);
+    var lines = buffer.split("\r\n");
+    while ( lines.length > 1 )
+      Receive( lines.shift() );
+    buffer = lines.join("\r\n");
+  }
+
+  function Receive(msg)
+  {  
+    var posinfo = msg.match("\\<(.*)\\|MPos:([\\-0-9.]*),([\\-0-9.]*),([\\-0-9.]*)|.*\\>");
+    if (posinfo)
+    {
+      onState(posinfo[1]);
+      onPosInfo({x:parseFloat(posinfo[2]), y:parseFloat(posinfo[3]), z:parseFloat(posinfo[4])});
+      return;
+    }
+
+    if (msg == "ok")
+      return;
+    onLog(msg);
+  }
+
+  function onSend()
+  {
+    socket.send($("send").value + "\n");
+  }
+
+  function _send(m)
+  {  
+    if (typeof(m) == "object")
+    {
+//      console.log({sendarr:m});  
+      for (var i=0; i<m.length; i++)
+      {
+        ((msg) => {
+          setTimeout(() => {
+            console.log(msg);
+            socket.send(msg) 
+          }, i*10);
+        })(m[i]+"\r\n");  
+      }
+      return;
+    }
+    socket.send(m+"\r\n");
+  }
+
+  function onLog(msg)
+  {
+    $("log").value = msg + "\n" + $("log").value;
+  }
+
+  $ = function(id) 
+  {
+    return document.getElementById(id);
+  }
+
+  var lastpos;
+  var idlecnt=0, runcnt=0, running = 0;
+  function onState(state) 
+  {
+    if (state == "Idle")
+    { 
+      idlecnt++;
+      runcnt = 0;
+    }
+    if (state == "Run")
+    { 
+      runcnt++;
+      idlecnt = 0;
+    }
+    running = idlecnt < 5;
+  }
+  var mypos;
+  function onPosInfo(p)
+  {
+    mypos = {...p};
+///    $("position").innerHTML = "<b>x: </b>" + x + " <b>y: </b>" + y + " <b>z: </b>" + z;
+    $("position").value = "x: " + p.x + " y: " + p.y + " z: " + p.z;
+    p = transform.forward(p);
+//    ctx.fillStyle = "rgb(255, 0, 0, 0.2)";
+    if (lastpos)
+    {
+//      var p = lastpos;
+      ctx.fillStyle = "#ffe0e0";
+      ctx.fillRect(lastpos.x-2, lastpos.y-2, 4, 4);
+    }
+    ctx.fillStyle = "#ff0000";
+    ctx.fillRect(p.x-2, p.y-2, 4, 4);
+    lastpos = {...p};
+  }
+  function onClick(p)
+  {
+    p = transform.backward(p);
+    console.log(p);
+    socket.send("x" + Math.floor(p.x) + "y" + Math.floor(p.y) + "\r\n");
+  }
+  function go(dx, dy)
+  {
+console.log("go: "+[dx, dy]);
+    socket.send("x" + Math.floor(mypos.x+dx) + "y" + Math.floor(mypos.y+dy) + "\r\n");
+  }
+
+
+  var transform = {
+    ofsx:400,
+    ofsy:0,
+    kx:2.4,   // male -> v smere, velke -> protismeru
+    ky:1.9,   // male -> v smere, velke -> protismeru
+    forward:(xyz) => ({x:-xyz.x/transform.kx+transform.ofsx, y:xyz.y/transform.ky+transform.ofsy, z:xyz.z}),
+    backward:(xyz) => ({x:-(xyz.x-transform.ofsx)*transform.kx, y:+(xyz.y-transform.ofsy)*transform.ky, z:xyz.z}),
+  }
+
+
+  var canvas = $("canvas");
+  var ctx = canvas.getContext('2d');
+  canvas.width = 800; //can.width;
+  canvas.height = 400; //can.height;
+
+  canvas = document.querySelector("#canvas");
+  canvas.addEventListener('mousedown', _mousedown, false);
+  canvas.addEventListener('touchstart', _mousedown, false);
+  canvas.addEventListener('mouseup', _mouseup, false);
+  canvas.addEventListener('touchend', _mouseup, false);
+
+  function _mousedown(evt) 
+  {
+    evt.preventDefault();
+    var pos = mousepos(evt);
+    onClick({x:pos.x, y:pos.y, z:0});
+  }
+
+  function _mouseup()
+  {
+  }
+
+  function mousepos(evt)
+  {
+    var rect = canvas.getBoundingClientRect();
+    var x = evt.clientX, y = evt.clientY;
+    if ( evt.changedTouches ) 
+    {
+      x = evt.changedTouches[0].clientX*2;
+      y = evt.changedTouches[0].clientY*2;
+    }
+    x = (x - rect.left)*canvas.width/rect.width;
+    y = (y - rect.top)*canvas.height/rect.height;
+    return {x:Math.floor(x), y:Math.floor(y)};
+  }
+//
+
+var globvid;
+var camlastpos = {x:0, y:0};
+video.addEventListener('play', function() {
+  var vid = this;
+  globvid = vid;
+  setInterval(() => {
+    if (!running && lastpos)
+{
+        ctx.drawImage(vid, 
+          vid.videoWidth/2, vid.videoHeight/2, vid.videoWidth/2, vid.videoHeight/2, 
+          lastpos.x-50/2, lastpos.y-50/2, 100/2, 100/2);
+
+  if (camlastpos.x != mypos.x || camlastpos.y != mypos.y)
+  {
+    camlastpos = {...mypos}
+    testupl(vid, (mypos.x+1000) + "_" + (mypos.y+1000) + ".png");
+    if (queue.length > 0)
+    {
+      var delta = queue.shift();
+      go(delta[0], delta[1]);
+    }
+  }
+
+}
+//      ctx.drawImage(vid, 0, 0, vid.videoWidth, vid.videoHeight, lastpos.x-50, lastpos.y-50, 100, 100);
+//      ctx.drawImage(vid, lastpos.x-50, lastpos.y-50, 100, 100);
+  }, 500);
+});
+
+
+
+function testupl(vid, name)
+{
+  console.log("save: " +name);
+  var tcanvas = $("tcanvas");
+  tcanvas.width = vid.videoWidth;
+  tcanvas.height = vid.videoHeight;
+  tcanvas.getContext('2d').drawImage(vid, 0, 0);  
+  tcanvas.toBlob(blob => {
+    ajax = new XMLHttpRequest();
+    ajax.open("POST", "/", true);
+    ajax.onreadystatechange = function() {
+//      console.log(ajax.responseText);
+    }
+    var formData = new FormData();
+    formData.append("file", blob, name);
+    ajax.send(formData);
+  });
+}
+  
+var queue = [];
+function demo()
+{
+  var dx = 40, dy = 40;
+  var cx = 25, cy = 25;
+  for (var i=0; i<cy; i+=2)
+  {
+    for (var j=0; j<cx; j++)
+      queue.push([0, -dy]);
+    queue.push([-dx, 0]);
+    for (var j=0; j<cx; j++)
+      queue.push([0, dy]);
+    queue.push([-dx, 0]);
+  }
+} 
+</script>
