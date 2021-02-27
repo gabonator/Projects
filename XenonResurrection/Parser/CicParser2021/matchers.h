@@ -486,6 +486,11 @@ class CIMData : public CInstructionMatcher
 			return make_shared<CIData>(CIData::Function, "", arrMatches[0]);
 		}
 
+        if ( CUtils::match("^dw (.*),(.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CINop>();
+        }
+
         if ( CUtils::match("^dw (.*)$", strLine, arrMatches) )
         {
             return make_shared<CIData>(CIData::Word, "", arrMatches[0]);
@@ -552,6 +557,10 @@ class CIMNop : public CInstructionMatcher
 		{
 			return make_shared<CINop>(strLine);
 		}
+        if ( CUtils::match("^data\\s+(end|ends)$", strLine) )
+        {
+            return make_shared<CINop>(strLine);
+        }
 
         if ( CUtils::match("^align .*", strLine, arrMatches) )
         {

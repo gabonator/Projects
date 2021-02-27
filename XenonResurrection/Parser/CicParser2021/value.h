@@ -332,8 +332,7 @@ public:
 		}
 */
 		if ( CUtils::match("^byte ptr word_data_(.+)\\+(.+)$", value.c_str(), matches) )
-		{
-            _ASSERT(0);
+		{ // cat
 			m_eRegLength = r8;
 			m_eType = ds_ptr;
 			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]));
@@ -352,7 +351,7 @@ public:
 		if ( CUtils::match("^word ptr byte_data_(.+)\\+(.+)$", value.c_str(), matches) )
 		{
 			m_eRegLength = r16;
-			m_eType = byteptrasword;
+			m_eType = ds_ptr;
 			m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0]) + CUtils::ParseLiteral(matches[1]));
 			return;
 		}

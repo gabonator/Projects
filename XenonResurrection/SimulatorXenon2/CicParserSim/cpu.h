@@ -104,7 +104,7 @@ void _STOP_(const char*) {
     std::cout << "===========STOP===========\n";
     _sync();
     int f = 9;
- //   assert(0);
+    assert(0);
     
 }
 

@@ -1,3 +1,8 @@
+// TODO: first two trees not animating
+// TODO: cannot buy anything in shop
+// TODO: should blink white when hit
+// TODO: two trees in front of first boss
+
 void sub_1F2BA();
 void sub_14311();
 void sub_14759();
@@ -89,9 +94,16 @@ void sub_189AE();
 void sub_188A9();
 void sub_18C3E();
 void sub_17DDE();
+void sub_19F02();
+void sub_19F4E() { std::cout << "-------uninmplemented\n"; }
 
-void _indirectCall(WORD seg, WORD ptr)
+void _indirectCall(WORD seg, int ptr)
 {
+    _ASSERT(ptr >= 0 && ptr <= 0xffff);
+    // ma byt 4311 ale je 9f02
+//    if (ptr!=0x0853 && ptr != 0x7520)
+//        std::cout << "indirect " << (int)ptr << "\n";
+    
     if (seg==_seg000 && ptr==0x002a) //0x000c)
     {
         sub_1F2BA();
@@ -112,19 +124,19 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x70f1: sub_170F1(); break;
         case 0x6EEF: sub_16EEF(); break;
         case 0x41E2: sub_141E2(); break;
-        case 0x480b: sub_1480B(0); break;
-        case 0x714A: sub_1714A(); break;
+           case 0x480b: sub_1480B(0); break;
+              case 0x714A: sub_1714A(); break;
         case 0x08B9: /*sub_108B9();*/ break; // strom?
         case 0x0f2b: sub_10F2B(); break;
         case 0x37ca: sub_137CA(); break; // swingtail
-        case 0x1e61: sub_11E61(); break;
-        case 0x28df: sub_128DF(); break;
-        case 0x2ab2: sub_12AB2(); break;
-        case 0x3aa7: sub_13AA7(); break;
-        case 0x2a6e: sub_12A6E(); break;
+        case 0x1e61: sub_11E61(); break; // hit2
+        case 0x28df: sub_128DF(); break; // hit3
+        case 0x2ab2: sub_12AB2(); break; // speed powerup
+        case 0x3aa7: sub_13AA7(); break; // hit1
+        case 0x2a6e: sub_12A6E(); break; // power powerup
         case 0x6d22: sub_16D22(); break; // tree - animation
         case 0x3a39: sub_13A39(); break; // swingtail hit
-        case 0x308C: loc_1308C(); break;
+        case 0x308C: loc_1308C(); break; // rearshot powerup
         case 0x39ee: sub_139EE(); break; // draw fire
         case 0x091f: sub_1091F(); break; // draw fire
         case 0x0897: sub_10897(); break;
@@ -151,7 +163,7 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x2a48: sub_12A48(); break;
         case 0x714d: sub_1714D(); break;
         case 0x69C8: sub_169C8(); break;
-        case 0x3246: sub_13246(); break;
+        case 0x3246: sub_13246(); break; // powerup - cannon
         case 0x3a99: sub_13A99(); break;
         case 0x7569: sub_17569(); break;
         //case 0xf732: sub_1F732(); break;
@@ -164,9 +176,18 @@ void _indirectCall(WORD seg, WORD ptr)
         case 0x88A9: sub_188A9(); break;
         case 0x8C3E: sub_18C3E(); break;
         case 0x7DDE: sub_17DDE(); break;
+        case 0x6284: break; // retn
+        case 0x9f02: sub_19F02(); break;
+            
+        case 0x9f9A:
+        case 0x9fe6:
+        case 0x9f4E: sub_19F4E(); break;
+          
+        case 0x4f96: //sub_14F96(); break;
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";
+            assert(0);
     }
 
 }

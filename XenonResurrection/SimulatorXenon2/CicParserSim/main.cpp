@@ -692,7 +692,7 @@ WORD& memory16(WORD segment, int offset)
 {
     _ASSERT(offset >= 0 && offset <= 0xffff);
 
-    if (segment == _dseg && offset == 0xa1ac+58)
+    if (segment == _dseg && offset == 0x9f00+10)
     {
         int f = 9;
     }

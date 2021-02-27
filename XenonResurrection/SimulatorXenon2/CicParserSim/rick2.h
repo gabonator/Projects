@@ -252,7 +252,7 @@ void sub_14C48();
 void sub_14C59();
 void sub_14CAD();
 void sub_14CFA();
-void sub_14D0D();
+void sub_14D0D(int pc = 0);
 void sub_14D38();
 void sub_14E12();
 void sub_14E29();
@@ -642,7 +642,7 @@ void sub_10000()
     _cx = 0x0008;                               //mov cx, 8
     _di = 0x8e58;                               //mov di, 8E58h
     _al = 0xff;                                 //mov al, 0FFh
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     _ax = 0x1a00;                               //mov ax, 1A00h
     _interrupt(16);                             //int 10h
     if (_al != 0x1a)                            //jnz short loc_10032
@@ -837,7 +837,7 @@ void sub_10174()
     _ax = _ax ^ _ax;                            //xor ax, ax
     _di = 0x216c;                               //mov di, 216Ch
     _cx = 0x0100;                               //mov cx, 100h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _bx = memory16(_ds, 0x2370);                //mov bx, word_2A8A0
     _cx = 0x0200;                               //mov cx, 200h
     _dx = 0x216c;                               //mov dx, 216Ch
@@ -877,7 +877,7 @@ loc_101B2:                                      //loc_101B2:
     _push(_es);                                 //push es
     _push(_di);                                 //push di
     _les(_di, _ds, 0x236C);                     //les di, dword_2A89C
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     memory16(_ds, 0x236C) = _di;                //mov word ptr dword_2A89C, di
     _di = _pop();                               //pop di
     _es = _pop();                               //pop es
@@ -910,7 +910,7 @@ loc_101FC:                                      //loc_101FC:
     _push(_es);                                 //push es
     _push(_di);                                 //push di
     _les(_di, _ds, 0x236C);                     //les di, dword_2A89C
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     memory16(_ds, 0x236C) = _di;                //mov word ptr dword_2A89C, di
     _di = _pop();                               //pop di
     _es = _pop();                               //pop es
@@ -942,14 +942,14 @@ void sub_10230()
     _ax = 0x0001;                               //mov ax, 1
     _cx = 0x013a;                               //mov cx, 13Ah
     _di = 0x0004;                               //mov di, 4
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _ax = 0x04e6;                               //mov ax, 4E6h
     _dx = 0x0000;                               //mov dx, 0
     _cx = 0x013a;                               //mov cx, 13Ah
     _di = 0x0c46;                               //mov di, 0C46h
     _bx = 0x09d2;                               //mov bx, 9D2h
 loc_10251:                                      //loc_10251:
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax += 0x0002;                              //add ax, 2
     memory16(_ds, _bx) = _dx;                   //mov [bx], dx
     _bx += 0x0002;                              //add bx, 2
@@ -993,25 +993,25 @@ void sub_102A8()
     _bx = 0x000d;                               //mov bx, 0Dh
 loc_102B5:                                      //loc_102B5:
     _cx = _bx;                                  //mov cx, bx
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     _al += 1;                                   //inc al
     if (_al != 0)                               //jnz short loc_102B5
       goto loc_102B5;
 loc_102BD:                                      //loc_102BD:
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _al += 1;                                   //inc al
     if (_al != 0)                               //jnz short loc_102BD
       goto loc_102BD;
 loc_102C2:                                      //loc_102C2:
     _al -= 1;                                   //dec al
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     if (_al != 0)                               //jnz short loc_102C2
       goto loc_102C2;
     _cx = 0x0080;                               //mov cx, 80h
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     _cx = 0x0080;                               //mov cx, 80h
     _al = 0x20;                                 //mov al, 20h
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
 }
 
 void sub_102D4()
@@ -1051,7 +1051,7 @@ loc_10312:                                      //loc_10312:
     sub_10174();                                //call sub_10174
     _si = 0x216c;                               //mov si, 216Ch
 loc_10323:                                      //loc_10323:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     memory16(_ds, 0x216A) = _si;                //mov word_2A69A, si
     _si = _pop();                               //pop si
@@ -1063,7 +1063,7 @@ loc_10323:                                      //loc_10323:
     sub_10174();                                //call sub_10174
     _si = 0x216c;                               //mov si, 216Ch
 loc_1033E:                                      //loc_1033E:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     memory16(_ds, 0x216A) = _si;                //mov word_2A69A, si
     _si = _pop();                               //pop si
@@ -1225,7 +1225,7 @@ loc_10468:                                      //loc_10468:
     _di = _si;                                  //mov di, si
     _si -= 1;                                   //dec si
     _si -= 1;                                   //dec si
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     memory16(_ds, _bx + 4) = _ax;               //mov [bx+4], ax
     _di = _pop();                               //pop di
     _si = _pop();                               //pop si
@@ -1236,7 +1236,7 @@ loc_10468:                                      //loc_10468:
     _di = _si;                                  //mov di, si
     _si -= 1;                                   //dec si
     _si -= 1;                                   //dec si
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _di = _pop();                               //pop di
     _si = _pop();                               //pop si
     memory16(_ds, _bx + 3142) = _si;            //mov [bx+0C46h], si
@@ -1268,7 +1268,7 @@ void sub_104C9()
     sub_10174();                                //call sub_10174
     _si = 0x216c;                               //mov si, 216Ch
 loc_104DA:                                      //loc_104DA:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     memory16(_ds, 0x216A) = _si;                //mov word_2A69A, si
     _si = _pop();                               //pop si
@@ -1322,7 +1322,7 @@ loc_1054F:                                      //loc_1054F:
     _si = 0x2ee0;                               //mov si, 2EE0h
     _cx = 0x0009;                               //mov cx, 9
 loc_10565:                                      //loc_10565:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _out(_dx, _ax);                             //out dx, ax
     if (--_cx)                                  //loop loc_10565
       goto loc_10565;
@@ -1332,7 +1332,7 @@ loc_10565:                                      //loc_10565:
     _di = _di ^ _di;                            //xor di, di
     _cx = 0x4000;                               //mov cx, 4000h
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _es = _pop();                               //pop es
     _dx = 0x03b8;                               //mov dx, 3B8h
     _al = 0x08;                                 //mov al, 8
@@ -1453,7 +1453,7 @@ void sub_1066E()
 loc_10685:                                      //loc_10685:
     _push(_cx);                                 //push cx
     _dl = _dl ^ _dl;                            //xor dl, dl
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _dh = _al;                                  //mov dh, al
     _bh = memory(_ds, 0x2EF3);                  //mov bh, byte_2B423
     _ah = 0x02;                                 //mov ah, 2
@@ -1464,7 +1464,7 @@ loc_10693:                                      //loc_10693:
     _bl = 0x07;                                 //mov bl, 7
     _cx = 0x0001;                               //mov cx, 1
     _interrupt(16);                             //int 10h
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_106B2
       goto loc_106B2;
     _ah = 0x0e;                                 //mov ah, 0Eh
@@ -1525,18 +1525,18 @@ loc_10703:                                      //loc_10703:
     _bl = 0xf0;                                 //mov bl, 0F0h
 loc_10716:                                      //loc_10716:
     memory(_ds, 0x2EF7) = _bl;                  //mov byte_2B427, bl
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short locret_10760
       goto locret_10760;
     _al = _al - memory(_ds, 0x2EF5);            //sub al, byte_2B425
     _al = -_al;                                 //neg al
     _al >>= 1;                                  //shr al, 1
     memory(_ds, 0x2EF2) = _al;                  //mov byte_2B422, al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memory(_ds, 0x2EF6) = _al;                  //mov byte_2B426, al
     _push(_cx);                                 //push cx
 loc_1072F:                                      //loc_1072F:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1075C
       goto loc_1075C;
     _ah = 0x02;                                 //mov ah, 2
@@ -2702,7 +2702,7 @@ loc_11709:                                      //loc_11709:
     _cx = 0x000e;                               //mov cx, 0Eh
     _di = 0x916a;                               //mov di, 916Ah
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     sub_135EB();                                //call sub_135EB
     memory16(_ds, 0x912E) = 0x0008;             //mov word_3165E, 8
     memory16(_ds, 0x9130) = 0x0008;             //mov word_31660, 8
@@ -2722,7 +2722,7 @@ loc_11709:                                      //loc_11709:
     _di = 0x921c;                               //mov di, 921Ch
     _cx = 0x0007;                               //mov cx, 7
     _al = _al ^ _al;                            //xor al, al
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     memory16(_ds, 0x9164) = 0x0000;             //mov word_31694, 0
     memory16(_ds, 0x9186) = 0x0027;             //mov word_316B6, 27h
     memory16(_ds, 0x9188) = 0x0000;             //mov word_316B8, 0
@@ -2771,7 +2771,7 @@ loc_11873:                                      //loc_11873:
     _di = 0x9c80;                               //mov di, 9C80h
     _ax = 0xffff;                               //mov ax, 0FFFFh
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     // draw score
     sub_116A9();                                //call sub_116A9
     sub_116BA();                                //call sub_116BA
@@ -2817,7 +2817,7 @@ loc_11930:                                      //loc_11930:
     _di = 0x9c80;                               //mov di, 9C80h
     _ax = 0xffff;                               //mov ax, 0FFFFh
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
 }
 
 void sub_1193C()
@@ -2825,9 +2825,9 @@ void sub_1193C()
     _si = 0x916a;                               //mov si, 916Ah
     _cx = 0x0007;                               //mov cx, 7
 loc_11942:                                      //loc_11942:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if (!(_bx & _bx))                           //jz short loc_11958
       goto loc_11958;
     _push(_si);                                 //push si
@@ -2877,7 +2877,7 @@ void sub_1195B()
     _di = 0x8e8c;                               //mov di, 8E8Ch
     _cx = 0x0010;                               //mov cx, 10h
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     memory16(_ds, 0x8E80) = 0x0000;             //mov word_313B0, 0
     memory16(_ds, 0x8E7E) = 0x0000;             //mov word_313AE, 0
     memory(_ds, 0x8FAF) = 0xff;                 //mov byte_314DF, 0FFh
@@ -2886,20 +2886,20 @@ void sub_1195B()
     _cx = 0x0004;                               //mov cx, 4
 loc_119D3:                                      //loc_119D3:
     _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_119D3
       goto loc_119D3;
     _di = 0x8ecc;                               //mov di, 8ECCh
     _cx = 0x0011;                               //mov cx, 11h
 loc_119E3:                                      //loc_119E3:
     _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax = memory16(_ds, _si + 18);              //mov ax, [si+12h]
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax = memory16(_ds, _si + 22);              //mov ax, [si+16h]
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_119E3
       goto loc_119E3;
     _push(_si);                                 //push si
@@ -2925,20 +2925,20 @@ void sub_11A19()
     _di = 0x8fb2;                               //mov di, 8FB2h
     _cx = 0x0146;                               //mov cx, 146h
 loc_11A22:                                      //loc_11A22:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = memory16(_ds, _di);                   //mov bx, [di]
     memory16(_ds, _si - 2) = _bx;               //mov [si-2], bx
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_11A22
       goto loc_11A22;
     _si = 0x9f00;                               //mov si, 9F00h
     _di = 0x8f62;                               //mov di, 8F62h
     _cx = 0x004c;                               //mov cx, 4Ch
 loc_11A34:                                      //loc_11A34:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _di);                     //mov ah, [di]
     memory(_ds, _si - 1) = _ah;                 //mov [si-1], ah
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     if (--_cx)                                  //loop loc_11A34
       goto loc_11A34;
     _si = 0x0000;                               //mov si, 0
@@ -2947,10 +2947,10 @@ loc_11A34:                                      //loc_11A34:
     _ax = _seg003;                              //mov ax, seg seg003
     _es = _ax;                                  //mov es, ax
 loc_11A4B:                                      //loc_11A4B:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = memory16(_es, _di);                   //mov bx, es:[di]
     memory16(_ds, _si - 2) = _bx;               //mov [si-2], bx
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_11A4B
       goto loc_11A4B;
     _ax = _ds;                                  //mov ax, ds
@@ -3035,7 +3035,7 @@ void sub_11B43()
     _cx = 0x1770;                               //mov cx, 1770h
     _ax = _seg003;                              //mov ax, seg seg003
     _es = _ax;                                  //mov es, ax
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _ax = _ds;                                  //mov ax, ds
     _es = _ax;                                  //mov es, ax
     memory16(_ds, 0x8F32) = 0x0000;             //mov word_31462, 0
@@ -3043,7 +3043,7 @@ void sub_11B43()
     _di = 0x8e8c;                               //mov di, 8E8Ch
     _cx = 0x0010;                               //mov cx, 10h
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     memory(_ds, 0x8FB0) = 0x00;                 //mov byte_314E0, 0
     memory(_ds, 0x8F59) = 0x00;                 //mov byte_31489, 0
     memory(_ds, 0x8F5B) = 0x00;                 //mov byte_3148B, 0
@@ -3125,16 +3125,16 @@ void sub_11BEA()
 {
     _push(_si);                                 //push si
     _si += 0x0028;                              //add si, 28h
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     memory16(_ds, 0xFCE2) = _ax;                //mov word_38212, ax
     memory16(_ds, 0x8EB4) = _ax;                //mov word_313E4, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     memory16(_ds, 0xFCE6) = _ax;                //mov word_38216, ax
     memory16(_ds, 0x8EB6) = _ax;                //mov word_313E6, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     memory16(_ds, 0xFCEA) = _ax;                //mov word_3821A, ax
     memory16(_ds, 0x8EB8) = _ax;                //mov word_313E8, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     memory16(_ds, 0xFCEE) = _ax;                //mov word_3821E, ax
     memory16(_ds, 0x8EBA) = _ax;                //mov word_313EA, ax
     _di = memory16(_ds, 0x9054);                //mov di, word_31584
@@ -3355,7 +3355,7 @@ loc_11E0F:                                      //loc_11E0F:
     _bx = _pop();                               //pop bx
     if (!(_cx & _cx))                           //jz short loc_11E27
       goto loc_11E27;
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _si = 0x5538;                               //mov si, 5538h
     _ax >>= 1;                                  //shr ax, 1
@@ -3363,7 +3363,7 @@ loc_11E0F:                                      //loc_11E0F:
     _si += _bx;                                 //add si, bx
     _si += _bx;                                 //add si, bx
 loc_11E21:                                      //loc_11E21:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _dx;                                 //add di, dx
     if (--_cx)                                  //loop loc_11E21
       goto loc_11E21;
@@ -3389,7 +3389,7 @@ void sub_11E29()
     _si = 0x9920;                               //mov si, 9920h
     _cx = 0x004b;                               //mov cx, 4Bh
 loc_11E4E:                                      //loc_11E4E:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ax = _ax & memory16(_ds, _di);             //and ax, [di]
     if (_ax != 0)                               //jnz short loc_11E5C
       goto loc_11E5C;
@@ -3804,7 +3804,8 @@ loc_129B5:                                      //loc_129B5:
 loc_129CF:                                      //loc_129CF:
     memory16(_ds, 0x8E88) = _ax;                //mov word_313B8, ax
     _push(_si);                                 //push si
-    _indirectCall(_cs, memory16(_ds, _di));                    //call di
+    // TODO: POZOR INDIRECT!!!!!
+    _indirectCall(_cs, _di);                    //call di
     _si = _pop();                               //pop si
 }
 
@@ -3915,7 +3916,7 @@ void locret_12AAF()
     return;                                     //retn
 }
 
-void sub_12AB2()
+void sub_12AB2() // add speed powerup
 {
     if (memory16(_ds, 0x915E) == 0x0002)        //jz short locret_12ABD
       goto locret_12ABD;
@@ -3963,7 +3964,7 @@ loc_12B17:                                      //loc_12B17:
     _di = 0x8e8c;                               //mov di, 8E8Ch
     _ax = _ax ^ _ax;                            //xor ax, ax
     _cx = 0x0010;                               //mov cx, 10h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
 }
 
 void sub_12B22()
@@ -4581,13 +4582,13 @@ loc_13243:                                      //loc_13243:
 {sub_13319(); return; };                        //
 }
 
-void sub_13246()
+void sub_13246() // cannon powerup
 {
     WORD _cs = _seg000;
 
     _ax = 0x0034;                               //mov ax, 34h
     sub_13117();                                //call sub_13117
-    if (_FIXME_)                                //jnz short loc_13251
+    if (!_flags.zero)                                //jnz short loc_13251
       goto loc_13251;
 {sub_13319(); return; };                        //
 loc_13251:                                      //loc_13251:
@@ -6059,7 +6060,7 @@ loc_13F13:                                      //loc_13F13:
     _di = 0x921c;                               //mov di, 921Ch
     _cx = 0x0007;                               //mov cx, 7
     _al = _al ^ _al;                            //xor al, al
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     memory16(_ds, 0x9156) = 0x0000;             //mov word_31686, 0
     memory16(_ds, 0x9158) = 0x0000;             //mov word_31688, 0
     sub_10E6F();                                //call sub_10E6F
@@ -6069,9 +6070,9 @@ loc_13F7B:                                      //loc_13F7B:
     _cx = 0x001e;                               //mov cx, 1Eh
     sub_15926();                                //call sub_15926
     _bx = memory16(_ds, 0x8E7A);                //mov bx, word_313AA
-    memory(_ds, _bx + -28835) = 0x00;           //mov byte ptr [bx-70A3h], 0
+    memory(_ds, _bx + -28835 + 65536) = 0x00;           //mov byte ptr [bx-70A3h], 0
     _bx = _bx ^ 0x0001;                         //xor bx, 1
-    if (memory(_ds, _bx + -28835) != 0x00)      //jnz short loc_13F9A
+    if (memory(_ds, _bx + -28835 + 65536) != 0x00)      //jnz short loc_13F9A
       goto loc_13F9A;
     goto loc_13C9D;                             //jmp loc_13C9D
 loc_13F9A:                                      //loc_13F9A:
@@ -6145,9 +6146,9 @@ loc_1403E:                                      //loc_1403E:
       goto loc_14078;
     _bx = memory16(_ds, 0x8E7A);                //mov bx, word_313AA
     _bx = _bx ^ 0x0001;                         //xor bx, 1
-    if (memory(_ds, _bx + -28835) == 0x00)      //jz short loc_14078
+    if (memory(_ds, _bx + -28835 + 65536) == 0x00)      //jz short loc_14078
       goto loc_14078;
-    if (memory(_ds, _bx + -28833) == 0x00)      //jz short loc_1407E
+    if (memory(_ds, _bx + -28833 + 65536) == 0x00)      //jz short loc_1407E
       goto loc_1407E;
 loc_14078:                                      //loc_14078:
     sub_14A69();                                //call sub_14A69
@@ -6185,12 +6186,12 @@ loc_140C1:                                      //loc_140C1:
 loc_140CB:                                      //loc_140CB:
     _bx = memory16(_ds, 0x8E7A);                //mov bx, word_313AA
     _bx = _bx ^ 0x0001;                         //xor bx, 1
-    if (memory(_ds, _bx + -28835) == 0x00)      //jz short loc_14116
+    if (memory(_ds, _bx + -28835 + 65536) == 0x00)      //jz short loc_14116
       goto loc_14116;
-    if (memory(_ds, _bx + -28833) != 0x00)      //jnz short loc_14116
+    if (memory(_ds, _bx + -28833 + 65536) != 0x00)      //jnz short loc_14116
       goto loc_14116;
     _bx = _bx ^ 0x0001;                         //xor bx, 1
-    memory(_ds, _bx + -28833) = 0xff;           //mov byte ptr [bx-70A1h], 0FFh
+    memory(_ds, _bx + -28833 + 65536) = 0xff;           //mov byte ptr [bx-70A1h], 0FFh
     sub_118F5();                                //call sub_118F5
     _si = memory16(_ds, 0x9054);                //mov si, word_31584
     sub_13760();                                //call sub_13760
@@ -6564,7 +6565,7 @@ loc_14411:                                      //loc_14411:
     _si = 0x8ed2;                               //mov si, 8ED2h
     _di = 0x8ecc;                               //mov di, 8ECCh
     _cx = 0x0030;                               //mov cx, 30h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _si = _pop();                               //pop si
     if (memory16(_ds, 0x8E7E) != 0x0000)        //jnz short loc_14483
       goto loc_14483;
@@ -6577,7 +6578,7 @@ loc_14430:                                      //loc_14430:
     _di = 0x8f30;                               //mov di, 8F30h
     _cx = 0x0030;                               //mov cx, 30h
     _flags.direction = true;                    //std
-    _rep_movsw<MemAuto, MemAuto, DirBackward>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirBackward>();    //rep movsw
     _flags.direction = false;                   //cld
     _si = _pop();                               //pop si
     _ax = memory16(_ds, 0x9190);                //mov ax, word_316C0
@@ -6606,7 +6607,7 @@ loc_14483:                                      //loc_14483:
     _si = 0x8ec0;                               //mov si, 8EC0h
     _di = 0x8ebc;                               //mov di, 8EBCh
     _cx = 0x0004;                               //mov cx, 4
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _si = _pop();                               //pop si
     _ax = memory16(_ds, 0x8F34);                //mov ax, word_31464
     memory16(_ds, _di) = _ax;                   //mov [di], ax
@@ -6676,6 +6677,7 @@ loc_14532:                                      //loc_14532:
       goto loc_1453F;
     memory16(_ds, 0x919E) = 0x0000;             //mov word_316CE, 0
 loc_1453F:                                      //loc_1453F:
+    memory16(_ds, 0x919E) = 6; // inertia
     if ((short)memory16(_ds, 0x919E) >= (short)0x0006)
       goto loc_1454A;
 loc_14546:                                      //loc_14546:
@@ -6891,7 +6893,7 @@ loc_14740:                                      //loc_14740:
     _si = 0x91b8;                               //mov si, 91B8h
     _di = 0x9134;                               //mov di, 9134h
     _cx = 0x000e;                               //mov cx, 0Eh
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _si = _pop();                               //pop si
 }
 
@@ -6979,7 +6981,8 @@ void sub_147E9()
 
 void sub_1480B(int pc)
 {
-    _ASSERT(pc == 0);
+    if (pc == 0x1480e)
+        goto loc_1480E;
     sub_141B1();                                //call sub_141B1
 loc_1480E:                                      //loc_1480E:
     sub_14865();                                //call sub_14865
@@ -7460,8 +7463,8 @@ loc_14B8E:                                      //loc_14B8E:
       goto loc_14BC0;
     _ax = memory16(_ds, 0x3048);                //mov ax, word_2B578
 loc_14BAB:                                      //loc_14BAB:
-    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
-      goto loc_14BAB;
+//    if (_ax == memory16(_ds, 0x3048))           //jz short loc_14BAB
+//      goto loc_14BAB;
     sub_10985();                                //call sub_10985
     sub_1080F();                                //call sub_1080F
     sub_10A51();                                //call sub_10A51
@@ -7475,9 +7478,9 @@ void sub_14BC7()
 {
     _ax = memory16(_ds, 0x3046);                //mov ax, word_2B576
     _ax += 0x0009;                              //add ax, 9
-loc_14BCD:                                      //loc_14BCD:
-    if (_ax != memory16(_ds, 0x3046))           //jnz short loc_14BCD
-      goto loc_14BCD;
+//loc_14BCD:                                      //loc_14BCD:
+//    if (_ax != memory16(_ds, 0x3046))           //jnz short loc_14BCD
+//      goto loc_14BCD;
 }
 
 void loc_14BD4()
@@ -7611,13 +7614,18 @@ void sub_14CFA()
     _dx = 0x0004;                               //mov dx, 4
     _si = 0xb144;                               //mov si, 0B144h
     if (!(memory16(_ds, 0x8F3C) & 0x0004))      //jz short loc_14D1E
-      _STOP_("goto loc_14D1E");
+      {sub_14D0D(0x14D1E); return;}
+//      _STOP_("goto loc_14D1E");
     _si = 0xb1ae;                               //mov si, 0B1AEh
-    _STOP_("goto loc_14D1E");                   //jmp short loc_14D1E
+    {sub_14D0D(0x14D1E); return;}
+//    _STOP_("goto loc_14D1E");                   //jmp short loc_14D1E
 }
 
-void sub_14D0D()
+void sub_14D0D(int pc)
 {
+    if (pc == 0x14D1E)
+        goto loc_14D1E;
+    
     _dx = 0x006d;                               //mov dx, 6Dh
     _si = 0xb144;                               //mov si, 0B144h
     if (!(memory16(_ds, 0x8F3E) & 0x0004))      //jz short loc_14D1E
@@ -7858,7 +7866,7 @@ loc_14F27:                                      //loc_14F27:
     goto loc_14E93;                             //jmp loc_14E93
 loc_14F37:                                      //loc_14F37:
     sub_14FE3();                                //call sub_14FE3
-    if (_FIXME_)                                //jz short loc_14F80
+    if (_flags.zero)                                //jz short loc_14F80
       goto loc_14F80;
     sub_1576D();                                //call sub_1576D
     _si = 0x3952;                               //mov si, 3952h
@@ -8629,8 +8637,9 @@ loc_15697:                                      //loc_15697:
     memory16(_ds, _si) = 0x0000;                //mov word ptr [si], 0
     goto loc_156B2;                             //jmp short loc_156B2
 loc_156A3:                                      //loc_156A3:
+    _flags.carry2 = (short)memory16(_ds, _si) > 1;
     memory16(_ds, _si) -= 1;                    //dec word ptr [si]
-    if (_FIXME_)                                //jg short loc_156B2
+    if (_flags.carry2)                                //jg short loc_156B2
       goto loc_156B2;
     sub_14191();                                //call sub_14191
     _ax &= 0x00ff;                              //and ax, 0FFh
@@ -8781,7 +8790,7 @@ loc_157BD:                                      //loc_157BD:
     sub_15829();                                //call sub_15829
 loc_157C9:                                      //loc_157C9:
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_157F4
       goto loc_157F4;
     if (_al == 0x20)                            //jz short loc_157E4
@@ -8797,7 +8806,7 @@ loc_157DD:                                      //loc_157DD:
     goto loc_157C9;                             //jmp short loc_157C9
 loc_157E4:                                      //loc_157E4:
     memory16(_ds, 0x8F46) += 1;                 //inc word_31476
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_157F4
       goto loc_157F4;
     if (_al == 0x20)                            //jz short loc_157E4
@@ -8817,8 +8826,9 @@ void sub_157FA()
     sub_156B8();                                //call sub_156B8
     sub_10C93();                                //call sub_10C93
     _ax = _pop();                               //pop ax
-    _STOP_("sp-trace-fail");                    //sub_157FA endp_failed
-    _STOP_("continues");                        //sub_1580D proc near
+    sub_1580D();
+//    _STOP_("sp-trace-fail");                    //sub_157FA endp_failed
+//    _STOP_("continues");                        //sub_1580D proc near
 }
 
 void sub_1580D()
@@ -8850,11 +8860,11 @@ void sub_15835()
     _cx = 0x0007;                               //mov cx, 7
 loc_1583B:                                      //loc_1583B:
     _push(_cx);                                 //push cx
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx = _ax;                                  //mov cx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx = _ax;                                  //mov dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _di = _ax;                                  //mov di, ax
     _ax = memory16(_ds, _di);                   //mov ax, [di]
     _di += 0x0002;                              //add di, 2
@@ -8887,12 +8897,12 @@ void sub_15863()
     _cx = 0x0030;                               //mov cx, 30h
 loc_15883:                                      //loc_15883:
     sub_14191();                                //call sub_14191
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     sub_14191();                                //call sub_14191
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     sub_14191();                                //call sub_14191
     _ax &= 0x1fff;                              //and ax, 1FFFh
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_15883
       goto loc_15883;
     sub_10DE7();                                //call sub_10DE7
@@ -8959,12 +8969,12 @@ void sub_15935()
     _di = 0x9a40;                               //mov di, 9A40h
 loc_1593E:                                      //loc_1593E:
     sub_14191();                                //call sub_14191
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     sub_14191();                                //call sub_14191
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     sub_14191();                                //call sub_14191
     _ax &= 0x1fff;                              //and ax, 1FFFh
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_1593E
       goto loc_1593E;
 }
@@ -9416,13 +9426,13 @@ loc_15CD1:                                      //loc_15CD1:
     _si = 0xdf16;                               //mov si, 0DF16h
     _ch = _ch ^ _ch;                            //xor ch, ch
 loc_15D10:                                      //loc_15D10:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _cl = _al;                                  //mov cl, al
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
+    _lodsb<MemData, DirForward>();                 //lodsb
     _cl = _al;                                  //mov cl, al
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     if ((short)_di >= (short)0x2ee0)            //jge short loc_15D28
       goto loc_15D28;
     if ((short)_di < (short)0x2ee0)             //jl short loc_15D10
@@ -9482,7 +9492,7 @@ loc_15D82:                                      //loc_15D82:
     _ax = _ax ^ _ax;                            //xor ax, ax
     _di = _di ^ _di;                            //xor di, di
     _cx = 0x7a34;                               //mov cx, 7A34h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _es = _pop();                               //pop es
     _dx = 0x4205;                               //mov dx, 4205h
     sub_15E24();                                //call sub_15E24
@@ -9504,15 +9514,15 @@ loc_15D82:                                      //loc_15D82:
     _di = 0x5538;                               //mov di, 5538h
     _cx = 0x1c90;                               //mov cx, 1C90h
 loc_15DEA:                                      //loc_15DEA:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx = _ax;                                  //mov dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx |= _ax;                                 //or dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx |= _ax;                                 //or dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ax |= _dx;                                 //or ax, dx
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_15DEA
       goto loc_15DEA;
     _ds = _pop();                               //pop ds
@@ -9954,31 +9964,39 @@ loc_165DC:                                      //loc_165DC:
     memory(_ds, 0x922A) = 0x00;                 //mov byte_3175A, 0
 }
 
+void loc_166B6();
+
 void sub_16696()
 {
     memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
+    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
     memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_FIXME_)                                //jbe short loc_166A1
+    if (_flags.carry2)                                //jbe short loc_166A1
       goto loc_166A1;
     return;                                     //retn
 loc_166A1:                                      //loc_166A1:
     _bp = 0x650d;                               //mov bp, 650Dh
-    _STOP_("goto loc_166B6");                   //jmp short loc_166B6
+    //_STOP_("goto loc_166B6");                   //jmp short loc_166B6
+    loc_166B6();
 }
 
 void sub_166A6()
 {
-    WORD _cs = _seg000;
-
     memory16(_ds, _di + 4) = 0x08b9;            //mov word ptr [di+4], 8B9h
+    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
     memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_FIXME_)                                //jbe short loc_166B1
+    if (_flags.carry2)                                //jbe short loc_166B1
       goto loc_166B1;
     return;                                     //retn
 loc_166B1:                                      //loc_166B1:
     _bp = 0x6523;                               //mov bp, 6523h
-    _STOP_("goto $+2");                         //jmp short $+2
-loc_166B6:                                      //loc_166B6:
+    //_STOP_("goto $+2");                         //jmp short $+2
+    loc_166B6();
+}
+
+void loc_166B6()                                      //loc_166B6:
+{
+    WORD _cs = _seg000;
     _push(_si);                                 //push si
     sub_11022();                                //call sub_11022
     _push(_di);                                 //push di
@@ -10205,18 +10223,19 @@ void sub_16A0A()
     WORD _cs = _seg000;
 
     _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
-    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
+    memory(_ds, _bx + -28122 + 65536) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
     _di = memory16(_ds, _si + 10);              //mov di, [si+0Ah]
     if (memory16(_ds, _di) != 0x00bc)           //jnz short loc_16A33
       goto loc_16A33;
     _bx = memory16(_ds, _si + 32);              //mov bx, [si+20h]
     _bx <<= 1;                                  //shl bx, 1
-    if (memory16(_ds, _bx + -28204) != 0x0000)  //jnz short loc_16A2D
+    if (memory16(_ds, _bx + -28204 + 65536) != 0x0000)  //jnz short loc_16A2D
       goto loc_16A2D;
-    memory16(_ds, _bx + -28204) = 0x0014;       //mov word ptr [bx-6E2Ch], 14h
+    memory16(_ds, _bx + -28204 + 65536) = 0x0014;       //mov word ptr [bx-6E2Ch], 14h
 loc_16A2D:                                      //loc_16A2D:
     sub_107C0();                                //call sub_107C0
-    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+//    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+    _indirectCall(_seg000, memory16(_ds, _si+2));
 loc_16A33:                                      //loc_16A33:
     _ax = memory16(_ds, _di + 18);              //mov ax, [di+12h]
     memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
@@ -10257,11 +10276,12 @@ void sub_16AAD()
     _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
     memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
     _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
-    memory(_ds, _bx + -28122) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
+    memory(_ds, _bx + -28122 + 65536) = 0xff;           //mov byte ptr [bx-6DDAh], 0FFh
     sub_14871();                                //call sub_14871
     if (memory16(_ds, _si) != 0x0004)           //jnz short locret_16AC6
       goto locret_16AC6;
-    _STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+    //_STOP_("goto word ptr [si+2]");             //jmp word ptr [si+2]
+    _indirectCall(_seg000, memory16(_ds, _si+2));
 locret_16AC6:                                   //locret_16AC6:
     return;
 }
@@ -10820,12 +10840,13 @@ void sub_1714D()
     memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
     memory16(_ds, 0xFCFE) += 0x000e;            //add word_3822E, 0Eh
     sub_10F2F();                                //call sub_10F2F
-    if (_FIXME_)                                //jz short loc_171A7
+    if (_flags.zero)                                //jz short loc_171A7
       goto loc_171A7;
     _ax = _pop();                               //pop ax
     memory16(_ds, _di + 4) = 0x7569;            //mov word ptr [di+4], 7569h
+    _flags.carry2 = memory16(_ds, _di + 36) <= _ax;
     memory16(_ds, _di + 36) -= _ax;             //sub [di+24h], ax
-    if (_FIXME_)                                //jbe short loc_171A9
+    if (_flags.carry2)                                //jbe short loc_171A9
       goto loc_171A9;
     return;                                     //retn
 loc_171A7:                                      //loc_171A7:
@@ -11247,7 +11268,7 @@ void sub_1758F()
     _di = 0x91d4;                               //mov di, 91D4h
     _cx = 0x0010;                               //mov cx, 10h
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     memory16(_ds, 0x91F4) = 0xd272;             //mov word_31724, 0D272h
     memory16(_ds, 0x91F6) = 0x6a4a;             //mov word_31726, 6A4Ah
     memory16(_ds, 0x91F8) = 0xba5d;             //mov word_31728, 0BA5Dh
@@ -12515,7 +12536,7 @@ loc_18CC6:                                      //loc_18CC6:
     memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
     memory16(_ds, 0xFCFE) += 0x000f;            //add word_3822E, 0Fh
     sub_10F2F();                                //call sub_10F2F
-    if (_FIXME_)                                //jnz short loc_18D0B
+    if (!_flags.zero)                                //jnz short loc_18D0B
       goto loc_18D0B;
 loc_18CFF:                                      //loc_18CFF:
     _di += 0x0008;                              //add di, 8
@@ -12558,7 +12579,7 @@ loc_18D8E:
     memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
     memory16(_ds, 0xFCFE) += 0x000f;            //add word_3822E, 0Fh
     sub_10F2F();                                //call sub_10F2F
-    if (_FIXME_)                                //jz short loc_18DE7
+    if (_flags.zero)                                //jz short loc_18DE7
       goto loc_18DE7;
     memory(_cs, _di) = 0x0001;                  //mov word ptr cs:[di], 1
     _ax = memory16(_ds, 0xFCF6);                //mov ax, word_38226
@@ -12705,7 +12726,7 @@ loc_18E72:                                      //loc_18E72:
 loc_18F7F:                                      //loc_18F7F:
     _ax = memory16(_cs, _si);                   //mov ax, cs:[si]
     _si += 0x0002;                              //add si, 2
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     if (--_cx)                                  //loop loc_18F7F
       goto loc_18F7F;
     memory16(_ds, 0x8E72) = 0x1b55;             //mov word_313A2, 1B55h
@@ -15970,8 +15991,8 @@ loc_1ECAE:                                      //loc_1ECAE:
     _ax = 0x0105;                               //mov ax, 105h
     _out(_dx, _ax);                             //out dx, ax
 loc_1ECC5:                                      //loc_1ECC5:
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += 0x0026;                              //add di, 26h
     if (--_cx)                                  //loop loc_1ECC5
       goto loc_1ECC5;
@@ -16003,11 +16024,11 @@ loc_1ECD8:                                      //loc_1ECD8:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1ECFC:                                      //loc_1ECFC:
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemData, DirForward>();
     _out(_dx, _al);                             //out dx, al
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemData, DirForward>();
     _out(_dx, _al);                             //out dx, al
     _ah = memoryVideoGet(_es, _di + 1);         //mov ah, es:[di+1]
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
@@ -16045,10 +16066,10 @@ loc_1ED27:                                      //loc_1ED27:
     _push(_cx);                                 //push cx
     _si += 0x5538;                              //add si, 5538h
 loc_1ED43:                                      //loc_1ED43:
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemData, DirForward>();
     _out(_dx, _al);                             //out dx, al
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemData, DirForward>();
     _out(_dx, _al);                             //out dx, al
     memoryVideoAnd(_es, _di + 1, _al);          //and es:[di+1], al
     _di += 0x0028;                              //add di, 28h
@@ -16082,10 +16103,10 @@ loc_1ED75:                                      //loc_1ED75:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1ED8E:                                      //loc_1ED8E:
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemVideo, DirForward>();
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemData, DirAuto>();
+    _lodsb<MemVideo, DirForward>();
     _ah = memoryVideoGet(_es, _di + 1);         //mov ah, es:[di+1]
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0028;                              //add di, 28h
@@ -16229,8 +16250,8 @@ loc_1EE86:                                      //loc_1EE86:
     _push(_cx);                                 //push cx
     _ax = 0xffff;                               //mov ax, 0FFFFh
 loc_1EE94:                                      //loc_1EE94:
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di += 0x004c;                              //add di, 4Ch
     if (--_cx)                                  //loop loc_1EE94
       goto loc_1EE94;
@@ -16250,8 +16271,8 @@ loc_1EEA0:                                      //loc_1EEA0:
     _ax = _seg009;                              //mov ax, seg seg009
     _ds = _ax;                                  //mov ds, ax
 loc_1EEB2:                                      //loc_1EEB2:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += 0x004c;                              //add di, 4Ch
     if (--_cx)                                  //loop loc_1EEB2
       goto loc_1EEB2;
@@ -16273,7 +16294,7 @@ loc_1EEC1:                                      //loc_1EEC1:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1EED6:                                      //loc_1EED6:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _rol(_ax, 1);                               //rol ax, 1
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
@@ -16295,7 +16316,7 @@ loc_1EED6:                                      //loc_1EED6:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _rol(_ax, 1);                               //rol ax, 1
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
@@ -16338,7 +16359,7 @@ loc_1EF38:                                      //loc_1EF38:
     _si -= _dx;                                 //sub si, dx
     _si += 0x5538;                              //add si, 5538h
 loc_1EF4C:                                      //loc_1EF4C:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _push(_ds);                                 //push ds
     _dx = _seg009;                              //mov dx, seg seg009
@@ -16354,7 +16375,7 @@ loc_1EF4C:                                      //loc_1EF4C:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _al = (~_al);                               //not al
     memory(_es, _di) &= _al;                    //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _rol(_ax, 1);                               //rol ax, 1
@@ -16367,12 +16388,12 @@ loc_1EF4C:                                      //loc_1EF4C:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _al = (~_al);                               //not al
     memory(_es, _di) &= _al;                    //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ds = _pop();                               //pop ds
     _xchg(_si, _bp);                            //xchg si, bp
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _push(_ds);                                 //push ds
     _dx = _seg009;                              //mov dx, seg seg009
@@ -16388,7 +16409,7 @@ loc_1EF4C:                                      //loc_1EF4C:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _al = (~_al);                               //not al
     memory(_es, _di) &= _al;                    //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _rol(_ax, 1);                               //rol ax, 1
@@ -16401,7 +16422,7 @@ loc_1EF4C:                                      //loc_1EF4C:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _al = (~_al);                               //not al
     memory(_es, _di) &= _al;                    //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ds = _pop();                               //pop ds
@@ -16534,10 +16555,10 @@ loc_1F093:                                      //loc_1F093:
     _push(_cx);                                 //push cx
     _ax = 0x7777;                               //mov ax, 7777h
 loc_1F0A1:                                      //loc_1F0A1:
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _flags.sign = (short)(_di + 0x1ff8) < 0;    //add di, 1FF8h
     _di += 0x1ff8;
     if (!_flags.sign)                           //jns short loc_1F0AF
@@ -16563,10 +16584,10 @@ loc_1F0B6:                                      //loc_1F0B6:
     _ax = _seg009;                              //mov ax, seg seg009
     _ds = _ax;                                  //mov ds, ax
 loc_1F0CA:                                      //loc_1F0CA:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ff8) < 0;    //add di, 1FF8h
     _di += 0x1ff8;
     if (!_flags.sign)                           //jns short loc_1F0D8
@@ -16595,7 +16616,7 @@ loc_1F0EC:                                      //loc_1F0EC:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_1F0FA:                                      //loc_1F0FA:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -16681,7 +16702,7 @@ loc_1F16C:                                      //loc_1F16C:
     memory(_es, _di) |= 0x70;                   //or byte ptr es:[di], 70h
 loc_1F170:                                      //loc_1F170:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -16796,31 +16817,31 @@ loc_1F1FF:                                      //loc_1F1FF:
     _bp <<= 1;                                  //shl bp, 1
     _si += 0x5538;                              //add si, 5538h
 loc_1F213:                                      //loc_1F213:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _push(_ds);                                 //push ds
     _dx = _seg009;                              //mov dx, seg seg009
     _xchg(_si, _bp);                            //xchg si, bp
     _ds = _dx;                                  //mov ds, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F226
       goto loc_1F226;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F226:                                      //loc_1F226:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F22F
       goto loc_1F22F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F22F:                                      //loc_1F22F:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F238
       goto loc_1F238;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F238:                                      //loc_1F238:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F241
       goto loc_1F241;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -16828,31 +16849,31 @@ loc_1F241:                                      //loc_1F241:
     _di += 1;                                   //inc di
     _ds = _pop();                               //pop ds
     _xchg(_si, _bp);                            //xchg si, bp
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _push(_ds);                                 //push ds
     _xchg(_si, _bp);                            //xchg si, bp
     _dx = _seg009;                              //mov dx, seg seg009
     _ds = _dx;                                  //mov ds, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F258
       goto loc_1F258;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F258:                                      //loc_1F258:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F261
       goto loc_1F261;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F261:                                      //loc_1F261:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F26A
       goto loc_1F26A;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_1F26A:                                      //loc_1F26A:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_1F273
       goto loc_1F273;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -16913,7 +16934,7 @@ void sub_1F2D5()
     _ax = _ax ^ _ax;                            //xor ax, ax
     _cx = 0x00c8;                               //mov cx, 0C8h
 loc_1F2DD:                                      //loc_1F2DD:
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax += 0x0028;                              //add ax, 28h
     if (--_cx)                                  //loop loc_1F2DD
       goto loc_1F2DD;
@@ -16997,8 +17018,8 @@ void sub_1F363()
     _push(_di);                                 //push di
     _cx = 0x1c90;                               //mov cx, 1C90h
 loc_1F368:                                      //loc_1F368:
-    _movsb<MemVideo, MemAuto, DirAuto>();
-    _movsb<MemVideo, MemAuto, DirAuto>();
+    _movsb<MemVideo, MemData, DirForward>();
+    _movsb<MemVideo, MemData, DirForward>();
     _si += 0x0006;                              //add si, 6
     if (--_cx)                                  //loop loc_1F368
       goto loc_1F368;
@@ -17306,13 +17327,13 @@ loc_1F592:                                      //loc_1F592:
     _di = memory16(_ds, 0x425B);                //mov di, word_2C78B
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_1F5AE
       goto loc_1F5AE;
@@ -17426,22 +17447,22 @@ loc_1F697:                                      //loc_1F697:
       goto loc_1F6A1;
 {loc_1F73C(); return; };                        //
 loc_1F6A1:                                      //loc_1F6A1:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 3, _al);           //or es:[di+3], al
@@ -17486,19 +17507,19 @@ loc_1F708:                                      //loc_1F708:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 3, _ah);          //and es:[di+3], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 4, _ah);          //and es:[di+4], ah
@@ -17512,22 +17533,22 @@ loc_1F708:                                      //loc_1F708:
 void loc_1F73C()
 {
 loc_1F73C:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 3, _al);           //or es:[di+3], al
@@ -17562,15 +17583,15 @@ loc_1F797:                                      //loc_1F797:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 3, _ah);          //and es:[di+3], ah
     _di += 0x0028;                              //add di, 28h
@@ -17587,17 +17608,17 @@ void loc_1F7C0()
       goto loc_1F7CA;
 {loc_1F851(); return; };                        //
 loc_1F7CA:                                      //loc_1F7CA:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
@@ -17637,15 +17658,15 @@ loc_1F826:                                      //loc_1F826:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 3, _ah);          //and es:[di+3], ah
@@ -17659,17 +17680,17 @@ loc_1F826:                                      //loc_1F826:
 void loc_1F851()
 {
 loc_1F851:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
@@ -17704,11 +17725,11 @@ loc_1F8A1:                                      //loc_1F8A1:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
     _di += 0x0028;                              //add di, 28h
@@ -17727,12 +17748,12 @@ void loc_1F8C1()
         return;
     }
 loc_1F8C8:                                      //loc_1F8C8:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
@@ -17772,11 +17793,11 @@ loc_1F919:                                      //loc_1F919:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
@@ -17790,12 +17811,12 @@ loc_1F919:                                      //loc_1F919:
 void loc_1F93B()
 {
 loc_1F93B:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _ah = memory(_ds, _si - 1);                 //mov ah, [si-1]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ror(_ax, _cl);                             //ror ax, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
@@ -17830,7 +17851,7 @@ loc_1F980:                                      //loc_1F980:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
     _di += 0x0028;                              //add di, 28h
@@ -17849,7 +17870,7 @@ void loc_1F997()
         return;
     }
 loc_1F99E:                                      //loc_1F99E:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
@@ -17889,7 +17910,7 @@ loc_1F9E4:                                      //loc_1F9E4:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
@@ -17903,7 +17924,7 @@ loc_1F9E4:                                      //loc_1F9E4:
 void loc_1F9FD()
 {
 loc_1F9FD:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
@@ -17935,7 +17956,7 @@ void sub_1FA27()
     _bl = _bh;                                  //mov bl, bh
     _si = _si + memory16(_ds, 0x2);             //add si, ds:2
 loc_1FA37:                                      //loc_1FA37:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 0x0028;                              //add di, 28h
@@ -17978,25 +17999,25 @@ loc_1FA82:                                      //loc_1FA82:
       goto loc_1FA8A;
 {loc_1FB1B(); return; };                        //
 loc_1FA8A:                                      //loc_1FA8A:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memory(_es, _di) |= _al;                    //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memory(_es, _di + 1) |= _al;                //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memory(_es, _di + 2) |= _al;                //or es:[di+2], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18030,19 +18051,19 @@ void sub_1FADB()
     _si = _si + memory16(_ds, 0x2);             //add si, ds:2
 loc_1FAEB:                                      //loc_1FAEB:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memory(_es, _di) &= _ah;                    //and es:[di], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memory(_es, _di + 1) &= _ah;                //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memory(_es, _di + 2) &= _ah;                //and es:[di+2], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memory(_es, _di + 3) &= _ah;                //and es:[di+3], ah
@@ -18057,19 +18078,19 @@ void loc_1FB1B()
 {
 loc_1FB1B:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18103,15 +18124,15 @@ void sub_1FB64()
     _bl = _bh;                                  //mov bl, bh
 loc_1FB74:                                      //loc_1FB74:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di, _ah);              //and es:[di], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
@@ -18126,13 +18147,13 @@ void loc_1FB9B()
 {
 loc_1FB9B:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18166,11 +18187,11 @@ void sub_1FBD8()
     _bl = _bh;                                  //mov bl, bh
 loc_1FBE8:                                      //loc_1FBE8:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di, _ah);              //and es:[di], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
@@ -18185,7 +18206,7 @@ void loc_1FC06()
 {
 loc_1FC06:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18219,7 +18240,7 @@ void sub_1FC37()
     _bl = _bh;                                  //mov bl, bh
 loc_1FC47:                                      //loc_1FC47:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di, _ah);              //and es:[di], ah
@@ -18277,19 +18298,19 @@ loc_1FCB7:                                      //loc_1FCB7:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18324,15 +18345,15 @@ loc_1FD15:                                      //loc_1FD15:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 3, _ah);          //and es:[di+3], ah
     _di += 0x0028;                              //add di, 28h
@@ -18350,13 +18371,13 @@ loc_1FD3E:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18392,11 +18413,11 @@ loc_1FD94:                                      //loc_1FD94:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 2, _ah);          //and es:[di+2], ah
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
@@ -18415,7 +18436,7 @@ loc_1FDB8:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18451,7 +18472,7 @@ loc_1FE02:                                      //loc_1FE02:
     _al = memory(_ds, _si);                     //mov al, [si]
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     memoryVideoAnd(_es, _di + 1, _ah);          //and es:[di+1], ah
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
@@ -18465,7 +18486,7 @@ loc_1FE02:                                      //loc_1FE02:
 void loc_1FE1D()
 {
 loc_1FE1D:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _ah >>= _cl;                                //shr ah, cl
     _al = _ch;                                  //mov al, ch
@@ -18499,7 +18520,7 @@ void sub_1FE4D()
     _si = _si + memory16(_ds, 0x2);             //add si, ds:2
     _bl = _bh;                                  //mov bl, bh
 loc_1FE5D:                                      //loc_1FE5D:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al >>= _cl;                                //shr al, cl
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
@@ -18637,13 +18658,13 @@ loc_1FF5C:                                      //loc_1FF5C:
     _di = memory16(_ds, 0x425B);                //mov di, word_2C78B
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_1FF78
       goto loc_1FF78;
@@ -18760,25 +18781,25 @@ loc_20068:                                      //loc_20068:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 3, _al);           //or es:[di+3], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18796,19 +18817,19 @@ loc_200AD:                                      //loc_200AD:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18829,19 +18850,19 @@ loc_200EB:                                      //loc_200EB:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18859,13 +18880,13 @@ loc_20124:                                      //loc_20124:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18886,13 +18907,13 @@ loc_20156:                                      //loc_20156:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18910,7 +18931,7 @@ loc_20183:                                      //loc_20183:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -18931,7 +18952,7 @@ loc_201A9:                                      //loc_201A9:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -18944,7 +18965,7 @@ loc_201A9:                                      //loc_201A9:
     _di = _pop();                               //pop di
     goto loc_203C6;                             //jmp loc_203C6
 loc_201CA:                                      //loc_201CA:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _ah >>= _cl;                                //shr ah, cl
     _al = _ch;                                  //mov al, ch
@@ -18987,25 +19008,25 @@ loc_20218:                                      //loc_20218:
     if ((short)_bp <= (short)0x0018)            //jle short loc_2025C
       goto loc_2025C;
 loc_20222:                                      //loc_20222:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -19019,19 +19040,19 @@ loc_20222:                                      //loc_20222:
     goto loc_203C6;                             //jmp loc_203C6
 loc_2025C:                                      //loc_2025C:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -19045,13 +19066,13 @@ loc_2025C:                                      //loc_2025C:
     goto loc_203C6;                             //jmp loc_203C6
 loc_2028E:                                      //loc_2028E:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -19065,7 +19086,7 @@ loc_2028E:                                      //loc_2028E:
     goto loc_203C6;                             //jmp loc_203C6
 loc_202B4:                                      //loc_202B4:
     _si = _si + memory16(_ds, 0x4);             //add si, ds:4
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _ah ^ _ah;                            //xor ah, ah
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
@@ -19122,19 +19143,19 @@ loc_20327:                                      //loc_20327:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 2, _al);           //or es:[di+2], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -19151,13 +19172,13 @@ loc_2035D:                                      //loc_2035D:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memory(_ds, _si);                     //mov ah, [si]
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -19175,7 +19196,7 @@ loc_2038B:                                      //loc_2038B:
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _ror(_ax, _cl);                             //ror ax, cl
     _al = _ch;                                  //mov al, ch
     _out(_dx, _ax);                             //out dx, ax
@@ -19188,7 +19209,7 @@ loc_2038B:                                      //loc_2038B:
     _di = _pop();                               //pop di
     goto loc_203C6;                             //jmp short loc_203C6
 loc_203AD:                                      //loc_203AD:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _ah >>= _cl;                                //shr ah, cl
     _al = _ch;                                  //mov al, ch
@@ -19251,8 +19272,9 @@ loc_20417:                                      //loc_20417:
     _bx -= 0x00c0;                              //sub bx, 0C0h
     if (_flags.carry2)                                //jle short loc_20425
       goto loc_20425;
+    _flags.carry2 = (short)_cx <= (short)_bx;
     _cx -= _bx;                                 //sub cx, bx
-    if (_FIXME_)                                //jle short locret_20481
+    if (_flags.carry2)                                //jle short locret_20481
       goto locret_20481;
 loc_20425:                                      //loc_20425:
     _bx = _ax;                                  //mov bx, ax
@@ -19277,10 +19299,10 @@ loc_20425:                                      //loc_20425:
     if ((short)_bx >= (short)0x0138)            //jge short loc_20466
       goto loc_20466;
 loc_20454:                                      //loc_20454:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di + 1, _al);           //or es:[di+1], al
     _di += 0x0028;                              //add di, 28h
@@ -19288,7 +19310,7 @@ loc_20454:                                      //loc_20454:
       goto loc_20454;
     goto loc_20471;                             //jmp short loc_20471
 loc_20466:                                      //loc_20466:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _out(_dx, _al);                             //out dx, al
     memoryVideoOr(_es, _di, _al);               //or es:[di], al
     _si += 1;                                   //inc si
@@ -19324,7 +19346,7 @@ void sub_20482()
     _cx -= _dx;                                 //sub cx, dx
     _bl = 0x14;                                 //mov bl, 14h
 loc_204A4:                                      //loc_204A4:
-    _lodsw<MemData, DirAuto>();
+    _lodsw<MemData, DirForward>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -19336,8 +19358,8 @@ loc_204A4:                                      //loc_204A4:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_204B6:                                      //loc_204B6:
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += 0x0026;                              //add di, 26h
     if (--_cx)                                  //loop loc_204B6
       goto loc_204B6;
@@ -19355,60 +19377,60 @@ loc_204B6:                                      //loc_204B6:
     _bx = 0x0b14;                               //mov bx, 0B14h
     _bp = 0x0026;                               //mov bp, 26h
 loc_204D5:                                      //loc_204D5:
-    _lodsw<MemData, DirAuto>();
+    _lodsw<MemData, DirForward>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
     _cx = _ds;                                  //mov cx, ds
     _ax = 0xa400;                               //mov ax, 0A400h
     _ds = _ax;                                  //mov ds, ax
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
     _di -= 0x027e;                              //sub di, 27Eh
     _ds = _cx;                                  //mov ds, cx
@@ -19425,7 +19447,7 @@ loc_204D5:                                      //loc_204D5:
       goto loc_2055C;
     _bl = 0x14;                                 //mov bl, 14h
 loc_2053D:                                      //loc_2053D:
-    _lodsw<MemData, DirAuto>();
+    _lodsw<MemData, DirForward>();
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -19435,8 +19457,8 @@ loc_2053D:                                      //loc_2053D:
     _push(_di);                                 //push di
     _cx = _dx;                                  //mov cx, dx
 loc_2054C:                                      //loc_2054C:
-    _movsb<MemVideo, MemVideo, DirAuto>();
-    _movsb<MemVideo, MemVideo, DirAuto>();
+    _movsb<MemVideo, MemVideo, DirForward>();
+    _movsb<MemVideo, MemVideo, DirForward>();
     _di += _bp;                                 //add di, bp
     if (--_cx)                                  //loop loc_2054C
       goto loc_2054C;
@@ -19479,7 +19501,7 @@ void sub_2058D()
     _out(_dx, _ax);                             //out dx, ax
     _di = memory16(_ds, 0x425B);                //mov di, word_2C78B
     _cx = 0x1f40;                               //mov cx, 1F40h
-    _rep_stosb<MemVideo, DirAuto>();
+    _rep_stosb<MemVideo, DirForward>();
     _ax = 0x0001;                               //mov ax, 1
     _out(_dx, _ax);                             //out dx, ax
     _es = _pop();                               //pop es
@@ -19553,26 +19575,26 @@ void sub_20627()
     _push(_di);                                 //push di
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemVideo, MemAuto, DirAuto>();
+    _rep_movsb<MemVideo, MemData, DirForward>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _push(_cx);                                 //push cx
     _push(_di);                                 //push di
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemVideo, MemAuto, DirAuto>();
+    _rep_movsb<MemVideo, MemData, DirForward>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _push(_cx);                                 //push cx
     _push(_di);                                 //push di
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemVideo, MemAuto, DirAuto>();
+    _rep_movsb<MemVideo, MemData, DirForward>();
     _di = _pop();                               //pop di
     _cx = _pop();                               //pop cx
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _rep_movsb<MemVideo, MemAuto, DirAuto>();
+    _rep_movsb<MemVideo, MemData, DirForward>();
     _ax = 0x0f02;                               //mov ax, 0F02h
     _out(_dx, _ax);                             //out dx, ax
 }
@@ -19591,15 +19613,15 @@ void sub_20653()
     _si = 0x9c80;                               //mov si, 9C80h
     _cx = 0x0050;                               //mov cx, 50h
 loc_2066C:                                      //loc_2066C:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if ((short)_ax < 0)                         //js short loc_206EA
       goto loc_206EA;
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx = _ax;                                  //mov dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx += _ax;                                 //add bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx += _ax;                                 //add dx, ax
     if (_bx >= 0x013c)                          //jnb short loc_206E3
       goto loc_206E3;
@@ -19957,7 +19979,7 @@ void sub_2095F()
     _push(_di);                                 //push di
     _cx = 0x0008;                               //mov cx, 8
 loc_20963:                                      //loc_20963:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     memoryVideoSet(_es, _di + 8192, _al);       //mov es:[di+2000h], al
     _di += 0x0028;                              //add di, 28h
@@ -20006,7 +20028,8 @@ loc_209BD:                                      //loc_209BD:
     _ax = memory16(_ds, _bx);                   //mov ax, [bx]
     memory16(_ds, 0xFCE2) -= _ax;               //sub word_38212, ax
     _ax = memory16(_ds, _bx + 2);               //mov ax, [bx+2]
-    _FIXME_;                                    //sbb word_38214, ax
+    memory16(_ds, 0xFCE4) -= _ax + _flags.carry;
+    //_FIXME_;                                    //sbb word_38214, ax
     if ((short)memory16(_ds, 0xFCE2) < 0)       //js short loc_209CF
       goto loc_209CF;
     _dx += 1;                                   //inc dx
@@ -20085,7 +20108,7 @@ void sub_20A3C()
 
 void sub_20A47()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short locret_20A5B
       goto locret_20A5B;
     _xchg(_si, _bp);                            //xchg si, bp
@@ -20156,9 +20179,9 @@ void sub_20AC0()
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_20AC2:                                      //loc_20AC2:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
-    _stosb<MemVideo, DirAuto>();
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
+    _stosb<MemVideo, DirForward>();
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _di += 0x0027;                              //add di, 27h
     if (--_cx)                                  //loop loc_20AC2
@@ -20253,7 +20276,7 @@ void sub_20B5B()
     _si = 0x1e00;                               //mov si, 1E00h
     _di = 0xfec0;                               //mov di, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemVideo, MemVideo, DirAuto>();
+    _rep_movsb<MemVideo, MemVideo, DirForward>();
     _ax = 0x0005;                               //mov ax, 5
     _out(_dx, _ax);                             //out dx, ax
     _ax = _pop();                               //pop ax
@@ -20278,11 +20301,11 @@ void sub_20B8A()
     _di = 0x1e00;                               //mov di, 1E00h
     _si = 0xfec0;                               //mov si, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemVideo, MemVideo, DirAuto>();
+    _rep_movsb<MemVideo, MemVideo, DirForward>();
     _di = 0x3e00;                               //mov di, 3E00h
     _si = 0xfec0;                               //mov si, 0FEC0h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsb<MemVideo, MemVideo, DirAuto>();
+    _rep_movsb<MemVideo, MemVideo, DirForward>();
     _ax = 0x0005;                               //mov ax, 5
     _out(_dx, _ax);                             //out dx, ax
     _ax = _pop();                               //pop ax
@@ -20304,7 +20327,7 @@ void sub_20BBF()
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
     _cx = 0x1f40;                               //mov cx, 1F40h
-    _rep_movsb<MemVideo, MemVideo, DirAuto>();
+    _rep_movsb<MemVideo, MemVideo, DirForward>();
     _ax = _pop();                               //pop ax
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -20458,8 +20481,8 @@ loc_20D02:                                      //loc_20D02:
     _push(_di);                                 //push di
     _push(_bp);                                 //push bp
 loc_20D04:                                      //loc_20D04:
-    _movsb<MemVideo, MemAuto, DirAuto>();
-    _movsb<MemVideo, MemAuto, DirAuto>();
+    _movsb<MemVideo, MemData, DirForward>();
+    _movsb<MemVideo, MemData, DirForward>();
     _si += 0x0006;                              //add si, 6
     _bp -= 1;                                   //dec bp
     if (_bp != 0)                               //jnz short loc_20D04
@@ -20530,13 +20553,19 @@ void loc_20D45()
     _out(_dx, _ax);                             //out dx, ax
     memoryVideoAnd(_es, _di, _al);              //and es:[di], al
     _di += 0x001c;                              //add di, 1Ch
+    // TODO: FIX!!! JOIN!!!
+    sub_20D87();
 }
 
 void sub_20D87()
 {
     if (--_cx)                                  //loop loc_20D45
-      _STOP_("goto loc_20D45");
-//    return;                                     //retf
+    {
+        loc_20D45();
+        return;
+    }
+      //_STOP_("goto loc_20D45");
+    return;                                     //retf
     _STOP_("sp-trace-fail");                    //sub_20D87 endp_failed
     _STOP_("continues");                        //sub_20D8A proc far
 }
@@ -20652,27 +20681,27 @@ loc_20EA9:                                      //loc_20EA9:
 loc_20EAD:                                      //loc_20EAD:
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0002;                              //add di, 2
     if (--_cx)                                  //loop loc_20EAD
@@ -20696,27 +20725,27 @@ loc_20F04:                                      //loc_20F04:
 loc_20F08:                                      //loc_20F08:
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0002;                              //add di, 2
     if (--_cx)                                  //loop loc_20F08
@@ -20776,12 +20805,12 @@ loc_20F9F:                                      //loc_20F9F:
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0108;                               //mov ax, 108h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _ax = 0xff08;                               //mov ax, 0FF08h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _dx = 0x03c4;                               //mov dx, 3C4h
     _ax = 0x0202;                               //mov ax, 202h
@@ -20789,12 +20818,12 @@ loc_20F9F:                                      //loc_20F9F:
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0108;                               //mov ax, 108h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _ax = 0xff08;                               //mov ax, 0FF08h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _dx = 0x03c4;                               //mov dx, 3C4h
     _ax = 0x0402;                               //mov ax, 402h
@@ -20802,12 +20831,12 @@ loc_20F9F:                                      //loc_20F9F:
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0108;                               //mov ax, 108h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _ax = 0xff08;                               //mov ax, 0FF08h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _dx = 0x03c4;                               //mov dx, 3C4h
     _ax = 0x0802;                               //mov ax, 802h
@@ -20815,12 +20844,12 @@ loc_20F9F:                                      //loc_20F9F:
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0108;                               //mov ax, 108h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _ax = 0xff08;                               //mov ax, 0FF08h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _dx = 0x03c4;                               //mov dx, 3C4h
     _di += 0x0002;                              //add di, 2
@@ -20829,27 +20858,27 @@ loc_20F9F:                                      //loc_20F9F:
 loc_2101E:                                      //loc_2101E:
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di + 1, _al);          //mov es:[di+1], al
     _di += 0x0002;                              //add di, 2
     if (--_cx)                                  //loop loc_2101E
@@ -20857,24 +20886,24 @@ loc_2101E:                                      //loc_2101E:
     _cx = _pop();                               //pop cx
     _ax = 0x0102;                               //mov ax, 102h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ax = 0x0202;                               //mov ax, 202h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ax = 0x0402;                               //mov ax, 402h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ax = 0x0802;                               //mov ax, 802h
     _out(_dx, _ax);                             //out dx, ax
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _di += 0x001c;                              //add di, 1Ch
     if (--_cx)                                  //loop loc_21083
       goto loc_21083;
@@ -21027,7 +21056,7 @@ void sub_211B0()
     _push(_di);                                 //push di
     _cx = 0x0008;                               //mov cx, 8
 loc_211B4:                                      //loc_211B4:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = memoryVideoGet(_es, _di);             //mov ah, es:[di]
     memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _ah = memoryVideoGet(_es, _di + 8192);      //mov ah, es:[di+2000h]
@@ -21158,7 +21187,7 @@ void loc_2130B()
     _si = 0x4243;                               //mov si, 4243h
     _cx = 0x0009;                               //mov cx, 9
 loc_21323:                                      //loc_21323:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _out(_dx, _ax);                             //out dx, ax
     if (--_cx)                                  //loop loc_21323
       goto loc_21323;
@@ -21168,7 +21197,7 @@ loc_21323:                                      //loc_21323:
     _ax = _ax ^ _ax;                            //xor ax, ax
     _di = _di ^ _di;                            //xor di, di
     _cx = 0x4000;                               //mov cx, 4000h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _es = _pop();                               //pop es
     _dl += 0x04;                                //add dl, 4
     _al = 0x0a;                                 //mov al, 0Ah
@@ -21181,7 +21210,7 @@ void sub_2133E()
     _ax = _ax ^ _ax;                            //xor ax, ax
     _cx = 0x00c8;                               //mov cx, 0C8h
 loc_21346:                                      //loc_21346:
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _ax += 0x0050;                              //add ax, 50h
     if (--_cx)                                  //loop loc_21346
       goto loc_21346;
@@ -21351,11 +21380,11 @@ void sub_214E6()
     _si += 0x0020;                              //add si, 20h
 loc_214F5:                                      //loc_214F5:
     _si += 0x000c;                              //add si, 0Ch
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if (!(_ax & _ax))                           //jz short loc_21547
       goto loc_21547;
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _cx = _ax;                                  //mov cx, ax
     _cx += 1;                                   //inc cx
@@ -21382,7 +21411,7 @@ loc_2151B:                                      //loc_2151B:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21426,7 +21455,7 @@ loc_2155D:                                      //loc_2155D:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21460,12 +21489,12 @@ void sub_2159D()
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     _si += 0x0006;                              //add si, 6
 }
@@ -21504,7 +21533,7 @@ loc_215F5:                                      //loc_215F5:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21520,12 +21549,12 @@ void sub_2160E()
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     _si += 0x0006;                              //add si, 6
 }
@@ -21563,7 +21592,7 @@ loc_21666:                                      //loc_21666:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21585,7 +21614,7 @@ void sub_2167F()
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
 }
 
@@ -21611,7 +21640,7 @@ loc_216A4:                                      //loc_216A4:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21631,7 +21660,7 @@ loc_216CA:                                      //loc_216CA:
     _ah = memory(_ds, _si + 8);                 //mov ah, [si+8]
     _bl = memory(_ds, _si + 16);                //mov bl, [si+10h]
     _bh = memory(_ds, _si + 24);                //mov bh, [si+18h]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     memory16(_cs, 0x38A7) += 1;                 //inc cs:word_22B37
     memory16(_cs, 0x38A7) &= 0x0007;            //and cs:word_22B37, 7
@@ -21662,7 +21691,7 @@ loc_216F6:                                      //loc_216F6:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -21690,7 +21719,7 @@ loc_2171E:                                      //loc_2171E:
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     _si += _dx;                                 //add si, dx
     _ah = memory(_ds, _si);                     //mov ah, [si]
@@ -21701,7 +21730,7 @@ loc_2171E:                                      //loc_2171E:
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_217DB();                                //call sub_217DB
     memory16(_cs, 0x38A7) += 1;                 //inc cs:word_22B37
     memory16(_cs, 0x38A7) &= 0x0007;            //and cs:word_22B37, 7
@@ -21747,7 +21776,7 @@ loc_21782:                                      //loc_21782:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _rol(_ax, 1);                               //rol ax, 1
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _rol(_ax, 1);                               //rol ax, 1
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _rol(_ax, 1);                               //rol ax, 1
@@ -21756,7 +21785,7 @@ loc_21782:                                      //loc_21782:
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
     _rol(_ax, 1);                               //rol ax, 1
     _ASSERT(0); /* unk previous */ _rcl(_al, 1);//rcl al, 1
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _si += _dx;                                 //add si, dx
     _al = memory(_ds, _si);                     //mov al, [si]
     _si += _dx;                                 //add si, dx
@@ -21976,13 +22005,13 @@ void sub_2191D()
 loc_2192A:                                      //loc_2192A:
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_21942
       goto loc_21942;
@@ -22076,15 +22105,15 @@ loc_219EC:                                      //loc_219EC:
       goto loc_219F4;
     goto loc_21AB9;                             //jmp loc_21AB9
 loc_219F4:                                      //loc_219F4:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _al >>= _cl;                                //shr al, cl
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _dl >>= _cl;                                //shr dl, cl
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22093,8 +22122,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22103,8 +22132,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22113,8 +22142,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22123,8 +22152,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22133,8 +22162,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22143,8 +22172,8 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22153,7 +22182,7 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _al = _al ^ _al;                            //xor al, al
     _dl = _dl ^ _dl;                            //xor dl, dl
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
@@ -22163,7 +22192,7 @@ loc_219F4:                                      //loc_219F4:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _di += 0x0047;                              //add di, 47h
     _bl -= 1;                                   //dec bl
     if ((char)_bl < 0)                          //js short loc_21AB6
@@ -22172,15 +22201,15 @@ loc_219F4:                                      //loc_219F4:
 loc_21AB6:                                      //loc_21AB6:
     goto loc_21C9B;                             //jmp loc_21C9B
 loc_21AB9:                                      //loc_21AB9:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _al >>= _cl;                                //shr al, cl
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _dl >>= _cl;                                //shr dl, cl
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22189,8 +22218,8 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22199,8 +22228,8 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22209,8 +22238,8 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22219,8 +22248,8 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22229,7 +22258,7 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _al = _al ^ _al;                            //xor al, al
     _dl = _dl ^ _dl;                            //xor dl, dl
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
@@ -22239,7 +22268,7 @@ loc_21AB9:                                      //loc_21AB9:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _di += 0x0049;                              //add di, 49h
     _bl -= 1;                                   //dec bl
     if ((char)_bl < 0)                          //js short loc_21B51
@@ -22248,15 +22277,15 @@ loc_21AB9:                                      //loc_21AB9:
 loc_21B51:                                      //loc_21B51:
     goto loc_21C9B;                             //jmp loc_21C9B
 loc_21B54:                                      //loc_21B54:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _al >>= _cl;                                //shr al, cl
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _dl >>= _cl;                                //shr dl, cl
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22265,8 +22294,8 @@ loc_21B54:                                      //loc_21B54:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22275,8 +22304,8 @@ loc_21B54:                                      //loc_21B54:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22285,7 +22314,7 @@ loc_21B54:                                      //loc_21B54:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _al = _al ^ _al;                            //xor al, al
     _dl = _dl ^ _dl;                            //xor dl, dl
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
@@ -22295,22 +22324,22 @@ loc_21B54:                                      //loc_21B54:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _di += 0x004b;                              //add di, 4Bh
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_21B54
       goto loc_21B54;
     goto loc_21C9B;                             //jmp loc_21C9B
 loc_21BC2:                                      //loc_21BC2:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _al >>= _cl;                                //shr al, cl
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _dl >>= _cl;                                //shr dl, cl
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _stosb<MemData, DirForward>();                 //stosb
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dl = _ah;                                  //mov dl, ah
     _ah = memory(_ds, _si - 4);                 //mov ah, [si-4]
     _dh = memory(_ds, _si - 3);                 //mov dh, [si-3]
@@ -22319,7 +22348,7 @@ loc_21BC2:                                      //loc_21BC2:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _al = _al ^ _al;                            //xor al, al
     _dl = _dl ^ _dl;                            //xor dl, dl
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
@@ -22329,7 +22358,7 @@ loc_21BC2:                                      //loc_21BC2:
     _al = (~_al);                               //not al
     _al = _al & memory(_es, _di);               //and al, es:[di]
     _al |= _dl;                                 //or al, dl
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     _di += 0x004d;                              //add di, 4Dh
     _bl -= 1;                                   //dec bl
     if ((char)_bl >= 0)                         //jns short loc_21BC2
@@ -22355,7 +22384,7 @@ loc_21C06:                                      //loc_21C06:
 loc_21C2C:                                      //loc_21C2C:
     _push(_bp);                                 //push bp
     _push(_di);                                 //push di
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if (_bp >= 0x0140)                          //jnb short loc_21C45
       goto loc_21C45;
     _dl = _ah;                                  //mov dl, ah
@@ -22370,7 +22399,7 @@ loc_21C45:                                      //loc_21C45:
     _bp += 0x0004;                              //add bp, 4
     _bh = memory(_cs, 0x2A11);                  //mov bh, cs:byte_21CA1
 loc_21C4E:                                      //loc_21C4E:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if (_bp >= 0x0140)                          //jnb short loc_21C6B
       goto loc_21C6B;
     _dl = _ah;                                  //mov dl, ah
@@ -22508,13 +22537,13 @@ loc_21D50:                                      //loc_21D50:
 loc_21D5D:                                      //loc_21D5D:
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_21D75
       goto loc_21D75;
@@ -22607,49 +22636,49 @@ loc_21E1F:                                      //loc_21E1F:
     if ((short)_bp <= (short)0x0018)            //jle short loc_21E8D
       goto loc_21E8D;
 loc_21E24:                                      //loc_21E24:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _al >>= _cl;                                //shr al, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
@@ -22664,37 +22693,37 @@ loc_21E24:                                      //loc_21E24:
       goto loc_21E24;
     goto loc_21F45;                             //jmp loc_21F45
 loc_21E8D:                                      //loc_21E8D:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _al >>= _cl;                                //shr al, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
@@ -22709,25 +22738,25 @@ loc_21E8D:                                      //loc_21E8D:
       goto loc_21E8D;
     goto loc_21F45;                             //jmp short loc_21F45
 loc_21EDF:                                      //loc_21EDF:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _al >>= _cl;                                //shr al, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
@@ -22742,13 +22771,13 @@ loc_21EDF:                                      //loc_21EDF:
       goto loc_21EDF;
     goto loc_21F45;                             //jmp short loc_21F45
 loc_21F1B:                                      //loc_21F1B:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _al >>= _cl;                                //shr al, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
     _di += 1;                                   //inc di
     _ah = memory(_ds, _si - 2);                 //mov ah, [si-2]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _si += 1;                                   //inc si
     _ax >>= _cl;                                //shr ax, cl
     memory(_es, _di) |= _al;                    //or es:[di], al
@@ -22819,16 +22848,16 @@ loc_21F90:                                      //loc_21F90:
     if ((short)_bx >= (short)0x0138)            //jge short loc_21FBA
       goto loc_21FBA;
 loc_21FAB:                                      //loc_21FAB:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_21FC9();                                //call sub_21FC9
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_21FC9();                                //call sub_21FC9
     _di += 0x004c;                              //add di, 4Ch
     if (--_cx)                                  //loop loc_21FAB
       goto loc_21FAB;
     goto loc_21FC4;                             //jmp short loc_21FC4
 loc_21FBA:                                      //loc_21FBA:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_21FC9();                                //call sub_21FC9
     _si += 1;                                   //inc si
     _di += 0x004e;                              //add di, 4Eh
@@ -22878,7 +22907,7 @@ void sub_21FF4()
     _cx -= _dx;                                 //sub cx, dx
     _bl = 0x14;                                 //mov bl, 14h
 loc_2200D:                                      //loc_2200D:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -22891,8 +22920,8 @@ loc_2200D:                                      //loc_2200D:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_22021:                                      //loc_22021:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += 0x004c;                              //add di, 4Ch
     if (--_cx)                                  //loop loc_22021
       goto loc_22021;
@@ -22910,7 +22939,7 @@ loc_22021:                                      //loc_22021:
     _bx = 0x0b14;                               //mov bx, 0B14h
     _bp = 0x004c;                               //mov bp, 4Ch
 loc_22040:                                      //loc_22040:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -22919,53 +22948,53 @@ loc_22040:                                      //loc_22040:
     _cx = _ds;                                  //mov cx, ds
     _ax = _seg009;                              //mov ax, seg seg009
     _ds = _ax;                                  //mov ds, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
     _di -= 0x04fc;                              //sub di, 4FCh
     _ds = _cx;                                  //mov ds, cx
@@ -22982,7 +23011,7 @@ loc_22040:                                      //loc_22040:
       goto loc_220CF;
     _bl = 0x14;                                 //mov bl, 14h
 loc_220AC:                                      //loc_220AC:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -22994,8 +23023,8 @@ loc_220AC:                                      //loc_220AC:
     _push(_di);                                 //push di
     _cx = _dx;                                  //mov cx, dx
 loc_220BF:                                      //loc_220BF:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _bp;                                 //add di, bp
     if (--_cx)                                  //loop loc_220BF
       goto loc_220BF;
@@ -23032,10 +23061,10 @@ void sub_220DC()
 loc_220F5:                                      //loc_220F5:
     _push(_cx);                                 //push cx
     _cx = 0x0028;                               //mov cx, 28h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _di += 0x1fb0;                              //add di, 1FB0h
     _cx = 0x0028;                               //mov cx, 28h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _di -= 0x2000;                              //sub di, 2000h
     _cx = _pop();                               //pop cx
     if (--_cx)                                  //loop loc_220F5
@@ -23057,7 +23086,7 @@ loc_22125:                                      //loc_22125:
     _push(_cx);                                 //push cx
     _cx = 0x0028;                               //mov cx, 28h
     _di += 0x0005;                              //add di, 5
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _di += 0x0005;                              //add di, 5
     _flags.sign = (short)(_di + 0x1fa6) < 0;    //add di, 1FA6h
     _di += 0x1fa6;
@@ -23087,7 +23116,7 @@ void sub_22152()
     _ax = _ax ^ _ax;                            //xor ax, ax
     _di = _di ^ _di;                            //xor di, di
     _cx = 0x1f40;                               //mov cx, 1F40h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _es = _pop();                               //pop es
 }
 
@@ -23116,7 +23145,7 @@ void sub_2217E()
     _ax = _seg005;                              //mov ax, seg seg005
     _ds = _ax;                                  //mov ds, ax
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _ax = _pop();                               //pop ax
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -23131,15 +23160,15 @@ void sub_2219A()
     _si = 0x9c80;                               //mov si, 9C80h
     _cx = 0x0050;                               //mov cx, 50h
 loc_221A5:                                      //loc_221A5:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if ((short)_ax < 0)                         //js short loc_22223
       goto loc_22223;
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx = _ax;                                  //mov dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx += _ax;                                 //add bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx += _ax;                                 //add dx, ax
     if (_bx >= 0x013c)                          //jnb short loc_2221C
       goto loc_2221C;
@@ -23469,21 +23498,21 @@ void sub_2244F()
     _ds = _ax;                                  //mov ds, ax
     _cx = 0x0008;                               //mov cx, 8
     _ax = 0x004e;                               //mov ax, 4Eh
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
     _ax = _pop();                               //pop ax
     _ds = _ax;                                  //mov ds, ax
@@ -23603,7 +23632,7 @@ void sub_22548()
 
 void sub_22553()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short locret_22567
       goto locret_22567;
     _xchg(_si, _bp);                            //xchg si, bp
@@ -23646,8 +23675,8 @@ void sub_22568()
     _ds = _ax;                                  //mov ds, ax
     _ax = 0x004c;                               //mov ax, 4Ch
 loc_2259E:                                      //loc_2259E:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di += _ax;                                 //add di, ax
     if (--_cx)                                  //loop loc_2259E
       goto loc_2259E;
@@ -23721,7 +23750,7 @@ void sub_22616()
     _si = 0x3c00;                               //mov si, 3C00h
     _di = 0x923e;                               //mov di, 923Eh
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _ds = _pop();                               //pop ds
 loc_2262F:                                      //loc_2262F:
     memory(_ds, 0x33BC) += 1;                   //inc byte ptr word_2B8EC
@@ -23738,7 +23767,7 @@ void sub_22634()
     _si = 0x923e;                               //mov si, 923Eh
     _di = 0x3c00;                               //mov di, 3C00h
     _cx = 0x0140;                               //mov cx, 140h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _es = _pop();                               //pop es
 locret_2264C:                                   //locret_2264C:
     return;
@@ -23869,7 +23898,7 @@ loc_22749:                                      //loc_22749:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
     _cx = _dx;                                  //mov cx, dx
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _cx = _pop();                               //pop cx
     _di = _pop();                               //pop di
     _di += 0x0050;                              //add di, 50h
@@ -23900,9 +23929,9 @@ loc_22771:                                      //loc_22771:
     _ax = _ax ^ _ax;                            //xor ax, ax
     _push(_cx);                                 //push cx
     _cx = 0x000b;                               //mov cx, 0Bh
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _cx = _pop();                               //pop cx
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _stosb<MemData, DirForward>();                 //stosb
     memory(_es, _di) &= 0x3f;                   //and byte ptr es:[di], 3Fh
     _di += 0x0037;                              //add di, 37h
 loc_2278A:                                      //loc_2278A:
@@ -24009,7 +24038,7 @@ loc_2281E:                                      //loc_2281E:
 loc_22889:                                      //loc_22889:
     _push(_cx);                                 //push cx
     _cx = 0x000e;                               //mov cx, 0Eh
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _cx = _pop();                               //pop cx
     _di += 0x0034;                              //add di, 34h
     _si += 0x0010;                              //add si, 10h
@@ -24025,7 +24054,7 @@ loc_22889:                                      //loc_22889:
 loc_228A8:                                      //loc_228A8:
     _push(_cx);                                 //push cx
     _cx = 0x000e;                               //mov cx, 0Eh
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _cx = _pop();                               //pop cx
     _di += 0x0034;                              //add di, 34h
     _si += 0x0010;                              //add si, 10h
@@ -24066,14 +24095,14 @@ void sub_228E5()
     _ds = _ax;                                  //mov ds, ax
 loc_228F0:                                      //loc_228F0:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _al &= 0x03;                                //and al, 3
     memory(_es, _di + 1) |= _al;                //or es:[di+1], al
     _di += 0x0002;                              //add di, 2
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _push(_cx);                                 //push cx
     _cx = 0x000b;                               //mov cx, 0Bh
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _si += 0x0002;                              //add si, 2
     _cx = _pop();                               //pop cx
     _di += 0x0036;                              //add di, 36h
@@ -24151,7 +24180,7 @@ loc_22982:                                      //loc_22982:
     _ds = _ax;                                  //mov ds, ax
     _cx = 0x0008;                               //mov cx, 8
 loc_229AF:                                      //loc_229AF:
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemData, MemData, DirForward>();        //movsb
     _si += 1;                                   //inc si
     _di += 0x004f;                              //add di, 4Fh
     if (--_cx)                                  //loop loc_229AF
@@ -24266,7 +24295,7 @@ void sub_22CAC()
 {
     _bl = _bl ^ _bl;                            //xor bl, bl
 loc_22CAE:                                      //loc_22CAE:
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _bh = _al;                                  //mov bh, al
     _ax = 0x1000;                               //mov ax, 1000h
     _interrupt(16);                             //int 10h
@@ -24391,7 +24420,7 @@ loc_22DBC:                                      //loc_22DBC:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24409,7 +24438,7 @@ loc_22DDD:                                      //loc_22DDD:
     _ah = memory(_ds, _si + 8);                 //mov ah, [si+8]
     _bl = memory(_ds, _si + 16);                //mov bl, [si+10h]
     _bh = memory(_ds, _si + 24);                //mov bh, [si+18h]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     if (--_cx)                                  //loop loc_22DDD
       goto loc_22DDD;
@@ -24438,7 +24467,7 @@ loc_22DFE:                                      //loc_22DFE:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24464,7 +24493,7 @@ loc_22E21:                                      //loc_22E21:
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _si += _dx;                                 //add si, dx
     _ah = memory(_ds, _si);                     //mov ah, [si]
@@ -24475,7 +24504,7 @@ loc_22E21:                                      //loc_22E21:
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     if (--_cx)                                  //loop loc_22E21
       goto loc_22E21;
@@ -24509,7 +24538,7 @@ loc_22E6D:                                      //loc_22E6D:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24531,7 +24560,7 @@ void sub_22E89()
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
 }
 
@@ -24555,7 +24584,7 @@ loc_22EAE:                                      //loc_22EAE:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24571,12 +24600,12 @@ void sub_22ECA()
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _si += 0x0006;                              //add si, 6
 }
@@ -24611,7 +24640,7 @@ loc_22F07:                                      //loc_22F07:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24639,12 +24668,12 @@ void sub_22F31()
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _ah = memory(_ds, _si + 2);                 //mov ah, [si+2]
     _bl = memory(_ds, _si + 4);                 //mov bl, [si+4]
     _bh = memory(_ds, _si + 6);                 //mov bh, [si+6]
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _si += 0x0006;                              //add si, 6
 }
@@ -24660,11 +24689,11 @@ void sub_22F4F()
     _si += 0x0020;                              //add si, 20h
 loc_22F5E:                                      //loc_22F5E:
     _si += 0x000c;                              //add si, 0Ch
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if (!(_ax & _ax))                           //jz short loc_22FA8
       goto loc_22FA8;
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx = _ax;                                  //mov cx, ax
     _cx += 1;                                   //inc cx
     _dx = _cx;                                  //mov dx, cx
@@ -24691,7 +24720,7 @@ loc_22F83:                                      //loc_22F83:
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
     _es = _pop();                               //pop es
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ds = _pop();                               //pop ds
@@ -24736,7 +24765,7 @@ loc_22FB7:                                      //loc_22FB7:
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
     _si -= _dx;                                 //sub si, dx
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     sub_22FDF();                                //call sub_22FDF
     _bx = _pop();                               //pop bx
     _bx -= 0x0008;                              //sub bx, 8
@@ -24946,7 +24975,7 @@ loc_23125:                                      //loc_23125:
 
 void sub_2312A()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -25037,7 +25066,7 @@ loc_231A0:                                      //loc_231A0:
 
 void sub_231A5()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -25123,7 +25152,7 @@ loc_23217:                                      //loc_23217:
     memory(_es, _di) |= 0x70;                   //or byte ptr es:[di], 70h
 loc_2321B:                                      //loc_2321B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -25213,7 +25242,7 @@ loc_23292:                                      //loc_23292:
 
 void sub_23294()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     _ah = _al;                                  //mov ah, al
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
@@ -25323,14 +25352,14 @@ void sub_23316()
 loc_23323:                                      //loc_23323:
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
     _cx &= 0xfffe;                              //and cx, 0FFFEh
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_2333E
       goto loc_2333E;
@@ -25442,100 +25471,100 @@ loc_2341E:                                      //loc_2341E:
     memory16(_ss, 38) -= 0x0010;                //sub word ptr ss:26h, 10h
 loc_23436:                                      //loc_23436:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2343F
       goto loc_2343F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2343F:                                      //loc_2343F:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23448
       goto loc_23448;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23448:                                      //loc_23448:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23451
       goto loc_23451;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23451:                                      //loc_23451:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2345A
       goto loc_2345A;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2345A:                                      //loc_2345A:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23464
       goto loc_23464;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23464:                                      //loc_23464:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2346D
       goto loc_2346D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2346D:                                      //loc_2346D:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23476
       goto loc_23476;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23476:                                      //loc_23476:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2347F
       goto loc_2347F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2347F:                                      //loc_2347F:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23489
       goto loc_23489;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23489:                                      //loc_23489:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23492
       goto loc_23492;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23492:                                      //loc_23492:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2349B
       goto loc_2349B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2349B:                                      //loc_2349B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234A4
       goto loc_234A4;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234A4:                                      //loc_234A4:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234AE
       goto loc_234AE;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234AE:                                      //loc_234AE:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234B7
       goto loc_234B7;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234B7:                                      //loc_234B7:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234C0
       goto loc_234C0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234C0:                                      //loc_234C0:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234C9
       goto loc_234C9;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -25547,100 +25576,100 @@ loc_234C9:                                      //loc_234C9:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_234D4:                                      //loc_234D4:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234DD
       goto loc_234DD;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234DD:                                      //loc_234DD:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234E6
       goto loc_234E6;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234E6:                                      //loc_234E6:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234EF
       goto loc_234EF;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234EF:                                      //loc_234EF:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_234F8
       goto loc_234F8;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_234F8:                                      //loc_234F8:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23502
       goto loc_23502;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23502:                                      //loc_23502:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2350B
       goto loc_2350B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2350B:                                      //loc_2350B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23514
       goto loc_23514;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23514:                                      //loc_23514:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2351D
       goto loc_2351D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2351D:                                      //loc_2351D:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23527
       goto loc_23527;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23527:                                      //loc_23527:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23530
       goto loc_23530;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23530:                                      //loc_23530:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23539
       goto loc_23539;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23539:                                      //loc_23539:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23542
       goto loc_23542;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23542:                                      //loc_23542:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2354C
       goto loc_2354C;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2354C:                                      //loc_2354C:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23555
       goto loc_23555;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23555:                                      //loc_23555:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2355E
       goto loc_2355E;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2355E:                                      //loc_2355E:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23567
       goto loc_23567;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -25652,100 +25681,100 @@ loc_23567:                                      //loc_23567:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23572:                                      //loc_23572:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2357B
       goto loc_2357B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2357B:                                      //loc_2357B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23584
       goto loc_23584;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23584:                                      //loc_23584:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2358D
       goto loc_2358D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2358D:                                      //loc_2358D:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23596
       goto loc_23596;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23596:                                      //loc_23596:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235A0
       goto loc_235A0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235A0:                                      //loc_235A0:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235A9
       goto loc_235A9;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235A9:                                      //loc_235A9:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235B2
       goto loc_235B2;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235B2:                                      //loc_235B2:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235BB
       goto loc_235BB;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235BB:                                      //loc_235BB:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235C5
       goto loc_235C5;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235C5:                                      //loc_235C5:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235CE
       goto loc_235CE;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235CE:                                      //loc_235CE:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235D7
       goto loc_235D7;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235D7:                                      //loc_235D7:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235E0
       goto loc_235E0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235E0:                                      //loc_235E0:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235EA
       goto loc_235EA;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235EA:                                      //loc_235EA:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235F3
       goto loc_235F3;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235F3:                                      //loc_235F3:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_235FC
       goto loc_235FC;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_235FC:                                      //loc_235FC:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23605
       goto loc_23605;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -25757,100 +25786,100 @@ loc_23605:                                      //loc_23605:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23610:                                      //loc_23610:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23619
       goto loc_23619;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23619:                                      //loc_23619:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23622
       goto loc_23622;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23622:                                      //loc_23622:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2362B
       goto loc_2362B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2362B:                                      //loc_2362B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23634
       goto loc_23634;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23634:                                      //loc_23634:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2363E
       goto loc_2363E;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2363E:                                      //loc_2363E:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23647
       goto loc_23647;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23647:                                      //loc_23647:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23650
       goto loc_23650;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23650:                                      //loc_23650:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23659
       goto loc_23659;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23659:                                      //loc_23659:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23663
       goto loc_23663;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23663:                                      //loc_23663:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2366C
       goto loc_2366C;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2366C:                                      //loc_2366C:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23675
       goto loc_23675;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23675:                                      //loc_23675:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2367E
       goto loc_2367E;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2367E:                                      //loc_2367E:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23688
       goto loc_23688;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23688:                                      //loc_23688:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23691
       goto loc_23691;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23691:                                      //loc_23691:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2369A
       goto loc_2369A;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2369A:                                      //loc_2369A:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236A3
       goto loc_236A3;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -25871,75 +25900,75 @@ loc_236B3:                                      //loc_236B3:
     memory16(_ss, 38) -= 0x000c;                //sub word ptr ss:26h, 0Ch
 loc_236CB:                                      //loc_236CB:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236D4
       goto loc_236D4;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_236D4:                                      //loc_236D4:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236DD
       goto loc_236DD;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_236DD:                                      //loc_236DD:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236E6
       goto loc_236E6;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_236E6:                                      //loc_236E6:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236EF
       goto loc_236EF;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_236EF:                                      //loc_236EF:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_236F9
       goto loc_236F9;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_236F9:                                      //loc_236F9:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23702
       goto loc_23702;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23702:                                      //loc_23702:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2370B
       goto loc_2370B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2370B:                                      //loc_2370B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23714
       goto loc_23714;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23714:                                      //loc_23714:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2371E
       goto loc_2371E;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2371E:                                      //loc_2371E:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23727
       goto loc_23727;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23727:                                      //loc_23727:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23730
       goto loc_23730;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23730:                                      //loc_23730:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23739
       goto loc_23739;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -25951,75 +25980,75 @@ loc_23739:                                      //loc_23739:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23744:                                      //loc_23744:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2374D
       goto loc_2374D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2374D:                                      //loc_2374D:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23756
       goto loc_23756;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23756:                                      //loc_23756:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2375F
       goto loc_2375F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2375F:                                      //loc_2375F:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23768
       goto loc_23768;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23768:                                      //loc_23768:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23772
       goto loc_23772;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23772:                                      //loc_23772:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2377B
       goto loc_2377B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2377B:                                      //loc_2377B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23784
       goto loc_23784;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23784:                                      //loc_23784:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2378D
       goto loc_2378D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2378D:                                      //loc_2378D:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23797
       goto loc_23797;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23797:                                      //loc_23797:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237A0
       goto loc_237A0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237A0:                                      //loc_237A0:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237A9
       goto loc_237A9;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237A9:                                      //loc_237A9:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237B2
       goto loc_237B2;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26031,75 +26060,75 @@ loc_237B2:                                      //loc_237B2:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_237BD:                                      //loc_237BD:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237C6
       goto loc_237C6;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237C6:                                      //loc_237C6:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237CF
       goto loc_237CF;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237CF:                                      //loc_237CF:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237D8
       goto loc_237D8;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237D8:                                      //loc_237D8:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237E1
       goto loc_237E1;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237E1:                                      //loc_237E1:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237EB
       goto loc_237EB;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237EB:                                      //loc_237EB:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237F4
       goto loc_237F4;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237F4:                                      //loc_237F4:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_237FD
       goto loc_237FD;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_237FD:                                      //loc_237FD:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23806
       goto loc_23806;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23806:                                      //loc_23806:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23810
       goto loc_23810;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23810:                                      //loc_23810:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23819
       goto loc_23819;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23819:                                      //loc_23819:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23822
       goto loc_23822;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23822:                                      //loc_23822:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2382B
       goto loc_2382B;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26111,75 +26140,75 @@ loc_2382B:                                      //loc_2382B:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23836:                                      //loc_23836:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2383F
       goto loc_2383F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2383F:                                      //loc_2383F:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23848
       goto loc_23848;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23848:                                      //loc_23848:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23851
       goto loc_23851;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23851:                                      //loc_23851:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2385A
       goto loc_2385A;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2385A:                                      //loc_2385A:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23864
       goto loc_23864;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23864:                                      //loc_23864:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2386D
       goto loc_2386D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2386D:                                      //loc_2386D:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23876
       goto loc_23876;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23876:                                      //loc_23876:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2387F
       goto loc_2387F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2387F:                                      //loc_2387F:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23889
       goto loc_23889;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23889:                                      //loc_23889:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23892
       goto loc_23892;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23892:                                      //loc_23892:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2389B
       goto loc_2389B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2389B:                                      //loc_2389B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238A4
       goto loc_238A4;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26200,50 +26229,50 @@ loc_238B4:                                      //loc_238B4:
     memory16(_ss, 38) -= 0x0008;                //sub word ptr ss:26h, 8
 loc_238CC:                                      //loc_238CC:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238D5
       goto loc_238D5;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_238D5:                                      //loc_238D5:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238DE
       goto loc_238DE;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_238DE:                                      //loc_238DE:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238E7
       goto loc_238E7;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_238E7:                                      //loc_238E7:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238F0
       goto loc_238F0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_238F0:                                      //loc_238F0:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_238FA
       goto loc_238FA;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_238FA:                                      //loc_238FA:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23903
       goto loc_23903;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23903:                                      //loc_23903:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2390C
       goto loc_2390C;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2390C:                                      //loc_2390C:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23915
       goto loc_23915;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26255,50 +26284,50 @@ loc_23915:                                      //loc_23915:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23920:                                      //loc_23920:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23929
       goto loc_23929;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23929:                                      //loc_23929:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23932
       goto loc_23932;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23932:                                      //loc_23932:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2393B
       goto loc_2393B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2393B:                                      //loc_2393B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23944
       goto loc_23944;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23944:                                      //loc_23944:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2394E
       goto loc_2394E;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2394E:                                      //loc_2394E:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23957
       goto loc_23957;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23957:                                      //loc_23957:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23960
       goto loc_23960;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23960:                                      //loc_23960:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23969
       goto loc_23969;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26310,50 +26339,50 @@ loc_23969:                                      //loc_23969:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23974:                                      //loc_23974:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2397D
       goto loc_2397D;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2397D:                                      //loc_2397D:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23986
       goto loc_23986;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23986:                                      //loc_23986:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_2398F
       goto loc_2398F;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_2398F:                                      //loc_2398F:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23998
       goto loc_23998;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23998:                                      //loc_23998:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239A2
       goto loc_239A2;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239A2:                                      //loc_239A2:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239AB
       goto loc_239AB;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239AB:                                      //loc_239AB:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239B4
       goto loc_239B4;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239B4:                                      //loc_239B4:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239BD
       goto loc_239BD;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26365,50 +26394,50 @@ loc_239BD:                                      //loc_239BD:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_239C8:                                      //loc_239C8:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239D1
       goto loc_239D1;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239D1:                                      //loc_239D1:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239DA
       goto loc_239DA;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239DA:                                      //loc_239DA:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239E3
       goto loc_239E3;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239E3:                                      //loc_239E3:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239EC
       goto loc_239EC;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239EC:                                      //loc_239EC:
     _di += 1;                                   //inc di
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239F6
       goto loc_239F6;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239F6:                                      //loc_239F6:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_239FF
       goto loc_239FF;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_239FF:                                      //loc_239FF:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A08
       goto loc_23A08;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A08:                                      //loc_23A08:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A11
       goto loc_23A11;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26429,25 +26458,25 @@ loc_23A21:                                      //loc_23A21:
     memory16(_ss, 38) -= 0x0004;                //sub word ptr ss:26h, 4
 loc_23A39:                                      //loc_23A39:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A42
       goto loc_23A42;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A42:                                      //loc_23A42:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A4B
       goto loc_23A4B;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A4B:                                      //loc_23A4B:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A54
       goto loc_23A54;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A54:                                      //loc_23A54:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A5D
       goto loc_23A5D;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26459,25 +26488,25 @@ loc_23A5D:                                      //loc_23A5D:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23A68:                                      //loc_23A68:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A71
       goto loc_23A71;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A71:                                      //loc_23A71:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A7A
       goto loc_23A7A;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A7A:                                      //loc_23A7A:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A83
       goto loc_23A83;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23A83:                                      //loc_23A83:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23A8C
       goto loc_23A8C;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26489,25 +26518,25 @@ loc_23A8C:                                      //loc_23A8C:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23A97:                                      //loc_23A97:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AA0
       goto loc_23AA0;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23AA0:                                      //loc_23AA0:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AA9
       goto loc_23AA9;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23AA9:                                      //loc_23AA9:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AB2
       goto loc_23AB2;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23AB2:                                      //loc_23AB2:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23ABB
       goto loc_23ABB;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26519,25 +26548,25 @@ loc_23ABB:                                      //loc_23ABB:
     goto loc_23C6E;                             //jmp loc_23C6E
 loc_23AC6:                                      //loc_23AC6:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23ACF
       goto loc_23ACF;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23ACF:                                      //loc_23ACF:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AD8
       goto loc_23AD8;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23AD8:                                      //loc_23AD8:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AE1
       goto loc_23AE1;
     memory(_es, _di) = _al;                     //mov es:[di], al
 loc_23AE1:                                      //loc_23AE1:
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short loc_23AEA
       goto loc_23AEA;
     memory(_es, _di) = _al;                     //mov es:[di], al
@@ -26572,7 +26601,7 @@ loc_23B1E:                                      //loc_23B1E:
     _push(_di);                                 //push di
     _bh = memory(_cs, 0x49E4);                  //mov bh, cs:byte_23C74
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B34
       goto loc_23B34;
     if (!(_al & _al))                           //jz short loc_23B34
@@ -26581,7 +26610,7 @@ loc_23B1E:                                      //loc_23B1E:
 loc_23B34:                                      //loc_23B34:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B46
       goto loc_23B46;
     if (!(_al & _al))                           //jz short loc_23B46
@@ -26590,7 +26619,7 @@ loc_23B34:                                      //loc_23B34:
 loc_23B46:                                      //loc_23B46:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B58
       goto loc_23B58;
     if (!(_al & _al))                           //jz short loc_23B58
@@ -26599,7 +26628,7 @@ loc_23B46:                                      //loc_23B46:
 loc_23B58:                                      //loc_23B58:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B6A
       goto loc_23B6A;
     if (!(_al & _al))                           //jz short loc_23B6A
@@ -26614,7 +26643,7 @@ loc_23B6A:                                      //loc_23B6A:
     goto loc_23C5B;                             //jmp loc_23C5B
 loc_23B75:                                      //loc_23B75:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B84
       goto loc_23B84;
     if (!(_al & _al))                           //jz short loc_23B84
@@ -26623,7 +26652,7 @@ loc_23B75:                                      //loc_23B75:
 loc_23B84:                                      //loc_23B84:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23B96
       goto loc_23B96;
     if (!(_al & _al))                           //jz short loc_23B96
@@ -26632,7 +26661,7 @@ loc_23B84:                                      //loc_23B84:
 loc_23B96:                                      //loc_23B96:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23BA8
       goto loc_23BA8;
     if (!(_al & _al))                           //jz short loc_23BA8
@@ -26641,7 +26670,7 @@ loc_23B96:                                      //loc_23B96:
 loc_23BA8:                                      //loc_23BA8:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23BBA
       goto loc_23BBA;
     if (!(_al & _al))                           //jz short loc_23BBA
@@ -26656,7 +26685,7 @@ loc_23BBA:                                      //loc_23BBA:
     goto loc_23C5B;                             //jmp loc_23C5B
 loc_23BC5:                                      //loc_23BC5:
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23BD4
       goto loc_23BD4;
     if (!(_al & _al))                           //jz short loc_23BD4
@@ -26665,7 +26694,7 @@ loc_23BC5:                                      //loc_23BC5:
 loc_23BD4:                                      //loc_23BD4:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23BE6
       goto loc_23BE6;
     if (!(_al & _al))                           //jz short loc_23BE6
@@ -26674,7 +26703,7 @@ loc_23BD4:                                      //loc_23BD4:
 loc_23BE6:                                      //loc_23BE6:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23BF8
       goto loc_23BF8;
     if (!(_al & _al))                           //jz short loc_23BF8
@@ -26683,7 +26712,7 @@ loc_23BE6:                                      //loc_23BE6:
 loc_23BF8:                                      //loc_23BF8:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23C0A
       goto loc_23C0A;
     if (!(_al & _al))                           //jz short loc_23C0A
@@ -26696,7 +26725,7 @@ loc_23C0A:                                      //loc_23C0A:
     if (_bh == 0)                               //jz short loc_23C5B
       goto loc_23C5B;
     _si += 1;                                   //inc si
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23C21
       goto loc_23C21;
     if (!(_al & _al))                           //jz short loc_23C21
@@ -26705,7 +26734,7 @@ loc_23C0A:                                      //loc_23C0A:
 loc_23C21:                                      //loc_23C21:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23C33
       goto loc_23C33;
     if (!(_al & _al))                           //jz short loc_23C33
@@ -26714,7 +26743,7 @@ loc_23C21:                                      //loc_23C21:
 loc_23C33:                                      //loc_23C33:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23C45
       goto loc_23C45;
     if (!(_al & _al))                           //jz short loc_23C45
@@ -26723,7 +26752,7 @@ loc_23C33:                                      //loc_23C33:
 loc_23C45:                                      //loc_23C45:
     _bp += 0x0002;                              //add bp, 2
     _di += 1;                                   //inc di
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (_bp >= 0x0140)                          //jnb short loc_23C57
       goto loc_23C57;
     if (!(_al & _al))                           //jz short loc_23C57
@@ -26846,14 +26875,14 @@ loc_23D23:                                      //loc_23D23:
 loc_23D30:                                      //loc_23D30:
     _push(_ds);                                 //push ds
     _ds = _ax;                                  //mov ds, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _cx -= _ax;                                 //sub cx, ax
     _cx &= 0xfffe;                              //and cx, 0FFFEh
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx -= _ax;                                 //sub dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bp = _ax;                                  //mov bp, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx = _ax;                                  //mov bx, ax
     if ((short)_cx < (short)0x0140)             //jl short loc_23D4B
       goto loc_23D4B;
@@ -27084,7 +27113,7 @@ void sub_23ED2()
     _cx -= _dx;                                 //sub cx, dx
     _bl = 0x14;                                 //mov bl, 14h
 loc_23EEB:                                      //loc_23EEB:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -27098,10 +27127,10 @@ loc_23EEB:                                      //loc_23EEB:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
 loc_23F01:                                      //loc_23F01:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ff8) < 0;    //add di, 1FF8h
     _di += 0x1ff8;
     if (!_flags.sign)                           //jns short loc_23F0F
@@ -27142,7 +27171,7 @@ loc_23F0F:                                      //loc_23F0F:
     memory16(_ss, 38) = _ax;                    //mov ss:26h, ax
     _bx = 0x0b14;                               //mov bx, 0B14h
 loc_23F6C:                                      //loc_23F6C:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     if (_ax != 0)                               //jnz short loc_23F75
@@ -27156,85 +27185,85 @@ loc_23F75:                                      //loc_23F75:
     _ax = _seg009;                              //mov ax, seg seg009
     _ds = _ax;                                  //mov ds, ax
     _push(_di);                                 //push di
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
     goto loc_240B0;                             //jmp loc_240B0
 loc_24016:                                      //loc_24016:
@@ -27243,85 +27272,85 @@ loc_24016:                                      //loc_24016:
     _ds = _ax;                                  //mov ds, ax
     _push(_di);                                 //push di
     _ax = _ax ^ _ax;                            //xor ax, ax
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 32);              //add di, ss:20h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 34);              //add di, ss:22h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 36);              //add di, ss:24h
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
-    _stosw<MemAuto, DirAuto>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
+    _stosw<MemData, DirForward>();                 //stosw
     _di = _di + memory16(_ss, 38);              //add di, ss:26h
 loc_240B0:                                      //loc_240B0:
     _bp = _di;                                  //mov bp, di
@@ -27347,7 +27376,7 @@ loc_240CF:                                      //loc_240CF:
       goto loc_24106;
     _bl = 0x14;                                 //mov bl, 14h
 loc_240D9:                                      //loc_240D9:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _push(_si);                                 //push si
     _ax >>= 1;                                  //shr ax, 1
     _si = _ax;                                  //mov si, ax
@@ -27359,10 +27388,10 @@ loc_240D9:                                      //loc_240D9:
     _push(_di);                                 //push di
     _cx = _dx;                                  //mov cx, dx
 loc_240EC:                                      //loc_240EC:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ff8) < 0;    //add di, 1FF8h
     _di += 0x1ff8;
     if (!_flags.sign)                           //jns short loc_240FA
@@ -27399,7 +27428,7 @@ void sub_2411A()
     _di = _di ^ _di;                            //xor di, di
     _ax = _ax ^ _ax;                            //xor ax, ax
     _cx = 0x4000;                               //mov cx, 4000h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
+    _rep_stosw<MemData, DirForward>();             //rep stosw
     _es = _pop();                               //pop es
 }
 
@@ -27475,7 +27504,7 @@ void sub_24185()
 loc_2419A:                                      //loc_2419A:
     _push(_cx);                                 //push cx
     _cx = 0x0050;                               //mov cx, 50h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _flags.sign = (short)(_di + 0x1f60) < 0;    //add di, 1F60h
     _di += 0x1f60;
     if (!_flags.sign)                           //jns short loc_241AA
@@ -27497,15 +27526,15 @@ void sub_241B3()
     _si = 0x9c80;                               //mov si, 9C80h
     _cx = 0x0050;                               //mov cx, 50h
 loc_241BE:                                      //loc_241BE:
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     if ((short)_ax < 0)                         //js short loc_2422D
       goto loc_2422D;
     _bx = _ax;                                  //mov bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx = _ax;                                  //mov dx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _bx += _ax;                                 //add bx, ax
-    _lodsw<MemAuto, DirAuto>();                 //lodsw
+    _lodsw<MemData, DirForward>();                 //lodsw
     _dx += _ax;                                 //add dx, ax
     if (_bx >= 0x013c)                          //jnb short loc_24226
       goto loc_24226;
@@ -27664,7 +27693,7 @@ void sub_24323()
 loc_2432E:                                      //loc_2432E:
     _push(_di);                                 //push di
     _push(_cx);                                 //push cx
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     _cx = _pop();                               //pop cx
     _di = _pop();                               //pop di
     if ((short)_di < (short)0x00a0)             //jl short locret_24347
@@ -27801,8 +27830,8 @@ void sub_2441D()
     _push(_di);                                 //push di
     _cx = 0x0008;                               //mov cx, 8
 loc_2443D:                                      //loc_2443D:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ffc) < 0;    //add di, 1FFCh
     _di += 0x1ffc;
     if (!_flags.sign)                           //jns short loc_24449
@@ -27821,8 +27850,8 @@ loc_24449:                                      //loc_24449:
     _push(_di);                                 //push di
     _cx = 0x0008;                               //mov cx, 8
 loc_2445B:                                      //loc_2445B:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ffc) < 0;    //add di, 1FFCh
     _di += 0x1ffc;
     if (!_flags.sign)                           //jns short loc_24467
@@ -27960,7 +27989,7 @@ void sub_24547()
 
 void sub_24552()
 {
-    _lodsb<MemAuto, DirAuto>();                 //lodsb
+    _lodsb<MemData, DirForward>();                 //lodsb
     if (!(_al & _al))                           //jz short locret_24566
       goto locret_24566;
     _xchg(_si, _bp);                            //xchg si, bp
@@ -28003,10 +28032,10 @@ void sub_24567()
     _ax = 0xb800;                               //mov ax, 0B800h
     _es = _ax;                                  //mov es, ax
 loc_2459C:                                      //loc_2459C:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _flags.sign = (short)(_di + 0x1ff8) < 0;    //add di, 1FF8h
     _di += 0x1ff8;
     if (!_flags.sign)                           //jns short loc_245AA
@@ -28112,7 +28141,7 @@ void sub_24649()
 loc_24660:                                      //loc_24660:
     _push(_cx);                                 //push cx
     _cx = 0x0050;                               //mov cx, 50h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _flags.sign = (short)(_si + 0x1f60) < 0;    //add si, 1F60h
     _si += 0x1f60;
     if (!_flags.sign)                           //jns short loc_24670
@@ -28151,7 +28180,7 @@ void sub_2468C()
 loc_2469C:                                      //loc_2469C:
     _push(_cx);                                 //push cx
     _cx = 0x0050;                               //mov cx, 50h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _flags.sign = (short)(_di + 0x1f60) < 0;    //add di, 1F60h
     _di += 0x1f60;
     if (!_flags.sign)                           //jns short loc_246AC
@@ -28177,7 +28206,7 @@ loc_246B8:                                      //loc_246B8:
     _ds = _ax;                                  //mov ds, ax
     _di = 0x43cf;                               //mov di, 43CFh
     _cx = 0x0080;                               //mov cx, 80h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _di = _pop();                               //pop di
     _ds = _pop();                               //pop ds
     sub_24144();                                //call sub_24144
@@ -28187,7 +28216,7 @@ loc_246B8:                                      //loc_246B8:
     _es = _ax;                                  //mov es, ax
     _si = 0x43cf;                               //mov si, 43CFh
     _cx = 0x0080;                               //mov cx, 80h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
     _si = _pop();                               //pop si
     _es = _pop();                               //pop es
     sub_24154();                                //call sub_24154
@@ -28311,7 +28340,7 @@ loc_247CA:                                      //loc_247CA:
     _push(_cx);                                 //push cx
     _cx = _dx;                                  //mov cx, dx
     _push(_di);                                 //push di
-    _rep_movsb<MemAuto, MemAuto, DirAuto>();    //rep movsb
+    _rep_movsb<MemData, MemData, DirForward>();    //rep movsb
     _di = _pop();                               //pop di
     _flags.sign = (short)(_di + 0x2000) < 0;    //add di, 2000h
     _di += 0x2000;
@@ -28356,8 +28385,8 @@ loc_24810:                                      //loc_24810:
     _ax = _ax ^ _ax;                            //xor ax, ax
     _push(_cx);                                 //push cx
     _cx = 0x0017;                               //mov cx, 17h
-    _rep_stosw<MemAuto, DirAuto>();             //rep stosw
-    _stosb<MemAuto, DirAuto>();                 //stosb
+    _rep_stosw<MemData, DirForward>();             //rep stosw
+    _stosb<MemData, DirForward>();                 //stosb
     _cx = _pop();                               //pop cx
     memory(_es, _di) &= 0x0f;                   //and byte ptr es:[di], 0Fh
     _di = _pop();                               //pop di
@@ -28477,10 +28506,10 @@ loc_24945:                                      //loc_24945:
     _push(_cx);                                 //push cx
     _cx = 0x0007;                               //mov cx, 7
 loc_2494A:                                      //loc_2494A:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     if (--_cx)                                  //loop loc_2494A
       goto loc_2494A;
     _cx = _pop();                               //pop cx
@@ -28507,10 +28536,10 @@ loc_24975:                                      //loc_24975:
     _push(_cx);                                 //push cx
     _cx = 0x0007;                               //mov cx, 7
 loc_2497A:                                      //loc_2497A:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     if (--_cx)                                  //loop loc_2497A
       goto loc_2497A;
     _cx = _pop();                               //pop cx
@@ -28562,11 +28591,11 @@ loc_249CE:                                      //loc_249CE:
     _push(_di);                                 //push di
     _di += 0x0003;                              //add di, 3
     _si += 0x0003;                              //add si, 3
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _movsb<MemData, MemData, DirForward>();        //movsb
     _push(_cx);                                 //push cx
     _cx = 0x0017;                               //mov cx, 17h
-    _rep_movsw<MemAuto, MemAuto, DirAuto>();    //rep movsw
-    _movsb<MemAuto, MemAuto, DirAuto>();        //movsb
+    _rep_movsw<MemData, MemData, DirForward>();    //rep movsw
+    _movsb<MemData, MemData, DirForward>();        //movsb
     _cx = _pop();                               //pop cx
     _si += 0x0005;                              //add si, 5
     _di = _pop();                               //pop di
@@ -28600,7 +28629,7 @@ loc_24A0E:                                      //loc_24A0E:
     sub_10ED9();                                //call sub_10ED9
     _push(_di);                                 //push di
     _cx = 0x000f;                               //mov cx, 0Fh
-    _rep_stosb<MemAuto, DirAuto>();             //rep stosb
+    _rep_stosb<MemData, DirForward>();             //rep stosb
     _di = _pop();                               //pop di
     _flags.sign = (short)(_di + 0x2000) < 0;    //add di, 2000h
     _di += 0x2000;
@@ -28648,7 +28677,7 @@ loc_24A38:                                      //loc_24A38:
     _ds = _ax;                                  //mov ds, ax
     _cx = 0x0008;                               //mov cx, 8
 loc_24A6E:                                      //loc_24A6E:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _si += 0x0002;                              //add si, 2
     _flags.sign = (short)(_di + 0x1ffe) < 0;    //add di, 1FFEh
     _di += 0x1ffe;
@@ -28667,7 +28696,7 @@ loc_24A7C:                                      //loc_24A7C:
     _ds = _ax;                                  //mov ds, ax
     _cx = 0x0008;                               //mov cx, 8
 loc_24A8D:                                      //loc_24A8D:
-    _movsw<MemAuto, MemAuto, DirAuto>();        //movsw
+    _movsw<MemData, MemData, DirForward>();        //movsw
     _si += 0x0002;                              //add si, 2
     _flags.sign = (short)(_di + 0x1ffe) < 0;    //add di, 1FFEh
     _di += 0x1ffe;
