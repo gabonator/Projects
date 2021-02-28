@@ -990,6 +990,10 @@ public:
             m_strCondition = "_FIXME_";
             break;
 
+        case CIConditionalJump::js:
+            m_strCondition = "_FIXME_";
+            break;
+
 		default:
 			_ASSERT(0);
 		}

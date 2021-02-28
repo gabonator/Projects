@@ -1,7 +1,9 @@
-// TODO: first two trees not animating
+// FIXED: first two trees not animating
 // TODO: cannot buy anything in shop
 // TODO: should blink white when hit
-// TODO: two trees in front of first boss
+// FIXED: two trees in front of first boss
+// TODO: worms coming out from wrong hole
+// FIXED: cannon does not work
 
 void sub_1F2BA();
 void sub_14311();
@@ -95,7 +97,10 @@ void sub_188A9();
 void sub_18C3E();
 void sub_17DDE();
 void sub_19F02();
-void sub_19F4E() { std::cout << "-------uninmplemented\n"; }
+void sub_19F4E() { assert(0); std::cout << "-------uninmplemented\n"; }
+void sub_121E9();
+void sub_1246D();
+void sub_128B8();
 
 void _indirectCall(WORD seg, int ptr)
 {
@@ -136,7 +141,8 @@ void _indirectCall(WORD seg, int ptr)
         case 0x2a6e: sub_12A6E(); break; // power powerup
         case 0x6d22: sub_16D22(); break; // tree - animation
         case 0x3a39: sub_13A39(); break; // swingtail hit
-        case 0x308C: loc_1308C(); break; // rearshot powerup
+        case 0x308C: sub_13246(); // gabo cannon combo!
+                     loc_1308C(); break; // rearshot powerup
         case 0x39ee: sub_139EE(); break; // draw fire
         case 0x091f: sub_1091F(); break; // draw fire
         case 0x0897: sub_10897(); break;
@@ -182,8 +188,13 @@ void _indirectCall(WORD seg, int ptr)
         case 0x9f9A:
         case 0x9fe6:
         case 0x9f4E: sub_19F4E(); break;
-          
+        
+        case 0x21e9: sub_121E9(); break; // cannon
+        case 0x246d: sub_1246D(); break; // cannon
+        case 0x28b8: sub_128B8(); break; // cannon fire
+            
         case 0x4f96: //sub_14F96(); break;
+        
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";

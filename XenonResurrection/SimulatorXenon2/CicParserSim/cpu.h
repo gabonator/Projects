@@ -508,3 +508,12 @@ void _imul(WORD w)
     _ax = v & 0xffff;
     _dx = v >> 16;
 }
+void _mul(WORD w)
+{
+    
+    //_ax = w * _al;
+    //return;
+    uint32_t v = w * _ax;
+    _ax = v & 0xffff;
+    _dx = v >> 16;
+}

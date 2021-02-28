@@ -1038,6 +1038,22 @@ public:
 			return;
 		}
 
+        if ( CUtils::match("^cs:word_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r16;
+            m_eType = cs_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])+CUtils::ParseLiteral(matches[1]));
+            return;
+        }
+
+        if ( CUtils::match("^word ptr cs:loc_(.*)$", value.c_str(), matches) )
+        {
+            m_eRegLength = r16;
+            m_eType = cs_ptr;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0]));
+            return;
+        }
+
         if ( CUtils::match("^cs:word_(.*)$", value.c_str(), matches) )
         {
             m_eRegLength = r16;

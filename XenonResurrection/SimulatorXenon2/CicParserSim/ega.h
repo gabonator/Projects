@@ -600,8 +600,6 @@ public:
         }*/
 		dwAddr -= 0xa000 * 16;
 
-//        if (bWrite == 0xff)
-//            bWrite = 0xaa;
         
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
@@ -628,12 +626,12 @@ public:
 
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
-//        static int q = 0;
-//        if (q++ > 500)
-//        {
-//            //_sync();
-//            q= 0;
-//        }
+        static int q = 0;
+        if (q++ > 500)
+        {
+            //_sync();
+            q= 0;
+        }
     }
 
 	virtual BYTE Read(DWORD dwAddr) override
