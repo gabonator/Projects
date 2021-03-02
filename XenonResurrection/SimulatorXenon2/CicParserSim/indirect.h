@@ -4,6 +4,7 @@
 // FIXED: two trees in front of first boss
 // TODO: worms coming out from wrong hole
 // FIXED: cannon does not work
+// FIXED: respawn position on map wrong
 
 void sub_1F2BA();
 void sub_14311();
@@ -97,10 +98,14 @@ void sub_188A9();
 void sub_18C3E();
 void sub_17DDE();
 void sub_19F02();
-void sub_19F4E() { assert(0); std::cout << "-------uninmplemented\n"; }
+void sub_19F4E();
 void sub_121E9();
 void sub_1246D();
 void sub_128B8();
+void sub_14F96();
+void sub_180CA();
+void sub_12AA4();
+void sub_1866D();
 
 void _indirectCall(WORD seg, int ptr)
 {
@@ -145,7 +150,7 @@ void _indirectCall(WORD seg, int ptr)
                      loc_1308C(); break; // rearshot powerup
         case 0x39ee: sub_139EE(); break; // draw fire
         case 0x091f: sub_1091F(); break; // draw fire
-        case 0x0897: sub_10897(); break;
+        case 0x0897:/* sub_10897();*/ break; // lv2 boss
 
         case 0x3998: sub_13998(); break; // explosion anim
         case 0x41fb: sub_141FB(); break; // explosion cleanup
@@ -192,13 +197,18 @@ void _indirectCall(WORD seg, int ptr)
         case 0x21e9: sub_121E9(); break; // cannon
         case 0x246d: sub_1246D(); break; // cannon
         case 0x28b8: sub_128B8(); break; // cannon fire
-            
-        case 0x4f96: //sub_14F96(); break;
-        
+        //case 0x4f9d: break; // advise
+        // level 2
+        case 0x4f96: sub_14F96(); break; // horse
+        case 0x2aa4: sub_12AA4(); break; // autoshoot
+        case 0x80ca: sub_180CA(); break;
+        case 0x866d: sub_1866D(); break; // lv2 boss
+            //8114, 8126, 80f5
+
         default:
 //            _ASSERT(0);
             std::cout << "Not implemented " << std::hex << (int)ptr << "\n";
-            assert(0);
+            //assert(0);
     }
 
 }

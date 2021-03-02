@@ -4541,7 +4541,7 @@ void sub_131B6()
 
     _ax = 0x0020;                               //mov ax, 20h
     sub_13117();                                //call sub_13117
-    if (_FIXME_)                                //jnz short loc_131C1
+    if (!_flags.zero)                                //jnz short loc_131C1
       goto loc_131C1;
     goto loc_13243;                             //jmp loc_13243
 loc_131C1:                                      //loc_131C1:
@@ -11621,7 +11621,7 @@ loc_18201:                                      //loc_18201:
 loc_1820A:                                      //loc_1820A:
     _ax = _ax + memory16(_ds, 0xFCFA);          //add ax, word_3822A
     _dx = 0x000a;                               //mov dx, 0Ah
-    _mul(_dx);//_ax = _dx * _al;                            //mul dx
+    _ax = _dx * _al;                            //mul dx
     _di = 0x9179;                               //mov di, 9179h
     _di += _ax;                                 //add di, ax
     _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
@@ -11637,9 +11637,9 @@ loc_1820A:                                      //loc_1820A:
     _bx = memory16(_cs, _di);                   //mov bx, cs:[di]
     _di += 0x0002;                              //add di, 2
     _bx <<= 1;                                  //shl bx, 1
-    if (memory16(_ds, _bx + -28206 + 65536) != 0x0000)  //jnz short loc_1824D
+    if (memory16(_ds, _bx + -28206+65536) != 0x0000)  //jnz short loc_1824D
       goto loc_1824D;
-    memory16(_ds, _bx + -28206 + 65536) = 0x0018;       //mov word ptr [bx-6E2Eh], 18h
+    memory16(_ds, _bx + -28206+65535) = 0x0018;       //mov word ptr [bx-6E2Eh], 18h
 loc_1824D:                                      //loc_1824D:
     _ax = memory16(_cs, _di);                   //mov ax, cs:[di]
     memory16(_ds, 0xFCEE) = _ax;                //mov word_3821E, ax
@@ -11647,7 +11647,7 @@ loc_1824D:                                      //loc_1824D:
     memory16(_ds, 0xFCEA) = 0x0000;             //mov word_3821A, 0
     _di = memory16(_cs, _di);                   //mov di, cs:[di]
     _di <<= 1;                                  //shl di, 1
-    _di = memory16(_ds, _di + -8524 + 65536);           //mov di, [di-214Ch]
+    _di = memory16(_ds, _di + -8524+65536);           //mov di, [di-214Ch]
     _bx = 0x9117;                               //mov bx, 9117h
     _ax = memory16(_cs, _bx);                   //mov ax, cs:[bx]
     memory16(_ds, 0xFCFE) = _ax;                //mov word_3822E, ax
@@ -11695,437 +11695,15 @@ loc_18271:                                      //loc_18271:
     memory16(_ds, 0xFCEA) -= 0x000a;            //sub word_3821A, 0Ah
     sub_13589();                                //call sub_13589
     memory16(_ds, 0xFCFE) -= 1;                 //dec word_3822E
-    // TODO: fix level 2!
-    if ((short)memory16(_ds, 0xFCFE) < 0)       //js short near ptr unk_182FF
-      _STOP_("goto near ptr unk_182FF");
+    if ((short)memory16(_ds, 0xFCFE) < 0)       //js short loc_182FF
+      goto loc_182FF;
     goto loc_18271;                             //jmp loc_18271
-    _STOP_("unk_182FF db 0B0h");                //unk_182FF db 0B0h
-    _stack16(_bp + _di + -1522) += _cx;         //add [bp+di-5F2h], cx
-    _flags.direction = false;                   //cld
+loc_182FF:                                      //loc_182FF:
+    _al = 0x01;                                 //mov al, 1
+    _cx = memory16(_ds, 0xFCFA);                //mov cx, word_3822A
     _al <<= _cl;                                //shl al, cl
     memory(_ds, 0x9202) |= _al;                 //or byte ptr word_31732, al
-    return;                                     //retn
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db 0A2h");                          //db 0A2h
-    _STOP_("db 0BEh");                          //db 0BEh
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  1Ah");                          //db  1Ah
-    _STOP_("db  74h");                          //db  74h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db  87h");                          //db  87h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  7Fh");                          //db  7Fh
-    _STOP_("db  41h");                          //db  41h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db  2Bh");                          //db  2Bh
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db  9Fh");                          //db  9Fh
-    _STOP_("db  79h");                          //db  79h
-    _STOP_("db 0F7h");                          //db 0F7h
-    _STOP_("db 0D8h");                          //db 0D8h
-    _STOP_("db  3Dh");                          //db  3Dh
-    _STOP_("db  0Ah");                          //db  0Ah
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  4Ah");                          //db  4Ah
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db  3Bh");                          //db  3Bh
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db  9Fh");                          //db  9Fh
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  22h");                          //db  22h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  6Ch");                          //db  6Ch
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  1Eh");                          //db  1Eh
-    _STOP_("db  9Ch");                          //db  9Ch
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db 0DEh");                          //db 0DEh
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0E3h");                          //db 0E3h
-    _STOP_("db  0Eh");                          //db  0Eh
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  87h");                          //db  87h
-    _STOP_("db 0CEh");                          //db 0CEh
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  3Dh");                          //db  3Dh
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  7Eh");                          //db  7Eh
-    _STOP_("db 0B8h");                          //db 0B8h
-    _STOP_("db  32h");                          //db  32h
-    _STOP_("db  89h");                          //db  89h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db 0B2h");                          //db 0B2h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0EBh");                          //db 0EBh
-    _STOP_("db 0DCh");                          //db 0DCh
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  6Ch");                          //db  6Ch
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  1Eh");                          //db  1Eh
-    _STOP_("db  9Ch");                          //db  9Ch
-    _STOP_("db 91h, 3, 0DEh, 0D1h, 0EBh, 83h, 0E3h, 0E...");
-    _STOP_("db 0CEh, 32h, 1, 44h, 12h, 0E9h, 11h, 0B2h...");
-    _STOP_("db 1Ah, 1, 0, 0BFh, 4Ch, 78h, 81h, 3Ch, 0E...");
-    _STOP_("db 0BFh, 60h, 78h, 2Eh, 8Bh, 5, 89h, 44h, ...");
-    _STOP_("db 45h, 2, 89h, 44h, 0Eh, 83h, 0C7h, 4, 89...");
-    _STOP_("db 0E9h, 0EAh, 0B1h, 83h, 44h, 16h, 0Ch, 8...");
-    _STOP_("db 0A0h, 0, 7Ch, 0F2h, 0C7h, 44h, 1Ah, 2 d...");
-    _STOP_("db 3Eh, 78h, 81h, 3Ch, 0E0h, 0, 74h, 0D1h,...");
-    _STOP_("db 0EBh, 0CCh, 0E8h, 0F1h, 0BDh, 0A1h, 98h...");
-    _STOP_("db 16h, 8Bh, 44h, 1Ah, 85h, 0C0h, 75h, 6Bh...");
-    _STOP_("db 0D1h, 0E3h, 8Bh, 44h, 12h, 3, 87h, 0DEh...");
-    _STOP_("db 16h, 3, 8Fh, 0EEh, 32h, 3Dh, 74h, 0, 7F...");
-    _STOP_("db 74h, 0, 0C7h, 44h, 1Ah, 1, 0, 0C7h, 44h...");
-    _STOP_("db 3Dh, 0CCh, 0, 7Ch, 0Dh, 0B8h, 0CCh, 0, ...");
-    _STOP_("db 1, 0, 0C7h, 44h, 1Ch, 2 dup(0), 3, 0Eh,...");
-    _STOP_("db 0F9h, 6Ch, 7Fh, 0Dh, 0B9h, 6Ch, 0, 0C7h...");
-    _STOP_("db 0, 0C7h, 44h, 1Ch, 6, 0, 81h, 0F9h, 54h...");
-    _STOP_("db 0B9h, 54h, 1, 0C7h, 44h, 1Ah, 1, 0, 0C7...");
-    _STOP_("db 2, 0, 89h, 44h, 12h, 2Bh, 0Eh, 90h, 91h...");
-    _STOP_("db 0C3h, 3Dh, 1, 0, 75h, 24h, 0E8h, 51h, 0...");
-    _STOP_("db 0, 75h, 1Bh, 0C7h, 44h, 1Ah, 2, 0, 0BFh...");
-    _STOP_("db 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 4...");
-    _STOP_("db 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, 0C3h,...");
-    _STOP_("db 3Bh, 3Ch, 75h, 78h, 56h, 0E8h, 0B6h, 8B...");
-    _STOP_("db 90h, 0E8h, 0Ah, 83h, 8Bh, 0FEh, 5Eh, 0C...");
-    _STOP_("db 0C7h, 45h, 2, 0E1h, 84h, 0C7h, 45h, 4, ...");
-    _STOP_("db 45h, 6, 0A7h, 3Ah, 2Eh, 0A1h, 24h, 77h,...");
-    _STOP_("db 0C6h, 45h, 27h, 0, 0C7h, 45h, 48h, 2 du...");
-    _STOP_("db 34h, 1Eh, 0, 0C7h, 45h, 36h, 2 dup(0), ...");
-    _STOP_("db 0D1h, 0E3h, 2Eh, 8Bh, 9Fh, 0Bh, 95h, 2E...");
-    _STOP_("db 45h, 0Ch, 2Eh, 8Bh, 47h, 2, 89h, 45h, 0...");
-    _STOP_("db 4, 89h, 5Dh, 10h, 8Bh, 44h, 12h, 89h, 4...");
-    _STOP_("db 44h, 16h, 89h, 45h, 16h, 8Bh, 44h, 1Ch,...");
-    _STOP_("db 0C7h, 45h, 1Ah, 2 dup(0FFh), 87h, 0FEh,...");
-    _STOP_("db 0B0h, 87h, 0FEh, 0E8h, 0E0h, 82h, 0C3h,...");
-    _STOP_("db 0BCh, 0A1h, 98h, 91h, 1, 44h, 16h, 8Bh,...");
-    _STOP_("db 0C0h, 78h, 4Ch, 0F7h, 6, 9Ch, 91h, 1, 0...");
-    _STOP_("db 44h, 1Ch, 74h, 3Ah, 79h, 3, 5, 8, 0, 3D...");
-    _STOP_("db 9, 0FFh, 4Ch, 1Ch, 83h, 64h, 1Ch, 7, 0E...");
-    _STOP_("db 44h, 1Ch, 83h, 64h, 1Ch, 7, 8Bh, 5Ch, 1...");
-    _STOP_("db 2Eh, 8Bh, 9Fh, 0Bh, 95h, 2Eh, 8Bh, 7, 8...");
-    _STOP_("db 2Eh, 8Bh, 47h, 2, 89h, 44h, 0Eh, 83h, 0...");
-    _STOP_("db 5Ch, 10h, 0E9h, 51h, 0B0h, 0C7h, 44h, 1...");
-    _STOP_("db 81h, 7Ch, 16h, 0C0h, 0, 73h, 3Dh, 2Eh, ...");
-    _STOP_("db 0, 44h, 48h, 73h, 34h, 0E8h, 41h, 0BCh,...");
-    _STOP_("db 44h, 48h, 0A1h, 12h, 9Fh, 8Bh, 1Eh, 16h...");
-    _STOP_("db 12h, 2Bh, 5Ch, 16h, 0E8h, 2Bh, 96h, 8Bh...");
-    _STOP_("db 8Bh, 1Eh, 28h, 77h");            //db 8Bh, 1Eh, 28h, 77h
-    _STOP_("db 0D1h, 0E3h, 2Eh, 8Bh, 0AFh, 0A9h, 92h, ...");
-    _STOP_("db 8Bh, 5Ch, 16h, 2Eh, 8Bh, 16h, 2Ah, 77h,...");
-    _STOP_("db 8Bh, 5Ch, 1Ch, 0D1h, 0E3h, 8Bh, 44h, 12...");
-    _STOP_("db 16h, 3, 87h, 0FEh, 32h, 3, 8Fh, 0Eh, 33...");
-    _STOP_("db 12h, 89h, 4Ch, 16h, 3, 0Eh, 90h, 91h, 0...");
-    _STOP_("db 8Bh, 15h, 83h, 0C7h, 2, 3Bh, 5, 75h, 1A...");
-    _STOP_("db 2, 75h, 15h, 0E8h, 0DFh, 0BBh, 25h, 3, ...");
-    _STOP_("db 8Bh, 0D8h, 0D1h, 0E3h, 8Bh, 51h, 2, 89h...");
-    _STOP_("db 0C5h, 0AFh, 83h, 0C7h, 0Ah, 4Ah, 79h, 0...");
-    _STOP_("db 0AFh, 0E9h, 8Fh, 7, 0E8h, 0DEh, 0BBh, 0...");
-    _STOP_("db 8Bh, 44h, 1Ah, 3Dh, 50h, 0, 7Dh, 7Fh, 2...");
-    _STOP_("db 34h, 0A1h, 12h, 9Fh, 8Bh, 1Eh, 16h, 9Fh...");
-    _STOP_("db 2Bh, 5Ch, 16h, 0E8h, 9Dh, 95h, 0F7h, 0D...");
-    _STOP_("db 89h, 44h, 1Ch, 8Bh, 0D8h, 0D1h, 0E3h, 2...");
-    _STOP_("db 1Bh, 95h, 2Eh, 8Bh, 7, 89h, 44h, 0Ch, 2...");
-    _STOP_("db 2, 89h, 44h, 0Eh, 83h, 0C3h, 4, 89h, 5C...");
-    _STOP_("db 5Ch, 1Ch, 0D1h, 0E3h, 8Bh, 87h, 90h, 33...");
-    _STOP_("db 3Dh, 40h, 1, 73h, 31h, 89h, 44h, 12h, 8...");
-    _STOP_("db 33h, 3, 44h, 16h, 3, 6, 98h, 91h, 3Dh, ...");
-    _STOP_("db 1Eh, 89h, 44h, 16h, 0E8h, 48h, 0AFh, 0E...");
-    _STOP_("db 74h, 16h, 83h, 3Eh, 88h, 91h, 0, 75h, 1...");
-    _STOP_("db 4, 9Fh, 0B9h, 8, 0B8h, 4, 0, 0E8h, 0F6h...");
-    _STOP_("db 64h, 81h, 0C3h, 0E8h, 95h, 88h, 0BAh, 5...");
-    _STOP_("db 30h, 12h, 0E8h, 0BDh, 0ACh, 0E8h, 54h, ...");
-    _STOP_("db 7Ch, 1Ah, 0, 80h, 75h, 3Ah, 0E8h, 3Ah, ...");
-    _STOP_("db 1Ch, 2Eh, 8Ah, 87h, 16h, 61h, 98h, 0D1h...");
-    _STOP_("db 0F8h, 3, 44h, 16h, 3Dh, 0C0h, 0, 73h, 1...");
-    _STOP_("db 16h, 2Eh, 8Ah, 87h, 56h, 61h, 98h, 0D1h...");
-    _STOP_("db 0F8h, 3, 44h, 12h, 3Dh, 40h, 1, 73h, 9,...");
-    _STOP_("db 0C7h, 44h, 4, 53h, 8, 0C3h, 0E8h, 13h, ...");
-    _STOP_("db 98h, 91h, 1, 44h, 16h, 8Bh, 5Ch, 22h, 0...");
-    _STOP_("db 92h, 0FFh, 0E8h, 4Fh, 0C1h, 83h, 3Ch, 4...");
-    _STOP_("db 5Ch, 20h, 0D1h, 0E3h, 83h, 0BFh, 0D2h, ...");
-    _STOP_("db 6, 0C7h, 87h, 0D2h, 91h, 18h, 0, 0C3h, ...");
-    _STOP_("db 61h, 7, 74h, 2Dh, 81h, 7Ch, 4, 97h, 8, ...");
-    _STOP_("db 7Ch, 3Ah, 83h, 3Dh, 0, 75h, 29h, 0C7h, ...");
-    _STOP_("db 8, 0EBh, 22h, 8Bh, 7Ch, 3Ah, 83h, 3Dh, ...");
-    _STOP_("db 83h, 0EFh, 0Ah, 3Bh, 7Ch, 38h, 74h, 12h...");
-    _STOP_("db 4, 53h, 8, 0EBh, 0Bh, 83h, 7Ch, 1Ah, 0,...");
-    _STOP_("db 44h, 4, 97h, 8, 8Bh, 5Ch, 1Ch, 83h, 0C3...");
-    _STOP_("db 0EBh, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h, 0EB...");
-    _STOP_("db 0Eh, 0BFh, 2Bh, 95h, 81h, 3Ch, 18h, 1, ...");
-    _STOP_("db 3Bh, 95h, 81h, 3Ch, 1Ch, 1, 75h, 3, 0BF...");
-    _STOP_("db 2Eh, 8Bh, 1, 89h, 44h, 0Ch, 0E9h, 44h, ...");
-    _STOP_("db 4, 5Fh, 8Ch, 29h, 45h, 24h, 76h, 1, 0C3...");
-    _STOP_("db 0F7h, 0E8h, 6Ah, 80h, 0B9h, 9, 0, 0E8h,...");
-    _STOP_("db 1Dh, 0, 0B8h, 50h, 0, 8Bh, 5Dh, 16h, 2B...");
-    _STOP_("db 91h, 0BAh, 0A0h, 0");            //db 91h, 0BAh, 0A0h, 0
-    _STOP_("db 0BDh");                          //db 0BDh
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db  13h");                          //db  13h
-    _STOP_("db  8Eh");                          //db  8Eh
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db 0E4h");                          //db 0E4h
-    _STOP_("db 0AFh");                          //db 0AFh
-    _STOP_("db  5Eh");                          //db  5Eh
-    _STOP_("db 0C6h");                          //db 0C6h
-    _STOP_("db  61h");                          //db  61h
-    _STOP_("db  8Fh");                          //db  8Fh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0C3h");                          //db 0C3h
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  44h");                          //db  44h
-    _STOP_("db  61h");                          //db  61h
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db 0B8h");                          //db 0B8h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E1h");                          //db 0E1h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E1h");                          //db 0E1h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E1h");                          //db 0E1h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E2h");                          //db 0E2h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E2h");                          //db 0E2h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E2h");                          //db 0E2h
-    _STOP_("db 0D1h");                          //db 0D1h
-    _STOP_("db 0E2h");                          //db 0E2h
-    _STOP_("db  2Bh");                          //db  2Bh
-    _STOP_("db  16h");                          //db  16h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0EAh");                          //db 0EAh
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  22h");                          //db  22h
-    _STOP_("db  74h");                          //db  74h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db 0B3h");                          //db 0B3h
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  7Ch");                          //db  7Ch
-    _STOP_("db  22h");                          //db  22h
-    _STOP_("db  74h");                          //db  74h
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db 0CBh");                          //db 0CBh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0EAh");                          //db 0EAh
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db 0F7h");                          //db 0F7h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db  5Eh");                          //db  5Eh
-    _STOP_("db 0C3h");                          //db 0C3h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  3Eh");                          //db  3Eh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db 0C9h");                          //db 0C9h
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  87h");                          //db  87h
-    _STOP_("db  29h");                          //db  29h
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  24h");                          //db  24h
-    _STOP_("db  76h");                          //db  76h
-    _STOP_("db 0E9h");                          //db 0E9h
-    _STOP_("db 0BCh");                          //db 0BCh
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  5Dh");                          //db  5Dh
-    _STOP_("db  0Ch");                          //db  0Ch
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db 0C1h");                          //db 0C1h
-    _STOP_("db  62h");                          //db  62h
-    _STOP_("db 0BAh");                          //db 0BAh
-    _STOP_("db  53h");                          //db  53h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  45h");                          //db  45h
-    _STOP_("db  28h");                          //db  28h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  5Dh");                          //db  5Dh
-    _STOP_("db  2Ah");                          //db  2Ah
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db 0C3h");                          //db 0C3h
-    _STOP_("db 0BDh");                          //db 0BDh
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db  18h");                          //db  18h
-    _STOP_("db 0ABh");                          //db 0ABh
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db 0F7h");                          //db 0F7h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db 0ACh");                          //db 0ACh
-    _STOP_("db  7Fh");                          //db  7Fh
-    _STOP_("db  5Eh");                          //db  5Eh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db  0Eh");                          //db  0Eh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  3Eh");                          //db  3Eh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  8Ch");                          //db  8Ch
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db 0F4h");                          //db 0F4h
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db  51h");                          //db  51h
-    _STOP_("db 0D2h");                          //db 0D2h
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db 0F6h");                          //db 0F6h
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db  4Dh");                          //db  4Dh
-    _STOP_("db  89h");                          //db  89h
-    _STOP_("db  83h");                          //db  83h
-    _STOP_("db  3Eh");                          //db  3Eh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db  75h");                          //db  75h
-    _STOP_("db  6Fh");                          //db  6Fh
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  8Ch");                          //db  8Ch
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db  57h");                          //db  57h
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db  81h");                          //db  81h
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  19h");                          //db  19h
-    _STOP_("db 0B9h");                          //db 0B9h
-    _STOP_("db 0CCh");                          //db 0CCh
-    _STOP_("db  33h");                          //db  33h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db 0F3h");                          //db 0F3h
-    _STOP_("db 0ABh");                          //db 0ABh
-    _STOP_("db  56h");                          //db  56h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  36h");                          //db  36h
-    _STOP_("db  54h");                          //db  54h
-    _STOP_("db  90h");                          //db  90h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db  85h");                          //db  85h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db  74h");                          //db  74h
-    _STOP_("db  13h");                          //db  13h
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db  2Ch");                          //db  2Ch
-    _STOP_("db  8Eh");                          //db  8Eh
-    _STOP_("db  58h");                          //db  58h
-    _STOP_("db  57h");                          //db  57h
-    _STOP_("db  3Dh");                          //db  3Dh
-    _STOP_("db  50h");                          //db  50h
-    _STOP_("db  74h");                          //db  74h
-    _STOP_("db  8Bh");                          //db  8Bh
-    _STOP_("db 0FEh");                          //db 0FEh
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db 0CAh");                          //db 0CAh
-    _STOP_("db 0B1h");                          //db 0B1h
-    _STOP_("db  5Eh");                          //db  5Eh
-    _STOP_("db 0EBh");                          //db 0EBh
-    _STOP_("db 0E7h");                          //db 0E7h
-    _STOP_("db 0C6h");                          //db 0C6h
-    _STOP_("db  2Dh");                          //db  2Dh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db 0C6h");                          //db 0C6h
-    _STOP_("db  2Eh");                          //db  2Eh
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db  8Ch");                          //db  8Ch
-    _STOP_("db  8Eh");                          //db  8Eh
-    _STOP_("db 0B9h");                          //db 0B9h
-    _STOP_("db  10h");                          //db  10h
-    _STOP_("db  33h");                          //db  33h
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db 0F3h");                          //db 0F3h
-    _STOP_("db 0ABh");                          //db 0ABh
-    _STOP_("db 0B9h");                          //db 0B9h
-    _STOP_("db  27h");                          //db  27h
-    _STOP_("db 0B8h");                          //db 0B8h
-    _STOP_("db 0BBh");                          //db 0BBh
-    _STOP_("db 0BAh");                          //db 0BAh
-    _STOP_("db  40h");                          //db  40h
-    _STOP_("db 0BFh");                          //db 0BFh
-    _STOP_("db 0C0h");                          //db 0C0h
-    _STOP_("db 0BDh");                          //db 0BDh
-    _STOP_("db  4Ch");                          //db  4Ch
-    _STOP_("db  12h");                          //db  12h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db 0F3h");                          //db 0F3h
-    _STOP_("db  8Ch");                          //db  8Ch
-    _STOP_("db 0B9h");                          //db 0B9h
-    _STOP_("db 0E8h");                          //db 0E8h
-    _STOP_("db  49h");                          //db  49h
-    _STOP_("db  8Dh");                          //db  8Dh
-    _STOP_("db  5Eh");                          //db  5Eh
-    _STOP_("db  5Fh");                          //db  5Fh
-    _STOP_("db 0C7h");                          //db 0C7h
-    _STOP_("db 0A8h");                          //db 0A8h
-    _STOP_("db  91h");                          //db  91h
-    _STOP_("db 0C6h");                          //db 0C6h
-    _STOP_("db  30h");                          //db  30h
-    _STOP_("db  92h");                          //db  92h
-    _STOP_("db 0FFh");                          //db 0FFh
-    _STOP_("db 0C3h");                          //db 0C3h
+
 }
 
 void sub_188A9()
@@ -29328,4 +28906,159 @@ loc_128CF:                                      //loc_128CF:
 {sub_13A36(); return; };                        //
 locret_128DE:                                   //locret_128DE:
     return;
+}
+
+void sub_14F96()
+{
+    memory16(_ds, 0x9162) = 0x00aa;             //mov word_31692, 0AAh
+}
+
+void sub_19F4E()
+{
+    _push(_si);                                 //push si
+    _si = _di;                                  //mov si, di
+    sub_10EF5();                                //call sub_10EF5
+    _si = _pop();                               //pop si
+    _bp = 0x1230;                               //mov bp, 1230h
+    _dx = 0x0853;                               //mov dx, 853h
+    sub_13326();                                //call sub_13326
+    memory16(_ds, 0x920E) -= 1;                 //dec word_3173E
+    if (memory16(_ds, 0x920E) == 0)             //jz short loc_19F65
+      goto loc_19F65;
+    return;                                     //retn
+loc_19F65:                                      //loc_19F65:
+    _bx = memory16(_ds, _di + 68);              //mov bx, [di+44h]
+    memory16(_ds, _bx + 36) = 0x0000;           //mov word ptr [bx+24h], 0
+    _ax = 0x0001;                               //mov ax, 1
+    sub_13A39();                                //call sub_13A39
+    _cx = 0x0004;                               //mov cx, 4
+    sub_115E4();                                //call sub_115E4
+    memory(_ds, 0x9225) = 0x00;                 //mov byte_31755, 0
+}
+
+void sub_12AA4()
+{
+    if ((short)memory16(_ds, 0x9132) >= (short)0x0004)
+      goto locret_12AAF;
+    memory16(_ds, 0x9132) += 1;                 //inc word_31662
+locret_12AAF:                                   //locret_12AAF:
+    return;
+}
+
+void sub_180CA()
+{
+    _bx <<= 1;                                  //shl bx, 1
+    switch (_bx)                                //jmp cs:off_19109[bx]
+    {
+        case 0: loc_13360(); return;
+      case 2:     _bx = 0x7736;                               //mov bx, 7736h
+        {sub_13389(); return; };                        //
+
+      case 4:     _bx = 0x7748;                               //mov bx, 7748h
+        {sub_13389(); return; };                        //
+
+      case 6:     _bx = 0x775a;                               //mov bx, 775Ah
+        {sub_13389(); return; };                        //
+
+      case 8:     _bx = 0x776c;                               //mov bx, 776Ch
+        {sub_13389(); return; };                        //
+
+      case 10:     _bx = 0x777e;                               //mov bx, 777Eh
+        {sub_13389(); return; };                        //
+
+      case 12:     _bx = 0x7790;                               //mov bx, 7790h
+        {sub_13389(); return; };                        //
+
+      default:
+        _ASSERT(0);
+    }
+}
+
+void sub_1866D()
+{
+    WORD _cs = _seg000;
+
+    if (memory16(_ds, _si + 26) != 0x8000)      //jnz short loc_186AE
+      goto loc_186AE;
+    sub_141B1();                                //call sub_141B1
+    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
+    _al = memory(_cs, _bx + 24854);             //mov al, cs:[bx+6116h]
+    _cbw();                                     //cbw
+    _sar(_ax, 1);                               //sar ax, 1
+    _sar(_ax, 1);                               //sar ax, 1
+    _ax = _ax + memory16(_ds, _si + 22);        //add ax, [si+16h]
+    if (_ax >= 0x00c0)                          //jnb short loc_186AA
+      goto loc_186AA;
+    memory16(_ds, _si + 22) = _ax;              //mov [si+16h], ax
+    _al = memory(_cs, _bx + 24918);             //mov al, cs:[bx+6156h]
+    _cbw();                                     //cbw
+    _sar(_ax, 1);                               //sar ax, 1
+    _sar(_ax, 1);                               //sar ax, 1
+    _ax = _ax + memory16(_ds, _si + 18);        //add ax, [si+12h]
+    if (_ax >= 0x0140)                          //jnb short loc_186AA
+      goto loc_186AA;
+    memory16(_ds, _si + 18) = _ax;              //mov [si+12h], ax
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    return;                                     //retn
+loc_186AA:                                      //loc_186AA:
+    sub_107C0();                                //call sub_107C0
+    return;                                     //retn
+loc_186AE:                                      //loc_186AE:
+    _ax = memory16(_ds, 0x9198);                //mov ax, word_316C8
+    memory16(_ds, _si + 22) += _ax;             //add [si+16h], ax
+    _bx = memory16(_ds, _si + 34);              //mov bx, [si+22h]
+    memory(_ds, _bx + -28115 + 65536) = 0xff;           //mov byte ptr [bx-6DD3h], 0FFh
+    loc_1480E();                                //call loc_1480E
+    if (memory16(_ds, _si) != 0x0004)           //jnz short loc_186D7
+      goto loc_186D7;
+    _bx = memory16(_ds, _si + 32);              //mov bx, [si+20h]
+    _bx <<= 1;                                  //shl bx, 1
+    if (memory16(_ds, _bx + -28206+ 65536) != 0x0000)  //jnz short locret_186D6
+      goto locret_186D6;
+    memory16(_ds, _bx + -28206+ 65536) = 0x0018;       //mov word ptr [bx-6E2Eh], 18h
+locret_186D6:                                   //locret_186D6:
+    return;                                     //retn
+loc_186D7:                                      //loc_186D7:
+    if (memory16(_ds, _si + 4) == 0x0761)       //jz short loc_1870B
+      goto loc_1870B;
+    if (memory16(_ds, _si + 4) == 0x0897)       //jz short loc_186F4
+      goto loc_186F4;
+    _di = memory16(_ds, _si + 58);              //mov di, [si+3Ah]
+    if (memory16(_ds, _di) != 0x0000)           //jnz short loc_18716
+      goto loc_18716;
+    memory16(_ds, _si + 4) = 0x0897;            //mov word ptr [si+4], 897h
+    goto loc_18716;                             //jmp short loc_18716
+loc_186F4:                                      //loc_186F4:
+    _di = memory16(_ds, _si + 58);              //mov di, [si+3Ah]
+    if (memory16(_ds, _di) == 0x0000)           //jz short loc_18716
+      goto loc_18716;
+    _di -= 0x000a;                              //sub di, 0Ah
+    if (_di == memory16(_ds, _si + 56))         //jz short loc_18716
+      goto loc_18716;
+    memory16(_ds, _si + 4) = 0x0853;            //mov word ptr [si+4], 853h
+    goto loc_18716;                             //jmp short loc_18716
+loc_1870B:                                      //loc_1870B:
+    if ((short)memory16(_ds, _si + 26) < 0 /*CHECK*/)//js short loc_18716
+      goto loc_18716;
+    memory16(_ds, _si + 4) = 0x0897;            //mov word ptr [si+4], 897h
+loc_18716:                                      //loc_18716:
+    _bx = memory16(_ds, _si + 28);              //mov bx, [si+1Ch]
+    _bx += 0x0010;                              //add bx, 10h
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx >>= 1;                                  //shr bx, 1
+    _bx &= 0x000e;                              //and bx, 0Eh
+    _di = 0x952b;                               //mov di, 952Bh
+    if (memory16(_ds, _si) != 0x0118)           //jnz short loc_18733
+      goto loc_18733;
+    _di = 0x953b;                               //mov di, 953Bh
+loc_18733:                                      //loc_18733:
+    if (memory16(_ds, _si) != 0x011c)           //jnz short loc_1873C
+      goto loc_1873C;
+    _di = 0x954b;                               //mov di, 954Bh
+loc_1873C:                                      //loc_1873C:
+    _ax = memory16(_cs, _bx + _di);             //mov ax, cs:[bx+di]
+    memory16(_ds, _si + 12) = _ax;              //mov [si+0Ch], ax
+{sub_13589(); return; };                        //
 }

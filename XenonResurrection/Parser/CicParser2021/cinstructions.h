@@ -185,9 +185,14 @@ public:
                     m_strInsertion = "_flags.sign = !!(_al & 0x80)";
                 else if (op1 == "_ah" && op2 == "_ah")
                     m_strInsertion = "_flags.sign = !!(_ah & 0x80)";
+                else if (op1 == "_bh" && op2 == "_bh")
+                    m_strInsertion = "_flags.sign = !!(_bh & 0x80)";
                 else
                     _ASSERT(0);
-            } else _ASSERT(0);
+            } else {
+                m_strInsertion = "_FIXME_";
+                //_ASSERT(0);
+            }
 
 			//_ASSERT(!pAlu->m_ExportInsertion);
 			m_strDst = op1; 
@@ -199,8 +204,15 @@ public:
 			m_strSrc = "(~" + op1 + ")";
 			break;
 		case CIAlu::Neg: 
-			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
-			m_strDst = op1; 
+			if(pAlu->m_ExportInsertion == CIAlu::Carry)
+            {
+                m_strInsertion = "_FIXME_";
+            } else
+            {
+                _ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
+            }
+                
+			m_strDst = op1;
 			m_strSrc = "-" + op1;
 			break;
 		case CIAlu::Shl:
@@ -232,17 +244,20 @@ public:
 			m_strSrc = op1 + " >> " + op2;
 			break;
 		case CIAlu::Mul: 
-                
+                // TODO: fix r16, overflow flag
 			m_strDst = CValue("ax").ToC();
 			m_strSrc = op1 + " * " + CValue("al").ToC();
                 
                 if (pAlu->m_ExportInsertion == CIAlu::None) {}
-                    else /*
+                    else
+                        m_strInsertion = "_FIXME_";
+                    /*
             if (pAlu->m_ExportInsertion == CIAlu::Overflow)
             {
                 m_strInsertion = "_flags.carry = (int)(" + m_strSrc + ") >= 0x10000";
             } else*/
-                _ASSERT(0);
+                //_ASSERT(0);
+                        
 
 			break;
                 
@@ -612,8 +627,8 @@ public:
                 }
                 else
                 {
-                    
-                    _ASSERT(0);
+                    strAux = "_FIXME_";
+                    //_ASSERT(0);
                 }
 
         }
@@ -891,6 +906,8 @@ public:
                     m_strCondition = "("+m_strSigned+")"+pAlu->m_op1.ToC() + " >= 0" ; break;
 
             case CIConditionalJump::jle: m_strCondition = "("+m_strSigned+")$a <= ("+m_strSigned+")$b"; break;
+            case CIConditionalJump::jl: m_strCondition = "("+m_strSigned+")$a < ("+m_strSigned+")$b";
+                break;
 
 			default:
 				_ASSERT(0);
@@ -919,6 +936,9 @@ public:
             case CIConditionalJump::jnb:
                 pAlu->m_ExportInsertion = CIAlu::Overflow;
                 m_strCondition = "!_flags.carry"; break;
+            case CIConditionalJump::jb:
+                pAlu->m_ExportInsertion = CIAlu::Overflow;
+                m_strCondition = "_flags.carry"; break;
                 default: _ASSERT(0);
             }
             break;
@@ -1571,3 +1591,40 @@ public:
     }
 };
 
+class CCAbbrev : public CCInstruction
+{
+public:
+    string m_strAssignment;
+
+public:
+    CCAbbrev(shared_ptr<CIAbbrev> pAbbrev)
+    {
+        string key = string("const int ") + CUtils::Trim(pAbbrev->m_strKey);
+        string value; // = pAbbrev->m_strValue;
+        vector<string> tokens;
+        if (CUtils::match("^(dword|word|byte) ptr \\-(.*)$", CUtils::Trim(pAbbrev->m_strValue), tokens))
+        {
+            int val = -CUtils::ParseLiteral(tokens[1]);
+            stringstream ss;
+            ss << std::dec << val;
+            value = ss.str();
+        } else
+        if (CUtils::match("^(dword|word|byte) ptr (.*)$", CUtils::Trim(pAbbrev->m_strValue), tokens))
+        {
+            int val = CUtils::ParseLiteral(tokens[1]);
+            stringstream ss;
+            ss << std::dec << val;
+            value = ss.str();
+        } else {
+            _ASSERT(0);
+        }
+        //CUtils::replace(value, "word ptr", "");
+
+        m_strAssignment = key + " = " + value;
+    }
+    
+    virtual string ToString() override
+    {
+        return m_strAssignment + ";";
+    }
+};

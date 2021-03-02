@@ -654,6 +654,31 @@ public:
     }
 };
 
+class CIAbbrev : public CInstruction
+{
+public:
+    string m_strKey;
+    string m_strValue;
+
+public:
+    CIAbbrev()
+    {
+    }
+
+    CIAbbrev(const string& strKey, const string& strValue)
+    {
+        m_strKey = strKey;
+        m_strValue = strValue;
+    }
+
+    virtual void Eval(CMachine& m) {}
+
+    virtual void Serialize(CSerializer& s)
+    {
+        s << m_strKey << m_strValue;
+    }
+};
+
 CInstruction* CInstruction::FromName(string strClassName)
 {
     // OSX
@@ -703,6 +728,7 @@ CInstruction* CInstruction::FromName(string strClassName)
         return new CIStop();
     if (strClassName == "class CISegment")
         return new CISegment();
+    if (strClassName == "class CIAbbrev")
+        return new CIAbbrev();
 	return nullptr;
 }
-

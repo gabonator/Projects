@@ -446,6 +446,15 @@ string CValue::ToC()
         case CValue::stack_bp_plus_di_plus:
             ss << "_stack16(_bp + _di + " << m_nValue << ")";
             return ss.str();
+        case CValue::stack_bp_plus_si_plus:
+            ss << "_stack16(_bp + _si + " << m_nValue << ")";
+            return ss.str();
+        case CValue::stack_bp_var:
+            ss << "_stack16(_bp + var_" << std::hex << std::uppercase << m_nValue << std::nouppercase << std::dec << ")";
+            return ss.str();
+        case CValue::stack_bp_arg:
+            ss << "_stack16(_bp + arg_" << std::hex << std::uppercase << m_nValue << std::nouppercase << std::dec << ")";
+            return ss.str();
         case CValue::bp_plus:
             ss << "_bp + " << m_nValue;
             return ss.str();
@@ -536,7 +545,24 @@ string CValue::ToC()
                 return "memory16(_cs, _si)";
             else
                 _ASSERT(0);
-                    
+            
+        case CValue::wordptr_bp_plus:
+            return "_FIXME_";
+        case CValue::offset_bp_arg:
+            ss << "_bp + arg_" << dec << m_nValue;
+            return ss.str();
+        case CValue::offset_bp_var:
+            ss << "_bp + arg_" << dec << m_nValue;
+            return ss.str();
+        
+        case CValue::ss_ptr_si:
+            if ( m_eRegLength == CValue::r16 )
+                return "memory16(_ss, _si)";
+            else if ( m_eRegLength == CValue::r8 )
+                return "memory(_ss, _si)";
+            else
+                _ASSERT(0);
+
 	default:
 		_ASSERT(0);
 	}

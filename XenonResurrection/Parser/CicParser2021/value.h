@@ -41,6 +41,8 @@ public:
         stack_bp_plus_si,
         stack_bp_plus_si_plus,
         stack_bp_plus_di_plus,
+        stack_bp_arg,
+        stack_bp_var,
         cs_ptr_bx_plus,
         cs_ptr_bx_plus_di,
         cs_ptr_bx_plus_di_plus,
@@ -55,6 +57,7 @@ public:
         cs_ptr_si,
         ss_byteptr,
         es_ptr_bp,
+        ss_ptr_si,
 
 		byteptrasword,
 
@@ -89,7 +92,9 @@ public:
         offset_bp_plus_di_plus,
         offset_bp_plus_si_plus,
         offset_bp_plus,
-        
+        offset_bp_arg,
+        offset_bp_var,
+
         stop, // need to be fixed manually
 		invalid
 	};
@@ -225,6 +230,35 @@ public:
             m_eType = offset_bp_plus_si_plus;
             m_eRegLength = unknown;
             m_nValue = CUtils::ParseLiteral(matches[0]);
+            return;
+        }
+        if ( CUtils::match("^bp\\+arg_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = offset_bp_arg;
+            m_eRegLength = unknown;
+            m_nValue = CUtils::ParseLiteral("0x"+matches[0]) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
+        if ( CUtils::match("^bp\\+arg_(.*)$", value.c_str(), matches) )
+        {
+            m_eType = offset_bp_arg;
+            m_eRegLength = unknown;
+            m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+            return;
+        }
+        if ( CUtils::match("^bp\\+var_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = offset_bp_var;
+            m_eRegLength = unknown;
+            m_nValue = CUtils::ParseLiteral("0x"+matches[0]) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+        if ( CUtils::match("^bp\\+var_(.*)$", value.c_str(), matches) )
+        {
+            m_eType = offset_bp_var;
+            m_eRegLength = unknown;
+            m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
             return;
         }
         if ( CUtils::match("^bp\\+(.*)$", value.c_str(), matches) )
@@ -443,19 +477,26 @@ public:
         {
             if ( CUtils::match("^\\[bp\\+arg_(.*)\\]$", value.c_str(), matches) )
             {
-                m_eType = stack_bp_plus;
-                m_nValue = CUtils::ParseLiteral("0x"+matches[0])+4;
+                m_eType = stack_bp_arg;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
                 if (eRegLength == unknown)
                     eRegLength = r16;
                 _ASSERT(eRegLength == r16 || eRegLength == r8);
                 m_eRegLength = eRegLength;
                 return;
             }
+            if ( CUtils::match("^\\[bp\\+var_(.*)\\+(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_var;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0]) + CUtils::ParseLiteral(matches[0]);
+                m_eRegLength = r16;
+                return;
+            }
 
             if ( CUtils::match("^\\[bp\\+var_(.*)\\]$", value.c_str(), matches) )
             {
-                m_eType = stack_bp_plus;
-                m_nValue = -CUtils::ParseLiteral("0x"+matches[0]);
+                m_eType = stack_bp_var;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
                 m_eRegLength = r16;
                 return;
             }
@@ -555,6 +596,21 @@ public:
                 m_eRegLength = r16;
                 return;
             }
+            if ( CUtils::match("^byte ptr \\[bp\\+var_(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_var;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+                m_eRegLength = r8;
+                return;
+            }
+            if ( CUtils::match("^byte ptr \\[bp\\+arg_(.*)\\]$", value.c_str(), matches) )
+            {
+                m_eType = stack_bp_arg;
+                m_nValue = CUtils::ParseLiteral("0x"+matches[0]);
+                m_eRegLength = r8;
+                return;
+            }
+
             if ( CUtils::match("^byte ptr \\[bp\\+(.*)\\]$", value.c_str(), matches) )
             {
                 m_eType = stack_bp_plus;
@@ -901,6 +957,13 @@ public:
             return;
         }
 
+        if ( value == "byte ptr ss:[si]" )
+        {
+            m_eRegLength = r8;
+            m_eType = ss_ptr_si;
+            return;
+        }
+
 		if ( CUtils::match("^es:\\[di\\+(.*)\\]$", value.c_str(), matches) )
 		{
 			_ASSERT(eRegLength == r16 || eRegLength == r8);
@@ -999,6 +1062,13 @@ public:
 		}
 
         if ( CUtils::match("^word ptr byte_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r16;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x"+matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+        if ( CUtils::match("^word ptr dword_(.*)\\+(.*)$", value.c_str(), matches) )
         {
             m_eType = ds_ptr;
             m_eRegLength = r16;
@@ -1239,6 +1309,14 @@ public:
         {
             m_eType = ds_ptr;
             m_eRegLength = r8;
+            m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
+            return;
+        }
+
+        if ( CUtils::match("^dword ptr word_(.*)\\+(.*)$", value.c_str(), matches) )
+        {
+            m_eType = ds_ptr;
+            m_eRegLength = r32;
             m_nValue = FixPtr(CUtils::ParseLiteral("0x" + matches[0])) + CUtils::ParseLiteral(matches[1]);
             return;
         }

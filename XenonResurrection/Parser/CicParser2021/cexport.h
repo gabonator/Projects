@@ -1,3 +1,5 @@
+shared_ptr<CIStop> xxx(new CIStop());
+
 class CCExport
 {
 	vector<shared_ptr<CInstruction>> m_arrSource;
@@ -143,11 +145,20 @@ public:
         if (pIndirectCall)
             pOutInstruction = make_shared<CCIndirectCall>(pIndirectCall);
 
+        shared_ptr<CIAbbrev> pAbbrev = dynamic_pointer_cast<CIAbbrev>(pInInstruction);
+        if (pAbbrev)
+            pOutInstruction = make_shared<CCAbbrev>(pAbbrev);
+
 		shared_ptr<CISwitch> pSwitch = dynamic_pointer_cast<CISwitch>(pInInstruction);
 		if (pSwitch)
 		{
-			vector<shared_ptr<CInstruction>> arrOptions = GetDataStarting(pSwitch->m_label);
-			pOutInstruction = make_shared<CCSwitch>( pSwitch, arrOptions );
+            if (pSwitch->m_label.find("ss:off") == string::npos)
+            {
+                vector<shared_ptr<CInstruction>> arrOptions = GetDataStarting(pSwitch->m_label);
+                pOutInstruction = make_shared<CCSwitch>( pSwitch, arrOptions );
+            } else {
+                pOutInstruction = make_shared<CCStop>(xxx);
+            }
 		}
 
 		shared_ptr<CILoop> pLoop = dynamic_pointer_cast<CILoop>(pInInstruction);

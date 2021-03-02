@@ -60,7 +60,12 @@ class CIMReturn : public CInstructionMatcher
 	{
 		vector<string> arrMatches;
 
-		if ( CUtils::match("^retf$", strLine, arrMatches) )
+        if ( CUtils::match("^retf (.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIReturn>(CUtils::ParseLiteral(arrMatches[0]));
+        }
+
+        if ( CUtils::match("^retf$", strLine, arrMatches) )
 		{
 			// TODO:
 			//https://courses.engr.illinois.edu/ece390/archive/spr2002/books/labmanual/inst-ref-ret.html
@@ -401,6 +406,10 @@ class CIMFlow : public CInstructionMatcher
         {
             return make_shared<CIStop>();
         }
+        if ( CUtils::match("^call \\$(.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIStop>();
+        }
 
         
 		//WTF: call dword ptr cs:[bp+7FBh]
@@ -567,7 +576,14 @@ class CIMNop : public CInstructionMatcher
             return make_shared<CINop>(strLine);
         }
 
-		if ( CUtils::match("^arg.*=.*", strLine, arrMatches) || CUtils::match("^var_.*=.*", strLine, arrMatches) || CUtils::match("^envp.*=.*", strLine, arrMatches) )
+        if ( CUtils::match("^(arg_.*)=(.*)", strLine, arrMatches) ||
+             CUtils::match("^(var_.*)=(.*)", strLine, arrMatches) )
+        {
+            
+            return make_shared<CIAbbrev>(CUtils::Trim(arrMatches[0]), CUtils::Trim(arrMatches[1]));
+        }
+
+		if ( CUtils::match("^envp.*=.*", strLine, arrMatches) )
 		{
 			return make_shared<CINop>(strLine);
 		}
