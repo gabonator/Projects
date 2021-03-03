@@ -1287,14 +1287,16 @@ function* sub_10A2F() {
     bp <<= 1;
     bp <<= 1;
     assert(bp == 12);
-    __sync = true;  yield* sub_205AE(); yield* _sync(); __sync = false;
+    yield* sub_205AE();
+    yield* _sync();
 }
 function* sub_10A51() {
     bp = memory16get(ds*16+0x3044);
     bp <<= 1;
     bp <<= 1;
     assert(bp == 12);
-    __sync = true;  yield* sub_205AE(); yield* _sync(); __sync = false;
+    yield* sub_205AE();
+    yield* _sync();
 }
 function* sub_10A73() {
     bp = memory16get(ds*16+0x3044);
@@ -1621,7 +1623,7 @@ function* sub_10F5A() {
     r16[bx] <<= 1;
     push(memory16get(cs*16+r16[bx] + 3948));
     r16[bx] = memory16get(ds*16+0x8E74);
-    yield* sub_10F78();
+    yield* indirectCall(cs, pop());
 }
 function* sub_10F78() {
     var cs = _seg000;
@@ -1676,13 +1678,17 @@ function* sub_1100E() {
         r16[cx] = 0x0004;
     case 0x11014:
         if (memory16get(ds*16+bp + 0) == 0x0000)
+            {
+            flags.zero = true;
             return;
+        }
         bp += 0x0004;
         if (--r16[cx]) {
             pc = 0x11014;
             break;
         }
         r16[cx] -= 1;
+        flags.zero = false;
         return;
     } while (1);
 }
@@ -1904,37 +1910,163 @@ function* loc_1109A() {
         _STOP_("db 50h, 1, 3 dup(0), 0E2h, 41h, 0F4h, 14h,...");
         _STOP_("db 0, 5Eh, 54h, 1, 0, 0Eh, 55h, 1, 0, 0BEh...");
         _STOP_("db 6Eh, 56h, 1, 0, 0BEh");
-        _STOP_("byte_1152F db 55h, 1, 0, 0Eh, 55h, 1, 0, 5...");
-        _STOP_("db 41h, 1Ah, 15h, 1Eh, 57h, 1, 0, 0CEh, 57...");
-        _STOP_("db 58h, 1, 0, 2Eh, 59h, 1, 0, 0DEh, 59h, 1...");
-        _STOP_("db 1, 0, 7Eh, 58h, 1, 0, 0CEh, 57h, 1, 3 d...");
-        _STOP_("db 41h, 40h, 15h, 0C0h, 96h, 2 dup(0), 70h...");
-        _STOP_("db 0E4h, 97h, 1, 0, 62h, 98h, 1, 0, 0EAh, ...");
-        _STOP_("db 99h, 1, 0, 18h, 9Ah, 1, 3 dup(0), 0E2h,...");
-        _STOP_("db 56h, 51h, 8Bh, 0C8h, 0E8h, 93h, 0FAh, 5...");
-        _STOP_("db 90h, 0E8h, 0E6h, 0F1h, 5Fh, 0C7h, 4, 0C...");
-        _STOP_("db 2, 98h, 39h, 0C7h, 44h, 4, 53h, 8, 8Bh,...");
-        _STOP_("db 0F7h, 2Bh, 3, 0C1h, 89h, 44h, 12h, 8Bh,...");
-        _STOP_("db 0EDh, 2Bh, 3, 0C3h, 89h, 44h, 16h, 2Eh,...");
-        _STOP_("db 89h, 44h, 0Ch, 2Eh, 8Bh, 46h, 2, 89h, 4...");
-        _STOP_("db 0C5h, 4, 89h, 6Ch, 10h, 83h, 0EDh, 4, 8...");
-        _STOP_("db 49h, 79h, 0B3h, 5Eh, 0C7h, 6, 88h, 8Eh,...");
-        _STOP_("db 6, 8Ah, 8Eh, 6, 0, 0C3h, 56h, 0E8h, 3Ah...");
-        _STOP_("db 96h, 90h, 0E8h, 0A0h, 0F1h, 0BFh, 0F2h,...");
-        _STOP_("db 60h, 0, 0C7h, 44h, 2, 0DFh, 28h, 0C7h, ...");
-        _STOP_("db 8, 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh...");
-        _STOP_("db 44h, 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, ...");
-        _STOP_("db 0E8h, 89h, 2Bh, 5, 0Ah, 0, 89h, 44h, 12...");
-        _STOP_("db 0, 0E8h, 7Dh, 2Bh, 5, 6, 0, 89h, 44h, 1...");
-        _STOP_("db 1Ah, 7, 0, 0FFh, 6, 64h, 91h, 0E8h, 0EC...");
-        _STOP_("db 96h, 90h, 0E8h, 52h, 0F1h, 0BFh, 0B4h, ...");
-        _STOP_("db 18h, 0, 0C7h, 44h, 2, 0DFh, 28h, 0C7h, ...");
-        _STOP_("db 8, 2Eh, 8Bh, 5, 89h, 44h, 0Ch, 2Eh, 8Bh...");
-        _STOP_("db 44h, 0Eh, 83h, 0C7h, 4, 89h, 7Ch, 10h, ...");
-        _STOP_("db 0E8h, 3Bh, 2Bh, 5, 0Ah, 0, 89h, 44h, 12...");
-        _STOP_("db 0, 0E8h, 2Fh, 2Bh, 5, 6, 0, 89h, 44h, 1...");
-        _STOP_("db 1Ah, 7, 0, 0FFh, 6, 64h, 91h, 49h, 78h,...");
-        _STOP_("db 0FFh, 5Eh, 0C3h");
+        _STOP_("db  55h");
+        _STOP_("db  0Eh");
+        _STOP_("db  55h");
+        _STOP_("db  5Eh");
+        _STOP_("db  54h");
+        _STOP_("db 0E2h");
+        _STOP_("db  41h");
+        _STOP_("db  1Ah");
+        _STOP_("db  15h");
+        _STOP_("db  1Eh");
+        _STOP_("db  57h");
+        _STOP_("db 0CEh");
+        _STOP_("db  57h");
+        _STOP_("db  7Eh");
+        _STOP_("db  58h");
+        _STOP_("db  2Eh");
+        _STOP_("db  59h");
+        _STOP_("db 0DEh");
+        _STOP_("db  59h");
+        _STOP_("db  2Eh");
+        _STOP_("db  59h");
+        _STOP_("db  7Eh");
+        _STOP_("db  58h");
+        _STOP_("db 0CEh");
+        _STOP_("db  57h");
+        _STOP_("db 0E2h");
+        _STOP_("db  41h");
+        _STOP_("db  40h");
+        _STOP_("db  15h");
+        _STOP_("db 0C0h");
+        _STOP_("db  96h");
+        _STOP_("db  70h");
+        _STOP_("db  97h");
+        _STOP_("db 0E4h");
+        _STOP_("db  97h");
+        _STOP_("db  62h");
+        _STOP_("db  98h");
+        _STOP_("db 0EAh");
+        _STOP_("db  98h");
+        _STOP_("db  7Ch");
+        _STOP_("db  99h");
+        _STOP_("db  18h");
+        _STOP_("db  9Ah");
+        _STOP_("db 0E2h");
+        _STOP_("db  41h");
+        _STOP_("db  66h");
+        _STOP_("db  15h");
+        return;
+    } while (1);
+}
+function* sub_11588() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        push(r16[si]);
+    case 0x11589:
+        push(r16[cx]);
+        r16[cx] = r16[ax];
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x9096;
+        yield* sub_1077C();
+        r16[di] = pop();
+        memory16set(ds*16+r16[si], 0x000c);
+        memory16set(ds*16+r16[si] + 2, 0x3998);
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        r16[ax] = r16[dx];
+        yield* sub_141A1();
+        r16[ax] += r16[cx];
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = r16[di];
+        yield* sub_141A1();
+        r16[ax] += r16[bx];
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        r16[ax] = memory16get(cs*16+bp);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+bp + 2);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        bp += 0x0004;
+        memory16set(ds*16+r16[si] + 16, bp);
+        bp -= 0x0004;
+        r16[ax] = r16[cx];
+        r16[cx] = pop();
+        r16[cx] -= 1;
+        if (r16s[cx] >= 0) {
+            pc = 0x11589;
+            break;
+        }
+        r16[si] = pop();
+        memory16set(ds*16+0x8E88, 0x0006);
+        memory16set(ds*16+0x8E8A, 0x0006);
+        return;
+    } while (1);
+}
+function* sub_115E4() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        push(r16[si]);
+    case 0x115E5:
+        yield* sub_11022();
+        r16[di] = 0x9096;
+        yield* sub_1078E();
+        r16[di] = 0x11f2;
+        memory16set(ds*16+r16[si], 0x0060);
+        memory16set(ds*16+r16[si] + 2, 0x28df);
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[di] + 2);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        r16[di] += 0x0004;
+        memory16set(ds*16+r16[si] + 16, r16[di]);
+        r16[ax] = 0x012c;
+        yield* sub_141A1();
+        r16[ax] += 0x000a;
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = 0x00b4;
+        yield* sub_141A1();
+        r16[ax] += 0x0006;
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        memory16set(ds*16+r16[si] + 26, 0x0007);
+        memory16set(ds*16+0x9164, memory16get(ds*16+0x9164) + 1);
+        yield* sub_11022();
+        r16[di] = 0x9096;
+        yield* sub_1078E();
+        r16[di] = 0x11b4;
+        memory16set(ds*16+r16[si], 0x0018);
+        memory16set(ds*16+r16[si] + 2, 0x28df);
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[di] + 2);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        r16[di] += 0x0004;
+        memory16set(ds*16+r16[si] + 16, r16[di]);
+        r16[ax] = 0x012c;
+        yield* sub_141A1();
+        r16[ax] += 0x000a;
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = 0x00b4;
+        yield* sub_141A1();
+        r16[ax] += 0x0006;
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        memory16set(ds*16+r16[si] + 26, 0x0007);
+        memory16set(ds*16+0x9164, memory16get(ds*16+0x9164) + 1);
+        r16[cx] -= 1;
+        if (r16s[cx] < 0) {
+            pc = 0x11687;
+            break;
+        }
+        pc = 0x115E5;
+        break;
+    case 0x11687:
+        r16[si] = pop();
         return;
     } while (1);
 }
@@ -2214,7 +2346,7 @@ function* sub_1195B() {
         r16[ax] >>= 1;
         r16[ax] >>= 1;
         r16[dx] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         memory16set(ds*16+0x918E, r16[ax]);
         yield* sub_1193C();
         r16[ax] = memory16get(ds*16+0x9166);
@@ -2327,16 +2459,16 @@ function* sub_11A65() {
     do switch (pc) {
     case 0:
         r16[bx] = memory16get(ds*16+0x8E7A);
-        if (memory[ds*16+r16[bx] + -28835] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28835 + 65536] == 0x00) {
             pc = 0x11A8E;
             break;
         }
         r16[bx] = r16[bx] ^ 0x0001;
-        if (memory[ds*16+r16[bx] + -28835] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28835 + 65536] == 0x00) {
             pc = 0x11A84;
             break;
         }
-        if (memory[ds*16+r16[bx] + -28833] != 0x00) {
+        if (memory[ds*16+r16[bx] + -28833 + 65536] != 0x00) {
             pc = 0x11A84;
             break;
         }
@@ -2348,7 +2480,7 @@ function* sub_11A65() {
     case 0x11A8E:
         yield* sub_11A19();
         r16[bx] = memory16get(ds*16+0x8E7A);
-        if (memory[ds*16+r16[bx] + -28833] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28833 + 65536] == 0x00) {
             pc = 0x11A84;
             break;
         }
@@ -2572,7 +2704,7 @@ function* loc_11C76() {
     case 0:
     case 0x11C76:
         yield* sub_11C18();
-        if (_FIXME_) {
+        if (flags.zero) {
             pc = 0x11CC1;
             break;
         }
@@ -2684,7 +2816,7 @@ function* sub_11D1E() {
         r16[ax] &= 0x00fe;
         r16[si] += r16[ax];
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[si] += r16[ax];
         r16[dx] = 0x0004;
         r16[di] = 0x9920;
@@ -2843,27 +2975,6 @@ function* sub_11E29() {
         return;
     } while (1);
 }
-function* loc_11E98() {
-    var cs = _seg000;
-    memory16set(ds*16+0x8E88, r16[dx]);
-    memory16set(ds*16+r16[si] + 2, 0x28df);
-    memory16set(ds*16+r16[si] + 4, 0x0853);
-    r16[ax] = memory16get(ds*16+r16[di] + 18);
-    memory16set(ds*16+r16[si] + 18, r16[ax]);
-    r16[ax] = memory16get(ds*16+r16[di] + 22);
-    memory16set(ds*16+r16[si] + 22, r16[ax]);
-    r16[bx] = memory16get(ds*16+r16[bx]);
-    r16[ax] = memory16get(cs*16+r16[bx]);
-    memory16set(ds*16+r16[si] + 12, r16[ax]);
-    r16[ax] = memory16get(cs*16+r16[bx] + 2);
-    memory16set(ds*16+r16[si] + 14, r16[ax]);
-    r16[bx] += 0x0004;
-    memory16set(ds*16+r16[si] + 16, r16[bx]);
-    memory16set(ds*16+r16[si] + 26, 0x0007);
-    r16[si] = r16[di];
-    yield* sub_107C0();
-    r16[si] = pop();
-}
 function* sub_11E61() {
     var cs = _seg000;
     var pc = 0;
@@ -2933,6 +3044,139 @@ function* sub_11ED3() {
     memory16set(ds*16+r16[di] + 66, r16[dx]);
     memory16set(ds*16+r16[di] + 40, 0x03e8);
     memory16set(ds*16+r16[di] + 44, 0x03e8);
+}
+function* sub_11F4D() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        yield* sub_141B1();
+        r16[bx] = memory16get(ds*16+r16[si] + 28);
+        r16[bx] <<= 1;
+        r16[ax] = memory16get(cs*16+r16[bx] + 7949);
+        imul16(memory16get(ds*16+r16[si] + 66));
+        flags.carry = !!(r16[ax] & 0x8000);
+        r16[ax] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = !!(r16[ax] & 0x8000);
+        r16[ax] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = (memory16get(ds*16+r16[si] + 20) + r16[ax]) >= 0x10000;
+        memory16set(ds*16+r16[si] + 20, memory16get(ds*16+r16[si] + 20) + r16[ax]);
+        memory16set(ds*16+r16[si] + 18, memory16get(ds*16+r16[si] + 18) + r16[dx] + flags.carry);
+        r16[ax] = memory16get(cs*16+r16[bx] + 7981);
+        imul16(memory16get(ds*16+r16[si] + 66));
+        flags.carry = !!(r16[ax] & 0x8000);
+        r16[ax] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = !!(r16[ax] & 0x8000);
+        r16[ax] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = (memory16get(ds*16+r16[si] + 24) + r16[ax]) >= 0x10000;
+        memory16set(ds*16+r16[si] + 24, memory16get(ds*16+r16[si] + 24) + r16[ax]);
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[dx] + flags.carry);
+        r16[ax] = memory16get(ds*16+0x9198);
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
+        if (memory16get(ds*16+r16[si] + 18) >= 0x0140) {
+            pc = 0x11FB0;
+            break;
+        }
+        if (memory16get(ds*16+r16[si] + 22) >= 0x00c0) {
+            pc = 0x11FB0;
+            break;
+        }
+        yield* sub_13589();
+        yield* sub_142AE();
+        if (flags.zero)
+            return;
+        if (memory16get(ds*16+0x9188) != 0x0000) {
+            pc = 0x11FB0;
+            break;
+        }
+        r16[ax] = 0x0004;
+        yield* sub_13C4F();
+        memory16set(ds*16+0x9F04, 0x08b9);
+    case 0x11FB0:
+        yield* sub_107C0();
+        return;
+    } while (1);
+}
+function* sub_125A8() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[di] = memory16get(ds*16+r16[si] + 68);
+        bp = memory16get(ds*16+r16[di] + 10);
+        if (bp == r16[si]) {
+            pc = 0x12624;
+            break;
+        }
+    case 0x125B2:
+        if (memory16get(ds*16+bp + 4) != 0x0761) {
+            pc = 0x125CD;
+            break;
+        }
+        bp = memory16get(ds*16+bp + 10);
+        if (bp != r16[si]) {
+            pc = 0x125B2;
+            break;
+        }
+        memory16set(ds*16+r16[di] + 40, 0x03e8);
+        memory16set(ds*16+r16[di] + 44, 0x03e8);
+        return;
+    case 0x125CD:
+        r16[ax] = memory16get(ds*16+bp + 40);
+        r16[bx] = memory16get(ds*16+bp + 42);
+        r16[cx] = memory16get(ds*16+bp + 44);
+        r16[dx] = memory16get(ds*16+bp + 46);
+    case 0x125DD:
+        bp = memory16get(ds*16+bp + 10);
+        if (r16[si] == bp) {
+            pc = 0x12617;
+            break;
+        }
+        if (memory16get(ds*16+bp + 4) == 0x0761) {
+            pc = 0x125DD;
+            break;
+        }
+        if (r16s[ax] <= memory16gets(ds*16+bp + 40)) {
+            pc = 0x125F7;
+            break;
+        }
+        r16[ax] = memory16get(ds*16+bp + 40);
+    case 0x125F7:
+        if (r16s[bx] <= memory16gets(ds*16+bp + 42)) {
+            pc = 0x12601;
+            break;
+        }
+        r16[bx] = memory16get(ds*16+bp + 42);
+    case 0x12601:
+        if (r16s[cx] >= memory16gets(ds*16+bp + 44)) {
+            pc = 0x1260B;
+            break;
+        }
+        r16[cx] = memory16get(ds*16+bp + 44);
+    case 0x1260B:
+        if (r16s[dx] >= memory16gets(ds*16+bp + 46)) {
+            pc = 0x125DD;
+            break;
+        }
+        r16[dx] = memory16get(ds*16+bp + 46);
+        pc = 0x125DD;
+        break;
+    case 0x12617:
+        memory16set(ds*16+r16[di] + 40, r16[ax]);
+        memory16set(ds*16+r16[di] + 42, r16[bx]);
+        memory16set(ds*16+r16[di] + 44, r16[cx]);
+        memory16set(ds*16+r16[di] + 46, r16[dx]);
+        return;
+    case 0x12624:
+        push(r16[di]);
+        yield* sub_107C0();
+        r16[si] = pop();
+        yield* sub_107C0();
+        return;
+    } while (1);
 }
 function* loc_127E7() {
     var cs = _seg000;
@@ -3056,7 +3300,7 @@ function* loc_127E7() {
     case 0x128CF:
         yield* sub_13589();
         yield* sub_11BEA();
-        if (_FIXME_)
+        if (flags.zero)
             return;
         r16[ax] = memory16get(cs*16+0x13DA4);
     {yield* sub_13A36(); return; };
@@ -3123,12 +3367,12 @@ function* sub_128DF() {
         memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) + 1);
         r16[ax] = 0x00a0;
         r16[ax] = r16[ax] - memory16get(ds*16+r16[si] + 18);
-        _imul16(r16[ax]);
+        imul16(r16[ax]);
         r16[bx] = r16[ax];
         r16[cx] = r16[dx];
         r16[ax] = 0x0064;
         r16[ax] = r16[ax] - memory16get(ds*16+r16[si] + 22);
-        _imul16(r16[ax]);
+        imul16(r16[ax]);
         flags.carry = (r16[ax] + r16[bx]) >= 0x10000;
         r16[ax] += r16[bx];
         r16[dx] = r16[dx] + r16[cx] + flags.carry;
@@ -3213,7 +3457,8 @@ function* sub_129D7() {
             pc = 0x129DF;
             break;
         }
-        _STOP_("goto loc_1308C");
+        yield* loc_1308C();
+        return;
     case 0x129DF:
         if (r16[ax] != 0x0098) {
             pc = 0x129E7;
@@ -3293,10 +3538,11 @@ function* sub_129D7() {
         return;
     } while (1);
 }
-function* loc_12A4D() {
+function* sub_12A48() {
     var pc = 0;
     do switch (pc) {
     case 0:
+        memory16set(ds*16+0x9186, memory16get(ds*16+0x9186) + 0x0014);
     case 0x12A4D:
         memory16set(ds*16+0x8E88, 0x0012);
         if (memory16gets(ds*16+0x9186) <= signed16(0x0027)) {
@@ -3306,10 +3552,6 @@ function* loc_12A4D() {
         memory16set(ds*16+0x9186, 0x0027);
     case 0x12A60:
         memory[ds*16+0x8FAF] = 0xff;
-        return;
-        memory16set(ds*16+0x9186, memory16get(ds*16+0x9186) + 0x0028);
-        pc = 0x12A4D;
-        break;
         return;
     } while (1);
 }
@@ -3360,10 +3602,13 @@ function* sub_12AB2() {
     memory16set(ds*16+0x915E, memory16get(ds*16+0x915E) + 1);
     return;
 }
-function* loc_12ADD() {
+function* sub_12AD0() {
     var pc = 0;
     do switch (pc) {
     case 0:
+        memory16set(ds*16+0x8E88, 0x000b);
+        yield* sub_10EB3();
+        r16[di] = memory16get(ds*16+0x9054);
     case 0x12ADD:
         r16[ax] = memory16get(ds*16+r16[di]);
         if (!(r16[ax] & r16[ax])) {
@@ -3908,7 +4153,6 @@ function* loc_1308C() {
     var pc = 0;
     do switch (pc) {
     case 0:
-    case 0x1308C:
         if (memory16get(ds*16+0x9148) != 0x0044) {
             pc = 0x13096;
             break;
@@ -3962,14 +4206,16 @@ function* sub_13117() {
     do switch (pc) {
     case 0:
         yield* sub_1100E();
-        if (_FIXME_) {
+        if (!flags.zero) {
             pc = 0x13122;
             break;
         }
         r16[ax] = 0xffff;
+        flags.zero = false;
         return;
     case 0x13122:
         r16[ax] = r16[ax] ^ r16[ax];
+        flags.zero = true;
         return;
     } while (1);
 }
@@ -4038,7 +4284,7 @@ function* sub_131B6() {
     case 0:
         r16[ax] = 0x0020;
         yield* sub_13117();
-        if (_FIXME_) {
+        if (!flags.zero) {
             pc = 0x131C1;
             break;
         }
@@ -4096,7 +4342,7 @@ function* sub_13246() {
     case 0:
         r16[ax] = 0x0034;
         yield* sub_13117();
-        if (_FIXME_) {
+        if (!flags.zero) {
             pc = 0x13251;
             break;
         }
@@ -4165,8 +4411,7 @@ function* sub_13246() {
         r16[ax] = memory16get(ds*16+r16[di] + 22);
         memory16set(ds*16+r16[si] + 22, r16[ax]);
         r16[si] = pop();
-        _STOP_("sp-trace-fail");
-        _STOP_("continues");
+        yield* sub_13319();
         return;
     } while (1);
 }
@@ -4285,7 +4530,7 @@ function* sub_13389() {
         r16[bx] = memory16get(ds*16+r16[di] + 6);
         r16[bx] -= 1;
         r16[bx] <<= 1;
-        r16[bx] = memory16get(ds*16+(r16[bx] + -8656 + 65536));
+        r16[bx] = memory16get(ds*16+r16[bx] + -8656 + 65536);
         memory16set(ds*16+r16[si] + 56, r16[bx]);
         if (memory16get(ds*16+r16[bx]) != 0x000a) {
             pc = 0x13461;
@@ -4417,48 +4662,46 @@ function* sub_13389() {
     } while (1);
 }
 function* sub_13529() {
-    var pc = 0;
-    do switch (pc) {
-    case 0:
-        yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x904a;
-        yield* sub_1077C();
-        r16[di] = pop();
-        pc = 0x13541;
-        break;
-        yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x90e2;
-        yield* sub_1077C();
-        r16[di] = pop();
-    case 0x13541:
-        memory16set(ds*16+r16[si], r16[ax]);
-        memory16set(ds*16+r16[si] + 2, r16[bx]);
-        memory16set(ds*16+r16[si] + 4, 0x0761);
-        memory16set(ds*16+r16[si] + 72, 0x0000);
-        r16[bx] = memory16get(ds*16+r16[di] + 8);
-        r16[bx] -= 0x0008;
-        memory16set(ds*16+r16[si] + 18, r16[bx]);
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] &= 0x00fe;
-        r16[ax] = memory16get(ds*16+r16[di] + 10);
-        r16[ax] -= 0x0008;
-        memory16set(ds*16+r16[si] + 22, r16[ax]);
-        r16[ax] >>= 1;
-        r16[ax] >>= 1;
-        r16[ax] >>= 1;
-        r16[ax] >>= 1;
-        r16[dx] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
-        r16[ax] += r16[bx];
-        memory16set(ds*16+r16[si] + 56, r16[ax]);
-        memory16set(ds*16+r16[si] + 26, 0x0000);
-        memory16set(ds*16+r16[si] + 34, 0x0000);
-        return;
-    } while (1);
+    yield* sub_11022();
+    push(r16[di]);
+    r16[di] = 0x904a;
+    yield* sub_1077C();
+    r16[di] = pop();
+    yield* loc_13541();
+}
+function* loc_13536() {
+    yield* sub_11022();
+    push(r16[di]);
+    r16[di] = 0x90e2;
+    yield* sub_1077C();
+    r16[di] = pop();
+    yield* loc_13541();
+}
+function* loc_13541() {
+    memory16set(ds*16+r16[si], r16[ax]);
+    memory16set(ds*16+r16[si] + 2, r16[bx]);
+    memory16set(ds*16+r16[si] + 4, 0x0761);
+    memory16set(ds*16+r16[si] + 72, 0x0000);
+    r16[bx] = memory16get(ds*16+r16[di] + 8);
+    r16[bx] -= 0x0008;
+    memory16set(ds*16+r16[si] + 18, r16[bx]);
+    r16[bx] >>= 1;
+    r16[bx] >>= 1;
+    r16[bx] >>= 1;
+    r16[bx] &= 0x00fe;
+    r16[ax] = memory16get(ds*16+r16[di] + 10);
+    r16[ax] -= 0x0008;
+    memory16set(ds*16+r16[si] + 22, r16[ax]);
+    r16[ax] >>= 1;
+    r16[ax] >>= 1;
+    r16[ax] >>= 1;
+    r16[ax] >>= 1;
+    r16[dx] = 0x0028;
+    _mul(r16[dx]);
+    r16[ax] += r16[bx];
+    memory16set(ds*16+r16[si] + 56, r16[ax]);
+    memory16set(ds*16+r16[si] + 26, 0x0000);
+    memory16set(ds*16+r16[si] + 34, 0x0000);
 }
 function* sub_13589() {
     var pc = 0;
@@ -4877,25 +5120,26 @@ function* sub_137DF() {
     } while (1);
 }
 function* loc_13809() {
-    var cs = _seg000;
+    if (memory[ds*16+0x8FAE] == 0x00)
+        return;
+    r16[ax] = 0xfff7;
+    r16[bx] = 0x0000;
+    r16[cx] = 0xfffe;
+    r16[dx] = 0xfffd;
+    bp = 0x12b2;
+    yield* sub_145F4();
+    r16[ax] = 0x0009;
+    r16[bx] = 0x0000;
+    r16[cx] = 0x0002;
+    r16[dx] = 0xfffd;
+    bp = 0x12be;
+    yield* sub_145F4();
+    return;
+}
+function* sub_13835() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        if (memory[ds*16+0x8FAE] == 0x00)
-            return;
-        r16[ax] = 0xfff7;
-        r16[bx] = 0x0000;
-        r16[cx] = 0xfffe;
-        r16[dx] = 0xfffd;
-        bp = 0x12b2;
-        yield* sub_145F4();
-        r16[ax] = 0x0009;
-        r16[bx] = 0x0000;
-        r16[cx] = 0x0002;
-        r16[dx] = 0xfffd;
-        bp = 0x12be;
-        yield* sub_145F4();
-        return;
         yield* sub_141B1();
         r16[ax] = memory16get(ds*16+0x9F12);
         memory16set(ds*16+r16[si] + 18, r16[ax]);
@@ -4918,12 +5162,13 @@ function* loc_13809() {
         bp = 0x12c4;
         yield* sub_145F4();
         return;
-        if (memory16get(ds*16+0x8E80) == 0x0000) {
-            pc = 0x1387A;
-            break;
-        }
-        return;
-    case 0x1387A:
+    } while (1);
+}
+function* loc_1387A() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
         if (memory16gets(ds*16+r16[si] + 72) < 0 /*CHECK*/) {
             pc = 0x13883;
             break;
@@ -5083,6 +5328,8 @@ function* sub_1399C() {
             _STOP_("goto loc_139D3");
     case 0x139CF:
         yield* sub_107C0();
+        _STOP_("sp-trace-fail");
+        _STOP_("continues");
         return;
     } while (1);
 }
@@ -5092,7 +5339,7 @@ function* sub_139D3() {
         _STOP_("goto nullsub_5");
     yield* sub_13589();
     yield* sub_11BEA();
-    if (_FIXME_)
+    if (flags.zero)
         _STOP_("goto nullsub_5");
     r16[ax] = memory16get(ds*16+r16[si] + 52);
     r16[ax] = r16[ax] + memory16get(cs*16+0x3DAC);
@@ -5210,6 +5457,22 @@ function* sub_13A39() {
         r16[di] = pop();
         return;
     } while (1);
+}
+function* sub_13A8E() {
+    memory16set(ds*16+r16[di] + 4, 0x08b9);
+}
+function* sub_13A94() {
+    memory16set(ds*16+r16[di] + 4, 0x08b9);
+    _STOP_("sp-trace-fail");
+    _STOP_("continues");
+}
+function* sub_13A99() {
+    if (memory16get(ds*16+r16[si]) == 0x0000)
+        return;
+    if (memory16get(ds*16+r16[si]) == 0x0008)
+        return;
+    yield* sub_107C0();
+    return;
 }
 function* sub_13AA7() {
     memory16set(ds*16+r16[di] + 4, 0x08b9);
@@ -5445,10 +5708,12 @@ function* sub_13C4F() {
         r16[ax] >>= 1;
     case 0x13C66:
         memory[ds*16+0x8FAF] = 0xff;
+        flags.carry2 = memory16get(ds*16+0x9186) > r16[ax];
         memory16set(ds*16+0x9186, memory16get(ds*16+0x9186) - r16[ax]);
-        if (memory16get(ds*16+0x9186) > 0)
+        if (flags.carry2)
             return;
-        yield* sub_13C01();
+        // std::cout << "----- skip die\n";
+        memory16set(ds*16+0x9186, 0x27);
         return;
     } while (1);
 }
@@ -5627,7 +5892,7 @@ function* sub_13C75() {
             pc = 0x13E4C;
             break;
         }
-        memory16get(ds*16+0xFCE2) <<= 1;
+        memory16set(ds*16+0xFCE2, memory16get(ds*16+0xFCE2) << 1);
         r16[ax] = memory16get(ds*16+0xFCE2);
         memory16set(ds*16+0x919A, r16[ax]);
         pc = 0x13E4C;
@@ -5764,9 +6029,9 @@ function* sub_13C75() {
         r16[cx] = 0x001e;
         yield* sub_15926();
         r16[bx] = memory16get(ds*16+0x8E7A);
-        memory[ds*16+r16[bx] + -28835] = 0x00;
+        memory[ds*16+r16[bx] + -28835 + 65536] = 0x00;
         r16[bx] = r16[bx] ^ 0x0001;
-        if (memory[ds*16+r16[bx] + -28835] != 0x00) {
+        if (memory[ds*16+r16[bx] + -28835 + 65536] != 0x00) {
             pc = 0x13F9A;
             break;
         }
@@ -5826,7 +6091,7 @@ function* sub_13C75() {
         yield* sub_14191();
         r16[ax] &= 0x0003;
         r16[dx] = 0x0032;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) + r16[ax]);
         r16[ax] = memory16get(ds*16+0xFCE6);
         memory16set(ds*16+0x915A, r16[ax]);
@@ -5849,7 +6114,7 @@ function* sub_13C75() {
         yield* sub_14191();
         r16[ax] &= 0x0003;
         r16[dx] = 0x0032;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) + r16[ax]);
         r16[ax] = memory16get(ds*16+0xFCE6);
         memory16set(ds*16+0x915A, r16[ax]);
@@ -5871,11 +6136,11 @@ function* sub_13C75() {
         }
         r16[bx] = memory16get(ds*16+0x8E7A);
         r16[bx] = r16[bx] ^ 0x0001;
-        if (memory[ds*16+r16[bx] + -28835] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28835 + 65536] == 0x00) {
             pc = 0x14078;
             break;
         }
-        if (memory[ds*16+r16[bx] + -28833] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28833 + 65536] == 0x00) {
             pc = 0x1407E;
             break;
         }
@@ -5928,16 +6193,16 @@ function* sub_13C75() {
     case 0x140CB:
         r16[bx] = memory16get(ds*16+0x8E7A);
         r16[bx] = r16[bx] ^ 0x0001;
-        if (memory[ds*16+r16[bx] + -28835] == 0x00) {
+        if (memory[ds*16+r16[bx] + -28835 + 65536] == 0x00) {
             pc = 0x14116;
             break;
         }
-        if (memory[ds*16+r16[bx] + -28833] != 0x00) {
+        if (memory[ds*16+r16[bx] + -28833 + 65536] != 0x00) {
             pc = 0x14116;
             break;
         }
         r16[bx] = r16[bx] ^ 0x0001;
-        memory[ds*16+r16[bx] + -28833] = 0xff;
+        memory[ds*16+r16[bx] + -28833 + 65536] = 0xff;
         yield* sub_118F5();
         r16[si] = memory16get(ds*16+0x9054);
         yield* sub_13760();
@@ -6013,7 +6278,7 @@ function* sub_13C75() {
 function* sub_14191() {
     push(r16[dx]);
     r16[ax] = 0x6255;
-    r16[ax] = memory16get(ds*16+0x304A) * r8[al];
+    _mul(memory16get(ds*16+0x304A));
     r16[ax] += 0x3619;
     memory16set(ds*16+0x304A, r16[ax]);
     r16[dx] = pop();
@@ -6114,7 +6379,7 @@ function* sub_1421C() {
         r16[dx] <<= r8[cl];
         r16[bx] = r16[ax];
         r16[bx] <<= 1;
-        r16[ax] = memory16get(ds*16+r16[bx] + 12422);
+        r16[ax] = memory16get(ds*16+(r16[bx] + 12422) & 65535);
         r16[cx] = 0x0030;
         bp = r16[dx];
     case 0x14232:
@@ -6263,9 +6528,11 @@ function* sub_142EB() {
         }
         r16[ax] = r16[ax] ^ r16[ax];
         r16[ax] -= 1;
+        flags.zero = false;
         return;
     case 0x1430E:
         r16[ax] = r16[ax] ^ r16[ax];
+        flags.zero = true;
         return;
     } while (1);
 }
@@ -6316,7 +6583,7 @@ function* sub_14311() {
         r16[ax] += 0x0080;
         memory16set(ds*16+r16[si] + 46, r16[ax]);
         yield* sub_11BEA();
-        if (_FIXME_) {
+        if (flags.zero) {
             pc = 0x1437C;
             break;
         }
@@ -6559,6 +6826,7 @@ function* sub_144F3() {
         }
         memory16set(ds*16+0x919E, 0x0000);
     case 0x1453F:
+        memory16set(ds*16+0x919E, 6);
         if (memory16gets(ds*16+0x919E) >= signed16(0x0006)) {
             pc = 0x1454A;
             break;
@@ -6713,7 +6981,7 @@ function* sub_1465C() {
     push(r16[ax]);
     push(r16[dx]);
     r16[ax] = 0x000a;
-    r16[ax] = r16[cx] * r8[al];
+    _mul(r16[cx]);
     r16[cx] = pop();
     div(r16[cx]);
     r16[si] = r16[ax];
@@ -6802,8 +7070,9 @@ function* sub_14675() {
         return;
     case 0x14717:
         r16[ax] = memory16get(ds*16+0x9132);
+        flags.carry2 = memory16get(ds*16+0x912E) > r16[ax];
         memory16set(ds*16+0x912E, memory16get(ds*16+0x912E) - r16[ax]);
-        if (memory16get(ds*16+0x912E) > 0)
+        if (flags.carry2)
             return;
         r16[ax] = memory16get(ds*16+0x9130);
         memory16set(ds*16+0x912E, memory16get(ds*16+0x912E) + r16[ax]);
@@ -6909,11 +7178,11 @@ function* loc_147A9() {
         r16[di] -= r16[bx];
         bp = r16[ax];
         r16[ax] = memory16get(ds*16+0x991E);
-        _imul16(r16[cx]);
+        imul16(r16[cx]);
         r16[ax] += bp;
         memory16set(ds*16+r16[si] + 18, r16[ax]);
         r16[ax] = memory16get(ds*16+0x991E);
-        _imul16(r16[di]);
+        imul16(r16[di]);
         r16[ax] += r16[bx];
         memory16set(ds*16+r16[si] + 22, r16[ax]);
         return;
@@ -6935,8 +7204,8 @@ function* sub_147E9() {
     r16[ax] = memory16get(cs*16+0x47E7);
     memory16set(ds*16+0x304A, r16[ax]);
 }
-function* sub_1480B() {
-    var pc = 0;
+function* sub_1480B(pc) {
+    if (!pc) pc = 0;
     do switch (pc) {
     case 0:
         yield* sub_141B1();
@@ -7051,6 +7320,42 @@ function* sub_14871() {
         pc = 0x1492D;
         break;
     case 0x148DE:
+        /*
+        r16[bx] = memory16get(ds*16+0xFCEE);
+        r8[ah] = memory[cs*16+r16[bx] + r16[di]];
+        _cwd();
+        flags.carry = !!(r8[ah] & 0x80);
+        r8[ah] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = !!(r8[ah] & 0x80);
+        r8[ah] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = (memory[ds*16+0xFCE9] + r8[ah]) >= 0x100;
+        memory[ds*16+0xFCE9] += r8[ah];
+        memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) + r16[dx] + flags.carry);
+        r8[ah] = memory[cs*16+r16[bx] + r16[di] + 64];
+        _cwd();
+        flags.carry = !!(r8[ah] & 0x80);
+        r8[ah] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = !!(r8[ah] & 0x80);
+        r8[ah] <<= 1;
+        rcl16(dx, 1);
+        flags.carry = (memory[ds*16+0xFCE5] + r8[ah]) >= 0x100;
+        memory[ds*16+0xFCE5] += r8[ah];
+        memory16set(ds*16+0xFCE2, memory16get(ds*16+0xFCE2) + r16[dx] + flags.carry);
+        r16[ax] = memory16get(ds*16+0xFCF2);
+        flags.carry = (memory16get(ds*16+0xFCF0) + r16[ax]) >= 0x10000;
+        memory16set(ds*16+0xFCF0, memory16get(ds*16+0xFCF0) + r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCF4);
+        memory16set(ds*16+0xFCEE, memory16get(ds*16+0xFCEE) + r16[ax] + flags.carry);
+        memory16set(ds*16+0xFCEE, memory16get(ds*16+0xFCEE) & 0x00ff);
+        r16[ax] = memory16get(ds*16+0xFCF6);
+        flags.carry = (memory16get(ds*16+0xFCF2) + r16[ax]) >= 0x10000;
+        memory16set(ds*16+0xFCF2, memory16get(ds*16+0xFCF2) + r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCF8);
+        memory16set(ds*16+0xFCF4, memory16get(ds*16+0xFCF4) + r16[ax] + flags.carry);
+        */
         r16[bx] = memory16get(ds*16+0xFCEE);
         r8[ah] = memory[cs*16+r16[bx] + r16[di]];
         _cwd();
@@ -7156,6 +7461,7 @@ function* sub_14871() {
         _STOP_("db  49h");
         _STOP_("db 0F1h");
         _STOP_("db  49h");
+
     case 0x149B5:
         r16[ax] = memory16get(ds*16+r16[si] + 54);
         if (!(r16[ax] & r16[ax])) {
@@ -7266,15 +7572,52 @@ function* sub_149F9() {
     } while (1);
 }
 function* sub_14A06() {
-    assert(0);
-}
-function* loc_14A48() {
     var pc = 0;
     do switch (pc) {
     case 0:
+        r16[ax] = memory16get(ds*16+r16[di] + 2);
+        memory16set(ds*16+r16[si] + 28, r16[ax]);
+        memory16set(ds*16+r16[si] + 30, 0x0000);
+        r16[ax] = memory16get(ds*16+r16[di] + 4);
+        _cwd();
+        r8[dl] = r8[ah];
+        r8[ah] = r8[al];
+        r8[al] = r8[al] ^ r8[al];
+        memory16set(ds*16+r16[si] + 60, r16[ax]);
+        memory16set(ds*16+r16[si] + 62, r16[dx]);
+        r16[ax] = memory16get(ds*16+r16[di] + 6);
+        memory16set(ds*16+r16[si] + 64, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 8);
+        memory16set(ds*16+r16[si] + 26, r16[ax]);
+        r16[di] += 0x000a;
+        memory16set(ds*16+r16[si] + 58, r16[di]);
+        _STOP_("goto loc_1489E");
+        return;
+    } while (1);
+}
+function* sub_14A36() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[ax] = memory16get(ds*16+r16[di] + 2);
+        r16[di] += 0x0004;
+        memory16set(ds*16+r16[si] + 58, r16[di]);
+        memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) - r16[ax]);
+        if (_FIXME_) {
+            pc = 0x14A48;
+            break;
+        }
+        _STOP_("goto loc_1499F");
+    case 0x14A48:
         r16[ax] = memory16get(ds*16+0xFCFE);
         memory16set(ds*16+r16[si] + 26, r16[ax]);
         return;
+    } while (1);
+}
+function* loc_14A4F() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
     case 0x14A4F:
         yield* sub_14191();
         r16[ax] &= 0x000e;
@@ -7593,8 +7936,10 @@ function* sub_14CFA() {
     r16[si] = 0xb1ae;
 {sub_14D0D(0x14D1E); return;}
 }
-function* sub_14D0D() {
-    var pc = 0;
+function* sub_14D0D(pc) {
+//    var pc = 0;
+    if (!pc)
+      pc = 0;
     do switch (pc) {
     case 0:
         if (pc == 0x14D1E) {
@@ -7873,7 +8218,7 @@ function* sub_14E78() {
         r16[bx] += r16[dx];
         r16[ax] += r16[bx];
         r16[bx] = 0x000c;
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[si] = 0x3cb6;
         r16[si] += r16[ax];
         r16[ax] = memory16get(ds*16+r16[si] + 6);
@@ -7951,7 +8296,7 @@ function* sub_14E78() {
         r16[si] = memory16get(ds*16+0x39B4);
         r16[bx] = memory16get(ds*16+r16[si] + 6);
         r16[bx] <<= 1;
-        yield* indirectCall(ds, r16[bx] + 14362);
+        yield* indirectCall(ds, memory16get(ds*16+r16[bx] + 14362));
         memory16set(ds*16+0x39B2, 0xffff);
         yield* sub_1577D();
         yield* sub_14E29();
@@ -8308,7 +8653,7 @@ function* sub_15154() {
         r16[bx] += r16[dx];
         r16[ax] += r16[bx];
         r16[bx] = 0x000c;
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[si] = 0x3cb6;
         r16[si] += r16[ax];
         r16[ax] = memory16get(ds*16+r16[si] + 6);
@@ -8449,7 +8794,7 @@ function* sub_15240() {
         r16[bx] = memory16get(ds*16+r16[bx] + 14542);
         r16[di] = memory16get(ds*16+r16[si] + 10);
         r16[ax] = 0x07d0;
-        r16[ax] = memory16get(ds*16+r16[di] + 52) * r8[al];
+        _mul(memory16get(ds*16+r16[di] + 52));
         r16[ax] += r16[bx];
         r16[ax] >>= 1;
         memory16set(ds*16+0x39B2, r16[ax]);
@@ -8646,7 +8991,7 @@ function* sub_15435() {
         r16[bx] += bp;
         r16[bx] = r16[bx] + memory16get(ds*16+0x8F42);
         r16[ax] = 0x000c;
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[bx] = r16[ax];
         r16[cx] = memory16get(ds*16+r16[bx] + 15544);
         r16[dx] = memory16get(ds*16+r16[bx] + 15546);
@@ -8689,7 +9034,7 @@ function* sub_15488() {
         r16[bx] += r16[ax];
         r16[bx] = r16[bx] + memory16get(ds*16+0x8F42);
         r16[ax] = 0x000c;
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[bx] = r16[ax];
         r16[cx] = memory16get(ds*16+r16[bx] + 15544);
         r16[dx] = memory16get(ds*16+r16[bx] + 15546);
@@ -8980,8 +9325,9 @@ function* sub_15691() {
         pc = 0x156B2;
         break;
     case 0x156A3:
+        flags.carry2 = memory16gets(ds*16+r16[si]) > 1;
         memory16set(ds*16+r16[si], memory16get(ds*16+r16[si]) - 1);
-        if (memory16gets(ds*16+r16[si]) > 0) {
+        if (flags.carry2) {
             pc = 0x156B2;
             break;
         }
@@ -9538,7 +9884,7 @@ function* sub_159C8() {
         memory[ds*16+r16[di] + 12] = 0x3a;
         memory[ds*16+r16[di] + 13] = 0x3a;
         memory[ds*16+r16[di] + 14] = 0x3a;
-        _lea(bp, ds, r16[di] + 4);
+        lea(bp, ds, r16[di] + 4);
         r16[bx] = 0x3756;
         r16[ax] = memory16get(ds*16+0x9152);
         memory16set(ds*16+0xFCE2, r16[ax]);
@@ -9566,14 +9912,15 @@ function* sub_159C8() {
         r16[ax] = memory16get(ds*16+r16[bx]);
         memory16set(ds*16+0xFCE2, memory16get(ds*16+0xFCE2) + r16[ax]);
         r16[ax] = memory16get(ds*16+r16[bx] + 2);
-        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) + r16[ax] + flags.carry); assert(0);
+assert(0);
+        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) + r16[ax] + flags.carry);
         r16[bx] += 0x0004;
         bp += 1;
         pc = 0x15A4A;
         break;
     case 0x15A7C:
         memory[ds*16+0x8F5B] = 0x00;
-        _lea(bp, ds, r16[di] + 12);
+        lea(bp, ds, r16[di] + 12);
         r16[bx] = 0x33ca;
         r16[di] = r16[di] ^ r16[di];
     case 0x15A89:
@@ -9860,6 +10207,7 @@ function* sub_15C0F() {
         sp += 0x0002;
         yield* sub_15950();
         r16[ax] = r16[ax] ^ r16[ax];
+        flags.zero = true;
         return;
     case 0x15C6D:
         sp += 0x0002;
@@ -9867,6 +10215,7 @@ function* sub_15C0F() {
         memory[ds*16+0x8F5B] = 0x00;
         r16[ax] = r16[ax] ^ r16[ax];
         r16[ax] -= 1;
+        flags.zero = false;
         return;
     } while (1);
 }
@@ -10107,7 +10456,6 @@ function* sub_15E52() {
         interrupt(33);
         if (flags.carry)
             _STOP_("goto loc_15E04");
-console.log("check " + memory[_dseg*16+0xe186].toString(16));
         return;
     } while (1);
 }
@@ -10456,11 +10804,11 @@ function* sub_160A5() {
         r8[dl] = 0x08;
     case 0x160B9:
         r16[ax] = memory16get(ds*16+0x8F4C);
-        assert(0); /* FIXME */ _rcl(r8[dl], 1);
-        assert(0); /* FIXME */ _rcl(r8[dl], 1);
+        assert(0); /* FIXME */ rcl8(dl, 1);
+        assert(0); /* FIXME */ rcl8(dl, 1);
         r16[ax] = memory16get(ds*16+0x8F4E);
-        assert(0); /* FIXME */ _rcl(r8[dl], 1);
-        assert(0); /* FIXME */ _rcl(r8[dl], 1);
+        assert(0); /* FIXME */ rcl8(dl, 1);
+        assert(0); /* FIXME */ rcl8(dl, 1);
         if (r8[dl] == memory[ds*16+0x8F5A])
             return;
         if (!(r8[dl] & 0x80)) {
@@ -10538,7 +10886,6 @@ function* sub_1655B() {
             pc = 0x16590;
             break;
         }
-        // std::cout << "enter shop\n";
         memory[ds*16+0x8FB0] = 0xff;
         memory[ds*16+0x922C] = 0xff;
         memory16set(ds*16+0x9190, 0x09c0);
@@ -10593,110 +10940,39 @@ function* sub_1655B() {
         return;
     } while (1);
 }
-function* sub_165F6() {
-    var cs = _seg000;
+function* sub_16696() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        lodsb_data_forward();
-        _FIXME_;
-        push(r16[bx]);
-        memory16set(ds*16+r16[si] + 65, memory16get(ds*16+r16[si] + 65) + r16[dx]);
-        push(sp);
-        flags.carry = (memory16get(ds*16+r16[si] - 100) + r16[dx]) >= 0x10000;
-        memory16set(ds*16+r16[si] - 100, memory16get(ds*16+r16[si] - 100) + r16[dx]);
-        r8[al] -= 0xc1 + flags.carry;
-        push(r16[bx]);
-        memory16set(ds*16+r16[si] + 65, memory16get(ds*16+r16[si] + 65) + r16[dx]);
-        push(sp);
-        memory16set(ds*16+r16[si] + 4, memory16get(ds*16+r16[si] + 4) + r16[dx]);
-        push(ds);
-        assert(0); /* unk previous */ _rcl(memory16get(ds*16+bp + r16[di] + 1), 84);
-        r16[cx] += 1;
-        push(sp);
-        flags.carry = (memory16get(ds*16+r16[si] - 92) + r16[dx]) >= 0x10000;
-        memory16set(ds*16+r16[si] - 92, memory16get(ds*16+r16[si] - 92) + r16[dx]);
-        r16[ax] -= memory16get(ds*16+r16[bx] + r16[di]) + flags.carry;
-        push(r16[bx]);
-        r16[cx] += 1;
-        push(r16[bx]);
-        flags.carry2 = (memory16get(ds*16+bp + r16[di] + 65) + 0x1a53 + flags.carry) >= 0x10000;
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x1a53 + flags.carry); assert(0);flags.carry = flags.carry2;
-        r8[al] -= 0x01 + flags.carry;
-        push(r16[bx]);
-        r16[cx] += 1;
-        push(r16[bx]);
-        flags.carry2 = (memory16get(ds*16+bp + r16[di] + 65) + 0x9453 + flags.carry) >= 0x10000;
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x9453 + flags.carry); assert(0);flags.carry = flags.carry2;
-        r8[al] -= 0x01 + flags.carry;
-        push(r16[bx]);
-        r16[cx] += 1;
-        push(r16[bx]);
-        flags.carry2 = (memory16get(ds*16+bp + r16[di] + 65) + 0x5853 + flags.carry) >= 0x10000;
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x5853 + flags.carry); assert(0);flags.carry = flags.carry2;
-        r16[ax] -= 0x5301 + flags.carry;
-        r16[cx] += 1;
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x7653 + flags.carry); assert(0);
-        ds = pop();
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + r16[dx]);
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0xec53 + flags.carry); assert(0);
-        ds = pop();
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + r16[dx]);
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x6653 + flags.carry); assert(0);
-        memory[ds*16+r16[bx] + r16[di]] &= r8[al];
-        push(r16[bx]);
-        r16[cx] += 1;
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x5a53 + flags.carry); assert(0);
-        ds = pop();
-        assert(0); /* unk previous */ _rcl(memory16get(ds*16+bp + r16[di] + 1), 84);
-        r16[cx] += 1;
-        push(sp);
-        memory16set(ds*16+r16[si] + 60, memory16get(ds*16+r16[si] + 60) + r16[dx]);
-        ds = pop();
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + r16[dx]);
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0xf853 + flags.carry); assert(0);
-        ds = pop();
-        assert(0); /* unk previous */ _rcl(memory16get(ds*16+bp + r16[di] + 1), 84);
-        r16[cx] += 1;
-        push(sp);
-        memory16set(ds*16+r16[si] - 78, memory16get(ds*16+r16[si] - 78) + r16[dx]);
-        ds = pop();
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + r16[dx]);
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0x4a53 + flags.carry); assert(0);
-        r8[cl] &= r8[al];
-        push(r16[bx]);
-        memory16set(ds*16+r16[si] + 65, memory16get(ds*16+r16[si] + 65) + r16[dx]);
-        push(sp);
-        memory16set(ds*16+r16[si] + 44, memory16get(ds*16+r16[si] + 44) + r16[dx]);
-        memory[ds*16+r16[bx] + r16[di]] &= r8[al];
-        push(r16[bx]);
-        r16[cx] += 1;
-        push(r16[bx]);
-        memory16set(ds*16+bp + r16[di] + 65, memory16get(ds*16+bp + r16[di] + 65) + 0xc753 + flags.carry); assert(0);
-        bp += 1;
-        r8[al] += 0xb9;
-        memory[ds*16+r16[bx] + r16[di]] |= r8[ch];
-        bp += 1;
-        r8[al] &= 0x76;
-        r16[bx] += r16[ax];
-        bp = 0x650d;
-        yield* loc_166B6(); return;
         memory16set(ds*16+r16[di] + 4, 0x08b9);
+        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
         memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
-        if (_FIXME_) {
+        if (flags.carry2) {
+            pc = 0x166A1;
+            break;
+        }
+        return;
+    case 0x166A1:
+        bp = 0x650d;
+        yield* loc_166B6();
+        return;
+    } while (1);
+}
+function* sub_166A6() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        memory16set(ds*16+r16[di] + 4, 0x08b9);
+        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
+        memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
+        if (flags.carry2) {
             pc = 0x166B1;
             break;
         }
         return;
     case 0x166B1:
         bp = 0x6523;
-        _STOP_("goto $+2");
+        yield* loc_166B6();
         return;
     } while (1);
 }
@@ -10732,6 +11008,453 @@ function* loc_166B6() {
     r16[si] = r16[di];
     yield* sub_107C0();
     r16[si] = pop();
+}
+function* sub_16807() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[si] = 0x9226;
+        r16[cx] = r16[cx] ^ r16[cx];
+    case 0x1680C:
+        if (memory[ds*16+r16[si]] != 0x00) {
+            pc = 0x1681B;
+            break;
+        }
+        memory[ds*16+r16[si]] = 0xff;
+        push(r16[si]);
+        push(r16[cx]);
+        yield* sub_16823();
+        r16[cx] = pop();
+        r16[si] = pop();
+    case 0x1681B:
+        r16[si] += 1;
+        r16[cx] += 1;
+        if (r16s[cx] < signed16(0x0005)) {
+            pc = 0x1680C;
+            break;
+        }
+        return;
+    } while (1);
+}
+function* sub_16823() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[bx] = r16[cx];
+        memory16set(ds*16+0xFCFA, r16[cx]);
+        r16[bx] <<= 1;
+        r16[ax] = memory16get(ds*16+r16[bx] + -28172 + 65536);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        memory16set(ds*16+r16[bx] + -28172 + 65536, r16[ax]);
+        r16[ax] &= 0x000f;
+        r16[bx] = r16[ax];
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] += r16[bx];
+        r16[ax] <<= 1;
+        r16[di] = 0x6767;
+        r16[di] += r16[ax];
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+0xFCE2, r16[ax]);
+        r16[bx] = memory16get(cs*16+r16[di] + 2);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x919A);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        memory16set(ds*16+0xFCE6, r16[bx]);
+        bp = memory16get(cs*16+r16[di] + 4);
+        bp <<= 1;
+        if (memory16get(ds*16+bp + 28204) != 0x0000) {
+            pc = 0x16876;
+            break;
+        }
+        memory16set(ds*16+bp + 28204, 0x0014);
+    case 0x16876:
+        r16[dx] = memory16get(cs*16+r16[di] + 6);
+        memory16set(ds*16+0xFCEE, r16[dx]);
+        memory16set(ds*16+0xFCEA, 0x0000);
+        r16[di] = memory16get(cs*16+r16[di] + 8);
+        r16[di] <<= 1;
+        r16[di] = memory16get(ds*16+r16[di] + -8482 + 65536);
+        r16[bx] = 0x670d;
+        r16[cx] = memory16get(cs*16+r16[bx]);
+        r16[bx] += 0x0002;
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        push(r16[si]);
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        memory16set(ds*16+r16[si], 0x010c);
+        memory16set(ds*16+r16[si] + 2, 0x6aad);
+        memory16set(ds*16+r16[si] + 4, 0x0761);
+        memory16set(ds*16+r16[si] + 6, 0x69c8);
+        r16[ax] = memory16get(ds*16+0xFCEE);
+        memory16set(ds*16+r16[si] + 32, r16[ax]);
+        memory16set(ds*16+r16[si] + 72, 0x0000);
+        memory16set(ds*16+r16[si] + 56, r16[di]);
+        memory16set(ds*16+r16[si] + 58, r16[di]);
+        r16[ax] = memory16get(ds*16+0xFCE2);
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCE6);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCEA);
+        memory16set(ds*16+r16[si] + 26, r16[ax]);
+        r16[ax] = memory[cs*16+0x6282];
+        memory16set(ds*16+r16[si] + 66, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCFA);
+        memory16set(ds*16+r16[si] + 34, r16[ax]);
+        memory16set(ds*16+r16[si] + 40, 0x03e8);
+        memory16set(ds*16+r16[si] + 44, 0x03e8);
+        memory16set(ds*16+r16[si] + 52, 0x0000);
+    case 0x16900:
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si], r16[ax]);
+        memory16set(ds*16+r16[si] + 2, 0x6a0a);
+        memory16set(ds*16+r16[si] + 4, 0x0761);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[si] + 6, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 4);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 6);
+        memory16set(ds*16+r16[si] + 52, r16[ax]);
+        r16[bx] += 0x0008;
+        r16[ax] = memory16get(ds*16+0xFCEE);
+        memory16set(ds*16+r16[si] + 32, r16[ax]);
+        memory16set(ds*16+r16[si] + 36, 0x0001);
+        memory[ds*16+r16[si] + 39] = 0x00;
+        memory16set(ds*16+r16[si] + 72, 0x0000);
+        memory16set(ds*16+r16[si] + 14, 0x0000);
+        memory16set(ds*16+r16[si] + 56, r16[di]);
+        memory16set(ds*16+r16[si] + 58, r16[di]);
+        r16[ax] = memory16get(ds*16+0xFCE2);
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCE6);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        memory16set(ds*16+r16[si] + 54, 0x0000);
+        r16[ax] = memory16get(ds*16+0xFCEA);
+        memory16set(ds*16+r16[si] + 26, r16[ax]);
+        memory16set(ds*16+r16[si] + 66, 0x0004);
+        r16[ax] = memory16get(ds*16+0xFCFA);
+        memory16set(ds*16+r16[si] + 34, r16[ax]);
+        memory16set(ds*16+0xFCEA, memory16get(ds*16+0xFCEA) - 0x0007);
+        yield* sub_13589();
+        if (--r16[cx]) {
+            pc = 0x16900;
+            break;
+        }
+        yield* sub_11022();
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        memory16set(ds*16+r16[si], 0x00b8);
+        memory16set(ds*16+r16[si] + 2, 0x0761);
+        memory16set(ds*16+r16[si] + 4, 0x0761);
+        memory16set(ds*16+r16[si] + 6, 0x0761);
+        memory16set(ds*16+r16[si] + 40, 0x03e8);
+        memory16set(ds*16+r16[si] + 44, 0x03e8);
+        memory16set(ds*16+r16[si] + 70, r16[di]);
+        memory16set(ds*16+r16[di], 0x00bc);
+        memory16set(ds*16+r16[di] + 2, 0x25a8);
+        memory16set(ds*16+r16[di] + 4, 0x0761);
+        memory16set(ds*16+r16[di] + 6, 0x0761);
+        memory16set(ds*16+r16[di] + 40, 0x03e8);
+        memory16set(ds*16+r16[di] + 44, 0x03e8);
+        memory16set(ds*16+r16[di] + 68, r16[si]);
+        return;
+    } while (1);
+}
+function* sub_169C8() {
+    push(r16[si]);
+    r16[si] = r16[di];
+    yield* sub_107C0();
+    r16[si] = pop();
+}
+function* sub_169D0() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        yield* sub_141B1();
+        r16[bx] = memory16get(ds*16+r16[si] + 28);
+        r8[al] = memory[cs*16+r16[bx] + 24854];
+        _cbw();
+        sar16(ax, 1);
+        sar16(ax, 1);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 22);
+        if (r16[ax] >= 0x00c0) {
+            pc = 0x16A06;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        r8[al] = memory[cs*16+r16[bx] + 24918];
+        _cbw();
+        sar16(ax, 1);
+        sar16(ax, 1);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 18);
+        if (r16[ax] >= 0x0140) {
+            pc = 0x16A06;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        return;
+    case 0x16A06:
+        yield* sub_107C0();
+        return;
+    } while (1);
+}
+function* sub_16A0A() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[bx] = memory16get(ds*16+r16[si] + 34);
+        memory[ds*16+r16[bx] + -28122 + 65536] = 0xff;
+        r16[di] = memory16get(ds*16+r16[si] + 10);
+        if (memory16get(ds*16+r16[di]) != 0x00bc) {
+            pc = 0x16A33;
+            break;
+        }
+        r16[bx] = memory16get(ds*16+r16[si] + 32);
+        r16[bx] <<= 1;
+        if (memory16get(ds*16+r16[bx] + -28204 + 65536) != 0x0000) {
+            pc = 0x16A2D;
+            break;
+        }
+        memory16set(ds*16+r16[bx] + -28204 + 65536, 0x0014);
+    case 0x16A2D:
+        yield* sub_107C0();
+        yield* indirectCall(_seg000, memory16get(ds*16+r16[si]+2));
+    case 0x16A33:
+        r16[ax] = memory16get(ds*16+r16[di] + 18);
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 22);
+        r16[ax] = r16[ax] + memory16get(ds*16+0x9198);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 28);
+        memory16set(ds*16+r16[si] + 28, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 30);
+        memory16set(ds*16+r16[si] + 30, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 26);
+        memory16set(ds*16+r16[si] + 26, r16[ax]);
+        if (memory16get(ds*16+r16[si] + 4) != 0x0761) {
+            pc = 0x16A67;
+            break;
+        }
+        if (memory16gets(ds*16+r16[si] + 26) < 0 /*CHECK*/) {
+            pc = 0x16A67;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+    case 0x16A67:
+        r16[bx] = memory16get(ds*16+r16[si] + 28);
+        r16[bx] += 0x0010;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] &= 0x000e;
+        r16[di] = 0x6a8d;
+        if (memory16get(ds*16+r16[si]) != 0x0110) {
+            pc = 0x16A84;
+            break;
+        }
+        r16[di] = 0x6a9d;
+    case 0x16A84:
+        r16[ax] = memory16get(cs*16+r16[bx] + r16[di]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+    {yield* sub_13589(); return; };
+        return;
+    } while (1);
+}
+function* sub_16AAD() {
+    r16[ax] = memory16get(ds*16+0x9198);
+    memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
+    r16[bx] = memory16get(ds*16+r16[si] + 34);
+    memory[ds*16+r16[bx] + -28122 + 65536] = 0xff;
+    yield* sub_14871();
+    if (memory16get(ds*16+r16[si]) != 0x0004)
+        return;
+    yield* indirectCall(_seg000, memory16get(ds*16+r16[si]+2));
+    return;
+}
+function* sub_16AC7() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[ax] = memory16get(ds*16+0x91AA);
+        r16[ax] += 0x00d0;
+        if (r16s[ax] >= memory16gets(ds*16+r16[si] + 22)) {
+            pc = 0x16AD5;
+            break;
+        }
+        pc = 0x16B76;
+        break;
+    case 0x16AD5:
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] += 0x0004;
+        memory16set(ds*16+r16[si] + 40, r16[ax]);
+        r16[ax] += 0x0018;
+        memory16set(ds*16+r16[si] + 44, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        r16[ax] += 0x0004;
+        memory16set(ds*16+r16[si] + 42, r16[ax]);
+        r16[ax] += 0x0018;
+        memory16set(ds*16+r16[si] + 46, r16[ax]);
+        r16[bx] = memory16get(ds*16+r16[si] + 26);
+        r16[bx] <<= 1;
+        r16[bx] <<= 1;
+        r16[bx] <<= 1;
+        r16[di] = 0x6b7a;
+        if (memory16get(ds*16+r16[si]) == 0x00e0) {
+            pc = 0x16B0C;
+            break;
+        }
+        r16[di] = 0x6b9a;
+    case 0x16B0C:
+        r16[bx] += r16[di];
+        r16[di] = memory16get(ds*16+r16[si] + 56);
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di], r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[di] + 2, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 4);
+        memory16set(ds*16+r16[di] + 40, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 6);
+        memory16set(ds*16+r16[di] + 42, r16[ax]);
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) + 1);
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) & 0x0003);
+        r8[al] = memory[cs*16+0x6262];
+        flags.carry = (memory[ds*16+r16[si] + 72] + r8[al]) >= 0x100;
+        memory[ds*16+r16[si] + 72] += r8[al];
+        if (!flags.carry)
+            return;
+        yield* sub_14191();
+        r8[al] &= 0x3f;
+        memory[ds*16+r16[si] + 72] = r8[al];
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] += 0x0010;
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        r16[bx] += 0x000e;
+        r16[cx] = 0x0002;
+        bp = memory[cs*16+0x6264];
+        bp <<= 1;
+        bp = memory16get(cs*16+bp + 30294);
+        if (memory16get(ds*16+r16[si]) == 0x00e4) {
+            pc = 0x16B6E;
+            break;
+        }
+        r16[cx] = 0x0006;
+        r16[ax] -= 0x0010;
+    case 0x16B6E:
+        r16[dx] = memory[cs*16+0x6266];
+    {yield* sub_11ED3(); return; };
+    case 0x16B76:
+        yield* sub_107C0();
+        return;
+    } while (1);
+}
+function* sub_16BCA() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[ax] = memory16get(ds*16+0x91AA);
+        r16[ax] += 0x00d0;
+        if (r16s[ax] >= memory16gets(ds*16+r16[si] + 22)) {
+            pc = 0x16BD8;
+            break;
+        }
+        pc = 0x16C7E;
+        break;
+    case 0x16BD8:
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] += 0x0008;
+        memory16set(ds*16+r16[si] + 40, r16[ax]);
+        r16[ax] += 0x0010;
+        memory16set(ds*16+r16[si] + 44, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        r16[ax] += 0x0008;
+        memory16set(ds*16+r16[si] + 42, r16[ax]);
+        r16[ax] += 0x0010;
+        memory16set(ds*16+r16[si] + 46, r16[ax]);
+        r16[bx] = memory16get(ds*16+r16[si] + 26);
+        r16[bx] &= 0xfffe;
+        r16[bx] <<= 1;
+        r16[di] = 0x6cd2;
+        if (memory16get(ds*16+r16[si]) == 0x00d8) {
+            pc = 0x16C0E;
+            break;
+        }
+        r16[di] = 0x6c82;
+    case 0x16C0E:
+        r16[bx] += r16[di];
+        r16[di] = memory16get(ds*16+r16[si] + 56);
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di], r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[di] + 2, r16[ax]);
+        if (memory16get(ds*16+r16[si] + 26) != 0x0000) {
+            pc = 0x16C36;
+            break;
+        }
+        r8[al] = memory[cs*16+0x6268];
+        flags.carry = (memory[ds*16+r16[si] + 72] + r8[al]) >= 0x100;
+        memory[ds*16+r16[si] + 72] += r8[al];
+        if (!flags.carry)
+            return;
+        yield* sub_14191();
+        r8[al] &= 0x3f;
+        memory[ds*16+r16[si] + 72] = r8[al];
+    case 0x16C36:
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) + 1);
+        if (memory16get(ds*16+r16[si] + 26) != 0x0028) {
+            pc = 0x16C45;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 26, 0x0000);
+        return;
+    case 0x16C45:
+        if (memory16get(ds*16+r16[si] + 26) != 0x0018)
+            return;
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] += 0x001a;
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        r16[bx] += 0x0002;
+        bp = memory[cs*16+0x626A];
+        bp <<= 1;
+        bp = memory16get(cs*16+bp + 30294);
+        r16[cx] = 0x0002;
+        if (memory16get(ds*16+r16[si]) == 0x00dc) {
+            pc = 0x16C76;
+            break;
+        }
+        r16[cx] = 0x0006;
+        r16[ax] -= 0x001a;
+    case 0x16C76:
+        r16[dx] = memory[cs*16+0x626C];
+    {yield* sub_11ED3(); return; };
+    case 0x16C7E:
+        yield* sub_107C0();
+        return;
+    } while (1);
 }
 function* sub_16D22() {
     var cs = _seg000;
@@ -10806,7 +11529,112 @@ function* sub_16D22() {
     case 0x16DC8:
         r16[dx] = memory[cs*16+0x6272];
     {yield* sub_11ED3(); return; };
+        return;
     case 0x16DD0:
+        yield* sub_107C0();
+        return;
+    } while (1);
+}
+function* sub_16E2C() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[ax] = memory16get(ds*16+0x91AA);
+        r16[ax] += 0x00d0;
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        if (r16s[ax] >= memory16gets(ds*16+r16[si] + 22)) {
+            pc = 0x16E3E;
+            break;
+        }
+        pc = 0x16EEB;
+        break;
+    case 0x16E3E:
+        yield* sub_141B1();
+        r16[ax] = memory16get(ds*16+0x9198);
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
+        if (memory16get(ds*16+r16[si] + 26) != 0x0000) {
+            pc = 0x16E50;
+            break;
+        }
+        return;
+    case 0x16E50:
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9F16);
+        if (r16s[ax] > signed16(0x000a)) {
+            pc = 0x16ED1;
+            break;
+        }
+        if (r16s[ax] < signed16(0xffe2)) {
+            pc = 0x16ED1;
+            break;
+        }
+        yield* sub_14191();
+        if (r8[al] >= 0x32) {
+            pc = 0x16ED1;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 26, 0x0000);
+        yield* sub_107DC();
+        r16[di] = 0x9096;
+        yield* sub_1077C();
+        r16[di] = 0x64fd;
+        if (memory16get(ds*16+r16[si]) == 0x00d4) {
+            pc = 0x16E82;
+            break;
+        }
+        r16[di] = 0x64d7;
+    case 0x16E82:
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[di] += 0x0002;
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        r16[di] += 0x0002;
+        memory16set(ds*16+r16[si] + 16, r16[di]);
+        memory16set(ds*16+0xFCFE, 0x0002);
+    case 0x16E9D:
+        bp = memory[cs*16+0x6274];
+        bp <<= 1;
+        bp = memory16get(cs*16+bp + 30294);
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] += 0x0007;
+        r16[cx] = 0x0005;
+        if (memory16get(ds*16+r16[si]) == 0x00d4) {
+            pc = 0x16EBE;
+            break;
+        }
+        r16[cx] = 0x0001;
+    case 0x16EBE:
+        r16[cx] = r16[cx] + memory16get(ds*16+0xFCFE);
+        r16[dx] = memory[cs*16+0x6276];
+        yield* sub_11ED3();
+        memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) - 1);
+        if (memory16gets(ds*16+0xFCFE) >= 0) {
+            pc = 0x16E9D;
+            break;
+        }
+        return;
+    case 0x16ED1:
+        r16[ax] = memory16get(ds*16+r16[si] + 26);
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
+        memory16set(ds*16+r16[si] + 34, memory16get(ds*16+r16[si] + 34) + r16[ax]);
+        if (memory16get(ds*16+r16[si] + 34) == 0) {
+            pc = 0x16EE4;
+            break;
+        }
+        r16[ax] = memory16get(ds*16+r16[si] + 34);
+        if (r16[ax] != memory16get(ds*16+r16[si] + 28)) {
+            pc = 0x16EE7;
+            break;
+        }
+    case 0x16EE4:
+        memory16set(ds*16+r16[si] + 26, -memory16get(ds*16+r16[si] + 26));
+    case 0x16EE7:
+        yield* sub_13589();
+        return;
+    case 0x16EEB:
         yield* sub_107C0();
         return;
     } while (1);
@@ -11091,14 +11919,15 @@ function* sub_1714D() {
         memory16set(ds*16+0xFCFE, r16[ax]);
         memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) + 0x000e);
         yield* sub_10F2F();
-        if (_FIXME_) {
+        if (flags.zero) {
             pc = 0x171A7;
             break;
         }
         r16[ax] = pop();
         memory16set(ds*16+r16[di] + 4, 0x7569);
+        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
         memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
-        if (_FIXME_) {
+        if (flags.carry2) {
             pc = 0x171A9;
             break;
         }
@@ -11112,14 +11941,14 @@ function* sub_1714D() {
         r16[si] = r16[di];
         yield* sub_107C0();
         r16[cx] = 0x0008;
-        _STOP_("call near ptr byte_1152F+0B5h");
+        yield* sub_115E4();
         r16[cx] = 0x0013;
         r16[ax] = 0x0000;
         r16[bx] = 0x0000;
         r16[dx] = 0x0140;
         r16[di] = 0x00c0;
         bp = 0x124c;
-        _STOP_("call near ptr byte_1152F+59h");
+        yield* sub_11588();
         r16[si] = memory16get(ds*16+0x9054);
         yield* sub_13760();
         r16[si] = pop();
@@ -11593,19 +12422,818 @@ function* sub_1758F() {
     memory16set(ds*16+0x91FC, 0xe51a);
     r16[ax] = 0x0001;
     r16[dx] = r16[dx] ^ r16[dx];
-    r16[ax] = memory16get(ds*16+0x991A) * r8[al];
+    _mul(memory16get(ds*16+0x991A));
     memory16set(ds*16+0x8E76, r16[ax]);
     r16[ax] = 0x0002;
     r16[dx] = r16[dx] ^ r16[dx];
-    r16[ax] = memory16get(ds*16+0x991A) * r8[al];
+    _mul(memory16get(ds*16+0x991A));
     memory16set(ds*16+0x8E78, r16[ax]);
     memory16set(ds*16+0x8E72, 0x3463);
 }
-function* loc_18B81() {
+function* sub_17DDE() {
     var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
+        r16[ax] = memory16get(ds*16+0x91AA);
+        r16[ax] += 0x00d0;
+        if (r16s[ax] >= memory16gets(ds*16+r16[si] + 22)) {
+            pc = 0x17DEC;
+            break;
+        }
+        pc = 0x17E83;
+        break;
+    case 0x17DEC:
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] -= 0x0008;
+        memory16set(ds*16+r16[si] + 40, r16[ax]);
+        r16[ax] += 0x0014;
+        memory16set(ds*16+r16[si] + 44, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        r16[ax] += 0x0004;
+        memory16set(ds*16+r16[si] + 42, r16[ax]);
+        r16[ax] += 0x0008;
+        memory16set(ds*16+r16[si] + 46, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 26);
+        if (r16[ax] & r16[ax]) {
+            pc = 0x17E25;
+            break;
+        }
+        yield* sub_14191();
+        if (r8[al] >= memory[cs*16+0x7714])
+            return;
+        memory16set(ds*16+r16[si] + 26, 0x0001);
+        return;
+    case 0x17E25:
+        r16[bx] = r16[ax];
+        r16[bx] <<= 1;
+        r16[bx] += 0x90c1;
+        if (memory16get(ds*16+r16[si]) == 0x00e8) {
+            pc = 0x17E36;
+            break;
+        }
+        r16[bx] += 0x001e;
+    case 0x17E36:
+        r16[di] = memory16get(ds*16+r16[si] + 56);
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di], r16[ax]);
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) + 1);
+        if (memory16get(ds*16+r16[si] + 26) == 0x0007) {
+            pc = 0x17E53;
+            break;
+        }
+        if (memory16get(ds*16+r16[si] + 26) != 0x000f)
+            return;
+        memory16set(ds*16+r16[si] + 26, 0x0000);
+        return;
+    case 0x17E53:
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        r16[ax] += 0x0008;
+        r16[bx] += 0x0008;
+        r16[di] = memory[cs*16+0x7716];
+        r16[di] <<= 1;
+        bp = memory16get(cs*16+r16[di] + -27991 + 65536);
+        r16[cx] = 0x0002;
+        if (memory16get(ds*16+r16[si]) == 0x00ec) {
+            pc = 0x17E7B;
+            break;
+        }
+        r16[cx] = 0x0006;
+    case 0x17E7B:
+        r16[dx] = memory[cs*16+0x7718];
+    {yield* sub_11ED3(); return; };
+    case 0x17E83:
+        yield* sub_107C0();
+        return;
+    } while (1);
+}
+function* sub_17F32() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory[ds*16+0x9230] != 0x00) {
+            pc = 0x17F4E;
+            break;
+        }
+        if (memory16gets(ds*16+0x9190) < signed16(0x09d0)) {
+            pc = 0x17F6E;
+            break;
+        }
+        if (memory16gets(ds*16+0x9190) > signed16(0x0b50)) {
+            pc = 0x17F6E;
+            break;
+        }
+        yield* sub_1818C();
+        pc = 0x17F6E;
+        break;
+    case 0x17F4E:
+        if (memory16gets(ds*16+0x9190) <= signed16(0x09f0)) {
+            pc = 0x17F6E;
+            break;
+        }
+        memory16set(ds*16+0x9190, 0x09f0);
+        memory16set(ds*16+0x91AA, 0x09f0);
+        memory16set(ds*16+0x918E, 0x18d8);
+        memory16set(ds*16+0x9196, 0x0000);
+    case 0x17F6E:
+        memory[ds*16+0x922D] = 0x00;
+        memory[ds*16+0x922E] = 0x00;
+        return;
+    } while (1);
+}
+function* sub_17F79() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        r16[di] = r16[si];
+        r16[bx] <<= 1;
+        switch (r16[bx])
+        {
+        case 0: yield* loc_135CE(); return;
+            pc = 0x17F82;
+            break;
+            pc = 0x17FDB;
+            break;
+            pc = 0x18018;
+            break;
+            pc = 0x180A3;
+            break;
+            pc = 0x180BB;
+            break;
+        case 12: assert(0);
+            pc = 0x180D1;
+            break;
+            pc = 0x180D7;
+            break;
+            pc = 0x180DD;
+            break;
+            pc = 0x180E3;
+            break;
+            pc = 0x180E9;
+            break;
+            pc = 0x180EF;
+            break;
+            default:
+            assert(0);
+        }
+    case 0x17F82:
+        r16[ax] = 0x00e8;
+        if (memory16get(ds*16+r16[di] + 12) != 0x0000) {
+            pc = 0x17F8E;
+            break;
+        }
+        r16[ax] = 0x00ec;
+    case 0x17F8E:
+        r16[bx] = 0x7dde;
+        yield* sub_13529();
+        memory16set(ds*16+r16[si] + 6, 0x3b76);
+        r16[ax] = memory[cs*16+0x771C];
+        memory16set(ds*16+r16[si] + 36, r16[ax]);
+        memory16set(ds*16+r16[si] + 40, 0x03e8);
+        memory16set(ds*16+r16[si] + 44, 0x03e8);
+        r16[bx] = memory16get(ds*16+r16[si] + 56);
+        bp = 0x90df;
+        r16[dx] = 0x90bf;
+        if (memory16get(ds*16+r16[di] + 12) == 0x0000) {
+            pc = 0x17FBF;
+            break;
+        }
+        bp = 0x90c1;
+        r16[dx] = 0x90bd;
+    case 0x17FBF:
+        memory16set(ds*16+r16[si] + 12, bp);
+        memory16set(ds*16+r16[si] + 16, r16[dx]);
+        r16[ax] = memory16get(cs*16+bp);
+        memory16set(ds*16+r16[bx], r16[ax]);
+        memory16set(ds*16+r16[si] + 52, 0x0064);
+        memory16set(ds*16+r16[si] + 48, 0x0000);
+        memory16set(ds*16+r16[si] + 50, 0x0000);
+        return;
+    case 0x17FDB:
+        r16[ax] = 0x00f0;
+        if (memory16get(ds*16+r16[di] + 12) != 0x0000) {
+            pc = 0x17FE7;
+            break;
+        }
+        r16[ax] = 0x00f4;
+    case 0x17FE7:
+        r16[bx] = 0x7ce6;
+        yield* loc_13536();
+        r16[bx] = memory16get(ds*16+r16[si] + 56);
+        bp = 0x906d;
+        if (memory16get(ds*16+r16[di] + 12) != 0x0000) {
+            pc = 0x17FFC;
+            break;
+        }
+        bp = 0x9095;
+    case 0x17FFC:
+        r16[ax] = memory16get(cs*16+bp);
+        memory16set(ds*16+r16[bx], r16[ax]);
+        r16[ax] = memory16get(cs*16+bp + 2);
+        memory16set(ds*16+r16[bx] + 2, r16[ax]);
+        r16[ax] = memory16get(cs*16+bp + 4);
+        memory16set(ds*16+r16[bx] + 40, r16[ax]);
+        r16[ax] = memory16get(cs*16+bp + 6);
+        memory16set(ds*16+r16[bx] + 42, r16[ax]);
+        return;
+    case 0x18018:
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        memory16set(ds*16+r16[si], 0x0100);
+        r16[bx] = 0x7a56;
+        if (memory16get(ds*16+r16[di] + 12) != 0x0000) {
+            pc = 0x18037;
+            break;
+        }
+        memory16set(ds*16+r16[si], 0x0104);
+        r16[bx] = 0x7a2c;
+    case 0x18037:
+        memory16set(ds*16+r16[si] + 2, 0x7e87);
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        r16[bx] += 0x0004;
+        memory16set(ds*16+r16[si] + 16, r16[bx]);
+        memory16set(ds*16+r16[si] + 72, 0x0000);
+        memory16set(ds*16+r16[si] + 6, 0x3aa7);
+        r16[ax] = memory[cs*16+0x771E];
+        memory16set(ds*16+r16[si] + 36, r16[ax]);
+        memory[ds*16+r16[si] + 39] = 0x00;
+        memory16set(ds*16+r16[si] + 52, 0x00c8);
+        r16[ax] = memory16get(ds*16+r16[di] + 8);
+        r16[ax] -= 0x0008;
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[di] + 10);
+        r16[ax] -= 0x0008;
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        memory16set(ds*16+r16[si] + 26, 0xffff);
+        r16[ax] = memory16get(ds*16+r16[di] + 4);
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        memory16set(ds*16+r16[si] + 28, r16[ax]);
+        memory16set(ds*16+r16[si] + 34, r16[ax]);
+        memory16set(ds*16+r16[si] + 54, 0x0000);
+        yield* sub_13589();
+        return;
+    case 0x180A3:
+        r16[ax] = 0x00fc;
+        r16[bx] = 0x7bef;
+        assert(0);
+        memory16set(ds*16+r16[si] + 34, 0x0001);
+        r16[di] = memory16get(ds*16+r16[si] + 56);
+        r16[ax] = memory16get(cs*16+0x8FD7);
+        memory16set(ds*16+r16[di], r16[ax]);
+        return;
+    case 0x180BB:
+        r16[ax] = 0x00f8;
+        r16[bx] = 0x7ac4;
+        assert(0);
+        memory16set(ds*16+r16[si] + 34, 0x0001);
+        return;
+        r16[bx] <<= 1;
+        switch (r16[bx])
+        {
+        case 0: assert(0);
+            pc = 0x180D1;
+            break;
+            pc = 0x180D7;
+            break;
+            pc = 0x180DD;
+            break;
+            pc = 0x180E3;
+            break;
+            pc = 0x180E9;
+            break;
+            pc = 0x180EF;
+            break;
+            default:
+            assert(0);
+        }
+    case 0x180D1:
+        r16[bx] = 0x7736;
+    {yield* sub_13389(); return; };
+    case 0x180D7:
+        r16[bx] = 0x7748;
+    {yield* sub_13389(); return; };
+    case 0x180DD:
+        r16[bx] = 0x775a;
+    {yield* sub_13389(); return; };
+    case 0x180E3:
+        r16[bx] = 0x776c;
+    {yield* sub_13389(); return; };
+    case 0x180E9:
+        r16[bx] = 0x777e;
+    {yield* sub_13389(); return; };
+    case 0x180EF:
+        r16[bx] = 0x7790;
+    {yield* sub_13389(); return; };
+        _STOP_("sp-trace-fail");
+        _STOP_("continues");
+        return;
+    } while (1);
+}
+function* sub_1818C() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory[ds*16+0x9230] != 0x00)
+            return;
+        if (memory[ds*16+0x922D] != 0x00) {
+            pc = 0x181A8;
+            break;
+        }
+        memory16set(ds*16+0xFCFA, 0x0000);
+        yield* loc_181E7();
+        memory[ds*16+0x922D] = 0xff;
+    case 0x181A8:
+        if (memory[ds*16+0x922E] != 0x00)
+            return;
+        memory16set(ds*16+0xFCFA, 0x0001);
+        yield* loc_181E7();
+        memory[ds*16+0x922E] = 0xff;
+        return;
+    } while (1);
+}
+function* sub_181BE() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory16get(ds*16+0xFCFA) != 0x0000) {
+            pc = 0x181D6;
+            break;
+        }
+        r16[ax] = memory16get(ds*16+0x91F4);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        memory16set(ds*16+0x91F4, r16[ax]);
+        return;
+    case 0x181D6:
+        r16[ax] = memory16get(ds*16+0x91F6);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        ror16(ax, 1);
+        memory16set(ds*16+0x91F6, r16[ax]);
+        return;
+    } while (1);
+}
+function* loc_181E7() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory16get(ds*16+0x9200) == 0x0001) {
+            pc = 0x181F9;
+            break;
+        }
+        if (memory[ds*16+0x922F] == 0x00) {
+            pc = 0x18201;
+            break;
+        }
+        memory[ds*16+0x922F] -= 1;
+    case 0x181F9:
+        yield* sub_181BE();
+        r16[ax] &= 0x0006;
+        pc = 0x1820A;
+        break;
+    case 0x18201:
+        yield* sub_181BE();
+        r16[ax] &= 0x0006;
+        r16[ax] += 0x0008;
+    case 0x1820A:
+        r16[ax] = r16[ax] + memory16get(ds*16+0xFCFA);
+        r16[dx] = 0x000a;
+        r16[ax] = r16[dx] * r8[al];
+        r16[di] = 0x9179;
+        r16[di] += r16[ax];
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+0xFCE2, r16[ax]);
+        r16[di] += 0x0002;
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+0xFCE6, r16[ax]);
+        r16[di] += 0x0002;
+        r16[ax] = memory16get(ds*16+0x919A);
+        memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) - r16[ax]);
+        r16[ax] = memory16get(ds*16+0x9190);
+        memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) - r16[ax]);
+        r16[bx] = memory16get(cs*16+r16[di]);
+        r16[di] += 0x0002;
+        r16[bx] <<= 1;
+        if (memory16get(ds*16+r16[bx] + -28206+65536) != 0x0000) {
+            pc = 0x1824D;
+            break;
+        }
+        memory16set(ds*16+r16[bx] + -28206+65535, 0x0018);
+    case 0x1824D:
+        r16[ax] = memory16get(cs*16+r16[di]);
+        memory16set(ds*16+0xFCEE, r16[ax]);
+        r16[di] += 0x0002;
+        memory16set(ds*16+0xFCEA, 0x0000);
+        r16[di] = memory16get(cs*16+r16[di]);
+        r16[di] <<= 1;
+        r16[di] = memory16get(ds*16+r16[di] + -8524+65536);
+        r16[bx] = 0x9117;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+0xFCFE, r16[ax]);
+        r16[bx] += 0x0002;
+    case 0x18271:
+        yield* sub_11022();
+        push(r16[di]);
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = pop();
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si], r16[ax]);
+        r16[bx] += 0x0002;
+        memory16set(ds*16+r16[si] + 2, 0x866d);
+        memory16set(ds*16+r16[si] + 4, 0x0761);
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si] + 6, r16[ax]);
+        r16[bx] += 0x0002;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[bx] += 0x0002;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[si] + 52, r16[ax]);
+        r16[bx] += 0x0002;
+        r16[ax] = memory16get(ds*16+0xFCEE);
+        memory16set(ds*16+r16[si] + 32, r16[ax]);
+        r16[ax] = memory[cs*16+0x7720];
+        memory16set(ds*16+r16[si] + 36, r16[ax]);
+        memory16set(ds*16+r16[si] + 72, 0x0000);
+        memory[ds*16+r16[si] + 39] = 0x00;
+        memory16set(ds*16+r16[si] + 14, 0x0000);
+        memory16set(ds*16+r16[si] + 56, r16[di]);
+        memory16set(ds*16+r16[si] + 58, r16[di]);
+        r16[ax] = memory16get(ds*16+0xFCE2);
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCE6);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        memory16set(ds*16+r16[si] + 54, 0x0000);
+        r16[ax] = memory16get(ds*16+0xFCEA);
+        memory16set(ds*16+r16[si] + 26, r16[ax]);
+        r16[ax] = memory[cs*16+0x7722];
+        memory16set(ds*16+r16[si] + 66, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCFA);
+        memory16set(ds*16+r16[si] + 34, r16[ax]);
+        memory16set(ds*16+0xFCEA, memory16get(ds*16+0xFCEA) - 0x000a);
+        yield* sub_13589();
+        memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) - 1);
+        if (memory16gets(ds*16+0xFCFE) < 0) {
+            pc = 0x182FF;
+            break;
+        }
+        pc = 0x18271;
+        break;
+    case 0x182FF:
+        r8[al] = 0x01;
+        r16[cx] = memory16get(ds*16+0xFCFA);
+        r8[al] <<= r8[cl];
+        memory[ds*16+0x9202] |= r8[al];
+        return;
+    } while (1);
+}
+function* sub_188A9() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory16gets(ds*16+0x918C) >= 0 /*CHECK*/) {
+            pc = 0x188BE;
+            break;
+        }
+        if (memory16gets(ds*16+0x91AA) > signed16(0x0b40)) {
+            pc = 0x188BE;
+            break;
+        }
+        memory16set(ds*16+0x91AA, 0x0b40);
+    case 0x188BE:
+        if (memory16get(ds*16+r16[si] + 34) != 0x0002) {
+            pc = 0x188CD;
+            break;
+        }
+        if (memory16get(ds*16+0x9200) != 0x0001) {
+            pc = 0x188EC;
+            break;
+        }
+        pc = 0x188F8;
+        break;
+    case 0x188CD:
+        if (memory16get(ds*16+r16[si] + 34) != 0x0001) {
+            pc = 0x188DD;
+            break;
+        }
+        if (memory16gets(ds*16+0x9F12) >= signed16(0x00a0)) {
+            pc = 0x188EC;
+            break;
+        }
+        pc = 0x188E5;
+        break;
+    case 0x188DD:
+        if (memory16gets(ds*16+0x9F12) < signed16(0x00a0)) {
+            pc = 0x188EC;
+            break;
+        }
+    case 0x188E5:
+        if (memory16get(ds*16+0x9202) != 0x0003) {
+            pc = 0x188F8;
+            break;
+        }
+    case 0x188EC:
+        memory16set(ds*16+r16[si] + 40, 0x03e8);
+        memory16set(ds*16+r16[si] + 44, 0x03e8);
+        pc = 0x18931;
+        break;
+    case 0x188F8:
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        memory16set(ds*16+r16[si] + 40, r16[ax]);
+        r16[ax] += 0x000f;
+        memory16set(ds*16+r16[si] + 44, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] <<= 1;
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        memory16set(ds*16+r16[si] + 42, r16[ax]);
+        r16[ax] += 0x000f;
+        memory16set(ds*16+r16[si] + 46, r16[ax]);
+        if (memory16get(ds*16+r16[si] + 26) != 0x0004) {
+            pc = 0x18931;
+            break;
+        }
+        if (memory16get(ds*16+0x9202) != 0x0003) {
+            pc = 0x18940;
+            break;
+        }
+    case 0x18931:
+        if (memory16get(ds*16+0x919C) & 0x0001) {
+            pc = 0x18940;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) + 1);
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) & 0x0007);
+    case 0x18940:
+        r16[bx] = memory16get(ds*16+r16[si] + 26);
+        if (r16s[bx] <= signed16(0x0004)) {
+            pc = 0x1894D;
+            break;
+        }
+        r16[bx] -= 0x0008;
+        r16[bx] = -r16[bx];
+    case 0x1894D:
+        r16[bx] <<= 1;
+        r16[di] = memory16get(ds*16+r16[si] + 12);
+        r16[ax] = memory16get(cs*16+r16[bx] + -27939 + 65536);
+        memory16set(ds*16+r16[di], r16[ax]);
+        if (memory16get(ds*16+r16[si] + 34) != 0x0002)
+            return;
+        bp = 0x91d4;
+        r16[di] = 0x9219;
+        r16[cx] = 0x0008;
+    case 0x18968:
+        if (memory16get(ds*16+bp + 0) == 0x0000) {
+            pc = 0x189A5;
+            break;
+        }
+        r16[bx] = 0x0000;
+        r16[bx] = r16[bx] + memory16get(cs*16+r16[di]);
+        memory16set(ds*16+bp + 0, memory16get(ds*16+bp + 0) - 1);
+        push(r16[si]);
+        if (memory16get(ds*16+bp + 0) & 0x0002) {
+            pc = 0x18987;
+            break;
+        }
+        lea(si, ds, r16[di] + 2);
+        pc = 0x1898A;
+        break;
+    case 0x18987:
+        lea(si, ds, r16[di] + 10);
+    case 0x1898A:
+        r16[ax] = memory16get(cs*16+r16[si]);
+        memory16set(ds*16+r16[bx], r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[si] + 2);
+        memory16set(ds*16+r16[bx] + 2, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[si] + 4);
+        memory16set(ds*16+r16[bx] + 40, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[si] + 6);
+        memory16set(ds*16+r16[bx] + 42, r16[ax]);
+        r16[si] = pop();
+    case 0x189A5:
+        bp += 0x0002;
+        r16[di] += 0x0012;
+        if (--r16[cx]) {
+            pc = 0x18968;
+            break;
+        }
+        return;
+    } while (1);
+}
+function* sub_189AE() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory16gets(ds*16+0x91AA) > signed16(0x0120)) {
+            pc = 0x189BC;
+            break;
+        }
+        memory16set(ds*16+0x91AA, 0x0120);
+    case 0x189BC:
+        if (memory16get(ds*16+r16[si] + 32) != 0x0000) {
+            pc = 0x18A0F;
+            break;
+        }
+        if (memory16gets(ds*16+r16[si] + 26) >= 0 /*CHECK*/) {
+            pc = 0x189FB;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 40, 0x03e8);
+        memory16set(ds*16+r16[si] + 44, 0x03e8);
+        r16[ax] = memory16get(ds*16+0x9F16);
+        r16[ax] = r16[ax] + memory16get(ds*16+0x9190);
+        if (r16s[ax] > signed16(0x00b0))
+            return;
+        r16[ax] = memory16get(ds*16+0x9F12);
+        if (r16s[ax] < signed16(0x0000))
+            return;
+        if (r16s[ax] > signed16(0x013f))
+            return;
+        memory16set(ds*16+r16[si] + 32, 0x03e8);
+        memory16set(ds*16+r16[si] + 28, 0x0003);
+        memory16set(ds*16+r16[si] + 26, 0x0154);
+        return;
+    case 0x189FB:
+        memory16set(ds*16+r16[si] + 26, memory16get(ds*16+r16[si] + 26) - 1);
+        if (memory16gets(ds*16+r16[si] + 26) >= 0) {
+            pc = 0x18A0F;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 48, 0x0000);
+        memory16set(ds*16+r16[si] + 32, 0x03e8);
+        memory16set(ds*16+r16[si] + 28, 0xfffd);
+    case 0x18A0F:
+        r8[al] = memory[cs*16+0x7732];
+        flags.carry = (memory[ds*16+r16[si] + 72] + r8[al]) >= 0x100;
+        memory[ds*16+r16[si] + 72] += r8[al];
+        if (!flags.carry) {
+            pc = 0x18A8B;
+            break;
+        }
+        yield* sub_14191();
+        r8[al] &= 0x3f;
+        memory[ds*16+r16[si] + 72] = r8[al];
+        yield* sub_14191();
+        r16[ax] &= 0x0003;
+        if (r16[ax] == 0) {
+            pc = 0x18A58;
+            break;
+        }
+        r16[ax] = 0x00a0;
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        r16[bx] += 0x0070;
+        r16[cx] = 0x0004;
+        r16[dx] = memory[cs*16+0x7734];
+        yield* sub_11ED3();
+        r16[bx] = 0x7a80;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[di] + 14, r16[ax]);
+        r16[bx] += 0x0004;
+        memory16set(ds*16+r16[di] + 16, r16[bx]);
+        pc = 0x18A8B;
+        break;
+    case 0x18A58:
+        r16[cx] = 0x0010;
+    case 0x18A5B:
+        push(r16[cx]);
+        r16[ax] = 0x00a0;
+        r16[bx] = memory16get(ds*16+r16[si] + 22);
+        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
+        r16[bx] += 0x0070;
+        r16[cx] -= 1;
+        r16[dx] = memory[cs*16+0x7734];
+        yield* sub_11ED3();
+        r16[bx] = 0x7a92;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[di] + 14, r16[ax]);
+        r16[bx] += 0x0004;
+        memory16set(ds*16+r16[di] + 16, r16[bx]);
+        r16[cx] = pop();
+        if (--r16[cx]) {
+            pc = 0x18A5B;
+            break;
+        }
+    case 0x18A8B:
+        memory16set(ds*16+0xFCF2, 0x0098);
+        memory16set(ds*16+0xFCFA, 0x00a7);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        memory16set(ds*16+0xFCF6, r16[ax]);
+        r16[ax] = memory16get(ds*16+0x9190);
+        memory16set(ds*16+0xFCF6, memory16get(ds*16+0xFCF6) - r16[ax]);
+        memory16set(ds*16+0xFCF6, memory16get(ds*16+0xFCF6) + 0x0070);
+        r16[ax] = memory16get(ds*16+0xFCF6);
+        memory16set(ds*16+0xFCFE, r16[ax]);
+        memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) + 0x000a);
+        r16[ax] = memory16get(ds*16+0xFCF2);
+        memory16set(ds*16+r16[si] + 40, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCF6);
+        memory16set(ds*16+r16[si] + 42, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCFA);
+        memory16set(ds*16+r16[si] + 44, r16[ax]);
+        r16[ax] = memory16get(ds*16+0xFCFE);
+        memory16set(ds*16+r16[si] + 46, r16[ax]);
+        if (memory16gets(ds*16+0x9190) < signed16(0x0160)) {
+            pc = 0x18AD7;
+            break;
+        }
+        return;
+    case 0x18AD7:
+        if (memory16get(ds*16+r16[si] + 48) != 0x0000) {
+            pc = 0x18AE0;
+            break;
+        }
+        pc = 0x18B78;
+        break;
+    case 0x18AE0:
+        r16[bx] = memory16get(ds*16+r16[si] + 34);
+        r16[bx] += 0x0002;
+        r16[bx] &= 0x0006;
+        memory16set(ds*16+r16[si] + 34, r16[bx]);
+        r16[bx] = memory16get(cs*16+r16[bx] + -27405);
+        r16[di] = 0x9333;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(cs*16+r16[di], r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(cs*16+r16[di] + 2, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 4);
+        memory16set(cs*16+r16[di] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 6);
+        memory16set(cs*16+r16[di] + 14, r16[ax]);
+        memory16set(ds*16+r16[si] + 48, memory16get(ds*16+r16[si] + 48) - 1);
+        if (memory16get(ds*16+r16[si] + 48) != 0)
+            return;
+        push(r16[si]);
+        yield* sub_11022();
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        r16[di] = r16[si];
+        r16[si] = pop();
+        memory16set(ds*16+r16[di], 0x010c);
+        memory16set(ds*16+r16[di] + 2, 0x83bd);
+        memory16set(ds*16+r16[di] + 4, 0x0853);
+        memory16set(ds*16+r16[di] + 6, 0x0761);
+        memory16set(ds*16+r16[di] + 40, 0x03e8);
+        memory16set(ds*16+r16[di] + 44, 0x03e8);
+        memory16set(ds*16+r16[di] + 18, 0x00a0);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] = r16[ax] - memory16get(ds*16+0x9190);
+        r16[ax] += 0x0080;
+        memory16set(ds*16+r16[di] + 22, r16[ax]);
+        r16[bx] = 0x78de;
+        r16[ax] = memory16get(cs*16+r16[bx]);
+        memory16set(ds*16+r16[di] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[bx] + 2);
+        memory16set(ds*16+r16[di] + 14, r16[ax]);
+        r16[bx] += 0x0004;
+        memory16set(ds*16+r16[di] + 16, r16[bx]);
+        memory16set(ds*16+r16[di] + 26, 0x0000);
+        yield* sub_14191();
+        r16[ax] &= 0x0007;
+        memory16set(ds*16+r16[di] + 28, r16[ax]);
+        return;
+    case 0x18B78:
+        if (memory16get(ds*16+r16[si] + 32) != 0x0000) {
+            pc = 0x18B81;
+            break;
+        }
+        pc = 0x18C0D;
+        break;
+    case 0x18B81:
         r8[ah] = 0x11;
         interrupt(128);
         if (r8[al] & r8[al]) {
@@ -11685,19 +13313,21 @@ function* loc_18B81() {
         memory16set(ds*16+r16[si] + 32, r16[ax]);
         memory16set(ds*16+r16[si] + 28, r16[dx]);
         return;
-        if (memory16gets(ds*16+0x9190) >= signed16(0x0160))
-            return;
-        push(r16[si]);
-        r16[ax] = 0x0006;
-        r16[bx] = 0x0009;
-        r16[dx] = memory16get(ds*16+r16[si] + 22);
-        r16[dx] = r16[dx] - memory16get(ds*16+0x9190);
-        r16[cx] = 0x0038;
-        r16[si] = 0x92e7;
-        yield* sub_10941();
-        r16[si] = pop();
-        return;
     } while (1);
+}
+function* sub_18C3E() {
+    if (memory16gets(ds*16+0x9190) >= signed16(0x0160))
+        return;
+    push(r16[si]);
+    r16[ax] = 0x0006;
+    r16[bx] = 0x0009;
+    r16[dx] = memory16get(ds*16+r16[si] + 22);
+    r16[dx] = r16[dx] - memory16get(ds*16+0x9190);
+    r16[cx] = 0x0038;
+    r16[si] = 0x92e7;
+    yield* sub_10941();
+    r16[si] = pop();
+    return;
 }
 function* sub_18C5F() {
     memory16set(ds*16+r16[si] + 4, 0x8c3e);
@@ -11737,11 +13367,22 @@ function* sub_18C85() {
         return;
     } while (1);
 }
-function* loc_18CC6() {
+function* sub_18CA7() {
     var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
+        r16[ax] = memory16get(ds*16+0x9190);
+        memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) + r16[ax]);
+        r16[ax] = memory16get(ds*16+0x9190);
+        memory16set(ds*16+0xFCEE, memory16get(ds*16+0xFCEE) + r16[ax]);
+        if (memory16gets(ds*16+0xFCE6) >= signed16(0x01b0)) {
+            pc = 0x18D08;
+            break;
+        }
+        yield* sub_18C85();
+        r16[cx] = memory16get(cs*16+r16[di]);
+        r16[di] += 0x0002;
     case 0x18CC6:
         push(r16[cx]);
         if (memory[cs*16+r16[di]] == 0x0000) {
@@ -11764,7 +13405,7 @@ function* loc_18CC6() {
         memory16set(ds*16+0xFCFE, r16[ax]);
         memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) + 0x000f);
         yield* sub_10F2F();
-        if (_FIXME_) {
+        if (!flags.zero) {
             pc = 0x18D0B;
             break;
         }
@@ -11781,6 +13422,7 @@ function* loc_18CC6() {
         r16[cx] = pop();
     case 0x18D08:
         r16[ax] = r16[ax] ^ r16[ax];
+        flags.zero = true;
         return;
     case 0x18D0B:
         r16[bx] = 0x98ce;
@@ -11789,45 +13431,15 @@ function* loc_18CC6() {
         r16[cx] = pop();
         r16[ax] = r16[ax] ^ r16[ax];
         r16[ax] -= 1;
+        flags.zero = false;
         return;
-        r16[bx] = 0x98ce;
-        r16[di] = memory16get(ds*16+r16[bx] + 12);
-        memory[cs*16+r16[di]] = 0x0000;
-        r16[bx] = memory16get(cs*16+r16[di] + 2);
-        r16[ax] = memory16get(cs*16+r16[di] + 4);
-        r16[ax] >>= 1;
-        r16[ax] >>= 1;
-        r16[ax] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[dx] = 0x0014;
-        r16[ax] = r16[dx] * r8[al];
-        r16[bx] += r16[ax];
-        memory16set(ds*16+r16[bx] + 0, 0x0000);
-        r16[dx] = 0x0853;
-        r16[ax] = memory16get(cs*16+r16[di] + 2);
-        r16[ax] += 0x0008;
-        r16[bx] = memory16get(cs*16+r16[di] + 4);
-        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
-        r16[bx] += 0x0008;
-        bp = 0x1230;
-    {yield* sub_13326(); return; };
-        r16[ax] = memory16get(ds*16+r16[si] + 40);
-        memory16set(ds*16+0xFCE2, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[si] + 42);
-        memory16set(ds*16+0xFCE6, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[si] + 44);
-        memory16set(ds*16+0xFCEA, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[si] + 46);
-        memory16set(ds*16+0xFCEE, r16[ax]);
-        r16[ax] = memory16get(ds*16+0x9190);
-        memory16set(ds*16+0xFCE6, memory16get(ds*16+0xFCE6) + r16[ax]);
-        r16[ax] = memory16get(ds*16+0x9190);
-        memory16set(ds*16+0xFCEE, memory16get(ds*16+0xFCEE) + r16[ax]);
-        yield* sub_18C85();
-        r16[cx] = memory16get(cs*16+r16[di]);
-        r16[di] += 0x0002;
+    } while (1);
+}
+function* loc_18D8E() {
+    var cs = _seg000;
+    var pc = 0;
+    do switch (pc) {
+    case 0:
     case 0x18D8E:
         push(r16[cx]);
         if (memory[cs*16+r16[di]] != 0x0000) {
@@ -11845,7 +13457,7 @@ function* loc_18CC6() {
         memory16set(ds*16+0xFCFE, r16[ax]);
         memory16set(ds*16+0xFCFE, memory16get(ds*16+0xFCFE) + 0x000f);
         yield* sub_10F2F();
-        if (_FIXME_) {
+        if (flags.zero) {
             pc = 0x18DE7;
             break;
         }
@@ -11859,7 +13471,7 @@ function* loc_18CC6() {
         r16[bx] >>= 1;
         r16[bx] >>= 1;
         r16[dx] = 0x0014;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[bx] += r16[ax];
         r16[ax] = memory16get(cs*16+r16[di] + 6);
         memory16set(ds*16+r16[bx] + 0, r16[ax]);
@@ -11895,11 +13507,36 @@ function* sub_18DF0() {
         return;
     } while (1);
 }
-function* loc_18E72() {
+function* sub_18E01() {
     var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
+        memory16set(ds*16+0x91A8, 0x09e0);
+        memory16set(ds*16+0x91AA, 0x11ff);
+        memory16set(ds*16+0x8EAC, 0x0fa0);
+        memory16set(ds*16+0x8EAE, 0x04b0);
+        memory[ds*16+0x9230] = 0x00;
+        yield* sub_11022();
+        r16[di] = 0x904a;
+        yield* sub_1077C();
+        memory16set(ds*16+r16[si], 0x0050);
+        memory16set(ds*16+r16[si] + 2, 0x89ae);
+        memory16set(ds*16+r16[si] + 4, 0x8c3e);
+        memory16set(ds*16+r16[si] + 6, 0x8745);
+        memory16set(ds*16+r16[si] + 72, 0x0000);
+        memory[ds*16+r16[si] + 74] = 0xff;
+        memory[ds*16+r16[si] + 75] = 0xff;
+        memory16set(ds*16+r16[si] + 22, 0x0060);
+        r16[ax] = memory[cs*16+0x772C];
+        memory16set(ds*16+r16[si] + 36, r16[ax]);
+        memory16set(ds*16+r16[si] + 26, 0xffff);
+        memory16set(ds*16+r16[si] + 32, 0x0000);
+        memory16set(ds*16+r16[si] + 48, 0x0000);
+        memory16set(ds*16+r16[si] + 34, 0x0000);
+        memory16set(ds*16+r16[si] + 54, 0x0000);
+        r16[cx] = 0x0003;
+        r16[di] = 0x33b0;
     case 0x18E72:
         yield* sub_11022();
         push(r16[di]);
@@ -11922,7 +13559,7 @@ function* loc_18E72() {
         r16[di] += 0x0002;
         memory16set(ds*16+r16[si] + 22, r16[ax]);
         r16[dx] = 0x0014;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[ax] += r16[bx];
         r16[ax] <<= 1;
         r16[ax] += 0x0000;
@@ -11986,1002 +13623,6 @@ function* loc_18E72() {
             break;
         }
         memory16set(ds*16+0x8E72, 0x1b55);
-        return;
-        _STOP_("db 0C0h");
-        _STOP_("db  49h");
-        _STOP_("db  4Ah");
-        _STOP_("db  40h");
-        _STOP_("db  4Bh");
-        _STOP_("db  80h");
-        _STOP_("db  4Bh");
-        _STOP_("db  40h");
-        _STOP_("db  4Ah");
-        _STOP_("db  80h");
-        _STOP_("db  4Ah");
-        _STOP_("db 0C0h");
-        _STOP_("db  4Bh");
-        _STOP_("db  4Ch");
-        _STOP_("db 0C0h");
-        _STOP_("db  4Ah");
-        _STOP_("db  4Bh");
-        _STOP_("db  40h");
-        _STOP_("db  4Ch");
-        _STOP_("db  80h");
-        _STOP_("db  4Ch");
-        _STOP_("db 0C0h");
-        _STOP_("db  4Ch");
-        _STOP_("db  4Dh");
-        _STOP_("db 0C0h");
-        _STOP_("db  4Fh");
-        _STOP_("db  50h");
-        _STOP_("db  40h");
-        _STOP_("db  4Dh");
-        _STOP_("db  80h");
-        _STOP_("db  4Dh");
-        _STOP_("db  40h");
-        _STOP_("db  50h");
-        _STOP_("db  80h");
-        _STOP_("db  50h");
-        _STOP_("db 0C0h");
-        _STOP_("db  52h");
-        _STOP_("db  53h");
-        _STOP_("db  40h");
-        _STOP_("db  55h");
-        _STOP_("db  80h");
-        _STOP_("db  55h");
-        _STOP_("db  40h");
-        _STOP_("db  53h");
-        _STOP_("db  80h");
-        _STOP_("db  53h");
-        _STOP_("db 0C0h");
-        _STOP_("db  55h");
-        _STOP_("db  56h");
-        _STOP_("db 0C0h");
-        _STOP_("db  53h");
-        _STOP_("db  54h");
-        _STOP_("db  40h");
-        _STOP_("db  56h");
-        _STOP_("db  80h");
-        _STOP_("db  56h");
-        _STOP_("db  40h");
-        _STOP_("db  54h");
-        _STOP_("db  80h");
-        _STOP_("db  54h");
-        _STOP_("db 0C0h");
-        _STOP_("db  56h");
-        _STOP_("db  57h");
-        _STOP_("db  80h");
-        _STOP_("db  29h");
-        _STOP_("db  80h");
-        _STOP_("db  29h");
-        _STOP_("db  80h");
-        _STOP_("db  5Fh");
-        _STOP_("db 0C0h");
-        _STOP_("db  5Fh");
-        _STOP_("db  60h");
-        _STOP_("db  40h");
-        _STOP_("db  60h");
-        _STOP_("db  80h");
-        _STOP_("db  60h");
-        _STOP_("db 0C0h");
-        _STOP_("db  60h");
-        _STOP_("db  61h");
-        _STOP_("db  7Ch");
-        _STOP_("db  79h");
-        _STOP_("db 0FCh");
-        _STOP_("db 0FFh");
-        _STOP_("db  92h");
-        _STOP_("db  79h");
-        _STOP_("db 0FDh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0A8h");
-        _STOP_("db  79h");
-        _STOP_("db 0BEh");
-        _STOP_("db  79h");
-        _STOP_("db 0D4h");
-        _STOP_("db  79h");
-        _STOP_("db 0EAh");
-        _STOP_("db  79h");
-        _STOP_("db 0FDh");
-        _STOP_("db 0FFh");
-        _STOP_("db  7Ah");
-        _STOP_("db 0FCh");
-        _STOP_("db 0FFh");
-        _STOP_("db  16h");
-        _STOP_("db  7Ah");
-        _STOP_("db 0FCh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0FDh");
-        _STOP_("db 0FFh");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  75h");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  75h");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  75h");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  75h");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  6Dh");
-        _STOP_("db  90h");
-        _STOP_("db  75h");
-        _STOP_("db  90h");
-        _STOP_("db  7Dh");
-        _STOP_("db  90h");
-        _STOP_("db  85h");
-        _STOP_("db  90h");
-        _STOP_("db  8Dh");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  9Dh");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db  9Dh");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  9Dh");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db  9Dh");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  95h");
-        _STOP_("db  90h");
-        _STOP_("db  9Dh");
-        _STOP_("db  90h");
-        _STOP_("db 0A5h");
-        _STOP_("db  90h");
-        _STOP_("db 0ADh");
-        _STOP_("db  90h");
-        _STOP_("db 0B5h");
-        _STOP_("db  90h");
-        _STOP_("db 0C1h");
-        _STOP_("db  3Dh");
-        _STOP_("db  3Eh");
-        _STOP_("db  41h");
-        _STOP_("db  40h");
-        _STOP_("db  81h");
-        _STOP_("db  40h");
-        _STOP_("db 0C1h");
-        _STOP_("db  40h");
-        _STOP_("db  41h");
-        _STOP_("db  41h");
-        _STOP_("db  45h");
-        _STOP_("db  81h");
-        _STOP_("db  45h");
-        _STOP_("db  41h");
-        _STOP_("db  41h");
-        _STOP_("db  81h");
-        _STOP_("db  41h");
-        _STOP_("db 0C1h");
-        _STOP_("db  45h");
-        _STOP_("db  46h");
-        _STOP_("db 0C1h");
-        _STOP_("db  41h");
-        _STOP_("db  42h");
-        _STOP_("db  41h");
-        _STOP_("db  46h");
-        _STOP_("db  81h");
-        _STOP_("db  46h");
-        _STOP_("db  41h");
-        _STOP_("db  42h");
-        _STOP_("db  81h");
-        _STOP_("db  42h");
-        _STOP_("db 0C1h");
-        _STOP_("db  46h");
-        _STOP_("db  47h");
-        _STOP_("db 0C1h");
-        _STOP_("db  42h");
-        _STOP_("db  43h");
-        _STOP_("db  41h");
-        _STOP_("db  47h");
-        _STOP_("db  81h");
-        _STOP_("db  47h");
-        _STOP_("db  41h");
-        _STOP_("db  43h");
-        _STOP_("db  81h");
-        _STOP_("db  43h");
-        _STOP_("db 0C1h");
-        _STOP_("db  47h");
-        _STOP_("db  48h");
-        _STOP_("db 0C1h");
-        _STOP_("db  43h");
-        _STOP_("db  44h");
-        _STOP_("db  41h");
-        _STOP_("db  48h");
-        _STOP_("db  81h");
-        _STOP_("db  48h");
-        _STOP_("db  41h");
-        _STOP_("db  44h");
-        _STOP_("db  81h");
-        _STOP_("db  44h");
-        _STOP_("db 0C1h");
-        _STOP_("db  48h");
-        _STOP_("db  49h");
-        _STOP_("db 0C1h");
-        _STOP_("db  44h");
-        _STOP_("db  45h");
-        _STOP_("db  41h");
-        _STOP_("db  49h");
-        _STOP_("db  81h");
-        _STOP_("db  49h");
-        _STOP_("db 0C1h");
-        _STOP_("db  5Bh");
-        _STOP_("db  5Ch");
-        _STOP_("db 0C1h");
-        _STOP_("db  57h");
-        _STOP_("db  58h");
-        _STOP_("db  41h");
-        _STOP_("db  58h");
-        _STOP_("db  81h");
-        _STOP_("db  58h");
-        _STOP_("db 0C1h");
-        _STOP_("db  58h");
-        _STOP_("db  59h");
-        _STOP_("db  41h");
-        _STOP_("db  59h");
-        _STOP_("db  81h");
-        _STOP_("db  59h");
-        _STOP_("db  41h");
-        _STOP_("db  59h");
-        _STOP_("db  59h");
-        _STOP_("db 0C1h");
-        _STOP_("db  58h");
-        _STOP_("db  81h");
-        _STOP_("db  58h");
-        _STOP_("db  41h");
-        _STOP_("db  58h");
-        _STOP_("db  58h");
-        _STOP_("db 0C1h");
-        _STOP_("db  57h");
-        _STOP_("db 0C1h");
-        _STOP_("db  59h");
-        _STOP_("db  5Ah");
-        _STOP_("db  41h");
-        _STOP_("db  5Ah");
-        _STOP_("db  81h");
-        _STOP_("db  5Ah");
-        _STOP_("db 0C1h");
-        _STOP_("db  5Ah");
-        _STOP_("db  5Bh");
-        _STOP_("db  41h");
-        _STOP_("db  5Bh");
-        _STOP_("db  81h");
-        _STOP_("db  5Bh");
-        _STOP_("db  41h");
-        _STOP_("db  5Bh");
-        _STOP_("db  5Bh");
-        _STOP_("db 0C1h");
-        _STOP_("db  5Ah");
-        _STOP_("db  81h");
-        _STOP_("db  5Ah");
-        _STOP_("db  41h");
-        _STOP_("db  5Ah");
-        _STOP_("db  5Ah");
-        _STOP_("db 0C1h");
-        _STOP_("db  59h");
-        _STOP_("db 0CEh");
-        _STOP_("db  35h");
-        _STOP_("db  82h");
-        _STOP_("db  7Fh");
-        _STOP_("db 0DBh");
-        _STOP_("db  7Fh");
-        _STOP_("db  18h");
-        _STOP_("db  80h");
-        _STOP_("db 0A3h");
-        _STOP_("db  80h");
-        _STOP_("db 0BBh");
-        _STOP_("db  80h");
-        _STOP_("db  60h");
-        _STOP_("db  33h");
-        _STOP_("db 0D1h");
-        _STOP_("db  80h");
-        _STOP_("db 0D7h");
-        _STOP_("db  80h");
-        _STOP_("db 0DDh");
-        _STOP_("db  80h");
-        _STOP_("db 0E3h");
-        _STOP_("db  80h");
-        _STOP_("db 0E9h");
-        _STOP_("db  80h");
-        _STOP_("db 0EFh");
-        _STOP_("db  80h");
-        _STOP_("db  0Bh");
-        _STOP_("db  14h");
-        _STOP_("db 0F5h");
-        _STOP_("db  80h");
-        _STOP_("db  2Ah");
-        _STOP_("db 0FAh");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db  81h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  32h");
-        _STOP_("db  1Ch");
-        _STOP_("db  26h");
-        _STOP_("db  81h");
-        _STOP_("db  85h");
-        _STOP_("db  2Fh");
-        _STOP_("db  64h");
-        _STOP_("db  58h");
-        _STOP_("db  68h");
-        _STOP_("db  0Bh");
-        _STOP_("db 0D8h");
-        _STOP_("db  68h");
-        _STOP_("db  0Bh");
-        _STOP_("db  13h");
-        _STOP_("db  58h");
-        _STOP_("db  68h");
-        _STOP_("db  0Bh");
-        _STOP_("db 0D8h");
-        _STOP_("db  68h");
-        _STOP_("db  0Bh");
-        _STOP_("db 0, 3, 0, 12h, 0, 68h, 0, 88h, 0Bh, 4, 0...");
-        _STOP_("db 0C8h, 0, 88h, 0Bh, 5, 0, 4, 0, 11h, 0, ...");
-        _STOP_("db 0Bh, 4, 0, 6, 0, 3, 0, 0C8h, 0, 88h, 0B...");
-        _STOP_("db 10h, 0, 58h, 0, 68h, 0Ah, 1, 0, 8, 0, 4...");
-        _STOP_("db 68h, 0Ah, 8, 0, 1, 0, 0Ah, 0, 58h, 0, 6...");
-        _STOP_("db 8, 0, 4, 0, 0D8h, 0, 68h, 0Ah, 8, 0, 1,...");
-        _STOP_("db 0, 68h, 0Ah, 1, 0, 8, 0, 4, 0, 0D8h, 0,...");
-        _STOP_("db 0, 1, 0, 0Ah, 0, 58h, 0, 68h, 0Ah, 1, 0...");
-        _STOP_("db 0D8h, 0, 68h, 0Ah, 8, 0, 1, 0, 0Ah, 0, ...");
-        _STOP_("db 3Bh, 1, 3Ch, 41h, 3Eh, 81h, 3Eh, 41h, 3...");
-        _STOP_("db 0C1h, 3Eh, 1, 3Fh, 0EAh, 1Ah, 0C1h, 3Bh...");
-        _STOP_("db 3Eh, 81h, 3Eh, 41h, 3Ch, 81h, 3Ch, 0C1h...");
-        _STOP_("db 52h, 1Ch, 0C1h, 3Bh, 1, 3Ch, 41h, 3Eh, ...");
-        _STOP_("db 3Ch, 81h, 3Ch, 0C1h, 3Eh, 1, 3Fh, 0A4h,...");
-        _STOP_("db 1, 3Ch, 41h, 3Eh, 81h, 3Eh, 41h, 3Ch, 8...");
-        _STOP_("db 3Eh, 1, 3Fh, 0AEh, 1Ch, 0C1h, 3Ch, 1, 3...");
-        _STOP_("db 81h, 3Fh, 41h, 3Dh, 81h, 3Dh, 0C1h, 3Fh...");
-        _STOP_("db 1Ch, 0C1h, 3Ch, 1, 3Dh, 41h, 3Fh, 81h, ...");
-        _STOP_("db 81h, 3Dh, 0C1h, 3Fh, 1, 40h, 0F8h, 1Ah,...");
-        _STOP_("db 3Dh, 41h, 3Fh, 81h, 3Fh, 41h, 3Dh, 81h,...");
-        _STOP_("db 1, 40h, 0E0h, 19h, 0C1h, 3Ch, 1, 3Dh, 4...");
-        _STOP_("db 3Fh, 41h, 3Dh, 81h, 3Dh, 0C1h, 3Fh, 1, ...");
-        _STOP_("db 13h, 51h, 0EDh, 52h, 36h, 68h, 5Ah, 68h...");
-        _STOP_("db 61h, 0C1h, 61h, 41h, 5Ch, 4 dup(0), 1, ...");
-        _STOP_("db 81h, 62h, 4 dup(0), 41h, 5Ch, 2 dup(0),...");
-        _STOP_("db 80h, 15h, 2 dup(0), 41h, 0Dh, 41h, 5Ch,...");
-        _STOP_("db 5Ch, 81h, 5Ch, 0C1h, 5Ch, 1, 5Dh, 41h, ...");
-        _STOP_("db 1, 34h, 4 dup(0), 41h, 3Ah, 4 dup(0), 1...");
-        _STOP_("db 81h, 3Ah, 2 dup(0), 0C1h, 1Ch, 1, 1Dh, ...");
-        _STOP_("db 1Dh, 0C1h, 1Dh, 1, 1Eh, 0C1h, 21h, 1, 2...");
-        _STOP_("db 80h, 22h, 0C1h, 22h, 1, 23h, 0C1h, 26h,...");
-        _STOP_("db 27h, 80h, 27h, 0C0h, 27h, 1, 28h, 0C1h,...");
-        _STOP_("db 40h, 2Ch, 80h, 2Ch, 0C0h, 2Ch, 1, 2Dh, ...");
-        _STOP_("db 31h, 41h, 31h, 81h, 31h, 0C1h, 31h, 1, ...");
-        _STOP_("db 1, 36h, 41h, 36h, 81h, 36h, 0C1h, 36h, ...");
-        _STOP_("db 3Ah, 1, 3Bh, 4 dup(0), 41h, 3Bh, 81h, 3...");
-        _STOP_("db 1, 36h, 0C1h, 3Ah, 1, 3Bh, 0C1h, 4Eh, 1...");
-        _STOP_("db 51h, 1, 52h, 0C1h, 36h, 1, 37h, 41h, 3B...");
-        _STOP_("db 41h, 4Fh, 81h, 4Fh, 41h, 52h, 81h, 52h,...");
-        _STOP_("db 31h, 41h, 36h, 81h, 36h, 0C1h, 4Dh, 1, ...");
-        _STOP_("db 1, 51h, 41h, 4Eh, 81h, 4Eh, 41h, 51h, 8...");
-        _STOP_("db 3 dup(0), 20h, 0, 0A0h, 1, 0C1h, 39h, 2...");
-        _STOP_("db 0, 90h, 1, 81h, 39h, 2 dup(0), 30h, 0, ...");
-        _STOP_("db 39h, 2 dup(0), 30h, 0, 80h, 1, 81h, 39h...");
-        _STOP_("db 0, 80h, 1, 0C1h, 39h, 2 dup(0), 40h, 0,...");
-        _STOP_("db  39h");
-        _STOP_("db  50h");
-        _STOP_("db  70h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db  50h");
-        _STOP_("db  60h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db  60h");
-        _STOP_("db  60h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db  60h");
-        _STOP_("db  50h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db  70h");
-        _STOP_("db  50h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db  70h");
-        _STOP_("db  40h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db  0Ch");
-        _STOP_("db 0C0h");
-        _STOP_("db  50h");
-        _STOP_("db  39h");
-        _STOP_("db 0C0h");
-        _STOP_("db  40h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db 0D0h");
-        _STOP_("db  60h");
-        _STOP_("db  39h");
-        _STOP_("db 0D0h");
-        _STOP_("db  50h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db 0E0h");
-        _STOP_("db  70h");
-        _STOP_("db  39h");
-        _STOP_("db 0E0h");
-        _STOP_("db  60h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db 0F0h");
-        _STOP_("db  80h");
-        _STOP_("db  39h");
-        _STOP_("db 0F0h");
-        _STOP_("db  70h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  90h");
-        _STOP_("db  39h");
-        _STOP_("db  80h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  10h");
-        _STOP_("db 0A0h");
-        _STOP_("db  39h");
-        _STOP_("db  10h");
-        _STOP_("db  90h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  0Ah");
-        _STOP_("db  30h");
-        _STOP_("db  20h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  30h");
-        _STOP_("db  30h");
-        _STOP_("db  39h");
-        _STOP_("db  40h");
-        _STOP_("db  30h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  40h");
-        _STOP_("db  40h");
-        _STOP_("db  39h");
-        _STOP_("db  50h");
-        _STOP_("db  40h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  50h");
-        _STOP_("db  50h");
-        _STOP_("db  39h");
-        _STOP_("db  60h");
-        _STOP_("db  50h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  60h");
-        _STOP_("db  60h");
-        _STOP_("db  39h");
-        _STOP_("db  70h");
-        _STOP_("db  60h");
-        _STOP_("db  41h");
-        _STOP_("db  39h");
-        _STOP_("db  70h");
-        _STOP_("db  70h");
-        _STOP_("db  39h");
-        _STOP_("db  0Ah");
-        _STOP_("db 0C0h");
-        _STOP_("db  60h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db 0C0h");
-        _STOP_("db  70h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db 0D0h");
-        _STOP_("db  50h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db 0D0h");
-        _STOP_("db  60h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db 0E0h");
-        _STOP_("db  40h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db 0E0h");
-        _STOP_("db  50h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db 0F0h");
-        _STOP_("db  30h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db 0F0h");
-        _STOP_("db  40h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db  20h");
-        _STOP_("db  81h");
-        _STOP_("db  39h");
-        _STOP_("db  30h");
-        _STOP_("db 0C1h");
-        _STOP_("db  39h");
-        _STOP_("db  73h");
-        _STOP_("db  93h");
-        _STOP_("db  7Bh");
-        _STOP_("db  93h");
-        _STOP_("db  83h");
-        _STOP_("db  93h");
-        _STOP_("db  7Bh");
-        _STOP_("db  93h");
-        _STOP_("db  53h");
-        _STOP_("db  93h");
-        _STOP_("db  5Bh");
-        _STOP_("db  93h");
-        _STOP_("db  63h");
-        _STOP_("db  93h");
-        _STOP_("db  6Bh");
-        _STOP_("db  93h");
-        _STOP_("db  62h");
-        _STOP_("db  16h");
-        _STOP_("db 0C4h");
-        _STOP_("db  44h");
-        _STOP_("db  79h");
-        _STOP_("db  36h");
-        _STOP_("db  79h");
-        _STOP_("db  28h");
-        _STOP_("db  79h");
-        _STOP_("db  1Ah");
-        _STOP_("db  79h");
-        _STOP_("db  0Ch");
-        _STOP_("db  79h");
-        _STOP_("db  6Eh");
-        _STOP_("db  79h");
-        _STOP_("db  60h");
-        _STOP_("db  79h");
-        _STOP_("db  52h");
-        _STOP_("db  79h");
-        _STOP_("db  16h");
-        _STOP_("db  7Ah");
-        _STOP_("db  7Ah");
-        _STOP_("db 0EAh");
-        _STOP_("db  79h");
-        _STOP_("db 0D4h");
-        _STOP_("db  79h");
-        _STOP_("db 0BEh");
-        _STOP_("db  79h");
-        _STOP_("db 0A8h");
-        _STOP_("db  79h");
-        _STOP_("db  92h");
-        _STOP_("db  79h");
-        _STOP_("db  7Ch");
-        _STOP_("db  79h");
-        _STOP_("db  65h");
-        _STOP_("db  2Bh");
-        _STOP_("db 0B5h");
-        _STOP_("db  2Ah");
-        _STOP_("db  2Ah");
-        _STOP_("db 0D5h");
-        _STOP_("db  2Eh");
-        _STOP_("db  25h");
-        _STOP_("db  2Eh");
-        _STOP_("db  75h");
-        _STOP_("db  2Dh");
-        _STOP_("db 0C5h");
-        _STOP_("db  2Ch");
-        _STOP_("db  15h");
-        _STOP_("db  2Ch");
-        _STOP_("db  0Bh");
-        _STOP_("db  36h");
-        _STOP_("db 0BBh");
-        _STOP_("db  36h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  5Bh");
-        _STOP_("db  35h");
-        _STOP_("db  0Bh");
-        _STOP_("db  36h");
-        _STOP_("db 0BBh");
-        _STOP_("db  36h");
-        _STOP_("db 0B5h");
-        _STOP_("db  34h");
-        _STOP_("db  5Bh");
-        _STOP_("db  35h");
-        _STOP_("db  73h");
-        _STOP_("db  33h");
-        _STOP_("db 0CDh");
-        _STOP_("db  32h");
-        _STOP_("db  1Dh");
-        _STOP_("db  32h");
-        _STOP_("db  77h");
-        _STOP_("db  31h");
-        _STOP_("db 0DBh");
-        _STOP_("db  30h");
-        _STOP_("db  35h");
-        _STOP_("db  30h");
-        _STOP_("db  85h");
-        _STOP_("db  2Fh");
-        _STOP_("db  0Fh");
-        _STOP_("db  34h");
-        _STOP_("unk_19564 db    6");
-        _STOP_("unk_19566 db  0Ch");
-        _STOP_("db  18h");
-        _STOP_("db  14h");
-        _STOP_("db 0E0h");
-        _STOP_("db  28h");
-        _STOP_("db  18h");
-        _STOP_("db  18h");
-        _STOP_("db  10h");
-        _STOP_("db  50h");
-        _STOP_("db  14h");
-        _STOP_("db  14h");
-        _STOP_("db  0Ch");
-        _STOP_("db  10h");
-        _STOP_("db  14h");
-        _STOP_("unk_19596 db  1Eh");
-        _STOP_("db  0Ah");
-        _STOP_("db 0D4h");
-        _STOP_("db  2Ch");
-        _STOP_("db  0Bh");
-        _STOP_("db  48h");
-        _STOP_("db  53h");
-        _STOP_("db 0A7h");
-        _STOP_("db  3Ah");
-        _STOP_("db  54h");
-        _STOP_("db  96h");
-        _STOP_("db 0E0h");
-        _STOP_("db  2Ch");
-        _STOP_("db  0Bh");
-        _STOP_("db  48h");
-        _STOP_("db  53h");
-        _STOP_("db 0A7h");
-        _STOP_("db  3Ah");
-        _STOP_("db  7Ah");
-        _STOP_("db  96h");
-        _STOP_("db 0E4h");
-        _STOP_("db 0F4h");
-        _STOP_("db 0FBh");
-        _STOP_("db  99h");
-        _STOP_("db  53h");
-        _STOP_("db  39h");
-        _STOP_("db  3Ah");
-        _STOP_("db  90h");
-        _STOP_("db  96h");
-        _STOP_("db  0Ch");
-        _STOP_("db 0FFh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0E4h");
-        _STOP_("db  0Eh");
-        _STOP_("db  9Ah");
-        _STOP_("db  53h");
-        _STOP_("db  39h");
-        _STOP_("db  3Ah");
-        _STOP_("db  94h");
-        _STOP_("db  96h");
-        _STOP_("db  0Ch");
-        _STOP_("db 0FFh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0E4h");
-        _STOP_("db  1Ch");
-        _STOP_("db  9Ah");
-        _STOP_("db  53h");
-        _STOP_("db  39h");
-        _STOP_("db  3Ah");
-        _STOP_("db  94h");
-        _STOP_("db  96h");
-        _STOP_("db  0Ch");
-        _STOP_("db 0FFh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0E4h");
-        _STOP_("db  2Ah");
-        _STOP_("db  9Ah");
-        _STOP_("db  53h");
-        _STOP_("db  39h");
-        _STOP_("db  3Ah");
-        _STOP_("db  94h");
-        _STOP_("db  96h");
-        _STOP_("db  0Ch");
-        _STOP_("db 0FFh");
-        _STOP_("db 0FFh");
-        _STOP_("db 0E4h");
-        _STOP_("db 38h, 0, 3, 9Ah, 53h, 8, 39h, 3Ah, 94h, ...");
-        _STOP_("db 2 dup(0FFh), 0E4h, 0, 46h, 0, 3, 9Ah, 5...");
-        _STOP_("db 94h, 96h, 0Ch, 0, 2 dup(0FFh), 0E4h, 0,...");
-        _STOP_("db 9Ah, 53h, 8, 39h, 3Ah, 98h, 96h, 0Ch, 0...");
-        _STOP_("db 2 dup(0), 0E8h, 0, 0C8h, 0, 2Bh, 9Ah, 5...");
-        _STOP_("db 3Ah, 9Ch, 96h, 3, 5 dup(0), 0ECh, 0, 64...");
-        _STOP_("db 53h, 8, 0A7h, 3Ah, 0A0h, 96h, 3, 5 dup(...");
-        _STOP_("db 1, 0, 85h, 0DFh, 1, 0, 0D5h, 0E0h, 1, 0...");
-        _STOP_("db 1, 0, 61h, 0E3h, 1, 0, 0B1h, 0E4h, 1, 0...");
-        _STOP_("db 0, 47h, 0E7h, 1, 3 dup(0), 0E2h, 41h, 5...");
-        _STOP_("db 0E8h, 3, 0, 0C9h, 0E9h, 3, 0, 0F1h, 0EA...");
-        _STOP_("db 0ECh, 3, 3 dup(0), 0E2h, 41h, 7Ah, 96h,...");
-        _STOP_("db 9Fh, 6Bh, 2 dup(0), 5Fh, 6Eh, 2 dup(0),...");
-        _STOP_("db 95h, 41h, 1, 0, 45h, 42h, 1, 0, 0F5h, 4...");
-        _STOP_("db 43h, 1, 0, 55h, 44h, 1, 0, 5, 45h, 1, 0...");
-        _STOP_("db 1, 0, 65h, 46h, 1, 3 dup(0), 0E2h, 41h,...");
-        _STOP_("db 88h, 2, 0, 0C1h, 88h, 2, 0, 5Dh, 89h, 2...");
-        _STOP_("db 2, 3 dup(0), 0E2h, 41h, 0C6h, 96h, 21h,...");
-        _STOP_("db 80h, 2, 0, 77h, 81h, 2, 0, 27h, 82h, 2,...");
-        _STOP_("db 41h, 0DCh, 96h, 79h, 85h, 2, 0, 15h, 86...");
-        _STOP_("db 86h, 2, 0, 61h, 87h, 2, 3 dup(0), 0E2h,...");
-        _STOP_("db 0CDh, 82h, 2, 0, 7Dh, 83h, 2, 0, 23h, 8...");
-        _STOP_("db 84h, 2, 3 dup(0), 0E2h, 41h, 8, 97h, 0C...");
-        _STOP_("db 0, 75h, 0DCh, 2, 0, 11h, 0DDh, 2, 0, 99...");
-        _STOP_("db 0E2h, 41h, 1Eh, 97h, 0A5h, 0B4h, 2, 0, ...");
-        _STOP_("db 0, 0B1h, 0B9h, 2, 0, 35h, 0B7h, 2, 3 du...");
-        _STOP_("db 34h, 97h, 3Dh, 0B2h, 2 dup(0), 8Dh, 0AA...");
-        _STOP_("db 0ADh, 2, 0, 0ADh, 0AFh, 2, 0, 1Dh, 0ADh...");
-        _STOP_("db 0E2h, 41h, 4Eh, 97h, 0B5h, 0BBh, 2 dup(...");
-        _STOP_("db 2, 0, 7Dh, 0A3h, 2, 0, 0F9h, 0A5h, 2, 0...");
-        _STOP_("db 2, 3 dup(0), 0E2h, 41h, 68h, 97h, 0F5h,...");
-        _STOP_("db 45h, 0BEh, 2, 0, 0D5h, 0C0h, 2, 0, 65h,...");
-        _STOP_("db 0D5h, 0C0h, 2, 3 dup(0), 0E2h, 41h, 82h...");
-        _STOP_("db 0A7h, 2 dup(0), 0E7h, 5Dh, 2, 0, 97h, 5...");
-        _STOP_("db 5Fh, 2, 0, 0EDh, 5Fh, 2, 3 dup(0), 0E2h...");
-        _STOP_("db 7Bh, 58h, 2, 0, 2Bh, 59h, 2, 0, 0DBh, 5...");
-        _STOP_("db 5Ah, 2, 3 dup(0), 0E2h, 41h, 0B2h, 97h,...");
-        _STOP_("db 0B9h, 66h, 2, 0, 5Fh, 67h, 2, 0, 0Fh, 6...");
-        _STOP_("db 0E2h, 41h, 0C8h, 97h, 53h, 63h, 2, 0, 3...");
-        _STOP_("db 0B3h, 64h, 2, 0, 59h, 65h, 2, 3 dup(0),...");
-        _STOP_("db 97h, 0C5h, 55h, 2, 0, 75h, 56h, 2, 0, 1...");
-        _STOP_("db 0CBh, 57h, 2, 3 dup(0), 0E2h, 41h, 0F4h...");
-        _STOP_("db 2, 0, 0E1h, 5Bh, 2, 0, 87h, 5Ch, 2, 0, ...");
-        _STOP_("db 3 dup(0), 0E2h, 41h, 0Ah, 98h, 9Dh, 60h...");
-        _STOP_("db 61h, 2, 0, 0FDh, 61h, 2, 0, 0A3h, 62h, ...");
-        _STOP_("db 0E2h, 41h, 20h, 98h, 0BFh, 68h, 2, 0");
-        _STOP_("db 6Fh, 69h, 2, 0, 15h, 6Ah, 2, 0, 0C5h, 6...");
-        _STOP_("db 0E2h, 41h, 36h, 98h, 0A9h, 8Ah, 4, 0, 0...");
-        _STOP_("db 3 dup(0), 0E2h, 41h, 4Ch, 98h, 61h, 93h...");
-        _STOP_("db 98h, 4, 0, 69h, 9Ch, 4, 3 dup(0), 0E2h,...");
-        _STOP_("db 9, 7Bh, 2 dup(0), 91h, 7Bh, 2, 0, 19h, ...");
-        _STOP_("db 7Ch, 14h, 0, 19h, 7Ch, 2, 0, 91h, 7Bh, ...");
-        _STOP_("db 0E2h, 41h, 6Ch, 98h, 7Fh, 79h, 2 dup(0)...");
-        _STOP_("db 3, 0, 15h, 2Eh, 3, 3 dup(0), 0E2h, 41h,...");
-        _STOP_("db 0EDh, 1, 0, 0C9h, 0EDh, 1, 0, 5Bh, 0EEh...");
-        _STOP_("db 0EEh, 1, 3 dup(0), 0E2h, 41h, 9Ch, 98h,...");
-        _STOP_("db 0D9h, 39h, 2, 0, 79h, 3Bh, 1, 0, 69h, 3...");
-        _STOP_("db 79h, 3Bh, 2, 3 dup(0), 0E2h, 41h, 0B2h,...");
-        _STOP_("db 2 dup(0), 1Dh, 34h, 2, 0, 0BDh, 35h, 1,...");
-        _STOP_("db 2 dup(0), 0BDh, 35h, 2, 3 dup(0), 0E2h,...");
-        _STOP_("db 35h, 9, 3, 0, 71h, 0Ah, 3, 0, 0ADh, 0Bh...");
-        _STOP_("db 0Ah, 3, 3 dup(0), 0E2h, 41h, 0E6h, 98h,...");
-        _STOP_("db 0, 0E9h, 0Ch, 3, 0, 89h, 0Eh, 3, 0, 29h...");
-        _STOP_("db 89h, 0Eh, 3, 0, 0E9h, 0Ch, 3, 0, 0ADh, ...");
-        _STOP_("db 29h, 0, 3, 0, 65h, 1, 3, 0, 0A1h, 2, 3,...");
-        _STOP_("db 3 dup(0), 0E2h, 41h, 18h, 99h, 0A1h, 2,...");
-        _STOP_("db 2 dup(3), 0, 7Dh, 5, 3, 0, 1Dh, 7, 3, 0...");
-        _STOP_("db 0, 0DDh, 2 dup(3), 0, 0A1h, 2, 2 dup(0)...");
-        _STOP_("db 0, 0BBh, 47h, 1, 0, 43h, 48h, 1, 0, 0BB...");
-        _STOP_("db 0E2h, 41h, 4Ah, 99h, 0ADh, 48h, 1, 0, 5...");
-        _STOP_("db 0EFh, 49h, 1, 0, 5Dh, 49h, 1, 3 dup(0),...");
-        _STOP_("db 99h, 77h, 4Ah, 1, 0, 27h, 4Bh, 1, 0, 0D...");
-        _STOP_("db 27h, 4Bh, 1, 3 dup(0), 0E2h, 41h, 76h, ...");
-        _STOP_("db 1, 0, 37h, 4Dh, 1, 0, 0C9h, 4Dh, 1, 0, ...");
-        _STOP_("db 3 dup(0), 0E2h, 41h, 8Ch, 99h, 51h, 4Eh...");
-        _STOP_("db 4Eh, 1, 0, 7Fh, 4Fh, 1, 0, 0F7h, 4Eh, 1...");
-        _STOP_("db 41h, 0A2h, 99h, 0E9h, 4Fh, 1, 0, 99h, 5...");
-        _STOP_("db 51h, 1, 0, 99h, 50h, 1, 3 dup(0), 0E2h,...");
-        _STOP_("db 0B3h, 51h, 1, 0, 63h, 52h, 1, 0, 13h, 5...");
-        _STOP_("db 52h, 1, 3 dup(0), 0E2h, 41h, 0CEh, 99h,...");
-        _STOP_("db 0, 73h, 54h, 1, 0, 5, 55h, 1, 0, 73h, 5...");
-        _STOP_("db 0E2h, 41h, 0E4h, 99h, 0C3h, 0E8h, 10h, ...");
-        _STOP_("db 0ACh, 0EBh, 0Eh, 0E8h, 8, 0AEh, 0BFh, 0...");
-        _STOP_("db 6, 0E8h, 0, 0AEh, 0BFh, 9, 0ADh, 8Bh, 5...");
-        _STOP_("db 0C3h, 10h, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h...");
-        _STOP_("db 0EBh, 83h, 0E3h, 0Eh, 2Eh, 8Bh, 1, 89h,...");
-        _STOP_("db 5Eh, 9Bh, 0E8h, 0DDh, 0ADh, 8Bh, 44h, 1...");
-        _STOP_("db 79h, 15h, 8Bh, 5Ch, 16h, 85h, 0DBh, 79h...");
-        _STOP_("db 7Ch, 5, 0BBh, 2 dup(0), 0EBh, 34h, 0BBh...");
-        _STOP_("db 2Fh, 8Bh, 5Ch, 16h, 85h, 0DBh, 79h, 1Ah...");
-        _STOP_("db 0F7h, 0D8h, 3Bh, 0D8h, 7Ch, 0EBh, 0BBh,...");
-        _STOP_("db 1Ah, 81h, 0EBh, 0C0h, 0, 0F7h, 0DBh, 3B...");
-        _STOP_("db 0Dh, 0EBh");
-        _STOP_("db 0D5h, 2Dh, 40h, 1, 81h, 0EBh, 0C0h, 0, ...");
-        _STOP_("db 0E4h, 0BBh, 6, 0, 2Eh, 8Bh, 0BFh, 19h, ...");
-        _STOP_("db 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 45h, 2, 89h...");
-        _STOP_("db 0C7h, 4, 89h, 7Ch, 10h, 0C7h, 44h, 2, 0...");
-        _STOP_("db 0F0h, 9Ah, 81h, 3Eh, 0A8h, 91h, 0F0h, 0...");
-        _STOP_("db 81h, 3Eh, 90h, 91h, 0F0h, 0Ah, 75h, 26h...");
-        _STOP_("db 91h, 0F0h, 0Ah, 0A1h, 9Ah, 91h, 0E8h, 6...");
-        _STOP_("db 6, 9Ah, 91h, 2 dup(0), 80h, 3Eh, 35h, 9...");
-        _STOP_("db 0C6h, 6, 35h, 92h, 0, 0EBh, 6, 0C7h, 6,...");
-        _STOP_("db 81h, 3Eh, 90h, 91h, 0D0h, 0, 7Fh, 3Ch, ...");
-        _STOP_("db 91h, 20h, 7Dh, 6, 0C7h, 6, 0AAh, 91h, 2...");
-        _STOP_("db 3Bh, 0, 0C6h, 6, 33h, 92h, 0, 0C6h, 6, ...");
-        _STOP_("db 80h, 3Eh, 31h, 92h, 0, 74h, 29h, 80h, 3...");
-        _STOP_("db 0, 74h, 22h, 80h, 3Eh, 61h, 8Fh, 0, 75h...");
-        _STOP_("db 9, 0, 0E8h, 0D8h, 7Ah, 0C6h, 6, 61h, 8F...");
-        _STOP_("db 0Eh, 81h, 3Eh, 0AAh, 91h, 30h, 0Ah, 7Dh...");
-        _STOP_("db 0AAh, 91h, 30h, 0Ah, 0C3h, 80h, 3Eh, 31...");
-        _STOP_("db 10h, 80h, 3Eh, 33h, 92h, 0, 75h, 9, 0C7...");
-        _STOP_("db 2 dup(0), 0E8h, 2Ah, 0, 0C3h, 83h, 3Eh,...");
-        _STOP_("db 0, 75h, 11h, 0A1h, 0F4h, 91h, 0D1h, 0C8...");
-        _STOP_("db 0D1h, 0C8h, 0D1h, 0C8h, 0D1h, 0C8h, 0A3...");
-        _STOP_("db 0C3h, 0A1h, 0F6h, 91h, 0D1h, 0C8h, 0D1h...");
-        _STOP_("db 0C8h, 0D1h, 0C8h, 0D1h, 0C8h, 0A3h, 0F6...");
-        _STOP_("db 83h, 3Eh, 8, 92h, 1, 74h, 9, 0A1h, 8, 9...");
-        _STOP_("db 8, 92h, 0EBh, 10h, 0E8h, 0C4h, 0FFh, 25...");
-        _STOP_("db 1, 0, 7Ch, 0F5h, 3Dh, 7, 0, 74h, 0F0h, ...");
-        _STOP_("db 0A8h, 0DEh, 3, 0F8h, 0C7h, 6, 0EAh, 0FC...");
-        _STOP_("db 8Bh, 3Dh, 8Bh, 45h, 2, 0A3h, 0E2h, 0FCh...");
-        _STOP_("db 2Bh, 6, 90h, 91h, 2Bh, 6, 9Ah, 91h, 0A3...");
-        _STOP_("db 0BBh, 21h, 0ADh, 2Eh, 8Bh, 17h, 83h, 0C...");
-        _STOP_("db 70h, 74h, 8Bh, 0EEh, 0C7h, 44h, 6, 4Dh,...");
-        _STOP_("db 57h, 8Bh, 0FEh, 0E8h, 61h, 74h, 89h, 75...");
-        _STOP_("db 0C7h, 44h, 6, 99h, 3Ah, 57h, 0BFh, 4Ah,...");
-        _STOP_("db 6Bh, 5Fh, 0C7h, 4, 50h, 0, 0A1h, 0EAh, ...");
-        _STOP_("db 1Ah, 2Eh, 8Bh, 7, 29h, 6, 0EAh, 0FCh, 8...");
-        _STOP_("db 2Eh, 8Bh, 7, 89h, 44h, 2, 83h, 0C3h, 2,...");
-        _STOP_("db 53h, 8, 2Eh, 8Bh, 7, 89h, 44h, 0Ch, 83h...");
-        _STOP_("db 44h, 34h, 0D0h, 7, 0C7h, 44h, 48h, 2 du...");
-        _STOP_("db 27h, 0, 0C6h, 44h, 26h, 0, 0C7h, 44h, 0...");
-        _STOP_("db 89h, 7Ch, 38h, 89h, 7Ch, 3Ah, 0C7h, 44h...");
-        _STOP_("db 0, 0A1h, 0E2h, 0FCh, 89h, 44h, 12h, 0A1...");
-        _STOP_("db 89h, 44h, 16h, 0C7h, 44h, 36h, 2 dup(0)...");
-        _STOP_("db 60h, 95h, 89h, 44h, 42h, 0A1h, 0FAh, 0F...");
-        _STOP_("db 22h, 0E8h, 49h, 99h, 89h, 6Ch, 44h, 0C7...");
-        _STOP_("db 2 dup(0), 4Ah, 78h, 3, 0E9h, 6Dh, 0FFh,...");
-        _STOP_("db 98h, 91h, 1, 44h, 16h, 0FFh, 74h, 1Ch, ...");
-        _STOP_("db 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D1h, 0E...");
-        _STOP_("db 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h, 0Eh,...");
-        _STOP_("db 0, 0D1h, 0E8h");
-        _STOP_("db 0D1h, 0E8h, 0D1h, 0E8h, 0D1h, 0E8h, 25h...");
-        _STOP_("db 0C3h, 74h, 18h, 2Eh, 8Bh, 0BFh, 65h, 0A...");
-        _STOP_("db 5, 89h, 44h, 0Ch, 2Eh, 8Bh, 45h, 2, 89h...");
-        _STOP_("db 0C7h, 4, 89h, 7Ch, 10h, 2Eh, 0A0h, 8Ch,...");
-        _STOP_("db 48h, 73h, 33h, 8Bh, 44h, 12h, 8Bh, 5Ch,...");
-        _STOP_("db 0, 2Eh, 8Bh, 16h, 8Eh, 95h, 50h, 53h, 5...");
-        _STOP_("db 1Eh, 82h, 0BDh, 1Eh, 97h, 2Eh, 8Bh, 46h...");
-        _STOP_("db 0Ch, 2Eh, 8Bh, 46h, 0, 89h, 45h, 0Eh, 8...");
-        _STOP_("db 89h, 6Dh, 10h, 5Ah, 59h, 5Bh, 58h, 49h,...");
-        _STOP_("db 0B3h, 98h, 0A1h, 98h, 91h, 1, 44h, 16h,...");
-        _STOP_("db 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D1h, 0E...");
-        _STOP_("db 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h, 0Eh,...");
-        _STOP_("db 75h, 0ADh, 89h, 44h, 0Ch, 0E9h, 8Eh, 98...");
-        _STOP_("db 91h, 1, 44h, 16h, 0E8h, 0Ah, 0ABh, 8Bh,...");
-        _STOP_("db 0C3h, 10h, 0D1h, 0EBh, 0D1h, 0EBh, 0D1h...");
-        _STOP_("db 0EBh, 83h, 0E3h, 0Eh, 2Eh, 8Bh, 87h, 85...");
-        _STOP_("db 44h, 0Ch, 0E9h, 69h, 98h, 0A1h, 98h, 91...");
-        _STOP_("db 8Bh, 5Ch, 22h, 0C6h, 87h, 33h, 92h, 0FF...");
-        _STOP_("db 0AAh, 8Bh, 5Ch, 1Ch, 83h, 0C3h, 10h, 0D...");
-        _STOP_("db 0EBh, 0D1h, 0EBh, 0D1h, 0EBh, 83h, 0E3h...");
-        _STOP_("db 87h, 95h, 0ADh, 89h, 44h, 0Ch, 0E9h, 3C...");
-        _STOP_("db 0DFh, 0C7h, 47h, 4, 0B9h, 8, 83h, 7Fh, ...");
-        _STOP_("db 5, 8Bh, 5Fh, 46h, 0EBh, 0F0h, 0BBh, 0Ah...");
-        _STOP_("db 22h, 3, 5Dh, 22h, 29h, 7, 76h, 1, 0C3h,...");
-        _STOP_("db 92h, 3, 5Dh, 22h, 0C6h, 7, 0FFh, 0C6h, ...");
-        _STOP_("db 75h, 46h, 56h, 8Bh, 0F7h, 0E8h, 3Ch, 6A...");
-        _STOP_("db 85h, 0FFh, 75h, 0F1h, 0B9h, 13h, 0, 0B8...");
-        _STOP_("db 0BBh, 2 dup(0), 0BAh, 40h, 1, 0BFh, 0C0...");
-        _STOP_("db 12h, 0E8h, 0E9h, 77h, 56h, 8Bh, 36h, 54...");
-        _STOP_("db 0B9h, 99h, 5Eh, 5Fh, 0C3h, 8Bh, 0FEh, 0...");
-        _STOP_("db 0FFh, 0A7h, 0A5h, 0ADh, 0E8h, 6Ch, 72h,...");
-        _STOP_("db 90h, 0E8h, 0BFh, 69h, 5Fh, 0C7h, 4, 0DC...");
-        _STOP_("db 2, 69h, 0A4h, 0C7h, 44h, 4, 53h, 8, 8Bh...");
-        _STOP_("db 5Ch, 1Ch, 0D1h, 0E3h, 0C7h, 44h, 48h, 2...");
-        _STOP_("db 45h, 8, 2Dh, 8, 0, 3, 87h, 62h, 40h, 89...");
-        _STOP_("db 8Bh, 45h, 0Ah, 2Dh, 8, 0, 2Bh, 6, 90h, ...");
-        _STOP_("db 72h, 40h, 89h, 44h, 16h, 2Eh, 8Bh, 0AFh...");
-        _STOP_("db 2Eh, 8Bh, 46h, 0, 89h, 44h, 0Ch, 2Eh, 8...");
-        _STOP_("db 44h, 0Eh, 83h, 0C5h, 4, 89h, 6Ch, 10h, ...");
-        _STOP_("db 0A7h, 3Ah, 2Eh, 0A1h, 62h, 95h, 89h, 44...");
-        _STOP_("db 44h, 27h, 0, 0C7h, 44h, 34h, 64h, 0, 0C...");
-        _STOP_("db 2 dup(0), 0C7h, 44h, 36h, 2 dup(0), 0E9...");
-        _STOP_("db 0C6h, 6, 35h, 92h, 0FFh, 0E8h, 0D1h, 0A...");
-        _STOP_("db 92h, 95h, 0, 44h, 48h, 73h, 45h, 0E8h, ...");
-        _STOP_("db 3Fh, 88h, 44h, 48h, 0A1h, 12h, 9Fh, 8Bh...");
-        _STOP_("db 2Bh, 44h, 12h, 2Bh, 5Ch, 16h, 0E8h, 35h...");
-        _STOP_("db 8Bh, 44h, 12h, 8Bh, 5Ch, 16h, 5, 10h, 0...");
-        _STOP_("db 3Ch, 2Eh, 8Bh, 16h, 94h, 95h, 0E8h, 62h...");
-        _STOP_("db 9Ch, 98h, 2Eh, 8Bh, 46h");
-        _STOP_("db  45h");
-        _STOP_("db  0Ch");
-        _STOP_("db  2Eh");
-        _STOP_("db  8Bh");
-        _STOP_("db  46h");
-        _STOP_("db  89h");
-        _STOP_("db  45h");
-        _STOP_("db  0Eh");
-        _STOP_("db  83h");
-        _STOP_("db 0C5h");
-        _STOP_("db  89h");
-        _STOP_("db  6Dh");
-        _STOP_("db  10h");
-        _STOP_("db 0C3h");
         return;
     } while (1);
 }
@@ -13101,7 +13742,7 @@ function* loc_19F19() {
         r16[ax] = 0x0001;
         yield* sub_13A39();
         r16[cx] = 0x0004;
-        _STOP_("call near ptr byte_1152F+0B5h");
+        yield* sub_115E4();
         memory[ds*16+0x9225] = 0x00;
         return;
         yield* sub_19E89();
@@ -13312,7 +13953,6 @@ function* sub_1A0E5() {
         memory16set(ds*16+r16[si] + 30, 0x0000);
         memory16set(ds*16+r16[si] + 64, 0x0000);
         memory16set(ds*16+r16[si] + 54, 0x0000);
-        assert(0);
         r16[ax] = memory16get(cs*16+0x19564);
         memory16set(ds*16+r16[si] + 66, r16[ax]);
         yield* sub_13589();
@@ -16137,23 +16777,18 @@ function* loc_1A1F4() {
         return;
     } while (1);
 }
-function* loc_1EBD7() {
-    sub_1EBD0(0x1EBD7);
-}
 function* sub_1EBD0() {
+    memory[ds*16+0x8F52] = 0x00;
+    yield* loc_1EBDC();
+}
+function* loc_1EBD7() {
+    memory[ds*16+0x8F52] = 0xff;
+    yield* loc_1EBDC();
+}
+function* loc_1EBDC() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        if (pc == 0x1EBD7) {
-            pc = 0x1EBD7;
-            break;
-        }
-        memory[ds*16+0x8F52] = 0x00;
-        pc = 0x1EBDC;
-        break;
-    case 0x1EBD7:
-        memory[ds*16+0x8F52] = 0xff;
-    case 0x1EBDC:
         bp = 0xa000;
         es = bp;
     case 0x1EBE1:
@@ -16206,7 +16841,7 @@ function* sub_1EBD0() {
         }
     case 0x1EC21:
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[di] += r16[ax];
     case 0x1EC28:
         if (r16s[di] >= signed16(bp)) {
@@ -16332,8 +16967,8 @@ function* sub_1EC6F() {
         r16[ax] = 0x0105;
         out16(r16[dx], r16[ax]);
     case 0x1ECC5:
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += 0x0026;
         if (--r16[cx]) {
             pc = 0x1ECC5;
@@ -16454,10 +17089,10 @@ function* sub_1EC6F() {
         push(r16[di]);
         push(r16[cx]);
     case 0x1ED8E:
-        lodsb_data_forward();
+        lodsb_video_forward();
         r8[ah] = memoryVideoGet(es, r16[di]);
         memoryVideoSet(es, r16[di], r8[al]);
-        lodsb_data_forward();
+        lodsb_video_forward();
         r8[ah] = memoryVideoGet(es, r16[di] + 1);
         memoryVideoSet(es, r16[di] + 1, r8[al]);
         r16[di] += 0x0028;
@@ -16552,7 +17187,7 @@ function* sub_1EDE0() {
         r16[ax] = r16[dx];
         xchg16(di, dx);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] += r16[dx];
         r16[dx] = r16[ax];
     case 0x1EE34:
@@ -16695,45 +17330,45 @@ function* sub_1EE78() {
         lodsb_data_forward();
         r8[ah] = r8[al];
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         lodsb_data_forward();
         r8[ah] = r8[al];
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         r16[di] += 0x004c;
@@ -16767,26 +17402,26 @@ function* sub_1EE78() {
         {var t = r16[si]; r16[si] = bp; bp = t;}//_xchg(r16[si], bp);
         ds = r16[dx];
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         r8[al] = (~r8[al]);
         memory[es*16+r16[di]] &= r8[al];
         lodsb_data_forward();
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         r8[al] = (~r8[al]);
         memory[es*16+r16[di]] &= r8[al];
         lodsb_data_forward();
@@ -16801,26 +17436,26 @@ function* sub_1EE78() {
         {var t = r16[si]; r16[si] = bp; bp = t;}//_xchg(r16[si], bp);
         ds = r16[dx];
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         r8[al] = (~r8[al]);
         memory[es*16+r16[di]] &= r8[al];
         lodsb_data_forward();
         memory[es*16+r16[di]] |= r8[al];
         r16[di] += 1;
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         r8[al] = (~r8[al]);
         memory[es*16+r16[di]] &= r8[al];
         lodsb_data_forward();
@@ -16907,7 +17542,7 @@ function* sub_1EFF0() {
         r16[ax] = r16[dx];
         xchg16(di, dx);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] += r16[dx];
         r16[dx] = r16[ax];
     case 0x1F041:
@@ -17574,8 +18209,8 @@ function* sub_1F363() {
         push(r16[di]);
         r16[cx] = 0x1c90;
     case 0x1F368:
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_data_forward();
+        movsb_video_data_forward();
         r16[si] += 0x0006;
         if (--r16[cx]) {
             pc = 0x1F368;
@@ -17623,7 +18258,7 @@ function* sub_1F3AE() {
 }
 function* sub_1F3B5() {
     r16[ax] = 0x0030;
-    r16[ax] = memory16get(ds*16+0x991C) * r8[al];
+    _mul(memory16get(ds*16+0x991C));
     r16[dx] = r16[ax];
     r16[dx] += 0x427d;
     yield* sub_1F38C();
@@ -17674,7 +18309,7 @@ function* sub_1F3EF() {
     case 0x1F420:
         r16[di] = memory16get(ds*16+r16[si]);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+r16[si] + 2);
         r16[di] += bp;
         if (!(memoryVideoGet(es, r16[di]) & r8[bl])) {
@@ -17694,7 +18329,7 @@ function* sub_1F3EF() {
     case 0x1F441:
         r16[di] = memory16get(ds*16+r16[si]);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+r16[si] + 2);
         r16[di] += bp;
         if (!(memoryVideoGet(es, r16[di]) & r8[bl])) {
@@ -17714,7 +18349,7 @@ function* sub_1F3EF() {
     case 0x1F462:
         r16[di] = memory16get(ds*16+r16[si]);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+r16[si] + 2);
         r16[di] += bp;
         if (!(memoryVideoGet(es, r16[di]) & r8[bl])) {
@@ -17818,7 +18453,7 @@ function* sub_1F492() {
             break;
         }
         r16[di] = 0x0028;
-        r16[ax] = r16[di] * r8[al];
+        _mul(r16[di]);
         r16[di] = r16[ax];
         r16[di] = r16[di] + memory16get(ds*16+0x425B);
         push(r16[cx]);
@@ -17972,9 +18607,9 @@ function* sub_1F585() {
         if (signed16(bp) > signed16(0x0010)) {
             pc = 0x1F616;
             break;
-        }       
+        }
         memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
-        memory16set(ds*16+0x2, memory16set(ds*16+0x2) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
         pc = 0x1F63F;
         break;
     case 0x1F616:
@@ -17991,13 +18626,13 @@ function* sub_1F585() {
         pc = 0x1F63F;
         break;
     case 0x1F62F:
-        memory16get(ds*16+0x0) <<= 1;
-        memory16get(ds*16+0x0) <<= 1;
-        memory16get(ds*16+0x2) <<= 1;
-        memory16get(ds*16+0x2) <<= 1;
+        memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
+        memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
     case 0x1F63F:
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[di] += r16[ax];
         if (r16s[cx] >= 0) {
             pc = 0x1F64D;
@@ -18801,7 +19436,7 @@ function* loc_1FB1B() {
         ror16(ax, r8[cl]);
         r8[al] = r8[ch];
         out16(r16[dx], r16[ax]);
-        memory[es*16+r16[di] + 2] |= r8[al];
+        memoryVideoOr(es, r16[di] + 2, r8[al]);
         r16[di] += 0x0028;
         r8[bl] -= 1;
         if (r8s[bl] >= 0) {
@@ -18842,7 +19477,7 @@ function* sub_1FB64() {
         lodsb_data_forward();
         r8[ah] = memory[ds*16+r16[si]];
         ror16(ax, r8[cl]);
-        memory[es*16+r16[di] + 1] &= r8[ah];
+        memoryVideoAnd(es, r16[di] + 1, r8[ah]);
         lodsb_data_forward();
         r8[ah] = r8[ah] ^ r8[ah];
         ror16(ax, r8[cl]);
@@ -19406,7 +20041,7 @@ function* sub_1FEDE() {
         r16[si] += r16[ax];
         r16[ax] = 0x0028;
         push(r16[dx]);
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[dx] = pop();
         r16[si] += r16[ax];
         push(es);
@@ -19522,8 +20157,8 @@ function* sub_1FF41() {
             pc = 0x1FFE0;
             break;
         }
-        memory16get(ds*16+0x0) <<= 1;
-        memory16get(ds*16+0x2) <<= 1;
+        memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
         pc = 0x20009;
         break;
     case 0x1FFE0:
@@ -19540,13 +20175,13 @@ function* sub_1FF41() {
         pc = 0x20009;
         break;
     case 0x1FFF9:
-        memory16get(ds*16+0x0) <<= 1;
-        memory16get(ds*16+0x0) <<= 1;
-        memory16get(ds*16+0x2) <<= 1;
-        memory16get(ds*16+0x2) <<= 1;
+        memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
+        memory16set(ds*16+0x0, memory16get(ds*16+0x0) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
+        memory16set(ds*16+0x2, memory16get(ds*16+0x2) << 1);
     case 0x20009:
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[di] += r16[ax];
         if (r16s[cx] >= 0) {
             pc = 0x20017;
@@ -20176,18 +20811,20 @@ function* sub_203DA() {
     case 0x20417:
         r16[bx] = r16[dx];
         r16[bx] += r16[cx];
+        flags.carry2 = r16s[bx] <= signed16(0x00c0);
         r16[bx] -= 0x00c0;
-        if (r16s[bx] <= 0) {
+        if (flags.carry2) {
             pc = 0x20425;
             break;
         }
+        flags.carry2 = r16s[cx] <= r16s[bx];
         r16[cx] -= r16[bx];
-        if (r16s[cx] <= 0)
+        if (flags.carry2)
             return;
     case 0x20425:
         r16[bx] = r16[ax];
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[di] = memory16get(ds*16+0x425B);
         r16[di] += r16[ax];
         r16[bx] >>= 1;
@@ -20274,8 +20911,8 @@ function* sub_20482() {
         push(r16[di]);
         push(r16[cx]);
     case 0x204B6:
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += 0x0026;
         if (--r16[cx]) {
             pc = 0x204B6;
@@ -20304,53 +20941,53 @@ function* sub_20482() {
         r16[cx] = ds;
         r16[ax] = 0xa400;
         ds = r16[ax];
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
         r16[di] -= 0x027e;
         ds = r16[cx];
@@ -20383,8 +21020,8 @@ function* sub_20482() {
         push(r16[di]);
         r16[cx] = r16[dx];
     case 0x2054C:
-        movsb_auto_auto_auto();
-        movsb_auto_auto_auto();
+        movsb_video_video_forward();
+        movsb_video_video_forward();
         r16[di] += bp;
         if (--r16[cx]) {
             pc = 0x2054C;
@@ -20590,7 +21227,7 @@ function* sub_20653() {
         r16[dx] = pop();
         r16[di] = memory16get(ds*16+0x425B);
         r16[ax] = 0x0028;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[di] += r16[ax];
         r16[ax] = pop();
         push(r16[cx]);
@@ -20718,7 +21355,7 @@ function* sub_20721() {
         r16[ax] = 0xa000;
         es = r16[ax];
         r16[ax] = 0x0028;
-        r16[ax] = memory16get(ds*16+0x32BC) * r8[al];
+        _mul(memory16get(ds*16+0x32BC));
         r16[di] = memory16get(ds*16+0x425B);
         bp = r16[di];
         r16[di] += r16[ax];
@@ -20848,7 +21485,6 @@ function* sub_20854() {
     case 0x20894:
         r16[bx] = 0x9221;
         r16[di] = 0x1e08;
-        flags.carry = (memory16get(ds*16+0x9156) + 0x000a) >= 0x10000;
         memory16set(ds*16+0x9156, memory16get(ds*16+0x9156) + 0x000a);
     case 0x2089F:
         memory16set(ds*16+0x9158, memory16get(ds*16+0x9158) + 0x0000 + flags.carry);
@@ -21000,7 +21636,7 @@ function* sub_20973() {
 }
 function* sub_2098C() {
     r16[ax] = 0x0028;
-    r16[ax] = memory16get(ds*16+0x3752) * r8[al];
+    _mul(memory16get(ds*16+0x3752));
     r16[di] = r16[ax];
     push(memory16get(ds*16+r16[si] + 20));
     push(r16[si]);
@@ -21024,10 +21660,9 @@ function* sub_209A6() {
         r16[dx] = r16[dx] ^ r16[dx];
     case 0x209BD:
         r16[ax] = memory16get(ds*16+r16[bx]);
-        flags.carry = memory16get(ds*16+0xFCE2) < r16[ax];
         memory16set(ds*16+0xFCE2, memory16get(ds*16+0xFCE2) - r16[ax]);
         r16[ax] = memory16get(ds*16+r16[bx] + 2);
-        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) - r16[ax] - flags.carry);
+        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) - r16[ax] + flags.carry);
         if (memory16gets(ds*16+0xFCE2) < 0) {
             pc = 0x209CF;
             break;
@@ -21076,7 +21711,7 @@ function* sub_209E9() {
             break;
         }
         yield* sub_1F492();
-    {__sync = true; yield* sub_205AE(); yield* _sync(); __sync = false; return; };
+    {yield* sub_205AE(); yield* _sync(); return; };
         return;
     } while (1);
 }
@@ -21103,17 +21738,17 @@ function* sub_20A3C() {
     yield* sub_20A47();
 }
 function* sub_20A47() {
-while (1) {
     lodsb_data_forward();
     if (!(r8[al] & r8[al]))
         return;
-    {var t = r16[si]; r16[si] = bp; bp = t;}//_xchg(r16[si], bp);
+    {var t = r16[si]; r16[si] = bp; bp = t;} //_xchg(r16[si], bp);
     push(r16[si]);
     yield* sub_20A5C();
     r16[si] = pop();
-    {var t = r16[si]; r16[si] = bp; bp = t;}//_xchg(r16[si], bp);
+    {var t = r16[si]; r16[si] = bp; bp = t;} //_xchg(r16[si], bp);
     r16[di] += 0x0002;
-}
+{yield* sub_20A47(); return; };
+    return;
 }
 function* sub_20A5C() {
     var pc = 0;
@@ -21137,7 +21772,7 @@ function* sub_20A5C() {
         }
         r16[di] = r16[di] + memory16get(ds*16+0x425B);
         r16[cx] = pop();
-        r16[ax] = r16[cx] * r8[al];
+        _mul(r16[cx]);
         r16[ax] <<= 1;
         r16[ax] <<= 1;
         r16[ax] <<= 1;
@@ -21578,11 +22213,17 @@ function* loc_20D45() {
     out16(r16[dx], r16[ax]);
     memoryVideoAnd(es, r16[di], r8[al]);
     r16[di] += 0x001c;
+    yield* sub_20D87();
 }
 function* sub_20D87() {
     if (--r16[cx])
-    { yield* loc_20D45(); return; }
-    yield* sub_20D8A();
+        {
+        yield* loc_20D45();
+        return;
+    }
+    return;
+    _STOP_("sp-trace-fail");
+    _STOP_("continues");
 }
 function* sub_20D8A() {
     var pc = 0;
@@ -21643,7 +22284,7 @@ function* sub_20D8A() {
         r16[ax] = 0x0030;
         r16[ax] = r16[ax] - memory16get(ds*16+0x8F3C);
         r16[dx] = 0x0038;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[si] += r16[ax];
         r16[cx] = memory16get(ds*16+0x8F3C);
         r16[cx] -= 0x0008;
@@ -21651,7 +22292,7 @@ function* sub_20D8A() {
         r16[di] = memory16get(ds*16+0x425B);
         r16[di] += 0x11c2;
         r16[ax] = 0x0028;
-        r16[ax] = memory16get(ds*16+0x8F3C) * r8[al];
+        _mul(memory16get(ds*16+0x8F3C));
         r16[di] -= r16[ax];
         r16[si] = 0x64d8;
         r16[cx] = memory16get(ds*16+0x8F3C);
@@ -21971,7 +22612,7 @@ function* sub_21090() {
         es = r16[ax];
         r16[si] = memory16get(ds*16+0x425B);
         r16[ax] = 0x0028;
-        r16[ax] = memory16get(ds*16+r16[di] + 4) * r8[al];
+        _mul(memory16get(ds*16+r16[di] + 4));
         r16[si] += r16[ax];
         r16[ax] = memory16get(ds*16+r16[di] + 2);
         r16[cx] = r16[ax];
@@ -22051,7 +22692,7 @@ function* sub_21132() {
     case 0x2113B:
         push(r16[ax]);
         r16[ax] = 0x0028;
-        r16[ax] = memory16get(ds*16+0x8F48) * r8[al];
+        _mul(memory16get(ds*16+0x8F48));
         r16[di] = r16[ax];
         r16[ax] = memory16get(ds*16+0x8F46);
         r16[ax] >>= 1;
@@ -22205,7 +22846,7 @@ function* sub_2120E() {
         r16[ax] = 0xa000;
         es = r16[ax];
         r16[ax] = 0x0028;
-        r16[ax] = memory16get(ds*16+0x32BC) * r8[al];
+        _mul(memory16get(ds*16+0x32BC));
         r16[di] = memory16get(ds*16+0x425B);
         bp = r16[di];
         r16[di] += r16[ax];
@@ -22509,7 +23150,7 @@ function* sub_214E6() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22558,7 +23199,7 @@ function* sub_2154D() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22646,7 +23287,7 @@ function* sub_215BB() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22709,7 +23350,7 @@ function* sub_2162C() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22760,7 +23401,7 @@ function* sub_21696() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22820,7 +23461,7 @@ function* sub_216E8() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -22909,22 +23550,22 @@ function* sub_21781() {
         push(r16[bx]);
         r8[ah] = memory[ds*16+r16[si]];
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         stosb_data_forward();
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         rol16(ax, 1);
-        assert(0); /* unk previous */ _rcl(r8[al], 1);
+        assert(0); /* unk previous */ rcl8(al, 1);
         stosb_data_forward();
         r16[si] += r16[dx];
         r8[al] = memory[ds*16+r16[si]];
@@ -22971,16 +23612,16 @@ function* sub_217DB() {
         r8[dl] = r8[dl] ^ r8[dl];
         flags.carry = !!(r8[bh] & 0x80);
         r8[bh] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[bl] & 0x80);
         r8[bl] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[ah] & 0x80);
         r8[ah] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         bp = r16[dx];
         bp &= 0x000f;
         bp <<= 1;
@@ -23035,7 +23676,7 @@ function* sub_21844() {
     case 0x2185A:
         r16[di] = memory16get(ds*16+r16[si]);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+r16[si] + 2);
         memory[es*16+r16[di]] |= 0x18;
         r16[si] += 0x0006;
@@ -23119,7 +23760,7 @@ function* sub_21870() {
         }
         r16[di] = r16[ax];
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         push(r16[cx]);
         r16[cx] = r16[bx];
         r16[cx] &= 0x0003;
@@ -23260,7 +23901,7 @@ function* sub_2191D() {
         push(ds);
         r16[ax] = dseg;
         ds = r16[ax];
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x4255);
         es = r16[ax];
         ds = pop();
@@ -23586,10 +24227,10 @@ function* sub_2191D() {
         sar16(dx, 1);
         sar16(dx, 1);
         r16[di] += r16[dx];
-        r16[dx] = r16[cx];
+        r16[dx] = r16[cx];                    
         r16[cx] &= 0x0003;
         r16[cx] <<= 1;
-        _xchg(r16[dx], bp);
+        {var t = r16[dx]; r16[dx] = bp; bp = t;}//_xchg(r16[dx], bp);
         r16[si] = r16[si] + memory16get(ds*16+0x0);
         r16[dx] += 0x0007;
         r16[dx] >>= 1;
@@ -23738,7 +24379,7 @@ function* sub_21CDF() {
         r16[si] += r16[ax];
         r16[ax] = 0x0028;
         push(r16[dx]);
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[dx] = pop();
         r16[si] += r16[ax];
         push(es);
@@ -23869,7 +24510,7 @@ function* sub_21D42() {
         push(ds);
         r16[ax] = dseg;
         ds = r16[ax];
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x4255);
         es = r16[ax];
         ds = pop();
@@ -24138,7 +24779,7 @@ function* sub_21F4B() {
         r16[bx] = r16[ax];
         r16[di] = r16[dx];
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[bx] >>= 1;
         r16[bx] >>= 1;
         r16[di] += r16[bx];
@@ -24178,23 +24819,23 @@ function* sub_21F4B() {
 function* sub_21FC9() {
     r8[ah] = r8[al];
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     memory[es*16+r16[di]] |= r8[al];
     r16[di] += 1;
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     rol16(ax, 1);
-    assert(0); /* unk previous */ _rcl(r8[al], 1);
+    assert(0); /* unk previous */ rcl8(al, 1);
     memory[es*16+r16[di]] |= r8[al];
     r16[di] += 1;
 }
@@ -24540,7 +25181,7 @@ function* sub_2219A() {
         r16[dx] = pop();
         r16[di] = r16[dx];
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = pop();
         push(r16[cx]);
         r16[cx] = r16[ax];
@@ -24655,7 +25296,7 @@ function* sub_2224B() {
         es = r16[ax];
         r16[di] = memory16get(ds*16+0x32BC);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x32BA);
         sar16(ax, 1);
         sar16(ax, 1);
@@ -24933,7 +25574,7 @@ function* sub_22490() {
 function* sub_22495() {
     r16[di] = memory16get(ds*16+0x3752);
     r16[di] <<= 1;
-    r16[di] = memory16get(ds*16+r16[di] + -26818);
+    r16[di] = memory16get(ds*16+r16[di] + 38718);
     push(memory16get(ds*16+r16[si] + 20));
     push(r16[si]);
     memory[ds*16+r16[si] + 20] = 0x00;
@@ -25067,7 +25708,7 @@ function* sub_22568() {
             break;
         }
         r16[cx] = pop();
-        r16[ax] = r16[cx] * r8[al];
+        _mul(r16[cx]);
         r16[ax] <<= 1;
         r16[ax] <<= 1;
         r16[si] += r16[ax];
@@ -25445,14 +26086,14 @@ function* sub_2278D() {
         r16[ax] = 0x0030;
         r16[ax] = r16[ax] - memory16get(ds*16+0x8F3C);
         r16[dx] = 0x001c;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[si] += r16[ax];
         r16[cx] = memory16get(ds*16+0x8F3C);
         r16[cx] -= 0x0008;
         yield* sub_228E5();
         r16[di] = 0x2384;
         r16[ax] = 0x0050;
-        r16[ax] = memory16get(ds*16+0x8F3C) * r8[al];
+        _mul(memory16get(ds*16+0x8F3C));
         r16[di] -= r16[ax];
         r16[si] = 0x64d8;
         r16[cx] = memory16get(ds*16+0x8F3C);
@@ -25641,7 +26282,7 @@ function* sub_22979() {
     case 0x22982:
         r16[di] = memory16get(ds*16+0x8F48);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+0x8F46);
         r8[al] -= 0x20;
         r8[ah] = r8[ah] ^ r8[ah];
@@ -25658,7 +26299,7 @@ function* sub_22979() {
         ds = r16[ax];
         r16[cx] = 0x0008;
     case 0x229AF:
-        movsb_auto_auto_auto();
+        movsb_data_data_forward();
         r16[si] += 1;
         r16[di] += 0x004f;
         if (--r16[cx]) {
@@ -25743,7 +26384,7 @@ function* sub_22A02() {
         es = r16[ax];
         r16[di] = memory16get(ds*16+0x32BC);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x32BA);
         sar16(ax, 1);
         sar16(ax, 1);
@@ -25920,7 +26561,7 @@ function* sub_22DAE() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -25977,7 +26618,7 @@ function* sub_22DF0() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -26058,7 +26699,7 @@ function* sub_22E5D() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -26107,7 +26748,7 @@ function* sub_22EA0() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -26162,7 +26803,7 @@ function* sub_22EF7() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -26258,7 +26899,7 @@ function* sub_22F4F() {
         push(es);
         ds = pop();
         es = pop();
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         push(ds);
         push(es);
         ds = pop();
@@ -26335,28 +26976,28 @@ function* sub_22FDF() {
     case 0x22FE4:
         flags.carry = !!(r8[bh] & 0x80);
         r8[bh] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[bl] & 0x80);
         r8[bl] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[ah] & 0x80);
         r8[ah] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[bh] & 0x80);
         r8[bh] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[bl] & 0x80);
         r8[bl] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[ah] & 0x80);
         r8[ah] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r8[dl], 1);
+        rcl8(dl, 1);
         memory[es*16+r16[di]] = r8[dl];
         r16[di] += 1;
         if (--r16[cx]) {
@@ -26414,7 +27055,7 @@ function* sub_23046() {
     case 0x2305C:
         r16[di] = memory16get(ds*16+r16[si]);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] = r16[di] + memory16get(ds*16+r16[si] + 2);
         if (memory[es*16+r16[di]] != 0x00) {
             pc = 0x23070;
@@ -26503,7 +27144,7 @@ function* sub_23077() {
         }
         r16[di] = r16[ax];
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         push(r16[cx]);
         r16[cx] = r16[bx];
         r16[cx] &= 0x0001;
@@ -27152,7 +27793,7 @@ function* sub_23316() {
         r16[ax] = dseg;
         ds = r16[ax];
         r16[ax] = memory16get(ds*16+r16[di] + -26816);
-        r16[ax] = r16[ax] - memory16get(ds*16+r16[di] + -26818);
+        r16[ax] = r16[ax] - memory16get(ds*16+r16[di] + 38718);
         memory16set(_ss*16+32, r16[ax]);
         r16[ax] = memory16get(ds*16+r16[di] + -26814);
         r16[ax] = r16[ax] - memory16get(ds*16+r16[di] + -26816);
@@ -27163,7 +27804,7 @@ function* sub_23316() {
         r16[ax] = memory16get(ds*16+r16[di] + -26810);
         r16[ax] = r16[ax] - memory16get(ds*16+r16[di] + -26812);
         memory16set(_ss*16+38, r16[ax]);
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         ds = pop();
         if (r16s[cx] >= 0) {
             pc = 0x233E8;
@@ -29048,7 +29689,7 @@ function* sub_23CB2() {
         r16[si] += r16[ax];
         r16[ax] = 0x0028;
         push(r16[dx]);
-        r16[ax] = r16[bx] * r8[al];
+        _mul(r16[bx]);
         r16[dx] = pop();
         r16[si] += r16[ax];
         push(es);
@@ -29181,7 +29822,7 @@ function* sub_23D15() {
         push(ds);
         r16[ax] = dseg;
         ds = r16[ax];
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         ds = pop();
         if (r16s[cx] >= 0) {
             pc = 0x23DC5;
@@ -29342,7 +29983,7 @@ function* sub_23E4F() {
     case 0x23E97:
         r16[di] = r16[dx];
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] >>= 1;
         r16[di] += r16[ax];
         r16[bx] = 0xb800;
@@ -29448,7 +30089,7 @@ function* sub_23ED2() {
         r16[bx] = r16[bx] - memory16get(ds*16+0x9196);
         r16[bx] <<= 1;
         r16[ax] = memory16get(ds*16+r16[bx] + -26816);
-        r16[ax] = r16[ax] - memory16get(ds*16+r16[bx] + -26818);
+        r16[ax] = r16[ax] - memory16get(ds*16+r16[bx] + 38718);
         r16[ax] -= 0x0008;
         memory16set(_ss*16+32, r16[ax]);
         r16[ax] = memory16get(ds*16+r16[bx] + -26814);
@@ -29888,7 +30529,7 @@ function* sub_241B3() {
         r16[di] = pop();
         r16[ax] = pop();
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] >>= 1;
         r16[di] += r16[ax];
         memory[es*16+r16[di]] = 0x77;
@@ -29994,7 +30635,7 @@ function* sub_24250() {
         es = r16[ax];
         r16[di] = memory16get(ds*16+0x32BC);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[bx] = memory16get(ds*16+0x32C0);
         r16[bx] <<= 1;
         r16[cx] = memory16get(ds*16+r16[bx] + 13252);
@@ -30280,7 +30921,7 @@ function* sub_24475() {
 function* sub_24488() {
     r16[di] = memory16get(ds*16+0x3752);
     r16[di] <<= 1;
-    r16[di] = memory16get(ds*16+r16[di] + -26818);
+    r16[di] = memory16get(ds*16+r16[di] + 38718);
     push(memory16get(ds*16+r16[si] + 20));
     push(r16[si]);
     memory[ds*16+r16[si] + 20] = 0x00;
@@ -30417,7 +31058,7 @@ function* sub_24567() {
             break;
         }
         r16[cx] = pop();
-        r16[ax] = r16[cx] * r8[al];
+        _mul(r16[cx]);
         r16[ax] <<= 1;
         r16[ax] <<= 1;
         r16[ax] <<= 1;
@@ -30679,7 +31320,7 @@ function* sub_246E5() {
         r16[di] = memory16get(cs*16+r16[si]);
         r16[si] += 0x0002;
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] += r16[ax];
         r16[dx] = memory16get(cs*16+r16[si]);
         r16[si] += 0x0002;
@@ -30792,7 +31433,7 @@ function* sub_247BF() {
         push(r16[cx]);
         r16[cx] = r16[dx];
         push(r16[di]);
-        rep_movsb_video_video_forward();
+        rep_movsb_data_data_forward();
         r16[di] = pop();
         flags.sign = signed16(r16[di] + 0x2000) < 0;
         r16[di] += 0x2000;
@@ -30922,7 +31563,7 @@ function* sub_24835() {
         r16[ax] = 0x0030;
         r16[ax] = r16[ax] - memory16get(ds*16+0x8F3C);
         r16[dx] = 0x0038;
-        r16[ax] = r16[dx] * r8[al];
+        _mul(r16[dx]);
         r16[si] += r16[ax];
         r16[cx] = memory16get(ds*16+0x8F3C);
         r16[cx] -= 0x0008;
@@ -30930,7 +31571,7 @@ function* sub_24835() {
         r16[di] = 0x0071;
         r16[di] = r16[di] - memory16get(ds*16+0x8F3C);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[di] += 0x0068;
         r16[si] = 0x64d8;
         r16[cx] = memory16get(ds*16+0x8F3C);
@@ -31077,11 +31718,11 @@ function* sub_249C3() {
         push(r16[di]);
         r16[di] += 0x0003;
         r16[si] += 0x0003;
-        movsb_auto_auto_auto();
+        movsb_data_data_forward();
         push(r16[cx]);
         r16[cx] = 0x0017;
         rep_movsw_data_data_forward();
-        movsb_auto_auto_auto();
+        movsb_data_data_forward();
         r16[cx] = pop();
         r16[si] += 0x0005;
         r16[di] = pop();
@@ -31156,7 +31797,7 @@ function* sub_24A2F() {
         push(r16[ax]);
         r16[di] = memory16get(ds*16+0x8F48);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x8F46);
         r16[ax] <<= 1;
         r16[di] += r16[ax];
@@ -31296,7 +31937,7 @@ function* sub_24AFC() {
         es = r16[ax];
         r16[di] = memory16get(ds*16+0x32BC);
         r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -26818);
+        r16[di] = memory16get(ds*16+r16[di] + 38718);
         r16[ax] = memory16get(ds*16+0x32BA);
         r16[ax] >>= 1;
         r16[di] += r16[ax];
@@ -31323,9 +31964,9 @@ function* sub_24B90() {
         ds = pop();
         r8[bh] = r8[bh] ^ r8[bh];
         r8[bl] = r8[ah];
-        flags.carry2 = r8[ah] <= 0x10;
+        flags.carry = r8[ah] <= 0x10;
         r8[ah] -= 0x10;
-        if (flags.carry2) {
+        if (flags.carry) {
             pc = 0x24BA5;
             break;
         }
@@ -31370,9 +32011,9 @@ function* sub_24B90() {
         _STOP_("db 1, 0CBh, 1, 0B1h, 1, 99h, 1, 82h, 1, 6C...");
         _STOP_("db 44h, 1, 32h, 1, 21h, 1, 30h dup(0)");
     case 0x24CC0:
-        flags.carry2 = r8[bl] < 0x20;
+        flags.carry = r8[bl] < 0x20;
         r8[bl] -= 0x20;
-        if (flags.carry2) {
+        if (flags.carry) {
             pc = 0x24CCC;
             break;
         }
@@ -31809,432 +32450,193 @@ function* sub_24F12() {
         return;
     } while (1);
 }
-function* sub_11F4D() {
-    var cs = _seg000;
+function* sub_121E9() {
     var pc = 0;
     do switch (pc) {
     case 0:
         yield* sub_141B1();
-        r16[bx] = memory16get(ds*16+r16[si] + 28);
-        r16[bx] <<= 1;
-        r16[ax] = memory16get(cs*16+r16[bx] + 7949);
-        _imul16(memory16get(ds*16+r16[si] + 66));
-        flags.carry = !!(r16[ax] & 0x8000);
-        r16[ax] <<= 1;
-        rcl16(dx, 1);
-        flags.carry = !!(r16[ax] & 0x8000);
-        r16[ax] <<= 1;
-        rcl16(dx, 1);
-        flags.carry = (memory16get(ds*16+r16[si] + 20) + r16[ax]) >= 0x10000;
-        memory16set(ds*16+r16[si] + 20, memory16get(ds*16+r16[si] + 20) + r16[ax]);
-        memory16set(ds*16+r16[si] + 18, memory16get(ds*16+r16[si] + 18) + r16[dx] + flags.carry);
-        r16[ax] = memory16get(cs*16+r16[bx] + 7981);
-        _imul16(memory16get(ds*16+r16[si] + 66));
-        flags.carry = !!(r16[ax] & 0x8000);
-        r16[ax] <<= 1;
-        rcl16(dx, 1);
-        flags.carry = !!(r16[ax] & 0x8000);
-        r16[ax] <<= 1;
-        rcl16(dx, 1);
-        flags.carry = (memory16get(ds*16+r16[si] + 24) + r16[ax]) >= 0x10000;
-        memory16set(ds*16+r16[si] + 24, memory16get(ds*16+r16[si] + 24) + r16[ax]);
-        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[dx] + flags.carry);
-        r16[ax] = memory16get(ds*16+0x9198);
-        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
-        if (memory16get(ds*16+r16[si] + 18) >= 0x0140) {
-            pc = 0x11FB0;
+        r16[di] = memory16get(ds*16+r16[si] + 28);
+        if (memory16get(ds*16+r16[di]) != 0x0034) {
+            pc = 0x12216;
             break;
         }
-        if (memory16get(ds*16+r16[si] + 22) >= 0x00c0) {
-            pc = 0x11FB0;
+        r16[ax] = memory16get(ds*16+0x9F12);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[di] + 48);
+        memory16set(ds*16+r16[si] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+0x9F16);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[di] + 50);
+        memory16set(ds*16+r16[si] + 22, r16[ax]);
+        if (memory16get(ds*16+0x991E) == 0x0000) {
+            pc = 0x12210;
             break;
         }
-        yield* sub_13589();
-        yield* sub_142AE();
-        if (flags.zero)
-            return;
-        if (memory16get(ds*16+0x9188) != 0x0000) {
-            pc = 0x11FB0;
-            break;
-        }
-        r16[ax] = 0x0004;
-        yield* sub_13C4F();
-        memory16set(ds*16+0x9F04, 0x08b9);
-    case 0x11FB0:
+    {yield* loc_147A9(); return; };
+    case 0x12210:
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        return;
+    case 0x12216:
         yield* sub_107C0();
         return;
     } while (1);
 }
-function* sub_13835() {
+function* sub_1246D() {
+    var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
         yield* sub_141B1();
         r16[ax] = memory16get(ds*16+0x9F12);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 48);
         memory16set(ds*16+r16[si] + 18, r16[ax]);
         r16[ax] = memory16get(ds*16+0x9F16);
+        r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 50);
         memory16set(ds*16+r16[si] + 22, r16[ax]);
         if (memory16get(ds*16+0x991E) == 0x0000) {
-            pc = 0x1384E;
+            pc = 0x1248C;
             break;
         }
     {yield* loc_147A9(); return; };
-    case 0x1384E:
+    case 0x1248C:
         memory16set(ds*16+r16[si] + 4, 0x0853);
+        if (memory16get(ds*16+r16[si] + 12) == 0x8786) {
+            pc = 0x124C4;
+            break;
+        }
         if (memory[ds*16+0x8FAE] == 0x00)
             return;
-        memory16set(ds*16+r16[si] + 14, 0x0001);
-        r16[ax] = 0x0000;
-        r16[bx] = 0x0009;
-        r16[cx] = 0x0000;
-        r16[dx] = 0x0012;
-        bp = 0x12c4;
-        yield* sub_145F4();
-        return;
-    } while (1);
-}
-function* sub_16807() {
-    var pc = 0;
-    do switch (pc) {
-    case 0:
-        r16[si] = 0x9226;
-        r16[cx] = r16[cx] ^ r16[cx];
-    case 0x1680C:
-        if (memory[ds*16+r16[si]] != 0x00) {
-            pc = 0x1681B;
-            break;
-        }
-        memory[ds*16+r16[si]] = 0xff;
-        push(r16[si]);
-        push(r16[cx]);
-        yield* sub_16823();
-        r16[cx] = pop();
-        r16[si] = pop();
-    case 0x1681B:
-        r16[si] += 1;
-        r16[cx] += 1;
-        if (r16s[cx] < signed16(0x0005)) {
-            pc = 0x1680C;
-            break;
-        }
-        return;
-    } while (1);
-}
-function* sub_16823() {
-    var cs = _seg000;
-    var pc = 0;
-    do switch (pc) {
-    case 0:
-        r16[bx] = r16[cx];
-        memory16set(ds*16+0xFCFA, r16[cx]);
-        r16[bx] <<= 1;
-        r16[ax] = memory16get(ds*16+r16[bx] + -28172);
-        ror16(ax, 1);
-        ror16(ax, 1);
-        ror16(ax, 1);
-        memory16set(ds*16+r16[bx] + -28172, r16[ax]);
-        r16[ax] &= 0x000f;
-        r16[bx] = r16[ax];
-        r16[ax] <<= 1;
-        r16[ax] <<= 1;
-        r16[ax] += r16[bx];
-        r16[ax] <<= 1;
-        r16[di] = 0x6767;
-        r16[di] += r16[ax];
+        if (memory16get(ds*16+r16[si] + 12) != 0x8626)
+            return;
+        memory16set(ds*16+0x8E88, 0x0015);
+        r16[di] = 0x12ca;
         r16[ax] = memory16get(cs*16+r16[di]);
-        memory16set(ds*16+0xFCE2, r16[ax]);
-        r16[bx] = memory16get(cs*16+r16[di] + 2);
-        r16[bx] = r16[bx] - memory16get(ds*16+0x919A);
-        r16[bx] = r16[bx] - memory16get(ds*16+0x9190);
-        memory16set(ds*16+0xFCE6, r16[bx]);
-        bp = memory16get(cs*16+r16[di] + 4);
-        bp <<= 1;
-        if (memory16get(ds*16+bp + 28204) != 0x0000) {
-            pc = 0x16876;
-            break;
-        }
-        memory16set(ds*16+bp + 28204, 0x0014);
-    case 0x16876:
-        r16[dx] = memory16get(cs*16+r16[di] + 6);
-        memory16set(ds*16+0xFCEE, r16[dx]);
-        memory16set(ds*16+0xFCEA, 0x0000);
-        r16[di] = memory16get(cs*16+r16[di] + 8);
-        r16[di] <<= 1;
-        r16[di] = memory16get(ds*16+r16[di] + -8482);
-        r16[bx] = 0x670d;
-        r16[cx] = memory16get(cs*16+r16[bx]);
-        r16[bx] += 0x0002;
-        yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x904a;
-        yield* sub_1077C();
-        r16[di] = pop();
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+r16[di] + 2);
+        memory16set(ds*16+r16[si] + 14, r16[ax]);
+        r16[di] += 0x0004;
+        memory16set(ds*16+r16[si] + 16, r16[di]);
+        return;
+    case 0x124C4:
         push(r16[si]);
         yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x904a;
+        r16[di] = 0x9096;
         yield* sub_1077C();
-        r16[di] = pop();
-        memory16set(ds*16+r16[si], 0x010c);
-        memory16set(ds*16+r16[si] + 2, 0x6aad);
-        memory16set(ds*16+r16[si] + 4, 0x0761);
-        memory16set(ds*16+r16[si] + 6, 0x69c8);
-        r16[ax] = memory16get(ds*16+0xFCEE);
-        memory16set(ds*16+r16[si] + 32, r16[ax]);
-        memory16set(ds*16+r16[si] + 72, 0x0000);
-        memory16set(ds*16+r16[si] + 56, r16[di]);
-        memory16set(ds*16+r16[si] + 58, r16[di]);
-        r16[ax] = memory16get(ds*16+0xFCE2);
-        memory16set(ds*16+r16[si] + 18, r16[ax]);
-        r16[ax] = memory16get(ds*16+0xFCE6);
-        memory16set(ds*16+r16[si] + 22, r16[ax]);
-        r16[ax] = memory16get(ds*16+0xFCEA);
-        memory16set(ds*16+r16[si] + 26, r16[ax]);
-        r16[ax] = memory[cs*16+0x6282];
-        memory16set(ds*16+r16[si] + 66, r16[ax]);
-        r16[ax] = memory16get(ds*16+0xFCFA);
-        memory16set(ds*16+r16[si] + 34, r16[ax]);
-        memory16set(ds*16+r16[si] + 40, 0x03e8);
-        memory16set(ds*16+r16[si] + 44, 0x03e8);
-        memory16set(ds*16+r16[si] + 52, 0x0000);
-    case 0x16900:
-        yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x904a;
-        yield* sub_1077C();
-        r16[di] = pop();
-        r16[ax] = memory16get(cs*16+r16[bx]);
-        memory16set(ds*16+r16[si], r16[ax]);
-        memory16set(ds*16+r16[si] + 2, 0x6a0a);
-        memory16set(ds*16+r16[si] + 4, 0x0761);
-        r16[ax] = memory16get(cs*16+r16[bx] + 2);
-        memory16set(ds*16+r16[si] + 6, r16[ax]);
-        r16[ax] = memory16get(cs*16+r16[bx] + 4);
-        memory16set(ds*16+r16[si] + 12, r16[ax]);
-        r16[ax] = memory16get(cs*16+r16[bx] + 6);
-        memory16set(ds*16+r16[si] + 52, r16[ax]);
-        r16[bx] += 0x0008;
-        r16[ax] = memory16get(ds*16+0xFCEE);
-        memory16set(ds*16+r16[si] + 32, r16[ax]);
-        memory16set(ds*16+r16[si] + 36, 0x0001);
-        memory[ds*16+r16[si] + 39] = 0x00;
-        memory16set(ds*16+r16[si] + 72, 0x0000);
-        memory16set(ds*16+r16[si] + 14, 0x0000);
-        memory16set(ds*16+r16[si] + 56, r16[di]);
-        memory16set(ds*16+r16[si] + 58, r16[di]);
-        r16[ax] = memory16get(ds*16+0xFCE2);
-        memory16set(ds*16+r16[si] + 18, r16[ax]);
-        r16[ax] = memory16get(ds*16+0xFCE6);
-        memory16set(ds*16+r16[si] + 22, r16[ax]);
-        memory16set(ds*16+r16[si] + 54, 0x0000);
-        r16[ax] = memory16get(ds*16+0xFCEA);
-        memory16set(ds*16+r16[si] + 26, r16[ax]);
-        memory16set(ds*16+r16[si] + 66, 0x0004);
-        r16[ax] = memory16get(ds*16+0xFCFA);
-        memory16set(ds*16+r16[si] + 34, r16[ax]);
-        memory16set(ds*16+0xFCEA, memory16get(ds*16+0xFCEA) - 0x0007);
-        yield* sub_13589();
-        if (--r16[cx]) {
-            pc = 0x16900;
-            break;
-        }
-        yield* sub_11022();
-        r16[di] = 0x904a;
-        yield* sub_1077C();
-        r16[di] = pop();
-        memory16set(ds*16+r16[si], 0x00b8);
-        memory16set(ds*16+r16[si] + 2, 0x0761);
-        memory16set(ds*16+r16[si] + 4, 0x0761);
-        memory16set(ds*16+r16[si] + 6, 0x0761);
-        memory16set(ds*16+r16[si] + 40, 0x03e8);
-        memory16set(ds*16+r16[si] + 44, 0x03e8);
-        memory16set(ds*16+r16[si] + 70, r16[di]);
-        memory16set(ds*16+r16[di], 0x00bc);
-        memory16set(ds*16+r16[di] + 2, 0x25a8);
-        memory16set(ds*16+r16[di] + 4, 0x0761);
-        memory16set(ds*16+r16[di] + 6, 0x0761);
-        memory16set(ds*16+r16[di] + 40, 0x03e8);
-        memory16set(ds*16+r16[di] + 44, 0x03e8);
-        memory16set(ds*16+r16[di] + 68, r16[si]);
+        r16[di] = r16[si];
+        r16[si] = pop();
+        bp = 0x132c;
+        memory16set(ds*16+r16[di], 0x0030);
+        memory16set(ds*16+r16[di] + 4, 0x0853);
+        memory16set(ds*16+r16[di] + 2, 0x28b8);
+        r16[ax] = memory16get(cs*16+bp);
+        memory16set(ds*16+r16[di] + 12, r16[ax]);
+        r16[ax] = memory16get(cs*16+bp + 2);
+        memory16set(ds*16+r16[di] + 14, r16[ax]);
+        bp += 0x0004;
+        memory16set(ds*16+r16[di] + 16, bp);
+        r16[ax] = memory16get(ds*16+r16[si] + 18);
+        memory16set(ds*16+r16[di] + 18, r16[ax]);
+        r16[ax] = memory16get(ds*16+r16[si] + 22);
+        r16[ax] -= 0x000b;
+        memory16set(ds*16+r16[di] + 22, r16[ax]);
+        memory16set(ds*16+r16[di] + 26, 0x0000);
         return;
     } while (1);
 }
-function* sub_16A0A() {
+function* sub_128B8() {
     var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
-        r16[bx] = memory16get(ds*16+r16[si] + 34);
-        memory[ds*16+r16[bx] + -28122] = 0xff;
-        r16[di] = memory16get(ds*16+r16[si] + 10);
-        if (memory16get(ds*16+r16[di]) != 0x00bc) {
-            pc = 0x16A33;
+        if (memory[ds*16+0x9224] == 0x00) {
+            pc = 0x128C2;
             break;
         }
-        r16[bx] = memory16get(ds*16+r16[si] + 32);
-        r16[bx] <<= 1;
-        if (memory16get(ds*16+r16[bx] + -28204) != 0x0000) {
-            pc = 0x16A2D;
+        _STOP_("goto loc_13A2F");
+    case 0x128C2:
+        yield* sub_141B1();
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) - 0x000a);
+        if (memory16gets(ds*16+r16[si] + 22) >= 0) {
+            pc = 0x128CF;
             break;
         }
-        memory16set(ds*16+r16[bx] + -28204, 0x0014);
-    case 0x16A2D:
         yield* sub_107C0();
-        yield* indirectCall(_seg000, memory16get(ds*16+r16[si]+2));
         return;
-    case 0x16A33:
-        r16[ax] = memory16get(ds*16+r16[di] + 18);
-        memory16set(ds*16+r16[si] + 18, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[di] + 22);
-        r16[ax] = r16[ax] + memory16get(ds*16+0x9198);
-        memory16set(ds*16+r16[si] + 22, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[di] + 28);
-        memory16set(ds*16+r16[si] + 28, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[di] + 30);
-        memory16set(ds*16+r16[si] + 30, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[di] + 26);
-        memory16set(ds*16+r16[si] + 26, r16[ax]);
-        if (memory16get(ds*16+r16[si] + 4) != 0x0761) {
-            pc = 0x16A67;
-            break;
-        }
-        if (memory16gets(ds*16+r16[si] + 26) < 0 /*CHECK*/) {
-            pc = 0x16A67;
-            break;
-        }
-        memory16set(ds*16+r16[si] + 4, 0x0853);
-    case 0x16A67:
-        r16[bx] = memory16get(ds*16+r16[si] + 28);
-        r16[bx] += 0x0010;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] >>= 1;
-        r16[bx] &= 0x000e;
-        r16[di] = 0x6a8d;
-        if (memory16get(ds*16+r16[si]) != 0x0110) {
-            pc = 0x16A84;
-            break;
-        }
-        r16[di] = 0x6a9d;
-    case 0x16A84:
-        r16[ax] = memory16get(cs*16+r16[bx] + r16[di]);
-        memory16set(ds*16+r16[si] + 12, r16[ax]);
-    {yield* sub_13589(); return; };
+    case 0x128CF:
+        yield* sub_13589();
+        yield* sub_11BEA();
+        if (flags.zero)
+            return;
+        r16[ax] = memory16get(cs*16+0x3DA4);
+    {yield* sub_13A36(); return; };
         return;
     } while (1);
 }
-function* sub_125A8() {
+function* sub_14F96() {
+    memory16set(ds*16+0x9162, 0x00aa);
+}
+function* sub_19F4E() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        r16[di] = memory16get(ds*16+r16[si] + 68);
-        bp = memory16get(ds*16+r16[di] + 10);
-        if (bp == r16[si]) {
-            pc = 0x12624;
-            break;
-        }
-    case 0x125B2:
-        if (memory16get(ds*16+bp + 4) != 0x0761) {
-            pc = 0x125CD;
-            break;
-        }
-        bp = memory16get(ds*16+bp + 10);
-        if (bp != r16[si]) {
-            pc = 0x125B2;
-            break;
-        }
-        memory16set(ds*16+r16[di] + 40, 0x03e8);
-        memory16set(ds*16+r16[di] + 44, 0x03e8);
-        return;
-    case 0x125CD:
-        r16[ax] = memory16get(ds*16+bp + 40);
-        r16[bx] = memory16get(ds*16+bp + 42);
-        r16[cx] = memory16get(ds*16+bp + 44);
-        r16[dx] = memory16get(ds*16+bp + 46);
-    case 0x125DD:
-        bp = memory16get(ds*16+bp + 10);
-        if (r16[si] == bp) {
-            pc = 0x12617;
-            break;
-        }
-        if (memory16get(ds*16+bp + 4) == 0x0761) {
-            pc = 0x125DD;
-            break;
-        }
-        if (r16s[ax] <= memory16gets(ds*16+bp + 40)) {
-            pc = 0x125F7;
-            break;
-        }
-        r16[ax] = memory16get(ds*16+bp + 40);
-    case 0x125F7:
-        if (r16s[bx] <= memory16gets(ds*16+bp + 42)) {
-            pc = 0x12601;
-            break;
-        }
-        r16[bx] = memory16get(ds*16+bp + 42);
-    case 0x12601:
-        if (r16s[cx] >= memory16gets(ds*16+bp + 44)) {
-            pc = 0x1260B;
-            break;
-        }
-        r16[cx] = memory16get(ds*16+bp + 44);
-    case 0x1260B:
-        if (r16s[dx] >= memory16gets(ds*16+bp + 46)) {
-            pc = 0x125DD;
-            break;
-        }
-        r16[dx] = memory16get(ds*16+bp + 46);
-        pc = 0x125DD;
-        break;
-    case 0x12617:
-        memory16set(ds*16+r16[di] + 40, r16[ax]);
-        memory16set(ds*16+r16[di] + 42, r16[bx]);
-        memory16set(ds*16+r16[di] + 44, r16[cx]);
-        memory16set(ds*16+r16[di] + 46, r16[dx]);
-        return;
-    case 0x12624:
-        push(r16[di]);
-        yield* sub_107C0();
+        push(r16[si]);
+        r16[si] = r16[di];
+        yield* sub_10EF5();
         r16[si] = pop();
-        yield* sub_107C0();
+        bp = 0x1230;
+        r16[dx] = 0x0853;
+        yield* sub_13326();
+        memory16set(ds*16+0x920E, memory16get(ds*16+0x920E) - 1);
+        if (memory16get(ds*16+0x920E) == 0) {
+            pc = 0x19F65;
+            break;
+        }
+        return;
+    case 0x19F65:
+        r16[bx] = memory16get(ds*16+r16[di] + 68);
+        memory16set(ds*16+r16[bx] + 36, 0x0000);
+        r16[ax] = 0x0001;
+        yield* sub_13A39();
+        r16[cx] = 0x0004;
+        yield* sub_115E4();
+        memory[ds*16+0x9225] = 0x00;
         return;
     } while (1);
 }
-function* sub_16AAD() {
-    r16[ax] = memory16get(ds*16+0x9198);
-    memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
-    r16[bx] = memory16get(ds*16+r16[si] + 34);
-    memory[ds*16+r16[bx] + -28122] = 0xff;
-    yield* sub_14871();
-    if (memory16get(ds*16+r16[si]) != 0x0004)
+function* sub_12AA4() {
+    if (memory16gets(ds*16+0x9132) >= signed16(0x0004))
         return;
-    yield* indirectCall(_seg000, memory16get(ds*16+r16[si]+2));
+    memory16set(ds*16+0x9132, memory16get(ds*16+0x9132) + 1);
     return;
 }
-function* sub_16696() {
-    var pc = 0;
-    do switch (pc) {
-    case 0:
-        memory16set(ds*16+r16[di] + 4, 0x08b9);
-        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
-        memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
-        if (flags.carry2) {
-            pc = 0x166A1;
-            break;
-        }
-        return;
-    case 0x166A1:
-        bp = 0x650d;
-        yield* loc_166B6();
-        return;
-    } while (1);
+function* sub_180CA() {
+    r16[bx] <<= 1;
+    switch (r16[bx])
+    {
+    case 0: yield* loc_13360(); return;
+    case 2:     r16[bx] = 0x7736;
+    {yield* sub_13389(); return; };
+    case 4:     r16[bx] = 0x7748;
+    {yield* sub_13389(); return; };
+    case 6:     r16[bx] = 0x775a;
+    {yield* sub_13389(); return; };
+    case 8:     r16[bx] = 0x776c;
+    {yield* sub_13389(); return; };
+    case 10:     r16[bx] = 0x777e;
+    {yield* sub_13389(); return; };
+    case 12:     r16[bx] = 0x7790;
+    {yield* sub_13389(); return; };
+        default:
+        assert(0);
+    }
 }
-function* sub_169D0() {
+function* sub_1866D() {
     var cs = _seg000;
     var pc = 0;
     do switch (pc) {
     case 0:
+        if (memory16get(ds*16+r16[si] + 26) != 0x8000) {
+            pc = 0x186AE;
+            break;
+        }
         yield* sub_141B1();
         r16[bx] = memory16get(ds*16+r16[si] + 28);
         r8[al] = memory[cs*16+r16[bx] + 24854];
@@ -32243,7 +32645,7 @@ function* sub_169D0() {
         sar16(ax, 1);
         r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 22);
         if (r16[ax] >= 0x00c0) {
-            pc = 0x16A06;
+            pc = 0x186AA;
             break;
         }
         memory16set(ds*16+r16[si] + 22, r16[ax]);
@@ -32253,62 +32655,314 @@ function* sub_169D0() {
         sar16(ax, 1);
         r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 18);
         if (r16[ax] >= 0x0140) {
-            pc = 0x16A06;
+            pc = 0x186AA;
             break;
         }
         memory16set(ds*16+r16[si] + 18, r16[ax]);
         memory16set(ds*16+r16[si] + 4, 0x0853);
         return;
-    case 0x16A06:
+    case 0x186AA:
         yield* sub_107C0();
+        return;
+    case 0x186AE:
+        r16[ax] = memory16get(ds*16+0x9198);
+        memory16set(ds*16+r16[si] + 22, memory16get(ds*16+r16[si] + 22) + r16[ax]);
+        r16[bx] = memory16get(ds*16+r16[si] + 34);
+        memory[ds*16+r16[bx] + -28115 + 65536] = 0xff;
+        yield* loc_1480E();
+        if (memory16get(ds*16+r16[si]) != 0x0004) {
+            pc = 0x186D7;
+            break;
+        }
+        r16[bx] = memory16get(ds*16+r16[si] + 32);
+        r16[bx] <<= 1;
+        if (memory16get(ds*16+r16[bx] + -28206+ 65536) != 0x0000)
+            return;
+        memory16set(ds*16+r16[bx] + -28206+ 65536, 0x0018);
+        return;
+    case 0x186D7:
+        if (memory16get(ds*16+r16[si] + 4) == 0x0761) {
+            pc = 0x1870B;
+            break;
+        }
+        if (memory16get(ds*16+r16[si] + 4) == 0x0897) {
+            pc = 0x186F4;
+            break;
+        }
+        r16[di] = memory16get(ds*16+r16[si] + 58);
+        if (memory16get(ds*16+r16[di]) != 0x0000) {
+            pc = 0x18716;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 4, 0x0897);
+        pc = 0x18716;
+        break;
+    case 0x186F4:
+        r16[di] = memory16get(ds*16+r16[si] + 58);
+        if (memory16get(ds*16+r16[di]) == 0x0000) {
+            pc = 0x18716;
+            break;
+        }
+        r16[di] -= 0x000a;
+        if (r16[di] == memory16get(ds*16+r16[si] + 56)) {
+            pc = 0x18716;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 4, 0x0853);
+        pc = 0x18716;
+        break;
+    case 0x1870B:
+        if (memory16gets(ds*16+r16[si] + 26) < 0 /*CHECK*/) {
+            pc = 0x18716;
+            break;
+        }
+        memory16set(ds*16+r16[si] + 4, 0x0897);
+    case 0x18716:
+        r16[bx] = memory16get(ds*16+r16[si] + 28);
+        r16[bx] += 0x0010;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] >>= 1;
+        r16[bx] &= 0x000e;
+        r16[di] = 0x952b;
+        if (memory16get(ds*16+r16[si]) != 0x0118) {
+            pc = 0x18733;
+            break;
+        }
+        r16[di] = 0x953b;
+    case 0x18733:
+        if (memory16get(ds*16+r16[si]) != 0x011c) {
+            pc = 0x1873C;
+            break;
+        }
+        r16[di] = 0x954b;
+    case 0x1873C:
+        r16[ax] = memory16get(cs*16+r16[bx] + r16[di]);
+        memory16set(ds*16+r16[si] + 12, r16[ax]);
+    {yield* sub_13589(); return; };
         return;
     } while (1);
 }
-function* sub_166A6() {
-    var cs = _seg000;
+function* sub_18114() {
     var pc = 0;
     do switch (pc) {
     case 0:
         memory16set(ds*16+r16[di] + 4, 0x08b9);
-        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
-        memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
-        if (flags.carry2) {
-            pc = 0x166B1;
+        if (r16s[ax] >= memory16gets(ds*16+r16[di] + 36)) {
+            pc = 0x18121;
+            break;
+        }
+    {yield* sub_13AA7(); return; };
+    case 0x18121:
+        r16[bx] = 0x7892;
+        yield* loc_18136();
+        return;
+    } while (1);
+}
+function* loc_18136() {
+    var cs = _seg000;
+    push(r16[si]);
+    yield* sub_11022();
+    push(r16[di]);
+    r16[di] = 0x9096;
+    yield* sub_1077C();
+    r16[di] = pop();
+    r16[ax] = memory16get(ds*16+r16[di]);
+    memory16set(ds*16+r16[si], r16[ax]);
+    r16[ax] = memory16get(ds*16+r16[di] + 2);
+    memory16set(ds*16+r16[si] + 2, r16[ax]);
+    memory16set(ds*16+r16[si] + 4, 0x0853);
+    r16[ax] = memory16get(ds*16+r16[di] + 18);
+    memory16set(ds*16+r16[si] + 18, r16[ax]);
+    r16[ax] = memory16get(ds*16+r16[di] + 22);
+    memory16set(ds*16+r16[si] + 22, r16[ax]);
+    r16[ax] = memory16get(cs*16+r16[bx]);
+    memory16set(ds*16+r16[si] + 12, r16[ax]);
+    r16[ax] = memory16get(cs*16+r16[bx] + 2);
+    memory16set(ds*16+r16[si] + 14, r16[ax]);
+    r16[bx] += 0x0004;
+    memory16set(ds*16+r16[si] + 16, r16[bx]);
+    memory16set(ds*16+r16[si] + 26, 0x8000);
+    yield* sub_14191();
+    memory16set(ds*16+r16[si] + 28, 0x0000);
+    memory16set(ds*16+r16[si] + 30, 0x0000);
+    memory[ds*16+r16[si] + 28] = r8[al];
+    r16[si] = r16[di];
+    yield* sub_107C0();
+    r16[si] = pop();
+}
+function* sub_18126() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        memory16set(ds*16+r16[di] + 4, 0x08b9);
+        if (r16s[ax] >= memory16gets(ds*16+r16[di] + 36)) {
+            pc = 0x18133;
+            break;
+        }
+    {yield* sub_13AA7(); return; };
+    case 0x18133:
+        r16[bx] = 0x78b8;
+        yield* loc_18136();
+        return;
+    } while (1);
+}
+function* sub_180F5() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        memory16set(ds*16+r16[di] + 4, 0x08b9);
+        if (r16s[ax] >= memory16gets(ds*16+r16[di] + 36)) {
+            pc = 0x18102;
+            break;
+        }
+    {yield* sub_13AA7(); return; };
+    case 0x18102:
+        r16[cx] = memory16get(ds*16+r16[di] + 34);
+        r8[al] = 0x01;
+        r8[al] <<= r8[cl];
+        r8[al] = (~r8[al]);
+        memory[ds*16+0x9202] &= r8[al];
+        r16[bx] = 0x786c;
+        yield* loc_18136();
+        return;
+    } while (1);
+}
+function* sub_187D5() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        if (memory16get(ds*16+0x9202) != 0x0003) {
+            pc = 0x187DF;
             break;
         }
         return;
-    case 0x166B1:
-        bp = 0x6523;
-    case 0x166B6:
+    case 0x187DF:
+        memory16set(ds*16+r16[di] + 4, 0x8783);
+        flags.carry2 = memory16get(ds*16+r16[di] + 36) <= r16[ax];
+        memory16set(ds*16+r16[di] + 36, memory16get(ds*16+r16[di] + 36) - r16[ax]);
+        if (flags.carry2) {
+            pc = 0x187EC;
+            break;
+        }
+        return;
+    case 0x187EC:
+        memory16set(ds*16+0x9202, 0x0003);
+        r16[bx] = memory16get(ds*16+r16[di] + 12);
+        memory16set(ds*16+r16[bx], 0x62c1);
+        r16[dx] = 0x0853;
+        r16[ax] = memory16get(ds*16+r16[di] + 40);
+        r16[ax] += 0x0008;
+        r16[bx] = memory16get(ds*16+r16[di] + 42);
+        r16[bx] += 0x0008;
+        bp = 0x1230;
+        yield* sub_13326();
         push(r16[si]);
-        yield* sub_11022();
-        push(r16[di]);
-        r16[di] = 0x9096;
-        yield* sub_1077C();
-        r16[di] = pop();
-        r16[ax] = memory16get(ds*16+r16[di]);
-        memory16set(ds*16+r16[si], r16[ax]);
-        memory16set(ds*16+r16[si] + 2, 0x69d0);
-        memory16set(ds*16+r16[si] + 4, 0x0853);
-        r16[ax] = memory16get(ds*16+r16[di] + 18);
-        memory16set(ds*16+r16[si] + 18, r16[ax]);
-        r16[ax] = memory16get(ds*16+r16[di] + 22);
-        memory16set(ds*16+r16[si] + 22, r16[ax]);
-        r16[ax] = memory16get(cs*16+bp);
-        memory16set(ds*16+r16[si] + 12, r16[ax]);
-        r16[ax] = memory16get(cs*16+bp + 2);
-        memory16set(ds*16+r16[si] + 14, r16[ax]);
-        bp += 0x0004;
-        memory16set(ds*16+r16[si] + 16, bp);
-        yield* sub_14191();
-        memory[ds*16+r16[si] + 28] = r8[al];
-        memory[ds*16+r16[si] + 29] = 0x00;
-        r16[ax] = memory16get(ds*16+r16[di] + 52);
-        flags.carry = (memory16get(ds*16+0x9152) + r16[ax]) >= 0x10000;
-        memory16set(ds*16+0x9152, memory16get(ds*16+0x9152) + r16[ax]);
-        memory16set(ds*16+0x9154, memory16get(ds*16+0x9154) + 0x0000 + flags.carry);
         r16[si] = r16[di];
         yield* sub_107C0();
+        r16[si] = pop();
+        memory16set(ds*16+0x9200, memory16get(ds*16+0x9200) - 1);
+        if (memory16get(ds*16+0x9200) != 0x0001) {
+            pc = 0x18832;
+            break;
+        }
+        memory16set(ds*16+0x918C, 0xffff);
+        memory16set(ds*16+0x91F4, 0xd251);
+        memory16set(ds*16+0x91F6, 0x894d);
+    case 0x18832:
+        if (memory16get(ds*16+0x9200) != 0x0000)
+            return;
+        memory16set(ds*16+0x918C, 0x0001);
+        push(r16[di]);
+        r16[di] = 0x0000;
+        r16[di] += 0x1950;
+        r16[cx] = 0x01cc;
+        r16[ax] = r16[ax] ^ r16[ax];
+        rep_stosw_data_forward();
+        push(r16[si]);
+        r16[si] = memory16get(ds*16+0x9054);
+    case 0x18853:
+        r16[ax] = memory16get(ds*16+r16[si]);
+        if (!(r16[ax] & r16[ax])) {
+            pc = 0x1886C;
+            break;
+        }
+        push(r16[ax]);
+        yield* sub_11689();
+        r16[ax] = pop();
+        push(r16[di]);
+        if (r16[ax] == 0x0050) {
+            pc = 0x18869;
+            break;
+        }
+        r16[di] = r16[si];
+        yield* sub_13A33();
+    case 0x18869:
+        r16[si] = pop();
+        pc = 0x18853;
+        break;
+    case 0x1886C:
+        memory[ds*16+0x922D] = 0x00;
+        memory[ds*16+0x922E] = 0x00;
+        r16[di] = 0x8e8c;
+        r16[cx] = 0x0010;
+        r16[ax] = r16[ax] ^ r16[ax];
+        rep_stosw_data_forward();
+        r16[cx] = 0x0027;
+        r16[ax] = 0x0000;
+        r16[bx] = 0x0000;
+        r16[dx] = 0x0140;
+        r16[di] = 0x00c0;
+        bp = 0x124c;
+        yield* sub_11588();
+        r16[cx] = 0x0004;
+        yield* sub_115E4();
+        r16[si] = pop();
+        r16[di] = pop();
+        memory16set(ds*16+0x91A8, 0x0000);
+        memory[ds*16+0x9230] = 0xff;
+        return;
+    } while (1);
+}
+function* sub_18783() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
+        push(r16[si]);
+        memory16set(ds*16+r16[si] + 4, 0x0761);
+        r16[di] = 0x92bf;
+        r16[ax] = 0x0003;
+        r16[bx] = 0x0002;
+        r16[cx] = memory16get(ds*16+r16[si] + 18);
+        r16[cx] <<= 1;
+        r16[cx] <<= 1;
+        r16[cx] <<= 1;
+        r16[cx] -= 0x0010;
+        r16[dx] = memory16get(ds*16+r16[si] + 22);
+        r16[dx] <<= 1;
+        r16[dx] <<= 1;
+        r16[dx] <<= 1;
+        r16[dx] <<= 1;
+        r16[dx] = r16[dx] - memory16get(ds*16+0x9190);
+        r16[dx] -= 0x0010;
+        if (memory16get(ds*16+r16[si] + 34) == 0x0000) {
+            pc = 0x187CE;
+            break;
+        }
+        r16[cx] += 0x0010;
+        r16[di] = 0x92b3;
+        if (memory16get(ds*16+r16[si] + 34) == 0x0001) {
+            pc = 0x187CE;
+            break;
+        }
+        r16[di] = 0x92cb;
+        r16[bx] = 0x0003;
+        r16[dx] -= 0x0010;
+        r16[cx] -= 0x0008;
+    case 0x187CE:
+        r16[si] = r16[di];
+        yield* sub_10963();
         r16[si] = pop();
         return;
     } while (1);
