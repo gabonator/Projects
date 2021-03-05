@@ -19624,6 +19624,7 @@ loc_209BD:                                      //loc_209BD:
     memory16(_ds, 0xFCE4) -= _ax + _flags.carry;
     //_FIXME_;                                    //sbb word_38214, ax
     if ((short)memory16(_ds, 0xFCE2) < 0)       //js short loc_209CF
+    if ((short)memory16(_ds, 0xFCE4) < 0)       //js short loc_209CF
       goto loc_209CF;
     _dx += 1;                                   //inc dx
     goto loc_209BD;                             //jmp short loc_209BD

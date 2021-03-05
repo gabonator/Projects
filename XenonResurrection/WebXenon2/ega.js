@@ -234,7 +234,7 @@ var EGA = {
 		case 0x07: EGA.SetDontCare( val >> 8 ); return true;
 		case 0x08: EGA.SetBitMask( val >> 8 ); return true;
 		case 0x03: EGA.SetRotate( val >> 8 ); return true;
-                case 0x04: this.cfgReadMapSelect = data >> 8; return true;
+                case 0x04: this.cfgReadMapSelect = val >> 8; return true;
 		}
 	}
         return false;
