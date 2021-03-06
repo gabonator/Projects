@@ -5714,6 +5714,7 @@ function* sub_13C4F() {
             return;
         // std::cout << "----- skip die\n";
         memory16set(ds*16+0x9186, 0x27);
+        //yield* sub_13C01();
         return;
     } while (1);
 }
