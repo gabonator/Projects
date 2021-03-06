@@ -28,10 +28,12 @@
 			clientY: touch.clientY
 		});
 		canvas.dispatchEvent(mouseEvent);
+                e.preventDefault(); 
 	}, false);
 	canvas.addEventListener("touchend", function (e) {
 		var mouseEvent = new MouseEvent("mouseup", {});
 		canvas.dispatchEvent(mouseEvent);
+                e.preventDefault(); 
 	}, false);
 	canvas.addEventListener("touchmove", function (e) {
 		var touch = e.touches[0];
@@ -40,6 +42,7 @@
 			clientY: touch.clientY
 		});
 		canvas.dispatchEvent(mouseEvent);
+                e.preventDefault(); 
 	}, false);
 
 	// Prevent scrolling when touching the canvas
