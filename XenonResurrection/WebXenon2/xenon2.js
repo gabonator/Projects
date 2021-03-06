@@ -21663,7 +21663,7 @@ function* sub_209A6() {
         r16[ax] = memory16get(ds*16+r16[bx]);
         memory16set(ds*16+0xFCE2, memory16get(ds*16+0xFCE2) - r16[ax]);
         r16[ax] = memory16get(ds*16+r16[bx] + 2);
-        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) - r16[ax] + flags.carry);
+        memory16set(ds*16+0xFCE4, memory16get(ds*16+0xFCE4) - r16[ax] - flags.carry);
         if (memory16gets(ds*16+0xFCE4) < 0) {
             pc = 0x209CF;
             break;
