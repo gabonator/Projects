@@ -1,4 +1,9 @@
+// TODO: remove
 shared_ptr<CIStop> xxx(new CIStop());
+
+// TODO: cleanup
+bool _ReturnsCarry(string name);
+bool _ReturnsZero(string name);
 
 class CCExport
 {
@@ -256,22 +261,11 @@ public:
 			}
 			if (dynamic_pointer_cast<CICall>(pInstruction))
 			{
-                /*
-                if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_15C0F" )
-                {
-                    // ends width xor ax, ax; or dec ax
-                    return make_shared<CICompare>(CValue("ax"), CValue("0", CValue::r16)); // TODO: CHECK!
-                } else
-                    if ( dynamic_pointer_cast<CICall>(pInstruction)->m_label == "sub_10101" )
-                    {
-                        // ends width "cmp, jz" and "stc", need to manually fix 10101 to clear carry
-                        return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
-                    } else
-                    {
-                        return make_shared<CIStop>(pInstruction); //TODO
-                    }
+                if (_ReturnsCarry(dynamic_pointer_cast<CICall>(pInstruction)->m_label))
+                    return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
+                if (_ReturnsZero(dynamic_pointer_cast<CICall>(pInstruction)->m_label))
+                    return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeZeroTest );
 
-                _ASSERT(0);*/
                 if (CheckCarryReturn(dynamic_pointer_cast<CICall>(pInstruction)->m_label))
                     return make_shared<CIZeroArgOp>( CIZeroArgOp::FakeCarryTest );
                 else
@@ -759,7 +753,7 @@ public:
 			string strPad;
 			if ( !dynamic_pointer_cast<CCLabel>(arrOutput[i]) )
 				for (int j=0; j<nBaseIndent + nIndent; j++)
-					strPad += "  ";
+					strPad += "    ";
 
 			string all(arrOutput[i]->ToString());
 			CUtils::replace(all, "\r", "\n"); 

@@ -252,7 +252,7 @@ class CIMAlu : public CInstructionMatcher
 
         if ( CUtils::match("^imul[\\s]+(.*)$", strLine, arrMatches) )
         {
-            return make_shared<CIAlu>(CIAlu::Mul, CValue(arrMatches[0]));
+            return make_shared<CIAlu>(CIAlu::IMul, CValue(arrMatches[0]));
         }
 
         if ( CUtils::match("^idiv (.+)$", strLine, arrMatches) )

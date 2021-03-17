@@ -1,3 +1,6 @@
+string _DefaultDirection();
+string _DefaultMemory();
+
 class CCInstruction
 {
 public:
@@ -245,8 +248,9 @@ public:
 			break;
 		case CIAlu::Mul: 
                 // TODO: fix r16, overflow flag
-			m_strDst = CValue("ax").ToC();
-			m_strSrc = op1 + " * " + CValue("al").ToC();
+			//m_strDst = CValue("ax").ToC();
+			//m_strSrc = op1 + " * " + CValue("al").ToC();
+                m_strSrc = string("_imul(") + op1 + ");";
                 
                 if (pAlu->m_ExportInsertion == CIAlu::None) {}
                     else
@@ -386,7 +390,7 @@ public:
 			default:
 				_ASSERT(0);
 		}*/
-		return "MemAuto";
+		return _DefaultMemory();
 	}
 
 	static string DirToC(/*CStaticAnalysis::CPossibleValue& pv*/)
@@ -403,7 +407,7 @@ public:
 			default:
 				_ASSERT(0);
 		}*/
-		return "DirAuto";
+		return _DefaultDirection();
 	}
 
 	static string GetTemplate(/*CStaticAnalysis& anal,*/ CIZeroArgOp::EType op)

@@ -61,9 +61,13 @@ public:
     set<string> mFuncVideoEs;
     set<string> mFuncVideoDs;
     set<string> mFuncBiosEs;
+    set<string> mFuncReturnCarry;
+    set<string> mFuncReturnZero;
     vector<string> mArguments;
     vector<string> mFuncList;
     vector<string> mNewArguments;
+    string mDefaultMemory{"MemAuto"};
+    string mDefaultDirection{"DirAuto"};
 
     void addSegmentInfo(string name, int begin, int end, int base)
     {
@@ -100,6 +104,14 @@ public:
     {
         return mFuncBiosEs.find(fname) != mFuncBiosEs.end();
     }
+    bool isReturningCarry(const string& fname)
+    {
+        return mFuncReturnCarry.find(fname) != mFuncReturnCarry.end();
+    }
+    bool isReturningZero(const string& fname)
+    {
+        return mFuncReturnZero.find(fname) != mFuncReturnZero.end();
+    }
     int fixPtr(int ofs)
     {
         for (int i=0; i<mSegments.size(); i++)
@@ -126,6 +138,25 @@ public:
 CSourceParser sp;
 CCExport e;
 CCustomize custom;
+
+string _DefaultDirection()
+{
+    return custom.mDefaultDirection;
+}
+
+string _DefaultMemory()
+{
+    return custom.mDefaultMemory;
+}
+
+bool _ReturnsCarry(string name)
+{
+    return custom.isReturningCarry(name);
+}
+bool _ReturnsZero(string name)
+{
+    return custom.isReturningZero(name);
+}
 
 int FixPtr(int ofs)
 {
@@ -509,7 +540,16 @@ void doConfig(const string& jsonFile)
                 custom.mFuncVideoDs.insert(funcName);
             if (string(attrs["es"].GetString()) == "bios")
                 custom.mFuncBiosEs.insert(funcName);
+            if (string(attrs["return"].GetString()) == "carry")
+                custom.mFuncReturnCarry.insert(funcName);
+            if (string(attrs["return"].GetString()) == "zero")
+                custom.mFuncReturnZero.insert(funcName);
         });
+    }
+    if (json["defaults"])
+    {
+        custom.mDefaultMemory = json["defaults"]["memory"].GetString();
+        custom.mDefaultDirection = json["defaults"]["direction"].GetString();
     }
 }
 
@@ -546,8 +586,10 @@ int main(int argc, const char * argv[])
         custom.mArguments.push_back(argv[i]);
     
     // TEST:
-    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
-    
+    //custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
+
+    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick2/cico.cfg"};
+
     for (auto it = custom.mArguments.begin(); it != custom.mArguments.end(); )
     {
         if (*it == "-config")

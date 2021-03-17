@@ -11065,25 +11065,30 @@ sub_1A234	endp
 ; ---------------------------------------------------------------------------
 		db    0
 		db    0
-		db  8Bh	; ‹
-		db    7
-		db  43h	; C
-		db  43h	; C
-		db    5
-		db  14h
-		db  23h	; #
-		db  89h	; ‰
-		db  1Eh
-		db  3Ch	; <
-		db  9Eh	; ž
-		db  8Bh	; ‹
-		db 0D8h	; Ø
-		db 0C3h	; Ã
-		db  8Bh	; ‹
-		db  1Eh
-		db  3Ch	; <
-		db  9Eh	; ž
-		db 0C3h	; Ã
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A23E	proc near
+		mov	ax, [bx]
+		inc	bx
+		inc	bx
+		add	ax, 2314h
+		mov	ds:9E3Ch, bx
+		mov	bx, ax
+		retn
+sub_1A23E	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A24C	proc near
+		mov	bx, ds:9E3Ch
+		retn
+sub_1A24C	endp
+
+; ---------------------------------------------------------------------------
 		dw 0
 		dw 0
 		dw 0
@@ -11144,7 +11149,11 @@ locret_1A2C3:				; CODE XREF: sub_1A257+5Fj
 		retn
 sub_1A257	endp
 
-; ---------------------------------------------------------------------------
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A2C4	proc near		; CODE XREF: sub_1A2F6+26p
 		push	bx
 		call	sub_1C4CA
 		pop	bx
@@ -11154,7 +11163,7 @@ sub_1A257	endp
 		retn
 ; ---------------------------------------------------------------------------
 
-loc_1A2D3:				; CODE XREF: seg001:9ED0j
+loc_1A2D3:				; CODE XREF: sub_1A2C4+Cj
 		cmp	dx, 1
 		jnz	short loc_1A2F1
 		test	al, 10h
@@ -11165,49 +11174,267 @@ loc_1A2D3:				; CODE XREF: seg001:9ED0j
 		retn
 ; ---------------------------------------------------------------------------
 
-loc_1A2E8:				; CODE XREF: seg001:9EDAj
+loc_1A2E8:				; CODE XREF: sub_1A2C4+16j
 		mov	word ptr ds:9E53h, 0
 
-loc_1A2EE:				; CODE XREF: seg001:9EE1j
+loc_1A2EE:				; CODE XREF: sub_1A2C4+1Dj
 		and	al, 0EFh
 		retn
 ; ---------------------------------------------------------------------------
 
-loc_1A2F1:				; CODE XREF: seg001:9ED6j
+loc_1A2F1:				; CODE XREF: sub_1A2C4+12j
 		and	al, 0EFh
 		retn
+sub_1A2C4	endp
+
 ; ---------------------------------------------------------------------------
-		db 2 dup(0), 0E8h, 42h,	0C8h, 0C7h, 6, 0F4h, 9Eh, 2 dup(0)
-		db 33h,	0C9h, 8Ah, 0Fh,	43h, 51h, 0FFh,	6, 0F4h, 9Eh, 83h
-		db 3Eh,	0F4h, 9Eh, 7, 75h, 6, 0C7h, 6, 0F4h, 9Eh, 2 dup(0)
-		db 0E8h, 70h, 0, 0E8h, 1Bh, 1, 0E8h, 0A5h, 0FFh, 0A8h
-		db 10h,	74h, 7,	83h, 3Eh, 0F4h,	9Eh, 0,	75h, 13h, 0FFh
-		db 16h,	34h, 0,	0FFh, 16h, 44h,	0, 0E8h, 0E7h, 0F7h, 0FFh
-		db 16h,	1Ch, 0,	0FFh, 16h, 38h,	0, 59h,	0E2h, 0C4h, 0C3h
-		db 0BEh, 0B8h, 9Ch, 8Bh, 4, 0Bh, 0C0h, 78h, 0Eh, 74h, 7
-		db 56h,	53h, 0E8h, 8, 0, 5Bh, 5Eh, 83h,	0C6h, 10h, 0EBh
-		db 0ECh, 0C3h, 8Ah, 44h, 2, 8Ah, 64h, 4, 50h, 53h, 56h
-		db 8Bh,	74h, 0Eh, 0FFh,	16h, 32h, 0, 5Eh, 5Bh, 58h, 0FFh
-		db 44h,	0Ch, 8Bh, 44h, 0Ah, 3Bh, 44h, 0Ch, 75h,	11h, 8Bh
-		db 44h,	6, 1, 44h, 2, 8Bh, 44h,	8, 1, 44h, 4, 33h, 0C0h
-		db 89h,	44h, 0Ch, 0C3h,	0BEh, 0D6h, 9Bh, 8Bh, 4, 0Bh, 0C0h
-		db 78h,	3Ch, 74h, 35h, 3Dh, 1, 0, 74h, 30h, 3Dh, 2, 0
-		db 75h,	24h, 8Bh, 44h, 12h, 1, 44h, 2, 81h, 7Ch, 2, 0E8h
-		db 0, 7Ch, 4, 0C7h, 4, 2 dup(0), 83h, 7Ch, 2, 0, 7Dh, 4
-		db 0C7h, 4, 2 dup(0), 8Bh, 44h,	14h, 1,	44h, 4,	0EBh, 8
-		db 90h,	53h, 56h, 0E8h,	8, 0, 5Eh, 5Bh,	83h, 0C6h, 1Ah
-		db 0EBh, 0BEh, 0C3h, 53h, 8Bh, 5Ch, 6, 8Ah, 7, 3Ch, 0
-		db 75h,	6, 43h,	8Bh, 1Fh, 89h, 5Ch, 6, 43h, 8Ah, 7, 0D0h
-		db 0F8h, 0D0h, 0F8h, 0D0h, 0F8h, 0D0h, 0F8h, 3Ch, 7, 75h
-		db 2, 0FEh, 0C0h, 98h, 1, 44h, 2, 81h, 7Ch, 2, 0E8h, 0
-		db 7Ch,	4, 0C7h, 4, 2 dup(0), 83h, 7Ch,	2, 0, 7Dh, 4, 0C7h
-		db 4, 2	dup(0),	8Ah, 7,	24h, 0Fh, 0A8h,	8, 74h,	2, 0Ch
-		db 0F0h, 3Ch, 7, 75h, 2, 0FEh, 0C0h, 98h, 1, 44h, 4, 4Bh
-		db 8Ah,	7, 98h,	0FFh, 44h, 8, 3Bh, 44h,	8, 74h,	2, 73h
-		db 0Ah,	0C7h, 44h, 8, 2	dup(0),	2 dup(43h), 89h, 5Ch, 6
-		db 5Bh,	0C3h, 0BEh, 0D6h, 9Bh, 8Bh, 4, 0Bh, 0C0h, 78h
-		db 0Eh,	74h, 7,	53h, 56h, 0E8h,	47h, 0CDh, 5Eh,	5Bh, 83h
-		db 0C6h, 1Ah, 0EBh, 0ECh, 0C3h
+		dw 0
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A2F6	proc near
+		call	sub_16B3B
+		mov	word ptr ds:9EF4h, 0
+		xor	cx, cx
+		mov	cl, [bx]
+		inc	bx
+
+loc_1A304:				; CODE XREF: sub_1A2F6+48j
+		push	cx
+		inc	word ptr ds:9EF4h
+		cmp	word ptr ds:9EF4h, 7
+		jnz	short loc_1A316
+		mov	word ptr ds:9EF4h, 0
+
+loc_1A316:				; CODE XREF: sub_1A2F6+18j
+		call	sub_1A389
+		call	sub_1A437
+		call	sub_1A2C4
+		test	al, 10h
+		jz	short loc_1A32A
+		cmp	word ptr ds:9EF4h, 0
+		jnz	short loc_1A33D
+
+loc_1A32A:				; CODE XREF: sub_1A2F6+2Bj
+		call	word ptr ds:34h
+		call	word ptr ds:44h
+		call	sub_19B1C
+		call	word ptr ds:1Ch
+		call	word ptr ds:38h
+
+loc_1A33D:				; CODE XREF: sub_1A2F6+32j
+		pop	cx
+		loop	loc_1A304
+		retn
+sub_1A2F6	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A341	proc near
+		mov	si, 9CB8h
+
+loc_1A344:				; CODE XREF: sub_1A341+15j
+		mov	ax, [si]
+		or	ax, ax
+		js	short locret_1A358
+		jz	short loc_1A353
+		push	si
+		push	bx
+		call	sub_1A359
+		pop	bx
+		pop	si
+
+loc_1A353:				; CODE XREF: sub_1A341+9j
+		add	si, 10h
+		jmp	short loc_1A344
+; ---------------------------------------------------------------------------
+
+locret_1A358:				; CODE XREF: sub_1A341+7j
+		retn
+sub_1A341	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A359	proc near		; CODE XREF: sub_1A341+Dp
+		mov	al, [si+2]
+		mov	ah, [si+4]
+		push	ax
+		push	bx
+		push	si
+		mov	si, [si+0Eh]
+		call	word ptr ds:32h
+		pop	si
+		pop	bx
+		pop	ax
+		inc	word ptr [si+0Ch]
+		mov	ax, [si+0Ah]
+		cmp	ax, [si+0Ch]
+		jnz	short locret_1A388
+		mov	ax, [si+6]
+		add	[si+2],	ax
+		mov	ax, [si+8]
+		add	[si+4],	ax
+		xor	ax, ax
+		mov	[si+0Ch], ax
+
+locret_1A388:				; CODE XREF: sub_1A359+1Cj
+		retn
+sub_1A359	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A389	proc near		; CODE XREF: sub_1A2F6:loc_1A316p
+		mov	si, 9BD6h
+
+loc_1A38C:				; CODE XREF: sub_1A389+43j
+		mov	ax, [si]
+		or	ax, ax
+		js	short locret_1A3CE
+		jz	short loc_1A3C9
+		cmp	ax, 1
+		jz	short loc_1A3C9
+		cmp	ax, 2
+		jnz	short loc_1A3C2
+		mov	ax, [si+12h]
+		add	[si+2],	ax
+		cmp	word ptr [si+2], 0E8h ;	'è'
+		jl	short loc_1A3AF
+		mov	word ptr [si], 0
+
+loc_1A3AF:				; CODE XREF: sub_1A389+20j
+		cmp	word ptr [si+2], 0
+		jge	short loc_1A3B9
+		mov	word ptr [si], 0
+
+loc_1A3B9:				; CODE XREF: sub_1A389+2Aj
+		mov	ax, [si+14h]
+		add	[si+4],	ax
+		jmp	short loc_1A3C9
+; ---------------------------------------------------------------------------
+		db  90h	; 
+; ---------------------------------------------------------------------------
+
+loc_1A3C2:				; CODE XREF: sub_1A389+13j
+		push	bx
+		push	si
+		call	sub_1A3CF
+		pop	si
+		pop	bx
+
+loc_1A3C9:				; CODE XREF: sub_1A389+9j sub_1A389+Ej ...
+		add	si, 1Ah
+		jmp	short loc_1A38C
+; ---------------------------------------------------------------------------
+
+locret_1A3CE:				; CODE XREF: sub_1A389+7j
+		retn
+sub_1A389	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A3CF	proc near		; CODE XREF: sub_1A389+3Bp
+		push	bx
+		mov	bx, [si+6]
+		mov	al, [bx]
+		cmp	al, 0
+		jnz	short loc_1A3DF
+		inc	bx
+		mov	bx, [bx]
+		mov	[si+6],	bx
+
+loc_1A3DF:				; CODE XREF: sub_1A3CF+8j
+		inc	bx
+		mov	al, [bx]
+		sar	al, 1
+		sar	al, 1
+		sar	al, 1
+		sar	al, 1
+		cmp	al, 7
+		jnz	short loc_1A3F0
+		inc	al
+
+loc_1A3F0:				; CODE XREF: sub_1A3CF+1Dj
+		cbw
+		add	[si+2],	ax
+		cmp	word ptr [si+2], 0E8h ;	'è'
+		jl	short loc_1A3FF
+		mov	word ptr [si], 0
+
+loc_1A3FF:				; CODE XREF: sub_1A3CF+2Aj
+		cmp	word ptr [si+2], 0
+		jge	short loc_1A409
+		mov	word ptr [si], 0
+
+loc_1A409:				; CODE XREF: sub_1A3CF+34j
+		mov	al, [bx]
+		and	al, 0Fh
+		test	al, 8
+		jz	short loc_1A413
+		or	al, 0F0h
+
+loc_1A413:				; CODE XREF: sub_1A3CF+40j
+		cmp	al, 7
+		jnz	short loc_1A419
+		inc	al
+
+loc_1A419:				; CODE XREF: sub_1A3CF+46j
+		cbw
+		add	[si+4],	ax
+		dec	bx
+		mov	al, [bx]
+		cbw
+		inc	word ptr [si+8]
+		cmp	ax, [si+8]
+		jz	short loc_1A42B
+		jnb	short loc_1A435
+
+loc_1A42B:				; CODE XREF: sub_1A3CF+58j
+		mov	word ptr [si+8], 0
+		inc	bx
+		inc	bx
+		mov	[si+6],	bx
+
+loc_1A435:				; CODE XREF: sub_1A3CF+5Aj
+		pop	bx
+		retn
+sub_1A3CF	endp
+
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_1A437	proc near		; CODE XREF: sub_1A2F6+23p
+		mov	si, 9BD6h
+
+loc_1A43A:				; CODE XREF: sub_1A437+15j
+		mov	ax, [si]
+		or	ax, ax
+		js	short locret_1A44E
+		jz	short loc_1A449
+		push	bx
+		push	si
+		call	sub_1718E
+		pop	si
+		pop	bx
+
+loc_1A449:				; CODE XREF: sub_1A437+9j
+		add	si, 1Ah
+		jmp	short loc_1A43A
+; ---------------------------------------------------------------------------
+
+locret_1A44E:				; CODE XREF: sub_1A437+7j
+		retn
+sub_1A437	endp
+
 
 ; =============== S U B	R O U T	I N E =======================================
 
