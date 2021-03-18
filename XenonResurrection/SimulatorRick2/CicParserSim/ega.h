@@ -432,7 +432,7 @@ public:
 		//DWORD mem_addr = off;
 		int mask = 0x80 >> (x % 8);
 
-        //int page = 0x7000; //cfgAddr; 0xa700-0
+        //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
         int page = cfgAddr;
     
         int shift = page*4;
@@ -568,16 +568,20 @@ public:
 
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
-        static int q = 0;
-        if (q++ > 5000*2)
-        {
-            //_sync();
-            q= 0;
-        }
+//        static int q = 0;
+//        if (q++ > 5000*2)
+//        {
+//            _sync();
+//            q= 0;
+//        }
     }
 
 	virtual BYTE Read(DWORD dwAddr) override
 	{
+        if (dwAddr == 0xa6d96) //if (dwAddr == 0xa6596 || dwAddr == 0xa9a96)
+        {
+            int f = 9;
+        }
         /*
         if (dwAddr >= 0xb8000)
         {

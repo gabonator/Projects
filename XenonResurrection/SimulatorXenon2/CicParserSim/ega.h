@@ -577,44 +577,16 @@ public:
         
 	virtual void Write(DWORD dwAddr, BYTE bWrite) override
 	{
-        /*
-        if (dwAddr >= 0xb8000)
-        {
-            
-            dwAddr -= 0xb8000;
-            int y = dwAddr/160;
-            int x = dwAddr%160;
-
-            static int text[80*25*2];
-            //_ASSERT(y<25);
-            if (y >= 25)
-                y -= 25;
-            if (y<25)
-            {
-                text[y*160+x] = bWrite;
-                x /= 2;
-                DrawChar(x, y, text[y*160+x*2], text[y*160+x*2+1]);
-            }
-          //  _sync();
-            return;
-        }*/
 		dwAddr -= 0xa000 * 16;
 
-        
+        if (test)
+        {            
+            int f = 9;
+        }
+
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
 
-        if (bWrite != 1)
-        {
-            int f=9;
-        }
-        if (bWrite != 0 && bWrite != 1)
-        {
-            int f=9;
-        }
-
-        //LoadLatch(dwAddr); // PROBLEM - goose
-        //uLatch.u32Data = 0xffffffff;
         DWORD data = ModeOperation(bWrite);
 
         TLatch pixels;
@@ -636,29 +608,11 @@ public:
 
 	virtual BYTE Read(DWORD dwAddr) override
 	{
-        if (dwAddr == 0xa6d96) //if (dwAddr == 0xa6596 || dwAddr == 0xa9a96)
-        {
-            int f = 9;
-        }
-        /*
-        if (dwAddr >= 0xb8000)
-        {
-            int f = 9;
-            return 0;
-        }
-*/
 		dwAddr -= 0xa000 * 16;
-/*
-		if ( nReadMode == 1 || nReadMode == 0 )
-		{
-			LoadLatch(dwAddr);
-			return 0;
-		}
-*/
 		_ASSERT( dwAddr < sizeof(memory) );
 		LoadLatch(dwAddr); //((DWORD*)&memory[dwAddr])[dwAddr]; 
 		if ( nReadMode == 0 )
-			return uLatch.u8Data[cfgReadMapSelect];
+            return uLatch.u8Data[cfgReadMapSelect];
 		if ( nReadMode == 1 )
 		{
 			TLatch temp;

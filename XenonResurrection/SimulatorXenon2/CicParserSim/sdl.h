@@ -7,7 +7,7 @@ void onKey(int k, int p);
 class CSdl
 {
     enum {
-        Width = 320,
+        Width = 640,
         Height = 200
     };
     std::vector< unsigned char > pixels;

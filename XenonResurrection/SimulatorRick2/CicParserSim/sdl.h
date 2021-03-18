@@ -11,7 +11,7 @@ class CSdl
         Height = 200
     };
     std::vector< unsigned char > pixels;
-    const int pixelSize = 4;
+    const int pixelSize = 3;
 
     SDL_Renderer* renderer{nullptr};
     SDL_Texture* texture{nullptr};
@@ -101,7 +101,7 @@ public:
         //const double seconds = ( end - start ) / static_cast< double >( freq );
         //std::cout << "Frame time: " << seconds * 1000.0 << "ms" << std::endl;
         if (running)
-            SDL_Delay(40);
+            SDL_Delay(30);
 
     }
     

@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <list>
 
+bool test = false;
 #include "cpu.h"
 void __debugRect(int, int, int, int);
 void __debugPoint(int, int);
@@ -38,7 +39,7 @@ constexpr WORD _seg007= 0x449b;
 constexpr WORD _seg008= 0x5489;
 constexpr WORD _seg009= 0x63d0;
 constexpr WORD _seg010= 0x7218;
-//byte_447B0   447b- 0x447b
+//byte_447B0   447b- 0x447b                                                                                           	
 
 constexpr WORD _ss = _seg006;
 void memoryVideoAnd(WORD seg, int ofs, BYTE a)
@@ -866,9 +867,9 @@ void _sync()
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
       {
-        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
-          //mSdl.SetPixel(x, y, mVideo.GetPixelA(x, y, 0));
-          //mSdl.SetPixel(x+320, y, mVideo.GetPixelA(x, y, 0x2000));
+//        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
+          mSdl.SetPixel(x, y, mVideo.GetPixelA(x, y, 0));
+          mSdl.SetPixel(x+320, y, mVideo.GetPixelA(x, y, 0x2000));
 /*
           BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
           //DWORD off = (int)y * 40L + ((int)x / 8L);

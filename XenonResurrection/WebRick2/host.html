@@ -469,6 +469,20 @@ function popf()
   flags.zero = !!(m & 2);
 }
 
+function imul16(w)
+{
+    var v = r16s[ax] * signed16(w);
+    r16[ax] = v & 0xffff;
+    r16[dx] = v >> 16;
+}
+
+function imul8(w)
+{    
+    var v = r16s[ax] * signed8(w);
+    r16[ax] = v & 0xffff;
+}
+
+
 var _retrace = 0;
 function in8(port)
 {

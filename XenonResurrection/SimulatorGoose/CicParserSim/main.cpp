@@ -23,11 +23,18 @@ constexpr WORD _seg002 = 0x1CFC;
 constexpr WORD _dseg = 0x13A5;
 
 
-#include "code-goose.h"
-#include "code-goose-2.h"
-#include "code-goose-3.h"
-#include "code-goose-4.h"
-#include "code-goose-sound.h"
+void memoryVideoAnd(WORD seg, int ofs, BYTE a)
+{
+    _ASSERT(ofs >= 0 && ofs <= 0xffff);
+    memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & a);
+}
+void memoryVideoOr(WORD seg, int ofs, BYTE a)
+{
+    _ASSERT(ofs >= 0 && ofs <= 0xffff);
+    memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) | a);
+}
+
+#include "goose.h"
 
 //constexpr WORD seg000 = 0x1000;
 //constexpr WORD seg002 = 0x24B9;
@@ -60,16 +67,34 @@ uint8_t segment9[0x10000];
 //uint8_t videoram[0x10000];
 
 CSdl mSdl;
-/*
-uint8_t mark2[0x10000] = {0};
-uint8_t mark1[0x10000] = {0};
-uint8_t mark0[0x10000] = {0};
-uint8_t mark3[0x10000] = {0};
-uint8_t mark7[0x10000] = {0};
-uint8_t mark5[0x10000] = {0};
-uint8_t mark9[0x10000] = {0};
-uint8_t markd[0x10000] = {0};
-*/
+
+
+BYTE MemData::Get8(WORD seg, int ofs)
+{
+    _ASSERT(ofs >= 0 && ofs <= 0xffff);
+
+    if (seg >= 0xa000 && seg <= 0xd000)
+    {
+        _ASSERT(0);
+        return memoryVideoGet(seg, ofs);
+    }
+    return memory(seg, ofs);
+}
+void MemData::Set8(WORD seg, int ofs, BYTE data)
+{
+    _ASSERT(ofs >= 0 && ofs <= 0xffff);
+
+    if (seg >= 0xa000)
+    {
+        _ASSERT(0);
+        //data ^= 0xff;
+        memoryVideoSet(seg, ofs, data);
+        return;
+    }
+    memory(seg, ofs) = data;
+}
+
+
 using namespace std;
 void _interrupt(BYTE i)
 {
@@ -403,14 +428,16 @@ void _xlat()
 {
     _al = memory(_ds, _bx+_al);
 }
-BYTE MemAuto::Get8(WORD seg, WORD ofs)
+BYTE MemAuto::Get8(WORD seg, int ofs)
 {
+    _ASSERT(ofs == (WORD)ofs);
     if (seg == 0xa000 || seg == 0xa800 || seg == 0xa400 || seg == 0xa200)
         return memoryVideoGet(seg, ofs);
     return memory(seg, ofs);
 }
-void MemAuto::Set8(WORD seg, WORD ofs, BYTE data)
+void MemAuto::Set8(WORD seg, int ofs, BYTE data)
 {
+    _ASSERT(ofs == (WORD)ofs);
     if (seg == 0xa000 || seg == 0xa800 || seg == 0xa400 || seg == 0xa200)
     {
         memoryVideoSet(seg, ofs, data);
@@ -419,13 +446,14 @@ void MemAuto::Set8(WORD seg, WORD ofs, BYTE data)
     memory(seg, ofs) = data;
 }
 
-BYTE MemVideo::Get8(WORD seg, WORD ofs)
-{
+BYTE MemVideo::Get8(WORD seg, int ofs)
+{    _ASSERT(ofs == (WORD)ofs);
     _ASSERT(seg == 0xa000 || seg == 0xa400|| seg == 0xa200 || seg == 0xa800);
     return mVideo.Read(seg*16+ofs);
 }
-void MemVideo::Set8(WORD seg, WORD ofs, BYTE data)
+void MemVideo::Set8(WORD seg, int ofs, BYTE data)
 {
+    _ASSERT(ofs == (WORD)ofs);
     _ASSERT(seg == 0xa000 || seg == 0xa400 || seg == 0xa200 || seg == 0xa800);
     mVideo.Write(seg*16+ofs, data);
 }
@@ -446,8 +474,9 @@ void memoryVideoSet(WORD seg, WORD ofs, BYTE data)
     memoryVideo.Set8(seg, ofs, data);
 }
 
-WORD& memory16(WORD segment, WORD offset)
+WORD& memory16(WORD segment, int offset)
 {
+    _ASSERT(offset == (WORD)offset);
     if (segment == _dseg)
         return *(WORD*)(datasegment + offset);
     if (segment == _seg000)
@@ -508,8 +537,9 @@ WORD& memory16(WORD segment, WORD offset)
     return dummy;
 }
 
-BYTE& memory(WORD segment, WORD offset)
+BYTE& memory(WORD segment, int offset)
 {
+    _ASSERT(offset == (WORD)offset);
     if (segment == 0x1d0c ||
         segment == 0x1d0c+0x800*1 ||
         segment == 0x1d0c+0x800*2 ||

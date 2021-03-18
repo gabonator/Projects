@@ -562,14 +562,14 @@ void _xlat()
 {
     _al = memory(_ds, _bx+_al);
 }
-BYTE MemData::Get8(WORD seg, WORD ofs)
+BYTE MemData::Get8(WORD seg, int ofs)
 {
     if (seg >= 0xa000 && seg <= 0xd000)
         _ASSERT(0);
         //return memoryVideoGet(seg, ofs);
     return memory(seg, ofs);
 }
-void MemData::Set8(WORD seg, WORD ofs, BYTE data)
+void MemData::Set8(WORD seg, int ofs, BYTE data)
 {
     if (seg >= 0xa000)
     {
@@ -580,12 +580,12 @@ void MemData::Set8(WORD seg, WORD ofs, BYTE data)
     memory(seg, ofs) = data;
 }
 
-BYTE MemVideo::Get8(WORD seg, WORD ofs)
+BYTE MemVideo::Get8(WORD seg, int ofs)
 {
     _ASSERT(seg >= 0xa000);
     return mVideo.Read(seg*16+ofs);
 }
-void MemVideo::Set8(WORD seg, WORD ofs, BYTE data)
+void MemVideo::Set8(WORD seg, int ofs, BYTE data)
 {
     _ASSERT(seg >= 0xa000);
     mVideo.Write(seg*16+ofs, data);
@@ -630,8 +630,9 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 
 
-WORD& memory16(WORD segment, WORD offset)
+WORD& memory16(WORD segment, int offset)
 {
+    _ASSERT(offset <= 0xffff && offset >= 0);
     _ASSERT(segment != 0);
     /*
     if (segment==_seg001 && (offset==0xB369 || offset==0xB37D || offset==0xB391))
@@ -648,8 +649,13 @@ WORD& memory16(WORD segment, WORD offset)
     return *(WORD*)(datasegment + ofs);
 }
 
-BYTE& memory(WORD segment, WORD offset)
+BYTE& memory(WORD segment, int offset)
 {
+    _ASSERT(offset <= 0xffff && offset >= 0);
+    if (segment==_seg001 && offset == 0x571c)
+    {
+        int f = 9;
+    }
     if (segment==_seg001 && (offset==0xB369 || offset==0xB37D || offset==0xB391))
     {
         int f = 9;
@@ -801,9 +807,43 @@ void _sync()
     }*/
 
 //    synccalls = 0;
+    static int xx =0;
+    xx++;
+    for (int k=1430; k<1431; k++)
+    {
+        //memory(0x2000, k+0x0000) = 0xff;
+        //memory(0x2000, k+0x0800) = 0xff;
+        //memory(0x2000, k+0x1000) = 0xff;
+        //memory(0x2000, k+0x1800) = 0xff;
+        //memory(0x2000, k+0x2000) = 0xff;
+    }
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
+      {
         mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
+        /*
+          
+          BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
+          //DWORD off = (int)y * 40L + ((int)x / 8L);
+          
+          //DWORD mem_addr = off;
+          int mask = 0x80 >> (x % 8);
+
+          //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
+          //int page = 0;
+      
+          int off = 0x800;
+          int shift = (int)y * 1L + ((int)x / 8L)*180;
+          BYTE b = 0;
+          if ( _video[shift + off*0] & mask ) b |= 1;
+          if ( _video[shift + off*1] & mask ) b |= 2;
+          if ( _video[shift + off*2] & mask ) b |= 4;
+          if ( _video[shift + off*3] & mask ) b |= 8;
+
+          mSdl.SetPixel(x+320, y, mVideo.palette[b]);
+*/
+          //int c = memory(0x2000, x)
+      }
 
     mSdl.Loop();
 }

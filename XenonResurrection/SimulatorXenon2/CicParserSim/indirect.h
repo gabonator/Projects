@@ -106,6 +106,11 @@ void sub_14F96();
 void sub_180CA();
 void sub_12AA4();
 void sub_1866D();
+void sub_18114();
+void sub_18126();
+void sub_180F5();
+void sub_187D5();
+void sub_18783();
 
 void _indirectCall(WORD seg, int ptr)
 {
@@ -128,7 +133,7 @@ void _indirectCall(WORD seg, int ptr)
         case 0x72c4: sub_172C4(); break;
         case 0x758f: sub_1758F(); break;
         case 0x655b: sub_1655B(); break; // enter shop
-        case 0x0853: sub_10853(); break;
+        case 0x0853: sub_10853(); break; // draw ship
         case 0x0761: sub_10761(); break;
         case 0x7520: sub_17520(); break;
         case 0x70f1: sub_170F1(); break;
@@ -171,8 +176,8 @@ void _indirectCall(WORD seg, int ptr)
         //case 0x5e2c: break;
         case 0x6e2c: sub_16E2C(); break;
         case 0x71dd: sub_171DD(); break;
-        case 0x2a48: sub_12A48(); break;
-        case 0x714d: sub_1714D(); break;
+        case 0x2a48: sub_12A48(); break; // small heart
+        case 0x714d: sub_1714D(); break; // lv1 boss hit
         case 0x69C8: sub_169C8(); break;
         case 0x3246: sub_13246(); break; // powerup - cannon
         case 0x3a99: sub_13A99(); break;
@@ -203,7 +208,13 @@ void _indirectCall(WORD seg, int ptr)
         case 0x2aa4: sub_12AA4(); break; // autoshoot
         case 0x80ca: sub_180CA(); break;
         case 0x866d: sub_1866D(); break; // lv2 boss
-            //8114, 8126, 80f5
+        case 0x8114: sub_18114(); break;
+        case 0x8126: sub_18126(); break;
+        case 0x80f5: sub_180F5(); break;
+        case 0x87D5: sub_187D5(); break;
+        case 0x8783: sub_18783(); break;
+            //7e87
+            
 
         default:
 //            _ASSERT(0);

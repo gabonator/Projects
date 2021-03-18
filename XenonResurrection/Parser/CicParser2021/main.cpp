@@ -588,7 +588,7 @@ int main(int argc, const char * argv[])
     // TEST:
     //custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
 
-    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick2/cico.cfg"};
+    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/cico.cfg"};
 
     for (auto it = custom.mArguments.begin(); it != custom.mArguments.end(); )
     {

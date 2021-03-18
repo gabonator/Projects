@@ -32,8 +32,8 @@ struct reg_t {
 
   WORD ds;
   WORD es;
-  WORD si;
-  WORD di;
+  int si;
+  int di;
   WORD bp;
   WORD cs;
   WORD sp;
@@ -77,8 +77,8 @@ extern reg_t _reg;
 #define zf _reg.flags.bit.zero
 
 
-WORD& memory16(WORD segment, WORD offset);
-BYTE& memory(WORD segment, WORD offset);
+WORD& memory16(WORD segment, int offset);
+BYTE& memory(WORD segment, int offset);
 
 void _push(WORD w);
 WORD _pop();
@@ -112,18 +112,18 @@ void _in(BYTE& value, WORD port);
 
 struct MemVideo
 {
-    static BYTE Get8(WORD seg, WORD nAddr);
-    static void Set8(WORD seg, WORD nAddr, BYTE nData);
-    static WORD Get16(WORD seg, WORD nAddr);
-    static void Set16(WORD seg, WORD nAddr, WORD nData);
+    static BYTE Get8(WORD seg, int nAddr);
+    static void Set8(WORD seg, int nAddr, BYTE nData);
+    static WORD Get16(WORD seg, int nAddr);
+    static void Set16(WORD seg, int nAddr, WORD nData);
 };
 
 struct MemData
 {
-    static BYTE Get8(WORD seg, WORD nAddr);
-    static void Set8(WORD seg, WORD nAddr, BYTE nData);
-    static WORD Get16(WORD seg, WORD nAddr);
-    static void Set16(WORD seg, WORD nAddr, WORD nData);
+    static BYTE Get8(WORD seg, int nAddr);
+    static void Set8(WORD seg, int nAddr, BYTE nData);
+    static WORD Get16(WORD seg, int nAddr);
+    static void Set16(WORD seg, int nAddr, WORD nData);
 };
 
 struct DirForward
@@ -491,4 +491,17 @@ void _pushf()
 void _popf()
 {
     _reg.flags.f16 = _pop();
+}
+
+void _imul(WORD w)
+{
+    int v = (short)w * (short)_ax;
+    _ax = v & 0xffff;
+    _dx = v >> 16;
+}
+
+void _imul(BYTE w)
+{
+    int v = (char)w * (short)_ax;
+    _ax = v & 0xffff;
 }
