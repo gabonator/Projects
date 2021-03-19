@@ -21,18 +21,28 @@ struct reg_t {
               FLAG interrupt:1;
               FLAG direction:1;
               FLAG carry:1;
+              FLAG carry2:1;
               FLAG aux:1;
               FLAG zero:1;
               FLAG sign:1;
           } bit;
           WORD f16;
       };
+      BYTE toByte()
+      {
+          return bit.carry | (bit.zero << 1);
+      }
+      void fromByte(BYTE& b)
+      {
+          bit.carry = b & 1;
+          bit.zero = !!(b & 2);
+      }
   } flags;
 
   WORD ds;
   WORD es;
-  int si;
-  int di;
+  WORD si;
+  WORD di;
   WORD bp;
   WORD cs;
   WORD sp;
@@ -76,8 +86,8 @@ extern reg_t _reg;
 #define zf _reg.flags.bit.zero
 
 
-WORD& memory16(WORD segment, int offset);
-BYTE& memory(WORD segment, int offset);
+WORD& memory16(WORD segment, WORD offset);
+BYTE& memory(WORD segment, WORD offset);
 
 void _push(WORD w);
 WORD _pop();
@@ -98,7 +108,14 @@ template <class DST, class DIR> void _stosb();
 
 #define _ASSERT assert
 
-void _STOP_(const char*) { assert(0); }
+void _sync();
+void _STOP_(const char*) {
+    std::cout << "===========STOP===========\n";
+    _sync();
+    int f = 9;
+ //   assert(0);
+    
+}
 
 
 void _xlat();
@@ -106,19 +123,20 @@ void _in(BYTE& value, WORD port);
 
 struct MemVideo
 {
-    static BYTE Get8(WORD seg, int nAddr);
-    static void Set8(WORD seg, int nAddr, BYTE nData);
-    static WORD Get16(WORD seg, int nAddr);
-    static void Set16(WORD seg, int nAddr, WORD nData);
+    static BYTE Get8(WORD seg, WORD nAddr);
+    static void Set8(WORD seg, WORD nAddr, BYTE nData);
+    static WORD Get16(WORD seg, WORD nAddr);
+    static void Set16(WORD seg, WORD nAddr, WORD nData);
 };
 
-struct MemAuto
+struct MemData
 {
-    static BYTE Get8(WORD seg, int nAddr);
-    static void Set8(WORD seg, int nAddr, BYTE nData);
-    static WORD Get16(WORD seg, int nAddr);
-    static void Set16(WORD seg, int nAddr, WORD nData);
+    static BYTE Get8(WORD seg, WORD nAddr);
+    static void Set8(WORD seg, WORD nAddr, BYTE nData);
+    static WORD Get16(WORD seg, WORD nAddr);
+    static void Set16(WORD seg, WORD nAddr, WORD nData);
 };
+
 
 struct DirForward
 {
@@ -205,8 +223,9 @@ void _rep_movsw()
 template <class DST, class DIR>
 void _rep_stosb()
 {
-    _ASSERT(_cx < 0x6000);
-    _ASSERT(_cx);
+    _ASSERT(_cx < 0x7000);
+    if (!_cx)
+        return;
     while (_cx--)
         _stosb<DST, DIR>();
     _cx = 0;
@@ -296,9 +315,14 @@ WORD _pop()
 
 void _xchg(BYTE& a, BYTE& b) { BYTE t = a; a = b; b = t; }
 void _xchg(WORD& a, WORD& b) { WORD t = a; a = b; b = t; }
-void _lea(WORD a, WORD b) {_ASSERT(0);}
+//void _lea(WORD& r, WORD o) { _ASSERT(0); }
+void _lea(WORD& r, WORD s, WORD o)
+{
+    r = o;
+}
+
 void _repne_scasw();
-void _les(WORD& reg, WORD addr)
+void _les(WORD& reg, WORD seg, WORD addr)
 {
     reg = memory16(_ds, addr);
     _es = memory16(_ds, addr+2);
@@ -318,22 +342,30 @@ void _rol(WORD& b, BYTE l)
     while (l--) b = rol<WORD>(b);    
 }
 
+void _rol(BYTE& b, BYTE l)
+{
+    _ASSERT(l>=0 && l <= 7);
+    while (l--) b = rol<BYTE>(b);
+}
+
 void _ror(WORD & b, BYTE l)
 {
-    _ASSERT(l == 1);
-    b = ror<WORD>(b);
+    //_ASSERT(l == 1);
+    while (l--)
+        b = ror<WORD>(b);
 }
 
 
 void _ror(BYTE& b, BYTE l)
 {
-    _ASSERT(l == 1);
-    b = ror<BYTE>(b);
+    _ASSERT(l >= 0 && l < 8);
+    while (l--)
+        b = ror<BYTE>(b);
 }
 
 void _div(WORD& r)
 {
-//    _ASSERT(_dx == 0);
+    _ASSERT(r != 0);
     WORD result = _ax / r;
     WORD remain = _ax % r;
     _ax = result;
@@ -346,6 +378,24 @@ void _rcl(WORD& r, BYTE c)
     int newCarry = !!(r & 0x8000);
     r <<= 1;
     r |= _flags.carry;
+    _flags.carry = newCarry;
+}
+
+void _rcr(WORD& r, BYTE c)
+{
+    _ASSERT(c == 1);
+    int newCarry = !!(r & 0x8000);
+    r <<= 1;
+    r |= _flags.carry;
+    _flags.carry = newCarry;
+}
+
+void _rcr(BYTE& r, BYTE c)
+{
+    _ASSERT(c == 1);
+    int newCarry = !!(r & 0x1);
+    r >>= 1;
+    r |= _flags.carry ? 0x80 : 0;
     _flags.carry = newCarry;
 }
 
@@ -404,6 +454,12 @@ void _sar(WORD& a, BYTE b)
     sa >>= b;
 }
 
+void _sar(BYTE& a, BYTE b)
+{
+    int8_t& sa = (int8_t&)a;
+    sa >>= b;
+}
+
 void _cbw()
 {
     if (_al & 0x80)
@@ -430,11 +486,44 @@ void _stackReduce(int n)
     _sp += n;
     _ASSERT( _sp >= 0 && _sp < m_arrStack.size());
 }
-
-struct MemData
+#define _FIXME_ _fixme_()
+bool& _fixme_()
 {
-    static BYTE Get8(WORD seg, int nAddr);
-    static void Set8(WORD seg, int nAddr, BYTE nData);
-    static WORD Get16(WORD seg, int nAddr);
-    static void Set16(WORD seg, int nAddr, WORD nData);
-};
+    static bool x = false;
+    x = false;
+    std::cout << " ====== fixme =======";
+    //_ASSERT(0);
+    return x;
+}
+
+void _pushf()
+{
+    _push(_reg.flags.f16);
+}
+
+void _popf()
+{
+    _reg.flags.f16 = _pop();
+}
+
+typedef MemData MemAuto;
+
+void _imul(WORD w)
+{
+    int v = (short)w * (short)_ax;
+    _ax = v & 0xffff;
+    _dx = v >> 16;
+}
+
+void _aaa()
+{
+  if ((_al & 0x0F) > 9 /*|| (_ah == 1)*/)
+  {
+    _al = (_al + 6) & 0x0f;
+    _ah ++;
+    _flags.carry = 1;
+  } else {
+    _flags.carry = 0;
+  }
+  _al &= 0x0f;
+}

@@ -1695,6 +1695,10 @@ void sub_10BDC()
 
 void sub_10C24()
 {
+    //g//
+//    _stackReduce(8);                            //retn 8
+//    return;
+
     WORD _cs = _seg000;
 
     const int arg_0 = 4;                        //arg_0  = word ptr  4
@@ -4578,7 +4582,7 @@ void sub_12311()
 void sub_12329()
 {
     //lives
-    //memory16(_ds, 0x9534) -= 1;                 //dec word_1CF84
+//    memory16(_ds, 0x9534) -= 1;                 //dec word_1CF84
     _ax = memory16(_ds, 0x9534);                //mov ax, word_1CF84
     if (_ax == 0x0002)                          //jz short loc_12368
       goto loc_12368;
@@ -7351,7 +7355,7 @@ loc_13783:                                      //loc_13783:
     _bx = _bx - _stack16(_bp + var_2);          //sub bx, [bp+var_2]
     _stack16(_bp + var_6) = _bx;                //mov [bp+var_6], bx
     _bx = _stack16(_bp + var_A);                //mov bx, [bp+var_A]
-    _di = _di + _stack16(_bp + var_A);          //add di, [bp+var_A]
+    _di = (_di + _stack16(_bp + var_A)) & 0xffff;          //add di, [bp+var_A]
 loc_1379D:                                      //loc_1379D:
     memory(_es, _di) |= _al;                    //or es:[di], al
     if (--_cx)                                  //loop loc_1377C
@@ -7364,7 +7368,7 @@ loc_137A4:                                      //loc_137A4:
     sub_13801();                                //call sub_13801
     _cx = _stack16(_bp + var_4);                //mov cx, [bp+var_4]
 loc_137B2:                                      //loc_137B2:
-    _di = _di + _stack16(_bp + var_A);          //add di, [bp+var_A]
+    _di = (_di + _stack16(_bp + var_A)) & 0xffff;          //add di, [bp+var_A]
     _bx = _stack16(_bp + var_6);                //mov bx, [bp+var_6]
     _bx = _bx + _stack16(_bp + var_2);          //add bx, [bp+var_2]
     _stack16(_bp + var_6) = _bx;                //mov [bp+var_6], bx
@@ -7392,7 +7396,7 @@ loc_137DB:                                      //loc_137DB:
     if (_cx == 0)                               //jcxz short loc_137D5
       goto loc_137D5;
 loc_137E3:                                      //loc_137E3:
-    _di = _di + _stack16(_bp + var_A);          //add di, [bp+var_A]
+    _di = (_di + _stack16(_bp + var_A)) & 0xffff;          //add di, [bp+var_A]
     memory(_es, _di) |= _al;                    //or es:[di], al
     if (--_cx)                                  //loop loc_137E3
       goto loc_137E3;

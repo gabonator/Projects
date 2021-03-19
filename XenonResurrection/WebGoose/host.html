@@ -6,10 +6,13 @@
 
 <script>
 // vsync
+function* sub_133D7() {}/*
+var tempsub_1333C = sub_1333C;
 function* sub_1333C()
 {
+  tempsub_1333C();
   yield* _sync();
-}
+}*/
 
 var _datab = new ArrayBuffer(0x10000*100);
 var memory = new Uint8Array(_datab, 0, 0x10000*100);
@@ -33,7 +36,7 @@ var ax = 0, bx = 1, cx = 2, dx = 3, tx = 4;
 var al = 0, ah = 1, bl = 2, bh = 3, cl = 4, ch = 5, dl = 6, dh = 7, tl = 8, th = 9;
 // other registers
 var ds = 0, es = 0, di = 0, si = 0;
-var bp = 0, sp = 0x100;
+var bp = 0, sp = 64;
 
 flags = {carry:0, direction:0, zero:0};
 let _seg000 = 0x3A56;
@@ -150,11 +153,6 @@ function out8(p, v)
 }
 function out16(p, v)
 {
-if (p==0x3d4)
-{
-  console.log("3d4 <- "+v.toString(16));
-//throw "bla";
-}
     if (EGA.PortWrite16(p, v))
         return;
     console.log("out16: "+p.toString(16) + " <- " + v.toString(16));
@@ -269,6 +267,18 @@ function rep_movsw_video_data_forward()
   r16[cx] = 0;
 }
 
+function rep_movsb_video_data_forward()
+{
+  assert(es >= 0xa000 && ds < 0xa000 && r16[cx] > 0 && si <= 0xffff && di <= 0xffff);
+  assert(ds*16 + si < memory.length);
+  while (r16[cx]--) 
+  {
+    EGA.write(es*16 + di++, memory[ds*16 + si++]);
+  }
+  r16[cx] = 0;
+}
+
+
 function stosw_data_forward()
 {
     assert(es*16 + di < memory.length && di <= 0xffff);
@@ -303,11 +313,14 @@ function rep_stosw_data_forward()
 
 function push(i)
 {
+  assert(si < 0xffff && di < 0xffff && si >= 0 && di >= 0);
+
   _stack[sp>>1] = i;
   sp -= 2;
 }
 function pop()
 {
+  assert(si < 0xffff && di < 0xffff && si >= 0 && di >= 0);
   sp += 2;
   return _stack[sp>>1];
 }
@@ -316,6 +329,12 @@ function _stack16(i)
   if (i&1) throw "stack align";
   return _stack[i/2];
 }
+function _stack16s(i)
+{
+  if (i&1) throw "stack align";
+  return signed16(_stack[i/2]);
+}
+
 
 function _stack16set(i, v)
 {
@@ -394,6 +413,14 @@ function xchg16(a, b)
   var t = r16[a];
   r16[a] = r16[b];
   r16[b] = t;
+}
+
+function div(d)
+{
+  var res = r16[ax] / d;
+  var rem = r16[ax] % d;
+  r8[al] = res;
+  r8[ah] = rem;
 }
 
 function memory16gets(i)
@@ -557,32 +584,66 @@ function assert(x)
     throw new Error("assertion failed");
 }
 
+function onKey( k, on )
+{
+  var index = -1;
+
+  switch (k) 
+  {
+    case 37: index = 75; break; // left
+    case 38: index = 72; break; // up
+    case 39: index = 77; break; // right
+    case 40: index = 80; break; // down
+  }
+
+  switch (String.fromCharCode(k))
+  {
+    case ' ': index = 57; break;
+    case 'M': index = 50; break;
+    case 'N': index = 49; break;
+    case 'Q': index = 16; break;
+    case 'Y': index = 21; break;
+  }
+
+  if ( index == -1 )
+    return;
+
+  _data[0x8e8a+index] = on;
+}
+
+
 var _k = 0;
     document.onkeydown = function(evt) {
         evt = evt || window.event;
+        var index = -1;
         switch (evt.keyCode)
         {
-          case 38: _k |= 8; break;
-          case 40: _k |= 4; break;
-          case 37: _k |= 2; break;
-          case 39: _k |= 1; break;
-          case 13: _k |= 16; break;
-          case 32: _k |= 16; break;
+          case 38: i = 72; break; // up
+          case 40: i = 80; break; // down
+          case 37: i = 75; break; // left
+          case 39: i = 77; break; // right
+          case 32: i = 57; break;
+          case 77: i = 50; break; // m
+          case 78: i = 49; break; // n
         }
-        memory[_dseg*16+0xB884] = _k;
+        if (i != -1)
+          memory[_dseg*16+0x8e8a+i] = 1;
     }
     document.onkeyup = function(evt) {
         evt = evt || window.event;
+        var index = -1;
         switch (evt.keyCode)
         {
-          case 38: _k &= ~8; break;
-          case 40: _k &= ~4; break;
-          case 37: _k &= ~2; break;
-          case 39: _k &= ~1; break;
-          case 13: _k &= ~16; break;
-          case 32: _k &= ~16; break;
+          case 38: i = 72; break; // up
+          case 40: i = 80; break; // down
+          case 37: i = 75; break; // left
+          case 39: i = 77; break; // right
+          case 32: i = 57; break;
+          case 77: i = 50; break; // m
+          case 78: i = 49; break; // n
         }
-        memory[_dseg*16+0xB884] = _k;
+        if (i != -1)
+          memory[_dseg*16+0x8e8a+i] = 0;
     }
 
 </script>

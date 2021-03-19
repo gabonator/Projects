@@ -1831,13 +1831,13 @@ function* sub_10C24() {
         }
         r16[ax] |= 0xfc00;
     case 0x10C44:
-        _stack16set(bp + arg_4, _stack16set(bp + arg_4) + r16[ax]);
+        _stack16set(bp + arg_4, r16[ax]);
         if (r16s[ax] >= signed16(0x0000)) {
             pc = 0x10C77;
             break;
         }
         flags.sign = signed16(_stack16(bp + arg_0) + r16[ax]) < 0;
-        _stack16set(bp + arg_0) += r16[ax];
+        _stack16set(bp + arg_0, _stack16(bp + arg_0) + r16[ax]);
         if (!flags.sign) {
             pc = 0x10C54;
             break;
@@ -1864,7 +1864,7 @@ function* sub_10C24() {
         r16[cx] <<= 1;
         si += r16[cx];
         r16[ax] = 0x0000;
-        _stack16(bp + arg_4, r16[ax]);
+        _stack16set(bp + arg_4, r16[ax]);
         pc = 0x10C8F;
         break;
     case 0x10C77:
@@ -7862,6 +7862,7 @@ function* sub_1333C() {
     r8[ah] = r8[bl];
     r8[al] += 1;
     out16(r16[dx], r16[ax]);
+    yield* _sync();
     flags.interrupt = true;
     yield* sub_133D7();
 }
@@ -7883,6 +7884,7 @@ function* sub_13383() {
         r8[ah] = r8[bh];
         r8[al] = 0x0c;
         out16(r16[dx], r16[ax]);
+        yield* _sync();
         flags.interrupt = true;
         r16[dx] = 0x03da;
     case 0x133AA:
@@ -8430,7 +8432,7 @@ function* sub_136D4() {
         r16[bx] = r16[bx] - _stack16(bp + var_2);
         _stack16set(bp + var_6, r16[bx]);
         r16[bx] = _stack16(bp + var_A);
-        di = di + _stack16(bp + var_A);
+        di = (di + _stack16(bp + var_A)) & 0xffff;
     case 0x1379D:
         memory[es*16+di] |= r8[al];
         if (--r16[cx]) {
@@ -8446,7 +8448,7 @@ function* sub_136D4() {
         yield* sub_13801();
         r16[cx] = _stack16(bp + var_4);
     case 0x137B2:
-        di = di + _stack16(bp + var_A);
+        di = (di + _stack16(bp + var_A)) & 0xffff;
         r16[bx] = _stack16(bp + var_6);
         r16[bx] = r16[bx] + _stack16(bp + var_2);
         _stack16set(bp + var_6, r16[bx]);
@@ -8482,7 +8484,7 @@ function* sub_136D4() {
             break;
         }
     case 0x137E3:
-        di = di + _stack16(bp + var_A);
+        di = (di + _stack16(bp + var_A)) & 0xffff;
         memory[es*16+di] |= r8[al];
         if (--r16[cx]) {
             pc = 0x137E3;
