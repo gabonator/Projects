@@ -103,8 +103,8 @@ public:
 				if (_bl == 0x01)
 				{
 					_cgaPalette[0] = 0x000000;
-					_cgaPalette[1] = 0x00ffff;
-					_cgaPalette[2] = 0xff00ff;
+					_cgaPalette[1] = 0x55ffff;
+					_cgaPalette[2] = 0xff55ff;
 					_cgaPalette[3] = 0xffffff;
 					return true;
 				}

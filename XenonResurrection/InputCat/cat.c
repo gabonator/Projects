@@ -369,7 +369,7 @@ loc_17385:                                      //loc_17385:
       goto loc_1738F;
     goto loc_172B1;                             //jmp loc_172B1
 loc_1738F:                                      //loc_1738F:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     if (memory(_ds, 0x41C) == 0x00)             //jz short loc_1739C
       goto loc_1739C;
     goto loc_172D3;                             //jmp loc_172D3
@@ -478,7 +478,7 @@ loc_17490:                                      //loc_17490:
     sub_1C189();                                //call sub_1C189
     sub_1CAED();                                //call sub_1CAED
 loc_174AE:                                      //loc_174AE:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_17B15();                                //call sub_17B15
@@ -503,7 +503,7 @@ loc_174DA:                                      //loc_174DA:
     sub_19070();                                //call sub_19070
     sub_1CAED();                                //call sub_1CAED
 loc_174F5:                                      //loc_174F5:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_1BB73();                                //call sub_1BB73
@@ -534,7 +534,7 @@ loc_1752E:                                      //loc_1752E:
     sub_19070();                                //call sub_19070
     sub_1CAED();                                //call sub_1CAED
 loc_17549:                                      //loc_17549:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_1B7DB();                                //call sub_1B7DB
@@ -560,7 +560,7 @@ loc_17579:                                      //loc_17579:
     sub_1B2C0();                                //call sub_1B2C0
     sub_1CAED();                                //call sub_1CAED
 loc_17594:                                      //loc_17594:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_17B15();                                //call sub_17B15
@@ -587,7 +587,7 @@ loc_175C4:                                      //loc_175C4:
     sub_1AEC0();                                //call sub_1AEC0
     sub_1CAED();                                //call sub_1CAED
 loc_175E2:                                      //loc_175E2:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_17B15();                                //call sub_17B15
@@ -612,7 +612,7 @@ loc_17612:                                      //loc_17612:
     sub_19070();                                //call sub_19070
     sub_1CAED();                                //call sub_1CAED
 loc_1762A:                                      //loc_1762A:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_17B15();                                //call sub_17B15
@@ -655,7 +655,7 @@ loc_17689:                                      //loc_17689:
     memory(_ds, 0x1CB8) = 0x00;                 //mov byte_11DB8, 0
     sub_1CAED();                                //call sub_1CAED
 loc_176A8:                                      //loc_176A8:
-    _STOP_("sub_18568()");                      //call near ptr sub_18568
+    sub_18568();                                //call near ptr sub_18568
     sub_18430();                                //call sub_18430
     sub_1C69D();                                //call sub_1C69D
     sub_17B15();                                //call sub_17B15
@@ -682,7 +682,7 @@ locret_176D6:                                   //locret_176D6:
 loc_176D7:                                      //loc_176D7:
     memory(_ds, 0x531) += 1;                    //inc byte_10631
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jnz short locret_176D6
+    if (!_flags.zero)                           //jnz short locret_176D6
       goto locret_176D6;
     if (memory(_ds, 0x55A) != 0x00)             //jnz short locret_176D6
       goto locret_176D6;
@@ -703,7 +703,7 @@ loc_1770F:                                      //loc_1770F:
     memory(_ds, 0x531) = _al;                   //mov byte_10631, al
     _bx = memory16(_ds, 0x52F);                 //mov bx, word_1062F
     sub_17888();                                //call sub_17888
-    if (_FIXME_)                                //jz short loc_1773C
+    if (_flags.zero)                            //jz short loc_1773C
       goto loc_1773C;
     _al = memory(_ds, 0x525);                   //mov al, byte_10625
     _al = _al + memory(_ds, _bx + 1321);        //add al, [bx+529h]
@@ -733,7 +733,7 @@ loc_17753:                                      //loc_17753:
       goto loc_17753;
     _bl = _dl;                                  //mov bl, dl
     sub_17888();                                //call sub_17888
-    if (_FIXME_)                                //jnz short loc_17753
+    if (!_flags.zero)                           //jnz short loc_17753
       goto loc_17753;
 loc_17765:                                      //loc_17765:
     memory16(_ds, 0x52F) = _bx;                 //mov word_1062F, bx
@@ -784,8 +784,9 @@ loc_177CE:                                      //loc_177CE:
     _STOP_("db 90h");                           //db 90h
 loc_177EF:                                      //loc_177EF:
     memory16(_ds, 0x55F) -= 1;                  //dec word_1065F
-    _ax -= 0x0004;                              //sub ax, 4
-    if (_FIXME_)                                //jb short loc_177CE
+    _flags.carry = _ax < 0x0004;                //sub ax, 4
+    _ax -= 0x0004;
+    if (_flags.carry)                           //jb short loc_177CE
       goto loc_177CE;
     if (_ax < 0x0008)                           //jb short loc_177CE
       goto loc_177CE;
@@ -842,24 +843,24 @@ loc_17860:                                      //loc_17860:
 
 void sub_17863()
 {
-    _ah = flags.toByte();                       //lahf
+    _ah = _reg.flags.toByte();                  //lahf
     _bx = memory16(_ds, 0x52F);                 //mov bx, ds:52Fh
     _bl = memory(_ds, _bx + 1345);              //mov bl, [bx+541h]
     _cx = 0x0005;                               //mov cx, 5
     if (_bl == 0x09)                            //jz short loc_1787E
       goto loc_1787E;
 loc_17874:                                      //loc_17874:
-    _flags.fromByte(_ah);                       //sahf
+    _reg.flags.fromByte(_ah);                   //sahf
     _ASSERT(0 /* check carry */); _rcr(memory(_ds, _bx + 4118), 1);
-    _ah = flags.toByte();                       //lahf
+    _ah = _reg.flags.toByte();                  //lahf
     _bx += 1;                                   //inc bx
     if (--_cx)                                  //loop loc_17874
       goto loc_17874;
     return;                                     //retn
 loc_1787E:                                      //loc_1787E:
-    _flags.fromByte(_ah);                       //sahf
+    _reg.flags.fromByte(_ah);                   //sahf
     _ASSERT(0); /* unk previous */ _rcl(memory(_ds, _bx + 4118), 1);
-    _ah = flags.toByte();                       //lahf
+    _ah = _reg.flags.toByte();                  //lahf
     _bx -= 1;                                   //dec bx
     if (--_cx)                                  //loop loc_1787E
       goto loc_1787E;
@@ -867,6 +868,7 @@ loc_1787E:                                      //loc_1787E:
 
 void sub_17888()
 {
+    _STOP_("Should return zero");
     memory(_ds, 0x4D6) = 0x00;                  //mov byte ptr ds:4D6h, 0
     _al = memory(_ds, 0x57C);                   //mov al, ds:57Ch
     if (_al < memory(_ds, _bx + 1341))          //jb short loc_178A9
@@ -1138,7 +1140,7 @@ loc_17B4D:                                      //loc_17B4D:
     sub_18608();                                //call sub_18608
     _ax = _pop();                               //pop ax
     _dx = _pop();                               //pop dx
-    if (_FIXME_)                                //jz short locret_17B2C
+    if (_flags.zero)                            //jz short locret_17B2C
       goto locret_17B2C;
 loc_17B56:                                      //loc_17B56:
     memory16(_ds, 0x57D) = _dx;                 //mov ds:57Dh, dx
@@ -1181,8 +1183,9 @@ loc_17BA1:                                      //loc_17BA1:
     memory(_ds, 0x5F4) = _al;                   //mov ds:5F4h, al
 loc_17BC2:                                      //loc_17BC2:
     _dl = memory(_ds, 0x57B);                   //mov dl, ds:57Bh
-    _dl -= _al;                                 //sub dl, al
-    if (_FIXME_)                                //jnb short loc_17BCC
+    _flags.carry = _dl < _al;                   //sub dl, al
+    _dl -= _al;
+    if (!_flags.carry)                          //jnb short loc_17BCC
       goto loc_17BCC;
     _dl = 0;                                    //sub dl, dl
 loc_17BCC:                                      //loc_17BCC:
@@ -1293,8 +1296,9 @@ loc_17CD0:                                      //loc_17CD0:
     _dl = 0xb3;                                 //mov dl, 0B3h
     goto loc_17CFE;                             //jmp short loc_17CFE
 loc_17CE4:                                      //loc_17CE4:
-    _dl -= _bl;                                 //sub dl, bl
-    if (_FIXME_)                                //jb short loc_17CED
+    _flags.carry = _dl < _bl;                   //sub dl, bl
+    _dl -= _bl;
+    if (_flags.carry)                           //jb short loc_17CED
       goto loc_17CED;
     if (_dl > 0x03)                             //ja short loc_17CFE
       goto loc_17CFE;
@@ -1382,11 +1386,11 @@ loc_17DB5:                                      //loc_17DB5:
       goto loc_17DC7;
 loc_17DBB:                                      //loc_17DBB:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jnz short loc_17DBB
+    if (!_flags.zero)                           //jnz short loc_17DBB
       goto loc_17DBB;
 loc_17DC0:                                      //loc_17DC0:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_17DC0
+    if (_flags.zero)                            //jz short loc_17DC0
       goto loc_17DC0;
 loc_17DC5:                                      //loc_17DC5:
     if (--_cx)                                  //loop loc_17DC5
@@ -1397,14 +1401,14 @@ loc_17DC7:                                      //loc_17DC7:
     memory16(_ds, 0x55F) = _ax;                 //mov ds:55Fh, ax
     sub_18375();                                //call sub_18375
     sub_1A6D0();                                //call sub_1A6D0
-    if (_FIXME_)                                //jnb short locret_17DDB
+    if (!_flags.carry)                          //jnb short locret_17DDB
       goto locret_17DDB;
     sub_18375();                                //call sub_18375
 locret_17DDB:                                   //locret_17DDB:
     return;                                     //retn
 loc_17DDC:                                      //loc_17DDC:
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jnb short loc_17DE2
+    if (!_flags.carry)                          //jnb short loc_17DE2
       goto loc_17DE2;
 locret_17DE1:                                   //locret_17DE1:
     return;                                     //retn
@@ -1439,10 +1443,10 @@ loc_17E15:                                      //loc_17E15:
     sub_18413();                                //call sub_18413
 loc_17E30:                                      //loc_17E30:
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short locret_17E4B
+    if (_flags.carry)                           //jb short locret_17E4B
       goto locret_17E4B;
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short locret_17E4B
+    if (_flags.carry)                           //jb short locret_17E4B
       goto locret_17E4B;
     _dl = memory(_ds, 0x57B);                   //mov dl, ds:57Bh
     _cx = memory16(_ds, 0x579);                 //mov cx, ds:579h
@@ -1464,10 +1468,10 @@ loc_17E4C:                                      //loc_17E4C:
     memory16(_ds, 0x563) = _ax;                 //mov ds:563h, ax
     sub_18413();                                //call sub_18413
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short locret_17E96
+    if (_flags.carry)                           //jb short locret_17E96
       goto locret_17E96;
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short locret_17E96
+    if (_flags.carry)                           //jb short locret_17E96
       goto locret_17E96;
     _ax = memory16(_ds, 0x563);                 //mov ax, ds:563h
     memory16(_ds, 0x55F) = _ax;                 //mov ds:55Fh, ax
@@ -1496,8 +1500,9 @@ loc_17EA4:                                      //loc_17EA4:
     goto loc_17EF1;                             //jmp short loc_17EF1
 loc_17EC0:                                      //loc_17EC0:
     _al = memory(_ds, 0x578);                   //mov al, ds:578h
-    memory(_ds, 0x577) -= _al;                  //sub ds:577h, al
-    if (_FIXME_)                                //jnb short loc_17EF1
+    _flags.carry = memory(_ds, 0x577) < _al;    //sub ds:577h, al
+    memory(_ds, 0x577) -= _al;
+    if (!_flags.carry)                          //jnb short loc_17EF1
       goto loc_17EF1;
     if (memory(_ds, 0x571) == 0x01)             //jz short loc_17EE6
       goto loc_17EE6;
@@ -1524,7 +1529,7 @@ loc_17F05:                                      //loc_17F05:
     if (memory(_ds, 0x571) != 0x01)             //jnz short loc_17F17
       goto loc_17F17;
     sub_18838();                                //call sub_18838
-    if (_FIXME_)                                //jnb short loc_17F17
+    if (!_flags.carry)                          //jnb short loc_17F17
       goto loc_17F17;
     _al = memory(_ds, 0x57C);                   //mov al, ds:57Ch
     goto loc_17F59;                             //jmp short loc_17F59
@@ -1533,8 +1538,9 @@ loc_17F17:                                      //loc_17F17:
     _al = memory(_ds, 0x57C);                   //mov al, ds:57Ch
     if (memory(_ds, 0x571) == 0x01)             //jz short loc_17F36
       goto loc_17F36;
-    _al = _al - memory(_ds, 0x576);             //sub al, ds:576h
-    if (_FIXME_)                                //jnb short loc_17F7F
+    _flags.carry = _al < memory(_ds, 0x576);    //sub al, ds:576h
+    _al = _al - memory(_ds, 0x576);
+    if (!_flags.carry)                          //jnb short loc_17F7F
       goto loc_17F7F;
     _al = 0;                                    //sub al, al
     memory(_ds, 0x571) = 0x01;                  //mov byte ptr ds:571h, 1
@@ -1567,8 +1573,9 @@ loc_17F59:                                      //loc_17F59:
     _ax = _pop();                               //pop ax
 loc_17F7F:                                      //loc_17F7F:
     memory(_ds, 0x57C) = _al;                   //mov ds:57Ch, al
-    _al -= 0x32;                                //sub al, 32h
-    if (_FIXME_)                                //jnb short loc_17F88
+    _flags.carry = _al < 0x32;                  //sub al, 32h
+    _al -= 0x32;
+    if (!_flags.carry)                          //jnb short loc_17F88
       goto loc_17F88;
     _al = 0;                                    //sub al, al
 loc_17F88:                                      //loc_17F88:
@@ -1582,10 +1589,10 @@ loc_17F88:                                      //loc_17F88:
     sub_18413();                                //call sub_18413
 loc_17FA3:                                      //loc_17FA3:
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short loc_17FF4
+    if (_flags.carry)                           //jb short loc_17FF4
       goto loc_17FF4;
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short loc_17FF4
+    if (_flags.carry)                           //jb short loc_17FF4
       goto loc_17FF4;
     _ax = memory16(_ds, 0x563);                 //mov ax, ds:563h
     memory16(_ds, 0x55F) = _ax;                 //mov ds:55Fh, ax
@@ -1604,19 +1611,21 @@ loc_17FD8:                                      //loc_17FD8:
     memory16(_ds, 0x55D) = _ax;                 //mov ds:55Dh, ax
     memory16(_ds, 0x565) = _bx;                 //mov ds:565h, bx
     _al = 0x32;                                 //mov al, 32h
-    _al = _al - memory(_ds, 0x57C);             //sub al, ds:57Ch
+    _flags.carry = _al < memory(_ds, 0x57C);    //sub al, ds:57Ch
+    _al = _al - memory(_ds, 0x57C);
     if (_al == 0)                               //jz short loc_1800E
       goto loc_1800E;
-    if (_FIXME_)                                //jb short loc_1800E
+    if (_flags.carry)                           //jb short loc_1800E
       goto loc_1800E;
     _cx = 0x0168;                               //mov cx, 168h
 loc_17FEC:                                      //loc_17FEC:
     if (--_cx)                                  //loop loc_17FEC
       goto loc_17FEC;
-    _bh -= _al;                                 //sub bh, al
+    _flags.carry = _bh < _al;                   //sub bh, al
+    _bh -= _al;
     if (_bh == 0)                               //jz short loc_17FF4
       goto loc_17FF4;
-    if (_FIXME_)                                //jnb short loc_17FFA
+    if (!_flags.carry)                          //jnb short loc_17FFA
       goto loc_17FFA;
 loc_17FF4:                                      //loc_17FF4:
     memory(_ds, 0x583) = 0x01;                  //mov byte ptr ds:583h, 1
@@ -1633,23 +1642,26 @@ loc_1800E:                                      //loc_1800E:
     if (memory16(_ds, 0x4) != 0x0007)           //jnz short loc_1801E
       goto loc_1801E;
     _al = memory(_ds, 0x57B);                   //mov al, ds:57Bh
-    _al -= 0xbb;                                //sub al, 0BBh
-    if (_FIXME_)                                //jb short loc_1804F
+    _flags.carry = _al < 0xbb;                  //sub al, 0BBh
+    _al -= 0xbb;
+    if (_flags.carry)                           //jb short loc_1804F
       goto loc_1804F;
-    if (_FIXME_)                                //jnb short loc_1802C
+    if (!_flags.carry)                          //jnb short loc_1802C
       goto loc_1802C;
 loc_1801E:                                      //loc_1801E:
     if (memory(_ds, 0x550) != 0x02)             //jnz short loc_1804F
       goto loc_1804F;
     _al = memory(_ds, 0x57B);                   //mov al, ds:57Bh
-    _al -= 0x5e;                                //sub al, 5Eh
-    if (_FIXME_)                                //jb short loc_1804F
+    _flags.carry = _al < 0x5e;                  //sub al, 5Eh
+    _al -= 0x5e;
+    if (_flags.carry)                           //jb short loc_1804F
       goto loc_1804F;
 loc_1802C:                                      //loc_1802C:
-    _bh -= _al;                                 //sub bh, al
+    _flags.carry = _bh < _al;                   //sub bh, al
+    _bh -= _al;
     if (_bh == 0)                               //jz short loc_18032
       goto loc_18032;
-    if (_FIXME_)                                //jnb short loc_18046
+    if (!_flags.carry)                          //jnb short loc_18046
       goto loc_18046;
 loc_18032:                                      //loc_18032:
     if (memory16(_ds, 0x4) != 0x0007)           //jnz short loc_1803F
@@ -1673,7 +1685,7 @@ loc_18053:                                      //loc_18053:
       goto loc_180A8;
 loc_18061:                                      //loc_18061:
     sub_18838();                                //call sub_18838
-    if (_FIXME_)                                //jb short loc_18073
+    if (_flags.carry)                           //jb short loc_18073
       goto loc_18073;
     memory(_ds, 0x56E) = 0x00;                  //mov byte ptr ds:56Eh, 0
     memory(_ds, 0x571) = 0x01;                  //mov byte ptr ds:571h, 1
@@ -1683,7 +1695,7 @@ loc_18073:                                      //loc_18073:
     if (memory16(_ds, 0x4) != 0x0000)           //jnz short loc_180A8
       goto loc_180A8;
     sub_19527();                                //call sub_19527
-    if (_FIXME_)                                //jb short loc_18086
+    if (_flags.carry)                           //jb short loc_18086
       goto loc_18086;
     memory(_ds, 0x56C) = 0x00;                  //mov byte ptr ds:56Ch, 0
     goto loc_180A8;                             //jmp short loc_180A8
@@ -1792,10 +1804,10 @@ loc_18193:                                      //loc_18193:
     memory16(_ds, 0x55D) = _bx;                 //mov ds:55Dh, bx
     sub_18413();                                //call sub_18413
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short locret_181B6
+    if (_flags.carry)                           //jb short locret_181B6
       goto locret_181B6;
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short locret_181B6
+    if (_flags.carry)                           //jb short locret_181B6
       goto locret_181B6;
     _ax = memory16(_ds, 0x563);                 //mov ax, ds:563h
     memory16(_ds, 0x55F) = _ax;                 //mov ds:55Fh, ax
@@ -1857,8 +1869,9 @@ loc_18218:                                      //loc_18218:
     _flags.carry = true;                        //stc
     return;                                     //retn
 loc_18237:                                      //loc_18237:
-    _ax = _ax - memory16(_ds, 0x572);           //sub ax, ds:572h
-    if (_FIXME_)                                //jb short loc_18243
+    _flags.carry = _ax < memory16(_ds, 0x572);  //sub ax, ds:572h
+    _ax = _ax - memory16(_ds, 0x572);
+    if (_flags.carry)                           //jb short loc_18243
       goto loc_18243;
     if (_ax >= memory16(_ds, 0x5F6))            //jnb short loc_1824B
       goto loc_1824B;
@@ -1917,10 +1930,10 @@ void sub_18299()
 loc_182B7:                                      //loc_182B7:
     sub_18413();                                //call sub_18413
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short locret_1830C
+    if (_flags.carry)                           //jb short locret_1830C
       goto locret_1830C;
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short locret_1830C
+    if (_flags.carry)                           //jb short locret_1830C
       goto locret_1830C;
     sub_1A02D();                                //call sub_1A02D
     _bl = _dl;                                  //mov bl, dl
@@ -2004,8 +2017,9 @@ void sub_18396()
 {
     _dl = memory(_ds, 0x57B);                   //mov dl, ds:57Bh
     _cx = memory16(_ds, 0x579);                 //mov cx, ds:579h
-    _cx -= 0x000c;                              //sub cx, 0Ch
-    if (_FIXME_)                                //jnb short loc_183A5
+    _flags.carry = _cx < 0x000c;                //sub cx, 0Ch
+    _cx -= 0x000c;
+    if (!_flags.carry)                          //jnb short loc_183A5
       goto loc_183A5;
     _cx = 0;                                    //sub cx, cx
 loc_183A5:                                      //loc_183A5:
@@ -2258,7 +2272,7 @@ void sub_185DA()
 {
     _ax = 0xf000;                               //mov ax, 0F000h
     _es = _ax;                                  //mov es, ax
-    _al = memory(_es, 0xFFFE);                  //mov al, es:0FFFEh
+    _al = memoryBiosGet(_es, 0xFFFE);           //mov al, es:0FFFEh
     memory(_ds, 0x697) = _al;                   //mov ds:697h, al
 }
 
@@ -2278,6 +2292,7 @@ void loc_18605()
 
 void sub_18608()
 {
+    _STOP_("Should return zero");
     _dx = 0x03da;                               //mov dx, 3DAh
     _in(_al, _dx);                              //in al, dx
     _al &= 0x08;                                //and al, 8
@@ -2653,8 +2668,9 @@ loc_1895A:                                      //loc_1895A:
     if (_dx < _ax)                              //jb short loc_1894F
       goto loc_1894F;
     _dx = memory16(_ds, 0x579);                 //mov dx, ds:579h
-    _dx = _dx - memory16(_ds, 0x1279);          //sub dx, ds:1279h
-    if (_FIXME_)                                //jnb short loc_1898D
+    _flags.carry = _dx < memory16(_ds, 0x1279); //sub dx, ds:1279h
+    _dx = _dx - memory16(_ds, 0x1279);
+    if (!_flags.carry)                          //jnb short loc_1898D
       goto loc_1898D;
     _dx = 0;                                    //sub dx, dx
 loc_1898D:                                      //loc_1898D:
@@ -2673,8 +2689,9 @@ loc_189B0:                                      //loc_189B0:
     if (memory16(_ds, 0x4) != 0x0004)           //jnz short loc_189C7
       goto loc_189C7;
     _bx -= 1;                                   //dec bx
-    _bx -= 0x0027;                              //sub bx, 27h
-    if (_FIXME_)                                //jb short loc_189C7
+    _flags.carry = _bx < 0x0027;                //sub bx, 27h
+    _bx -= 0x0027;
+    if (_flags.carry)                           //jb short loc_189C7
       goto loc_189C7;
     if (_bx >= 0x0010)                          //jnb short loc_189C7
       goto loc_189C7;
@@ -2802,8 +2819,9 @@ loc_18ABE:                                      //loc_18ABE:
     goto loc_18AE5;                             //jmp short loc_18AE5
     _STOP_("db 90h");                           //db 90h
 loc_18ADF:                                      //loc_18ADF:
-    _ax -= _dx;                                 //sub ax, dx
-    if (_FIXME_)                                //jnb short loc_18AE5
+    _flags.carry = _ax < _dx;                   //sub ax, dx
+    _ax -= _dx;
+    if (!_flags.carry)                          //jnb short loc_18AE5
       goto loc_18AE5;
     _ax = 0;                                    //sub ax, ax
 loc_18AE5:                                      //loc_18AE5:
@@ -2813,13 +2831,15 @@ loc_18AE5:                                      //loc_18AE5:
     _al >>= 1;                                  //shr al, 1
     _al = _al + memory(_ds, 0x1673);            //add al, ds:1673h
     _dl = _al;                                  //mov dl, al
-    _al = _al - memory(_ds, 0x1676);            //sub al, ds:1676h
-    if (_FIXME_)                                //jb short loc_18B11
+    _flags.carry = _al < memory(_ds, 0x1676);   //sub al, ds:1676h
+    _al = _al - memory(_ds, 0x1676);
+    if (_flags.carry)                           //jb short loc_18B11
       goto loc_18B11;
-    _bh -= _al;                                 //sub bh, al
+    _flags.carry = _bh < _al;                   //sub bh, al
+    _bh -= _al;
     if (_bh == 0)                               //jz short loc_18B03
       goto loc_18B03;
-    if (_FIXME_)                                //jnb short loc_18B11
+    if (!_flags.carry)                          //jnb short loc_18B11
       goto loc_18B11;
 loc_18B03:                                      //loc_18B03:
     memory(_ds, 0x1673) = 0x00;                 //mov byte ptr ds:1673h, 0
@@ -2838,7 +2858,7 @@ loc_18B11:                                      //loc_18B11:
     sub_18B52();                                //call sub_18B52
 loc_18B2D:                                      //loc_18B2D:
     sub_18DAA();                                //call sub_18DAA
-    if (_FIXME_)                                //jb short locret_18B10
+    if (_flags.carry)                           //jb short locret_18B10
       goto locret_18B10;
     _di = memory16(_ds, 0x17E7);                //mov di, ds:17E7h
     memory16(_ds, 0x17E5) = _di;                //mov ds:17E5h, di
@@ -2871,7 +2891,7 @@ locret_18B6C:                                   //locret_18B6C:
 loc_18B6D:                                      //loc_18B6D:
     memory(_ds, 0x166A) = 0x0d;                 //mov byte ptr ds:166Ah, 0Dh
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jnz short locret_18B6C
+    if (!_flags.zero)                           //jnz short locret_18B6C
       goto locret_18B6C;
     if (memory(_ds, 0x1665) == 0x00)            //jz short loc_18B81
       goto loc_18B81;
@@ -2910,7 +2930,7 @@ loc_18BD2:                                      //loc_18BD2:
     memory16(_ds, 0x1666) = _cx;                //mov ds:1666h, cx
     memory(_ds, 0x1668) = _dl;                  //mov ds:1668h, dl
     sub_18D35();                                //call sub_18D35
-    if (_FIXME_)                                //jb short loc_18BBA
+    if (_flags.carry)                           //jb short loc_18BBA
       goto loc_18BBA;
     memory(_ds, 0x1665) = 0x1d;                 //mov byte ptr ds:1665h, 1Dh
     _bx = memory16(_ds, 0x8);                   //mov bx, ds:8
@@ -2920,7 +2940,7 @@ loc_18BD2:                                      //loc_18BD2:
     memory(_ds, 0x1670) = 0x01;                 //mov byte ptr ds:1670h, 1
 loc_18BFD:                                      //loc_18BFD:
     sub_18D35();                                //call sub_18D35
-    if (_FIXME_)                                //jb short locret_18C10
+    if (_flags.carry)                           //jb short locret_18C10
       goto locret_18C10;
     memory(_ds, 0x1664) = 0x00;                 //mov byte ptr ds:1664h, 0
     sub_18D7C();                                //call sub_18D7C
@@ -3084,8 +3104,9 @@ loc_18D8C:                                      //loc_18D8C:
     _ax += 0x0010;                              //add ax, 10h
     if (_ax < memory16(_ds, 0x1666))            //jb short loc_18DA8
       goto loc_18DA8;
-    _ax -= 0x0030;                              //sub ax, 30h
-    if (_FIXME_)                                //jnb short loc_18DA0
+    _flags.carry = _ax < 0x0030;                //sub ax, 30h
+    _ax -= 0x0030;
+    if (!_flags.carry)                          //jnb short loc_18DA0
       goto loc_18DA0;
     _ax = 0;                                    //sub ax, ax
 loc_18DA0:                                      //loc_18DA0:
@@ -3233,8 +3254,9 @@ loc_18F06:                                      //loc_18F06:
     memory(_ds, 0x1837) += 0x10;                //add byte ptr ds:1837h, 10h
     _cx = memory16(_ds, 0x1832);                //mov cx, ds:1832h
     _dl = memory(_ds, 0x1834);                  //mov dl, ds:1834h
-    _cx -= 0x0010;                              //sub cx, 10h
-    if (_FIXME_)                                //jnb short loc_18F24
+    _flags.carry = _cx < 0x0010;                //sub cx, 10h
+    _cx -= 0x0010;
+    if (!_flags.carry)                          //jnb short loc_18F24
       goto loc_18F24;
     _cx = 0;                                    //sub cx, cx
     memory(_ds, 0x1838) |= 0x01;                //or byte ptr ds:1838h, 1
@@ -3248,8 +3270,9 @@ loc_18F24:                                      //loc_18F24:
     memory16(_ds, 0x1835) = _ax;                //mov ds:1835h, ax
     memory(_ds, 0x1838) |= 0x02;                //or byte ptr ds:1838h, 2
 loc_18F3B:                                      //loc_18F3B:
-    _dl -= 0x08;                                //sub dl, 8
-    if (_FIXME_)                                //jnb short loc_18F47
+    _flags.carry = _dl < 0x08;                  //sub dl, 8
+    _dl -= 0x08;
+    if (!_flags.carry)                          //jnb short loc_18F47
       goto loc_18F47;
     _dl = 0;                                    //sub dl, dl
     memory(_ds, 0x1838) |= 0x04;                //or byte ptr ds:1838h, 4
@@ -3416,7 +3439,7 @@ locret_190AA:                                   //locret_190AA:
     return;                                     //retn
 loc_190AB:                                      //loc_190AB:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short locret_190AA
+    if (_flags.zero)                            //jz short locret_190AA
       goto locret_190AA;
     memory16(_ds, 0x1CC9) = _cx;                //mov ds:1CC9h, cx
     memory16(_ds, 0x1CE1) += 1;                 //inc word ptr ds:1CE1h
@@ -3529,8 +3552,9 @@ loc_191DB:                                      //loc_191DB:
       goto loc_1921F;
     if (memory(_ds, 0x1CD0) == 0x01)            //jz short loc_19212
       goto loc_19212;
-    _ax -= 0x0008;                              //sub ax, 8
-    if (_FIXME_)                                //jnb short loc_1921F
+    _flags.carry = _ax < 0x0008;                //sub ax, 8
+    _ax -= 0x0008;
+    if (!_flags.carry)                          //jnb short loc_1921F
       goto loc_1921F;
     _ax = 0;                                    //sub ax, ax
 loc_191EB:                                      //loc_191EB:
@@ -3567,7 +3591,7 @@ loc_1922B:                                      //loc_1922B:
     sub_19311();                                //call sub_19311
 loc_19243:                                      //loc_19243:
     sub_19325();                                //call sub_19325
-    if (_FIXME_)                                //jb short locret_19251
+    if (_flags.carry)                           //jb short locret_19251
       goto locret_19251;
     _ax = memory16(_ds, 0x1CCD);                //mov ax, ds:1CCDh
     memory16(_ds, 0x1CBD) = _ax;                //mov ds:1CBDh, ax
@@ -3685,8 +3709,9 @@ void sub_19325()
     _ax += 0x0020;                              //add ax, 20h
     if (_ax < memory16(_ds, 0x579))             //jb short loc_19364
       goto loc_19364;
-    _ax -= 0x0038;                              //sub ax, 38h
-    if (_FIXME_)                                //jnb short loc_1935A
+    _flags.carry = _ax < 0x0038;                //sub ax, 38h
+    _ax -= 0x0038;
+    if (!_flags.carry)                          //jnb short loc_1935A
       goto loc_1935A;
     _ax = 0;                                    //sub ax, ax
 loc_1935A:                                      //loc_1935A:
@@ -3800,11 +3825,11 @@ locret_19450:                                   //locret_19450:
 loc_19451:                                      //loc_19451:
     _cx = _dx;                                  //mov cx, dx
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short locret_19450
+    if (_flags.zero)                            //jz short locret_19450
       goto locret_19450;
     memory16(_ds, 0x1D5A) = _cx;                //mov ds:1D5Ah, cx
     sub_19527();                                //call sub_19527
-    if (_FIXME_)                                //jb short locret_19450
+    if (_flags.carry)                           //jb short locret_19450
       goto locret_19450;
     if (memory(_ds, 0x1D59) != 0x00)            //jnz short loc_1949D
       goto loc_1949D;
@@ -3849,7 +3874,7 @@ loc_194CF:                                      //loc_194CF:
     memory16(_ds, 0x1D62) = _ax;                //mov ds:1D62h, ax
     sub_1950C();                                //call sub_1950C
     sub_19527();                                //call sub_19527
-    if (_FIXME_)                                //jb short locret_194EC
+    if (_flags.carry)                           //jb short locret_194EC
       goto locret_194EC;
     if (memory(_ds, 0x1D59) != 0x00)            //jnz short loc_194ED
       goto loc_194ED;
@@ -3949,10 +3974,10 @@ loc_195B6:                                      //loc_195B6:
 loc_195CE:                                      //loc_195CE:
     memory16(_ds, 0x1F6C) = _bx;                //mov ds:1F6Ch, bx
     sub_1988E();                                //call sub_1988E
-    if (_FIXME_)                                //jb short locret_195B5
+    if (_flags.carry)                           //jb short locret_195B5
       goto locret_195B5;
     sub_19797();                                //call sub_19797
-    if (_FIXME_)                                //jb short locret_195B5
+    if (_flags.carry)                           //jb short locret_195B5
       goto locret_195B5;
     _bx = memory16(_ds, 0x1F6C);                //mov bx, ds:1F6Ch
     if (memory(_ds, _bx + 8016) == 0x00)        //jz short loc_1961B
@@ -4059,8 +4084,9 @@ loc_196C6:                                      //loc_196C6:
     _dl = 0xff;                                 //mov dl, 0FFh
     goto loc_196F2;                             //jmp short loc_196F2
 loc_196E8:                                      //loc_196E8:
-    _ax = _ax - memory16(_ds, 0x1F69);          //sub ax, ds:1F69h
-    if (_FIXME_)                                //jnb short loc_196F2
+    _flags.carry = _ax < memory16(_ds, 0x1F69); //sub ax, ds:1F69h
+    _ax = _ax - memory16(_ds, 0x1F69);
+    if (!_flags.carry)                          //jnb short loc_196F2
       goto loc_196F2;
     _ax = 0;                                    //sub ax, ax
     _dl = 0x01;                                 //mov dl, 1
@@ -4082,10 +4108,10 @@ loc_196F2:                                      //loc_196F2:
     sub_1977D();                                //call sub_1977D
 loc_19720:                                      //loc_19720:
     sub_1988E();                                //call sub_1988E
-    if (_FIXME_)                                //jb short locret_1972A
+    if (_flags.carry)                           //jb short locret_1972A
       goto locret_1972A;
     sub_19797();                                //call sub_19797
-    if (_FIXME_)                                //jnb short loc_1972B
+    if (!_flags.carry)                          //jnb short loc_1972B
       goto loc_1972B;
 locret_1972A:                                   //locret_1972A:
     return;                                     //retn
@@ -4998,11 +5024,11 @@ void sub_19F65()
 loc_19F70:                                      //loc_19F70:
     _cl = memory(_ds, 0x2AE0);                  //mov cl, ds:2AE0h
 loc_19F74:                                      //loc_19F74:
-    _bx = memory16(_es, _di);                   //mov bx, es:[di]
+    _bx = memoryVideoGet16(_es, _di);           //mov bx, es:[di]
     memory16(_ds, _bp + 0) = _bx;               //mov ds:[bp+0], bx
     _lodsw<MemData, DirForward>();              //lodsw
     _ax &= _bx;                                 //and ax, bx
-    _stosw<MemData, DirForward>();              //stosw
+    _stosw<MemVideo, DirForward>();
     _bp += 0x0002;                              //add bp, 2
     if (--_cx)                                  //loop loc_19F74
       goto loc_19F74;
@@ -5111,8 +5137,9 @@ void sub_1A059()
     if (_ax < _bx)                              //jb short loc_1A07F
       goto loc_1A07F;
     _ax -= _si;                                 //sub ax, si
-    _ax -= _di;                                 //sub ax, di
-    if (_FIXME_)                                //jnb short loc_1A067
+    _flags.carry = _ax < _di;                   //sub ax, di
+    _ax -= _di;
+    if (!_flags.carry)                          //jnb short loc_1A067
       goto loc_1A067;
     _ax = 0;                                    //sub ax, ax
 loc_1A067:                                      //loc_1A067:
@@ -5122,8 +5149,9 @@ loc_1A067:                                      //loc_1A067:
     if (_dl < _dh)                              //jb short loc_1A07F
       goto loc_1A07F;
     _dl -= _cl;                                 //sub dl, cl
-    _dl -= _ch;                                 //sub dl, ch
-    if (_FIXME_)                                //jnb short loc_1A079
+    _flags.carry = _dl < _ch;                   //sub dl, ch
+    _dl -= _ch;
+    if (!_flags.carry)                          //jnb short loc_1A079
       goto loc_1A079;
     _dl = 0;                                    //sub dl, dl
 loc_1A079:                                      //loc_1A079:
@@ -5151,8 +5179,9 @@ loc_1A0AD:                                      //loc_1A0AD:
     _bx = _cx;                                  //mov bx, cx
     _bx -= 1;                                   //dec bx
     _al = memory(_ds, 0x57B);                   //mov al, ds:57Bh
-    _al = _al - memory(_ds, _bx + 11220);       //sub al, [bx+2BD4h]
-    if (_FIXME_)                                //jnb short loc_1A0BB
+    _flags.carry = _al < memory(_ds, _bx + 11220);//sub al, [bx+2BD4h]
+    _al = _al - memory(_ds, _bx + 11220);
+    if (!_flags.carry)                          //jnb short loc_1A0BB
       goto loc_1A0BB;
     _al = (~_al);                               //not al
 loc_1A0BB:                                      //loc_1A0BB:
@@ -5339,8 +5368,9 @@ loc_1A269:                                      //loc_1A269:
     _ax = memory16(_ds, 0x2E88);                //mov ax, ds:2E88h
     _cl = 0x04;                                 //mov cl, 4
     _ax >>= _cl;                                //shr ax, cl
-    _ax -= 0x0002;                              //sub ax, 2
-    if (_FIXME_)                                //jnb short loc_1A288
+    _flags.carry = _ax < 0x0002;                //sub ax, 2
+    _ax -= 0x0002;
+    if (!_flags.carry)                          //jnb short loc_1A288
       goto loc_1A288;
     _ax = 0;                                    //sub ax, ax
 loc_1A288:                                      //loc_1A288:
@@ -5430,8 +5460,9 @@ loc_1A341:                                      //loc_1A341:
     _ax += 0x0007;                              //add ax, 7
     _cl = 0x04;                                 //mov cl, 4
     _ax >>= _cl;                                //shr ax, cl
-    _ax -= 0x0002;                              //sub ax, 2
-    if (_FIXME_)                                //jnb short loc_1A354
+    _flags.carry = _ax < 0x0002;                //sub ax, 2
+    _ax -= 0x0002;
+    if (!_flags.carry)                          //jnb short loc_1A354
       goto loc_1A354;
     _ax = 0;                                    //sub ax, ax
 loc_1A354:                                      //loc_1A354:
@@ -5471,10 +5502,10 @@ locret_1A398:                                   //locret_1A398:
 loc_1A399:                                      //loc_1A399:
     memory16(_ds, 0x328C) = _dx;                //mov ds:328Ch, dx
     sub_1A5EA();                                //call sub_1A5EA
-    if (_FIXME_)                                //jb short locret_1A398
+    if (_flags.carry)                           //jb short locret_1A398
       goto locret_1A398;
     sub_19410();                                //call sub_19410
-    if (_FIXME_)                                //jb short locret_1A398
+    if (_flags.carry)                           //jb short locret_1A398
       goto locret_1A398;
     memory(_ds, 0x32EA) += 1;                   //inc byte ptr ds:32EAh
     sub_1A02D();                                //call sub_1A02D
@@ -5482,9 +5513,10 @@ loc_1A399:                                      //loc_1A399:
     _al &= _dl;                                 //and al, dl
     memory(_ds, 0x32EB) = memory(_ds, 0x32EB) ^ _al;//xor ds:32EBh, al
     _ax = memory16(_ds, 0x327D);                //mov ax, ds:327Dh
-    _ax = _ax - memory16(_ds, 0x579);           //sub ax, ds:579h
+    _flags.carry = _ax < memory16(_ds, 0x579);  //sub ax, ds:579h
+    _ax = _ax - memory16(_ds, 0x579);
     _dl = 0xff;                                 //mov dl, 0FFh
-    if (_FIXME_)                                //jnb short loc_1A3C6
+    if (!_flags.carry)                          //jnb short loc_1A3C6
       goto loc_1A3C6;
     _ax = (~_ax);                               //not ax
     _dl = 0x01;                                 //mov dl, 1
@@ -5492,9 +5524,10 @@ loc_1A3C6:                                      //loc_1A3C6:
     memory(_ds, 0x32ED) = _dl;                  //mov ds:32EDh, dl
     _bl = memory(_ds, 0x327F);                  //mov bl, ds:327Fh
     _bl += 0x14;                                //add bl, 14h
-    _bl = _bl - memory(_ds, 0x57B);             //sub bl, ds:57Bh
+    _flags.carry = _bl < memory(_ds, 0x57B);    //sub bl, ds:57Bh
+    _bl = _bl - memory(_ds, 0x57B);
     _dl = 0xff;                                 //mov dl, 0FFh
-    if (_FIXME_)                                //jnb short loc_1A3DD
+    if (!_flags.carry)                          //jnb short loc_1A3DD
       goto loc_1A3DD;
     _bl = (~_bl);                               //not bl
     _dl = 0x01;                                 //mov dl, 1
@@ -5520,8 +5553,9 @@ loc_1A3FC:                                      //loc_1A3FC:
     _cl = 0x03;                                 //mov cl, 3
     _dx >>= _cl;                                //shr dx, cl
     _al = memory(_ds, 0x32EC);                  //mov al, ds:32ECh
-    _al -= _dl;                                 //sub al, dl
-    if (_FIXME_)                                //jnb short loc_1A41C
+    _flags.carry = _al < _dl;                   //sub al, dl
+    _al -= _dl;
+    if (!_flags.carry)                          //jnb short loc_1A41C
       goto loc_1A41C;
     _al = 0;                                    //sub al, al
 loc_1A41C:                                      //loc_1A41C:
@@ -5623,8 +5657,9 @@ loc_1A4DC:                                      //loc_1A4DC:
     _cx = 0x0130;                               //mov cx, 130h
     goto loc_1A50A;                             //jmp short loc_1A50A
 loc_1A503:                                      //loc_1A503:
-    _cx -= 0x0008;                              //sub cx, 8
-    if (_FIXME_)                                //jnb short loc_1A50A
+    _flags.carry = _cx < 0x0008;                //sub cx, 8
+    _cx -= 0x0008;
+    if (!_flags.carry)                          //jnb short loc_1A50A
       goto loc_1A50A;
     _cx = 0;                                    //sub cx, cx
 loc_1A50A:                                      //loc_1A50A:
@@ -5640,8 +5675,9 @@ loc_1A50A:                                      //loc_1A50A:
     _dl = 0xa5;                                 //mov dl, 0A5h
     goto loc_1A52E;                             //jmp short loc_1A52E
 loc_1A527:                                      //loc_1A527:
-    _dl -= 0x02;                                //sub dl, 2
-    if (_FIXME_)                                //jnb short loc_1A52E
+    _flags.carry = _dl < 0x02;                  //sub dl, 2
+    _dl -= 0x02;
+    if (!_flags.carry)                          //jnb short loc_1A52E
       goto loc_1A52E;
     _dl = 0;                                    //sub dl, dl
 loc_1A52E:                                      //loc_1A52E:
@@ -5649,7 +5685,7 @@ loc_1A52E:                                      //loc_1A52E:
     sub_19EE0();                                //call sub_19EE0
     memory16(_ds, 0x3284) = _ax;                //mov ds:3284h, ax
     sub_1A5EA();                                //call sub_1A5EA
-    if (_FIXME_)                                //jnb short loc_1A558
+    if (!_flags.carry)                          //jnb short loc_1A558
       goto loc_1A558;
 loc_1A53D:                                      //loc_1A53D:
     memory(_ds, 0x3280) = 0x00;                 //mov byte ptr ds:3280h, 0
@@ -5661,7 +5697,7 @@ loc_1A53D:                                      //loc_1A53D:
     return;                                     //retn
 loc_1A558:                                      //loc_1A558:
     sub_19410();                                //call sub_19410
-    if (_FIXME_)                                //jb short loc_1A53D
+    if (_flags.carry)                           //jb short loc_1A53D
       goto loc_1A53D;
     sub_1A5D0();                                //call sub_1A5D0
     memory16(_ds, 0x327A) += 0x0002;            //add word ptr ds:327Ah, 2
@@ -5825,6 +5861,7 @@ void sub_1A6AF()
 
 void sub_1A6D0()
 {
+    _STOP_("Check carry in all return paths");
     memory16(_ds, 0x3511) = 0x0000;             //mov word ptr ds:3511h, 0
     memory(_ds, 0x351B) = 0x00;                 //mov byte ptr ds:351Bh, 0
 loc_1A6DB:                                      //loc_1A6DB:
@@ -5861,8 +5898,9 @@ loc_1A700:                                      //loc_1A700:
       goto loc_1A79F;
     memory(_ds, 0x552) = 0x01;                  //mov byte ptr ds:552h, 1
     _cx = memory16(_ds, 0x579);                 //mov cx, ds:579h
-    _cx -= 0x0008;                              //sub cx, 8
-    if (_FIXME_)                                //jnb short loc_1A741
+    _flags.carry = _cx < 0x0008;                //sub cx, 8
+    _cx -= 0x0008;
+    if (!_flags.carry)                          //jnb short loc_1A741
       goto loc_1A741;
     _cx = 0;                                    //sub cx, cx
 loc_1A741:                                      //loc_1A741:
@@ -5891,7 +5929,7 @@ loc_1A773:                                      //loc_1A773:
 loc_1A774:                                      //loc_1A774:
     sub_1C9D6();                                //call sub_1C9D6
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_1A774
+    if (_flags.zero)                            //jz short loc_1A774
       goto loc_1A774;
     sub_1C9D6();                                //call sub_1C9D6
     _dx = _pop();                               //pop dx
@@ -6078,8 +6116,9 @@ loc_1A923:                                      //loc_1A923:
     _ax = memory16(_ds, _si + 13383);           //mov ax, [si+3447h]
     if (memory(_ds, _bx + 13335) == 0x01)       //jz short loc_1A93B
       goto loc_1A93B;
-    _ax -= _cx;                                 //sub ax, cx
-    if (_FIXME_)                                //jnb short loc_1A94A
+    _flags.carry = _ax < _cx;                   //sub ax, cx
+    _ax -= _cx;
+    if (!_flags.carry)                          //jnb short loc_1A94A
       goto loc_1A94A;
     _ax = 0;                                    //sub ax, ax
     memory(_ds, _bx + 13335) = 0x01;            //mov byte ptr [bx+3417h], 1
@@ -6194,8 +6233,9 @@ loc_1AA3B:                                      //loc_1AA3B:
     _cl = 0x02;                                 //mov cl, 2
     _ax >>= _cl;                                //shr ax, cl
     _ax += 1;                                   //inc ax
-    _ax -= _di;                                 //sub ax, di
-    if (_FIXME_)                                //jnb short loc_1AA54
+    _flags.carry = _ax < _di;                   //sub ax, di
+    _ax -= _di;
+    if (!_flags.carry)                          //jnb short loc_1AA54
       goto loc_1AA54;
     _ax = (~_ax);                               //not ax
 loc_1AA54:                                      //loc_1AA54:
@@ -6272,8 +6312,9 @@ loc_1AB03:                                      //loc_1AB03:
       goto loc_1AB1F;
     _dx = _dx - memory16(_ds, 0x412);           //sub dx, ds:412h
     _ax = 0x2a30;                               //mov ax, 2A30h
-    _ax -= _dx;                                 //sub ax, dx
-    if (_FIXME_)                                //jnb short loc_1AB1B
+    _flags.carry = _ax < _dx;                   //sub ax, dx
+    _ax -= _dx;
+    if (!_flags.carry)                          //jnb short loc_1AB1B
       goto loc_1AB1B;
     _ax = 0;                                    //sub ax, ax
 loc_1AB1B:                                      //loc_1AB1B:
@@ -6286,8 +6327,9 @@ loc_1AB1F:                                      //loc_1AB1F:
       goto loc_1AB2F;
     _ax <<= 1;                                  //shl ax, 1
 loc_1AB2F:                                      //loc_1AB2F:
-    _ax -= _dx;                                 //sub ax, dx
-    if (_FIXME_)                                //jnb short loc_1AB35
+    _flags.carry = _ax < _dx;                   //sub ax, dx
+    _ax -= _dx;
+    if (!_flags.carry)                          //jnb short loc_1AB35
       goto loc_1AB35;
     _ax = 0;                                    //sub ax, ax
 loc_1AB35:                                      //loc_1AB35:
@@ -6409,7 +6451,7 @@ void sub_1AC4C()
     _push(_dx);                                 //push dx
 loc_1AC51:                                      //loc_1AC51:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_1AC51
+    if (_flags.zero)                            //jz short loc_1AC51
       goto loc_1AC51;
     _dx = _pop();                               //pop dx
     _push(_dx);                                 //push dx
@@ -6509,8 +6551,9 @@ loc_1AD05:                                      //loc_1AD05:
       goto loc_1AD05;
 loc_1AD12:                                      //loc_1AD12:
     _ax = memory16(_ds, 0x369C);                //mov ax, ds:369Ch
-    _ax -= 0x0280;                              //sub ax, 280h
-    if (_FIXME_)                                //jb short loc_1AD20
+    _flags.carry = _ax < 0x0280;                //sub ax, 280h
+    _ax -= 0x0280;
+    if (_flags.carry)                           //jb short loc_1AD20
       goto loc_1AD20;
     if (_ax >= memory16(_ds, 0x369A))           //jnb short loc_1ACEA
       goto loc_1ACEA;
@@ -6586,8 +6629,9 @@ loc_1AD87:                                      //loc_1AD87:
     sub_1B044();                                //call sub_1B044
     return;                                     //retn
 loc_1ADCB:                                      //loc_1ADCB:
-    memory16(_ds, 0x37B6) -= 0x0002;            //sub word ptr ds:37B6h, 2
-    if (_FIXME_)                                //jnb short loc_1AD87
+    _flags.carry = memory16(_ds, 0x37B6) < 0x0002;//sub word ptr ds:37B6h, 2
+    memory16(_ds, 0x37B6) -= 0x0002;
+    if (!_flags.carry)                          //jnb short loc_1AD87
       goto loc_1AD87;
 }
 
@@ -6721,10 +6765,10 @@ locret_1AEF0:                                   //locret_1AEF0:
 loc_1AEF1:                                      //loc_1AEF1:
     memory16(_ds, 0x39C8) = _dx;                //mov ds:39C8h, dx
     sub_1B082();                                //call sub_1B082
-    if (_FIXME_)                                //jb short locret_1AEF0
+    if (_flags.carry)                           //jb short locret_1AEF0
       goto locret_1AEF0;
     sub_1B09E();                                //call sub_1B09E
-    if (_FIXME_)                                //jnb short loc_1AF02
+    if (!_flags.carry)                          //jnb short loc_1AF02
       goto loc_1AF02;
     goto loc_1AFC0;                             //jmp loc_1AFC0
 loc_1AF02:                                      //loc_1AF02:
@@ -6750,8 +6794,9 @@ loc_1AF3D:                                      //loc_1AF3D:
     _ax = memory16(_ds, 0x3964);                //mov ax, ds:3964h
     if (_ax < _dx)                              //jb short loc_1AF4C
       goto loc_1AF4C;
-    _ax = _ax - memory16(_ds, 0x39C6);          //sub ax, ds:39C6h
-    if (_FIXME_)                                //jnb short loc_1AF50
+    _flags.carry = _ax < memory16(_ds, 0x39C6); //sub ax, ds:39C6h
+    _ax = _ax - memory16(_ds, 0x39C6);
+    if (!_flags.carry)                          //jnb short loc_1AF50
       goto loc_1AF50;
     _ax = 0;                                    //sub ax, ax
     goto loc_1AF50;                             //jmp short loc_1AF50
@@ -6770,8 +6815,9 @@ loc_1AF55:                                      //loc_1AF55:
     _dl += 0x02;                                //add dl, 2
     if (memory(_ds, 0x3967) == 0x01)            //jz short loc_1AF82
       goto loc_1AF82;
-    _al -= _dl;                                 //sub al, dl
-    if (_FIXME_)                                //jb short loc_1AF79
+    _flags.carry = _al < _dl;                   //sub al, dl
+    _al -= _dl;
+    if (_flags.carry)                           //jb short loc_1AF79
       goto loc_1AF79;
     if (_al >= 0x09)                            //jnb short loc_1AFA6
       goto loc_1AFA6;
@@ -6784,8 +6830,9 @@ loc_1AF82:                                      //loc_1AF82:
     if (_al > memory(_ds, 0x57B))               //ja short loc_1AFA1
       goto loc_1AFA1;
     _bx = memory16(_ds, 0x3964);                //mov bx, ds:3964h
-    _bx = _bx - memory16(_ds, 0x579);           //sub bx, ds:579h
-    if (_FIXME_)                                //jnb short loc_1AF96
+    _flags.carry = _bx < memory16(_ds, 0x579);  //sub bx, ds:579h
+    _bx = _bx - memory16(_ds, 0x579);
+    if (!_flags.carry)                          //jnb short loc_1AF96
       goto loc_1AF96;
     _bx = (~_bx);                               //not bx
 loc_1AF96:                                      //loc_1AF96:
@@ -6800,7 +6847,7 @@ loc_1AFA6:                                      //loc_1AFA6:
     memory(_ds, 0x3966) = _al;                  //mov ds:3966h, al
 loc_1AFA9:                                      //loc_1AFA9:
     sub_1B082();                                //call sub_1B082
-    if (_FIXME_)                                //jnb short loc_1AFBB
+    if (!_flags.carry)                          //jnb short loc_1AFBB
       goto loc_1AFBB;
     _ax = memory16(_ds, 0x39C3);                //mov ax, ds:39C3h
     memory16(_ds, 0x3964) = _ax;                //mov ds:3964h, ax
@@ -6809,7 +6856,7 @@ loc_1AFA9:                                      //loc_1AFA9:
     return;                                     //retn
 loc_1AFBB:                                      //loc_1AFBB:
     sub_1B09E();                                //call sub_1B09E
-    if (_FIXME_)                                //jnb short loc_1B01E
+    if (!_flags.carry)                          //jnb short loc_1B01E
       goto loc_1B01E;
 loc_1AFC0:                                      //loc_1AFC0:
     if (memory(_ds, 0x553) == 0x00)             //jz short loc_1AFC8
@@ -6817,8 +6864,9 @@ loc_1AFC0:                                      //loc_1AFC0:
     return;                                     //retn
 loc_1AFC8:                                      //loc_1AFC8:
     _cx = memory16(_ds, 0x579);                 //mov cx, ds:579h
-    _cx -= 0x000c;                              //sub cx, 0Ch
-    if (_FIXME_)                                //jnb short loc_1AFD3
+    _flags.carry = _cx < 0x000c;                //sub cx, 0Ch
+    _cx -= 0x000c;
+    if (!_flags.carry)                          //jnb short loc_1AFD3
       goto loc_1AFD3;
     _cx = 0;                                    //sub cx, cx
 loc_1AFD3:                                      //loc_1AFD3:
@@ -6827,8 +6875,9 @@ loc_1AFD3:                                      //loc_1AFD3:
     _cx = 0x010e;                               //mov cx, 10Eh
 loc_1AFDC:                                      //loc_1AFDC:
     _dl = memory(_ds, 0x57B);                   //mov dl, ds:57Bh
-    _dl -= 0x04;                                //sub dl, 4
-    if (_FIXME_)                                //jnb short loc_1AFE7
+    _flags.carry = _dl < 0x04;                  //sub dl, 4
+    _dl -= 0x04;
+    if (!_flags.carry)                          //jnb short loc_1AFE7
       goto loc_1AFE7;
     _dl = 0;                                    //sub dl, dl
 loc_1AFE7:                                      //loc_1AFE7:
@@ -6940,7 +6989,7 @@ locret_1B0E9:                                   //locret_1B0E9:
     return;                                     //retn
 loc_1B0EA:                                      //loc_1B0EA:
     sub_1B295();                                //call sub_1B295
-    if (_FIXME_)                                //jb short locret_1B0E9
+    if (_flags.carry)                           //jb short locret_1B0E9
       goto locret_1B0E9;
     _ah = 0;                                    //sub ah, ah
     _interrupt(26);                             //int 1Ah
@@ -7162,12 +7211,12 @@ loc_1B319:                                      //loc_1B319:
     if (memory(_ds, _bx + 16050) != 0x00)       //jnz short locret_1B2FC
       goto locret_1B2FC;
     sub_1B50B();                                //call sub_1B50B
-    if (_FIXME_)                                //jnb short loc_1B32C
+    if (!_flags.carry)                          //jnb short loc_1B32C
       goto loc_1B32C;
     goto loc_1B354;                             //jmp short loc_1B354
 loc_1B32C:                                      //loc_1B32C:
     sub_1B52C();                                //call sub_1B52C
-    if (_FIXME_)                                //jb short locret_1B2FC
+    if (_flags.carry)                           //jb short locret_1B2FC
       goto locret_1B2FC;
     if (memory(_ds, _bx + 16054) != 0x00)       //jnz short loc_1B348
       goto loc_1B348;
@@ -7179,7 +7228,7 @@ loc_1B32C:                                      //loc_1B32C:
 loc_1B348:                                      //loc_1B348:
     memory(_ds, _bx + 16054) -= 1;              //dec byte ptr [bx+3EB6h]
     sub_1B50B();                                //call sub_1B50B
-    if (_FIXME_)                                //jb short loc_1B354
+    if (_flags.carry)                           //jb short loc_1B354
       goto loc_1B354;
     goto loc_1B3B1;                             //jmp short loc_1B3B1
 loc_1B354:                                      //loc_1B354:
@@ -7285,7 +7334,7 @@ loc_1B434:                                      //loc_1B434:
     _si = _bx;                                  //mov si, bx
     _si <<= 1;                                  //shl si, 1
     sub_1B52C();                                //call sub_1B52C
-    if (_FIXME_)                                //jnb short loc_1B456
+    if (!_flags.carry)                          //jnb short loc_1B456
       goto loc_1B456;
     return;                                     //retn
 loc_1B456:                                      //loc_1B456:
@@ -7405,14 +7454,16 @@ void sub_1B52C()
 void sub_1B54C()
 {
     _ax = memory16(_ds, _si + 16076);           //mov ax, [si+3ECCh]
-    _ax = _ax - memory16(_ds, 0x579);           //sub ax, ds:579h
-    if (_FIXME_)                                //jnb short loc_1B558
+    _flags.carry = _ax < memory16(_ds, 0x579);  //sub ax, ds:579h
+    _ax = _ax - memory16(_ds, 0x579);
+    if (!_flags.carry)                          //jnb short loc_1B558
       goto loc_1B558;
     _ax = (~_ax);                               //not ax
 loc_1B558:                                      //loc_1B558:
     _dl = memory(_ds, _bx + 16084);             //mov dl, [bx+3ED4h]
-    _dl = _dl - memory(_ds, 0x57B);             //sub dl, ds:57Bh
-    if (_FIXME_)                                //jnb short loc_1B564
+    _flags.carry = _dl < memory(_ds, 0x57B);    //sub dl, ds:57Bh
+    _dl = _dl - memory(_ds, 0x57B);
+    if (!_flags.carry)                          //jnb short loc_1B564
       goto loc_1B564;
     _dl = (~_dl);                               //not dl
 loc_1B564:                                      //loc_1B564:
@@ -7444,7 +7495,7 @@ loc_1B58A:                                      //loc_1B58A:
       goto locret_1B57A;
     sub_1B75D();                                //call sub_1B75D
     sub_1B787();                                //call sub_1B787
-    if (_FIXME_)                                //jb short locret_1B57A
+    if (_flags.carry)                           //jb short locret_1B57A
       goto locret_1B57A;
     sub_1A02D();                                //call sub_1A02D
     if (_dl > 0x30)                             //ja short loc_1B5CC
@@ -7559,8 +7610,9 @@ loc_1B689:                                      //loc_1B689:
     memory(_ds, 0x40B7) = 0xff;                 //mov byte ptr ds:40B7h, 0FFh
     goto loc_1B6B3;                             //jmp short loc_1B6B3
 loc_1B6A7:                                      //loc_1B6A7:
-    _ax -= 0x0004;                              //sub ax, 4
-    if (_FIXME_)                                //jnb short loc_1B6B3
+    _flags.carry = _ax < 0x0004;                //sub ax, 4
+    _ax -= 0x0004;
+    if (!_flags.carry)                          //jnb short loc_1B6B3
       goto loc_1B6B3;
     _ax = 0;                                    //sub ax, ax
     memory(_ds, 0x40B7) = 0x01;                 //mov byte ptr ds:40B7h, 1
@@ -7582,7 +7634,7 @@ loc_1B6B6:                                      //loc_1B6B6:
     sub_19FCD();                                //call sub_19FCD
 loc_1B6E0:                                      //loc_1B6E0:
     sub_1B787();                                //call sub_1B787
-    if (_FIXME_)                                //jb short locret_1B716
+    if (_flags.carry)                           //jb short locret_1B716
       goto locret_1B716;
     memory(_ds, 0x40B9) = 0x00;                 //mov byte ptr ds:40B9h, 0
     memory16(_ds, 0x40BE) += 0x0002;            //add word ptr ds:40BEh, 2
@@ -7620,8 +7672,9 @@ void sub_1B72B()
 {
     _ax = memory16(_ds, 0x40B2);                //mov ax, ds:40B2h
     _dl = 0x01;                                 //mov dl, 1
-    _ax = _ax - memory16(_ds, 0x579);           //sub ax, ds:579h
-    if (_FIXME_)                                //jnb short loc_1B73A
+    _flags.carry = _ax < memory16(_ds, 0x579);  //sub ax, ds:579h
+    _ax = _ax - memory16(_ds, 0x579);
+    if (!_flags.carry)                          //jnb short loc_1B73A
       goto loc_1B73A;
     _ax = (~_ax);                               //not ax
     _dl = 0xff;                                 //mov dl, 0FFh
@@ -7630,8 +7683,9 @@ loc_1B73A:                                      //loc_1B73A:
     memory16(_ds, 0x40CC) = _ax;                //mov ds:40CCh, ax
     _al = memory(_ds, 0x40B4);                  //mov al, ds:40B4h
     _dl = 0x01;                                 //mov dl, 1
-    _al = _al - memory(_ds, 0x57B);             //sub al, ds:57Bh
-    if (_FIXME_)                                //jnb short loc_1B750
+    _flags.carry = _al < memory(_ds, 0x57B);    //sub al, ds:57Bh
+    _al = _al - memory(_ds, 0x57B);
+    if (!_flags.carry)                          //jnb short loc_1B750
       goto loc_1B750;
     _al = (~_al);                               //not al
     _dl = 0xff;                                 //mov dl, 0FFh
@@ -7717,7 +7771,7 @@ loc_1B7E6:                                      //loc_1B7E6:
     return;                                     //retn
 loc_1B806:                                      //loc_1B806:
     sub_1B96E();                                //call sub_1B96E
-    if (_FIXME_)                                //jnb short loc_1B879
+    if (!_flags.carry)                          //jnb short loc_1B879
       goto loc_1B879;
     if (memory(_ds, 0x40AF) != 0x00)            //jnz short loc_1B82A
       goto loc_1B82A;
@@ -7764,7 +7818,7 @@ loc_1B869:                                      //loc_1B869:
     _push(_cx);                                 //push cx
     sub_1B96E();                                //call sub_1B96E
     _cx = _pop();                               //pop cx
-    if (_FIXME_)                                //jnb short loc_1B872
+    if (!_flags.carry)                          //jnb short loc_1B872
       goto loc_1B872;
     if (--_cx)                                  //loop loc_1B832
       goto loc_1B832;
@@ -7788,7 +7842,7 @@ loc_1B896:                                      //loc_1B896:
 loc_1B899:                                      //loc_1B899:
     memory16(_ds, 0x40A8) = _ax;                //mov ds:40A8h, ax
     sub_1B96E();                                //call sub_1B96E
-    if (_FIXME_)                                //jnb short loc_1B8A2
+    if (!_flags.carry)                          //jnb short loc_1B8A2
       goto loc_1B8A2;
     return;                                     //retn
 loc_1B8A2:                                      //loc_1B8A2:
@@ -7926,8 +7980,9 @@ void sub_1B9E0()
     _dl = memory(_ds, 0x327F);                  //mov dl, ds:327Fh
     _si = 0x0010;                               //mov si, 10h
     _bx = memory16(_ds, 0x579);                 //mov bx, ds:579h
-    _bx -= 0x0008;                              //sub bx, 8
-    if (_FIXME_)                                //jnb short loc_1B9F5
+    _flags.carry = _bx < 0x0008;                //sub bx, 8
+    _bx -= 0x0008;
+    if (!_flags.carry)                          //jnb short loc_1B9F5
       goto loc_1B9F5;
     _bx = 0;                                    //sub bx, bx
 loc_1B9F5:                                      //loc_1B9F5:
@@ -7966,8 +8021,9 @@ loc_1BA30:                                      //loc_1BA30:
     if (_al != memory(_ds, 0x57B))              //jnz short loc_1BA8D
       goto loc_1BA8D;
     _ax = memory16(_ds, _bx + 17377);           //mov ax, [bx+43E1h]
-    _ax = _ax - memory16(_ds, 0x579);           //sub ax, ds:579h
-    if (_FIXME_)                                //jnb short loc_1BA52
+    _flags.carry = _ax < memory16(_ds, 0x579);  //sub ax, ds:579h
+    _ax = _ax - memory16(_ds, 0x579);
+    if (!_flags.carry)                          //jnb short loc_1BA52
       goto loc_1BA52;
     _ax = (~_ax);                               //not ax
 loc_1BA52:                                      //loc_1BA52:
@@ -8076,7 +8132,7 @@ void sub_1BB07()
     memory(_ds, 0x44D9) = 0x01;                 //mov byte ptr ds:44D9h, 1
 loc_1BB32:                                      //loc_1BB32:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_1BB32
+    if (_flags.zero)                            //jz short loc_1BB32
       goto loc_1BB32;
     if (memory(_ds, 0x44BD) == 0x00)            //jz short loc_1BB42
       goto loc_1BB42;
@@ -8161,8 +8217,9 @@ loc_1BBE6:                                      //loc_1BBE6:
     _ax = _si;                                  //mov ax, si
     _bl <<= 1;                                  //shl bl, 1
     _dh = 0xff;                                 //mov dh, 0FFh
-    _ax = _ax - memory16(_ds, _bx + 17537);     //sub ax, [bx+4481h]
-    if (_FIXME_)                                //jnb short loc_1BC06
+    _flags.carry = _ax < memory16(_ds, _bx + 17537);//sub ax, [bx+4481h]
+    _ax = _ax - memory16(_ds, _bx + 17537);
+    if (!_flags.carry)                          //jnb short loc_1BC06
       goto loc_1BC06;
     _ax = (~_ax);                               //not ax
     _dh = 0x01;                                 //mov dh, 1
@@ -8234,8 +8291,9 @@ loc_1BC9D:                                      //loc_1BC9D:
     _cx = 0x0126;                               //mov cx, 126h
     goto loc_1BCCC;                             //jmp short loc_1BCCC
 loc_1BCC5:                                      //loc_1BCC5:
-    _cx -= 0x0008;                              //sub cx, 8
-    if (_FIXME_)                                //jnb short loc_1BCCC
+    _flags.carry = _cx < 0x0008;                //sub cx, 8
+    _cx -= 0x0008;
+    if (!_flags.carry)                          //jnb short loc_1BCCC
       goto loc_1BCCC;
     _cx = 0;                                    //sub cx, cx
 loc_1BCCC:                                      //loc_1BCCC:
@@ -8243,7 +8301,7 @@ loc_1BCCC:                                      //loc_1BCCC:
     memory16(_ds, 0x43DC) = _ax;                //mov ds:43DCh, ax
 loc_1BCD2:                                      //loc_1BCD2:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_1BCD2
+    if (_flags.zero)                            //jz short loc_1BCD2
       goto loc_1BCD2;
     sub_1BD33();                                //call sub_1BD33
     if (memory(_ds, 0x44D5) == 0x00)            //jz short loc_1BD2F
@@ -8414,7 +8472,7 @@ loc_1BE68:                                      //loc_1BE68:
 loc_1BE6C:                                      //loc_1BE6C:
     sub_1C1FD();                                //call sub_1C1FD
     sub_1C25D();                                //call sub_1C25D
-    if (_FIXME_)                                //jnb short loc_1BE75
+    if (!_flags.carry)                          //jnb short loc_1BE75
       goto loc_1BE75;
 locret_1BE74:                                   //locret_1BE74:
     return;                                     //retn
@@ -8444,7 +8502,7 @@ loc_1BEB4:                                      //loc_1BEB4:
     memory(_ds, 0x454A) = 0x00;                 //mov byte ptr ds:454Ah, 0
 loc_1BEBC:                                      //loc_1BEBC:
     sub_1C000();                                //call sub_1C000
-    if (_FIXME_)                                //jnb short loc_1BEC9
+    if (!_flags.carry)                          //jnb short loc_1BEC9
       goto loc_1BEC9;
     _bx = memory16(_ds, 0x45B6);                //mov bx, ds:45B6h
     sub_1C1EB();                                //call sub_1C1EB
@@ -8530,8 +8588,9 @@ loc_1BF76:                                      //loc_1BF76:
     memory(_ds, 0x4553) = 0x00;                 //mov byte ptr ds:4553h, 0
     goto loc_1BFA8;                             //jmp short loc_1BFA8
 loc_1BF90:                                      //loc_1BF90:
-    _ax = _ax - memory16(_ds, 0x45BC);          //sub ax, ds:45BCh
-    if (_FIXME_)                                //jb short loc_1BF9B
+    _flags.carry = _ax < memory16(_ds, 0x45BC); //sub ax, ds:45BCh
+    _ax = _ax - memory16(_ds, 0x45BC);
+    if (_flags.carry)                           //jb short loc_1BF9B
       goto loc_1BF9B;
     if (_ax > 0x0024)                           //ja short loc_1BFA8
       goto loc_1BFA8;
@@ -8558,12 +8617,12 @@ loc_1BFD1:                                      //loc_1BFD1:
     sub_19EE0();                                //call sub_19EE0
     memory16(_ds, 0x45BA) = _ax;                //mov ds:45BAh, ax
     sub_1C25D();                                //call sub_1C25D
-    if (_FIXME_)                                //jnb short loc_1BFE5
+    if (!_flags.carry)                          //jnb short loc_1BFE5
       goto loc_1BFE5;
     return;                                     //retn
 loc_1BFE5:                                      //loc_1BFE5:
     sub_1C000();                                //call sub_1C000
-    if (_FIXME_)                                //jb short loc_1BFF8
+    if (_flags.carry)                           //jb short loc_1BFF8
       goto loc_1BFF8;
     sub_1C17A();                                //call sub_1C17A
     sub_1C140();                                //call sub_1C140
@@ -8871,16 +8930,18 @@ void sub_1C290()
       goto loc_1C2A0;
     _ax = 0x0116;                               //mov ax, 116h
 loc_1C2A0:                                      //loc_1C2A0:
-    _ax -= 0x0010;                              //sub ax, 10h
-    if (_FIXME_)                                //jnb short loc_1C2A7
+    _flags.carry = _ax < 0x0010;                //sub ax, 10h
+    _ax -= 0x0010;
+    if (!_flags.carry)                          //jnb short loc_1C2A7
       goto loc_1C2A7;
     _ax = 0;                                    //sub ax, ax
 loc_1C2A7:                                      //loc_1C2A7:
     _ax &= 0x0ff0;                              //and ax, 0FF0h
     memory16(_ds, 0x579) = _ax;                 //mov ds:579h, ax
     memory(_ds, 0x57B) = 0x14;                  //mov byte ptr ds:57Bh, 14h
-    _ax -= 0x0080;                              //sub ax, 80h
-    if (_FIXME_)                                //jnb short loc_1C2B9
+    _flags.carry = _ax < 0x0080;                //sub ax, 80h
+    _ax -= 0x0080;
+    if (!_flags.carry)                          //jnb short loc_1C2B9
       goto loc_1C2B9;
     _ax = (~_ax);                               //not ax
 loc_1C2B9:                                      //loc_1C2B9:
@@ -9070,8 +9131,9 @@ void sub_1C45A()
     memory(_ds, 0x4D6E) += 1;                   //inc byte ptr ds:4D6Eh
     goto loc_1C486;                             //jmp short loc_1C486
 loc_1C47A:                                      //loc_1C47A:
-    _ax = _ax - memory16(_ds, 0x4D6A);          //sub ax, ds:4D6Ah
-    if (_FIXME_)                                //jnb short loc_1C486
+    _flags.carry = _ax < memory16(_ds, 0x4D6A); //sub ax, ds:4D6Ah
+    _ax = _ax - memory16(_ds, 0x4D6A);
+    if (!_flags.carry)                          //jnb short loc_1C486
       goto loc_1C486;
     _ax = 0;                                    //sub ax, ax
     memory(_ds, 0x4D6E) += 1;                   //inc byte ptr ds:4D6Eh
@@ -9090,8 +9152,9 @@ loc_1C48A:                                      //loc_1C48A:
     memory(_ds, 0x4D6E) += 1;                   //inc byte ptr ds:4D6Eh
     goto loc_1C4B6;                             //jmp short loc_1C4B6
 loc_1C4AA:                                      //loc_1C4AA:
-    _ax = _ax - memory16(_ds, 0x4D6C);          //sub ax, ds:4D6Ch
-    if (_FIXME_)                                //jnb short loc_1C4B6
+    _flags.carry = _ax < memory16(_ds, 0x4D6C); //sub ax, ds:4D6Ch
+    _ax = _ax - memory16(_ds, 0x4D6C);
+    if (!_flags.carry)                          //jnb short loc_1C4B6
       goto loc_1C4B6;
     _ax = 0;                                    //sub ax, ax
     memory(_ds, 0x4D6E) += 1;                   //inc byte ptr ds:4D6Eh
@@ -9943,8 +10006,9 @@ void sub_1CC4C()
       goto locret_1CC64;
     sub_185E7();                                //call sub_185E7
     _bx = memory16(_ds, 0x5A16);                //mov bx, ds:5A16h
-    _bx -= _ax;                                 //sub bx, ax
-    if (_FIXME_)                                //jb short loc_1CC65
+    _flags.carry = _bx < _ax;                   //sub bx, ax
+    _bx -= _ax;
+    if (_flags.carry)                           //jb short loc_1CC65
       goto loc_1CC65;
     if (_bx > 0x0260)                           //ja short loc_1CC65
       goto loc_1CC65;
@@ -10180,8 +10244,9 @@ loc_1CE3D:                                      //loc_1CE3D:
     sub_19FCD();                                //call sub_19FCD
 loc_1CE66:                                      //loc_1CE66:
     _bx = memory16(_ds, 0x5F60);                //mov bx, ds:5F60h
-    _bx -= 0x0008;                              //sub bx, 8
-    if (_FIXME_)                                //jb short loc_1CE81
+    _flags.carry = _bx < 0x0008;                //sub bx, 8
+    _bx -= 0x0008;
+    if (_flags.carry)                           //jb short loc_1CE81
       goto loc_1CE81;
     if (_bx >= 0x0006)                          //jnb short loc_1CE81
       goto loc_1CE81;
@@ -10371,7 +10436,7 @@ loc_1D048:                                      //loc_1D048:
     memory(_ds, 0x698) = _dl;                   //mov byte_10798, dl
 loc_1D04C:                                      //loc_1D04C:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short locret_1D05A
+    if (_flags.zero)                            //jz short locret_1D05A
       goto locret_1D05A;
     memory16(_ds, 0x572) = 0x0004;              //mov word_10672, 4
     sub_17B15();                                //call sub_17B15
@@ -10486,7 +10551,7 @@ loc_1D127:                                      //loc_1D127:
     goto loc_1D14C;                             //jmp short loc_1D14C
 loc_1D142:                                      //loc_1D142:
     sub_1D215();                                //call sub_1D215
-    if (_FIXME_)                                //jb short loc_1D118
+    if (_flags.carry)                           //jb short loc_1D118
       goto loc_1D118;
     memory(_ds, 0x69B) = 0x01;                  //mov byte ptr ds:69Bh, 1
 loc_1D14C:                                      //loc_1D14C:
@@ -10587,6 +10652,7 @@ void sub_1D1FD()
 
 void sub_1D215()
 {
+    _STOP_("Check carry in all return paths");
     _interrupt(17);                             //int 11h
     if (!(_ax & 0x1000))                        //jz short loc_1D226
       goto loc_1D226;
@@ -10649,7 +10715,7 @@ void sub_1D270()
     _es = _ax;                                  //mov es, ax
 loc_1D288:                                      //loc_1D288:
     sub_18608();                                //call sub_18608
-    if (_FIXME_)                                //jz short loc_1D288
+    if (_flags.zero)                            //jz short loc_1D288
       goto loc_1D288;
     _si = 0x000e;                               //mov si, 0Eh
     _di = memory16(_ds, 0x6F24);                //mov di, ds:6F24h
@@ -10725,7 +10791,7 @@ void sub_1D336()
 loc_1D341:                                      //loc_1D341:
     memory16(_ds, 0x70EE) = _dx;                //mov ds:70EEh, dx
     sub_1D4D6();                                //call sub_1D4D6
-    if (_FIXME_)                                //jnb short loc_1D359
+    if (!_flags.carry)                          //jnb short loc_1D359
       goto loc_1D359;
     sub_18413();                                //call sub_18413
     sub_1D45B();                                //call sub_1D45B
@@ -10785,8 +10851,9 @@ loc_1D3DB:                                      //loc_1D3DB:
       goto loc_1D404;
     if (memory(_ds, 0x70F6) == 0x01)            //jz short loc_1D3F7
       goto loc_1D3F7;
-    memory16(_ds, 0x70F3) -= 0x0005;            //sub word ptr ds:70F3h, 5
-    if (_FIXME_)                                //jb short loc_1D404
+    _flags.carry = memory16(_ds, 0x70F3) < 0x0005;//sub word ptr ds:70F3h, 5
+    memory16(_ds, 0x70F3) -= 0x0005;
+    if (_flags.carry)                           //jb short loc_1D404
       goto loc_1D404;
     goto loc_1D40D;                             //jmp short loc_1D40D
 loc_1D3F7:                                      //loc_1D3F7:
@@ -10803,7 +10870,7 @@ loc_1D40D:                                      //loc_1D40D:
     sub_19EE0();                                //call sub_19EE0
     memory16(_ds, 0x70FA) = _ax;                //mov ds:70FAh, ax
     sub_1D4D6();                                //call sub_1D4D6
-    if (_FIXME_)                                //jb short loc_1D404
+    if (_flags.carry)                           //jb short loc_1D404
       goto loc_1D404;
     sub_1D475();                                //call sub_1D475
     sub_1D45B();                                //call sub_1D45B
@@ -10863,8 +10930,9 @@ loc_1D48B:                                      //loc_1D48B:
     _ax = memory16(_ds, 0x70F3);                //mov ax, ds:70F3h
     _cl = 0x04;                                 //mov cl, 4
     _ax >>= _cl;                                //shr ax, cl
-    _ax -= 0x0002;                              //sub ax, 2
-    if (_FIXME_)                                //jb short locret_1D48A
+    _flags.carry = _ax < 0x0002;                //sub ax, 2
+    _ax -= 0x0002;
+    if (_flags.carry)                           //jb short locret_1D48A
       goto locret_1D48A;
     if (_ax >= 0x0010)                          //jnb short locret_1D48A
       goto locret_1D48A;
@@ -10924,7 +10992,6 @@ locret_1D51A:                                   //locret_1D51A:
 
 
 // imports
-void _STOP_("sub_18568() { _ASSERT(0); }
 void loc_17490() { _ASSERT(0); }
 void loc_174DA() { _ASSERT(0); }
 void loc_1752E() { _ASSERT(0); }

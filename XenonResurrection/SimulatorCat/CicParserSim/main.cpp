@@ -598,14 +598,19 @@ void memoryVideoOr16(WORD seg, WORD ofs, WORD x)
 
 WORD& memory16(WORD segment, WORD offset)
 {
-    
+    if (offset == 0x55F)
+    {
+        int f =9;
+    }
+    _ASSERT(segment < 0xa000);
     _ASSERT(offset >= 0x0 && segment*16 +offset < sizeof(data));
     return *(WORD*)(data +segment*16 +offset);
 }
 
 BYTE& memory(WORD segment, WORD offset)
 {
-   
+    _ASSERT(segment < 0xa000);
+
     _ASSERT(offset >= 0x0 && segment*16 +offset < sizeof(data));
     return *(data +segment*16+ offset);
 }

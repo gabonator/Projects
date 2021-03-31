@@ -57,6 +57,7 @@ public:
     
     vector<segmentInfo_t> mSegments;
     vector<pair<string, string>> mFuncDescription;
+    vector<pair<string, string>> mFuncStop;
     set<string> mFuncGlobalExit;
     set<string> mFuncVideoEs;
     set<string> mFuncVideoDs;
@@ -111,6 +112,18 @@ public:
     bool isReturningZero(const string& fname)
     {
         return mFuncReturnZero.find(fname) != mFuncReturnZero.end();
+    }
+    string shouldStop(const string& fname)
+    {
+        for (auto iter = mFuncStop.begin(); iter != mFuncStop.end(); iter++)
+            if (iter->first == fname)
+                return iter->second;
+        return "";
+//
+//        auto p = mFuncStop.find(fname);
+//        if (p!=mFuncReturnZero.end())
+//            return *p;
+//        return "";
     }
     int fixPtr(int ofs)
     {
@@ -446,7 +459,6 @@ bool doExport(ostream& output, std::vector<string>& flist)
                     line = ss.str();
                 }
             }
-
         }
                 
         if (usingCs)
@@ -474,10 +486,13 @@ bool doExport(ostream& output, std::vector<string>& flist)
         }
 
         output << "void " << testLabel << "()";
+        string stop = custom.shouldStop(testLabel);
         string comment = custom.GetFunctionDesc(testLabel);
         if (!comment.empty())
             output << "  // " << comment;
         output << endl << "{" << endl;
+        if (!stop.empty())
+            output << "    _STOP(\"" << stop << "\");" << endl;
         for (int i=0; i<outLines.size(); i++)
             output << outLines[i] << endl;
         output << "}" << endl << endl;
@@ -544,6 +559,14 @@ void doConfig(const string& jsonFile)
                 custom.mFuncReturnCarry.insert(funcName);
             if (string(attrs["return"].GetString()) == "zero")
                 custom.mFuncReturnZero.insert(funcName);
+            
+            string stop = string(attrs["stop"].GetString());
+            if (!stop.empty())
+                custom.mFuncStop.emplace_back(funcName, stop);
+            
+            string comment = string(attrs["comment"].GetString());
+            if (!comment.empty())
+                custom.mFuncDescription.emplace_back(funcName, comment);
         });
     }
     if (json["defaults"])
@@ -588,7 +611,7 @@ int main(int argc, const char * argv[])
     // TEST:
     //custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
 
-    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputGoose/cico.cfg"};
+    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cico.cfg"};
 
     for (auto it = custom.mArguments.begin(); it != custom.mArguments.end(); )
     {

@@ -445,8 +445,8 @@ public:
 		case CIZeroArgOp::_std: m_strOperation = "_flags.direction = true"; break;
 		case CIZeroArgOp::clc: m_strOperation = "_flags.carry = false"; break;
 		case CIZeroArgOp::stc: m_strOperation = "_flags.carry = true"; break;
-		case CIZeroArgOp::lahf: m_strOperation = "_ah = flags.toByte()"; break;
-		case CIZeroArgOp::sahf: m_strOperation = "_flags.fromByte(_ah)"; break;
+		case CIZeroArgOp::lahf: m_strOperation = "_ah = _reg.flags.toByte()"; break;
+		case CIZeroArgOp::sahf: m_strOperation = "_reg.flags.fromByte(_ah)"; break;
         case CIZeroArgOp::xlat: m_strOperation = "_xlat()"; break;
 
 		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
@@ -864,7 +864,12 @@ public:
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
             case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0"; break; // TODO: verify?
             case CIConditionalJump::js: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
-
+            case CIConditionalJump::jb:
+                    pAlu->m_ExportInsertion = CIAlu::Carry;
+                    m_strCondition = "_flags.carry"; break;
+            case CIConditionalJump::jnb:
+                    pAlu->m_ExportInsertion = CIAlu::Carry;
+                    m_strCondition = "!_flags.carry"; break;
 			default:
                     m_strCondition = "_FIXME_";
 				//_ASSERT(0);

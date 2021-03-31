@@ -397,11 +397,21 @@ class CIMFlow : public CInstructionMatcher
 			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::Default);
 		}
 
+        if ( CUtils::match("^call\\s+near\\s+ptr\\s+(sub_\\w+)$", strLine, arrMatches) )
+        {
+            return make_shared<CICall>(CLabel(arrMatches[0]), CICall::Default);
+        }
+
 		if ( CUtils::match("^call\\s+near\\s+ptr\\s+(\\w+)$", strLine, arrMatches) )
 		{
 			return make_shared<CICall>(CLabel(arrMatches[0]), CICall::NearPtr);
 		}
         
+        if ( CUtils::match("^call near ptr (sub_.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CICall>(CLabel(arrMatches[0]), CICall::Default);
+        }
+
         if ( CUtils::match("^call near ptr.*$", strLine, arrMatches) )
         {
             return make_shared<CIStop>();

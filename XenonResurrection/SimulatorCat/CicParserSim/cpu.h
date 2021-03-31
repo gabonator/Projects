@@ -508,6 +508,12 @@ void _popf()
 
 typedef MemData MemAuto;
 
+void _imul(BYTE w)
+{
+    int v = (char)w * (char)_al;
+    _ax = v & 0xffff;
+}
+
 void _imul(WORD w)
 {
     int v = (short)w * (short)_ax;
