@@ -674,6 +674,7 @@ loc_176A8:                                      //loc_176A8:
 
 void sub_176D0()
 {
+    _STOP_("fix _rep_movsb<MemVideo, MemVideo, DirBoth>, loc_1784B: memoryVideoOr");
     memory(_ds, 0x531) -= 1;                    //dec byte_10631
     if (memory(_ds, 0x531) == 0)                //jz short loc_176D7
       goto loc_176D7;
@@ -1634,7 +1635,7 @@ loc_17FFA:                                      //loc_17FFA:
     memory16(_ds, 0x565) = _bx;                 //mov ds:565h, bx
     _ah = _bl;                                  //mov ah, bl
     _ah <<= 1;                                  //shl ah, 1
-    _imul(_ah);                                 //mul ah
+    _mul(_ah);                                  //mul ah
     _ax = _ax + memory16(_ds, 0x569);           //add ax, ds:569h
     memory16(_ds, 0x55D) = _ax;                 //mov ds:55Dh, ax
     goto loc_1804F;                             //jmp short loc_1804F
@@ -2000,7 +2001,7 @@ void sub_18354()
     memory(_ds, 0x583) = 0x00;                  //mov byte ptr ds:583h, 0
 }
 
-void sub_18375()
+void sub_18375()  // Draw cat
 {
     _ax = 0xb800;                               //mov ax, 0B800h
     _es = _ax;                                  //mov es, ax
@@ -3031,20 +3032,20 @@ loc_18CCA:                                      //loc_18CCA:
     _ax += 0x15e0;                              //add ax, 15E0h
     _si = _ax;                                  //mov si, ax
     _cx = 0x0004;                               //mov cx, 4
-    _rep_movsw<MemData, MemData, DirForward>(); //rep movsw
+    _rep_movsw<MemVideo, MemData, DirForward>();
     return;                                     //retn
 loc_18D02:                                      //loc_18D02:
     _ax = 0;                                    //sub ax, ax
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     return;                                     //retn
 loc_18D07:                                      //loc_18D07:
     _al = memory(_ds, 0x166B);                  //mov al, ds:166Bh
     _al = _al - memory(_ds, 0x1668);            //sub al, ds:1668h
     _ah = 0x0a;                                 //mov ah, 0Ah
-    _imul(_ah);                                 //mul ah
+    _mul(_ah);                                  //mul ah
     _ax += 0x2681;                              //add ax, 2681h
     _si = _ax;                                  //mov si, ax
-    _rep_movsw<MemData, MemData, DirForward>(); //rep movsw
+    _rep_movsw<MemVideo, MemData, DirForward>();
 }
 
 void sub_18D1A()
@@ -3232,7 +3233,7 @@ loc_18ED0:                                      //loc_18ED0:
     _cx >>= 1;                                  //shr cx, 1
     _cx >>= 1;                                  //shr cx, 1
     _cx >>= 1;                                  //shr cx, 1
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _cx = memory16(_ds, 0x1835);                //mov cx, ds:1835h
     _cx >>= 1;                                  //shr cx, 1
     _cx >>= 1;                                  //shr cx, 1
@@ -4425,10 +4426,10 @@ void sub_199C0()
     _di = 0;                                    //sub di, di
     _ax = 0xaaaa;                               //mov ax, 0AAAAh
     _cx = 0x0050;                               //mov cx, 50h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = 0x2000;                               //mov di, 2000h
     _cx = 0x0050;                               //mov cx, 50h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     memory16(_ds, 0x2654) = 0x0000;             //mov word ptr ds:2654h, 0
 loc_199E5:                                      //loc_199E5:
     sub_1A02D();                                //call sub_1A02D
@@ -4630,11 +4631,11 @@ void sub_19BD0()
     _di = memory16(_ds, 0x267E);                //mov di, ds:267Eh
     _di += 0x0284;                              //add di, 284h
     _cx = 0x0024;                               //mov cx, 24h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = memory16(_ds, 0x267E);                //mov di, ds:267Eh
     _di += 0x1184;                              //add di, 1184h
     _cx = 0x0024;                               //mov cx, 24h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = memory16(_ds, 0x267E);                //mov di, ds:267Eh
     _di += 0x2284;                              //add di, 2284h
     _al = 0x2a;                                 //mov al, 2Ah
@@ -4649,7 +4650,7 @@ void sub_19C11()
 {
     _cx = 0x005f;                               //mov cx, 5Fh
 loc_19C14:                                      //loc_19C14:
-    memory(_es, _di) = _al;                     //mov es:[di], al
+    memoryVideoSet(_es, _di, _al);              //mov es:[di], al
     _di = _di ^ 0x2000;                         //xor di, 2000h
     if (_di & 0x2000)                           //jnz short loc_19C24
       goto loc_19C24;
@@ -4667,10 +4668,10 @@ void sub_19C30()
     _di = 0;                                    //sub di, di
     _ax = 0xaaaa;                               //mov ax, 0AAAAh
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = 0x2000;                               //mov di, 2000h
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     sub_19DCE();                                //call sub_19DCE
     _bx = 0x28a0;                               //mov bx, 28A0h
     _ax = 0;                                    //sub ax, ax
@@ -4689,10 +4690,10 @@ void sub_19C60()
     _di = 0;                                    //sub di, di
     _ax = 0xaaaa;                               //mov ax, 0AAAAh
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = 0x2000;                               //mov di, 2000h
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     sub_19DCE();                                //call sub_19DCE
     _bx = 0x28a0;                               //mov bx, 28A0h
     _ax = 0;                                    //sub ax, ax
@@ -4801,7 +4802,7 @@ loc_19D69:                                      //loc_19D69:
     memory16(_ds, 0x2ACE) = _cx;                //mov ds:2ACEh, cx
 loc_19D7B:                                      //loc_19D7B:
     _cx = memory16(_ds, 0x2ACE);                //mov cx, ds:2ACEh
-    _rep_movsb<MemData, MemData, DirForward>(); //rep movsb
+    _rep_movsb<MemVideo, MemData, DirForward>();
     _di = _di - memory16(_ds, 0x2ACE);          //sub di, ds:2ACEh
     _di = _di ^ 0x2000;                         //xor di, 2000h
     if (_di & 0x2000)                           //jnz short loc_19D92
@@ -4865,10 +4866,10 @@ loc_19E02:                                      //loc_19E02:
     _ax = 0x5655;                               //mov ax, 5655h
     _cx = 0x0500;                               //mov cx, 500h
     _flags.direction = false;                   //cld
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = 0x3180;                               //mov di, 3180h
     _cx = 0x0500;                               //mov cx, 500h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     memory16(_ds, 0x2AC2) = 0x2944;             //mov word ptr ds:2AC2h, 2944h
 loc_19E1C:                                      //loc_19E1C:
     memory(_ds, 0x2AC4) = 0x09;                 //mov byte ptr ds:2AC4h, 9
@@ -4949,7 +4950,7 @@ void sub_19EE0()
 {
     _al = _dl;                                  //mov al, dl
     _ah = 0x28;                                 //mov ah, 28h
-    _imul(_ah);                                 //mul ah
+    _mul(_ah);                                  //mul ah
     if (!(_dl & 0x01))                          //jz short loc_19EEE
       goto loc_19EEE;
     _ax += 0x1fd8;                              //add ax, 1FD8h
@@ -4973,7 +4974,7 @@ loc_19F0A:                                      //loc_19F0A:
     _cl = memory(_ds, 0x2AE0);                  //mov cl, ds:2AE0h
 loc_19F0E:                                      //loc_19F0E:
     _dx = 0x30c0;                               //mov dx, 30C0h
-    _bx = memory16(_es, _di);                   //mov bx, es:[di]
+    _bx = memoryVideoGet16(_es, _di);           //mov bx, es:[di]
     memory16(_ds, _bp + 0) = _bx;               //mov ds:[bp+0], bx
     _lodsw<MemData, DirForward>();              //lodsw
     memory16(_ds, 0x2AE3) = _ax;                //mov ds:2AE3h, ax
@@ -4999,7 +5000,7 @@ loc_19F34:                                      //loc_19F34:
       goto loc_19F1C;
     _ax &= _bx;                                 //and ax, bx
     _ax = _ax | memory16(_ds, 0x2AE3);          //or ax, ds:2AE3h
-    _stosw<MemData, DirForward>();              //stosw
+    _stosw<MemVideo, DirForward>();
     _bp += 0x0002;                              //add bp, 2
     if (--_cx)                                  //loop loc_19F0E
       goto loc_19F0E;
@@ -5015,7 +5016,7 @@ loc_19F5E:                                      //loc_19F5E:
       goto loc_19F0A;
 }
 
-void sub_19F65()
+void sub_19F65()  // Draw cat
 {
     _flags.direction = false;                   //cld
     memory(_ds, 0x2AE0) = _cl;                  //mov ds:2AE0h, cl
@@ -5093,7 +5094,7 @@ void sub_19FFA()
     _ch = 0;                                    //sub ch, ch
 loc_1A007:                                      //loc_1A007:
     _cl = memory(_es, 0x2AE0);                  //mov cl, es:2AE0h
-    _rep_movsw<MemData, MemData, DirForward>(); //rep movsw
+    _rep_movsw<MemData, MemVideo, DirForward>();
     _si = _si - memory16(_es, 0x2AE0);          //sub si, es:2AE0h
     _si = _si - memory16(_es, 0x2AE0);          //sub si, es:2AE0h
     _si = _si ^ 0x2000;                         //xor si, 2000h
@@ -5729,11 +5730,11 @@ loc_1A57B:                                      //loc_1A57B:
 loc_1A5A0:                                      //loc_1A5A0:
     _cx = memory16(_ds, 0x3287);                //mov cx, ds:3287h
 loc_1A5A4:                                      //loc_1A5A4:
-    _bx = memory16(_es, _di);                   //mov bx, es:[di]
+    _bx = memoryVideoGet16(_es, _di);           //mov bx, es:[di]
     memory16(_ds, _bp + 0) = _bx;               //mov ds:[bp+0], bx
     _lodsw<MemData, DirForward>();              //lodsw
     _ax |= _bx;                                 //or ax, bx
-    _stosw<MemData, DirForward>();              //stosw
+    _stosw<MemVideo, DirForward>();
     _bp += 0x0002;                              //add bp, 2
     if (--_cx)                                  //loop loc_1A5A4
       goto loc_1A5A4;
@@ -5847,7 +5848,7 @@ locret_1A6AE:                                   //locret_1A6AE:
 void sub_1A6AF()
 {
     _ah = 0x0a;                                 //mov ah, 0Ah
-    _imul(_ah);                                 //mul ah
+    _mul(_ah);                                  //mul ah
     _ax += 0x32b8;                              //add ax, 32B8h
     _si = _ax;                                  //mov si, ax
     _di = _bx;                                  //mov di, bx
@@ -6386,7 +6387,7 @@ loc_1AB9E:                                      //loc_1AB9E:
     _al &= 0xf0;                                //and al, 0F0h
     memory(_ds, 0x369E) = _al;                  //mov ds:369Eh, al
     _ah = 0x28;                                 //mov ah, 28h
-    _imul(_ah);                                 //mul ah
+    _mul(_ah);                                  //mul ah
     memory(_ds, 0x369F) = 0x01;                 //mov byte ptr ds:369Fh, 1
     sub_1ACDC();                                //call sub_1ACDC
     sub_1AC6A();                                //call sub_1AC6A
@@ -8866,10 +8867,10 @@ void sub_1C20F()
 loc_1C217:                                      //loc_1C217:
     _cx = 0x0003;                               //mov cx, 3
 loc_1C21A:                                      //loc_1C21A:
-    _bx = memory16(_es, _di);                   //mov bx, es:[di]
+    _bx = memoryVideoGet16(_es, _di);           //mov bx, es:[di]
     _lodsw<MemData, DirForward>();              //lodsw
     _ax |= _bx;                                 //or ax, bx
-    _stosw<MemData, DirForward>();              //stosw
+    _stosw<MemVideo, DirForward>();
     if (--_cx)                                  //loop loc_1C21A
       goto loc_1C21A;
     _di -= 0x0006;                              //sub di, 6
@@ -8892,7 +8893,7 @@ void sub_1C238()
     _ax = 0x5555;                               //mov ax, 5555h
 loc_1C243:                                      //loc_1C243:
     _cx = 0x0003;                               //mov cx, 3
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di -= 0x0006;                              //sub di, 6
     _di = _di ^ 0x2000;                         //xor di, 2000h
     if (_di & 0x2000)                           //jnz short loc_1C258
@@ -10644,10 +10645,10 @@ void sub_1D1FD()
     _ax = 0;                                    //sub ax, ax
     _di = _ax;                                  //mov di, ax
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
     _di = 0x2000;                               //mov di, 2000h
     _cx = 0x0fa0;                               //mov cx, 0FA0h
-    _rep_stosw<MemData, DirForward>();          //rep stosw
+    _rep_stosw<MemVideo, DirForward>();
 }
 
 void sub_1D215()

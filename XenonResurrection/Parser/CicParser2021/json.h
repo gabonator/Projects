@@ -444,6 +444,13 @@ private:
     
     bool TraverseObject(CSubstring& s, TKeyValueCallback fCallback)
     {
+        if (s.Length() > 2 && s[0] == '/' && s[1] == '/')
+        {
+            while (s.Length() && s[0] != '\n')
+                s++;
+            s++;
+        }
+
         while (s.Length() && (s[0] == ' ' || s[0] == ',' || s[0] == '\r' || s[0] == '\n'))
             s++;
         if (!s || s[0] != '{')

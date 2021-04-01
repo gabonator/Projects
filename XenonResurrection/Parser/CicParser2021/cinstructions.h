@@ -250,7 +250,7 @@ public:
                 // TODO: fix r16, overflow flag
 			//m_strDst = CValue("ax").ToC();
 			//m_strSrc = op1 + " * " + CValue("al").ToC();
-                m_strSrc = string("_imul(") + op1 + ");";
+                m_strSrc = string("_mul(") + op1 + ");";
                 
                 if (pAlu->m_ExportInsertion == CIAlu::None) {}
                     else
@@ -280,6 +280,11 @@ public:
         case CIAlu::IDiv:
                 m_strSrc = "_idiv(" + op1 + ");";
                 break;
+            case CIAlu::IMul:
+                _ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
+
+                    m_strSrc = "_idiv(" + op1 + ");";
+                    break;
 
 		default:
 			_ASSERT(0);
@@ -847,8 +852,9 @@ public:
 			{
 			case CIConditionalJump::jz: m_strCondition = "$a == 0"; break;
 			case CIConditionalJump::jnz: m_strCondition = "$a != 0"; break;
-			case CIConditionalJump::jb: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
-            case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0"; break; // TODO: verify?
+//			case CIConditionalJump::jb: m_strCondition= "($type)$a < 0"; break; // TODO: verify?
+//                case CIConditionalJump::jnb: m_strCondition = "_FIXME_"; break; //($type)$a >= 0 /* CHECK-857-jnb */"; break; // TODO: verify?
+            case CIConditionalJump::jns: m_strCondition = "($type)$a >= 0 /* CHECK-857-jns */"; break; // TODO: verify?
             case CIConditionalJump::js: m_strCondition = "($type)$a < 0"; break; // TODO: verify?
 			default:
                     m_strCondition = "_FIXME_";

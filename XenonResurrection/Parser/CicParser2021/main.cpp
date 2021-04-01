@@ -492,7 +492,7 @@ bool doExport(ostream& output, std::vector<string>& flist)
             output << "  // " << comment;
         output << endl << "{" << endl;
         if (!stop.empty())
-            output << "    _STOP(\"" << stop << "\");" << endl;
+            output << "    _STOP_(\"" << stop << "\");" << endl;
         for (int i=0; i<outLines.size(); i++)
             output << outLines[i] << endl;
         output << "}" << endl << endl;
@@ -604,14 +604,17 @@ int main(int argc, const char * argv[])
 {
     ofstream outputFile;
     ostream* output = &cout;
-        
+
+    std::cout << "Cicoparser by Gabriel Valky, 2021 (https://github.com/gabonator/Projects/tree/master/XenonResurrection/Parser)\n";
+
     for (int i=1; i<argc; i++)
         custom.mArguments.push_back(argv[i]);
     
     // TEST:
     //custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Parser/test/config.cfg"};
-
-    custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cico.cfg"};
+    //custom.mArguments = {"-config", "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cico.cfg"};
+    if (custom.mArguments.size() == 0)
+      std::cout << "No arguments provided, usage:\n  cicoparser -config config.cfg\n\n";
 
     for (auto it = custom.mArguments.begin(); it != custom.mArguments.end(); )
     {

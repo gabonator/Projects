@@ -64,8 +64,8 @@ public:
             
             serializer << i;
 			serializer << line;
-            
-			serializer << string(typeid(*m_arrCode[i]).name());
+                        CInstruction* instr = m_arrCode[i].get();
+			serializer << string(typeid(*instr).name());
 			m_arrCode[i]->Serialize(serializer);
 		}
 		f.close();
@@ -123,7 +123,7 @@ public:
 		while (!feof(f))
 		{
             if ((i%1000) == 0)
-                printf("line %d, ", i);
+                std::cout << "line " << i << ", " << std::flush;
             i++;
 			//printf("\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08%d", i++);
 

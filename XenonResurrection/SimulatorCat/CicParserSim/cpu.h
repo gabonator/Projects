@@ -508,9 +508,9 @@ void _popf()
 
 typedef MemData MemAuto;
 
-void _imul(BYTE w)
+void _mul(BYTE w)
 {
-    int v = (char)w * (char)_al;
+    int v = w * _al;
     _ax = v & 0xffff;
 }
 
