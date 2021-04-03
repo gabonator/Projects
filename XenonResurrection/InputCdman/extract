@@ -1,1 +1,0 @@
-dd skip=$((0x200)) count=$((33948-0x200)) if=CD-MAN.CDM of=cdman.data bs=1

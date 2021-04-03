@@ -307,8 +307,8 @@ void _interrupt(BYTE i)
         return;        
     }
     if (i == 0x21 && _ah == 0x09)
-    {
-        char text[128];
+    {/*
+        char text[256];
         int i;
         for (int i=0; i<120; i++)
         {
@@ -317,7 +317,7 @@ void _interrupt(BYTE i)
                 break;
         }
         text[i] = 0;
-        debugPrint(text);
+        debugPrint(text);*/
         return;        // print string
     }
     if (i == 0x12)
