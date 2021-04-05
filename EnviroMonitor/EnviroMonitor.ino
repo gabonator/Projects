@@ -326,7 +326,7 @@ char* tohex(byte n)
 void setup() 
 {
   Serial.begin(9600);
-  Serial.print("Starting board\n"); 
+  Serial.print("\nStarting board " __FILE__ "\n"); 
   Serial.print("Built " __DATE__ " " __TIME__ "\n");
 
   Restart();
@@ -773,4 +773,3 @@ int OregonReport(EthernetClient& client)
   return nBytes;
 }
 #endif
-
