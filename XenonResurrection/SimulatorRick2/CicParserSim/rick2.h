@@ -1712,7 +1712,7 @@ loc_11252:                                      //loc_11252:
     _ax -= 0x0040;                              //sub ax, 40h
 loc_11270:                                      //loc_11270:
     _bx = 0x01a4;                               //mov bx, 1A4h
-    _imul(_bx);                                  //mul bx
+    _mul(_bx);                                  //mul bx
     _bx = memory16(_ds, _si + 2);               //mov bx, [si+2]
     _bx += 0x0020;                              //add bx, 20h
     _bx &= 0x0006;                              //and bx, 6

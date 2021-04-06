@@ -38,6 +38,13 @@ WORD memoryBiosGet16(WORD seg, WORD ofs)
     return 0;
 }
 
+#define _FIXME_ _fixme_()
+bool _fixme_()
+{
+    _ASSERT(0);
+    return false;
+}
+
 #include "indirect.h"
 #include "cdman.h"
 
@@ -107,7 +114,7 @@ void _interrupt(BYTE i)
         }
         filename[p] = 0;
         //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
-        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/";
+        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCdman/res/";
         strcat(fullname, filename);
         for (int i=0; i<128 && fullname[i]; i++)
             if (fullname[i] == '\\')
@@ -679,10 +686,9 @@ void loadSegment(uint8_t* buffer, const char* suffix, int len)
     fread(buffer, len, 1, f);
     fclose(f);
 }
-extern int synccalls;
+
 void _sync()
 {
-    synccalls = 0;
     for (int y=0; y<350; y++)
       for (int x=0; x<640; x++)
     {
@@ -817,7 +823,7 @@ int main(int argc, const char * argv[]) {
     
     
     memset(datasegment, 0, sizeof(datasegment));
-    loadSegment(datasegment, "cdman.data", 0x3ec0); //33436);
+    loadSegment(datasegment, "CD-MAN.data", 0x3ec0); //33436);
     mSdl.Init();
     while (1)
     {

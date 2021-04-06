@@ -24,7 +24,7 @@ void sub_17B46();
 void sub_17A68();
 void sub_17B14();
 
-void _indirectCall(WORD seg, WORD ptr)
+void _indirectCall(WORD ptr)
 {
     switch(ptr) // sub_ 13EC0 + ptr
     {

@@ -502,6 +502,18 @@ void _imul(WORD w)
 
 void _imul(BYTE w)
 {
-    int v = (char)w * (short)_ax;
+    int v = (char)w * (short)_ax;   //BUG!!!!!!!!
+    _ax = v & 0xffff;
+}
+
+void _mul(WORD w)
+{
+    int v = w * _ax;
+    _ax = v & 0xffff;
+    _dx = v >> 16;
+}
+void _mul(BYTE b)
+{
+    int v = b * _ax;
     _ax = v & 0xffff;
 }

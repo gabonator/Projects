@@ -441,3 +441,15 @@ void _stackReduce(int n)
     _sp += n;
     _ASSERT( _sp >= 0 && _sp < m_arrStack.size());
 }
+
+void _mul(WORD w)
+{
+    int v = w * _ax;
+    _ax = v & 0xffff;
+    _dx = v >> 16;
+}
+void _mul(BYTE b)
+{
+    int v = b * _ax;
+    _ax = v & 0xffff;
+}

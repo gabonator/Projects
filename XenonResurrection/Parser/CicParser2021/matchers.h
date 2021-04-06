@@ -300,14 +300,19 @@ class CIMFlow : public CInstructionMatcher
             return make_shared<CIStop>();
         }
 
-        if ( CUtils::match("^call word ptr \\[(.*)\\]$", strLine, arrMatches) )
+        if ( CUtils::match("^call (word ptr \\[.*\\])$", strLine, arrMatches) )
         {
             return make_shared<CIIndirectCall>(CIIndirectCall::WordPtr, CValue(arrMatches[0], CValue::ERegLength::r16));
         }
 
-        if ( CUtils::match("^call word ptr (ds:.*)$", strLine, arrMatches) )
+        if ( CUtils::match("^call (word ptr ds:.*)$", strLine, arrMatches) )
         {
             return make_shared<CIIndirectCall>(CIIndirectCall::WordPtr, CValue(arrMatches[0], CValue::ERegLength::r16));
+        }
+
+        if ( CUtils::match("^jmp (word ptr \\[.*\\])$", strLine, arrMatches) )
+        {
+            return make_shared<CIIndirectCall>(CIIndirectCall::WordPtr, CValue(arrMatches[0], CValue::ERegLength::r16), true);
         }
 
         // data - switch options, or internal variable

@@ -267,7 +267,14 @@ bool doExport(ostream& output, std::vector<string>& flist)
             shared_ptr<CIConditionalJump> pCond = dynamic_pointer_cast<CIConditionalJump>(arrFunction[j]);
             if (pCond)
             {
-                if (internalLabels.find(pCond->m_label) == internalLabels.end())
+//                if (pCond->m_label == testLabel)
+//                    pCond->m_eType = CIConditionalJump::
+//                if (pCond->m_label.find("sub_") != string::npos)
+//                {
+//                    //
+//                }
+//                else
+                    if (internalLabels.find(pCond->m_label) == internalLabels.end())
                 {
                     if (pCond->m_label != testLabel)
                         pCond->m_stop = true;

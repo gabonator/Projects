@@ -478,18 +478,19 @@ public:
         WordPtr,
     } m_type;
     CValue m_value;
+    bool m_jump;
 
 public:
     CIIndirectCall() : m_type(Undefined) {}
 
-    CIIndirectCall(EType type, CValue value) :
-      m_value(value), m_type(type)
+    CIIndirectCall(EType type, CValue value, bool jump = false) :
+      m_value(value), m_type(type), m_jump(jump)
     {
     }
 
     virtual void Serialize(CSerializer& s)
     {
-        s << m_value << _enum(m_type);
+        s << m_value << _enum(m_type) << m_jump;
     }
 };
 

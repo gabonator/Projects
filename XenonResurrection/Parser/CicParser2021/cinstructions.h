@@ -653,7 +653,8 @@ public:
 		Return,
 		ReturnStack,
 		Break,
-		Continue
+		Continue,
+        Entry
 	};
 
 	enum EConditionType {
@@ -1102,31 +1103,38 @@ public:
 		return strAux;
 	}
 
-	string Target()
+	string _Target()
 	{
 		switch (m_eLabelType)
 		{
 		case Label:
             if (m_strLabel.substr(0, 4) == "sub_")
             {
-                string label = m_strLabel;
-                CUtils::replace(label, "sub_", "loc_");
+                //string label = m_strLabel;
+                //CUtils::replace(label, "sub_", "loc_"); // ??? CHECK
+//                if (m_stop)
+//                    return "_STOP_(\"goto " + m_strLabel + "\")";
                 
-                if (m_stop)
-                    return "_STOP_(\"goto " + label + "\")";
-                else
-                    return "goto " + label;
+                return "{ " + m_strLabel + "(); return; }";
+//                else
+//                    return "goto " + label;
             }
             else
             {
-                if (m_stop)
-                    return "_STOP_(\"goto " + m_strLabel + "\")";
-                else
+//                if (m_stop)
+//                    return "_STOP_(\"goto " + m_strLabel + "\")";
+//                else
                     return "goto " + m_strLabel;
             }
 		case Return: return "return";
 		case Break: return "break";
 		case Continue: return "continue";
+        case Entry:
+            {
+                string label = m_strLabel;
+                CUtils::replace(label, "sub_", "loc_");
+                return "goto " + label;
+            }
         default: _ASSERT(0);
 		}
 		return "?";
@@ -1136,15 +1144,20 @@ public:
 	{
 		string strAux = GetCondition();
 
+        string target = _Target();
+        string suffix = target.back() == '}' ? "" : ";";
+        
 		if ( strAux == "true" )
         {
-//            if (m_stop)
-//                return string("_STOP_(\"") + Target() + "\");";
-//            else
-                return Target() + ";";
+            if (m_stop)
+                return string("_STOP_(\"") + target + "\");";
+            else
+                return target + suffix;
         }
-
-		return "if (" + strAux + ")\n  " + Target() + ";";
+        if (m_stop)
+            return "if (" + strAux + ")\n    " + string("_STOP_(\"") + target + "\");";
+        else
+            return "if (" + strAux + ")\n    " + target + suffix;
 	}
 
 	CLabel GetLabel()
@@ -1233,7 +1246,7 @@ public:
 	CCCall(shared_ptr<CICall> pCall, shared_ptr<CInstruction> pPrevious = nullptr)
 	{
         if (pCall->m_label == "di")
-            m_strCall = string("_indirectCall(_cs, _") + pCall->m_label + ")";
+            m_strCall = string("_indirectCall(_") + pCall->m_label + ")";
         else
             m_strCall = pCall->m_label + "()";
         
@@ -1268,19 +1281,25 @@ public:
 
 class CCIndirectCall : public CCInstruction
 {
-public:
+private:
     string m_strCall;
+    bool m_jump;
 
 public:
     CCIndirectCall(shared_ptr<CIIndirectCall> pCall)
     {
         _ASSERT(pCall->m_type == CIIndirectCall::WordPtr);
+        m_jump = pCall->m_jump;
         
-        m_strCall = string("_indirectCall(_ds, ") + pCall->m_value.ToC() + ")";
+        //CValue value("[" +  pCall->m_value.ToC() + "]", CValue::r16);
+        
+        m_strCall = string("_indirectCall(") + pCall->m_value.ToC() + ")";
     }
     
     virtual string ToString() override
     {
+        if (m_jump)
+            return "{" + m_strCall + "; return; }";
         return m_strCall + ";";
     }
 };
