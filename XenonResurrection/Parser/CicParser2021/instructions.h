@@ -414,6 +414,7 @@ public:
 	EType m_eType;
 	CLabel m_label;
     bool m_stop{false};
+    bool m_function{false};
 
 public:
 	CIConditionalJump() : m_label("") {}

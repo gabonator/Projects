@@ -79,11 +79,19 @@ extern reg_t _reg;
 WORD& memory16(WORD segment, WORD offset);
 BYTE& memory(WORD segment, WORD offset);
 
+void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
+void memoryVideoOr16(WORD seg, WORD ofs, WORD x);
+void memoryVideoOr(WORD seg, WORD ofs, BYTE x);
+WORD memoryVideoGet16(WORD seg, WORD ofs);
+WORD memoryBiosGet16(WORD seg, WORD ofs);
+
 void _push(WORD w);
 WORD _pop();
 void _interrupt(BYTE n);
 void _out(WORD, BYTE);
 void _out(WORD, WORD);
+
+void _indirectCall(WORD ptr);
 
 template <class SRC, class DIR> void _lodsb();
 template <class SRC, class DIR> void _lodsw();
@@ -99,6 +107,13 @@ template <class DST, class DIR> void _stosb();
 #define _ASSERT assert
 
 void _STOP_(const char*) { assert(0); }
+#define _FIXME_ _fixme_()
+bool _fixme_()
+{
+    _ASSERT(0);
+    return false;
+}
+
 
 
 void _xlat();
@@ -452,4 +467,14 @@ void _mul(BYTE b)
 {
     int v = b * _ax;
     _ax = v & 0xffff;
+}
+
+void _xlat()
+{
+    _al = memory(_ds, _bx+_al);
+}
+
+void _repne_scasw()
+{
+    _ASSERT(0);
 }

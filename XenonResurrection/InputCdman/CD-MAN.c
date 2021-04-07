@@ -3497,7 +3497,7 @@ void sub_15CC8()
     _al = 0x02;                                 //mov al, 2
     _interrupt(33);                             //int 21h
     if (!_flags.carry)                          //jnb short loc_15D3C
-        _STOP_("goto loc_15D3C");
+        { loc_15D3C(); return; }
     sub_15CB2();                                //call sub_15CB2
     memory(_ds, 0x26D) = _cl;                   //mov ds:26Dh, cl
     _lea(_di, _ds, 0x1A4E);                     //lea di, ds:1A4Eh
@@ -3900,7 +3900,7 @@ void sub_15FC4()
 loc_15FD0:                                      //loc_15FD0:
     sub_1826D();                                //call sub_1826D
     if (_ah > memory(_ds, 0x22A))               //ja short loc_1603E
-        _STOP_("goto loc_1603E");
+        { loc_1603E(); return; }
     memory(_ds, 0x106D) = 0x00;                 //mov byte ptr ds:106Dh, 0
     memory(_ds, 0x106E) = 0x01;                 //mov byte ptr ds:106Eh, 1
     memory(_ds, 0x106F) = 0x02;                 //mov byte ptr ds:106Fh, 2
@@ -5239,7 +5239,7 @@ loc_16CF7:                                      //loc_16CF7:
 loc_16D08:                                      //loc_16D08:
     memory16(_ds, 0x1E9) = _si;                 //mov ds:1E9h, si
     if (memory(_ds, 0x5A) != 0x00)              //jnz short loc_16D3D
-        _STOP_("goto loc_16D3D");
+        { loc_16D3D(); return; }
     _cx = 0x0018;                               //mov cx, 18h
     _STOP_("sp-trace-fail");                    //sub_16CCD endp_failed
     _STOP_("continues");                        //sub_16D16 proc near
@@ -5385,7 +5385,7 @@ loc_16E46:                                      //loc_16E46:
     _si += _bx;                                 //add si, bx
     memory16(_ds, 0x1E9) = _si;                 //mov ds:1E9h, si
     if (memory(_ds, 0x5A) != 0x00)              //jnz short loc_16E88
-        _STOP_("goto loc_16E88");
+        { loc_16E88(); return; }
     _cx = 0x0018;                               //mov cx, 18h
     _STOP_("sp-trace-fail");                    //sub_16E1B endp_failed
     _STOP_("continues");                        //sub_16E59 proc near
@@ -5552,8 +5552,8 @@ void sub_16FAB()
     _si -= _cx;                                 //sub si, cx
     _cx = 0x0018;                               //mov cx, 18h
 loc_16FBF:                                      //loc_16FBF:
-    _al = memory(_es, _si);                     //mov al, es:[si]
-    memory(_es, _di + 4) = _al;                 //mov es:[di+4], al
+    _al = memoryVideoGet(_es, _si);             //mov al, es:[si]
+    memoryVideoSet(_es, _di + 4, _al);          //mov es:[di+4], al
     _di += 0x0050;                              //add di, 50h
     _si += 0x0050;                              //add si, 50h
     if (--_cx)                                  //loop loc_16FBF
@@ -6305,7 +6305,7 @@ loc_176B5:                                      //loc_176B5:
         _STOP_("goto locret_176FB");
     _si = 0xd6a7;                               //mov si, 0D6A7h
     if (memory16(_ds, 0x3D3) != 0x0002)         //jnz short sub_176C7
-        _STOP_("{ sub_176C7(); return; }");
+        { sub_176C7(); return; }
     _si = 0xad50;                               //mov si, 0AD50h
     _STOP_("sp-trace-fail");                    //sub_1769B endp_failed
     _STOP_("continues");                        //sub_176C7 proc near
@@ -6560,7 +6560,7 @@ void sub_1787C()
 {
     sub_180E0();                                //call sub_180E0
     if (_ax == 0xffff)                          //jz short sub_17885
-        _STOP_("{ sub_17885(); return; }");
+        { sub_17885(); return; }
 }
 
 void sub_17885()
@@ -7199,35 +7199,35 @@ loc_17DE2:                                      //loc_17DE2:
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0304;                               //mov ax, 304h
     _out(_dx, _ax);                             //out dx, ax
-    _bh = memoryVideoGet(_es, _si);             //mov bh, es:[si]
+    _bh = memory(_es, _si);                     //mov bh, es:[si]
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0204;                               //mov ax, 204h
     _out(_dx, _ax);                             //out dx, ax
-    _bl = memoryVideoGet(_es, _si);             //mov bl, es:[si]
+    _bl = memory(_es, _si);                     //mov bl, es:[si]
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0104;                               //mov ax, 104h
     _out(_dx, _ax);                             //out dx, ax
-    _ch = memoryVideoGet(_es, _si);             //mov ch, es:[si]
+    _ch = memory(_es, _si);                     //mov ch, es:[si]
     _dx = 0x03ce;                               //mov dx, 3CEh
     _ax = 0x0004;                               //mov ax, 4
     _out(_dx, _ax);                             //out dx, ax
-    _cl = memoryVideoGet(_es, _si);             //mov cl, es:[si]
+    _cl = memory(_es, _si);                     //mov cl, es:[si]
     _ax = _cx;                                  //mov ax, cx
     _es = memory16(_ds, 0x26B);                 //mov es, word ptr ds:26Bh
     _cx = 0x0008;                               //mov cx, 8
 loc_17E18:                                      //loc_17E18:
     _flags.carry = !!(_bh & 0x80);              //shl bh, 1
     _bh <<= 1;
-    _rcl(memoryVideoGet(_es, _di), 1);          //rcl byte ptr es:[di], 1
+    _rcl(memory(_es, _di), 1);                  //rcl byte ptr es:[di], 1
     _flags.carry = !!(_bl & 0x80);              //shl bl, 1
     _bl <<= 1;
-    _rcl(memoryVideoGet(_es, _di), 1);          //rcl byte ptr es:[di], 1
+    _rcl(memory(_es, _di), 1);                  //rcl byte ptr es:[di], 1
     _flags.carry = !!(_ah & 0x80);              //shl ah, 1
     _ah <<= 1;
-    _rcl(memoryVideoGet(_es, _di), 1);          //rcl byte ptr es:[di], 1
+    _rcl(memory(_es, _di), 1);                  //rcl byte ptr es:[di], 1
     _flags.carry = !!(_al & 0x80);              //shl al, 1
     _al <<= 1;
-    _rcl(memoryVideoGet(_es, _di), 1);          //rcl byte ptr es:[di], 1
+    _rcl(memory(_es, _di), 1);                  //rcl byte ptr es:[di], 1
     _di += 1;                                   //inc di
     if (--_cx)                                  //loop loc_17E18
         goto loc_17E18;

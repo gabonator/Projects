@@ -25,6 +25,8 @@
 /* Begin PBXFileReference section */
 		2D2793D525AC50CD00DEC620 /* cdman.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cdman.h; sourceTree = "<group>"; };
 		2D2793D725AD90B500DEC620 /* font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
+		2D7C635D261D7E1500351AE8 /* machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = machine.h; sourceTree = "<group>"; };
+		2D7C635E261D7EA600351AE8 /* memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
 		2D8F1B1525AF52790076B137 /* indirect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = indirect.h; sourceTree = "<group>"; };
 		2D9EAF1F258E6A4300297C9C /* sdl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl.h; sourceTree = "<group>"; };
 		2D9EAF26258E750E00297C9C /* CicParserSim.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CicParserSim.entitlements; sourceTree = "<group>"; };
@@ -68,8 +70,10 @@
 				2D2793D525AC50CD00DEC620 /* cdman.h */,
 				2D8F1B1525AF52790076B137 /* indirect.h */,
 				2DA6C5AF258AA66B002B1931 /* main.cpp */,
+				2D7C635E261D7EA600351AE8 /* memory.h */,
 				2D9EAF1F258E6A4300297C9C /* sdl.h */,
 				2DA6C5B8258AA6E3002B1931 /* cpu.h */,
+				2D7C635D261D7E1500351AE8 /* machine.h */,
 				2DB9F18C258EA679000A3299 /* ega.h */,
 				2D2793D725AD90B500DEC620 /* font.h */,
 			);

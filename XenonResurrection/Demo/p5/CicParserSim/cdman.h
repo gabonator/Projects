@@ -1,5 +1,5 @@
 void start();
-void sub_13F3D(int pc = 0);
+void sub_13F3D();
 void sub_13FEE();
 void sub_140C1();
 void sub_140F6();
@@ -79,7 +79,7 @@ void sub_15F62();
 void sub_15FA8();
 void sub_15FC4();
 void sub_1602F();
-void loc_1603E(int pc = 0);
+void loc_1603E();
 void sub_1610E();
 void sub_16138();
 void sub_1616A();
@@ -87,8 +87,6 @@ void sub_16184();
 void sub_161B6();
 void sub_161D8();
 void sub_16202();
-void sub_16216();
-void sub_1622F();
 void sub_1623A();
 void sub_16299();
 void sub_162CC();
@@ -107,8 +105,6 @@ void sub_1680D();
 void sub_168F2();
 void sub_16919();
 void sub_16998();
-void sub_16A07();
-void sub_16A2A();
 void sub_16A4D();
 void sub_16CA8();
 void sub_16CCD();
@@ -136,7 +132,7 @@ void sub_175D0();
 void sub_175F8();
 void sub_1763F();
 void sub_17680();
-void sub_1769B(int pc = 0);
+void sub_1769B();
 void sub_176C7();
 void sub_176FC();
 void sub_17738();
@@ -148,18 +144,6 @@ void sub_17885();
 void sub_1793C();
 void sub_179E3();
 void sub_17A24();
-void sub_17A68();
-void sub_17A71();
-void sub_17A8C();
-void sub_17AAD();
-void sub_17ACE();
-void sub_17AEF();
-void sub_17B10();
-void sub_17B14();
-void sub_17B2A();
-void sub_17B46();
-void sub_17B62();
-void sub_17B7E();
 void sub_17B9A();
 void sub_17BCB();
 void sub_17C31();
@@ -175,7 +159,7 @@ void sub_17F76();
 void sub_17F7B();
 void sub_180A7();
 void sub_180D2();
-void sub_180E0(int pc = 0);
+void sub_180E0();
 void sub_1813A();
 void loc_1819F();
 void sub_181A3();
@@ -240,11 +224,8 @@ loc_13EF5:                                      //loc_13EF5:
     _STOP_("continues");                        //sub_13F3D proc near
 }
 
-void sub_13F3D(int pc)
+void sub_13F3D()
 {
-    if (pc == 0x13FB9)
-        goto loc_13FB9;
-    
     memory16(_ds, 0x251) = _sp;                 //mov word_10451, sp
     sub_15CC3();                                //call sub_15CC3
     memory(_ds, 0x1451) = _ch;                  //mov byte_11651, ch
@@ -464,7 +445,6 @@ loc_1413E:                                      //loc_1413E:
     sub_158F3();                                //call sub_158F3
 loc_14147:                                      //loc_14147:
     sub_14587();                                //call sub_14587
-    _sync();
     if (memory(_ds, 0x63) == 0x01)              //jz short loc_141D0
         goto loc_141D0;
     sub_16202();                                //call sub_16202
@@ -1818,7 +1798,7 @@ loc_14DF0:                                      //loc_14DF0:
     sub_14E49();                                //call sub_14E49
     memory(_ds, 0x64E) = 0x00;                  //mov byte ptr ds:64Eh, 0
     memory(_ds, 0x63) = 0x01;                   //mov byte ptr ds:63h, 1
-    sub_13F3D(0x13FB9);
+    _STOP_("goto loc_13FB9");                   //jmp loc_13FB9
     return;                                     //retn
 loc_14E09:                                      //loc_14E09:
     if (memory16(_ds, _bx + 8511) != 0x0280)    //jnz short loc_14E24
@@ -2158,9 +2138,8 @@ void loc_15118()
     _STOP_("db 90h");                           //db 90h
 loc_1512B:                                      //loc_1512B:
     memory16(_ds, 0x247) += 1;                  //inc word ptr ds:247h
-    _ASSERT(0);
-//    if (_FIXME_)                                //jnb short loc_1513B
-//      goto loc_1513B;
+    if (_FIXME_)                                //jnb short loc_1513B
+        goto loc_1513B;
     _lea(_dx, _ds, 0x249);                      //lea dx, ds:249h
     sub_1513F();                                //call sub_1513F
     sub_1513F();                                //call sub_1513F
@@ -3756,24 +3735,16 @@ loc_15EB4:                                      //loc_15EB4:
     memory(_ds, _di + 124) |= 0x40;             //or byte ptr [di+7Ch], 40h
 }
 
-void loc_15EEB(int pc = 0);
 void sub_15ECC()
 {
     _si = memory16(_ds, 0x5AA);                 //mov si, ds:5AAh
     if (_si == 0x05ac)                          //jz short loc_15EEB
-    {
-        loc_15EEB();
-        return;
-    }
+        _STOP_("goto loc_15EEB");
     _ax = memory16(_ds, 0x5A8);                 //mov ax, ds:5A8h
     if (_ax != memory16(_ds, _si))              //jnz short loc_15F06
-    {
-        loc_15EEB(0x15F06);
-        return;
-    }
-//    _STOP_("sp-trace-fail");                    //sub_15ECC endp_failed
-//    _STOP_("continues");                        //sub_15EDD proc near
-//    sub_15EDD();
+        _STOP_("goto loc_15F06");
+    _STOP_("sp-trace-fail");                    //sub_15ECC endp_failed
+    _STOP_("continues");                        //sub_15EDD proc near
 }
 
 void sub_15EDD()
@@ -3781,13 +3752,7 @@ void sub_15EDD()
     memory16(_ds, 0x5A8) = 0x0000;              //mov word ptr ds:5A8h, 0
     _lea(_si, _ds, 0x5AC);                      //lea si, ds:5ACh
     memory16(_ds, 0x5AA) = _si;                 //mov ds:5AAh, si
-    loc_15EEB();
-}
-
-void loc_15EEB(int pc)                                      //loc_15EEB:
-{
-    if (pc == 0x15F06)
-        goto loc_15F06;
+loc_15EEB:                                      //loc_15EEB:
     _ax = 0x0000;                               //mov ax, 0
     _bp = memory16(_ds, 0x190);                 //mov bp, ds:190h
     if (!(memory(_ds, _bp + 124) & 0x08))       //jz short loc_15F12
@@ -3804,9 +3769,8 @@ loc_15F06:                                      //loc_15F06:
     _ax = memory16(_ds, _si);                   //mov ax, [si]
 loc_15F12:                                      //loc_15F12:
     sub_15F3A();                                //call sub_15F3A
-//    _STOP_("sp-trace-fail");                    //sub_15EDD endp_failed
-//    _STOP_("continues");                        //sub_15F15 proc near
-    sub_15F15(); 
+    _STOP_("sp-trace-fail");                    //sub_15EDD endp_failed
+    _STOP_("continues");                        //sub_15F15 proc near
 }
 
 void sub_15F15()
@@ -3845,7 +3809,7 @@ void sub_15F3A()
     _out(67, _al);                              //out 43h, al
     _ax = _pop();                               //pop ax
     _out(66, _al);                              //out 42h, al
-    //_STOP_("goto $+2");                         //jmp short $+2
+    _STOP_("goto $+2");                         //jmp short $+2
 loc_15F50:                                      //loc_15F50:
     _al = _ah;                                  //mov al, ah
     _out(66, _al);                              //out 42h, al
@@ -3954,7 +3918,7 @@ loc_1600C:                                      //loc_1600C:
     _bl = memory(_ds, 0x26D);                   //mov bl, ds:26Dh
 loc_1602A:                                      //loc_1602A:
     _ax = _dx;                                  //mov ax, dx
-    loc_1603E(0x160AC);
+    _STOP_("goto loc_160AC");                   //jmp short loc_160AC
 }
 
 void sub_1602F()
@@ -3967,11 +3931,8 @@ loc_1602F:
         goto loc_1602F;
 }
 
-void loc_1603E(int pc)
+void loc_1603E()
 {
-    if (pc == 0x160AC)
-        goto loc_160AC;
-    
     _bx <<= 1;                                  //shl bx, 1
     _cx = memory16(_ds, _bx + 418);             //mov cx, [bx+1A2h]
     _dx = 0x0000;                               //mov dx, 0
@@ -4179,25 +4140,6 @@ void sub_16202()
     sub_16919();                                //call sub_16919
     _bx = memory16(_ds, 0x3D3);                 //mov bx, ds:3D3h
     {_indirectCall(memory16(_ds, _bx + 1295)); return; }
-}
-
-void sub_16216()
-{
-    sub_16703();                                //call sub_16703
-    sub_1680D();                                //call sub_1680D
-    sub_16299();                                //call sub_16299
-    sub_16332();                                //call sub_16332
-    sub_16365();                                //call sub_16365
-    sub_16398();                                //call sub_16398
-    sub_163CB();                                //call sub_163CB
-    sub_163FE();                                //call sub_163FE
-}
-
-void sub_1622F()
-{
-    sub_1623A();                                //call sub_1623A
-    sub_162CC();                                //call sub_162CC
-    sub_162FF();                                //call sub_162FF
 }
 
 void sub_1623A()
@@ -4966,32 +4908,6 @@ locret_16A06:                                   //locret_16A06:
     return;
 }
 
-void sub_16A07()
-{
-    _cl = memory(_ds, 0x1E5);                   //mov cl, ds:1E5h
-    memory(_ds, 0x18E) = _cl;                   //mov ds:18Eh, cl
-    memory(_ds, 0x18D) = _cl;                   //mov ds:18Dh, cl
-    _bp = memory16(_ds, 0x1DC);                 //mov bp, ds:1DCh
-    memory16(_ds, 0x194) = _bp;                 //mov ds:194h, bp
-    _bp = memory16(_ds, 0x1D8);                 //mov bp, ds:1D8h
-    memory16(_ds, 0x190) = _bp;                 //mov ds:190h, bp
-    _al = memory(_ds, 0x1E8);                   //mov al, ds:1E8h
-    memory(_ds, 0x1E6) = _al;                   //mov ds:1E6h, al
-}
-
-void sub_16A2A()
-{
-    _cl = memory(_ds, 0x1E4);                   //mov cl, ds:1E4h
-    memory(_ds, 0x18E) = _cl;                   //mov ds:18Eh, cl
-    memory(_ds, 0x18D) = _cl;                   //mov ds:18Dh, cl
-    _bp = memory16(_ds, 0x1DA);                 //mov bp, ds:1DAh
-    memory16(_ds, 0x194) = _bp;                 //mov ds:194h, bp
-    _bp = memory16(_ds, 0x1D6);                 //mov bp, ds:1D6h
-    memory16(_ds, 0x190) = _bp;                 //mov ds:190h, bp
-    _al = memory(_ds, 0x1E7);                   //mov al, ds:1E7h
-    memory(_ds, 0x1E6) = _al;                   //mov ds:1E6h, al
-}
-
 void sub_16A4D()
 {
     if (memory(_ds, 0x18E) != 0xff)             //jnz short loc_16A57
@@ -5265,9 +5181,8 @@ loc_16D08:                                      //loc_16D08:
     if (memory(_ds, 0x5A) != 0x00)              //jnz short loc_16D3D
         { loc_16D3D(); return; }
     _cx = 0x0018;                               //mov cx, 18h
-//    _STOP_("sp-trace-fail");                    //sub_16CCD endp_failed
-//    _STOP_("continues");                        //sub_16D16 proc near
-    sub_16D16();
+    _STOP_("sp-trace-fail");                    //sub_16CCD endp_failed
+    _STOP_("continues");                        //sub_16D16 proc near
 }
 
 void sub_16D16()
@@ -5412,9 +5327,8 @@ loc_16E46:                                      //loc_16E46:
     if (memory(_ds, 0x5A) != 0x00)              //jnz short loc_16E88
         { loc_16E88(); return; }
     _cx = 0x0018;                               //mov cx, 18h
-//    _STOP_("sp-trace-fail");                    //sub_16E1B endp_failed
-//    _STOP_("continues");                        //sub_16E59 proc near
-    sub_16E59();
+    _STOP_("sp-trace-fail");                    //sub_16E1B endp_failed
+    _STOP_("continues");                        //sub_16E59 proc near
 }
 
 void sub_16E59()
@@ -5839,7 +5753,6 @@ loc_17211:                                      //loc_17211:
     _si = _pop();                               //pop si
     _si += 0x0004;                              //add si, 4
     _cx = _pop();                               //pop cx
-    _sync();
     if (--_cx)                                  //loop loc_17211
         goto loc_17211;
     _cx = 0x0005;                               //mov cx, 5
@@ -5848,7 +5761,6 @@ loc_17231:                                      //loc_17231:
     sub_15ECC();                                //call sub_15ECC
     memory16(_ds, 0x111E) = 0x0064;             //mov word ptr ds:111Eh, 64h
     sub_1778E();                                //call sub_1778E
-    _sync();
     _cx = _pop();                               //pop cx
     if (_al == 0x1b)                            //jz short locret_172B0
         goto locret_172B0;
@@ -5913,8 +5825,7 @@ loc_172C2:                                      //loc_172C2:
     _si = 0xad48;                               //mov si, 0AD48h
 loc_172D9:                                      //loc_172D9:
     _cx = 0x0001;                               //mov cx, 1
-    //sub_176C7();                                //call sub_176C7
-    sub_1769B(0x176C7);
+    sub_176C7();                                //call sub_176C7
 }
 
 void loc_172E6()
@@ -6262,7 +6173,7 @@ void sub_175F8()
     _out(_dx, _ax);                             //out dx, ax
     _cx = 0x36b0;                               //mov cx, 36B0h
     _flags.direction = false;                   //cld
-    _rep_stosw<MemVideo, DirAuto>();             //rep stosw
+    _rep_stosw<MemVideo, DirAuto>();
     _ax = 0x0001;                               //mov ax, 1
     _out(_dx, _ax);                             //out dx, ax
     _ax = 0x0105;                               //mov ax, 105h
@@ -6320,11 +6231,8 @@ loc_17687:                                      //loc_17687:
         goto loc_17683;
 }
 
-void sub_1769B(int pc)
+void sub_1769B()
 {
-    if (pc == 0x176C7)
-        goto loc_176C7;
-    
     _cx = memory16(_ds, 0x224);                 //mov cx, ds:224h
     if (memory(_ds, 0x64F) == 0x01)             //jz short loc_176B5
         goto loc_176B5;
@@ -6337,15 +6245,14 @@ loc_176B5:                                      //loc_176B5:
         _STOP_("goto locret_176FB");
     _si = 0xd6a7;                               //mov si, 0D6A7h
     if (memory16(_ds, 0x3D3) != 0x0002)         //jnz short sub_176C7
-        { goto loc_176C7; }
+        { sub_176C7(); return; }
     _si = 0xad50;                               //mov si, 0AD50h
-//    _STOP_("sp-trace-fail");                    //sub_1769B endp_failed
-//    _STOP_("continues");                        //sub_176C7 proc near
-//}
-//
-//void sub_176C7()
-//{
-loc_176C7:
+    _STOP_("sp-trace-fail");                    //sub_1769B endp_failed
+    _STOP_("continues");                        //sub_176C7 proc near
+}
+
+void sub_176C7()
+{
     _push(_cx);                                 //push cx
     _cx = 0x0002;                               //mov cx, 2
 loc_176CB:                                      //loc_176CB:
@@ -6369,7 +6276,7 @@ loc_176CF:                                      //loc_176CF:
     _di += 0xfa64;                              //add di, 0FA64h
     _cx = _pop();                               //pop cx
     if (--_cx)                                  //loop loc_176B5
-        goto loc_176B5;
+        _STOP_("goto loc_176B5");
 locret_176FB:                                   //locret_176FB:
     return;
 }
@@ -6556,7 +6463,6 @@ loc_1783D:                                      //loc_1783D:
 loc_17841:                                      //loc_17841:
     if (--_cx)                                  //loop loc_17841
         goto loc_17841;
-    _sync();
     if (memory(_ds, 0x1449) == 0x00)            //jz short loc_17853
         goto loc_17853;
     _ah = 0x01;                                 //mov ah, 1
@@ -6634,7 +6540,6 @@ loc_178FF:                                      //loc_178FF:
     sub_17A24();                                //call sub_17A24
     sub_17C31();                                //call sub_17C31
     sub_180E0();                                //call sub_180E0
-    _sync();
     if (_ax != 0xffff)                          //jnz short loc_1791F
         goto loc_1791F;
     if (memory(_ds, 0x144A) != 0x01)            //jnz short loc_178FF
@@ -6819,152 +6724,6 @@ loc_17A58:                                      //loc_17A58:
     _out(_dx, _ax);                             //out dx, ax
 }
 
-void sub_17A68()
-{
-    memory(_ds, 0x4C7) = 0x00;                  //mov byte ptr ds:4C7h, 0
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17A71()
-{
-    memory(_ds, 0x4C7) = 0x00;                  //mov byte ptr ds:4C7h, 0
-    _ax -= 1;                                   //dec ax
-    sub_17B9A();                                //call sub_17B9A
-    _ax += 0x0002;                              //add ax, 2
-    sub_17B9A();                                //call sub_17B9A
-    _ax -= 1;                                   //dec ax
-    _bx -= 1;                                   //dec bx
-    sub_17B9A();                                //call sub_17B9A
-    _bx += 0x0002;                              //add bx, 2
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17A8C()
-{
-    memory(_ds, 0x4C7) = 0x09;                  //mov byte ptr ds:4C7h, 9
-    _ax += 0x0002;                              //add ax, 2
-    sub_17B9A();                                //call sub_17B9A
-    _ax -= 0x0004;                              //sub ax, 4
-    sub_17B9A();                                //call sub_17B9A
-    _ax += 0x0002;                              //add ax, 2
-    _bx += 0x0002;                              //add bx, 2
-    sub_17B9A();                                //call sub_17B9A
-    _bx -= 0x0004;                              //sub bx, 4
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17AAD()
-{
-    memory(_ds, 0x4C7) = 0x09;                  //mov byte ptr ds:4C7h, 9
-    _ax += 0x0003;                              //add ax, 3
-    sub_17B9A();                                //call sub_17B9A
-    _ax -= 0x0006;                              //sub ax, 6
-    sub_17B9A();                                //call sub_17B9A
-    _ax += 0x0003;                              //add ax, 3
-    _bx += 0x0003;                              //add bx, 3
-    sub_17B9A();                                //call sub_17B9A
-    _bx -= 0x0006;                              //sub bx, 6
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17ACE()
-{
-    memory(_ds, 0x4C7) = 0x06;                  //mov byte ptr ds:4C7h, 6
-    _ax += 0x0004;                              //add ax, 4
-    sub_17B9A();                                //call sub_17B9A
-    _ax -= 0x0008;                              //sub ax, 8
-    sub_17B9A();                                //call sub_17B9A
-    _ax += 0x0004;                              //add ax, 4
-    _bx += 0x0004;                              //add bx, 4
-    sub_17B9A();                                //call sub_17B9A
-    _bx -= 0x0008;                              //sub bx, 8
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17AEF()
-{
-    memory(_ds, 0x4C7) = 0x06;                  //mov byte ptr ds:4C7h, 6
-    _ax += 0x0005;                              //add ax, 5
-    sub_17B9A();                                //call sub_17B9A
-    _ax -= 0x000a;                              //sub ax, 0Ah
-    sub_17B9A();                                //call sub_17B9A
-    _ax += 0x0005;                              //add ax, 5
-    _bx += 0x0005;                              //add bx, 5
-    sub_17B9A();                                //call sub_17B9A
-    _bx -= 0x000a;                              //sub bx, 0Ah
-    sub_17B9A();                                //call sub_17B9A
-}
-
-void sub_17B10()
-{
-    sub_17BCB();                                //call sub_17BCB
-}
-
-void sub_17B14()
-{
-    _ax -= 1;                                   //dec ax
-    sub_17BCB();                                //call sub_17BCB
-    _ax += 0x0002;                              //add ax, 2
-    sub_17BCB();                                //call sub_17BCB
-    _ax -= 1;                                   //dec ax
-    _bx -= 1;                                   //dec bx
-    sub_17BCB();                                //call sub_17BCB
-    _bx += 0x0002;                              //add bx, 2
-    sub_17BCB();                                //call sub_17BCB
-}
-
-void sub_17B2A()
-{
-    _ax += 0x0002;                              //add ax, 2
-    sub_17BCB();                                //call sub_17BCB
-    _ax -= 0x0004;                              //sub ax, 4
-    sub_17BCB();                                //call sub_17BCB
-    _ax += 0x0002;                              //add ax, 2
-    _bx += 0x0002;                              //add bx, 2
-    sub_17BCB();                                //call sub_17BCB
-    _bx -= 0x0004;                              //sub bx, 4
-    sub_17BCB();                                //call sub_17BCB
-}
-
-void sub_17B46()
-{
-    _ax += 0x0003;                              //add ax, 3
-    sub_17BCB();                                //call sub_17BCB
-    _ax -= 0x0006;                              //sub ax, 6
-    sub_17BCB();                                //call sub_17BCB
-    _ax += 0x0003;                              //add ax, 3
-    _bx += 0x0003;                              //add bx, 3
-    sub_17BCB();                                //call sub_17BCB
-    _bx -= 0x0006;                              //sub bx, 6
-    sub_17BCB();                                //call sub_17BCB
-}
-
-void sub_17B62()
-{
-    _ax += 0x0004;                              //add ax, 4
-    sub_17BCB();                                //call sub_17BCB
-    _ax -= 0x0008;                              //sub ax, 8
-    sub_17BCB();                                //call sub_17BCB
-    _ax += 0x0004;                              //add ax, 4
-    _bx += 0x0004;                              //add bx, 4
-    sub_17BCB();                                //call sub_17BCB
-    _bx -= 0x0008;                              //sub bx, 8
-    sub_17BCB();                                //call sub_17BCB
-}
-
-void sub_17B7E()
-{
-    _ax += 0x0005;                              //add ax, 5
-    sub_17BCB();                                //call sub_17BCB
-    _ax -= 0x000a;                              //sub ax, 0Ah
-    sub_17BCB();                                //call sub_17BCB
-    _ax += 0x0005;                              //add ax, 5
-    _bx += 0x0005;                              //add bx, 5
-    sub_17BCB();                                //call sub_17BCB
-    _bx -= 0x000a;                              //sub bx, 0Ah
-    sub_17BCB();                                //call sub_17BCB
-}
-
 void sub_17B9A()
 {
     _push(_ax);                                 //push ax
@@ -7026,9 +6785,8 @@ loc_17C04:                                      //loc_17C04:
     _bh &= _ch;                                 //and bh, ch
     _bh = -_bh;                                 //neg bh
     _rol(_bx, 1);                               //rol bx, 1
-    _flags.carry = (char)_ah >= 1;
     _ah -= 1;                                   //dec ah
-    if (_flags.carry)                                //jge short loc_17C04
+    if (_FIXME_)                                //jge short loc_17C04
         goto loc_17C04;
     memory(_ds, 0x4C7) = _bl;                   //mov ds:4C7h, bl
     _cx = _pop();                               //pop cx
@@ -7213,7 +6971,6 @@ loc_17DAD:                                      //loc_17DAD:
     _cx = _pop();                               //pop cx
     if (--_cx)                                  //loop loc_17D77
         goto loc_17D77;
-    _sync();
     _cx = _pop();                               //pop cx
     if (--_cx)                                  //loop loc_17D5F
         goto loc_17D5F;
@@ -7629,18 +7386,12 @@ void sub_180D2()
     _ah = 0x01;                                 //mov ah, 1
     _interrupt(22);                             //int 16h
     if (_flags.zero)                            //jz short loc_180F5
-        sub_180E0(0x180F5);
-    else
-        sub_180E0(0x180FF);                   //jmp short loc_180FF
+        _STOP_("goto loc_180F5");
+    _STOP_("goto loc_180FF");                   //jmp short loc_180FF
 }
 
-void sub_180E0(int pc)
+void sub_180E0()
 {
-    if (pc == 0x180F5)
-        goto loc_180F5;
-    if (pc == 0x180FF)
-        goto loc_180FF;
-    
     _ah = 0x01;                                 //mov ah, 1
     _interrupt(22);                             //int 16h
     if (_flags.zero)                            //jz short loc_180F5
@@ -7757,7 +7508,6 @@ void loc_1819F()
 void sub_181A3()
 {
 loc_181A3:
-    _sync();
     sub_180E0();                                //call sub_180E0
     if (_ax != 0xffff)                          //jnz short loc_181B0
         goto loc_181B0;

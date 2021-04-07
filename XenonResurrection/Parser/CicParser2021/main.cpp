@@ -274,10 +274,16 @@ bool doExport(ostream& output, std::vector<string>& flist)
 //                    //
 //                }
 //                else
-                    if (internalLabels.find(pCond->m_label) == internalLabels.end())
+                if (internalLabels.find(pCond->m_label) == internalLabels.end())
                 {
-                    if (pCond->m_label != testLabel)
-                        pCond->m_stop = true;
+                    if (std::find(flist.begin(), flist.end(), pCond->m_label) == flist.end())
+                    {
+                        if (pCond->m_label != testLabel)
+                            pCond->m_stop = true;
+                    } else {
+                        pCond->m_function = true;
+                        // it is a function name, not a label
+                    }
                 }
             }
             shared_ptr<CILoop> pLoop = dynamic_pointer_cast<CILoop>(arrFunction[j]);

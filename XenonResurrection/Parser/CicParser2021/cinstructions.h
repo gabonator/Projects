@@ -654,7 +654,8 @@ public:
 		ReturnStack,
 		Break,
 		Continue,
-        Entry
+        Entry,
+        Function
 	};
 
 	enum EConditionType {
@@ -755,7 +756,7 @@ public:
 		m_strOperand1 = pCompare->m_op1.ToC();
 		m_strOperand2 = pCompare->m_op2.ToC();
 		m_strLabel = pCondition->m_label;
-		m_eLabelType = Label;
+		m_eLabelType = pCondition->m_function ? Function : Label;
 
 		m_strSigned = "?";
         if (pCompare->m_op2.m_eType == CValue::EType::constant)
@@ -797,7 +798,7 @@ public:
 		m_strOperand1 = pTest->m_op1.ToC();
 		m_strOperand2 = pTest->m_op2.ToC();
 		m_strLabel = pCondition->m_label;
-		m_eLabelType = Label;
+		m_eLabelType = pCondition->m_function ? Function : Label;
 
 		switch ( pCondition->m_eType )
 		{
@@ -844,7 +845,7 @@ public:
 	{
 		m_strOperand1 = pAlu->m_op1.ToC();
 		m_strLabel = pCondition->m_label;
-		m_eLabelType = Label;
+		m_eLabelType = pCondition->m_function ? Function : Label;
 		m_strSigned = SignedType(pAlu->m_op1);
 		switch (pAlu->m_eType)
 		{
@@ -989,7 +990,7 @@ public:
 	void From(shared_ptr<CIConditionalJump> pCondition, EConditionType eCondition)
 	{
 		m_strLabel = pCondition->m_label;
-		m_eLabelType = Label;
+		m_eLabelType = pCondition->m_function ? Function : Label;
         
         if (eCondition==Fixme)
         {
@@ -1038,7 +1039,7 @@ public:
     void From(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CISingleArgOp> singleArgOp)
     {
         m_strLabel = pCondition->m_label;
-        m_eLabelType = Label;
+        m_eLabelType = pCondition->m_function ? Function : Label;
         if (singleArgOp->m_eType == CISingleArgOp::interrupt)
         {
             switch ( pCondition->m_eType )
@@ -1065,7 +1066,7 @@ public:
     void From(shared_ptr<CIConditionalJump> pCondition)
     {
         m_strLabel = pCondition->m_label;
-        m_eLabelType = Label;
+        m_eLabelType = pCondition->m_function ? Function : Label;
         switch ( pCondition->m_eType )
         {
         case CIConditionalJump::jcxz:
@@ -1107,24 +1108,16 @@ public:
 	{
 		switch (m_eLabelType)
 		{
+        case Function:
+                return "{ " + m_strLabel + "(); return; }";
 		case Label:
             if (m_strLabel.substr(0, 4) == "sub_")
             {
-                //string label = m_strLabel;
-                //CUtils::replace(label, "sub_", "loc_"); // ??? CHECK
-//                if (m_stop)
-//                    return "_STOP_(\"goto " + m_strLabel + "\")";
-                
                 return "{ " + m_strLabel + "(); return; }";
-//                else
-//                    return "goto " + label;
             }
             else
             {
-//                if (m_stop)
-//                    return "_STOP_(\"goto " + m_strLabel + "\")";
-//                else
-                    return "goto " + m_strLabel;
+                return "goto " + m_strLabel;
             }
 		case Return: return "return";
 		case Break: return "break";

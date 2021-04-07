@@ -28,7 +28,14 @@ def print_section_list():
         print("    {name:\"%s\", begin:0x%x, end:0x%x}," % (idc.SegName(s), idc.SegStart(s), idc.SegEnd(s)))
 
 basename = os.path.splitext(idaapi.get_input_file_path())[0]
-#basename = os.path.splitext(idaapi.get_root_filename())[0]
+# basename = os.path.splitext(idaapi.get_root_filename())[0]
+
+# undefine names
+names = map(lambda x : x[0], idautils.Names())
+names = filter(lambda x : idc.isData(idc.GetFlags(x)), names)
+
+for n in names:
+  idc.MakeUnknown(n, 1, 0)
 
 with open(basename + ".cfg", "w") as out:
     prev = sys.stdout
@@ -43,7 +50,7 @@ with open(basename + ".cfg", "w") as out:
     print ("    \"-save\",  \"%s.cico\"," % (basename))
     print ("    \"-load\",  \"%s.cico\"," % (basename))
     print ("    \"-functions\", \"all\",")
-    print ("    \"-export\", \"%s.c\" " % (basename))
+    print ("    \"-export\", \"%s.cpp\" " % (basename))
     print ("  ],")
     print ("  hints:{")
     print ("    start:{comment:\"Entry function\"},")
