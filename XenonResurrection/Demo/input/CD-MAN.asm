@@ -1359,15 +1359,24 @@ word_10601	dw 0			; DATA XREF: sub_13FEE+CFw
 		db    0
 byte_1070E	db 8			; DATA XREF: sub_13FEE+B0w
 					; sub_13FEE+BCw ...
-		dw 2356h
-		dw 236Fh
-		dw 2379h
-		dw 2379h
-		dw 2379h
-		dw 0A99Ch
-		dw 46C6h
-		dw 0A960h
-		dw 35E4h
+		db  56h	; V
+		db  23h	; #
+		db  6Fh	; o
+		db  23h	; #
+		db  79h	; y
+		db  23h	; #
+		db  79h	; y
+		db  23h	; #
+		db  79h	; y
+		db  23h	; #
+		db  9Ch	; œ
+		db 0A9h	; ©
+		db 0C6h	; Æ
+		db  46h	; F
+		db  60h	; `
+		db 0A9h	; ©
+		db 0E4h	; ä
+		db  35h	; 5
 		db 0E0h	; à
 		db 0BFh	; ¿
 		db 0E2h	; â
@@ -18118,7 +18127,11 @@ sub_150E5	proc near		; CODE XREF: sub_14FB4:loc_14FE2p
 		retn
 sub_150E5	endp
 
-; ---------------------------------------------------------------------------
+
+; =============== S U B	R O U T	I N E =======================================
+
+
+sub_150FB	proc near
 		push	bx
 		push	cx
 		push	dx
@@ -18131,7 +18144,7 @@ sub_150E5	endp
 		lea	dx, ds:247h
 		call	sub_1513F
 
-loc_15118:				; CODE XREF: seg002:1248j
+loc_15118:				; CODE XREF: sub_150FB+Dj
 		mov	ds:247h, ax
 		lea	dx, ds:247h
 		call	sub_1513F
@@ -18141,23 +18154,27 @@ loc_15118:				; CODE XREF: seg002:1248j
 		db 90h
 ; ---------------------------------------------------------------------------
 
-loc_1512B:				; CODE XREF: seg002:1241j
+loc_1512B:				; CODE XREF: sub_150FB+6j
 		inc	word ptr ds:247h
 		jnb	short loc_1513B
 		lea	dx, ds:249h
 		call	sub_1513F
 		call	sub_1513F
 
-loc_1513B:				; CODE XREF: seg002:1268j seg002:126Fj
+loc_1513B:				; CODE XREF: sub_150FB+2Dj
+					; sub_150FB+34j
 		pop	dx
 		pop	cx
 		pop	bx
 		retn
+sub_150FB	endp
+
 
 ; =============== S U B	R O U T	I N E =======================================
 
 
-sub_1513F	proc near		; CODE XREF: seg002:124Ep seg002:1255p ...
+sub_1513F	proc near		; CODE XREF: sub_150FB+13p
+					; sub_150FB+1Ap ...
 		push	ax
 		mov	ah, 40h	; '@'
 		mov	bx, ds:31Bh

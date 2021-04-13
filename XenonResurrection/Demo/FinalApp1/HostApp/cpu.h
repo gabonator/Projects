@@ -79,11 +79,19 @@ extern reg_t _reg;
 WORD& memory16(WORD segment, WORD offset);
 BYTE& memory(WORD segment, WORD offset);
 
+void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
+void memoryVideoOr16(WORD seg, WORD ofs, WORD x);
+void memoryVideoOr(WORD seg, WORD ofs, BYTE x);
+WORD memoryVideoGet16(WORD seg, WORD ofs);
+WORD memoryBiosGet16(WORD seg, WORD ofs);
+
 void _push(WORD w);
 WORD _pop();
 void _interrupt(BYTE n);
 void _out(WORD, BYTE);
 void _out(WORD, WORD);
+
+void _indirectCall(WORD ptr);
 
 template <class SRC, class DIR> void _lodsb();
 template <class SRC, class DIR> void _lodsw();
@@ -97,9 +105,14 @@ template <class DST, class DIR> void _stosb();
 
 
 #define _ASSERT assert
+#define _STOP_(x) assert(0)
+#define _FIXME_ _fixme_()
 
-void _STOP_(const char*) { assert(0); }
-
+bool _fixme_()
+{
+    _ASSERT(0);
+    return false;
+}
 
 void _xlat();
 void _in(BYTE& value, WORD port);
@@ -113,6 +126,14 @@ struct MemVideo
 };
 
 struct MemAuto
+{
+    static BYTE Get8(WORD seg, WORD nAddr);
+    static void Set8(WORD seg, WORD nAddr, BYTE nData);
+    static WORD Get16(WORD seg, WORD nAddr);
+    static void Set16(WORD seg, WORD nAddr, WORD nData);
+};
+
+struct MemData
 {
     static BYTE Get8(WORD seg, WORD nAddr);
     static void Set8(WORD seg, WORD nAddr, BYTE nData);
@@ -442,28 +463,24 @@ void _stackReduce(int n)
     _ASSERT( _sp >= 0 && _sp < m_arrStack.size());
 }
 
-void _mul(BYTE w)
-{
-    int v = w * _al;
-    _ax = v & 0xffff;
-}
-
 void _mul(WORD w)
 {
     int v = w * _ax;
     _ax = v & 0xffff;
     _dx = v >> 16;
 }
+void _mul(BYTE b)
+{
+    int v = b * _ax;
+    _ax = v & 0xffff;
+}
 
-void _imul(BYTE w)
+void _xlat()
+{
+    _al = memory(_ds, _bx+_al);
+}
+
+void _repne_scasw()
 {
     _ASSERT(0);
 }
-
-void _imul(WORD w)
-{
-    int v = (short)w * (short)_ax;
-    _ax = v & 0xffff;
-    _dx = v >> 16;
-}
-

@@ -19,7 +19,6 @@ class CSdl
     bool running{true};
     int lastKey{0};
 
-
 public:
     void Init()
     {
