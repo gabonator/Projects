@@ -1,0 +1,1 @@
+../Parser/build/cicoparser -config ETETRIS.cfg
