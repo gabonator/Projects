@@ -167,7 +167,10 @@ public:
 			m_strSrc = op1 + " ^ " + op2;
 			break;
 		case CIAlu::And: 
-			_ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
+			if(pAlu->m_ExportInsertion == CIAlu::None)
+            { } else {
+                m_strInsertion = "_FIXME_";
+            }
 			m_strDst = op1; 
 			m_strSrc = op1 + " & " + op2;
 			break;
@@ -283,7 +286,7 @@ public:
             case CIAlu::IMul:
                 _ASSERT(pAlu->m_ExportInsertion == CIAlu::None);
 
-                    m_strSrc = "_idiv(" + op1 + ");";
+                    m_strSrc = "_imul(" + op1 + ");";
                     break;
 
 		default:
@@ -844,6 +847,7 @@ public:
 	void From(shared_ptr<CIConditionalJump> pCondition, shared_ptr<CIAlu> pAlu)
 	{
 		m_strOperand1 = pAlu->m_op1.ToC();
+        m_strOperand2 = "_FIXME_";
 		m_strLabel = pCondition->m_label;
 		m_eLabelType = pCondition->m_function ? Function : Label;
 		m_strSigned = SignedType(pAlu->m_op1);

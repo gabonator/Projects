@@ -352,6 +352,16 @@ string CValue::ToC()
                 _ASSERT(0);
             return ss.str();
 
+        case CValue::cs_ptr_si_plus:
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_cs, _si + " << m_nValue << ")";
+            else
+            if ( m_eRegLength == CValue::r16 )
+                ss << "memory16(_cs, _si + " << m_nValue << ")";
+            else
+                _ASSERT(0);
+            return ss.str();
+
         case CValue::cs_ptr_bp:
             if ( m_eRegLength == CValue::r8 )
                 ss << "memory(_cs, _bp)";
@@ -508,7 +518,10 @@ string CValue::ToC()
             return ss.str();
 
         case CValue::wordptr_es_di_plus:
-            ss << "memory(_es, _di + 0x" << uppercase << hex << m_nValue << ")";
+            if ( m_eRegLength == CValue::r8 )
+                ss << "memory(_es, _di + 0x" << uppercase << hex << m_nValue << ")";
+            else
+                ss << "memory16(_es, _di + 0x" << uppercase << hex << m_nValue << ")";
 
             return ss.str();
 
@@ -549,10 +562,10 @@ string CValue::ToC()
         case CValue::wordptr_bp_plus:
             return "_FIXME_";
         case CValue::offset_bp_arg:
-            ss << "_bp + arg_" << dec << m_nValue;
+            ss << "_bp + arg_" << std::uppercase << hex << m_nValue;
             return ss.str();
         case CValue::offset_bp_var:
-            ss << "_bp + arg_" << dec << m_nValue;
+            ss << "_bp + var_" << std::uppercase << hex << m_nValue;
             return ss.str();
         
         case CValue::ss_ptr_si:
