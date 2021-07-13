@@ -808,6 +808,7 @@ public:
 		case CIConditionalJump::jz: m_strCondition = "!($a & $b)"; break;
 		case CIConditionalJump::jnz: m_strCondition = "$a & $b"; break;
         case CIConditionalJump::jns:
+        case CIConditionalJump::jge:
             if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
             {
                 string sign = "_FIXME_";
@@ -824,6 +825,7 @@ public:
             _ASSERT(0);
             break;
         case CIConditionalJump::js:
+        case CIConditionalJump::jl:
             if (pTest->m_op1.ToC() == pTest->m_op2.ToC())
             {
                 string sign = "_FIXME_";
