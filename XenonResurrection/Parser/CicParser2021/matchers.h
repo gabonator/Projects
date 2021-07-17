@@ -49,6 +49,16 @@ class CIMLabel : public CInstructionMatcher
 		{
 			return make_shared<CILabel>(arrMatches[0]);
 		}
+        
+        if ( CUtils::match("^(_[\\w]*):$", strLine, arrMatches) )
+        {
+            return make_shared<CILabel>(arrMatches[0]);
+        }
+        
+        if ( CUtils::match("^([\\w]*_):$", strLine, arrMatches) )
+        {
+            return make_shared<CILabel>(arrMatches[0]);
+        }
 
 		return nullptr;
 	}
