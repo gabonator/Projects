@@ -1,0 +1,26 @@
+<script src="shared.js">
+</script>
+<script>
+  const apiOptions = {
+    async readBuffer(filename) {
+      const response = await fetch(filename);
+      return response.arrayBuffer();
+    },
+
+    async compileStreaming(filename) {
+      const response = await fetch(filename);
+      return WebAssembly.compile(await response.arrayBuffer());
+    },
+
+    hostWrite(s) { console.log(s) }
+  };
+
+  async function test()
+  {
+    var api = new API(apiOptions);
+    output =  await api.compileLink("int main(void) { return 7; }");
+    console.log("done: " + new TextDecoder().decode(output));
+  }
+
+  test();
+</script>
