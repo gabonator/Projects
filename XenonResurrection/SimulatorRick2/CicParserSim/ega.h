@@ -19,7 +19,7 @@ public:
 	virtual bool Interrupt() = 0;
 	virtual void Write(DWORD dwAddr, BYTE bWrite) = 0;
 	virtual BYTE Read(DWORD dwAddr) = 0;
-	virtual DWORD GetPixel(int x, int y) = 0;
+	virtual DWORD GetPixel(int x, int y, int ovr) = 0;
     virtual void SetPixel(int x, int y, int c) = 0;
 };
 /*
@@ -424,7 +424,7 @@ public:
         return false;
     }
 
-	virtual DWORD GetPixel(int x, int y) override
+	virtual DWORD GetPixel(int x, int y, int ovr) override
 	{
 		BYTE* _video = (BYTE*)memory;
 		DWORD off = (int)y * 40L + ((int)x / 8L);
@@ -435,7 +435,7 @@ public:
         //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
         int page = cfgAddr;
     
-        int shift = page*4;
+        int shift = ovr ? (ovr*16-0xa0000)*4 : page*4;
 		BYTE b = 0;
 		if ( _video[shift + off*4 + 0] & mask ) b |= 1;
 		if ( _video[shift + off*4 + 1] & mask ) b |= 2;
@@ -568,12 +568,6 @@ public:
 
 		uLatch.u32Data = pixels.u32Data;
 		StoreLatch(dwAddr);
-//        static int q = 0;
-//        if (q++ > 5000*2)
-//        {
-//            _sync();
-//            q= 0;
-//        }
     }
 
 	virtual BYTE Read(DWORD dwAddr) override

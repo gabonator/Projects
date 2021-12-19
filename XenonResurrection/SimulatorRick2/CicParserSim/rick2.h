@@ -117,7 +117,7 @@ void sub_18014();
 void sub_1802D();
 void sub_181A4();
 void sub_181C6();
-void sub_18351();
+void sub_18351(int pc = 0);
 void sub_18A9A();
 void loc_18B03();
 void sub_18C83();
@@ -2360,6 +2360,8 @@ void sub_16222()
     _al &= 0x03;                                //and al, 3
     if (_al != 0)                               //jnz short loc_1623E
       goto loc_1623E;
+    _flags.carry = 0;
+    /* FUCKING PROBLEM: ALL PATH MUST SET CARRY FLAG !!!!!!!!!!!!!*/
     return;                                     //retn
 loc_1623E:                                      //loc_1623E:
     _si += 0x0004;                              //add si, 4
@@ -5427,6 +5429,7 @@ loc_17E2F:                                      //loc_17E2F:
     goto loc_17E4E;                             //jmp short loc_17E4E
 loc_17E36:                                      //loc_17E36:
     _lodsb<MemData, DirForward>();              //lodsb
+    _si &= 0xffff;
     _di = _ax;                                  //mov di, ax
     _bl = _bl | memory(_ds, _di + 21492);       //or bl, [di+53F4h]
     _lodsb<MemData, DirForward>();              //lodsb
@@ -5890,9 +5893,12 @@ locret_181FD:                                   //locret_181FD:
     return;
 }
 
-void sub_18351()
+void sub_18351(int pc)
 {
     WORD _cs = _seg001;
+
+    if (pc == 0x187DB)
+        goto loc_187DB;
 
     if (memory16(_ds, 0x7E16) != 0x0001)        //jnz short loc_1835B
       goto loc_1835B;
@@ -6704,7 +6710,7 @@ loc_18C69:                                      //loc_18C69:
     memory(_ds, 0x796B) = 0x01;                 //mov byte ptr ds:796Bh, 1
     memory16(_ds, 0x795D) = _bx;                //mov ds:795Dh, bx
     _dx = _bp;                                  //mov dx, bp
-    _STOP_("goto loc_187DB");                   //jmp loc_187DB
+    sub_18351(0x187DB);    
 }
 
 void sub_18C83()
@@ -7611,6 +7617,8 @@ locret_1964F:                                   //locret_1964F:
     return;
 }
 
+void loc_1C3B9();
+
 void loc_19650()
 {
     _indirectCall(_ds, memory16(_ds, 0x3C));    //call word ptr ds:3Ch
@@ -7644,7 +7652,7 @@ loc_19698:                                      //loc_19698:
 {loc_19F12(); return; };                        //
 loc_196A7:                                      //loc_196A7:
     memory16(_ds, 0x8BEC) += 1;                 //inc word ptr ds:8BECh
-    _STOP_("goto loc_1C3B9");                   //jmp loc_1C3B9
+{loc_1C3B9(); return; };                        //jmp loc_1C3B9
 {loc_19F12(); return; };                        //
     _STOP_("db 4Dh, 65h, 6Dh, 6Fh, 72h, 79h, 20h, 41h,...");
     _STOP_("db 6Fh, 63h, 61h, 74h, 69h, 6Fh, 6Eh, 20h,...");
@@ -10374,13 +10382,18 @@ loc_1C3AB:                                      //loc_1C3AB:
     goto loc_1C382;                             //jmp short loc_1C382
 }
 
+void loc_1C3B9();
+
 void loc_1C3B0()
 {
-    WORD _cs = _seg001;
-
     memory16(_ds, 0x6614) = 0x0006;             //mov word_16A14, 6
     sub_199C8();                                //call sub_199C8
-loc_1C3B9:                                      //loc_1C3B9:
+    loc_1C3B9();
+}
+    
+void loc_1C3B9()
+{
+    WORD _cs = _seg001;
     _sp = memory16(_ds, 0xC0DF);                //mov sp, word_1C4DF
     memory16(_ds, 0x6610) = 0x0006;             //mov word_16A10, 6
     memory16(_ds, 0x6612) = 0x0006;             //mov word_16A12, 6

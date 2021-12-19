@@ -675,6 +675,7 @@ void _repne_scasw()
 {
     _ASSERT(0);
 }
+bool slowdown{false};
 
 void onKey(int k, int p)
 {
@@ -689,6 +690,8 @@ void onKey(int k, int p)
         case SDL_SCANCODE_LSHIFT:
         case SDL_SCANCODE_Z:
         case SDL_SCANCODE_SPACE: keys = p ? keys | 16 : keys & ~16; break;
+        case SDL_SCANCODE_LCTRL:
+        case SDL_SCANCODE_RCTRL: slowdown = p;
     }
     //memory(_seg001, 0xA85E) = p ? 0 : 255;
     memory(_seg001, 0xB884) = keys;
@@ -698,83 +701,12 @@ void onKey(int k, int p)
         int key = 0;
         switch (k)
         {
-                /*
-            case SDL_SCANCODE_UP:
-                memory(_seg001, 0xB884) |= 8;
-                key = 0x4800; break;
-            case SDL_SCANCODE_DOWN:
-                memory(_seg001, 0xB884) |= 4;
-                key = 0x5000; break;
-            case SDL_SCANCODE_LEFT:
-                memory(_seg001, 0xB884) |= 2;
-                key = 0x4b00; break;
-            case SDL_SCANCODE_RIGHT:
-                memory(_seg001, 0xB884) |= 1;
-                key = 0x4d00; break;
-            case SDL_SCANCODE_SPACE:
-                key = 0x3920; break;*/
-            //case SDL_SCANCODE_RETURN: key = 0x1c0d; break;
-            //case SDL_SCANCODE_A: key = 'A' << 8; break;
-            //case SDL_SCANCODE_B: key = 'b' << 8; break;
-            //case SDL_SCANCODE_C: key = 0x1C << 8; break;
+        
             case SDL_SCANCODE_D: key = 0x1 << 8; break;
             case SDL_SCANCODE_E: key = 0x30 << 8; break;
-                /*
-            //case SDL_SCANCODE_F: memory(_seg001, 0xB884) |= 0x10; break;
-            case SDL_SCANCODE_1: memory(_ds, 0x18E) = 0; break;
-            case SDL_SCANCODE_2: memory(_ds, 0x18E) = 8; break;
-            case SDL_SCANCODE_3: memory(_ds, 0x18E) = 16; break;
-            case SDL_SCANCODE_4: memory(_ds, 0x18E) = 24; break;
-            case SDL_SCANCODE_5:
-                for (int i=0; i<4; i++)
-                {
-                    memory(_ds, i + 104) = 0x4d;
-                    memory16(_ds, i*2 + 491) = memory16(_ds, 0x1059);
-                    memory16(_ds, i*2 + 499) = memory16(_ds, 0x1059 + 2);
-                    memory16(_ds, i*2 + 507) = memory16(_ds, 0x1059 + 4);
-                }
-                break;*/
         }
 
-        if (key)
-        {
-            //memory(_seg001, 0xB888) = key >> 8;
-            
-            //keyboardBuffer.push_back(key);
-        }
-    } else {
-        //memory(_seg001, 0xB884) = 0;
     }
- //   memory(dataseg, 0x8f5b) = 0xff;
-//    memory(dataseg, 0x8f59) = 0x80;
-    /*
-    int code = 0;
-    switch (k)
-    {
-        case SDL_SCANCODE_UP: code = 1; break;
-        case SDL_SCANCODE_DOWN: code = 2; break;
-        case SDL_SCANCODE_LEFT: code = 4; break;
-        case SDL_SCANCODE_RIGHT: code = 5; break;
-        case SDL_SCANCODE_SPACE: code = 0x80; break;
-            
-        case SDL_SCANCODE_RETURN: code = 0x80;
-            memory(dataseg, 0x8f5b) = 0xff; break;
-    }
-    memory(dataseg, 0x8f59) = code;*/
-    /*
-    
-    #define MAPKEY( c, v ) if (k==c) memory(_dseg, 0x8e8a+v) = p
-    // http://www.ee.bgu.ac.il/~microlab/MicroLab/Labs/ScanCodes.htm
-    MAPKEY( SDL_SCANCODE_LEFT, 75 );
-    MAPKEY( SDL_SCANCODE_RIGHT, 77 );
-    MAPKEY( SDL_SCANCODE_DOWN, 80 );
-    MAPKEY( SDL_SCANCODE_UP, 72 );
-    MAPKEY( SDL_SCANCODE_SPACE, 57 );
-    MAPKEY( SDL_SCANCODE_N, 49 );
-    MAPKEY( SDL_SCANCODE_M, 50 );
-    MAPKEY( SDL_SCANCODE_Q, 16 );
-    MAPKEY( SDL_SCANCODE_Y, 21 );
-     */
 
 }
 
@@ -820,7 +752,7 @@ void _sync()
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
       {
-        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y));
+        mSdl.SetPixel(x, y, mVideo.GetPixel(x, y, 0));
         /*
           
           BYTE* _video = (BYTE*)&memory(0x2000, 0x0000); //datasegment+0x1000*16;
@@ -846,6 +778,8 @@ void _sync()
       }
 
     mSdl.Loop();
+        SDL_Delay(slowdown ? 120 : 30);
+
 }
 
 //

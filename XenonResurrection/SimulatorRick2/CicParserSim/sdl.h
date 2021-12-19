@@ -100,9 +100,6 @@ public:
         //const static Uint64 freq = SDL_GetPerformanceFrequency();
         //const double seconds = ( end - start ) / static_cast< double >( freq );
         //std::cout << "Frame time: " << seconds * 1000.0 << "ms" << std::endl;
-        if (running)
-            SDL_Delay(30);
-
     }
     
     void Deinit()
