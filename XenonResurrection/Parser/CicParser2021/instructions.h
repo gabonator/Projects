@@ -429,6 +429,8 @@ public:
 		CheckEnum(jbe);	CheckEnum(jz); CheckEnum(jnz); CheckEnum(ja); CheckEnum(jb);
 		CheckEnum(jnb);	CheckEnum(jle); CheckEnum(jg); CheckEnum(jge); CheckEnum(jns);
 		CheckEnum(jl);	CheckEnum(js); CheckEnum(jcxz);
+		if (str == "jc") return jb;
+		if (str == "jnc") return jnb;
 		_ASSERT(0);
 		return invalid;
 	}

@@ -87,6 +87,10 @@ class CIMReturn : public CInstructionMatcher
 			return make_shared<CIReturn>();
 		}
 
+		if ( CUtils::match("^ret$", strLine, arrMatches) )
+		{
+			return make_shared<CIReturn>();
+		}
 		if ( CUtils::match("^iret$", strLine, arrMatches) )
 		{
 			return make_shared<CIReturn>();
@@ -96,6 +100,11 @@ class CIMReturn : public CInstructionMatcher
 		{
 			return make_shared<CIReturn>(CUtils::ParseLiteral(arrMatches[0]));
 		}
+
+        if ( CUtils::match("^ret\\s*(0x.*)$", strLine, arrMatches) )
+        {
+            return make_shared<CIReturn>(CUtils::ParseLiteral(arrMatches[0]));
+        }
 
 		return nullptr;
 	}
@@ -397,7 +406,7 @@ class CIMFlow : public CInstructionMatcher
 			return make_shared<CIJump>(CLabel(arrMatches.back()));
 		}
 
-		if ( CUtils::match("^(jbe|jz|jnz|ja|jb|jnb|jle|jg|jge|jns|jl|js|jge|jcxz)\\s+(.*)$", strLine, arrMatches) )
+		if ( CUtils::match("^(jbe|jz|jnz|ja|jb|jc|jnb|jnc|jle|jg|jge|jns|jl|js|jge|jcxz)\\s+(.*)$", strLine, arrMatches) )
 		{
 			return make_shared<CIConditionalJump>(CIConditionalJump::GetType(arrMatches[0]), CLabel(arrMatches[1]));
 		}

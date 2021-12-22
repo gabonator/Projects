@@ -225,7 +225,8 @@ public:
 			}*/
 
 			if (dynamic_pointer_cast<CITest>(pInstruction) || dynamic_pointer_cast<CICompare>(pInstruction) ||
-				dynamic_pointer_cast<CIAlu>(pInstruction) )
+				dynamic_pointer_cast<CIAlu>(pInstruction) ||
+                dynamic_pointer_cast<CITwoArgOp>(pInstruction))
 			{
 				return pInstruction;
 			}

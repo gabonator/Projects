@@ -103,7 +103,7 @@ public:
 			return true;
 		}
 		
-		if ( match("^0x([0-9A-F]+)$", str.c_str(), matches) )
+		if ( match("^0x([0-9A-Fa-f]+)$", str.c_str(), matches) )
 		{
 			std::stringstream converter(matches[0]);
 			converter >> std::hex >> nValue;

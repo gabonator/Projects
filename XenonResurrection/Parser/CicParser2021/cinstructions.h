@@ -193,6 +193,8 @@ public:
                     m_strInsertion = "_flags.sign = !!(_ah & 0x80)";
                 else if (op1 == "_bh" && op2 == "_bh")
                     m_strInsertion = "_flags.sign = !!(_bh & 0x80)";
+                else if (op1 == "_cl" && op2 == "_cl")
+                    m_strInsertion = "_flags.sign = !!(_cl & 0x80)";
                 else
                     _ASSERT(0);
             } else {

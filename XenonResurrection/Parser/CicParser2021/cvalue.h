@@ -547,6 +547,11 @@ string CValue::ToC()
         case CValue::offset_bp_plus_di_plus:
             ss << "_bp + _di + " << dec << m_nValue;
             return ss.str();
+        
+        case CValue::offset_bp_plus_si_plus:
+            ss << "_bp + _si + " << dec << m_nValue;
+            return ss.str();
+            
         case CValue::offset_bp_plus:
             ss << "_bp + " << dec << m_nValue;
             return ss.str();
