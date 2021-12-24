@@ -233,7 +233,10 @@ void _rep_stosb()
 
 void _scasb()
 {
-    _ASSERT(0);
+    int op2 = memory(_es, _di);
+    _ASSERT(_flags.direction == 0);
+    _di++;
+    int diff = op2 - _al;
 }
 void _cmc()
 {

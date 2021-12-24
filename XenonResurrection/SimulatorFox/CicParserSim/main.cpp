@@ -34,12 +34,48 @@ class CVga : public CVideoAdapter
 {
 public:
     uint8_t buffer[320*240*6];
+    uint8_t palette[0x300];
+    int readcolorindex{0};
+
     virtual bool PortWrite16(int port, int data)
     {
         return false;
     }
+    virtual bool PortRead8(uint16_t port, uint8_t& data) override
+    {
+        if (port == 0x3c9)
+        {
+            //std::cout << "Read color  " << (int)readcolorindex/3 << "."
+            //<< (readcolorindex%3) << " = " << (int)palette[readcolorindex] << "\n";
+            data = palette[readcolorindex++];
+            return true;
+        }
+        return false;
+    }
+
     virtual bool PortWrite8(int port, int data)
     {
+        static int colorindex = 0;
+        
+        if (port == 0x3c7)
+        {
+            //std::cout << "Set read color " << (int)data << "\n";
+
+            readcolorindex = data*3;
+            return true;
+        }
+        if (port == 0x3c8)
+        {
+            //_sync();
+            //std::cout << "Set write color " << (int)data << "\n";
+            colorindex = data*3;
+            return true;
+        }
+        if (port == 0x3c9)
+        {
+            palette[colorindex++] = data;
+            return true;
+        }
         return false;
     }
     virtual bool Interrupt()
@@ -71,14 +107,14 @@ public:
     }
     virtual DWORD GetPixel(int x, int y)
     {
-        uint8_t c = buffer[y*320+x]*2+16;
+        uint8_t c = buffer[y*320+x];
         /*
         if (y & 1)
             c = buffer[y*320+x + 320*240]+16;
         else
             c = buffer[y*320+x + 320*240*2]+16;
          */
-        return c | (c<<8) | (c<<16);
+        return (palette[3*c+2]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c]*4)<<16);
     }
     virtual void SetPixel(int x, int y, int c)
     {
@@ -94,6 +130,11 @@ CSdl mSdl;
 
 void _in(uint8_t& v, uint16_t a)
 {
+    if (mVideo->PortRead8(a, v))
+    {
+        return;
+    }
+
     if (a == 0x201) // joystick
     {
         v = 0;
@@ -115,11 +156,11 @@ void _in(uint8_t& v, uint16_t a)
         std::cout << "timer\n";
            return;
     }
-    if (a == 0x3da) //video
+    if (a == 0x3da)
     {
-        //_sync();
-        v = rand();
-        std::cout << "video\n";
+        static int retrace = 0;
+        retrace++;
+        v = (retrace & 1) ? 8 : 0;
         return;
     }
 
@@ -137,7 +178,7 @@ void _out(uint16_t port, uint8_t val)
     {
         return;
     }
-    if (port == 0x3c7 || port == 0x3c8 || port == 0x3c9 || port == 0x3c0) // video
+    if (port == 0x3c7 || port == 0x3c8 || port == 0x3c0 || port == 0x3c9) // video
     {
         return;
     }
@@ -148,6 +189,10 @@ void _out(uint16_t port, uint8_t val)
     if (port == 0x43 || port == 0x61 || port == 0x40)
     {
         return; // timer
+    }
+    if (port == 0x3bf || port == 0x3b8) // video
+    {
+        return;
     }
     _ASSERT(0);
 
@@ -163,7 +208,20 @@ void _out(uint16_t port, uint16_t val)
 }
 void _indirectCall(int ofs)
 {
-    _ASSERT(0);
+    switch(ofs)
+    {
+        case 0x5dce:
+        case 0x63f1:
+        case 0x63bf:
+        case 0x476c:
+        case 0x4dfd:
+        case 0x4e87:
+        case 0x4d0b:
+            std::cout << "Indirect " << ofs << "\n";
+            return;
+    }
+    std::cout << "Ignore indirect " << ofs << "\n";
+//    _ASSERT(0);
 }
 
 void bios16set(int seg, int ofs, int val)
@@ -766,7 +824,7 @@ void _sync()
       }
 
     mSdl.Loop();
-    SDL_Delay(30);
+    SDL_Delay(5);
 }
 
 int main(int argc, const char * argv[]) {

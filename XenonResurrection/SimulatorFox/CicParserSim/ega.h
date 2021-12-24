@@ -6,6 +6,7 @@ class CVideoAdapter
 public:
     virtual bool PortWrite16(int port, int data) = 0;
     virtual bool PortWrite8(int port, int data) = 0;
+    virtual bool PortRead8(uint16_t port, uint8_t& data) = 0;
     virtual bool Interrupt() = 0;
     virtual void Write(DWORD dwAddr, BYTE bWrite) = 0;
     virtual BYTE Read(DWORD dwAddr) = 0;
@@ -224,8 +225,12 @@ public:
     
         memset(memory, 0, sizeof(memory));
     }
-    
-    bool Interrupt()
+    virtual bool PortRead8(uint16_t port, uint8_t& data) override
+    {
+        return false;
+    }
+
+    bool Interrupt() override
     {
         if (_ax == 0x1002)
         {
