@@ -24,6 +24,7 @@ int reloc(int p)
 //    return 0x087c;
 }
 void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
+WORD memoryVideoGet16(WORD seg, WORD ofs);
 
 
 #include "ega.h"
@@ -70,7 +71,13 @@ public:
     }
     virtual DWORD GetPixel(int x, int y)
     {
-        uint8_t c = buffer[y*320+x]+16;
+        uint8_t c = buffer[y*320+x]*2+16;
+        /*
+        if (y & 1)
+            c = buffer[y*320+x + 320*240]+16;
+        else
+            c = buffer[y*320+x + 320*240*2]+16;
+         */
         return c | (c<<8) | (c<<16);
     }
     virtual void SetPixel(int x, int y, int c)
@@ -191,10 +198,13 @@ std::map<int, FILE*> myfiles;
 using namespace std;
 void _interrupt(BYTE i)
 {
+    static int curdoshandle = 0;
     static int fileHandle = 5;
     static FILE* f = nullptr;
     if (i == 0x21 && _ah == 0x3e)
     {
+        _ASSERT(_bx == curdoshandle);
+        curdoshandle = -1;
         std::cout << "Close file" << endl;
         _ASSERT(f);
         fclose(f);
@@ -221,7 +231,7 @@ void _interrupt(BYTE i)
         }
         filename[p] = 0;
         //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
-        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/working/";
+        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/raw/";
         strcat(fullname, filename);
         for (int i=0; i<128 && fullname[i]; i++)
             if (fullname[i] == '\\')
@@ -231,6 +241,7 @@ void _interrupt(BYTE i)
             _flags.carry = 0;
         _ASSERT(f == nullptr);
         _ax = fileHandle++;
+        curdoshandle = _ax;
         myfiles.insert(std::pair<int, FILE*>(_ax, f));
         
         
@@ -251,6 +262,7 @@ void _interrupt(BYTE i)
     }
     if (i == 0x21 && _ah == 0x3f)
     {
+        _ASSERT(_bx == curdoshandle);
         // read file CX bytes => CS:DX
         _ASSERT(f);
         //int16_t s = _cx;
@@ -665,6 +677,14 @@ WORD& memory16(WORD segment, int offset)
 {
     _ASSERT(offset <= 0xffff && offset >= 0);
     _ASSERT(segment != 0);
+    if (segment*16 + offset == 0x10200 + 0x0af4)
+    {
+        int f=9;
+    }
+    if (segment*16+offset == 0x4f5b0)
+    {
+        int f = 9;
+    }
     /*
     if (segment==_seg001 && (offset==0xB369 || offset==0xB37D || offset==0xB391))
     {
@@ -681,6 +701,16 @@ WORD& memory16(WORD segment, int offset)
 
 BYTE& memory(WORD segment, int offset)
 {
+    if (segment*16 +offset== 0x10200 + 0x0af4)
+    {
+        int f=9;
+    }
+
+    if (segment*16+offset == 0x4f5b0)
+    {
+        int f = 9;
+    }
+
     _ASSERT(offset <= 0xffff && offset >= 0);
     if (segment==_seg001 && offset == 0x571c)
     {
@@ -709,6 +739,14 @@ bool slowdown{false};
 
 void onKey(int k, int p)
 {
+    switch (k)
+    {
+        case SDL_SCANCODE_Q: memory(0x168f, 1067) = p; break;
+        case SDL_SCANCODE_W: memory(0x168f, 1069) = p; break;
+        case SDL_SCANCODE_E: memory(0x168f, 1070) = p; break;
+        case SDL_SCANCODE_R: memory(0x168f, 1084) = p; break;
+    }
+    // ds:1069, ds:1070, ds:1084, ds:1067
 }
 
 void loadSegment(uint8_t* buffer, const char* fname, int len, int ofs)
@@ -757,7 +795,7 @@ int main(int argc, const char * argv[]) {
 */
     
     // ds @ 168f:0000    0x6af0 -> 0x168f0
-    loadSegment(datasegment, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/working/TEST.EXE", 84992, 0x168f0 - 0x6af0); //33436);
+    loadSegment(datasegment, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/raw/TEST.EXE", 84992, 0x168f0 - 0x6af0); //33436);
     _ds = 0x168f;
     _cs = 0x1020;
     _ss = 0x200; //0x169f;
@@ -767,7 +805,11 @@ int main(int argc, const char * argv[]) {
     //0x87c0 == 0x6af0
     _ASSERT(memory(_ds, 0x0) == 'F');
     _ASSERT(memory(_cs, 0x0) == 3);
-    
+    _ds = 0x01dd-0x087c+0x168f;
+    _ss = 0x01ed-0x087c+0x168f;
+    _bp = 0x091c;
+    _es = _ds;
+
     mSdl.Init();
 /*
     _ds = 0x01dd;

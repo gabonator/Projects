@@ -196,7 +196,7 @@ template <class DST, class SRC, class DIR>
 void _rep_movsb()
 {
     _ASSERT(_cx < 0x6000);
-    _ASSERT(_cx);
+    //_ASSERT(_cx);
     while (_cx--)
         _movsb<DST, SRC, DIR>();
     _cx = 0;
@@ -223,7 +223,7 @@ void _rep_movsw()
 template <class DST, class DIR>
 void _rep_stosb()
 {
-    _ASSERT(_cx < 0x7000);
+    _ASSERT(_cx < 0x9000);
     if (!_cx)
         return;
     while (_cx--)
@@ -535,8 +535,8 @@ void _mul(WORD w)
     _ax = v & 0xffff;
     _dx = v >> 16;
 }
-void _mul(BYTE b)
+void _mul(BYTE b) // GABO!!!!!
 {
-    int v = b * _ax;
+    int v = b * _al;
     _ax = v & 0xffff;
 }

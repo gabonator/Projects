@@ -121,7 +121,7 @@ class CIMFixedArgOp : public CInstructionMatcher
 			return make_shared<CISingleArgOp>(CISingleArgOp::GetType(arrMatches[0]), CValue(arrMatches[1]));
 		}
 
-		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|clc|sahf|lahf|popf|pushf|xlat|cmc|scasb)$", strLine, arrMatches) )
+		if ( CUtils::match("^(cli|sti|std|stc|ctc|cld|aaa|cbw|lodsw|lodsb|stosb|stosw|movsw|movsb|cmpsb|clc|sahf|lahf|popf|pushf|xlat|cmc|scasb)$", strLine, arrMatches) )
 		{
 			return make_shared<CIZeroArgOp>(CIZeroArgOp::GetType(arrMatches[0]));
 		}

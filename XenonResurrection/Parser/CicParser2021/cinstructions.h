@@ -434,6 +434,7 @@ public:
 		case CIZeroArgOp::stosw: return "<" + _es + ", " + _dir + ">"; break;
 		case CIZeroArgOp::movsb: return "<" + _es + ", " + _ds + ", " + _dir + ">"; break;
 		case CIZeroArgOp::movsw: return "<" + _es + ", " + _ds + ", " + _dir + ">"; break;
+		case CIZeroArgOp::cmpsb: return "<" + _ds + ", " + _es + ", " + _dir + ">"; break;
 		//case CIString::scasb: return ""; break;
 		//case CIString::scasw: return ""; break;
 		default:
@@ -465,6 +466,7 @@ public:
 		case CIZeroArgOp::stosw: m_strOperation = "_stosw"+GetTemplate(pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::movsb: m_strOperation = "_movsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::movsw: m_strOperation = "_movsw"+GetTemplate(pInstruction->m_eType)+"()"; break;
+		case CIZeroArgOp::cmpsb: m_strOperation = "_cmpsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
         case CIZeroArgOp::scasb: m_strOperation = "_scasb()"; break;
 
 		case CIZeroArgOp::pushf: m_strOperation = "_pushf()"; break;

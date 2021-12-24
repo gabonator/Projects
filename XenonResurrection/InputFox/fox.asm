@@ -1,5 +1,4 @@
 seg001 segment	byte public 'CODE' use16
-
 entry proc near
   sti
   cld
@@ -147,7 +146,7 @@ loc_014c:
   call sub_3271
   jmp loc_0117
   db 00h
-entry endp
+entry endp ; sp-analysis failed
 
 sub_0158 proc near
   mov ax, 0x168f
@@ -276,7 +275,7 @@ loc_0225:
   mov word ptr [0x1f7], 0xbe0
   sub word ptr [0x1f5], bx
   call sub_0488
-sub_01f8 endp
+sub_01f8 endp ; sp-analysis failed
 
 sub_0244 proc near
   mov word ptr [0x1f5], 0xa
@@ -469,7 +468,7 @@ loc_032a:
   db 5bh
   db 58h
   db c3h
-sub_027b endp
+sub_027b endp ; sp-analysis failed
 
 sub_038a proc near
   mov ax, 0x168f
@@ -625,7 +624,7 @@ loc_0450:
   db e2h
   db e1h
   db c3h
-sub_0423 endp
+sub_0423 endp ; sp-analysis failed
 
 sub_0488 proc near
   push ax
@@ -799,7 +798,7 @@ loc_058d:
   db 55h
   db 55h
   db 55h
-sub_050e endp
+sub_050e endp ; sp-analysis failed
 
 sub_05b7 proc near
   sub byte ptr [0x6506], 0x1
@@ -1434,7 +1433,7 @@ loc_0ab9:
   lodsw
   xchg ah, al
   mov dl, 0x11
-sub_097b endp
+sub_097b endp ; sp-analysis failed
 
 sub_0abe proc near
   dec dl
@@ -2562,7 +2561,7 @@ loc_0d05:
   db 58h
   db 5dh
   db cfh
-sub_0ceb endp
+sub_0ceb endp ; sp-analysis failed
 
 sub_107d proc near
   cli
@@ -2854,7 +2853,7 @@ sub_11e6 proc near
   db 5bh
   db 58h
   db c3h
-sub_11e6 endp
+sub_11e6 endp ; sp-analysis failed
 
 sub_1269 proc near
   push ax
@@ -3651,7 +3650,7 @@ loc_128d:
   db e9h
   db 80h
   db fdh
-sub_1269 endp
+sub_1269 endp ; sp-analysis failed
 
 sub_15a7 proc near
   push dx
@@ -4078,7 +4077,7 @@ loc_165e:
   db 46h
   db 46h
   db c3h
-sub_164f endp
+sub_164f endp ; sp-analysis failed
 
 sub_17eb proc near
   mov al, cs:[0x16e4]
@@ -4090,7 +4089,7 @@ sub_17eb proc near
 loc_17fc:
   ret
   db 00h
-sub_17eb endp
+sub_17eb endp ; sp-analysis failed
 
 sub_17fe proc near
   mov ax, 0x168f
@@ -4570,7 +4569,7 @@ sub_1c09 proc near
   mov [0x4e65], ax
   ret
   db 00h
-sub_1c09 endp
+sub_1c09 endp ; sp-analysis failed
 
 sub_1c1a proc near
   cmp byte ptr cs:[0x1], 0x3
@@ -4629,7 +4628,7 @@ loc_1c45:
   db 00h
   db 00h
   db 00h
-sub_1c30 endp
+sub_1c30 endp ; sp-analysis failed
 
 sub_1c61 proc near
   push ax
@@ -5883,7 +5882,7 @@ loc_273d:
   db aah
   db ffh
   db ffh
-sub_24c9 endp
+sub_24c9 endp ; sp-analysis failed
 
 sub_276f proc near
   push ax
@@ -6737,7 +6736,7 @@ loc_2dca:
   db c7h
   db 80h
   db 3eh
-sub_2d62 endp
+sub_2d62 endp ; sp-analysis failed
 
 sub_2de8 proc near
   push dx
@@ -8150,7 +8149,7 @@ loc_3710:
   mov si, 0x528e
   mov ax, 0x14d
   mov dx, 0x14e
-sub_3627 endp
+sub_3627 endp ; sp-analysis failed
 
 sub_372f proc near
   lea di, [si+0x12]
@@ -10867,7 +10866,7 @@ loc_473e:
   db 65h
   db 01h
   db c3h
-sub_4657 endp
+sub_4657 endp ; sp-analysis failed
 
 sub_4ae9 proc near
   cmp word ptr [0x5292], -0x1
@@ -10990,7 +10989,7 @@ loc_4bad:
   db 59h
   db 58h
   db c3h
-sub_4b7d endp
+sub_4b7d endp ; sp-analysis failed
 
 sub_4bd0 proc near
   push ax
@@ -11132,7 +11131,7 @@ loc_4be0:
   db 65h
   db 06h
   db c3h
-sub_4bd0 endp
+sub_4bd0 endp ; sp-analysis failed
 
 sub_4c65 proc near
   mov byte ptr [0x650f], 0x6
@@ -11239,11 +11238,11 @@ loc_4ca1:
   db 7eh
   db 52h
   db f0h
-sub_4c65 endp
+sub_4c65 endp ; sp-analysis failed
 
 sub_4cf0 proc near
   mov word ptr [0x528a], 0x0
-sub_4cf0 endp
+sub_4cf0 endp ; sp-analysis failed
 
 sub_4cf6 proc near
   sub byte ptr [0x650f], 0x1
@@ -11432,7 +11431,7 @@ sub_4cf6 proc near
   db 74h
   db b5h
   db c3h
-sub_4cf6 endp
+sub_4cf6 endp ; sp-analysis failed
 
 sub_4dc0 proc near
   call sub_59e7
@@ -12040,7 +12039,7 @@ sub_5133 proc near
   push bx
   push bp
   mov bp, sp
-  int 0xff     ; mov bx, word ptr [bp+param_1+0x4]
+  db 01h ;mov bx, word ptr [bp+param_1+0x4]
   mov bx, word ptr [bx+0x4]
   and bh, 0x1f
   cmp bl, 0x65
@@ -12053,7 +12052,7 @@ loc_514e:
   pop bp
   pop bx
   ret 0x2
-sub_5122 endp
+sub_5133 endp
 
 sub_5153 proc near
   mov bx, word ptr [di]
@@ -12114,7 +12113,7 @@ loc_51c3:
   clc
   ret
   db 00h
-sub_5153 endp
+sub_5153 endp ; sp-analysis failed
 
 sub_51c6 proc near
   mov ax, 0x168f
@@ -12578,7 +12577,7 @@ loc_5529:
   call sub_1c1a
   ret
   db 00h
-sub_5477 endp
+sub_5477 endp ; sp-analysis failed
 
 sub_5557 proc near
   mov al, cs:[0x1]
@@ -13056,7 +13055,7 @@ loc_5926:
   db 59h
   db f9h
   db c3h
-sub_58c8 endp
+sub_58c8 endp ; sp-analysis failed
 
 sub_5945 proc near
   mov ax, 0x168f
@@ -13138,7 +13137,7 @@ loc_5993:
   db 65h
   db 00h
   db c3h
-sub_596f endp
+sub_596f endp ; sp-analysis failed
 
 sub_59cc proc near
   mov byte ptr [0x6506], 0x32
@@ -13163,3 +13162,4 @@ loc_59fd:
   mov byte ptr [0x6517], 0x1
   ret
 sub_59e7 endp
+seg001 ends

@@ -2361,7 +2361,7 @@ void sub_16222()
     if (_al != 0)                               //jnz short loc_1623E
       goto loc_1623E;
     _flags.carry = 0;
-    /* FUCKING PROBLEM: ALL PATH MUST SET CARRY FLAG !!!!!!!!!!!!!*/
+    /* BLOODY PROBLEM FROM HELL: ALL PATH MUST SET CARRY FLAG !!!!!!!!!!!!!*/
     return;                                     //retn
 loc_1623E:                                      //loc_1623E:
     _si += 0x0004;                              //add si, 4

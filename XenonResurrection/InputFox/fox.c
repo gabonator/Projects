@@ -286,6 +286,8 @@ loc_014c:                                       //loc_014c:
     sub_3271();                                 //call sub_3271
     goto loc_0117;                              //jmp loc_0117
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //entry endp_failed
+    _STOP_("continues");                        //sub_0158 proc near
 }
 
 void sub_0158()
@@ -426,6 +428,8 @@ loc_0225:                                       //loc_0225:
     memory16(_ds, 503) = 0x0be0;                //mov word ptr [0x1f7], 0xbe0
     memory16(_ds, 501) -= _bx;                  //sub word ptr [0x1f5], bx
     sub_0488();                                 //call sub_0488
+    _STOP_("sp-trace-fail");                    //sub_01f8 endp_failed
+    _STOP_("continues");                        //sub_0244 proc near
 }
 
 void sub_0244()
@@ -621,6 +625,8 @@ loc_032a:                                       //loc_032a:
     _STOP_("db 5bh");                           //db 5bh
     _STOP_("db 58h");                           //db 58h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_027b endp_failed
+    _STOP_("continues");                        //sub_038a proc near
 }
 
 void sub_038a()
@@ -788,6 +794,8 @@ loc_0450:                                       //loc_0450:
     _STOP_("db e2h");                           //db e2h
     _STOP_("db e1h");                           //db e1h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_0423 endp_failed
+    _STOP_("continues");                        //sub_0488 proc near
 }
 
 void sub_0488()
@@ -974,6 +982,8 @@ loc_058d:                                       //loc_058d:
     _STOP_("db 55h");                           //db 55h
     _STOP_("db 55h");                           //db 55h
     _STOP_("db 55h");                           //db 55h
+    _STOP_("sp-trace-fail");                    //sub_050e endp_failed
+    _STOP_("continues");                        //sub_05b7 proc near
 }
 
 void sub_05b7()
@@ -1651,6 +1661,8 @@ loc_0ab9:                                       //loc_0ab9:
     _lodsw<MemData, DirForward>();              //lodsw
     _xchg(_ah, _al);                            //xchg ah, al
     _dl = 0x11;                                 //mov dl, 0x11
+    _STOP_("sp-trace-fail");                    //sub_097b endp_failed
+    _STOP_("continues");                        //sub_0abe proc near
 }
 
 void sub_0abe()
@@ -2798,6 +2810,8 @@ loc_0d05:                                       //loc_0d05:
     _STOP_("db 58h");                           //db 58h
     _STOP_("db 5dh");                           //db 5dh
     _STOP_("db cfh");                           //db cfh
+    _STOP_("sp-trace-fail");                    //sub_0ceb endp_failed
+    _STOP_("continues");                        //sub_107d proc near
 }
 
 void sub_107d()
@@ -3106,6 +3120,8 @@ void sub_11e6()
     _STOP_("db 5bh");                           //db 5bh
     _STOP_("db 58h");                           //db 58h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_11e6 endp_failed
+    _STOP_("continues");                        //sub_1269 proc near
 }
 
 void sub_1269()
@@ -3906,6 +3922,8 @@ loc_128d:                                       //loc_128d:
     _STOP_("db e9h");                           //db e9h
     _STOP_("db 80h");                           //db 80h
     _STOP_("db fdh");                           //db fdh
+    _STOP_("sp-trace-fail");                    //sub_1269 endp_failed
+    _STOP_("continues");                        //sub_15a7 proc near
 }
 
 void sub_15a7()
@@ -4344,6 +4362,8 @@ loc_165e:                                       //loc_165e:
     _STOP_("db 46h");                           //db 46h
     _STOP_("db 46h");                           //db 46h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_164f endp_failed
+    _STOP_("continues");                        //sub_17eb proc near
 }
 
 void sub_17eb()
@@ -4360,6 +4380,8 @@ loc_17eb:
 loc_17fc:                                       //loc_17fc:
     return;                                     //ret
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //sub_17eb endp_failed
+    _STOP_("continues");                        //sub_17fe proc near
 }
 
 void sub_17fe()
@@ -4860,6 +4882,8 @@ void sub_1c09()
     memory16(_ds, 0x4e65) = _ax;                //mov [0x4e65], ax
     return;                                     //ret
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //sub_1c09 endp_failed
+    _STOP_("continues");                        //sub_1c1a proc near
 }
 
 void sub_1c1a()
@@ -4925,6 +4949,8 @@ loc_1c45:                                       //loc_1c45:
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //sub_1c30 endp_failed
+    _STOP_("continues");                        //sub_1c61 proc near
 }
 
 void sub_1c61()
@@ -6245,6 +6271,8 @@ loc_273d:                                       //loc_273d:
     _STOP_("db aah");                           //db aah
     _STOP_("db ffh");                           //db ffh
     _STOP_("db ffh");                           //db ffh
+    _STOP_("sp-trace-fail");                    //sub_24c9 endp_failed
+    _STOP_("continues");                        //sub_276f proc near
 }
 
 void sub_276f()
@@ -7148,6 +7176,8 @@ loc_2dca:                                       //loc_2dca:
     _STOP_("db c7h");                           //db c7h
     _STOP_("db 80h");                           //db 80h
     _STOP_("db 3eh");                           //db 3eh
+    _STOP_("sp-trace-fail");                    //sub_2d62 endp_failed
+    _STOP_("continues");                        //sub_2de8 proc near
 }
 
 void sub_2de8()
@@ -8598,6 +8628,8 @@ loc_3710:                                       //loc_3710:
     _si = 0x528e;                               //mov si, 0x528e
     _ax = 0x014d;                               //mov ax, 0x14d
     _dx = 0x014e;                               //mov dx, 0x14e
+    _STOP_("sp-trace-fail");                    //sub_3627 endp_failed
+    _STOP_("continues");                        //sub_372f proc near
 }
 
 void sub_372f()
@@ -11415,6 +11447,8 @@ loc_473e:                                       //loc_473e:
     _STOP_("db 65h");                           //db 65h
     _STOP_("db 01h");                           //db 01h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_4657 endp_failed
+    _STOP_("continues");                        //sub_4ae9 proc near
 }
 
 void sub_4ae9()
@@ -11541,6 +11575,8 @@ loc_4bad:                                       //loc_4bad:
     _STOP_("db 59h");                           //db 59h
     _STOP_("db 58h");                           //db 58h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_4b7d endp_failed
+    _STOP_("continues");                        //sub_4bd0 proc near
 }
 
 void sub_4bd0()
@@ -11684,6 +11720,8 @@ loc_4be0:                                       //loc_4be0:
     _STOP_("db 65h");                           //db 65h
     _STOP_("db 06h");                           //db 06h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_4bd0 endp_failed
+    _STOP_("continues");                        //sub_4c65 proc near
 }
 
 void sub_4c65()
@@ -11792,11 +11830,15 @@ loc_4ca1:                                       //loc_4ca1:
     _STOP_("db 7eh");                           //db 7eh
     _STOP_("db 52h");                           //db 52h
     _STOP_("db f0h");                           //db f0h
+    _STOP_("sp-trace-fail");                    //sub_4c65 endp_failed
+    _STOP_("continues");                        //sub_4cf0 proc near
 }
 
 void sub_4cf0()
 {
     memory16(_ds, 21130) = 0x0000;              //mov word ptr [0x528a], 0x0
+    _STOP_("sp-trace-fail");                    //sub_4cf0 endp_failed
+    _STOP_("continues");                        //sub_4cf6 proc near
 }
 
 void sub_4cf6()
@@ -11988,6 +12030,8 @@ void sub_4cf6()
     _STOP_("db 74h");                           //db 74h
     _STOP_("db b5h");                           //db b5h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_4cf6 endp_failed
+    _STOP_("continues");                        //sub_4dc0 proc near
 }
 
 void sub_4dc0()
@@ -12612,7 +12656,7 @@ void sub_5133()
     _push(_bx);                                 //push bx
     _push(_bp);                                 //push bp
     _bp = _sp;                                  //mov bp, sp
-    _interrupt(255);                            //int 0xff
+    _STOP_("db 01h");                           //db 01h
     _bx = memory16(_ds, _bx + 4);               //mov bx, word ptr [bx+0x4]
     _bh &= 0x1f;                                //and bh, 0x1f
     if (_bl < 0x65)                             //jc loc_5149
@@ -12689,6 +12733,8 @@ loc_51c3:                                       //loc_51c3:
     _flags.carry = false;                       //clc
     return;                                     //ret
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //sub_5153 endp_failed
+    _STOP_("continues");                        //sub_51c6 proc near
 }
 
 void sub_51c6()
@@ -13178,6 +13224,8 @@ loc_5529:                                       //loc_5529:
     sub_1c1a();                                 //call sub_1c1a
     return;                                     //ret
     _STOP_("db 00h");                           //db 00h
+    _STOP_("sp-trace-fail");                    //sub_5477 endp_failed
+    _STOP_("continues");                        //sub_5557 proc near
 }
 
 void sub_5557()
@@ -13694,6 +13742,8 @@ loc_5926:                                       //loc_5926:
     _STOP_("db 59h");                           //db 59h
     _STOP_("db f9h");                           //db f9h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_58c8 endp_failed
+    _STOP_("continues");                        //sub_5945 proc near
 }
 
 void sub_5945()
@@ -13778,6 +13828,8 @@ loc_5993:                                       //loc_5993:
     _STOP_("db 65h");                           //db 65h
     _STOP_("db 00h");                           //db 00h
     _STOP_("db c3h");                           //db c3h
+    _STOP_("sp-trace-fail");                    //sub_596f endp_failed
+    _STOP_("continues");                        //sub_59cc proc near
 }
 
 void sub_59cc()
