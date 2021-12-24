@@ -206,17 +206,21 @@ void _out(uint16_t port, uint16_t val)
 
     _ASSERT(0);
 }
+
+#include "indirect.h"
+
 void _indirectCall(int ofs)
 {
     switch(ofs)
     {
-        case 0x5dce:
-        case 0x63f1:
-        case 0x63bf:
-        case 0x476c:
-        case 0x4dfd:
-        case 0x4e87:
-        case 0x4d0b:
+        case 0x5dce: sub_5dce(); return;
+        case 0x476c: sub_476c(); return;
+        case 0x4dfd: sub_4dfd(); return;
+        case 0x4e87: sub_4e87(); return;
+        case 0x63f1: sub_63f1(); return;
+        case 0x63bf: sub_63bf(); return;
+        case 0x4d0b: sub_4d0b(); return;
+        case 0x4748: sub_4748(); return;
             std::cout << "Indirect " << ofs << "\n";
             return;
     }
@@ -414,7 +418,20 @@ void _interrupt(BYTE i)
     {
         static bool newline = false;
         static int lasty = 0;
-        
+        if (_ah == 0x00)
+        {
+            cout << hex << "\nset video mode " << (int)_al << endl;
+            if (_al == 0x13)
+                mVideo = &mVga;
+            else
+                mVideo = &mEga;
+            return;
+        }
+
+        if (mVideo->Interrupt())
+        {
+            return;
+        }
         if (_ah == 0x1a)
         {
             //https://dos4gw.org/INT_10H_1aH_Set_or_Query_Display_Combination_Code
@@ -424,10 +441,6 @@ void _interrupt(BYTE i)
             
         }
 
-        if (_ah == 0x10 && _al == 0x12)
-        {
-            return;
-        }
         if (_ah == 0x0b)
         {
             return;
@@ -481,22 +494,14 @@ void _interrupt(BYTE i)
             fprintf(stdout, "%c", _al < 0x80 ? _al : '#');
             return;
         }
-        if (_ah == 0x00)
-        {
-            cout << hex << "\nset video mode " << (int)_al << endl;
-            if (_al == 0x13)
-                mVideo = &mVga;
-            else
-                mVideo = &mEga;
-            return;
-        }
         if (_ah == 0x10 && _al == 0)
         {
             cout << hex << "\nset text palette[" << (int)_bl << "] = " << (int)_bh << endl;
             return;
         }
-        if (_ax == 0x1002)
+        if (_ax == 0x1002 || _ax == 0x1012)
         {
+            mVideo->Interrupt();
             //cout << "set palette " << endl;
             return;
         }
@@ -803,6 +808,15 @@ void onKey(int k, int p)
         case SDL_SCANCODE_W: memory(0x168f, 1069) = p; break;
         case SDL_SCANCODE_E: memory(0x168f, 1070) = p; break;
         case SDL_SCANCODE_R: memory(0x168f, 1084) = p; break;
+
+        case SDL_SCANCODE_T:
+            for (int i=1060; i<1100; i+=2)
+                memory(0x168f, i) = p;
+            break;
+        case SDL_SCANCODE_Y:
+            for (int i=1060; i<1100; i+=2)
+                memory(0x168f, i+1) = p;
+            break;
     }
     // ds:1069, ds:1070, ds:1084, ds:1067
 }

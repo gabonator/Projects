@@ -91,6 +91,9 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
   if (l == "movsb.rep es:di, si")
     l = "rep movsb";
 
+  if (l.indexOf("param_") != -1)
+    l = "db 00h; " + l;
+
   l = l.split(" + -").join("-");
   l = l.split(" + ").join("+");
 

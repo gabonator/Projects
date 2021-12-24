@@ -886,10 +886,10 @@ loc_050c:                                       //loc_050c:
     _STOP_("goto loc_058d");                    //jmp loc_058d
 }
 
-void sub_050e()
+void sub_050e() // -- draw char
 {
     
-
+    _sync();
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -5847,13 +5847,18 @@ loc_2111:                                       //loc_2111:
         goto loc_20ee;
     goto loc_24a9;                              //jmp loc_24a9
 loc_213c:                                       //loc_213c:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
     _al = (~_al);                               //not al
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
     _dl &= _dh;                                 //and dl, dh
     _ah = _dl;                                  //mov ah, dl
@@ -5861,7 +5866,12 @@ loc_213c:                                       //loc_213c:
     if (_cl != 0)                               //jnz loc_213c
         goto loc_213c;
     _ah = (~_ah);                               //not ah
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+        //_xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], al
+    }
     _cl = memory(_cs, 0x1C4A);                  //mov cl, byte ptr cs:[0x1c4a]
     _al = _cl;                                  //mov al, cl
     _cbw();                                     //cbw
@@ -5898,19 +5908,29 @@ loc_2190:                                       //loc_2190:
     _dx = _pop();                               //pop dx
     _ax = _ax ^ _ax;                            //xor ax, ax
 loc_21b5:                                       //loc_21b5:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
     _dl &= _dh;                                 //and dl, dh
     _ah = _dl;                                  //mov ah, dl
     _cl -= 1;                                   //dec cl
     if (_cl != 0)                               //jnz loc_21b5
         goto loc_21b5;
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+        //_xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], al
+    }
     _cl = memory(_cs, 0x1C4A);                  //mov cl, byte ptr cs:[0x1c4a]
     _al = _cl;                                  //mov al, cl
     _cbw();                                     //cbw
@@ -5937,19 +5957,24 @@ loc_21f6:                                       //loc_21f6:
         goto loc_220a;
     _ax -= 1;                                   //dec ax
     _si -= _ax;                                 //sub si, ax
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _cx += 1;                                   //inc cx
     goto loc_2219;                              //jmp loc_2219
 loc_220a:                                       //loc_220a:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
     _al = (~_al);                               //not al
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
 loc_2219:                                       //loc_2219:
     _dl &= _dh;                                 //and dl, dh
@@ -5959,7 +5984,12 @@ loc_2219:                                       //loc_2219:
         goto loc_220a;
     _ah = (~_ah);                               //not ah
     _ah = _ah | memory(_cs, 0x1C57);            //or ah, byte ptr cs:[0x1c57]
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+        //_xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], al
+    }
     _cl = memory(_cs, 0x1C4A);                  //mov cl, byte ptr cs:[0x1c4a]
     _al = memory(_cs, 0x1C4B);                  //mov al, cs:[0x1c4b]
     _cbw();                                     //cbw
@@ -6003,18 +6033,23 @@ loc_228d:                                       //loc_228d:
         goto loc_22a1;
     _ax -= 1;                                   //dec ax
     _si -= _ax;                                 //sub si, ax
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _cx += 1;                                   //inc cx
     goto loc_22ae;                              //jmp loc_22ae
 loc_22a1:                                       //loc_22a1:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
 loc_22ae:                                       //loc_22ae:
     _dl &= _dh;                                 //and dl, dh
@@ -6023,7 +6058,12 @@ loc_22ae:                                       //loc_22ae:
     if (_cl != 0)                               //jnz loc_22a1
         goto loc_22a1;
     _ah = _ah & memory(_cs, 0x1C57);            //and ah, byte ptr cs:[0x1c57]
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+        //_xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], al
+    }
     _cl = memory(_cs, 0x1C4A);                  //mov cl, byte ptr cs:[0x1c4a]
     _al = memory(_cs, 0x1C4B);                  //mov al, cs:[0x1c4b]
     _cbw();                                     //cbw
@@ -6107,16 +6147,23 @@ loc_2356:                                       //loc_2356:
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
     _al = (~_al);                               //not al
-    _scasb();                                   //scasb
-    _di -= 1;                                   //dec di
-    _stosb<MemData, DirForward>();              //stosb
+    // gabo!!!
+    memoryVideoGet(_es, _di);
+    //_scasb();                                   //scasb
+    //_di -= 1;                                   //dec di
+    _stosb<MemVideo, DirForward>();              //stosb
     _bl &= _bh;                                 //and bl, bh
     _ah = _bl;                                  //mov ah, bl
     _cl -= 1;                                   //dec cl
     if (_cl != 0)                               //jnz loc_2356
         goto loc_2356;
     _ah = (~_ah);                               //not ah
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+//        _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    }
     _cl = _dh;                                  //mov cl, dh
     _di -= _bp;                                 //sub di, bp
     _dl -= 1;                                   //dec dl
@@ -6150,15 +6197,22 @@ loc_23b8:                                       //loc_23b8:
     _bl = _al;                                  //mov bl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
-    _scasb();                                   //scasb
-    _di -= 1;                                   //dec di
-    _stosb<MemData, DirForward>();              //stosb
+    // gabo!!!
+    memoryVideoGet(_es, _di);
+    //_scasb();                                   //scasb
+    //_di -= 1;                                   //dec di
+    _stosb<MemVideo, DirForward>();              //stosb
     _bl &= _bh;                                 //and bl, bh
     _ah = _bl;                                  //mov ah, bl
     _cl -= 1;                                   //dec cl
     if (_cl != 0)                               //jnz loc_23b8
         goto loc_23b8;
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+//        _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    }
     _cl = _dh;                                  //mov cl, dh
     _di -= _bp;                                 //sub di, bp
     _dl -= 1;                                   //dec dl
@@ -11931,68 +11985,6 @@ loc_4b7c:                                       //loc_4b7c:
     return;
 }
 
-void sub_4b7d()
-{
-    _push(_ax);                                 //push ax
-    _push(_cx);                                 //push cx
-    _push(_dx);                                 //push dx
-    _push(_bp);                                 //push bp
-    _ax = _ax ^ _ax;                            //xor ax, ax
-    if (memory(_ds, 25863) == 0x00)             //jz loc_4b95
-        goto loc_4b95;
-    _ax = memory16(_ds, 0x5285);                //mov ax, [0x5285]
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-    _ax <<= 1;                                  //shl ax, 1
-loc_4b95:                                       //loc_4b95:
-    _cl = memory(_ds, 21124);                   //mov cl, byte ptr [0x5284]
-    _sar(_ax, _cl);                             //sar ax, cl
-    _dx = memory16(_ds, 21122);                 //mov dx, word ptr [0x5282]
-    _dx += _ax;                                 //add dx, ax
-    if ((short)_dx >= (short)_bp)               //jge loc_4bad
-        goto loc_4bad;
-    _bp = -_bp;                                 //neg bp
-    if ((short)_dx <= (short)_bp)               //jle loc_4bad
-        goto loc_4bad;
-    _bp = _dx;                                  //mov bp, dx
-loc_4bad:                                       //loc_4bad:
-    memory16(_ds, 21122) = _bp;                 //mov word ptr [0x5282], bp
-    _bp = _pop();                               //pop bp
-    _dx = _pop();                               //pop dx
-    _cx = _pop();                               //pop cx
-    _ax = _pop();                               //pop ax
-    return;                                     //ret
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db c2h");                           //db c2h
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db f7h");                           //db f7h
-    _STOP_("db ddh");                           //db ddh
-    _STOP_("db 3bh");                           //db 3bh
-    _STOP_("db d5h");                           //db d5h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db eah");                           //db eah
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("sp-trace-fail");                    //sub_4b7d endp_failed
-    _STOP_("continues");                        //sub_4bd0 proc near
-}
-
 void sub_4bd0()
 {
     _push(_ax);                                 //push ax
@@ -12247,12 +12239,12 @@ loc_4ca1:                                       //loc_4ca1:
     _STOP_("sp-trace-fail");                    //sub_4c65 endp_failed
     _STOP_("continues");                        //sub_4cf0 proc near
 }
+void sub_4cf6();
 
 void sub_4cf0()
 {
     memory16(_ds, 21130) = 0x0000;              //mov word ptr [0x528a], 0x0
-    _STOP_("sp-trace-fail");                    //sub_4cf0 endp_failed
-    _STOP_("continues");                        //sub_4cf6 proc near
+    sub_4cf6();
 }
 
 void sub_4cf6()
