@@ -269,7 +269,7 @@ loc_641e:                                       //loc_641e:
     _flags.carry = memory(_ds, _si + 15) < 0x01;//sub byte ptr [si+0xf], 0x1
     memory(_ds, _si + 15) -= 0x01;
     memory(_ds, _si + 15) = memory(_ds, _si + 15) + 0x00 + _flags.carry;
-    if (_FIXME_)                                //jnz loc_6495
+    if (memory(_ds, _si + 15) != 0)                                //jnz loc_6495
         goto loc_6495;
     _ax = memory16(_ds, 0x527e);                //mov ax, [0x527e]
     _ax = _ax - memory16(_ds, _si + 2);         //sub ax, word ptr [si+0x2]
@@ -614,7 +614,7 @@ loc_5e4c:                                       //loc_5e4c:
 loc_5e5a:                                       //loc_5e5a:
     memory(_ds, _si + 2) &= 0xf0;               //and byte ptr [si+0x2], 0xf0
     sub_5ee4();                                 //call sub_5ee4
-    _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
+    _al = memory(_es, (_di + 65280)&0xffff);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
     _xlat();                                    //xlat
     _al &= 0x01;                                //and al, 0x1
@@ -692,4 +692,218 @@ loc_47d2:                                       //loc_47d2:
 void sub_4df9()
 {
     sub_4ca2();                                 //call sub_4ca2
+}
+
+void sub_5095()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_dx);                                 //push dx
+    _ax = memory16(_ds, _si);                   //mov ax, word ptr [si]
+    _ax = _ax - memory16(_ds, _di);             //sub ax, word ptr [di]
+    if ((short)_ax >= 0)                        //jns loc_50a0
+        goto loc_50a0;
+    _ax = -_ax;                                 //neg ax
+loc_50a0:                                       //loc_50a0:
+    if (_ax >= 0x0040)                          //jnc loc_511d
+        goto loc_511d;
+    _ax = memory16(_ds, _si + 2);               //mov ax, word ptr [si+0x2]
+    _ax = _ax - memory16(_ds, _di + 2);         //sub ax, word ptr [di+0x2]
+    if ((short)_ax >= 0)                        //jns loc_50af
+        goto loc_50af;
+    _ax = -_ax;                                 //neg ax
+loc_50af:                                       //loc_50af:
+    if (_ax >= 0x0046)                          //jnc loc_511d
+        goto loc_511d;
+    _ax = memory16(_ds, _si + 2);               //mov ax, word ptr [si+0x2]
+    _dx = memory16(_ds, _di + 2);               //mov dx, word ptr [di+0x2]
+    _bx = memory16(_ds, _si + 4);               //mov bx, word ptr [si+0x4]
+    if ((short)_ax >= (short)_dx)               //jge loc_50c5
+        goto loc_50c5;
+    _xchg(_ax, _dx);                            //xchg ax, dx
+    _bx = memory16(_ds, _di + 4);               //mov bx, word ptr [di+0x4]
+loc_50c5:                                       //loc_50c5:
+    _bh &= 0x1f;                                //and bh, 0x1f
+    _bx <<= 1;                                  //shl bx, 1
+    _bl = memory(_ds, _bx + 27640);             //mov bl, byte ptr [bx+0x6bf8]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bx -= 0x0003;                              //sub bx, 0x3
+    _ax -= _bx;                                 //sub ax, bx
+    if ((short)_ax >= (short)_dx)               //jge loc_511d
+        goto loc_511d;
+    _bx = memory16(_ds, _si + 4);               //mov bx, word ptr [si+0x4]
+    _bh &= 0x1f;                                //and bh, 0x1f
+    _bx <<= 1;                                  //shl bx, 1
+    _bp = _bx;                                  //mov bp, bx
+    _al = memory(_ds, _bx + 26927);             //mov al, byte ptr [bx+0x692f]
+    _ah = _ah ^ _ah;                            //xor ah, ah
+    _dx = memory16(_ds, _si);                   //mov dx, word ptr [si]
+    _dx -= _ax;                                 //sub dx, ax
+    _bx = memory16(_ds, _di + 4);               //mov bx, word ptr [di+0x4]
+    _bh &= 0x1f;                                //and bh, 0x1f
+    _bx <<= 1;                                  //shl bx, 1
+    _ax = memory16(_ds, _di);                   //mov ax, word ptr [di]
+    _flags.carry = _al < memory(_ds, _bx + 26927);//sub al, byte ptr [bx+0x692f]
+    _al = _al - memory(_ds, _bx + 26927);
+    _ah -= 0x00 + _flags.carry;                 //sbb ah, 0x0
+    _bl = memory(_ds, _bx + 27639);             //mov bl, byte ptr [bx+0x6bf7]
+    _bl >>= 1;                                  //shr bl, 1
+    if ((short)_ax < (short)_dx)                //jl loc_5110
+        goto loc_5110;
+    _xchg(_ax, _dx);                            //xchg ax, dx
+    _bl = memory(_ds, _bp + 27639);             //mov bl, byte ptr ds:[bp+0x6bf7]
+    _bl >>= 1;                                  //shr bl, 1
+loc_5110:                                       //loc_5110:
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _ax += _bx;                                 //add ax, bx
+    if ((short)_ax <= (short)_dx)               //jle loc_511d
+        goto loc_511d;
+    _dx = _pop();                               //pop dx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+    _flags.carry = true;                        //stc
+    return;                                     //ret
+loc_511d:                                       //loc_511d:
+    _dx = _pop();                               //pop dx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+    _flags.carry = false;                       //clc
+}
+
+void sub_11e6();
+void sub_59cc();
+void sub_4ae9();                    
+void sub_596f()
+{
+    _push(_ax);                                 //push ax
+    _al = 0x04;                                 //mov al, 0x4
+    sub_11e6();                                 //call sub_11e6
+    _ax = _pop();                               //pop ax
+    sub_59cc();                                 //call sub_59cc
+    sub_59cc();                                 //call sub_59cc
+    memory(_ds, 25876) = 0x18;                  //mov byte ptr [0x6514], 0x18
+    memory(_ds, 25875) = 0x00;                  //mov byte ptr [0x6513], 0x0
+    memory(_ds, 21127) = 0x00;                  //mov byte ptr [0x5287], 0x0
+    if ((short)memory16(_ds, 21116) > (short)_ax)//jg loc_5993
+        goto loc_5993;
+    _bp = -_bp;                                 //neg bp
+loc_5993:                                       //loc_5993:
+    memory16(_ds, 21122) = _bp;                 //mov word ptr [0x5282], bp
+    memory16(_ds, 21130) = 0xff80;              //mov word ptr [0x528a], 0xff80
+    sub_4ae9();                                 //call sub_4ae9
+}
+
+
+void sub_5a04()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _si = 0x527c;                               //mov si, 0x527c
+    sub_5095();                                 //call sub_5095
+    if (!_flags.carry)                          //jnc loc_5a40
+        goto loc_5a40;
+    _bx = memory16(_ds, _di + 9);               //mov bx, word ptr [di+0x9]
+    if (memory(_ds, _bx + 6) == 0x0b)           //jz loc_5a2c
+        goto loc_5a2c;
+    _ax = memory16(_ds, _bx + 4);               //mov ax, word ptr [bx+0x4]
+    _ah &= 0x1f;                                //and ah, 0x1f
+    if (_ax == 0x00b2)                          //jz loc_5a2c
+        goto loc_5a2c;
+    memory16(_ds, _bx + 8) = -memory16(_ds, _bx + 8);//neg word ptr [bx+0x8]
+loc_5a2c:                                       //loc_5a2c:
+    _ax = memory16(_ds, _di + 4);               //mov ax, word ptr [di+0x4]
+    _ah &= 0x1f;                                //and ah, 0x1f
+    _ax -= 0x009a;                              //sub ax, 0x9a
+    if (_ax > 0x0002)                           //ja loc_5a3f
+        goto loc_5a3f;
+    memory(_ds, 25857) = 0x01;                  //mov byte ptr [0x6501], 0x1
+loc_5a3f:                                       //loc_5a3f:
+    _flags.carry = true;                        //stc
+loc_5a40:                                       //loc_5a40:
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+    if (!_flags.carry)                                //jnc loc_5a57
+        goto loc_5a57;
+    _bp = memory16(_ds, _si + 12);              //mov bp, word ptr [si+0xc]
+    _bp |= _bp;                                 //or bp, bp
+    if (_bp == 0)                               //jz loc_5a57
+        goto loc_5a57;
+    _ax = memory16(_ds, _si);                   //mov ax, word ptr [si]
+    sub_596f();                                 //call sub_596f
+loc_5a57:                                       //loc_5a57:
+    return;                                     //ret
+loc_5a58:                                       //loc_5a58:
+    if (_al & 0x40)                             //jnz loc_5a98
+        goto loc_5a98;
+    memory(_ds, _si + 7) |= 0x40;               //or byte ptr [si+0x7], 0x40
+    _bx = memory16(_ds, _si + 4);               //mov bx, word ptr [si+0x4]
+    _bh &= 0x1f;                                //and bh, 0x1f
+    _bl = memory(_ds, _bx + 28639);             //mov bl, byte ptr [bx+0x6fdf]
+    _bl &= 0xf0;                                //and bl, 0xf0
+    if (_bl == 0xf0)                            //jz loc_5a8f
+        goto loc_5a8f;
+    _cl = 0x03;                                 //mov cl, 0x3
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bx >>= _cl;                                //shr bx, cl
+    _ah = memory(_ds, _si + 5);                 //mov ah, byte ptr [si+0x5]
+    _ax &= 0x8000;                              //and ax, 0x8000
+    _ax = _ax | memory16(_ds, _bx + 28627);     //or ax, word ptr [bx+0x6fd3]
+    memory16(_ds, _si + 4) = _ax;               //mov word ptr [si+0x4], ax
+    memory16(_ds, _si + 8) = 0x0000;            //mov word ptr [si+0x8], 0x0
+    memory(_ds, _si + 14) = 0xff;               //mov byte ptr [si+0xe], 0xff
+    return;                                     //ret
+loc_5a8f:                                       //loc_5a8f:
+    memory16(_ds, _si + 8) = 0xfff6;            //mov word ptr [si+0x8], 0xfff6
+    memory(_ds, _si + 14) = 0x00;               //mov byte ptr [si+0xe], 0x0
+loc_5a98:                                       //loc_5a98:
+    if (memory(_ds, _si + 14) == 0xff)          //jz loc_5ab7
+        goto loc_5ab7;
+    _ax = memory16(_ds, _si + 8);               //mov ax, word ptr [si+0x8]
+    memory16(_ds, _si + 2) += _ax;              //add word ptr [si+0x2], ax
+    if (memory(_ds, 25877) == 0x00)             //jz loc_5aaf
+        goto loc_5aaf;
+    memory16(_ds, 21136) += _ax;                //add word ptr [0x5290], ax
+loc_5aaf:                                       //loc_5aaf:
+    if ((short)_ax >= (short)0x0014)            //jge loc_5ab7
+        goto loc_5ab7;
+    memory16(_ds, _si + 8) += 1;                //inc word ptr [si+0x8]
+loc_5ab7:                                       //loc_5ab7:
+    return;
+}
+
+void sub_47d3()
+{
+    sub_4c12();                                 //call sub_4c12
+    sub_4c2a();                                 //call sub_4c2a
+    _bp = 0x0020;                               //mov bp, 0x20
+    sub_4b7d();                                 //call sub_4b7d
+    _ax = memory16(_ds, 0x5282);                //mov ax, [0x5282]
+    _flags.sign = !!(_ax & 0x8000);             //or ax, ax
+    _ax |= _ax;
+    if (!_flags.sign)                           //jns loc_47e8
+        goto loc_47e8;
+    _ax = -_ax;                                 //neg ax
+loc_47e8:                                       //loc_47e8:
+    if (_ax >= 0x0020)                          //jnc loc_47f9
+        goto loc_47f9;
+    _al = 0x06;                                 //mov al, 0x6
+    _ah = memory(_ds, 21125);                   //mov ah, byte ptr [0x5285]
+    _ah &= 0x80;                                //and ah, 0x80
+    memory16(_ds, 0x5280) = _ax;                //mov [0x5280], ax
+loc_47f9:                                       //loc_47f9:
+    return;
 }

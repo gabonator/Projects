@@ -25,6 +25,7 @@ int reloc(int p)
 }
 void memoryVideoSet16(WORD seg, WORD ofs, WORD w);
 WORD memoryVideoGet16(WORD seg, WORD ofs);
+void memoryVideoAdd(WORD seg, WORD ofs, BYTE data);
 
 
 #include "ega.h"
@@ -224,6 +225,9 @@ void _indirectCall(int ofs)
         case 0x47b4: sub_47b7(); return;
         case 0x47fa: sub_47fa(); return; // go right
         case 0x4df9: sub_4df9(); return;
+        case 0x47b7: sub_47b7(); return;
+        case 0x47d3: sub_47d3(); return;
+        case 0x5a04: sub_5a04(); return;
     }
     std::cout << "Ignore indirect " << ofs << "\n";
     //_ASSERT(0);
@@ -656,6 +660,12 @@ void _xlat()
 {
     _al = memory(_ds, _bx+_al);
 }
+
+void _xlat_cs()
+{
+    _al = memory(_cs, _bx+_al);
+}
+
 BYTE MemBios::Get8(WORD seg, int ofs)
 {
     std::cout << "bios read 2\n";
@@ -720,6 +730,11 @@ void memoryVideoSet(WORD seg, WORD ofs, BYTE data)
 void memoryVideoOr(WORD seg, WORD ofs, BYTE data)
 {
     memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) | data);
+}
+
+void memoryVideoAdd(WORD seg, WORD ofs, BYTE data)
+{
+    memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) + data);
 }
 
 void memoryVideoSet16(WORD seg, WORD ofs, WORD w)
@@ -875,7 +890,7 @@ int main(int argc, const char * argv[]) {
     _cs = 0x020d;
 */
     
-    // ds @ 168f:0000    0x6af0 -> 0x168f0
+    // ds @ 168f:0000    0x6af0 -> 0x168f0  (+0xfe00)
     loadSegment(datasegment, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/raw/TEST.EXE", 84992, 0x168f0 - 0x6af0); //33436);
     _ds = 0x168f;
     _cs = 0x1020;
