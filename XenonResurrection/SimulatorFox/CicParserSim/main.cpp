@@ -214,18 +214,19 @@ void _indirectCall(int ofs)
     switch(ofs)
     {
         case 0x5dce: sub_5dce(); return;
-        case 0x476c: sub_476c(); return;
+        case 0x476c: sub_476c(); return; // player
         case 0x4dfd: sub_4dfd(); return;
         case 0x4e87: sub_4e87(); return;
         case 0x63f1: sub_63f1(); return;
         case 0x63bf: sub_63bf(); return;
         case 0x4d0b: sub_4d0b(); return;
-        case 0x4748: sub_4748(); return;
-            std::cout << "Indirect " << ofs << "\n";
-            return;
+        case 0x4748: sub_4748(); return; // jump
+        case 0x47b4: sub_47b7(); return;
+        case 0x47fa: sub_47fa(); return; // go right
+        case 0x4df9: sub_4df9(); return;
     }
     std::cout << "Ignore indirect " << ofs << "\n";
-//    _ASSERT(0);
+    //_ASSERT(0);
 }
 
 void bios16set(int seg, int ofs, int val)
@@ -740,7 +741,7 @@ WORD& memory16(WORD segment, int offset)
 {
     _ASSERT(offset <= 0xffff && offset >= 0);
     _ASSERT(segment != 0);
-    if (segment*16 + offset == 0x10200 + 0x0af4)
+    if (segment*16 + offset == 0x168f*16 + 0x527c + 14)
     {
         int f=9;
     }
@@ -764,6 +765,15 @@ WORD& memory16(WORD segment, int offset)
 
 BYTE& memory(WORD segment, int offset)
 {
+    if (segment*16 + offset == 0x168f*16 + 0x5285)
+    {
+        int f=9;
+    }
+
+    if (segment ==_ds && offset == 21125)
+    {
+        int f= 9;
+    }
     if (segment*16 +offset== 0x10200 + 0x0af4)
     {
         int f=9;
@@ -809,15 +819,14 @@ void onKey(int k, int p)
         case SDL_SCANCODE_E: memory(0x168f, 1070) = p; break;
         case SDL_SCANCODE_R: memory(0x168f, 1084) = p; break;
 
-        case SDL_SCANCODE_T:
-            for (int i=1060; i<1100; i+=2)
-                memory(0x168f, i) = p;
-            break;
-        case SDL_SCANCODE_Y:
-            for (int i=1060; i<1100; i+=2)
-                memory(0x168f, i+1) = p;
-            break;
+        case SDL_SCANCODE_UP: memory(0x168f, 0x488) = p; break; // up
+        case SDL_SCANCODE_DOWN: memory(0x168f, 0x490) = p; break; // down
+        case SDL_SCANCODE_RIGHT: memory(0x168f, 0x48d) = p; break; // left
+        case SDL_SCANCODE_LEFT: memory(0x168f, 0x48b) = p; break; // right
+        case SDL_SCANCODE_RETURN: memory(0x168f, 0x45c) = p; break; // enter
+        case SDL_SCANCODE_SPACE: memory(0x168f, 0x459) = p; break;
     }
+    //memory16(0x168f, 0x5285) = 1;
     // ds:1069, ds:1070, ds:1084, ds:1067
 }
 

@@ -240,7 +240,7 @@ void _scasb()
 }
 void _cmc()
 {
-    _ASSERT(0);
+    _flags.carry = !_flags.carry;
 }
 
 template <class DST, class DIR>

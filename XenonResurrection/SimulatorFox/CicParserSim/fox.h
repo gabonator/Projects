@@ -1208,7 +1208,7 @@ void sub_06ea()
     _si -= 0x0167;                              //sub si, 0x167
 }
 
-void sub_0701()
+void sub_0701() // -- joystick
 {
     _ax = reloc(0x168f);                               //mov ax, reloc(0x168f)
     _ds = _ax;                                  //mov ds, ax
@@ -5788,10 +5788,15 @@ loc_20a8:                                       //loc_20a8:
 loc_20b5:                                       //loc_20b5:
     _ch = _ch ^ _ch;                            //xor ch, ch
 loc_20b7:                                       //loc_20b7:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
     _al = (~_al);                               //not al
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
     if (--_cx)                                  //loop loc_20b7
         goto loc_20b7;
@@ -5826,9 +5831,14 @@ loc_20ee:                                       //loc_20ee:
     _si = _si + memory16(_cs, 0x1C46);          //add si, word ptr cs:[0x1c46]
     _dx = _pop();                               //pop dx
 loc_2111:                                       //loc_2111:
-    _lodsb<MemData, DirForward>();              //lodsb
+    _lodsb<MemData, DirBackward>();              //lodsb
     _xlat();                                    //xlat
-    _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _al);
+        _al = t;
+        //_xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
+    }
     _di += 1;                                   //inc di
     if (--_cx)                                  //loop loc_2111
         goto loc_2111;
@@ -6241,9 +6251,10 @@ loc_23f4:                                       //loc_23f4:
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
     _al = (~_al);                               //not al
-    _scasb();                                   //scasb
-    _di -= 1;                                   //dec di
-    _stosb<MemData, DirForward>();              //stosb
+    memoryVideoGet(_es, _di);
+    //_scasb();                                   //scasb
+    //_di -= 1;                                   //dec di
+    _stosb<MemVideo, DirForward>();              //stosb
 loc_2400:                                       //loc_2400:
     _bl &= _bh;                                 //and bl, bh
     _ah = _bl;                                  //mov ah, bl
@@ -6252,7 +6263,12 @@ loc_2400:                                       //loc_2400:
         goto loc_23f4;
     _ah = (~_ah);                               //not ah
     _ah = _ah | memory(_cs, 0x1C57);            //or ah, byte ptr cs:[0x1c57]
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+//        _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    }
     _al = memory(_cs, 0x1C56);                  //mov al, cs:[0x1c56]
     _cbw();                                     //cbw
     _si += _ax;                                 //add si, ax
@@ -6298,9 +6314,12 @@ loc_2473:                                       //loc_2473:
     _bl = _al;                                  //mov bl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
-    _scasb();                                   //scasb
+    // gabo!!!
+    memoryVideoGet(_es, _di);
+    //_scasb();                                   //scasb
+    //_di -= 1;                                   //dec di
     _di -= 1;                                   //dec di
-    _stosb<MemData, DirForward>();              //stosb
+    _stosb<MemVideo, DirForward>();              //stosb
 loc_247d:                                       //loc_247d:
     _bl &= _bh;                                 //and bl, bh
     _ah = _bl;                                  //mov ah, bl
@@ -6308,7 +6327,12 @@ loc_247d:                                       //loc_247d:
     if (_cl != 0)                               //jnz loc_2473
         goto loc_2473;
     _ah = _ah & memory(_cs, 0x1C57);            //and ah, byte ptr cs:[0x1c57]
-    _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    {
+        int t = memoryVideoGet(_es, _di);
+        memoryVideoSet(_es, _di, _ah);
+        _ah = t;
+//        _xchg(memory(_es, _di), _ah);               //xchg byte ptr es:[di], ah
+    }
     _al = memory(_cs, 0x1C56);                  //mov al, cs:[0x1c56]
     _cbw();                                     //cbw
     _si += _ax;                                 //add si, ax
@@ -10230,7 +10254,7 @@ loc_40d7:                                       //loc_40d7:
     if ((short)memory16(_ds, 25890) > (short)_dx)//jg loc_40ed
         goto loc_40ed;
     sub_29b5();                                 //call sub_29b5
-    if (_FIXME_)                                //jc loc_40f4
+    if (_flags.carry)                                //jc loc_40f4
         goto loc_40f4;
     goto loc_40f9;                              //jmp loc_40f9
 loc_40ed:                                       //loc_40ed:
@@ -10429,8 +10453,18 @@ loc_4296:                                       //loc_4296:
     memory(_ds, 25864) = _dl;                   //mov byte ptr [0x6508], dl
     _cwd();                                     //cwd
     _dl |= _ah;                                 //or dl, ah
+    // update horizontal speed gabo
     if (memory16(_ds, _si + 9) == _dx)          //jz loc_42c1
         goto loc_42c1;
+    std::cout << "update horizontal speed\n"
+    << ", si+10 = " << (int)memory(_ds, _si + 10)
+    << ", 430 = " << (int)memory(_ds, 1072)
+    << ", 42f = " << (int)memory(_ds, 1071)
+    << ", 6507 = " << (int)memory(_ds, 25863)
+    << "; 42f = " << (int)memory(_ds, 1069)
+    << "; 42f = " << (int)memory(_ds, 1070)
+    << "; 42f = " << (int)memory(_ds, 25864);
+
     memory16(_ds, _si + 9) = _dx;               //mov word ptr [si+0x9], dx
 loc_42b9:                                       //loc_42b9:
     memory16(_ds, 25886) = 0x0001;              //mov word ptr [0x651e], 0x1
@@ -10470,7 +10504,7 @@ loc_4300:                                       //loc_4300:
     _cl = 0x04;                                 //mov cl, 0x4
     _sar(_ax, _cl);                             //sar ax, cl
     memory16(_ds, _si + 2) += _ax;              //add word ptr [si+0x2], ax
-    sub_4484();                                 //call sub_4484
+    sub_4484();                                 //call sub_4484 -- add gravity -- vertical fall
     _al = memory(_ds, 0x650a);                  //mov al, [0x650a]
     _al |= _al;                                 //or al, al
     if (_al == 0)                               //jz loc_4378
@@ -10572,7 +10606,7 @@ loc_43ea:                                       //loc_43ea:
     if (memory(_ds, 25877) != 0)                //jnz loc_43fd
         goto loc_43fd;
     memory16(_ds, 21138) = 0xffff;              //mov word ptr [0x5292], 0xffff
-loc_43fd:                                       //loc_43fd:
+loc_43fd:                                       //loc_43fd: -- increment vertical
     _dx = 0x0001;                               //mov dx, 0x1
     _flags.carry = memory(_ds, 25883) < _dl;    //sub byte ptr [0x651b], dl
     memory(_ds, 25883) -= _dl;
@@ -10631,7 +10665,7 @@ loc_447a:                                       //loc_447a:
     _ax = _pop();                               //pop ax
 }
 
-void sub_4484()
+void sub_4484() // -- vertical fall
 {
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
@@ -10687,7 +10721,7 @@ loc_44d9:                                       //loc_44d9:
     _al += 0x08;
     _bx = _bx + 0x0000 + _flags.carry;          //adc bx, 0x0
     _cmc();                                     //cmc
-    _bx = _bx + 0x0000 + _flags.carry; _ASSERT(0);//adc bx, 0x0
+    _bx = _bx + 0x0000 + _flags.carry; //adc bx, 0x0
     if (_bx == _bp)                             //jz loc_4506
         goto loc_4506;
     sub_4561();                                 //call sub_4561
@@ -10707,7 +10741,7 @@ loc_4506:                                       //loc_4506:
     memory(_ds, 21124) = 0x00;                  //mov byte ptr [0x5284], 0x0
     goto loc_4539;                              //jmp loc_4539
 loc_4536:                                       //loc_4536:
-    sub_4c65();                                 //call sub_4c65
+    sub_4c65();                                 //call sub_4c65 -- vertical fall
 loc_4539:                                       //loc_4539:
     _bx = _pop();                               //pop bx
     _ax = _pop();                               //pop ax
@@ -10872,9 +10906,9 @@ loc_4654:                                       //loc_4654:
 void sub_4657()
 {
     if ((short)memory16(_ds, 21130) < (short)0x0000)//jl loc_4653
-        _STOP_("goto loc_4653");
+        return; //_STOP_("goto loc_4653");
     if (memory(_ds, 25872) != 0x00)             //jnz loc_4653
-        _STOP_("goto loc_4653");
+        return; //_STOP_("goto loc_4653");
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -10888,9 +10922,9 @@ void sub_4657()
     _cx = 0x0004;                               //mov cx, 0x4
 loc_4674:                                       //loc_4674:
     if (memory16(_ds, _si + 4) == 0xffff)   //jz loc_4654
-        _STOP_("goto loc_4654");
+        goto loc_4735; //_STOP_("goto loc_4654");
     if (!(memory(_ds, _si + 5) & 0x20))         //jz loc_4654
-        _STOP_("goto loc_4654");
+        goto loc_4735; //_STOP_("goto loc_4654");
     _ax = memory16(_ds, _si);                   //mov ax, word ptr [si]
     _ax = _ax - memory16(_ds, 21116);           //sub ax, word ptr [0x527c]
     if ((short)_ax >= 0)                        //jns loc_468a
@@ -11985,7 +12019,7 @@ loc_4b7c:                                       //loc_4b7c:
     return;
 }
 
-void sub_4bd0()
+void sub_4bd0() // vertical fall down
 {
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
@@ -11996,7 +12030,7 @@ void sub_4bd0()
         goto loc_4be0;
     _bp = _dx;                                  //mov bp, dx
 loc_4be0:                                       //loc_4be0:
-    memory16(_ds, 21130) = _bp;                 //mov word ptr [0x528a], bp
+    memory16(_ds, 21130) = _bp;                 //mov word ptr [0x528a], bp // -- set vertical delta
     _dx = _pop();                               //pop dx
     _cx = _pop();                               //pop cx
     _ax = _pop();                               //pop ax
@@ -12130,7 +12164,7 @@ loc_4be0:                                       //loc_4be0:
     _STOP_("continues");                        //sub_4c65 proc near
 }
 
-void sub_4c65()
+void sub_4c65() // -- fall vertical
 {
     memory(_ds, 25871) = 0x06;                  //mov byte ptr [0x650f], 0x6
     if (memory(_ds, 25876) != 0x00)             //jnz loc_4ca1
@@ -12140,7 +12174,7 @@ void sub_4c65()
     _bp = 0x0040;                               //mov bp, 0x40
     sub_4b7d();                                 //call sub_4b7d
     _bp = 0x00c0;                               //mov bp, 0xc0
-    sub_4bd0();                                 //call sub_4bd0
+    sub_4bd0();                                 //call sub_4bd0 -- fall vertical
     if (memory(_ds, 25875) == 0x00)             //jz loc_4c8a
         goto loc_4c8a;
     _al = 0x0f;                                 //mov al, 0xf
@@ -12158,6 +12192,11 @@ loc_4c95:                                       //loc_4c95:
     _ax = _pop();                               //pop ax
 loc_4ca1:                                       //loc_4ca1:
     return;                                     //ret
+loc_4ca2:
+    // or byte [6526], 01  -- vertical trigger
+    // ret
+    // 020d:4df9: call 4ca2, ret
+    // 020d:45a5
     _STOP_("db 80h");                           //db 80h
     _STOP_("db 0eh");                           //db 0eh
     _STOP_("db 26h");                           //db 26h
@@ -12800,12 +12839,24 @@ void sub_4f1f()
     _push(_es);                                 //push es
     _push(_bp);                                 //push bp
     if ((short)memory16(_ds, _si + 14) < (short)0x0000)
+    {
+        _bp = _pop();                               //pop bp
+        _es = _pop();                               //pop es
+        _ds = _pop();                               //pop ds
+        _si = _pop();                               //pop si
+        _di = _pop();                               //pop di
+        _dx = _pop();                               //pop dx
+        _cx = _pop();                               //pop cx
+        _bx = _pop();                               //pop bx
+        _ax = _pop();                               //pop ax
+        return;
         _STOP_("goto loc_4f1c");
+    }
     _si = 0x527c;                               //mov si, 0x527c
     _bx = _bx ^ _bx;                            //xor bx, bx
     sub_5045();                                 //call sub_5045
-    if (_FIXME_)                                //jnc loc_4f1c
-        _STOP_("goto loc_4f1c");
+    if (!_flags.carry)                                //jnc loc_4f1c
+        goto loc_503b; //_STOP_("goto loc_4f1c");
     memory16(_ds, 21118) = _dx;                 //mov word ptr [0x527e], dx
     _di = _ax;                                  //mov di, ax
     _al = memory(_ds, _di + 4);                 //mov al, byte ptr [di+0x4]
@@ -13198,6 +13249,7 @@ loc_523a:                                       //loc_523a:
     memory(_ds, 34772) = 0x00;                  //mov byte ptr [0x87d4], 0x0
     goto loc_51d9;                              //jmp loc_51d9
 loc_5244:                                       //loc_5244:
+    _sync();
     sub_0805();                                 //call sub_0805
     if (memory(_ds, 1067) != 0x00)              //jnz loc_5244
         goto loc_5244;
@@ -14301,9 +14353,191 @@ loc_59fd:                                       //loc_59fd:
     memory(_ds, 25879) = 0x01;                  //mov byte ptr [0x6517], 0x1
 }
 
+void sub_655c()
+{
+    _bx += 1;                                   //inc bx
+    _bx += 1;                                   //inc bx
+    _ax = memory16(_ds, _bx);                   //mov ax, word ptr [bx]
+    _flags.sign = !!(_ax & 0x8000);             //or ax, ax
+    _ax |= _ax;
+    if (!_flags.sign)                           //jns loc_6566
+        goto loc_6566;
+    _bx += _ax;                                 //add bx, ax
+loc_6566:                                       //loc_6566:
+    return;
+}
 
-// imports
-void sub_64ff() { _ASSERT(0); }
-void sub_6582() { _ASSERT(0); }
-void sub_65be() { _ASSERT(0); }
+void sub_64ff()
+{
+    if (memory(_ds, _si + 7) & 0xc0)            //jnz loc_654b
+        goto loc_654b;
+    memory(_ds, _si + 7) &= 0xdf;               //and byte ptr [si+0x7], 0xdf
+    _bx = memory16(_ds, _si + 10);              //mov bx, word ptr [si+0xa]
+loc_650c:                                       //loc_650c:
+    _ax = memory16(_ds, _bx);                   //mov ax, word ptr [bx]
+    _flags.sign = !!(_ax & 0x8000);             //or ax, ax
+    _ax |= _ax;
+    if (!_flags.sign)                           //jns loc_6516
+        goto loc_6516;
+    _bx += _ax;                                 //add bx, ax
+    goto loc_650c;                              //jmp loc_650c
+loc_6516:                                       //loc_6516:
+    if (_ax != 0x55aa)                          //jnz loc_6527
+        goto loc_6527;
+    memory16(_ds, _di + 4) = 0xffff;            //mov word ptr [di+0x4], 0xffff
+    memory16(_ds, _si + 4) = 0x05aa;            //mov word ptr [si+0x4], 0x5aa
+    {sub_655c(); return; };                     //
+loc_6527:                                       //loc_6527:
+    _dh = _ah;                                  //mov dh, ah
+    _dh &= 0x20;                                //and dh, 0x20
+    _ah &= 0xdf;                                //and ah, 0xdf
+    memory(_ds, _si + 7) |= _dh;                //or byte ptr [si+0x7], dh
+    _dh = memory(_ds, _si + 9);                 //mov dh, byte ptr [si+0x9]
+    _dh &= 0x80;                                //and dh, 0x80
+    _ah |= _dh;                                 //or ah, dh
+    memory16(_ds, _si + 4) = _ax;               //mov word ptr [si+0x4], ax
+    _ax += 0x0065;                              //add ax, 0x65
+    memory16(_ds, _di + 4) = _ax;               //mov word ptr [di+0x4], ax
+    sub_655c();                                 //call sub_655c
+    memory16(_ds, _si + 10) = _bx;              //mov word ptr [si+0xa], bx
+    goto loc_6557;                              //jmp loc_6557
+loc_654b:                                       //loc_654b:
+    _ax = memory16(_ds, _si + 4);               //mov ax, word ptr [si+0x4]
+    _ah &= 0xdf;                                //and ah, 0xdf
+    _ax += 0x0065;                              //add ax, 0x65
+    memory16(_ds, _di + 4) = _ax;               //mov word ptr [di+0x4], ax
+loc_6557:                                       //loc_6557:
+    memory(_ds, _si + 5) |= 0x20;               //or byte ptr [si+0x5], 0x20
+}
+
+void sub_6582()
+{
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_si);                                 //push si
+    _push(_es);                                 //push es
+    _push(_ds);                                 //push ds
+    _bx = _ax;                                  //mov bx, ax
+    _ax = 0xf000;                               //mov ax, 0xf000
+    _es = _ax;                                  //mov es, ax
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _si = 0xfff0;                               //mov si, 0xfff0
+    _ax = memory16(_es, _bx);                   //mov ax, word ptr es:[bx]
+    _cl = memory(_cs, 0x4);                     //mov cl, byte ptr cs:[0x4]
+    _al = _al + memory(_es, _bx + 61440);       //add al, byte ptr es:[bx+0xf000]
+    _ah = _ah - memory(_es, _bx + 61442);       //sub ah, byte ptr es:[bx+0xf002]
+    _ror(_ax, _cl);                             //ror ax, cl
+    _cx = 0x0008;                               //mov cx, 0x8
+loc_65ad:                                       //loc_65ad:
+    _ax = _ax + memory16(_es, _si) + _flags.carry; _ASSERT(0);
+    _si += 1;                                   //inc si
+    _si += 1;                                   //inc si
+    if (--_cx)                                  //loop loc_65ad
+        goto loc_65ad;
+    _cl = _bl;                                  //mov cl, bl
+    _rol(_ax, _cl);                             //rol ax, cl
+    _ds = _pop();                               //pop ds
+    _es = _pop();                               //pop es
+    _si = _pop();                               //pop si
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+}
+
+void sub_65be()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _push(_si);                                 //push si
+    memory(_cs, 0x66D9) = _al;                  //mov cs:[0x66d9], al
+    memory(_cs, 0x66DA) = _ah;                  //mov byte ptr cs:[0x66da], ah
+    _mul(_ah);                                  //mul ah
+    memory16(_cs, 0x66DD) = _ax;                //mov cs:[0x66dd], ax
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _es = _ax;                                  //mov es, ax
+    _ax = memory16(_es, 1217);                  //mov ax, es:[0x4c1]
+    _ax += 0x07d1;                              //add ax, 0x7d1
+    _es = _ax;                                  //mov es, ax
+    _di = _di ^ _di;                            //xor di, di
+    _bp = _bp ^ _bp;                            //xor bp, bp
+loc_65e9:                                       //loc_65e9:
+    _al = memory(_cs, 0x66DA);                  //mov al, cs:[0x66da]
+    memory(_cs, 0x66D8) = _al;                  //mov cs:[0x66d8], al
+loc_65f1:                                       //loc_65f1:
+    _bx = memory16(_cs, 0x66DD);                //mov bx, word ptr cs:[0x66dd]
+    _ah = memory(_ds, _bx + _si);               //mov ah, byte ptr [bx+si]
+    _dx = _dx ^ _dx;                            //xor dx, dx
+    memory16(_cs, 0x66DB) = _dx;                //mov word ptr cs:[0x66db], dx
+    if (memory(_cs, 0x66DF) != _dl)             //jnz loc_6611
+        goto loc_6611;
+    _bx <<= 1;                                  //shl bx, 1
+    _dl = memory(_ds, _bx + _si);               //mov dl, byte ptr [bx+si]
+    _bx = _bx + memory16(_cs, 0x66DD);          //add bx, word ptr cs:[0x66dd]
+    _dh = memory(_ds, _bx + _si);               //mov dh, byte ptr [bx+si]
+loc_6611:                                       //loc_6611:
+    _lodsb<MemData, DirForward>();              //lodsb
+    _cx = 0x0008;                               //mov cx, 0x8
+loc_6615:                                       //loc_6615:
+    _bx = _bx ^ _bx;                            //xor bx, bx
+    _flags.carry = !!(_dh & 0x80);              //shl dh, 1
+    _dh <<= 1;
+    _rcl(_bx, 1);                               //rcl bx, 1
+    _flags.carry = !!(_dl & 0x80);              //shl dl, 1
+    _dl <<= 1;
+    _rcl(_bx, 1);                               //rcl bx, 1
+    _flags.carry = !!(_ah & 0x80);              //shl ah, 1
+    _ah <<= 1;
+    _rcl(_bx, 1);                               //rcl bx, 1
+    _flags.carry = !!(_al & 0x80);              //shl al, 1
+    _al <<= 1;
+    _rcl(_bx, 1);                               //rcl bx, 1
+    _bx <<= 1;                                  //shl bx, 1
+    _bx += _bp;                                 //add bx, bp
+    _bx = _bx + memory16(_cs, 0x6676);          //add bx, word ptr cs:[0x6676]
+    _bl = memory(_cs, _bx);                     //mov bl, byte ptr cs:[bx]
+    _bp = _bp ^ 0x0001;                         //xor bp, 0x1
+    _flags.carry = !!(_bl & 0x80);              //shl bl, 1
+    _bl <<= 1;
+    _rcl(memory16(_cs, 0x66DB), 1);             //rcl word ptr cs:[0x66db], 1
+    _flags.carry = !!(_bl & 0x80);              //shl bl, 1
+    _bl <<= 1;
+    _rcl(memory16(_cs, 0x66DB), 1);             //rcl word ptr cs:[0x66db], 1
+    if (--_cx)                                  //loop loc_6615
+        goto loc_6615;
+    _ax = memory16(_cs, 0x66DB);                //mov ax, cs:[0x66db]
+    _xchg(_ah, _al);                            //xchg ah, al
+    _stosw<MemData, DirForward>();              //stosw
+    memory(_cs, 0x66D8) -= 1;                   //dec byte ptr cs:[0x66d8]
+    if (memory(_cs, 0x66D8) != 0)               //jnz loc_65f1
+        goto loc_65f1;
+    _bp = _bp ^ 0x0001;                         //xor bp, 0x1
+    memory(_cs, 0x66D9) -= 1;                   //dec byte ptr cs:[0x66d9]
+    if (memory(_cs, 0x66D9) != 0)               //jnz loc_65e9
+        goto loc_65e9;
+    _di = _pop();                               //pop di
+    _si = _si ^ _si;                            //xor si, si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _ds = _pop();                               //pop ds
+    _es = _pop();                               //pop es
+    _cx = memory16(_cs, 0x66DD);                //mov cx, word ptr cs:[0x66dd]
+    _rep_movsw<MemData, MemData, DirForward>(); //rep movsw
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+}
+
 

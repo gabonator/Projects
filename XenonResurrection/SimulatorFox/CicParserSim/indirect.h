@@ -2,7 +2,7 @@ void sub_4ca2();
 void sub_4cf0();
 void sub_64df();
 
-void sub_4bb6()
+void sub_4bb6() // jump
 {
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
@@ -30,6 +30,9 @@ void sub_4b7d()
     if (memory(_ds, 25863) == 0x00)             //jz loc_4b95
         goto loc_4b95;
     _ax = memory16(_ds, 0x5285);                //mov ax, [0x5285]
+    
+    //_ax = 1; // gabo
+    
     _ax <<= 1;                                  //shl ax, 1
     _ax <<= 1;                                  //shl ax, 1
     _ax <<= 1;                                  //shl ax, 1
@@ -128,7 +131,7 @@ void sub_4748()
 loc_4755:                                       //loc_4755:
     memory(_ds, 25885) += 1;                    //inc byte ptr [0x651d]
     _bp = 0x0030;                               //mov bp, 0x30
-    sub_4bb6();                                 //call sub_4bb6
+    sub_4bb6();                                 //call sub_4bb6 -- set jump vector dy
     _bp = 0x0040;                               //mov bp, 0x40
     sub_4b7d();                                 //call sub_4b7d
     sub_4c12();                                 //call sub_4c12
@@ -344,9 +347,7 @@ void sub_4dfd()
 
 void sub_4ca2()
 {
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("sp-trace-fail");                    //sub_4ca2 endp_failed
-    _STOP_("continues");                        //sub_4ca3 proc near
+    memory(_ds, 0x6526) |= 1;
 }
 
 void sub_4ca3()
@@ -666,3 +667,29 @@ loc_5ec9:                                       //loc_5ec9:
 }
 
 
+
+void sub_47fa()
+{
+    _bp = 0x0040;                               //mov bp, 0x40
+    sub_4b7d();                                 //call sub_4b7d
+    sub_4c12();                                 //call sub_4c12
+    sub_4c2a();                                 //call sub_4c2a
+}
+
+void sub_47b7()
+{
+    sub_4c12();                                 //call sub_4c12
+    sub_4c2a();                                 //call sub_4c2a
+    sub_4be8();                                 //call sub_4be8
+    if (memory16(_ds, 25886) != 0x000f)         //jnz loc_47d2
+        goto loc_47d2;
+    memory(_ds, 25872) = 0x06;                  //mov byte ptr [0x6510], 0x6
+    memory16(_ds, 21130) = 0x0000;              //mov word ptr [0x528a], 0x0
+loc_47d2:                                       //loc_47d2:
+    return;
+}
+
+void sub_4df9()
+{
+    sub_4ca2();                                 //call sub_4ca2
+}
