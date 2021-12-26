@@ -4742,6 +4742,8 @@ loc_165e:                                       //loc_165e:
 
 void sub_17eb()
 {
+    _sync();
+    return;
 loc_17eb:
     _sync();
 
@@ -9134,8 +9136,9 @@ loc_3710:                                       //loc_3710:
     _si = 0x528e;                               //mov si, 0x528e
     _ax = 0x014d;                               //mov ax, 0x14d
     _dx = 0x014e;                               //mov dx, 0x14e
-    _STOP_("sp-trace-fail");                    //sub_3627 endp_failed
-    _STOP_("continues");                        //sub_372f proc near
+    //_STOP_("sp-trace-fail");                    //sub_3627 endp_failed
+    //_STOP_("continues");                        //sub_372f proc near
+    sub_372f();
 }
 
 void sub_372f()
