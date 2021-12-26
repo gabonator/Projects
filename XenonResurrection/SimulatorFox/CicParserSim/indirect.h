@@ -1,3 +1,48 @@
+void sub_5dce();
+void sub_476c();
+void sub_4dfd();
+void sub_4e87();
+void sub_63f1();
+void sub_63bf();
+void sub_4d0b();
+void sub_4748();
+void sub_47b7();
+void sub_47fa();
+void sub_4df9();
+void sub_47b7();
+void sub_47d3();
+void sub_5a04();
+
+void sub_4d0b()
+{
+    return;
+}
+
+void _indirectCall(int ofs)
+{
+    switch(ofs)
+    {
+        case 0x5dce: sub_5dce(); return;
+        case 0x476c: sub_476c(); return; // player
+        case 0x4dfd: sub_4dfd(); return;
+        case 0x4e87: sub_4e87(); return;
+        case 0x63f1: sub_63f1(); return;
+        case 0x63bf: sub_63bf(); return;
+        case 0x4d0b: sub_4d0b(); return;
+        case 0x4748: sub_4748(); return; // jump
+        case 0x47b4: sub_47b7(); return;
+        case 0x47fa: sub_47fa(); return; // go right
+        case 0x4df9: sub_4df9(); return;
+        case 0x47b7: sub_47b7(); return;
+        case 0x47d3: sub_47d3(); return;
+        case 0x5a04: sub_5a04(); return;
+    }
+    std::cout << "Ignore indirect " << ofs << "\n";
+    //_ASSERT(0);
+}
+
+
+/*
 void sub_4ca2();
 void sub_4cf0();
 void sub_64df();
@@ -907,3 +952,4 @@ loc_47e8:                                       //loc_47e8:
 loc_47f9:                                       //loc_47f9:
     return;
 }
+  */

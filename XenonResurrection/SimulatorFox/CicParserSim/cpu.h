@@ -111,8 +111,9 @@ void _STOP_(const char*) {
 }
 
 
-void _xlat();
 void _xlat_cs();
+void _xlat_ds();
+void _xlat_es();
 void _in(BYTE& value, WORD port);
 
 struct MemVideo

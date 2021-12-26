@@ -210,29 +210,6 @@ void _out(uint16_t port, uint16_t val)
 
 #include "indirect.h"
 
-void _indirectCall(int ofs)
-{
-    switch(ofs)
-    {
-        case 0x5dce: sub_5dce(); return;
-        case 0x476c: sub_476c(); return; // player
-        case 0x4dfd: sub_4dfd(); return;
-        case 0x4e87: sub_4e87(); return;
-        case 0x63f1: sub_63f1(); return;
-        case 0x63bf: sub_63bf(); return;
-        case 0x4d0b: sub_4d0b(); return;
-        case 0x4748: sub_4748(); return; // jump
-        case 0x47b4: sub_47b7(); return;
-        case 0x47fa: sub_47fa(); return; // go right
-        case 0x4df9: sub_4df9(); return;
-        case 0x47b7: sub_47b7(); return;
-        case 0x47d3: sub_47d3(); return;
-        case 0x5a04: sub_5a04(); return;
-    }
-    std::cout << "Ignore indirect " << ofs << "\n";
-    //_ASSERT(0);
-}
-
 void bios16set(int seg, int ofs, int val)
 {
     std::cout << "bios write\n";
@@ -656,14 +633,20 @@ void _tone(int f)
 {
 //    std::cout << "tone " << hex << f << " f=" << dec << (1193180/f) << "\n";
 }
-void _xlat()
-{
-    _al = memory(_ds, _bx+_al);
-}
 
 void _xlat_cs()
 {
     _al = memory(_cs, _bx+_al);
+}
+
+void _xlat_ds()
+{
+    _al = memory(_ds, _bx+_al);
+}
+
+void _xlat_es()
+{
+    _al = memory(_es, _bx+_al);
 }
 
 BYTE MemBios::Get8(WORD seg, int ofs)
