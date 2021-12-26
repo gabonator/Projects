@@ -29,7 +29,7 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
 //    console.log("function: "+m[1]);
     if (curfunc != "")
     {
-      console.log(lastInstruction);
+//      console.log(lastInstruction);
       var trail = curfunc + " endp";
       if (lastInstruction.substr(0, 3) != "ret" && lastInstruction.substr(0, 3) != "jmp")
         trail += " ; sp-analysis failed";
@@ -81,11 +81,11 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
   if (l == "movsw.rep es:di, si")
     l = "rep movsw";
   if (l == "xlat cs:, bx")
-    l = "xlat"; // check
+    l = "xlat cs";
   if (l == "xlat es:, bx")
-    l = "xlat"; // check
+    l = "xlat es";
   if (l == "xlat , bx")
-    l = "xlat"; // check
+    l = "xlat ds";
   if (l == "scasb es:di")
     l = "scasb";
   if (l == "movsb.rep es:di, si")

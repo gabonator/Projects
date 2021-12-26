@@ -4654,7 +4654,7 @@ void sub_1a2a()
     _al = _al & memory(_ds, 1144);              //and al, byte ptr [0x478]
     _al = _al & memory(_ds, 1106);              //and al, byte ptr [0x452]
     if (_al == 0)                               //jz loc_1a29
-        _STOP_("goto loc_1a29");
+        return;
     _bx = 0x0001;                               //mov bx, 0x1
     _al = _al ^ _al;                            //xor al, al
 loc_1a3c:                                       //loc_1a3c:
@@ -4666,7 +4666,7 @@ loc_1a3c:                                       //loc_1a3c:
         goto loc_1a51;
     _al = _al | memory(_ds, _bx + 1088);        //or al, byte ptr [bx+0x440]
     if (_al != 0)                               //jnz loc_1a29
-        _STOP_("goto loc_1a29");
+        return;
 loc_1a51:                                       //loc_1a51:
     _bx += 1;                                   //inc bx
     if (_bl < 0x7f)                             //jc loc_1a3c
@@ -7287,8 +7287,9 @@ void sub_2ddc()
     if (memory(_cs, 0x1) < 0x03)                //jc sub_2e53
         { sub_2e53(); return; }
     _di += 0x3e80;                              //add di, 0x3e80
-    _STOP_("sp-trace-fail");                    //sub_2ddc endp_failed
-    _STOP_("continues");                        //sub_2de8 proc near
+//    _STOP_("sp-trace-fail");                    //sub_2ddc endp_failed
+//    _STOP_("continues");                        //sub_2de8 proc near
+    sub_2de8();
 }
 
 void sub_2de8()
@@ -11480,7 +11481,7 @@ void sub_4db1()
     _ax = 0x0007;                               //mov ax, 0x7
     sub_10ff();                                 //call sub_10ff
     sub_4d10();                                 //call sub_4d10
-    if (_FIXME_)                                //jc loc_4dbf
+    if (_flags.carry)                                //jc loc_4dbf
         goto loc_4dbf;
     sub_0333();                                 //call sub_0333
 loc_4dbf:                                       //loc_4dbf:
@@ -11498,7 +11499,7 @@ void sub_4dc9()
     _ax = 0x0005;                               //mov ax, 0x5
     sub_10ff();                                 //call sub_10ff
     sub_4d10();                                 //call sub_4d10
-    if (_FIXME_)                                //jc loc_4df8
+    if (_flags.carry)                                //jc loc_4df8
         goto loc_4df8;
     _ax = memory16(_ds, 0x527c);                //mov ax, [0x527c]
     memory16(_ds, 0x64e4) = _ax;                //mov [0x64e4], ax
@@ -11561,13 +11562,19 @@ void sub_4e2e()
     _al &= 0x0f;                                //and al, 0xf
     if (_al == 0x01)                            //jz sub_4dfd
         { sub_4dfd(); return; }
+    _flags.zero = _al == 0x03;
+    // TODO: Parser exception!
 loc_4e40:                                       //loc_4e40:
-    if (_al == 0x03)                            //jz sub_4dfd
+    // TODO: freezes after climbing ladder 
+    if (_flags.zero)                            //jz sub_4dfd
         { sub_4dfd(); return; }
     if (_al == 0x07)                            //jz sub_4dfd
         { sub_4dfd(); return; }
     if (_al == 0x08)                            //jz loc_4e40
+    {
+        _flags.zero = true;
         goto loc_4e40;
+    }
     if (_al != 0x05)                            //jnz loc_4e5c
         goto loc_4e5c;
     sub_4df9();                                 //call sub_4df9
@@ -11576,14 +11583,17 @@ loc_4e40:                                       //loc_4e40:
 loc_4e5c:                                       //loc_4e5c:
     _push(_ds);                                 //push ds
     _ds = memory16(_ds, 21100);                 //mov ds, word ptr [0x526c]
-    _bl = memory(_ds, _di + 65280);             //mov bl, byte ptr [di+0xff00]
+    _bl = memory(_ds, (_di + 65280)&0xffff);             //mov bl, byte ptr [di+0xff00]
     _ds = _pop();                               //pop ds
     _bh = _bh ^ _bh;                            //xor bh, bh
     _ah = memory(_ds, _bx + 29603);             //mov ah, byte ptr [bx+0x73a3]
     if (_ah == 0x06)                            //jz loc_4e7e
         goto loc_4e7e;
     if (_al == 0x00)                            //jz loc_4e40
+    {
+        _flags.zero = true;
         goto loc_4e40;
+    }
     _ah = memory(_ds, 1069);                    //mov ah, byte ptr [0x42d]
     if (_ax == 0xff06)                          //jz loc_4e40
         goto loc_4e40;
@@ -14655,14 +14665,16 @@ void sub_6582()
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _si = 0xfff0;                               //mov si, 0xfff0
-    _ax = memory16(_es, _bx);                   //mov ax, word ptr es:[bx]
+    // TODO: password
+    _ax = bios16get(_es, _bx);                   //mov ax, word ptr es:[bx]
     _cl = memory(_cs, 0x4);                     //mov cl, byte ptr cs:[0x4]
-    _al = _al + memory(_es, _bx + 61440);       //add al, byte ptr es:[bx+0xf000]
-    _ah = _ah - memory(_es, _bx + 61442);       //sub ah, byte ptr es:[bx+0xf002]
+    _al = _al + bios16get(_es, _bx + 61440);       //add al, byte ptr es:[bx+0xf000]
+    _ah = _ah - bios16get(_es, _bx + 61442);       //sub ah, byte ptr es:[bx+0xf002]
+    _flags.carry = 0; // dont care
     _ror(_ax, _cl);                             //ror ax, cl
     _cx = 0x0008;                               //mov cx, 0x8
 loc_65ad:                                       //loc_65ad:
-    _ax = _ax + memory16(_es, _si) + _flags.carry; _ASSERT(0);
+    _ax = _ax + bios16get(_es, _si) + _flags.carry;
     _si += 1;                                   //inc si
     _si += 1;                                   //inc si
     if (--_cx)                                  //loop loc_65ad

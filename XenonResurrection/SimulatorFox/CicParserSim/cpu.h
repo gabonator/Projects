@@ -369,8 +369,8 @@ void _rol(BYTE& b, BYTE l)
 
 void _ror(WORD & b, BYTE l)
 {
-    _ASSERT(l == 1);
-    b = ror<WORD>(b);
+    while (l--)
+        b = ror<WORD>(b);
 }
 
 

@@ -821,8 +821,8 @@ void onKey(int k, int p)
         case SDL_SCANCODE_DOWN: memory(0x168f, 0x490) = p; break; // down
         case SDL_SCANCODE_RIGHT: memory(0x168f, 0x48d) = p; break; // left
         case SDL_SCANCODE_LEFT: memory(0x168f, 0x48b) = p; break; // right
-        case SDL_SCANCODE_RETURN: memory(0x168f, 0x45c) = p; break; // enter
-        case SDL_SCANCODE_SPACE: memory(0x168f, 0x459) = p; break;
+        case SDL_SCANCODE_SPACE: memory(0x168f, 0x45c) = p; break; // enter
+        case SDL_SCANCODE_P: memory(0x168f, 0x459) = p; break;
     }
     //memory16(0x168f, 0x5285) = 1;
     // ds:1069, ds:1070, ds:1084, ds:1067
