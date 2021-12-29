@@ -141,6 +141,14 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
 
   if (l.indexOf("param_") != -1)
     l = "db 00h; " + l;
+  if (l.indexOf("local_") != -1)
+    l = "db 00h; " + l;
+  if (l.indexOf("jmpf") != -1)
+    l = "db 00h; " + l;
+  if (l.indexOf("callf") != -1)
+    l = "db 00h; " + l;
+  if (l.indexOf("efined") != -1)
+    l = "db 00h; " + l;
 
   l = l.split(" + -").join("-");
   l = l.split(" + ").join("+");

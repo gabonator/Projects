@@ -1732,7 +1732,7 @@ loc_0dda:
   out 0x20, al
   mov ax, 0x4c00
   int 0x21
-  jmpf lab_f000_fff0
+  db 00h; jmpf lab_f000_fff0
 loc_0df9:
   cmp bl, 0x3d
   jnz loc_0e1c
@@ -1797,7 +1797,7 @@ loc_0e6a:
   mov ax, 0x201
   xor dx, dx
   pushf
-  callf [0x4c]
+  db 00h; callf [0x4c]
   cli
   mov ax, cs:[0xffc]
   or ax, word ptr cs:[0xffe]
@@ -1962,7 +1962,7 @@ sub_0efe endp
 
 sub_0ffa proc near
   pushf
-  callf sub_0000_0000
+  db 00h; callf sub_0000_0000
   mov [0x412], ax
   ret
 sub_0ffa endp
@@ -1991,8 +1991,8 @@ loc_101f:
 sub_1004 endp
 
 sub_1028 proc near
-  efined2 4
-  efined2 0
+  db 00h; efined2 4
+  db 00h; efined2 0
   push bp
   push ax
   mov bp, sp
@@ -2001,7 +2001,7 @@ sub_1028 proc near
   db 00h; mov ax, word ptr [bp+param_1+0x4]
   cmp ax, 0xc000
   jc loc_107a
-  mov ax, word ptr [bp+local_res0+0x4]
+  db 00h; mov ax, word ptr [bp+local_res0+0x4]
   shr ax, 1
   shr ax, 1
   shr ax, 1
@@ -2012,17 +2012,17 @@ sub_1028 proc near
 loc_104f:
   mov bp, sp
   db 00h; mov ds, word ptr [bp+param_1+0x4]
-  mov bp, word ptr [bp+local_res0+0x4]
+  db 00h; mov bp, word ptr [bp+local_res0+0x4]
   cmp byte ptr ds:[bp+0x0], 0xfa
   jnz loc_1065
   mov bp, sp
-  inc word ptr [bp+local_res0+0x4]
+  db 00h; inc word ptr [bp+local_res0+0x4]
   jmp loc_104f
 loc_1065:
   mov bp, sp
   db 00h; mov ax, word ptr [bp+param_1+0x4]
   mov cs:[0xffe], ax
-  mov ax, word ptr [bp+local_res0+0x4]
+  db 00h; mov ax, word ptr [bp+local_res0+0x4]
   mov cs:[0xffc], ax
 loc_1075:
   db 00h; and word ptr [bp+param_2+0x4], 0xfeff
