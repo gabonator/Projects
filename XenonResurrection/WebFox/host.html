@@ -1,0 +1,147 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<style>
+/*
+html, body {
+  overflow:hidden;
+}
+*/
+body {
+background: #000000;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas" style="width:960px; height:600px;"></canvas><br>
+
+<script>
+</script>
+
+<script src="fox.js"></script>
+<script src="fox.resources.js"></script>
+<script src="ega.js"></script>
+<script src="vga.js"></script>
+<script src="cpu.js"></script>
+
+<script>
+var _datab = new ArrayBuffer(0x10000*20);
+var memory = new Uint8Array(_datab, 0, 0x10000*20);
+var memorys = new Int8Array(_datab, 0, 0x10000*20);
+
+//var _video = new Uint8Array(0x12000);
+
+var _stackb = new ArrayBuffer(0x100*2);
+var _stack = new Uint16Array(_stackb, 0, 0x100);
+var _stacks = new Int16Array(_stackb, 0, 0x100);
+
+var r0 = new ArrayBuffer(16);
+var r16 = new Uint16Array(r0, 0, 8);
+var r16s = new Int16Array(r0, 0, 8);
+var r8 = new Uint8Array(r0, 0, 16);
+var r8s = new Int8Array(r0, 0, 16);
+
+
+flags = {carry:0, direction:0, zero:0};
+
+  var data = Module['game.exe'];
+  for (var i=0; i<data.length; i++)
+    memory[0x168f0 - 0x6af0+i] = data[i];
+
+    ds = 0x168f;
+    cs = 0x1020;
+    ss = 0x200; //0x169f;
+    assert(memory[ds*16 + 0x0] == 'F'.charCodeAt(0));
+    assert(memory[cs*16 + 0x0] == 3);
+    ds = 0x01dd-0x087c+0x168f;
+    ss = 0x01ed-0x087c+0x168f;
+    bp = 0x091c;
+    es = ds;
+
+    memory[ds*16 + 0x0080] = 0;
+    memory[ds*16 + 0x0081] = 0x0d;
+
+
+
+var can = document.getElementById("canvas");
+var ctx = can.getContext('2d');
+can.width = 320;
+can.height = 200;
+var data = ctx.createImageData(can.width, can.height);
+
+function display()
+{
+  var p = 0;
+  var pixels = data.data;
+  for (var y=0; y<200; y++)
+    for (var x=0; x<320; x++)
+    {
+      var c = video.getPixel(x, y);
+      pixels[p++] = c>>16;
+      pixels[p++] = (c>>8)&0xff;
+      pixels[p++] = c & 0xff;
+      pixels[p++] = 255;
+    }
+  ctx.putImageData(data, 0, 0);
+}
+var _iter = 0;
+function* _sync(k)
+{
+  yield 0;
+}
+
+var sequence = entry();
+if(1)
+{
+  setInterval( () =>
+  {
+    sequence.next();
+    display();
+  }, 50);
+} else{
+  sequence.next();
+  sequence.next();
+  sequence.next();
+  sequence.next();
+  sequence.next();
+  display();
+}
+
+function assert(x)
+{
+  if (!x) 
+    throw new Error("assertion failed");
+}
+
+var _k = 0;
+    document.onkeydown = function(evt) {
+        evt = evt || window.event;
+        switch (evt.keyCode)
+        {
+          case 65: memory[_dseg*16+0x9191] -= 0x1; break;
+          case 38: _k |= 1; break;  // up
+          case 40: _k |= 2; break;  // down
+          case 37: _k |= 4; break; // left
+          case 39: _k |= 8; break; // right
+          case 32: _k |= 0x80;
+           if (!(memory[_dseg*16+0x8f59] & 0x80))
+                memory[_dseg*16+0x8F5B] = 0xff;
+        }
+//        memory[_dseg*16+0x8f59] = _k;
+    }
+    document.onkeyup = function(evt) {
+        evt = evt || window.event;
+        switch (evt.keyCode)
+        {
+          case 38: _k &= ~1; break;
+          case 40: _k &= ~2; break;
+          case 37: _k &= ~4; break;
+          case 39: _k &= ~8; break;
+          case 32: _k &= ~0x80; break;
+        }
+//        memory[_dseg*16+0x8f59] = _k;
+    }
+
+</script>
+</body>
+</html>
