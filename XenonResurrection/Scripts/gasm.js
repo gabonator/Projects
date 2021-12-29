@@ -45,6 +45,54 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
   if (l == "")
     return l;
 
+
+  if (l.substr(-1) == ":")
+  {
+    if (lastInstruction.substr(0, 4) == "test")
+      console.log(curfunc + ": " + l + " ; LOST TEST!")
+  }
+
+  if (lastInstruction && lastInstruction.substr(-1) == ":") // label
+  {
+    if (l.substr(0, 3) != "cmp" &&
+        l.substr(0, 3) != "mov" &&
+        l.substr(0, 3) != "ret" &&
+        l.substr(0, 3) != "inc" &&
+        l.substr(0, 3) != "add" &&
+        l.substr(0, 3) != "and" &&
+        l.substr(0, 3) != "dec" &&
+        l.substr(0, 3) != "xor" &&
+        l.substr(0, 3) != "neg" &&
+        l.substr(0, 3) != "lod" &&
+        l.substr(0, 3) != "sto" &&
+        l.substr(0, 3) != "pop" &&
+        l.substr(0, 3) != "jmp" &&
+        l.substr(0, 3) != "cbw" &&
+        l.substr(0, 4) != "push" &&
+        l.substr(0, 2) != "or" &&
+        l.substr(0, 3) != "sub" &&
+        l.substr(0, 2) != "in" &&
+        l.substr(0, 3) != "out" &&
+        l.substr(0, 4) != "test" &&
+        l.substr(0, 4) != "call" &&
+        l.substr(0, 4) != "loop" &&
+        l.substr(0, 4) != "xchg" &&
+        l.substr(0, 3) != "clc" &&
+        l.substr(0, 3) != "stc" &&
+        l.substr(0, 3) != "sti" &&
+        l.substr(0, 3) != "mul" &&
+        l.substr(0, 3) != "shl" &&
+        l.substr(0, 3) != "shr" &&
+        l.substr(0, 3) != "not" &&
+        l.substr(0, 3) != "cld" &&
+        l.substr(0, 3) != "std" &&
+        1
+       )
+    {
+      console.log(curfunc + ": " + lastInstruction + " " + l);
+    }
+  }
+
   var db = l.match("\\?\\?\\s+([0-9A-Fa-f]{2}h)")
   if (db)
     l = "db " + db[1];

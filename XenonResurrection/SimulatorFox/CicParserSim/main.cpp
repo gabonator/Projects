@@ -13,6 +13,11 @@
 #include <map>
 #include "cpu.h"
 
+int origrenderer = 0;
+
+
+void addimage(int x, int y, int w, int h, int o, int s, int f);
+void clearimage();
 constexpr WORD _seg001 = 0x1000;
 constexpr WORD appBase = 0x0000; //0x1020;
 
@@ -144,12 +149,14 @@ void _in(uint8_t& v, uint16_t a)
     if (a == 0x3c9) //video
     {
         //_sync();
+        mVga.PortRead8(a, v);
         std::cout << "video out\n";
         return;
     }
     if (a == 0x388) //audio
     {
-        std::cout << "audio\n";
+        v = 0x60;
+        //std::cout << "audio\n";
         return;
     }
     if (a == 0x61)
@@ -179,12 +186,25 @@ void _out(uint16_t port, uint8_t val)
     {
         return;
     }
-    if (port == 0x3c7 || port == 0x3c8 || port == 0x3c0 || port == 0x3c9) // video
+    if (port == 0x3c9 || port == 0x3c8)
+    {
+        mVga.PortWrite8(port, val);
+        return;
+    }
+    if (port == 0x3c7 || port == 0x3c8 || port == 0x3c0) // video
     {
         return;
     }
-    if (port == 0x388 || port == 0x389 || port == 0x3c4 || port == 0x3c5) // sound
+    if (port == 0x388 || port == 0x389) // sound
     {
+        static int adr = -1;
+        if (port==0x388)
+            adr=val;
+        if (port==0x389)
+        {
+            //std::cout << " fm [" << adr << "] = " << (int)val << "\n";
+            adr = -1;
+        }
         return;
     }
     if (port == 0x43 || port == 0x61 || port == 0x40)
@@ -195,6 +215,11 @@ void _out(uint16_t port, uint8_t val)
     {
         return;
     }
+    if (port == 0x20) // video
+    {
+        return;
+    }
+    
     _ASSERT(0);
 
 }
@@ -823,6 +848,62 @@ void onKey(int k, int p)
         case SDL_SCANCODE_LEFT: memory(0x168f, 0x48b) = p; break; // right
         case SDL_SCANCODE_SPACE: memory(0x168f, 0x45c) = p; break; // enter
         case SDL_SCANCODE_P: memory(0x168f, 0x459) = p; break;
+        case SDL_SCANCODE_Z:
+        {
+            /*
+             for (int i=0; i<256; i++)
+             {
+                 for (int y=0; y<16; y++)
+                   for (int x=0; x<16; x++)
+                   {
+                       uint32_t p = mEga.GetPixel2(x, y, 2, 0x5dc0+i*32);
+                       p = mEga.palette[p];
+                       pixel((i%16)*16+x, (i/16)*16+y, p);
+                   }
+             }
+
+             */
+            uint8_t sprites[256*256];
+            FILE* f = fopen("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/sprites", "w");
+            for (int i=0; i<256; i++)
+            {
+                for (int y=0; y<16; y++)
+                  for (int x=0; x<16; x++)
+                  {
+                      uint32_t p = mEga.GetPixel2(x, y, 2, 0x5dc0+i*32);
+                      sprites[((i/16)*16+y)*256 + (i%16)*16+x] = p;
+                      //p = mEga.palette[p];
+                      //pixel((i%16)*16+x, (i/16)*16+y, p);
+                  }
+            }
+            for (int y=0; y<256; y++)
+            {
+                for (int x=0; x<256; x++)
+                {
+                    fprintf(f, "%x", sprites[y*256+x]);
+                }
+                fprintf(f, "\n");
+            }
+            for (int x=0; x<16; x++)
+                fprintf(f, "%08x ", mEga.palette[x]);
+            fprintf(f, "\n");
+
+            fclose(f);
+            f = fopen("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/map", "w");
+            for (int y=0; y<37; y++)
+            {
+                for (int x=0;x<256; x++)
+                {
+                    int s = memory(0x5b33, y*256+x);
+                    fprintf(f, "%02x ", s);
+                }
+                fprintf(f, "\n");
+            }
+            fclose(f);
+                
+        }
+            //0x5b33:0000
+            //memory(0x168f, 0x459) = p; break;
     }
     //memory16(0x168f, 0x5285) = 1;
     // ds:1069, ds:1070, ds:1084, ds:1067
@@ -835,17 +916,181 @@ void loadSegment(uint8_t* buffer, const char* fname, int len, int ofs)
     fread(buffer + ofs, len, 1, f);
     fclose(f);
 }
+std::vector<int> collectx, collecty, collectw, collecth, collects, collecto, collectf;
+void addimage(int x, int y, int w, int h, int o, int s, int f)
+{
+    collectx.push_back(x);
+    collecty.push_back(y);
+    collectw.push_back(w);
+    collecth.push_back(h);
+    collects.push_back(s);
+    collecto.push_back(o);
+    collectf.push_back(f);
+}
+
+void pixel(int x, int y, int c)
+{
+    if (x>=0 && x<320 && y>=0 && y<200)
+        mSdl.SetPixel(x, y, c);
+}
+void rect(int l, int t, int r, int b, int c)
+{
+    for (int x=l; x<r; x++)
+        pixel(x, t, c);
+    for (int x=l; x<r; x++)
+        pixel(x, b, c);
+    for (int y=t; y<b; y++)
+        pixel(l, y, c);
+    for (int y=t; y<b; y++)
+        pixel(r, y, c);
+}
+void clearimage()
+{
+    collectx.clear();
+    collecty.clear();
+    collectw.clear();
+    collecth.clear();
+    collects.clear();
+    collecto.clear();
+    collectf.clear();
+}
+int getmaptile(int x, int y)
+{
+    return memory(0x5b33, y*256+x);
+}
+int nearest(int x)
+{
+    
+    int power = 0;
+    while(power < x)
+        power+=8;
+    return power;
+}
+#include <set>
+std::set<int> exportedSprites;
 
 void _sync()
 {
+    if (0)
+    std::cout << "pos " << (int)memory16(0x168f, 0x5270)
+    << ","<< (int)memory16(0x168f, 0x5272)
+    << ","<< (int)memory(0x168f, 0x5274)
+    << ","<< (int)memory(0x168f, 0x5276) << "\n";
+    
+    if (0)
+    std::cout << "energy " << (int)memory(0x168f, 1049) << "\n";
+//
+//    _ah = memory(_ds, 0x5272);                   //mov ah, byte ptr [0x5272]
+//    _al = memory(_ds, 0x5270);                  //mov al, [0x5270]
+
+    if (1)
+    {
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
       {
         mSdl.SetPixel(x, y, mVideo->GetPixel(x, y));
       }
+    } else
+    {
+    for (int y=0; y<12; y++)
+      for (int x=0; x<20; x++)
+      {
+          int t = getmaptile((int)memory16(0x168f, 0x5270)+x, memory(0x168f, 0x5272)+y);
+          for (int _y=0; _y<16; _y++)
+              for (int _x=0; _x<16; _x++)
+              {
+                  int p = mEga.GetPixel2(_x, _y, 2, 0x5dc0+t*32);
+                  p = mEga.palette[p];
+                  pixel(x*16+_x, y*16+_y, p);
+              }
+      }
 
+    for(int i=0; i<collectx.size(); i++)
+    {
+        FILE* f = nullptr;
+        /*
+        int spriteid = collects[i]*16 + collecto[i];
+        
+        if (exportedSprites.find(spriteid) == exportedSprites.end())
+        {
+            exportedSprites.insert(spriteid);
+            char path[256];
+            sprintf(path, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/sprites/%04x_%04x", collects[i], collecto[i]);
+            f = fopen(path, "w");
+        }*/
+            
+        int frame = collectw[i]*collecth[i];
+        int pitch = collectw[i];
+        for (int y=0; y<collecth[i]; y++)
+        {
+            for (int x=0; x<collectw[i]*8; x++)
+            {
+                int plane0 = memory(collects[i], collecto[i]+y*pitch+x/8+frame*0);
+                int plane1 = memory(collects[i], collecto[i]+y*pitch+x/8+frame*1);
+                int plane2 = memory(collects[i], collecto[i]+y*pitch+x/8+frame*2);
+                int plane3 = memory(collects[i], collecto[i]+y*pitch+x/8+frame*3);
+                int plane4 = memory(collects[i], collecto[i]+y*pitch+x/8+frame*4);
+                int p0 = (plane0 >> (7-(x&7)))&1;
+                int p1 = (plane1 >> (7-(x&7)))&1;
+                int p2 = (plane2 >> (7-(x&7)))&1;
+                int p3 = (plane3 >> (7-(x&7)))&1;
+                int p4 = (plane4 >> (7-(x&7)))&1;
+                int p = p1 + 2*p2 + 4*p3 + 8*p4;
+                if (f)
+                {
+                    if (p0)
+                        fprintf(f, "%x", p);
+                    else
+                        fprintf(f, " ");
+                }
+                p = mEga.palette[p];
+                if (p0)
+                {
+                    if (!collectf[i])
+                        pixel((short)collectx[i]+ x, (short)collecty[i] + y, p);
+                    else
+                        pixel((short)collectx[i]+ collectw[i]*8-1 - x, (short)collecty[i] + y, p);
+                }
+
+            }
+            if (f)
+                fprintf(f, "\n");
+        }
+        if (f)
+            fclose(f);
+        if (0)
+        rect((short)collectx[i], (short)collecty[i], (short)collectx[i] + (short)collectw[i]*8, (short)collecty[i] + (short)collecth[i], 0xff0000);
+    }
+    }
     mSdl.Loop();
     SDL_Delay(5);
+    /*
+    int f = _reg.flags.f16;
+    int sp = _sp;
+    static int cycle = 0;
+    cycle++;
+    _push(_ax);
+    _push(_bx);
+    _push(_cx);
+    _push(_dx);
+    _push(_si);
+    _push(_di);
+    _push(_ds);
+    _push(_es);
+    
+    sub_138b();
+    _es = _pop();
+    _ds = _pop();
+    _di = _pop();
+    _si = _pop();
+    _dx = _pop();
+    _cx = _pop();
+    _bx = _pop();
+    _ax = _pop();
+    _ASSERT(_ds);
+    _ASSERT(_sp == sp);
+    _reg.flags.f16 = f;
+     */
 }
 
 int main(int argc, const char * argv[]) {
@@ -874,7 +1119,7 @@ int main(int argc, const char * argv[]) {
 */
     
     // ds @ 168f:0000    0x6af0 -> 0x168f0  (+0xfe00)
-    loadSegment(datasegment, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/raw/TEST.EXE", 84992, 0x168f0 - 0x6af0); //33436);
+    loadSegment(datasegment, "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputFox/raw/game.exe", 84992, 0x168f0 - 0x6af0); //33436);
     _ds = 0x168f;
     _cs = 0x1020;
     _ss = 0x200; //0x169f;

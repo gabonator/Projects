@@ -1142,32 +1142,18 @@ loc_085c:
   pop bx
   pop ax
   ret
-  db b8h
-  db 03h
-  db 00h
-  db cdh
-  db 10h
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db 2eh
-  db c6h
-  db 06h
-  db b3h
-  db 6bh
-  db 00h
-  db b4h
-  db 09h
-  db bah
-  db 61h
-  db 00h
-  db cdh
-  db 21h
-  db e9h
-  db 82h
-  db 00h
+sub_0805 endp
+
+sub_08d0 proc near
+  mov ax, 0x3
+  int 0x10
+  mov ax, 0x168f
+  mov ds, ax
+  mov byte ptr cs:[0x6bb3], 0x0
+  mov ah, 0x9
+  mov dx, 0x61
+  int 0x21
+  jmp loc_096c
 loc_08ea:
   mov ax, 0x168f
   mov ds, ax
@@ -1240,7 +1226,7 @@ loc_096c:
   sti
 loc_0979:
   jmp loc_0979
-sub_0805 endp
+sub_08d0 endp
 
 sub_097b proc near
   mov ax, 0x168f
@@ -1649,861 +1635,402 @@ loc_0d05:
   db 00h
   db 00h
   db 00h
-  db 2eh
-  db a3h
-  db 23h
-  db 0dh
-  db 2eh
-  db 8ch
-  db 1eh
-  db 25h
-  db 0dh
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db 83h
-  db 06h
-  db 3ch
-  db 04h
-  db 01h
-  db 83h
-  db 16h
-  db 3eh
-  db 04h
-  db 00h
-  db ffh
-  db 36h
-  db 35h
-  db 04h
-  db ffh
-  db 36h
-  db 33h
-  db 04h
-  db 2eh
-  db 8eh
-  db 1eh
-  db 25h
-  db 0dh
-  db 2eh
-  db a1h
-  db 23h
-  db 0dh
-  db cbh
-  db 1eh
-  db 53h
-  db 50h
-  db fch
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db e4h
-  db 60h
-  db 8ah
-  db d8h
-  db e4h
-  db 61h
-  db 8ah
-  db e0h
-  db 0ch
-  db 80h
-  db e6h
-  db 61h
-  db 8ah
-  db c4h
-  db e6h
-  db 61h
-  db 88h
-  db 1eh
-  db c0h
-  db 04h
-  db 80h
-  db fbh
-  db 01h
-  db 75h
-  db 06h
-  db 2eh
-  db 80h
-  db 3eh
-  db b3h
-  db 6bh
-  db 00h
-  db 75h
-  db 7eh
-  db b8h
-  db 03h
-  db 00h
-  db cdh
-  db 10h
-  db beh
-  db 27h
-  db 01h
-  db b9h
-  db 01h
-  db 00h
-  db b4h
-  db 0eh
-  db bbh
-  db 03h
-  db 00h
-  db ach
-  db 0ah
-  db c0h
-  db 74h
-  db 04h
-  db cdh
-  db 10h
-  db ebh
-  db f7h
-  db 32h
-  db c0h
-  db e6h
-  db 40h
-  db e6h
-  db 40h
-  db bah
-  db 40h
-  db 00h
-  db ech
-  db 8ah
-  db e0h
-  db ech
-  db 86h
-  db c4h
-  db 3dh
-  db 00h
-  db f0h
-  db 72h
-  db f5h
-  db ech
-  db 8ah
-  db e0h
-  db ech
-  db 86h
-  db c4h
-  db 3dh
-  db 00h
-  db 40h
-  db 77h
-  db f5h
-  db b8h
-  db 03h
-  db 00h
-  db cdh
-  db 10h
-  db e8h
-  db 30h
-  db ffh
-  db b0h
-  db 0ah
-  db e6h
-  db 42h
-  db 32h
-  db c0h
-  db e6h
-  db 42h
-  db e4h
-  db 61h
-  db 24h
-  db fch
-  db e6h
-  db 61h
-  db 8ch
-  db c8h
-  db 8eh
-  db c0h
-  db b9h
-  db c9h
-  db 0dh
-  db 33h
-  db ffh
-  db f3h
-  db aah
-  db bfh
-  db f9h
-  db 0dh
-  db bah
-  db 5eh
-  db 01h
-  db b9h
-  db 00h
-  db 04h
-  db f3h
-  db aah
-  db 81h
-  db efh
-  db 00h
-  db 04h
-  db 05h
-  db 40h
-  db 00h
-  db 8eh
-  db c0h
-  db 4ah
-  db 75h
-  db efh
-  db b0h
-  db 20h
-  db e6h
-  db 20h
-  db b8h
-  db 00h
-  db 4ch
-  db cdh
-  db 21h
-  db eah
-  db f0h
-  db ffh
-  db 00h
-  db f0h
-  db 80h
-  db fbh
-  db 3dh
-  db 75h
-  db 1eh
-  db 2eh
-  db 80h
-  db 36h
-  db e4h
-  db 16h
-  db 02h
-  db 2eh
-  db 80h
-  db 3eh
-  db e3h
-  db 16h
-  db 01h
-  db 74h
-  db 10h
-  db e4h
-  db 61h
-  db 24h
-  db fch
-  db 2eh
-  db f6h
-  db 06h
-  db e4h
-  db 16h
-  db 02h
-  db 74h
-  db 02h
-  db 0ch
-  db 03h
-  db e6h
-  db 61h
-  db 80h
-  db e3h
-  db 7fh
-  db 32h
-  db ffh
-  db a0h
-  db c0h
-  db 04h
-  db 98h
-  db f6h
-  db d4h
-  db 88h
-  db a7h
-  db 40h
-  db 04h
-  db b0h
-  db 20h
-  db e6h
-  db 20h
-  db 58h
-  db 5bh
-  db 1fh
-  db cfh
-  db 50h
-  db 53h
-  db 51h
-  db 52h
-  db 57h
-  db 56h
-  db 1eh
-  db 06h
-  db 55h
-  db fah
-  db 33h
-  db c0h
-  db 8eh
-  db d8h
-  db b0h
-  db cfh
-  db c4h
-  db 3eh
-  db 0ch
-  db 00h
-  db aah
-  db c7h
-  db 06h
-  db 04h
-  db 00h
-  db 28h
-  db 10h
-  db 8ch
-  db 0eh
-  db 06h
-  db 00h
-  db 9ch
-  db 58h
-  db 80h
-  db cch
-  db 01h
-  db 50h
-  db 9dh
-  db fbh
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db c0h
-  db 33h
-  db c0h
-  db 8eh
-  db d8h
-  db bbh
-  db 11h
-  db 02h
-  db b5h
-  db 00h
-  db b1h
-  db 01h
-  db b8h
-  db 01h
-  db 02h
-  db 33h
-  db d2h
-  db 9ch
-  db ffh
-  db 1eh
-  db 4ch
-  db 00h
-  db fah
-  db 2eh
-  db a1h
-  db fch
-  db 0fh
-  db 2eh
-  db 0bh
-  db 06h
-  db feh
-  db 0fh
-  db 75h
-  db 12h
-  db feh
-  db c1h
-  db 80h
-  db f9h
-  db 0ah
-  db 75h
-  db e3h
-  db feh
-  db c5h
-  db 80h
-  db fdh
-  db 27h
-  db 76h
-  db dah
-  db b4h
-  db 4ch
-  db cdh
-  db 21h
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db 8eh
-  db c0h
-  db b4h
-  db 19h
-  db cdh
-  db 21h
-  db 24h
-  db 01h
-  db a2h
-  db 10h
-  db 02h
-  db e8h
-  db 59h
-  db 00h
-  db 73h
-  db 37h
-  db e8h
-  db 54h
-  db 00h
-  db 73h
-  db 32h
-  db 80h
-  db 36h
-  db 10h
-  db 02h
-  db 01h
-  db e8h
-  db 4ah
-  db 00h
-  db 73h
-  db 28h
-  db e8h
-  db 45h
-  db 00h
-  db 73h
-  db 23h
-  db b8h
-  db 03h
-  db 00h
-  db cdh
-  db 10h
-  db bah
-  db f9h
-  db 01h
-  db b4h
-  db 09h
-  db cdh
-  db 21h
-  db b4h
-  db 0eh
-  db a0h
-  db 14h
-  db 04h
-  db 04h
-  db 30h
-  db cdh
-  db 10h
-  db b0h
-  db 2dh
-  db cdh
-  db 10h
-  db 8bh
-  db 16h
-  db 15h
-  db 04h
-  db e8h
-  db 29h
-  db 01h
-  db e9h
-  db 8eh
-  db fah
-  db 9ch
-  db 80h
-  db 3eh
-  db 17h
-  db 04h
-  db 01h
-  db 74h
-  db 0dh
-  db b4h
-  db 19h
-  db cdh
-  db 21h
-  db 3ch
-  db 03h
-  db 72h
-  db 05h
-  db c6h
-  db 06h
-  db 17h
-  db 04h
-  db 01h
-  db 9dh
-  db 5dh
-  db 07h
-  db 1fh
-  db 5eh
-  db 5fh
-  db 5ah
-  db 59h
-  db 5bh
-  db 58h
-  db c3h
-  db 8ah
-  db 16h
-  db 10h
-  db 02h
-  db 32h
-  db e4h
-  db cdh
-  db 13h
-  db b8h
-  db 01h
-  db 02h
-  db bbh
-  db 11h
-  db 02h
-  db b9h
-  db 02h
-  db 00h
-  db 8ah
-  db 16h
-  db 10h
-  db 02h
-  db b6h
-  db 00h
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 01h
-  db e8h
-  db ddh
-  db 00h
-  db 72h
-  db 5dh
-  db c6h
-  db 06h
-  db 17h
-  db 04h
-  db 00h
-  db b8h
-  db 01h
-  db 27h
-  db 80h
-  db 3fh
-  db f9h
-  db 75h
-  db 08h
-  db c6h
-  db 06h
-  db 17h
-  db 04h
-  db 01h
-  db b8h
-  db 00h
-  db 4fh
-  db 88h
-  db 26h
-  db 0fh
-  db 02h
-  db a2h
-  db 0eh
-  db 02h
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 02h
-  db b1h
-  db 01h
-  db b8h
-  db 01h
-  db 02h
-  db bbh
-  db 11h
-  db 02h
-  db 8ah
-  db 2eh
-  db 0fh
-  db 02h
-  db 8ah
-  db 36h
-  db 0eh
-  db 02h
-  db e8h
-  db a7h
-  db 00h
-  db 72h
-  db 27h
-  db feh
-  db c1h
-  db 80h
-  db f9h
-  db 0ah
-  db 76h
-  db e6h
-  db b8h
-  db 01h
-  db 02h
-  db b1h
-  db f7h
-  db 8ah
-  db 16h
-  db 10h
-  db 02h
-  db e8h
-  db 92h
-  db 00h
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 03h
-  db 73h
-  db 0dh
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 04h
-  db a3h
-  db 12h
-  db 04h
-  db 80h
-  db fch
-  db 10h
-  db 74h
-  db 14h
-  db a0h
-  db 11h
-  db 04h
-  db 38h
-  db 06h
-  db 14h
-  db 04h
-  db 73h
-  db 09h
-  db a2h
-  db 14h
-  db 04h
-  db a1h
-  db 12h
-  db 04h
-  db a3h
-  db 15h
-  db 04h
-  db f9h
-  db c3h
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 05h
-  db 81h
-  db 3eh
-  db 11h
-  db 02h
-  db 4dh
-  db 4fh
-  db 75h
-  db dfh
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 06h
-  db 81h
-  db 3eh
-  db 13h
-  db 02h
-  db 4bh
-  db 54h
-  db 75h
-  db d2h
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 07h
-  db bfh
-  db 50h
-  db 02h
-  db 33h
-  db dbh
-  db 43h
-  db 80h
-  db 39h
-  db 4eh
-  db 74h
-  db fah
-  db 89h
-  db 1eh
-  db 12h
-  db 04h
-  db 8dh
-  db 79h
-  db 0ah
-  db 83h
-  db fbh
-  db 0ah
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 08h
-  db 8ah
-  db 25h
-  db 33h
-  db dbh
-  db 43h
-  db 38h
-  db 21h
-  db 74h
-  db fbh
-  db 89h
-  db 1eh
-  db 12h
-  db 04h
-  db 03h
-  db fbh
-  db 83h
-  db fbh
-  db 0fh
-  db c6h
-  db 06h
-  db 11h
-  db 04h
-  db 09h
-  db bfh
-  db 10h
-  db 04h
-  db 8ah
-  db 05h
-  db 33h
-  db dbh
-  db 4bh
-  db 38h
-  db 01h
-  db 74h
-  db fbh
-  db f7h
-  db d3h
-  db 89h
-  db 1eh
-  db 12h
-  db 04h
-  db 81h
-  db fbh
-  db a8h
-  db 00h
-  db 72h
-  db 84h
-  db f8h
-  db c3h
-  db 9ch
-  db 9ah
-  db 00h
-  db 00h
-  db 00h
-  db 00h
-  db a3h
-  db 12h
-  db 04h
-  db c3h
-  db b9h
-  db 04h
-  db 00h
-  db 32h
-  db c0h
-  db d1h
-  db e2h
-  db d0h
-  db d0h
-  db d1h
-  db e2h
-  db d0h
-  db d0h
-  db d1h
-  db e2h
-  db d0h
-  db d0h
-  db d1h
-  db e2h
-  db d0h
-  db d0h
-  db 3ch
-  db 09h
-  db 76h
-  db 02h
-  db 04h
-  db 07h
-  db 04h
-  db 30h
-  db b4h
-  db 0eh
-  db cdh
-  db 10h
-  db e2h
-  db e0h
-  db c3h
-  db 55h
-  db 50h
-  db 8bh
-  db ech
-  db 2eh
-  db 83h
-  db 3eh
-  db feh
-  db 0fh
-  db 00h
-  db 75h
-  db 41h
-  db 8bh
-  db 46h
-  db 06h
-  db 3dh
-  db 00h
-  db c0h
-  db 72h
-  db 3eh
-  db 8bh
-  db 46h
-  db 04h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db 03h
-  db 46h
-  db 06h
-  db 3dh
-  db 00h
-  db c0h
-  db 72h
-  db 2bh
-  db 8bh
-  db ech
-  db 8eh
-  db 5eh
-  db 06h
-  db 8bh
-  db 6eh
-  db 04h
-  db 3eh
-  db 80h
-  db 7eh
-  db 00h
-  db fah
-  db 75h
-  db 07h
-  db 8bh
-  db ech
-  db ffh
-  db 46h
-  db 04h
-  db ebh
-  db eah
-  db 8bh
-  db ech
-  db 8bh
-  db 46h
-  db 06h
-  db 2eh
-  db a3h
-  db feh
-  db 0fh
-  db 8bh
-  db 46h
-  db 04h
-  db 2eh
-  db a3h
-  db fch
-  db 0fh
-  db 81h
-  db 66h
-  db 08h
-  db ffh
-  db feh
-  db 58h
-  db 5dh
-  db cfh
 sub_0ceb endp ; sp-analysis failed
+
+sub_0d27 proc near
+  mov cs:[0xd23], ax
+  mov word ptr cs:[0xd25], ds
+  mov ax, 0x168f
+  mov ds, ax
+  add word ptr [0x43c], 0x1
+  adc word ptr [0x43e], 0x0
+  push word ptr [0x435]
+  push word ptr [0x433]
+  mov ds, word ptr cs:[0xd25]
+  mov ax, cs:[0xd23]
+  retf
+sub_0d27 endp
+
+sub_0d51 proc near
+  push ds
+  push bx
+  push ax
+  cld
+  mov ax, 0x168f
+  mov ds, ax
+  in al, 0x60
+  mov bl, al
+  in al, 0x61
+  mov ah, al
+  or al, 0x80
+  out 0x61, al
+  mov al, ah
+  out 0x61, al
+  mov byte ptr [0x4c0], bl
+  cmp bl, 0x1
+  jnz loc_0d79
+  cmp byte ptr cs:[0x6bb3], 0x0
+loc_0d79:
+  jnz loc_0df9
+  mov ax, 0x3
+  int 0x10
+  mov si, 0x127
+  mov cx, 0x1
+  mov ah, 0xe
+  mov bx, 0x3
+loc_0d8b:
+  lodsb
+  or al, al
+  jz loc_0d94
+  int 0x10
+  jmp loc_0d8b
+loc_0d94:
+  xor al, al
+  out 0x40, al
+  out 0x40, al
+  mov dx, 0x40
+loc_0d9d:
+  in al, dx
+  mov ah, al
+  in al, dx
+  xchg ah, al
+  cmp ax, 0xf000
+  jc loc_0d9d
+loc_0da8:
+  in al, dx
+  mov ah, al
+  in al, dx
+  xchg ah, al
+  cmp ax, 0x4000
+  ja loc_0da8
+  mov ax, 0x3
+  int 0x10
+  call sub_0ceb
+  mov al, 0xa
+  out 0x42, al
+  xor al, al
+  out 0x42, al
+  in al, 0x61
+  and al, 0xfc
+  out 0x61, al
+  mov ax, cs
+  mov es, ax
+  mov cx, 0xdc9
+  xor di, di
+  rep stosb
+  mov di, 0xdf9
+  mov dx, 0x15e
+loc_0dda:
+  mov cx, 0x400
+  rep stosb
+  sub di, 0x400
+  add ax, 0x40
+  mov es, ax
+  dec dx
+  jnz loc_0dda
+  mov al, 0x20
+  out 0x20, al
+  mov ax, 0x4c00
+  int 0x21
+  jmpf lab_f000_fff0
+loc_0df9:
+  cmp bl, 0x3d
+  jnz loc_0e1c
+  xor byte ptr cs:[0x16e4], 0x2
+  cmp byte ptr cs:[0x16e3], 0x1
+  jz loc_0e1c
+  in al, 0x61
+  and al, 0xfc
+  test byte ptr cs:[0x16e4], 0x2
+  jz loc_0e1a
+  or al, 0x3
+loc_0e1a:
+  out 0x61, al
+loc_0e1c:
+  and bl, 0x7f
+  xor bh, bh
+  mov al, [0x4c0]
+  cbw
+  not ah
+  mov byte ptr [bx+0x440], ah
+  mov al, 0x20
+  out 0x20, al
+  pop ax
+  pop bx
+  pop ds
+  iret
+sub_0d51 endp ; sp-analysis failed
+
+sub_0e33 proc near
+  push ax
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  push ds
+  push es
+  push bp
+  cli
+  xor ax, ax
+  mov ds, ax
+  mov al, 0xcf
+  les di, [0xc]
+  stosb
+  mov word ptr [0x4], 0x1028
+  mov word ptr [0x6], cs
+  pushf
+  pop ax
+  or ah, 0x1
+  push ax
+  popf
+  sti
+  mov ax, 0x168f
+  mov es, ax
+  xor ax, ax
+  mov ds, ax
+  mov bx, 0x211
+  mov ch, 0x0
+loc_0e68:
+  mov cl, 0x1
+loc_0e6a:
+  mov ax, 0x201
+  xor dx, dx
+  pushf
+  callf [0x4c]
+  cli
+  mov ax, cs:[0xffc]
+  or ax, word ptr cs:[0xffe]
+  jnz loc_0e92
+  inc cl
+  cmp cl, 0xa
+  jnz loc_0e6a
+  inc ch
+  cmp ch, 0x27
+  jbe loc_0e68
+  mov ah, 0x4c
+  int 0x21
+loc_0e92:
+  mov ax, 0x168f
+  mov ds, ax
+  mov es, ax
+  mov ah, 0x19
+  int 0x21
+  and al, 0x1
+  mov [0x210], al
+  call sub_0efe
+  jnc loc_0ede
+  call sub_0efe
+  jnc loc_0ede
+  xor byte ptr [0x210], 0x1
+  call sub_0efe
+  jnc loc_0ede
+  call sub_0efe
+  jnc loc_0ede
+  mov ax, 0x3
+  int 0x10
+  mov dx, 0x1f9
+  mov ah, 0x9
+  int 0x21
+  mov ah, 0xe
+  mov al, [0x414]
+  add al, 0x30
+  int 0x10
+  mov al, 0x2d
+  int 0x10
+  mov dx, word ptr [0x415]
+  call sub_1004
+  jmp loc_096c
+loc_0ede:
+  pushf
+  cmp byte ptr [0x417], 0x1
+  jz loc_0ef3
+  mov ah, 0x19
+  int 0x21
+  cmp al, 0x3
+  jc loc_0ef3
+  mov byte ptr [0x417], 0x1
+loc_0ef3:
+  popf
+  pop bp
+  pop es
+  pop ds
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+sub_0e33 endp
+
+sub_0efe proc near
+  mov dl, byte ptr [0x210]
+  xor ah, ah
+  int 0x13
+  mov ax, 0x201
+  mov bx, 0x211
+  mov cx, 0x2
+  mov dl, byte ptr [0x210]
+  mov dh, 0x0
+  mov byte ptr [0x411], 0x1
+  call sub_0ffa
+  jc loc_0f7c
+  mov byte ptr [0x417], 0x0
+  mov ax, 0x2701
+  cmp byte ptr [bx], 0xf9
+  jnz loc_0f34
+  mov byte ptr [0x417], 0x1
+  mov ax, 0x4f00
+loc_0f34:
+  mov byte ptr [0x20f], ah
+  mov [0x20e], al
+  mov byte ptr [0x411], 0x2
+  mov cl, 0x1
+loc_0f42:
+  mov ax, 0x201
+  mov bx, 0x211
+  mov ch, byte ptr [0x20f]
+  mov dh, byte ptr [0x20e]
+  call sub_0ffa
+  jc loc_0f7c
+  inc cl
+  cmp cl, 0xa
+  jbe loc_0f42
+  mov ax, 0x201
+  mov cl, 0xf7
+  mov dl, byte ptr [0x210]
+  call sub_0ffa
+  mov byte ptr [0x411], 0x3
+  jnc loc_0f7c
+  mov byte ptr [0x411], 0x4
+  mov [0x412], ax
+  cmp ah, 0x10
+  jz loc_0f90
+loc_0f7c:
+  mov al, [0x411]
+  cmp byte ptr [0x414], al
+  jnc loc_0f8e
+  mov [0x414], al
+  mov ax, [0x412]
+  mov [0x415], ax
+loc_0f8e:
+  stc
+  ret
+loc_0f90:
+  mov byte ptr [0x411], 0x5
+  cmp word ptr [0x211], 0x4f4d
+  jnz loc_0f7c
+  mov byte ptr [0x411], 0x6
+  cmp word ptr [0x213], 0x544b
+  jnz loc_0f7c
+  mov byte ptr [0x411], 0x7
+  mov di, 0x250
+  xor bx, bx
+loc_0fb4:
+  inc bx
+  cmp byte ptr [bx+di], 0x4e
+  jz loc_0fb4
+  mov word ptr [0x412], bx
+  lea di, [bx+di+0xa]
+  cmp bx, 0xa
+  mov byte ptr [0x411], 0x8
+  mov ah, byte ptr [di]
+  xor bx, bx
+loc_0fcd:
+  inc bx
+  cmp byte ptr [bx+di], ah
+  jz loc_0fcd
+  mov word ptr [0x412], bx
+  add di, bx
+  cmp bx, 0xf
+  mov byte ptr [0x411], 0x9
+  mov di, 0x410
+  mov al, byte ptr [di]
+  xor bx, bx
+loc_0fe7:
+  dec bx
+  cmp byte ptr [bx+di], al
+  jz loc_0fe7
+  not bx
+  mov word ptr [0x412], bx
+  cmp bx, 0xa8
+  jc loc_0f7c
+  clc
+  ret
+sub_0efe endp
+
+sub_0ffa proc near
+  pushf
+  callf sub_0000_0000
+  mov [0x412], ax
+  ret
+sub_0ffa endp
+
+sub_1004 proc near
+  mov cx, 0x4
+loc_1007:
+  xor al, al
+  shl dx, 1
+  rcl al, 1
+  shl dx, 1
+  rcl al, 1
+  shl dx, 1
+  rcl al, 1
+  shl dx, 1
+  rcl al, 1
+  cmp al, 0x9
+  jbe loc_101f
+  add al, 0x7
+loc_101f:
+  add al, 0x30
+  mov ah, 0xe
+  int 0x10
+  loop loc_1007
+  ret
+sub_1004 endp
+
+sub_1028 proc near
+  efined2 4
+  efined2 0
+  push bp
+  push ax
+  mov bp, sp
+  cmp word ptr cs:[0xffe], 0x0
+  jnz loc_1075
+  db 00h; mov ax, word ptr [bp+param_1+0x4]
+  cmp ax, 0xc000
+  jc loc_107a
+  mov ax, word ptr [bp+local_res0+0x4]
+  shr ax, 1
+  shr ax, 1
+  shr ax, 1
+  shr ax, 1
+  db 00h; add ax, word ptr [bp+param_1+0x4]
+  cmp ax, 0xc000
+  jc loc_107a
+loc_104f:
+  mov bp, sp
+  db 00h; mov ds, word ptr [bp+param_1+0x4]
+  mov bp, word ptr [bp+local_res0+0x4]
+  cmp byte ptr ds:[bp+0x0], 0xfa
+  jnz loc_1065
+  mov bp, sp
+  inc word ptr [bp+local_res0+0x4]
+  jmp loc_104f
+loc_1065:
+  mov bp, sp
+  db 00h; mov ax, word ptr [bp+param_1+0x4]
+  mov cs:[0xffe], ax
+  mov ax, word ptr [bp+local_res0+0x4]
+  mov cs:[0xffc], ax
+loc_1075:
+  db 00h; and word ptr [bp+param_2+0x4], 0xfeff
+loc_107a:
+  pop ax
+  pop bp
+  iret
+sub_1028 endp ; sp-analysis failed
 
 sub_107d proc near
   cli
@@ -2733,69 +2260,45 @@ sub_11e6 proc near
   pop bx
   pop ax
   ret
-  db 50h
-  db 53h
-  db 51h
-  db 52h
-  db 57h
-  db 56h
-  db 1eh
-  db 06h
-  db 55h
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db b8h
-  db b6h
-  db 20h
-  db e8h
-  db 68h
-  db 03h
-  db fah
-  db bbh
-  db 9ah
-  db 0bh
-  db b2h
-  db 13h
-  db e8h
-  db 96h
-  db 03h
-  db 80h
-  db eah
-  db 03h
-  db 83h
-  db c3h
-  db 05h
-  db e8h
-  db 8dh
-  db 03h
-  db 8ah
-  db 67h
-  db 05h
-  db b0h
-  db c6h
-  db e8h
-  db 4eh
-  db 03h
-  db c6h
-  db 06h
-  db 74h
-  db 01h
-  db 00h
-  db fbh
-  db 5dh
-  db 07h
-  db 1fh
-  db 5eh
-  db 5fh
-  db 5ah
-  db 59h
-  db 5bh
-  db 58h
-  db c3h
-sub_11e6 endp ; sp-analysis failed
+sub_11e6 endp
+
+sub_122b proc near
+  push ax
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  push ds
+  push es
+  push bp
+  mov ax, 0x168f
+  mov ds, ax
+  mov ax, 0x20b6
+  call sub_15a7
+  cli
+  mov bx, 0xb9a
+  mov dl, 0x13
+  call sub_15de
+  sub dl, 0x3
+  add bx, 0x5
+  call sub_15de
+  mov ah, byte ptr [bx+0x5]
+  mov al, 0xc6
+  call sub_15a7
+  mov byte ptr [0x174], 0x0
+  sti
+  pop bp
+  pop es
+  pop ds
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+sub_122b endp
 
 sub_1269 proc near
   push ax
@@ -2828,771 +2331,409 @@ loc_128d:
   pop cx
   pop ax
   ret
-  db 50h
-  db 53h
-  db 51h
-  db 52h
-  db 57h
-  db 56h
-  db 1eh
-  db 06h
-  db 55h
-  db fch
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db feh
-  db 0eh
-  db 80h
-  db 09h
-  db 75h
-  db 08h
-  db a0h
-  db 81h
-  db 09h
-  db a2h
-  db 80h
-  db 09h
-  db ebh
-  db 69h
-  db c7h
-  db 06h
-  db 15h
-  db 09h
-  db b3h
-  db 09h
-  db 8bh
-  db 3eh
-  db 15h
-  db 09h
-  db 8bh
-  db 75h
-  db 0dh
-  db 83h
-  db feh
-  db ffh
-  db 74h
-  db 57h
-  db 83h
-  db feh
-  db feh
-  db 74h
-  db 48h
-  db 80h
-  db 6dh
-  db 07h
-  db 01h
-  db 77h
-  db 42h
-  db 32h
-  db ffh
-  db ach
-  db a8h
-  db 80h
-  db 74h
-  db 03h
-  db e9h
-  db 65h
-  db 01h
-  db 8ah
-  db e0h
-  db 80h
-  db e4h
-  db 0fh
-  db 8ah
-  db cch
-  db 86h
-  db 4dh
-  db 08h
-  db 88h
-  db 4dh
-  db 0fh
-  db b1h
-  db 04h
-  db d2h
-  db e8h
-  db 88h
-  db 45h
-  db 09h
-  db 8ah
-  db 5dh
-  db 08h
-  db 32h
-  db ffh
-  db d1h
-  db e3h
-  db 8bh
-  db 87h
-  db 66h
-  db 09h
-  db 8ah
-  db 4dh
-  db 09h
-  db e8h
-  db aeh
-  db 00h
-  db b0h
-  db 60h
-  db 8ah
-  db 0dh
-  db 80h
-  db f9h
-  db 07h
-  db 75h
-  db 05h
-  db b0h
-  db 40h
-  db 8ah
-  db 4dh
-  db 03h
-  db d2h
-  db e8h
-  db 88h
-  db 45h
-  db 07h
-  db 89h
-  db 75h
-  db 0dh
-  db 83h
-  db 06h
-  db 15h
-  db 09h
-  db 11h
-  db ebh
-  db 9dh
-  db 5dh
-  db 07h
-  db 1fh
-  db 5eh
-  db 5fh
-  db 5ah
-  db 59h
-  db 5bh
-  db 58h
-  db c3h
-  db 50h
-  db 53h
-  db 51h
-  db 52h
-  db 57h
-  db 56h
-  db 1eh
-  db 06h
-  db 55h
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db 80h
-  db 3eh
-  db 74h
-  db 01h
-  db 00h
-  db 74h
-  db 31h
-  db b0h
-  db bdh
-  db b4h
-  db efh
-  db 22h
-  db 26h
-  db 19h
-  db 09h
-  db e8h
-  db 4ch
-  db 02h
-  db b8h
-  db a6h
-  db 57h
-  db e8h
-  db 46h
-  db 02h
-  db b8h
-  db b6h
-  db 01h
-  db e8h
-  db 40h
-  db 02h
-  db b8h
-  db b6h
-  db 05h
-  db e8h
-  db 3ah
-  db 02h
-  db b0h
-  db bdh
-  db b4h
-  db 10h
-  db 0ah
-  db 26h
-  db 19h
-  db 09h
-  db e8h
-  db 2fh
-  db 02h
-  db ffh
-  db 0eh
-  db 72h
-  db 01h
-  db 75h
-  db 03h
-  db e8h
-  db aah
-  db feh
-  db 5dh
-  db 07h
-  db 1fh
-  db 5eh
-  db 5fh
-  db 5ah
-  db 59h
-  db 5bh
-  db 58h
-  db c3h
-  db 2eh
-  db 80h
-  db 3eh
-  db e4h
-  db 16h
-  db 03h
-  db 75h
-  db 13h
-  db 2eh
-  db 80h
-  db 3eh
-  db e3h
-  db 16h
-  db 00h
-  db 74h
-  db 08h
-  db e8h
-  db 9dh
-  db ffh
-  db e8h
-  db 0ah
-  db ffh
-  db ebh
-  db 03h
-  db e8h
-  db 3fh
-  db 03h
-  db 2eh
-  db ffh
-  db 06h
-  db e0h
-  db 16h
-  db 2eh
-  db feh
-  db 06h
-  db e2h
-  db 16h
-  db 2eh
-  db 80h
-  db 26h
-  db e2h
-  db 16h
-  db 03h
-  db 74h
-  db 07h
-  db 50h
-  db b0h
-  db 20h
-  db e6h
-  db 20h
-  db 58h
-  db cfh
-  db e9h
-  db 65h
-  db f9h
-  db 0bh
-  db c0h
-  db 75h
-  db 03h
-  db e9h
-  db 84h
-  db 00h
-  db 80h
-  db 7dh
-  db 06h
-  db 0fh
-  db 72h
-  db 48h
-  db 80h
-  db c1h
-  db 0fh
-  db 38h
-  db 4dh
-  db 06h
-  db 74h
-  db 09h
-  db e8h
-  db 0fh
-  db 01h
-  db 8ah
-  db 45h
-  db 01h
-  db e8h
-  db 9dh
-  db 00h
-  db 8ah
-  db 4dh
-  db 05h
-  db 80h
-  db e9h
-  db 06h
-  db b4h
-  db 10h
-  db d2h
-  db ech
-  db f6h
-  db d4h
-  db 22h
-  db 26h
-  db 19h
-  db 09h
-  db b0h
-  db bdh
-  db e8h
-  db b2h
-  db 01h
-  db 80h
-  db 7dh
-  db 05h
-  db 06h
-  db 75h
-  db 12h
-  db b8h
-  db a6h
-  db 57h
-  db e8h
-  db a6h
-  db 01h
-  db b8h
-  db b6h
-  db 00h
-  db e8h
-  db a0h
-  db 01h
-  db b8h
-  db b6h
-  db 05h
-  db e8h
-  db 9ah
-  db 01h
-  db 8ah
-  db 26h
-  db 19h
-  db 09h
-  db b0h
-  db bdh
-  db e8h
-  db 91h
-  db 01h
-  db c3h
-  db 80h
-  db c1h
-  db 02h
-  db 8bh
-  db d0h
-  db 8ah
-  db e2h
-  db 8ah
-  db 45h
-  db 05h
-  db 04h
-  db a0h
-  db e8h
-  db 81h
-  db 01h
-  db 80h
-  db 7dh
-  db 10h
-  db 01h
-  db 74h
-  db 0eh
-  db 8ah
-  db 45h
-  db 05h
-  db 04h
-  db b0h
-  db b4h
-  db 00h
-  db e8h
-  db 71h
-  db 01h
-  db 0bh
-  db d2h
-  db 74h
-  db 13h
-  db 8ah
-  db e6h
-  db d0h
-  db e1h
-  db d0h
-  db e1h
-  db 0ah
-  db e1h
-  db 80h
-  db cch
-  db 20h
-  db 8ah
-  db 45h
-  db 05h
-  db 04h
-  db b0h
-  db e8h
-  db 5ah
-  db 01h
-  db 8ah
-  db 45h
-  db 04h
-  db 88h
-  db 45h
-  db 10h
-  db c3h
-  db 8ah
-  db e0h
-  db 24h
-  db 0fh
-  db b1h
-  db 04h
-  db 80h
-  db e4h
-  db 70h
-  db d2h
-  db ech
-  db 80h
-  db fch
-  db 07h
-  db 74h
-  db 0bh
-  db 8ah
-  db dch
-  db d1h
-  db e3h
-  db ffh
-  db 97h
-  db 1ah
-  db 09h
-  db e9h
-  db 76h
-  db feh
-  db 8ah
-  db d8h
-  db d1h
-  db e3h
-  db ffh
-  db 97h
-  db 28h
-  db 09h
-  db e9h
-  db 6bh
-  db feh
-  db 88h
-  db 05h
-  db c3h
-  db 88h
-  db 45h
-  db 01h
-  db feh
-  db c0h
-  db 8ah
-  db 5dh
-  db 06h
-  db 8ah
-  db cbh
-  db b7h
-  db 00h
-  db d1h
-  db e3h
-  db 03h
-  db 1eh
-  db 17h
-  db 09h
-  db 8bh
-  db 1fh
-  db 80h
-  db f9h
-  db 0fh
-  db 72h
-  db 01h
-  db 43h
-  db 8ah
-  db c8h
-  db 32h
-  db edh
-  db 8ah
-  db 67h
-  db 02h
-  db 80h
-  db e4h
-  db 3fh
-  db 80h
-  db ech
-  db 3fh
-  db f6h
-  db dch
-  db 32h
-  db c0h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db d1h
-  db e8h
-  db f7h
-  db e1h
-  db b0h
-  db 3fh
-  db 2ah
-  db c4h
-  db 8ah
-  db 5dh
-  db 05h
-  db b7h
-  db 00h
-  db 8ah
-  db 9fh
-  db 5bh
-  db 09h
-  db 80h
-  db fbh
-  db 0dh
-  db 77h
-  db 03h
-  db 80h
-  db c3h
-  db 03h
-  db 8ah
-  db 9fh
-  db 48h
-  db 09h
-  db 8ah
-  db e0h
-  db 8ah
-  db c3h
-  db 04h
-  db 40h
-  db e8h
-  db d3h
-  db 00h
-  db c3h
-  db 88h
-  db 45h
-  db 02h
-  db c3h
-  db 88h
-  db 45h
-  db 03h
-  db c3h
-  db 88h
-  db 45h
-  db 04h
-  db c3h
-  db 88h
-  db 45h
-  db 05h
-  db c3h
-  db 3ch
-  db 01h
-  db 75h
-  db 29h
-  db 8ah
-  db 5dh
-  db 09h
-  db 32h
-  db ffh
-  db 80h
-  db c3h
-  db 0fh
-  db 88h
-  db 5dh
-  db 06h
-  db d1h
-  db e3h
-  db 03h
-  db 1eh
-  db 17h
-  db 09h
-  db 8bh
-  db 1fh
-  db 8ah
-  db 0fh
-  db 88h
-  db 4dh
-  db 05h
-  db b4h
-  db 10h
-  db 80h
-  db e9h
-  db 06h
-  db d2h
-  db ech
-  db 0ah
-  db 26h
-  db 19h
-  db 09h
-  db 88h
-  db 26h
-  db 19h
-  db 09h
-  db ebh
-  db 22h
-  db 72h
-  db 02h
-  db feh
-  db c8h
-  db 88h
-  db 45h
-  db 06h
-  db 8ah
-  db 4dh
-  db 05h
-  db 80h
-  db e9h
-  db 06h
-  db 72h
-  db 13h
-  db b4h
-  db 10h
-  db d2h
-  db ech
-  db f6h
-  db d4h
-  db 22h
-  db 26h
-  db 19h
-  db 09h
-  db 88h
-  db 26h
-  db 19h
-  db 09h
-  db b0h
-  db bdh
-  db e8h
-  db 73h
-  db 00h
-  db 8ah
-  db 5dh
-  db 05h
-  db 32h
-  db ffh
-  db 8ah
-  db 9fh
-  db 5bh
-  db 09h
-  db 80h
-  db 7dh
-  db 05h
-  db 06h
-  db 77h
-  db 03h
-  db 80h
-  db c3h
-  db 03h
-  db 8ah
-  db 97h
-  db 48h
-  db 09h
-  db 8ah
-  db 5dh
-  db 06h
-  db 32h
-  db ffh
-  db d1h
-  db e3h
-  db 03h
-  db 1eh
-  db 17h
-  db 09h
-  db 8bh
-  db 1fh
-  db 80h
-  db 7dh
-  db 06h
-  db 0fh
-  db 72h
-  db 01h
-  db 43h
-  db e8h
-  db 7dh
-  db 00h
-  db 80h
-  db eah
-  db 03h
-  db 83h
-  db c3h
-  db 05h
-  db 80h
-  db 7dh
-  db 05h
-  db 07h
-  db 73h
-  db 0eh
-  db e8h
-  db 6eh
-  db 00h
-  db 8ah
-  db 67h
-  db 05h
-  db 8ah
-  db 45h
-  db 05h
-  db 04h
-  db c0h
-  db e8h
-  db 2ch
-  db 00h
-  db c3h
-  db 8dh
-  db 44h
-  db 02h
-  db 89h
-  db 45h
-  db 0ah
-  db 8bh
-  db 34h
-  db c3h
-  db 8bh
-  db 75h
-  db 0ah
-  db c3h
-  db 8bh
-  db 34h
-  db c3h
-  db ach
-  db 88h
-  db 45h
-  db 0ch
-  db c3h
-  db feh
-  db 4dh
-  db 0ch
-  db 74h
-  db 03h
-  db 8bh
-  db 34h
-  db c3h
-  db 46h
-  db 46h
-  db c3h
-  db 58h
-  db beh
-  db feh
-  db ffh
-  db feh
-  db 0eh
-  db b2h
-  db 09h
-  db e9h
-  db 80h
-  db fdh
-sub_1269 endp ; sp-analysis failed
+sub_1269 endp
+
+sub_12ab proc near
+  push ax
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  push ds
+  push es
+  push bp
+  cld
+  mov ax, 0x168f
+  mov ds, ax
+  dec byte ptr [0x980]
+  jnz loc_12c8
+  mov al, [0x981]
+  mov [0x980], al
+  jmp loc_1331
+loc_12c8:
+  mov word ptr [0x915], 0x9b3
+loc_12ce:
+  mov di, word ptr [0x915]
+  mov si, word ptr [di+0xd]
+  cmp si, -0x1
+  jz loc_1331
+  cmp si, -0x2
+  jz loc_1327
+  sub byte ptr [di+0x7], 0x1
+  ja loc_1327
+loc_12e5:
+  xor bh, bh
+  lodsb
+  test al, 0x80
+  jz loc_12ef
+  jmp loc_1454
+loc_12ef:
+  mov ah, al
+  and ah, 0xf
+  mov cl, ah
+  xchg byte ptr [di+0x8], cl
+  mov byte ptr [di+0xf], cl
+  mov cl, 0x4
+  shr al, cl
+  mov byte ptr [di+0x9], al
+  mov bl, byte ptr [di+0x8]
+  xor bh, bh
+  shl bx, 1
+  mov ax, word ptr [bx+0x966]
+  mov cl, byte ptr [di+0x9]
+  call sub_13c2
+  mov al, 0x60
+  mov cl, byte ptr [di]
+  cmp cl, 0x7
+  jnz loc_1322
+  mov al, 0x40
+  mov cl, byte ptr [di+0x3]
+loc_1322:
+  shr al, cl
+  mov byte ptr [di+0x7], al
+loc_1327:
+  mov word ptr [di+0xd], si
+  add word ptr [0x915], 0x11
+  jmp loc_12ce
+loc_1331:
+  pop bp
+  pop es
+  pop ds
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+sub_12ab endp
+
+sub_133b proc near
+  push ax
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  push ds
+  push es
+  push bp
+  mov ax, 0x168f
+  mov ds, ax
+  cmp byte ptr [0x174], 0x0
+  jz loc_1381
+  mov al, 0xbd
+  mov ah, 0xef
+  and ah, byte ptr [0x919]
+  call sub_15a7
+  mov ax, 0x57a6
+  call sub_15a7
+  mov ax, 0x1b6
+  call sub_15a7
+  mov ax, 0x5b6
+  call sub_15a7
+  mov al, 0xbd
+  mov ah, 0x10
+  or ah, byte ptr [0x919]
+  call sub_15a7
+  dec word ptr [0x172]
+  jnz loc_1381
+  call sub_122b
+loc_1381:
+  pop bp
+  pop es
+  pop ds
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+sub_133b endp
+
+sub_138b proc near
+  cmp byte ptr cs:[0x16e4], 0x3
+  jnz loc_13a6
+  cmp byte ptr cs:[0x16e3], 0x0
+  jz loc_13a3
+  call sub_133b
+  call sub_12ab
+  jmp loc_13a6
+loc_13a3:
+  call sub_16e5
+loc_13a6:
+  inc word ptr cs:[0x16e0]
+  inc byte ptr cs:[0x16e2]
+  and byte ptr cs:[0x16e2], 0x3
+  jz loc_13bf
+  push ax
+  mov al, 0x20
+  out 0x20, al
+  pop ax
+  iret
+loc_13bf:
+  jmp sub_0d27
+sub_138b endp
+
+sub_13c2 proc near
+  or ax, ax
+  jnz loc_13c9
+  jmp loc_144d
+loc_13c9:
+  cmp byte ptr [di+0x6], 0xf
+  jc loc_1417
+  add cl, 0xf
+  cmp byte ptr [di+0x6], cl
+  jz loc_13e0
+  call sub_14e9
+  mov al, byte ptr [di+0x1]
+  call sub_147d
+loc_13e0:
+  mov cl, byte ptr [di+0x5]
+  sub cl, 0x6
+  mov ah, 0x10
+  shr ah, cl
+  not ah
+  and ah, byte ptr [0x919]
+  mov al, 0xbd
+  call sub_15a7
+  cmp byte ptr [di+0x5], 0x6
+  jnz loc_140d
+  mov ax, 0x57a6
+  call sub_15a7
+  mov ax, 0xb6
+  call sub_15a7
+  mov ax, 0x5b6
+  call sub_15a7
+loc_140d:
+  mov ah, byte ptr [0x919]
+  mov al, 0xbd
+  call sub_15a7
+  ret
+loc_1417:
+  add cl, 0x2
+  mov dx, ax
+  mov ah, dl
+  mov al, byte ptr [di+0x5]
+  add al, 0xa0
+  call sub_15a7
+  cmp byte ptr [di+0x10], 0x1
+  jz loc_143a
+  mov al, byte ptr [di+0x5]
+  add al, 0xb0
+  mov ah, 0x0
+  call sub_15a7
+  or dx, dx
+  jz loc_144d
+loc_143a:
+  mov ah, dh
+  shl cl, 1
+  shl cl, 1
+  or ah, cl
+  or ah, 0x20
+  mov al, byte ptr [di+0x5]
+  add al, 0xb0
+  call sub_15a7
+loc_144d:
+  mov al, byte ptr [di+0x4]
+  mov byte ptr [di+0x10], al
+  ret
+loc_1454:
+  mov ah, al
+  and al, 0xf
+  mov cl, 0x4
+  and ah, 0x70
+  shr ah, cl
+  cmp ah, 0x7
+  jz loc_146f
+  mov bl, ah
+  shl bx, 1
+  call word ptr [bx+0x91a]
+  jmp loc_12e5
+loc_146f:
+  mov bl, al
+  shl bx, 1
+  call word ptr [bx+0x928]
+  jmp loc_12e5
+sub_13c2 endp
+
+sub_147a proc near
+  mov byte ptr [di], al
+  ret
+sub_147a endp
+
+sub_147d proc near
+  mov byte ptr [di+0x1], al
+  inc al
+  mov bl, byte ptr [di+0x6]
+  mov cl, bl
+  mov bh, 0x0
+  shl bx, 1
+  add bx, word ptr [0x917]
+  mov bx, word ptr [bx]
+  cmp cl, 0xf
+  jc loc_1497
+  inc bx
+loc_1497:
+  mov cl, al
+  xor ch, ch
+  mov ah, byte ptr [bx+0x2]
+  and ah, 0x3f
+  sub ah, 0x3f
+  neg ah
+  xor al, al
+  shr ax, 1
+  shr ax, 1
+  shr ax, 1
+  shr ax, 1
+  mul cx
+  mov al, 0x3f
+  sub al, ah
+  mov bl, byte ptr [di+0x5]
+  mov bh, 0x0
+  mov bl, byte ptr [bx+0x95b]
+  cmp bl, 0xd
+  ja loc_14c7
+  add bl, 0x3
+loc_14c7:
+  mov bl, byte ptr [bx+0x948]
+  mov ah, al
+  mov al, bl
+  add al, 0x40
+  call sub_15a7
+  ret
+sub_147d endp
+
+sub_14d5 proc near
+  mov byte ptr [di+0x2], al
+  ret
+sub_14d5 endp
+
+sub_14d9 proc near
+  mov byte ptr [di+0x3], al
+  ret
+sub_14d9 endp
+
+sub_14dd proc near
+  mov byte ptr [di+0x4], al
+  ret
+sub_14dd endp
+
+sub_14e1 proc near
+  mov byte ptr [di+0x5], al
+  ret
+sub_14e1 endp
+
+sub_14e5 proc near
+  cmp al, 0x1
+  jnz loc_1512
+sub_14e5 endp ; sp-analysis failed
+
+sub_14e9 proc near
+  mov bl, byte ptr [di+0x9]
+  xor bh, bh
+  add bl, 0xf
+  mov byte ptr [di+0x6], bl
+  shl bx, 1
+  add bx, word ptr [0x917]
+  mov bx, word ptr [bx]
+  mov cl, byte ptr [bx]
+  mov byte ptr [di+0x5], cl
+  mov ah, 0x10
+  sub cl, 0x6
+  shr ah, cl
+  or ah, byte ptr [0x919]
+  mov byte ptr [0x919], ah
+  jmp loc_1534
+loc_1512:
+  jc loc_1516
+  dec al
+loc_1516:
+  mov byte ptr [di+0x6], al
+  mov cl, byte ptr [di+0x5]
+  sub cl, 0x6
+  jc loc_1534
+  mov ah, 0x10
+  shr ah, cl
+  not ah
+  and ah, byte ptr [0x919]
+  mov byte ptr [0x919], ah
+  mov al, 0xbd
+  call sub_15a7
+loc_1534:
+  mov bl, byte ptr [di+0x5]
+  xor bh, bh
+  mov bl, byte ptr [bx+0x95b]
+  cmp byte ptr [di+0x5], 0x6
+  ja loc_1546
+  add bl, 0x3
+loc_1546:
+  mov dl, byte ptr [bx+0x948]
+  mov bl, byte ptr [di+0x6]
+  xor bh, bh
+  shl bx, 1
+  add bx, word ptr [0x917]
+  mov bx, word ptr [bx]
+  cmp byte ptr [di+0x6], 0xf
+  jc loc_155e
+  inc bx
+loc_155e:
+  call sub_15de
+  sub dl, 0x3
+  add bx, 0x5
+  cmp byte ptr [di+0x5], 0x7
+  jnc loc_157b
+  call sub_15de
+  mov ah, byte ptr [bx+0x5]
+  mov al, byte ptr [di+0x5]
+  add al, 0xc0
+  call sub_15a7
+loc_157b:
+  ret
+sub_14e9 endp
+
+sub_157c proc near
+  lea ax, [si+0x2]
+  mov word ptr [di+0xa], ax
+  mov si, word ptr [si]
+  ret
+sub_157c endp
+
+sub_1585 proc near
+  mov si, word ptr [di+0xa]
+  ret
+sub_1585 endp
+
+sub_1589 proc near
+  mov si, word ptr [si]
+  ret
+sub_1589 endp
+
+sub_158c proc near
+  lodsb
+  mov byte ptr [di+0xc], al
+  ret
+sub_158c endp
+
+sub_1591 proc near
+  dec byte ptr [di+0xc]
+  jz loc_1599
+  mov si, word ptr [si]
+  ret
+loc_1599:
+  inc si
+  inc si
+  ret
+sub_1591 endp
+
+sub_159c proc near
+  pop ax
+  mov si, 0xfffe
+  dec byte ptr [0x9b2]
+  jmp loc_1327
+sub_159c endp
 
 sub_15a7 proc near
   push dx
@@ -3757,269 +2898,151 @@ loc_165e:
   db 00h
   db 00h
   db 02h
-  db 50h
-  db 53h
-  db 51h
-  db 52h
-  db 57h
-  db 56h
-  db 1eh
-  db 06h
-  db 55h
-  db fch
-  db b8h
-  db 8fh
-  db 16h
-  db 8eh
-  db d8h
-  db 8bh
-  db 36h
-  db 07h
-  db 0bh
-  db 83h
-  db feh
-  db feh
-  db 72h
-  db 03h
-  db e9h
-  db 83h
-  db 00h
-  db 2eh
-  db f6h
-  db 06h
-  db e4h
-  db 16h
-  db 02h
-  db 74h
-  db 7bh
-  db feh
-  db 0eh
-  db 80h
-  db 09h
-  db 75h
-  db 08h
-  db a0h
-  db 81h
-  db 09h
-  db a2h
-  db 80h
-  db 09h
-  db ebh
-  db 6dh
-  db 80h
-  db 3eh
-  db 09h
-  db 0bh
-  db 02h
-  db 75h
-  db 12h
-  db 80h
-  db 3eh
-  db 13h
-  db 0bh
-  db 01h
-  db 74h
-  db 0bh
-  db b8h
-  db 98h
-  db 3ah
-  db e6h
-  db 42h
-  db 8ah
-  db c4h
-  db e6h
-  db 42h
-  db ebh
-  db 00h
-  db 80h
-  db 2eh
-  db 09h
-  db 0bh
-  db 01h
-  db 77h
-  db 4dh
-  db 32h
-  db ffh
-  db ach
-  db a8h
-  db 80h
-  db 75h
-  db 54h
-  db 8ah
-  db e0h
-  db 80h
-  db e4h
-  db 0fh
-  db 88h
-  db 26h
-  db 0eh
-  db 0bh
-  db b1h
-  db 04h
-  db d2h
-  db e8h
-  db a2h
-  db 0dh
-  db 0bh
-  db b0h
-  db 10h
-  db 8ah
-  db 0eh
-  db 0fh
-  db 0bh
-  db d2h
-  db e8h
-  db 8ah
-  db 1eh
-  db 0eh
-  db 0bh
-  db 32h
-  db ffh
-  db d1h
-  db e3h
-  db 8bh
-  db 87h
-  db 20h
-  db 0bh
-  db 8ah
-  db 0eh
-  db 0dh
-  db 0bh
-  db d3h
-  db e8h
-  db e6h
-  db 42h
-  db 8ah
-  db c4h
-  db e6h
-  db 42h
-  db b0h
-  db 60h
-  db 8ah
-  db 0eh
-  db 0fh
-  db 0bh
-  db 80h
-  db f9h
-  db 07h
-  db 75h
-  db 06h
-  db b0h
-  db 40h
-  db 8ah
-  db 0eh
-  db 12h
-  db 0bh
-  db d2h
-  db e8h
-  db a2h
-  db 09h
-  db 0bh
-  db 89h
-  db 36h
-  db 07h
-  db 0bh
-  db 5dh
-  db 07h
-  db 1fh
-  db 5eh
-  db 5fh
-  db 5ah
-  db 59h
-  db 5bh
-  db 58h
-  db c3h
-  db 8ah
-  db e0h
-  db 24h
-  db 0fh
-  db b1h
-  db 04h
-  db 80h
-  db e4h
-  db 70h
-  db d2h
-  db ech
-  db 80h
-  db fch
-  db 07h
-  db 74h
-  db 08h
-  db 8ah
-  db dch
-  db 88h
-  db 87h
-  db 0fh
-  db 0bh
-  db ebh
-  db 8dh
-  db 3ch
-  db 0fh
-  db 74h
-  db 0bh
-  db 8ah
-  db d8h
-  db d1h
-  db e3h
-  db ffh
-  db 97h
-  db 16h
-  db 0bh
-  db e9h
-  db 7eh
-  db ffh
-  db e4h
-  db 61h
-  db 24h
-  db fch
-  db e6h
-  db 61h
-  db beh
-  db feh
-  db ffh
-  db feh
-  db 0eh
-  db b2h
-  db 09h
-  db ebh
-  db bch
-  db 8dh
-  db 44h
-  db 02h
-  db a3h
-  db 0ah
-  db 0bh
-  db 8bh
-  db 34h
-  db c3h
-  db 8bh
-  db 36h
-  db 0ah
-  db 0bh
-  db c3h
-  db 8bh
-  db 34h
-  db c3h
-  db 8ah
-  db 04h
-  db a2h
-  db 0ch
-  db 0bh
-  db 46h
-  db c3h
-  db feh
-  db 0eh
-  db 0ch
-  db 0bh
-  db 74h
-  db 03h
-  db 8bh
-  db 34h
-  db c3h
-  db 46h
-  db 46h
-  db c3h
 sub_164f endp ; sp-analysis failed
+
+sub_16e5 proc near
+  push ax
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  push ds
+  push es
+  push bp
+  cld
+  mov ax, 0x168f
+  mov ds, ax
+  mov si, word ptr [0xb07]
+  cmp si, -0x2
+  jc loc_1700
+  jmp loc_1783
+loc_1700:
+  test byte ptr cs:[0x16e4], 0x2
+  jz loc_1783
+  dec byte ptr [0x980]
+  jnz loc_1716
+  mov al, [0x981]
+  mov [0x980], al
+  jmp loc_1783
+loc_1716:
+  cmp byte ptr [0xb09], 0x2
+  jnz loc_172f
+  cmp byte ptr [0xb13], 0x1
+  jz loc_172f
+  mov ax, 0x3a98
+  out 0x42, al
+  mov al, ah
+  out 0x42, al
+  jmp loc_172f
+loc_172f:
+  sub byte ptr [0xb09], 0x1
+  ja loc_1783
+loc_1736:
+  xor bh, bh
+  lodsb
+  test al, 0x80
+  jnz loc_1791
+  mov ah, al
+  and ah, 0xf
+  mov byte ptr [0xb0e], ah
+  mov cl, 0x4
+  shr al, cl
+  mov [0xb0d], al
+  mov al, 0x10
+  mov cl, byte ptr [0xb0f]
+  shr al, cl
+  mov bl, byte ptr [0xb0e]
+  xor bh, bh
+  shl bx, 1
+  mov ax, word ptr [bx+0xb20]
+  mov cl, byte ptr [0xb0d]
+  shr ax, cl
+  out 0x42, al
+  mov al, ah
+  out 0x42, al
+  mov al, 0x60
+  mov cl, byte ptr [0xb0f]
+  cmp cl, 0x7
+  jnz loc_177e
+  mov al, 0x40
+  mov cl, byte ptr [0xb12]
+loc_177e:
+  shr al, cl
+  mov [0xb09], al
+loc_1783:
+  mov word ptr [0xb07], si
+  pop bp
+  pop es
+  pop ds
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+loc_1791:
+  mov ah, al
+  and al, 0xf
+  mov cl, 0x4
+  and ah, 0x70
+  shr ah, cl
+  cmp ah, 0x7
+  jz loc_17a9
+  mov bl, ah
+  mov byte ptr [bx+0xb0f], al
+  jmp loc_1736
+loc_17a9:
+  cmp al, 0xf
+  jz loc_17b8
+  mov bl, al
+  shl bx, 1
+  call word ptr [bx+0xb16]
+  jmp loc_1736
+loc_17b8:
+  in al, 0x61
+  and al, 0xfc
+  out 0x61, al
+  mov si, 0xfffe
+  dec byte ptr [0x9b2]
+  jmp loc_1783
+sub_16e5 endp
+
+sub_17c7 proc near
+  lea ax, [si+0x2]
+  mov [0xb0a], ax
+  mov si, word ptr [si]
+  ret
+sub_17c7 endp
+
+sub_17d0 proc near
+  mov si, word ptr [0xb0a]
+  ret
+sub_17d0 endp
+
+sub_17d5 proc near
+  mov si, word ptr [si]
+  ret
+sub_17d5 endp
+
+sub_17d8 proc near
+  mov al, byte ptr [si]
+  mov [0xb0c], al
+  inc si
+  ret
+sub_17d8 endp
+
+sub_17df proc near
+  dec byte ptr [0xb0c]
+  jz loc_17e8
+  mov si, word ptr [si]
+  ret
+loc_17e8:
+  inc si
+  inc si
+  ret
+sub_17df endp
 
 sub_17eb proc near
   mov al, cs:[0x16e4]
@@ -4770,17 +3793,17 @@ loc_1e74:
   shr cx, 1
 loc_1e76:
   mov ax, word ptr ds:[bp+si]
-  xlat
+  xlat cs
   and byte ptr es:[di], al
   lodsb
-  xlat
+  xlat cs
   or byte ptr es:[di], al
   dec di
   mov al, ah
-  xlat
+  xlat cs
   and byte ptr es:[di], al
   lodsb
-  xlat
+  xlat cs
   or byte ptr es:[di], al
   dec di
   loop loc_1e76
@@ -4905,23 +3928,23 @@ loc_1fa1:
   cbw
   add si, ax
   mov al, byte ptr ds:[bp+si-0x1]
-  xlat
+  xlat cs
   mov dh, al
   mov al, byte ptr [si-0x1]
-  xlat
+  xlat cs
   mov dl, al
   inc byte ptr cs:[0x1c4d]
   jmp loc_1ffa
 loc_1fd7:
   mov al, byte ptr ds:[bp+si]
-  xlat
+  xlat cs
   mov ah, al
   and al, ch
   or al, dh
   rol al, cl
   and byte ptr es:[di], al
   lodsb
-  xlat
+  xlat cs
   mov dh, al
   and al, ch
   or al, dl
@@ -5007,7 +4030,7 @@ loc_20b5:
   xor ch, ch
 loc_20b7:
   lodsb
-  xlat
+  xlat cs
   not al
   xchg byte ptr es:[di], al
   inc di
@@ -5043,7 +4066,7 @@ loc_20ee:
   pop dx
 loc_2111:
   lodsb
-  xlat
+  xlat cs
   xchg byte ptr es:[di], al
   inc di
   loop loc_2111
@@ -5062,7 +4085,7 @@ loc_2111:
   jmp loc_24a9
 loc_213c:
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   and al, ch
   or al, ah
@@ -5111,7 +4134,7 @@ loc_2190:
   xor ax, ax
 loc_21b5:
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   and al, ch
   or al, ah
@@ -5147,13 +4170,13 @@ loc_21f6:
   dec ax
   sub si, ax
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   inc cx
   jmp loc_2219
 loc_220a:
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   and al, ch
   or al, ah
@@ -5210,13 +4233,13 @@ loc_228d:
   dec ax
   sub si, ax
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   inc cx
   jmp loc_22ae
 loc_22a1:
   lodsb
-  xlat
+  xlat cs
   mov dl, al
   and al, ch
   or al, ah
@@ -6203,7 +5226,7 @@ loc_2a36:
 loc_2a40:
   lodsb
   mov ah, al
-  xlat
+  xlat es
   or byte ptr es:[0x64f5], al
   mov al, ah
   push es
@@ -6242,7 +5265,7 @@ loc_2a82:
 loc_2a8c:
   lodsb
   mov ah, al
-  xlat
+  xlat es
   or byte ptr es:[0x64f5], al
   mov al, ah
   call sub_2e53
@@ -6291,7 +5314,7 @@ loc_2ae0:
 loc_2aea:
   lodsb
   mov ah, al
-  xlat
+  xlat es
   or byte ptr es:[0x64f5], al
   mov al, ah
   push es
@@ -6337,7 +5360,7 @@ loc_2b3a:
 loc_2b44:
   lodsb
   mov ah, al
-  xlat
+  xlat es
   or byte ptr es:[0x64f5], al
   mov al, ah
   call sub_2e53
@@ -6423,7 +5446,7 @@ loc_2be9:
   mov byte ptr [0x64f5], 0x1
   mov al, bl
   mov bx, word ptr [0x64f6]
-  xlat
+  xlat ds
   xor bh, bh
   cmp di, 0x3c00
   jc loc_2c0b
@@ -6457,7 +5480,7 @@ loc_2c38:
   mov byte ptr [0x64f5], 0x1
   mov al, bl
   mov bx, word ptr [0x64f6]
-  xlat
+  xlat ds
   xor bh, bh
   cmp di, 0x5c80
   jc loc_2c5a
@@ -8451,7 +7474,7 @@ loc_3a9a:
   add di, ax
   mov bx, 0x72a3
   mov al, byte ptr es:[di]
-  xlat
+  xlat ds
   and al, 0x1
   jnz loc_3ade
   mov ax, word ptr [si]
@@ -8474,7 +7497,7 @@ loc_3ac9:
   cmp ax, 0x100
   jnc loc_3ade
   mov al, byte ptr es:[di]
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_3ae8
 loc_3ade:
@@ -8535,7 +7558,7 @@ loc_3b25:
   sub di, ax
   mov bx, 0x74a3
   mov al, byte ptr es:[di]
-  xlat
+  xlat ds
   and al, 0x7f
   jnz loc_3b78
   mov ax, word ptr [si+0xe]
@@ -8546,7 +7569,7 @@ loc_3b25:
   jmp loc_3d5a
 loc_3b6b:
   mov al, byte ptr es:[di+0xff00]
-  xlat
+  xlat ds
   and al, 0x7f
   jnz loc_3b78
   jmp loc_3d5a
@@ -8580,10 +7603,10 @@ loc_3bb8:
   mov bx, 0x72a3
   mov al, byte ptr es:[di]
   mov ah, al
-  xlat
+  xlat ds
   xchg ah, al
   mov bx, 0x73a3
-  xlat
+  xlat ds
   cmp word ptr [si+0x2], 0x6
   jg loc_3bd1
   xor al, al
@@ -8638,10 +7661,10 @@ loc_3c35:
   push bx
   mov bx, 0x72a3
   mov ah, al
-  xlat
+  xlat ds
   xchg ah, al
   pop bx
-  xlat
+  xlat ds
   cmp al, 0x9
   jz loc_3bfe
   cmp al, 0x8
@@ -9655,7 +8678,7 @@ loc_4585:
   lea di, [bx+0x100]
   mov al, byte ptr es:[di]
   mov bx, 0x73a3
-  xlat
+  xlat ds
   xor ah, ah
   mov bx, ax
   shl bx, 1
@@ -9670,10 +8693,10 @@ loc_45a5:
   mov ah, byte ptr es:[bx]
   mov al, byte ptr es:[bx+0x100]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   xchg al, ah
   mov bx, 0x74a3
-  xlat
+  xlat ds
   and al, 0x7f
   mov bl, al
   xor bh, bh
@@ -9694,14 +8717,14 @@ loc_45ef:
   push di
   add di, dx
   mov al, byte ptr es:[di+0x100]
-  xlat
+  xlat ds
   or al, al
   jz loc_460c
   neg dx
   add di, dx
   add di, dx
   mov al, byte ptr es:[di+0x100]
-  xlat
+  xlat ds
   or al, al
   jnz loc_4612
 loc_460c:
@@ -9723,7 +8746,7 @@ sub_4617 proc near
   mov di, bx
   mov al, byte ptr es:[bx]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   xor ah, ah
   mov bx, ax
   shl bx, 1
@@ -9741,7 +8764,7 @@ sub_4631 proc near
   mov di, bx
   mov al, byte ptr es:[bx]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   cmp al, 0x4
   jz loc_4645
   cmp al, 0x2
@@ -10036,17 +9059,17 @@ loc_485c:
   add di, ax
   mov es, word ptr [0x526c]
   mov al, byte ptr es:[di]
-  xlat
+  xlat ds
   cmp al, 0x6
   jz loc_48bc
   mov dx, 0xfff0
   mov al, byte ptr es:[di-0x1]
-  xlat
+  xlat ds
   cmp al, 0x6
   jz loc_48b8
   neg dx
   mov al, byte ptr es:[di+0x1]
-  xlat
+  xlat ds
   cmp al, 0x6
   jz loc_48b8
   xor dx, dx
@@ -10145,12 +9168,12 @@ sub_495b proc near
   add di, ax
   mov ax, word ptr es:[di]
   mov bx, 0x73a3
-  xlat
+  xlat ds
   and al, 0x7
   jz loc_49af
   mov dx, 0xffd0
   mov al, ah
-  xlat
+  xlat ds
   and al, 0x7
   jz loc_49a8
   neg dx
@@ -10484,31 +9507,18 @@ loc_4c37:
   pop bx
   pop ax
   ret
-  db bdh
-  db c0h
-  db 00h
-  db e8h
-  db 7dh
-  db ffh
-  db b0h
-  db 0eh
-  db 8ah
-  db 26h
-  db 85h
-  db 52h
-  db 80h
-  db e4h
-  db 80h
-  db a3h
-  db 80h
-  db 52h
-  db c6h
-  db 06h
-  db 0fh
-  db 65h
-  db 06h
-  db c3h
-sub_4c2a endp ; sp-analysis failed
+sub_4c2a endp
+
+sub_4c4d proc near
+  mov bp, 0xc0
+  call sub_4bd0
+  mov al, 0xe
+  mov ah, byte ptr [0x5285]
+  and ah, 0x80
+  mov [0x5280], ax
+  mov byte ptr [0x650f], 0x6
+  ret
+sub_4c4d endp
 
 sub_4c65 proc near
   mov byte ptr [0x650f], 0x6
@@ -10540,13 +9550,9 @@ loc_4ca1:
 sub_4c65 endp
 
 sub_4ca2 proc near
-  db 80h
-sub_4ca2 endp ; sp-analysis failed
-
-sub_4ca3 proc near
-  push cs
-  add bx, ax
-sub_4ca3 endp ; sp-analysis failed
+  or byte ptr [0x6526], 0x1
+  ret
+sub_4ca2 endp
 
 sub_4ca8 proc near
   push ax
@@ -10836,12 +9842,12 @@ loc_4ea5:
   mov es, word ptr [0x526c]
   mov bx, 0x72a3
   mov al, byte ptr es:[di]
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_4f00
   mov dx, 0x10
   mov al, byte ptr es:[di-0x1]
-  xlat
+  xlat ds
   and al, 0x1
   jnz loc_4efa
   neg dx
@@ -11602,7 +10608,7 @@ loc_54d8:
   mov cl, 0x4
 loc_54dc:
   lodsb
-  xlat
+  xlat cs
   shl al, 1
   rcl ah, 1
   shl al, 1
@@ -12187,24 +11193,16 @@ sub_59a1 proc near
   inc byte ptr [0x41a]
 loc_59ba:
   ret
-  db 80h
-  db 3eh
-  db 1bh
-  db 04h
-  db 09h
-  db 74h
-  db 04h
-  db feh
-  db 06h
-  db 1bh
-  db 04h
-  db c6h
-  db 06h
-  db 06h
-  db 65h
-  db 00h
-  db c3h
-sub_59a1 endp ; sp-analysis failed
+sub_59a1 endp
+
+sub_59bb proc near
+  cmp byte ptr [0x41b], 0x9
+  jz loc_59c6
+  inc byte ptr [0x41b]
+loc_59c6:
+  mov byte ptr [0x6506], 0x0
+  ret
+sub_59bb endp
 
 sub_59cc proc near
   mov byte ptr [0x6506], 0x32
@@ -12612,7 +11610,7 @@ loc_5d17:
   and byte ptr [si+0x2], 0xf0
   mov al, byte ptr es:[di+0xff00]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_5d2b
   neg word ptr [si+0x8]
@@ -12760,7 +11758,7 @@ loc_5e5a:
   call sub_5ee4
   mov al, byte ptr es:[di+0xff00]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_5e71
   call sub_5eca
@@ -12890,7 +11888,7 @@ loc_5f5f:
   call sub_5ee4
   mov al, byte ptr es:[di+0xff00]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_5f76
   neg word ptr [si+0x8]
@@ -13012,7 +12010,7 @@ loc_606e:
   call sub_5ee4
   mov al, byte ptr es:[di+0xff00]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_608a
   neg word ptr [si+0x8]
@@ -13114,7 +12112,7 @@ loc_614a:
   call sub_5ee4
   mov al, byte ptr es:[di+0xff00]
   mov bx, 0x72a3
-  xlat
+  xlat ds
   and al, 0x1
   jz loc_6166
   neg word ptr [si+0x8]
@@ -13635,7 +12633,7 @@ sub_6567 proc near
   mov es, word ptr [0x526c]
   mov al, byte ptr es:[di]
   mov bx, 0x73a3
-  xlat
+  xlat ds
   ret
 sub_6567 endp
 
@@ -13757,5 +12755,127 @@ loc_6615:
   pop bx
   pop ax
   ret
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db aah
+  db 55h
+  db 55h
+  db 55h
+  db 00h
+  db aah
+  db 00h
+  db 00h
+  db aah
+  db aah
+  db ffh
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 55h
+  db aah
+  db 55h
+  db 55h
+  db ffh
+  db aah
+  db ffh
+  db aah
+  db aah
+  db ffh
+  db ffh
+  db ffh
+  db ffh
+  db 00h
+  db 00h
+  db aah
+  db aah
+  db ffh
+  db ffh
+  db 55h
+  db 55h
+  db 55h
+  db 55h
+  db ffh
+  db ffh
+  db aah
+  db aah
+  db 55h
+  db 55h
+  db 00h
+  db 00h
+  db 55h
+  db 55h
+  db aah
+  db 55h
+  db 55h
+  db 55h
+  db aah
+  db aah
+  db aah
+  db aah
+  db ffh
+  db ffh
+  db ffh
+  db ffh
+  db 00h
+  db 00h
+  db ffh
+  db ffh
+  db 00h
+  db 00h
+  db aah
+  db aah
+  db aah
+  db aah
+  db 00h
+  db aah
+  db aah
+  db aah
+  db ffh
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 55h
+  db aah
+  db 55h
+  db 55h
+  db 55h
+  db aah
+  db ffh
+  db 55h
+  db 55h
+  db 00h
+  db 55h
+  db 00h
+  db 55h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db 00h
+  db c0h
+  db 00h
+  db 00h
+  db c0h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
+  db 80h
 sub_65be endp
 seg001 ends

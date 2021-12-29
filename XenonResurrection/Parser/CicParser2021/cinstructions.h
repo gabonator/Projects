@@ -458,7 +458,9 @@ public:
 		case CIZeroArgOp::stc: m_strOperation = "_flags.carry = true"; break;
 		case CIZeroArgOp::lahf: m_strOperation = "_ah = _reg.flags.toByte()"; break;
 		case CIZeroArgOp::sahf: m_strOperation = "_reg.flags.fromByte(_ah)"; break;
-        case CIZeroArgOp::xlat: m_strOperation = "_xlat()"; break;
+        case CIZeroArgOp::xlat_cs: m_strOperation = "_xlat_cs()"; break;
+        case CIZeroArgOp::xlat_ds: m_strOperation = "_xlat_ds()"; break;
+        case CIZeroArgOp::xlat_es: m_strOperation = "_xlat_es()"; break;
 
 		case CIZeroArgOp::lodsb: m_strOperation = "_lodsb"+GetTemplate(pInstruction->m_eType)+"()"; break;
 		case CIZeroArgOp::stosb: m_strOperation = "_stosb"+GetTemplate(pInstruction->m_eType)+"()"; break;

@@ -24,21 +24,54 @@ void sub_06ea();
 void sub_0701();
 void sub_07b0();
 void sub_0805();
+void sub_08d0();
 void sub_097b();
 void sub_0abe();
 void sub_0c1e();
 void sub_0c30();
 void sub_0ceb();
+void sub_0d27();
+void sub_0d51();
+void sub_0e33();
+void sub_0efe();
+void sub_0ffa();
+void sub_1004();
+void sub_1028();
 void sub_107d();
 void sub_10d3();
 void sub_10ff();
 void sub_1198();
 void sub_11e6();
+void sub_122b();
 void sub_1269();
+void sub_12ab();
+void sub_133b();
+void sub_138b();
+void sub_13c2();
+void sub_147a();
+void sub_147d();
+void sub_14d5();
+void sub_14d9();
+void sub_14dd();
+void sub_14e1();
+void sub_14e5();
+void sub_14e9();
+void sub_157c();
+void sub_1585();
+void sub_1589();
+void sub_158c();
+void sub_1591();
+void sub_159c();
 void sub_15a7();
 void sub_15de();
 void sub_1610();
 void sub_164f();
+void sub_16e5();
+void sub_17c7();
+void sub_17d0();
+void sub_17d5();
+void sub_17d8();
+void sub_17df();
 void sub_17eb();
 void sub_17fe();
 void sub_183f();
@@ -126,9 +159,9 @@ void sub_4bd0();
 void sub_4be8();
 void sub_4c12();
 void sub_4c2a();
+void sub_4c4d();
 void sub_4c65();
 void sub_4ca2();
-void sub_4ca3();
 void sub_4ca8();
 void sub_4cd8();
 void sub_4cf0();
@@ -173,6 +206,7 @@ void sub_592d();
 void sub_5945();
 void sub_596f();
 void sub_59a1();
+void sub_59bb();
 void sub_59cc();
 void sub_59e7();
 void sub_5a03();
@@ -203,8 +237,6 @@ void sub_6582();
 void sub_65be();
 void entry()
 {
-    WORD _cs = _seg001;
-
     _flags.interrupt = true;                    //sti
     _flags.direction = false;                   //cld
     _dx = 0xffff;                               //mov dx, 0xffff
@@ -359,8 +391,6 @@ loc_014c:                                       //loc_014c:
 
 void sub_0158()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     if (memory(_cs, 0x16E4) != 0x03)            //jnz loc_0172
@@ -650,8 +680,6 @@ void sub_0333()
 
 void sub_038a()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -673,8 +701,6 @@ loc_03a5:                                       //loc_03a5:
 
 void sub_03ae()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -729,8 +755,6 @@ loc_0403:                                       //loc_0403:
 
 void sub_0410()
 {
-    WORD _cs = _seg001;
-
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
     if (_al != 0x05)                            //jnz loc_0422
         goto loc_0422;
@@ -808,8 +832,6 @@ loc_0480:                                       //loc_0480:
 
 void sub_0488()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
 loc_0489:                                       //loc_0489:
     _lodsb<MemData, DirForward>();              //lodsb
@@ -881,8 +903,6 @@ loc_050c:                                       //loc_050c:
 
 void sub_050e()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -1008,8 +1028,6 @@ loc_05c6:                                       //loc_05c6:
 
 void sub_05c7()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -1421,33 +1439,19 @@ loc_085c:                                       //loc_085c:
     _cx = _pop();                               //pop cx
     _bx = _pop();                               //pop bx
     _ax = _pop();                               //pop ax
-    return;                                     //ret
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db b3h");                           //db b3h
-    _STOP_("db 6bh");                           //db 6bh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db bah");                           //db bah
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 82h");                           //db 82h
-    _STOP_("db 00h");                           //db 00h
+}
+
+void sub_08d0()
+{
+    _ax = 0x0003;                               //mov ax, 0x3
+    _interrupt(16);                             //int 0x10
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    memory(_cs, 0x6BB3) = 0x00;                 //mov byte ptr cs:[0x6bb3], 0x0
+    _ah = 0x09;                                 //mov ah, 0x9
+    _dx = 0x0061;                               //mov dx, 0x61
+    _interrupt(33);                             //int 0x21
+    goto loc_096c;                              //jmp loc_096c
 loc_08ea:                                       //loc_08ea:
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
@@ -1524,8 +1528,6 @@ loc_0979:                                       //loc_0979:
 
 void sub_097b()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _es = _ax;                                  //mov es, ax
@@ -1676,8 +1678,6 @@ loc_0ab9:                                       //loc_0ab9:
 void sub_0abe()
 {
 loc_0abe:
-    WORD _cs = _seg001;
-
     _dl -= 1;                                   //dec dl
     if (_dl == 0)                               //jz loc_0a7e
         _STOP_("goto loc_0a7e");
@@ -1839,8 +1839,6 @@ void sub_0c1e()
 
 void sub_0c30()
 {
-    WORD _cs = _seg001;
-
     _ax = memory16(_ds, 0x000c);                //mov ax, [0xc]
     if (memory16(_ds, 10) != _ax)               //jnz loc_0c48
         goto loc_0c48;
@@ -1964,868 +1962,425 @@ loc_0d05:                                       //loc_0d05:
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 00h");                           //db 00h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 23h");                           //db 23h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 8ch");                           //db 8ch
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 25h");                           //db 25h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 3ch");                           //db 3ch
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 35h");                           //db 35h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 25h");                           //db 25h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db a1h");                           //db a1h
-    _STOP_("db 23h");                           //db 23h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db cbh");                           //db cbh
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 60h");                           //db 60h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db b3h");                           //db b3h
-    _STOP_("db 6bh");                           //db 6bh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 7eh");                           //db 7eh
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db beh");                           //db beh
-    _STOP_("db 27h");                           //db 27h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b9h");                           //db b9h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db bbh");                           //db bbh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db ach");                           //db ach
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db f7h");                           //db f7h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db bah");                           //db bah
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 86h");                           //db 86h
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db 3dh");                           //db 3dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db f0h");                           //db f0h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db f5h");                           //db f5h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 86h");                           //db 86h
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db 3dh");                           //db 3dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 77h");                           //db 77h
-    _STOP_("db f5h");                           //db f5h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 30h");                           //db 30h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 8ch");                           //db 8ch
-    _STOP_("db c8h");                           //db c8h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db b9h");                           //db b9h
-    _STOP_("db c9h");                           //db c9h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db f3h");                           //db f3h
-    _STOP_("db aah");                           //db aah
-    _STOP_("db bfh");                           //db bfh
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db bah");                           //db bah
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b9h");                           //db b9h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db f3h");                           //db f3h
-    _STOP_("db aah");                           //db aah
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db efh");                           //db efh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 4ah");                           //db 4ah
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db efh");                           //db efh
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 4ch");                           //db 4ch
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db eah");                           //db eah
-    _STOP_("db f0h");                           //db f0h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db f0h");                           //db f0h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 3dh");                           //db 3dh
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 7fh");                           //db 7fh
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 98h");                           //db 98h
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db d4h");                           //db d4h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db a7h");                           //db a7h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db cfh");                           //db cfh
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 56h");                           //db 56h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db fah");                           //db fah
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db cfh");                           //db cfh
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db aah");                           //db aah
-    _STOP_("db c7h");                           //db c7h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 28h");                           //db 28h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 8ch");                           //db 8ch
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 9ch");                           //db 9ch
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db cch");                           //db cch
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 9dh");                           //db 9dh
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db bbh");                           //db bbh
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b5h");                           //db b5h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db 9ch");                           //db 9ch
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 4ch");                           //db 4ch
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db fah");                           //db fah
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db a1h");                           //db a1h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db c1h");                           //db c1h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db c5h");                           //db c5h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fdh");                           //db fdh
-    _STOP_("db 27h");                           //db 27h
-    _STOP_("db 76h");                           //db 76h
-    _STOP_("db dah");                           //db dah
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 4ch");                           //db 4ch
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 37h");                           //db 37h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 54h");                           //db 54h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 4ah");                           //db 4ah
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 28h");                           //db 28h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 23h");                           //db 23h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db bah");                           //db bah
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db 14h");                           //db 14h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 30h");                           //db 30h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 2dh");                           //db 2dh
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 15h");                           //db 15h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 29h");                           //db 29h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db fah");                           //db fah
-    _STOP_("db 9ch");                           //db 9ch
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db 3ch");                           //db 3ch
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 9dh");                           //db 9dh
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 5fh");                           //db 5fh
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db bbh");                           //db bbh
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b9h");                           //db b9h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db ddh");                           //db ddh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 27h");                           //db 27h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3fh");                           //db 3fh
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 4fh");                           //db 4fh
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db bbh");                           //db bbh
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db a7h");                           //db a7h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 27h");                           //db 27h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db c1h");                           //db c1h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 76h");                           //db 76h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db f7h");                           //db f7h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 92h");                           //db 92h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 14h");                           //db 14h
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 38h");                           //db 38h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 14h");                           //db 14h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 14h");                           //db 14h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db a1h");                           //db a1h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 15h");                           //db 15h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 4fh");                           //db 4fh
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db dfh");                           //db dfh
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 4bh");                           //db 4bh
-    _STOP_("db 54h");                           //db 54h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db bfh");                           //db bfh
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db dbh");                           //db dbh
-    _STOP_("db 43h");                           //db 43h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 39h");                           //db 39h
-    _STOP_("db 4eh");                           //db 4eh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db fah");                           //db fah
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 8dh");                           //db 8dh
-    _STOP_("db 79h");                           //db 79h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 25h");                           //db 25h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db dbh");                           //db dbh
-    _STOP_("db 43h");                           //db 43h
-    _STOP_("db 38h");                           //db 38h
-    _STOP_("db 21h");                           //db 21h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db bfh");                           //db bfh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 33h");                           //db 33h
-    _STOP_("db dbh");                           //db dbh
-    _STOP_("db 4bh");                           //db 4bh
-    _STOP_("db 38h");                           //db 38h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db f7h");                           //db f7h
-    _STOP_("db d3h");                           //db d3h
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db a8h");                           //db a8h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 84h");                           //db 84h
-    _STOP_("db f8h");                           //db f8h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 9ch");                           //db 9ch
-    _STOP_("db 9ah");                           //db 9ah
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db b9h");                           //db b9h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db 3ch");                           //db 3ch
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 76h");                           //db 76h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 30h");                           //db 30h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db cdh");                           //db cdh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 41h");                           //db 41h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 3dh");                           //db 3dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 3dh");                           //db 3dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 2bh");                           //db 2bh
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 6eh");                           //db 6eh
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7eh");                           //db 7eh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db fah");                           //db fah
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db ech");                           //db ech
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db eah");                           //db eah
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 66h");                           //db 66h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db cfh");                           //db cfh
     _STOP_("sp-trace-fail");                    //sub_0ceb endp_failed
+    _STOP_("continues");                        //sub_0d27 proc near
+}
+
+void sub_0d27()
+{
+    memory16(_cs, 0xD23) = _ax;                 //mov cs:[0xd23], ax
+    memory16(_cs, 0xD25) = _ds;                 //mov word ptr cs:[0xd25], ds
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _flags.carry = (memory16(_ds, 1084) + 0x0001) >= 0x10000;
+    memory16(_ds, 1084) += 0x0001;
+    memory16(_ds, 1086) = memory16(_ds, 1086) + 0x0000 + _flags.carry;
+    _push(memory16(_ds, 1077));                 //push word ptr [0x435]
+    _push(memory16(_ds, 1075));                 //push word ptr [0x433]
+    _ds = memory16(_cs, 0xD25);                 //mov ds, word ptr cs:[0xd25]
+    _ax = memory16(_cs, 0xD23);                 //mov ax, cs:[0xd23]
+}
+
+void sub_0d51()
+{
+    _push(_ds);                                 //push ds
+    _push(_bx);                                 //push bx
+    _push(_ax);                                 //push ax
+    _flags.direction = false;                   //cld
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _in(_al, 96);                               //in al, 0x60
+    _bl = _al;                                  //mov bl, al
+    _in(_al, 97);                               //in al, 0x61
+    _ah = _al;                                  //mov ah, al
+    _al |= 0x80;                                //or al, 0x80
+    _out(97, _al);                              //out 0x61, al
+    _al = _ah;                                  //mov al, ah
+    _out(97, _al);                              //out 0x61, al
+    memory(_ds, 1216) = _bl;                    //mov byte ptr [0x4c0], bl
+    if (_bl != 0x01)                            //jnz loc_0d79
+        goto loc_0d79;
+loc_0d79:                                       //loc_0d79:
+    if (memory(_cs, 0x6BB3) != 0x00)            //jnz loc_0df9
+        goto loc_0df9;
+    _ax = 0x0003;                               //mov ax, 0x3
+    _interrupt(16);                             //int 0x10
+    _si = 0x0127;                               //mov si, 0x127
+    _cx = 0x0001;                               //mov cx, 0x1
+    _ah = 0x0e;                                 //mov ah, 0xe
+    _bx = 0x0003;                               //mov bx, 0x3
+loc_0d8b:                                       //loc_0d8b:
+    _lodsb<MemData, DirForward>();              //lodsb
+    _al |= _al;                                 //or al, al
+    if (_al == 0)                               //jz loc_0d94
+        goto loc_0d94;
+    _interrupt(16);                             //int 0x10
+    goto loc_0d8b;                              //jmp loc_0d8b
+loc_0d94:                                       //loc_0d94:
+    _al = _al ^ _al;                            //xor al, al
+    _out(64, _al);                              //out 0x40, al
+    _out(64, _al);                              //out 0x40, al
+    _dx = 0x0040;                               //mov dx, 0x40
+loc_0d9d:                                       //loc_0d9d:
+    _in(_al, _dx);                              //in al, dx
+    _ah = _al;                                  //mov ah, al
+    _in(_al, _dx);                              //in al, dx
+    _xchg(_ah, _al);                            //xchg ah, al
+    if (_ax < 0xf000)                           //jc loc_0d9d
+        goto loc_0d9d;
+loc_0da8:                                       //loc_0da8:
+    _in(_al, _dx);                              //in al, dx
+    _ah = _al;                                  //mov ah, al
+    _in(_al, _dx);                              //in al, dx
+    _xchg(_ah, _al);                            //xchg ah, al
+    if (_ax > 0x4000)                           //ja loc_0da8
+        goto loc_0da8;
+    _ax = 0x0003;                               //mov ax, 0x3
+    _interrupt(16);                             //int 0x10
+    sub_0ceb();                                 //call sub_0ceb
+    _al = 0x0a;                                 //mov al, 0xa
+    _out(66, _al);                              //out 0x42, al
+    _al = _al ^ _al;                            //xor al, al
+    _out(66, _al);                              //out 0x42, al
+    _in(_al, 97);                               //in al, 0x61
+    _al &= 0xfc;                                //and al, 0xfc
+    _out(97, _al);                              //out 0x61, al
+    _ax = _cs;                                  //mov ax, cs
+    _es = _ax;                                  //mov es, ax
+    _cx = 0x0dc9;                               //mov cx, 0xdc9
+    _di = _di ^ _di;                            //xor di, di
+    _rep_stosb<MemData, DirForward>();          //rep stosb
+    _di = 0x0df9;                               //mov di, 0xdf9
+    _dx = 0x015e;                               //mov dx, 0x15e
+loc_0dda:                                       //loc_0dda:
+    _cx = 0x0400;                               //mov cx, 0x400
+    _rep_stosb<MemData, DirForward>();          //rep stosb
+    _di -= 0x0400;                              //sub di, 0x400
+    _ax += 0x0040;                              //add ax, 0x40
+    _es = _ax;                                  //mov es, ax
+    _dx -= 1;                                   //dec dx
+    if (_dx != 0)                               //jnz loc_0dda
+        goto loc_0dda;
+    _al = 0x20;                                 //mov al, 0x20
+    _out(32, _al);                              //out 0x20, al
+    _ax = 0x4c00;                               //mov ax, 0x4c00
+    _interrupt(33);                             //int 0x21
+    _STOP_("db 01h");                           //db 01h
+loc_0df9:                                       //loc_0df9:
+    if (_bl != 0x3d)                            //jnz loc_0e1c
+        goto loc_0e1c;
+    memory(_cs, 0x16E4) = memory(_cs, 0x16E4) ^ 0x02;//xor byte ptr cs:[0x16e4], 0x2
+    if (memory(_cs, 0x16E3) == 0x01)            //jz loc_0e1c
+        goto loc_0e1c;
+    _in(_al, 97);                               //in al, 0x61
+    _al &= 0xfc;                                //and al, 0xfc
+    if (!(memory(_cs, 0x16E4) & 0x02))          //jz loc_0e1a
+        goto loc_0e1a;
+    _al |= 0x03;                                //or al, 0x3
+loc_0e1a:                                       //loc_0e1a:
+    _out(97, _al);                              //out 0x61, al
+loc_0e1c:                                       //loc_0e1c:
+    _bl &= 0x7f;                                //and bl, 0x7f
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _al = memory(_ds, 0x4c0);                   //mov al, [0x4c0]
+    _cbw();                                     //cbw
+    _ah = (~_ah);                               //not ah
+    memory(_ds, _bx + 1088) = _ah;              //mov byte ptr [bx+0x440], ah
+    _al = 0x20;                                 //mov al, 0x20
+    _out(32, _al);                              //out 0x20, al
+    _ax = _pop();                               //pop ax
+    _bx = _pop();                               //pop bx
+    _ds = _pop();                               //pop ds
+    return;                                     //iret
+    _STOP_("sp-trace-fail");                    //sub_0d51 endp_failed
+    _STOP_("continues");                        //sub_0e33 proc near
+}
+
+void sub_0e33()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _flags.interrupt = false;                   //cli
+    _ax = _ax ^ _ax;                            //xor ax, ax
+    _ds = _ax;                                  //mov ds, ax
+    _al = 0xcf;                                 //mov al, 0xcf
+    _les(_di, _ds, 0x000c);                     //les di, [0xc]
+    _stosb<MemData, DirForward>();              //stosb
+    memory16(_ds, 4) = 0x1028;                  //mov word ptr [0x4], 0x1028
+    memory16(_ds, 6) = _cs;                     //mov word ptr [0x6], cs
+    _pushf();                                   //pushf
+    _ax = _pop();                               //pop ax
+    _ah |= 0x01;                                //or ah, 0x1
+    _push(_ax);                                 //push ax
+    _popf();                                    //popf
+    _flags.interrupt = true;                    //sti
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _es = _ax;                                  //mov es, ax
+    _ax = _ax ^ _ax;                            //xor ax, ax
+    _ds = _ax;                                  //mov ds, ax
+    _bx = 0x0211;                               //mov bx, 0x211
+    _ch = 0x00;                                 //mov ch, 0x0
+loc_0e68:                                       //loc_0e68:
+    _cl = 0x01;                                 //mov cl, 0x1
+loc_0e6a:                                       //loc_0e6a:
+    _ax = 0x0201;                               //mov ax, 0x201
+    _dx = _dx ^ _dx;                            //xor dx, dx
+    _pushf();                                   //pushf
+    _STOP_("db 01h");                           //db 01h
+    _flags.interrupt = false;                   //cli
+    _ax = memory16(_cs, 0xFFC);                 //mov ax, cs:[0xffc]
+    _ax = _ax | memory16(_cs, 0xFFE);           //or ax, word ptr cs:[0xffe]
+    if (_ax != 0)                               //jnz loc_0e92
+        goto loc_0e92;
+    _cl += 1;                                   //inc cl
+    if (_cl != 0x0a)                            //jnz loc_0e6a
+        goto loc_0e6a;
+    _ch += 1;                                   //inc ch
+    if (_ch <= 0x27)                            //jbe loc_0e68
+        goto loc_0e68;
+    _ah = 0x4c;                                 //mov ah, 0x4c
+    _interrupt(33);                             //int 0x21
+loc_0e92:                                       //loc_0e92:
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _es = _ax;                                  //mov es, ax
+    _ah = 0x19;                                 //mov ah, 0x19
+    _interrupt(33);                             //int 0x21
+    _al &= 0x01;                                //and al, 0x1
+    memory(_ds, 0x210) = _al;                   //mov [0x210], al
+    sub_0efe();                                 //call sub_0efe
+    if (!_flags.carry)                          //jnc loc_0ede
+        goto loc_0ede;
+    sub_0efe();                                 //call sub_0efe
+    if (!_flags.carry)                          //jnc loc_0ede
+        goto loc_0ede;
+    memory(_ds, 528) = memory(_ds, 528) ^ 0x01; //xor byte ptr [0x210], 0x1
+    sub_0efe();                                 //call sub_0efe
+    if (!_flags.carry)                          //jnc loc_0ede
+        goto loc_0ede;
+    sub_0efe();                                 //call sub_0efe
+    if (!_flags.carry)                          //jnc loc_0ede
+        goto loc_0ede;
+    _ax = 0x0003;                               //mov ax, 0x3
+    _interrupt(16);                             //int 0x10
+    _dx = 0x01f9;                               //mov dx, 0x1f9
+    _ah = 0x09;                                 //mov ah, 0x9
+    _interrupt(33);                             //int 0x21
+    _ah = 0x0e;                                 //mov ah, 0xe
+    _al = memory(_ds, 0x414);                   //mov al, [0x414]
+    _al += 0x30;                                //add al, 0x30
+    _interrupt(16);                             //int 0x10
+    _al = 0x2d;                                 //mov al, 0x2d
+    _interrupt(16);                             //int 0x10
+    _dx = memory16(_ds, 1045);                  //mov dx, word ptr [0x415]
+    sub_1004();                                 //call sub_1004
+    _STOP_("goto loc_096c");                    //jmp loc_096c
+loc_0ede:                                       //loc_0ede:
+    _pushf();                                   //pushf
+    if (memory(_ds, 1047) == 0x01)              //jz loc_0ef3
+        goto loc_0ef3;
+    _ah = 0x19;                                 //mov ah, 0x19
+    _interrupt(33);                             //int 0x21
+    if (_al < 0x03)                             //jc loc_0ef3
+        goto loc_0ef3;
+    memory(_ds, 1047) = 0x01;                   //mov byte ptr [0x417], 0x1
+loc_0ef3:                                       //loc_0ef3:
+    _popf();                                    //popf
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+}
+
+void sub_0efe()
+{
+    _dl = memory(_ds, 528);                     //mov dl, byte ptr [0x210]
+    _ah = _ah ^ _ah;                            //xor ah, ah
+    _interrupt(19);                             //int 0x13
+    _ax = 0x0201;                               //mov ax, 0x201
+    _bx = 0x0211;                               //mov bx, 0x211
+    _cx = 0x0002;                               //mov cx, 0x2
+    _dl = memory(_ds, 528);                     //mov dl, byte ptr [0x210]
+    _dh = 0x00;                                 //mov dh, 0x0
+    memory(_ds, 1041) = 0x01;                   //mov byte ptr [0x411], 0x1
+    sub_0ffa();                                 //call sub_0ffa
+    if (_FIXME_)                                //jc loc_0f7c
+        goto loc_0f7c;
+    memory(_ds, 1047) = 0x00;                   //mov byte ptr [0x417], 0x0
+    _ax = 0x2701;                               //mov ax, 0x2701
+    if (memory(_ds, _bx) != 0xf9)               //jnz loc_0f34
+        goto loc_0f34;
+    memory(_ds, 1047) = 0x01;                   //mov byte ptr [0x417], 0x1
+    _ax = 0x4f00;                               //mov ax, 0x4f00
+loc_0f34:                                       //loc_0f34:
+    memory(_ds, 527) = _ah;                     //mov byte ptr [0x20f], ah
+    memory(_ds, 0x20e) = _al;                   //mov [0x20e], al
+    memory(_ds, 1041) = 0x02;                   //mov byte ptr [0x411], 0x2
+    _cl = 0x01;                                 //mov cl, 0x1
+loc_0f42:                                       //loc_0f42:
+    _ax = 0x0201;                               //mov ax, 0x201
+    _bx = 0x0211;                               //mov bx, 0x211
+    _ch = memory(_ds, 527);                     //mov ch, byte ptr [0x20f]
+    _dh = memory(_ds, 526);                     //mov dh, byte ptr [0x20e]
+    sub_0ffa();                                 //call sub_0ffa
+    if (_FIXME_)                                //jc loc_0f7c
+        goto loc_0f7c;
+    _cl += 1;                                   //inc cl
+    if (_cl <= 0x0a)                            //jbe loc_0f42
+        goto loc_0f42;
+    _ax = 0x0201;                               //mov ax, 0x201
+    _cl = 0xf7;                                 //mov cl, 0xf7
+    _dl = memory(_ds, 528);                     //mov dl, byte ptr [0x210]
+    sub_0ffa();                                 //call sub_0ffa
+    memory(_ds, 1041) = 0x03;                   //mov byte ptr [0x411], 0x3
+    if (_FIXME_)                                //jnc loc_0f7c
+        goto loc_0f7c;
+    memory(_ds, 1041) = 0x04;                   //mov byte ptr [0x411], 0x4
+    memory16(_ds, 0x0412) = _ax;                //mov [0x412], ax
+    if (_ah == 0x10)                            //jz loc_0f90
+        goto loc_0f90;
+loc_0f7c:                                       //loc_0f7c:
+    _al = memory(_ds, 0x411);                   //mov al, [0x411]
+    if (memory(_ds, 1044) >= _al)               //jnc loc_0f8e
+        goto loc_0f8e;
+    memory(_ds, 0x414) = _al;                   //mov [0x414], al
+    _ax = memory16(_ds, 0x0412);                //mov ax, [0x412]
+    memory16(_ds, 0x0415) = _ax;                //mov [0x415], ax
+loc_0f8e:                                       //loc_0f8e:
+    _flags.carry = true;                        //stc
+    return;                                     //ret
+loc_0f90:                                       //loc_0f90:
+    memory(_ds, 1041) = 0x05;                   //mov byte ptr [0x411], 0x5
+    if (memory16(_ds, 529) != 0x4f4d)           //jnz loc_0f7c
+        goto loc_0f7c;
+    memory(_ds, 1041) = 0x06;                   //mov byte ptr [0x411], 0x6
+    if (memory16(_ds, 531) != 0x544b)           //jnz loc_0f7c
+        goto loc_0f7c;
+    memory(_ds, 1041) = 0x07;                   //mov byte ptr [0x411], 0x7
+    _di = 0x0250;                               //mov di, 0x250
+    _bx = _bx ^ _bx;                            //xor bx, bx
+loc_0fb4:                                       //loc_0fb4:
+    _bx += 1;                                   //inc bx
+    if (memory(_ds, _bx + _di) == 0x4e)         //jz loc_0fb4
+        goto loc_0fb4;
+    memory16(_ds, 1042) = _bx;                  //mov word ptr [0x412], bx
+    _lea(_di, _ds, _bx + _di + 10);             //lea di, [bx+di+0xa]
+    memory(_ds, 1041) = 0x08;                   //mov byte ptr [0x411], 0x8
+    _ah = memory(_ds, _di);                     //mov ah, byte ptr [di]
+    _bx = _bx ^ _bx;                            //xor bx, bx
+loc_0fcd:                                       //loc_0fcd:
+    _bx += 1;                                   //inc bx
+    if (memory(_ds, _bx + _di) == _ah)          //jz loc_0fcd
+        goto loc_0fcd;
+    memory16(_ds, 1042) = _bx;                  //mov word ptr [0x412], bx
+    _di += _bx;                                 //add di, bx
+    memory(_ds, 1041) = 0x09;                   //mov byte ptr [0x411], 0x9
+    _di = 0x0410;                               //mov di, 0x410
+    _al = memory(_ds, _di);                     //mov al, byte ptr [di]
+    _bx = _bx ^ _bx;                            //xor bx, bx
+loc_0fe7:                                       //loc_0fe7:
+    _bx -= 1;                                   //dec bx
+    if (memory(_ds, _bx + _di) == _al)          //jz loc_0fe7
+        goto loc_0fe7;
+    _bx = (~_bx);                               //not bx
+    memory16(_ds, 1042) = _bx;                  //mov word ptr [0x412], bx
+    if (_bx < 0x00a8)                           //jc loc_0f7c
+        goto loc_0f7c;
+    _flags.carry = false;                       //clc
+}
+
+void sub_0ffa()
+{
+    _pushf();                                   //pushf
+    _STOP_("db 01h");                           //db 01h
+    memory16(_ds, 0x0412) = _ax;                //mov [0x412], ax
+}
+
+void sub_1004()
+{
+    _cx = 0x0004;                               //mov cx, 0x4
+loc_1007:                                       //loc_1007:
+    _al = _al ^ _al;                            //xor al, al
+    _flags.carry = !!(_dx & 0x8000);            //shl dx, 1
+    _dx <<= 1;
+    _rcl(_al, 1);                               //rcl al, 1
+    _flags.carry = !!(_dx & 0x8000);            //shl dx, 1
+    _dx <<= 1;
+    _rcl(_al, 1);                               //rcl al, 1
+    _flags.carry = !!(_dx & 0x8000);            //shl dx, 1
+    _dx <<= 1;
+    _rcl(_al, 1);                               //rcl al, 1
+    _flags.carry = !!(_dx & 0x8000);            //shl dx, 1
+    _dx <<= 1;
+    _rcl(_al, 1);                               //rcl al, 1
+    if (_al <= 0x09)                            //jbe loc_101f
+        goto loc_101f;
+    _al += 0x07;                                //add al, 0x7
+loc_101f:                                       //loc_101f:
+    _al += 0x30;                                //add al, 0x30
+    _ah = 0x0e;                                 //mov ah, 0xe
+    _interrupt(16);                             //int 0x10
+    if (--_cx)                                  //loop loc_1007
+        goto loc_1007;
+}
+
+void sub_1028()
+{
+    _push(_bp);                                 //push bp
+    _push(_ax);                                 //push ax
+    _bp = _sp;                                  //mov bp, sp
+    if (memory16(_cs, 0xFFE) != 0x0000)         //jnz loc_1075
+        goto loc_1075;
+    _STOP_("db 00h");                           //db 00h
+    if (_ax < 0xc000)                           //jc loc_107a
+        goto loc_107a;
+    _STOP_("db 00h");                           //db 00h
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _STOP_("db 00h");                           //db 00h
+    if (_ax < 0xc000)                           //jc loc_107a
+        goto loc_107a;
+loc_104f:                                       //loc_104f:
+    _bp = _sp;                                  //mov bp, sp
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    if (memory(_ds, _bp + 0) != 0xfa)           //jnz loc_1065
+        goto loc_1065;
+    _bp = _sp;                                  //mov bp, sp
+    _STOP_("db 00h");                           //db 00h
+    goto loc_104f;                              //jmp loc_104f
+loc_1065:                                       //loc_1065:
+    _bp = _sp;                                  //mov bp, sp
+    _STOP_("db 00h");                           //db 00h
+    memory16(_cs, 0xFFE) = _ax;                 //mov cs:[0xffe], ax
+    _STOP_("db 00h");                           //db 00h
+    memory16(_cs, 0xFFC) = _ax;                 //mov cs:[0xffc], ax
+loc_1075:                                       //loc_1075:
+    _STOP_("db 00h");                           //db 00h
+loc_107a:                                       //loc_107a:
+    _ax = _pop();                               //pop ax
+    _bp = _pop();                               //pop bp
+    return;                                     //iret
+    _STOP_("sp-trace-fail");                    //sub_1028 endp_failed
     _STOP_("continues");                        //sub_107d proc near
 }
 
 void sub_107d()
 {
-    WORD _cs = _seg001;
-
     _flags.interrupt = false;                   //cli
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
@@ -2867,8 +2422,6 @@ loc_10c5:                                       //loc_10c5:
 
 void sub_10d3()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     memory(_ds, 25882) = 0x00;                  //mov byte ptr [0x651a], 0x0
@@ -2892,8 +2445,6 @@ loc_10f7:                                       //loc_10f7:
 
 void sub_10ff()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -2980,8 +2531,6 @@ loc_118d:                                       //loc_118d:
 
 void sub_1198()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -3065,77 +2614,48 @@ void sub_11e6()
     _cx = _pop();                               //pop cx
     _bx = _pop();                               //pop bx
     _ax = _pop();                               //pop ax
-    return;                                     //ret
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 56h");                           //db 56h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 68h");                           //db 68h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db fah");                           //db fah
-    _STOP_("db bbh");                           //db bbh
-    _STOP_("db 9ah");                           //db 9ah
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db b2h");                           //db b2h
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 96h");                           //db 96h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db eah");                           //db eah
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 8dh");                           //db 8dh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 67h");                           //db 67h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 4eh");                           //db 4eh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 5fh");                           //db 5fh
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("sp-trace-fail");                    //sub_11e6 endp_failed
-    _STOP_("continues");                        //sub_1269 proc near
+}
+
+void sub_122b()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _ax = 0x20b6;                               //mov ax, 0x20b6
+    sub_15a7();                                 //call sub_15a7
+    _flags.interrupt = false;                   //cli
+    _bx = 0x0b9a;                               //mov bx, 0xb9a
+    _dl = 0x13;                                 //mov dl, 0x13
+    sub_15de();                                 //call sub_15de
+    _dl -= 0x03;                                //sub dl, 0x3
+    _bx += 0x0005;                              //add bx, 0x5
+    sub_15de();                                 //call sub_15de
+    _ah = memory(_ds, _bx + 5);                 //mov ah, byte ptr [bx+0x5]
+    _al = 0xc6;                                 //mov al, 0xc6
+    sub_15a7();                                 //call sub_15a7
+    memory(_ds, 372) = 0x00;                    //mov byte ptr [0x174], 0x0
+    _flags.interrupt = true;                    //sti
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
 }
 
 void sub_1269()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
     _push(_si);                                 //push si
@@ -3165,779 +2685,429 @@ loc_128d:                                       //loc_128d:
     _si = _pop();                               //pop si
     _cx = _pop();                               //pop cx
     _ax = _pop();                               //pop ax
+}
+
+void sub_12ab()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _flags.direction = false;                   //cld
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    memory(_ds, 2432) -= 1;                     //dec byte ptr [0x980]
+    if (memory(_ds, 2432) != 0)                 //jnz loc_12c8
+        goto loc_12c8;
+    _al = memory(_ds, 0x981);                   //mov al, [0x981]
+    memory(_ds, 0x980) = _al;                   //mov [0x980], al
+    goto loc_1331;                              //jmp loc_1331
+loc_12c8:                                       //loc_12c8:
+    memory16(_ds, 2325) = 0x09b3;               //mov word ptr [0x915], 0x9b3
+loc_12ce:                                       //loc_12ce:
+    _di = memory16(_ds, 2325);                  //mov di, word ptr [0x915]
+    _si = memory16(_ds, _di + 13);              //mov si, word ptr [di+0xd]
+    if (_si == 0xffffffff)                      //jz loc_1331
+        goto loc_1331;
+    if (_si == 0xfffffffe)                      //jz loc_1327
+        goto loc_1327;
+    memory(_ds, _di + 7) -= 0x01;               //sub byte ptr [di+0x7], 0x1
+    if (_FIXME_)                                //ja loc_1327
+        goto loc_1327;
+loc_12e5:                                       //loc_12e5:
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _lodsb<MemData, DirForward>();              //lodsb
+    if (!(_al & 0x80))                          //jz loc_12ef
+        goto loc_12ef;
+    _STOP_("goto loc_1454");                    //jmp loc_1454
+loc_12ef:                                       //loc_12ef:
+    _ah = _al;                                  //mov ah, al
+    _ah &= 0x0f;                                //and ah, 0xf
+    _cl = _ah;                                  //mov cl, ah
+    _xchg(memory(_ds, _di + 8), _cl);           //xchg byte ptr [di+0x8], cl
+    memory(_ds, _di + 15) = _cl;                //mov byte ptr [di+0xf], cl
+    _cl = 0x04;                                 //mov cl, 0x4
+    _al >>= _cl;                                //shr al, cl
+    memory(_ds, _di + 9) = _al;                 //mov byte ptr [di+0x9], al
+    _bl = memory(_ds, _di + 8);                 //mov bl, byte ptr [di+0x8]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bx <<= 1;                                  //shl bx, 1
+    _ax = memory16(_ds, _bx + 2406);            //mov ax, word ptr [bx+0x966]
+    _cl = memory(_ds, _di + 9);                 //mov cl, byte ptr [di+0x9]
+    sub_13c2();                                 //call sub_13c2
+    _al = 0x60;                                 //mov al, 0x60
+    _cl = memory(_ds, _di);                     //mov cl, byte ptr [di]
+    if (_cl != 0x07)                            //jnz loc_1322
+        goto loc_1322;
+    _al = 0x40;                                 //mov al, 0x40
+    _cl = memory(_ds, _di + 3);                 //mov cl, byte ptr [di+0x3]
+loc_1322:                                       //loc_1322:
+    _al >>= _cl;                                //shr al, cl
+    memory(_ds, _di + 7) = _al;                 //mov byte ptr [di+0x7], al
+loc_1327:                                       //loc_1327:
+    memory16(_ds, _di + 13) = _si;              //mov word ptr [di+0xd], si
+    memory16(_ds, 2325) += 0x0011;              //add word ptr [0x915], 0x11
+    goto loc_12ce;                              //jmp loc_12ce
+loc_1331:                                       //loc_1331:
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+}
+
+void sub_133b()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    if (memory(_ds, 372) == 0x00)               //jz loc_1381
+        goto loc_1381;
+    _al = 0xbd;                                 //mov al, 0xbd
+    _ah = 0xef;                                 //mov ah, 0xef
+    _ah = _ah & memory(_ds, 2329);              //and ah, byte ptr [0x919]
+    sub_15a7();                                 //call sub_15a7
+    _ax = 0x57a6;                               //mov ax, 0x57a6
+    sub_15a7();                                 //call sub_15a7
+    _ax = 0x01b6;                               //mov ax, 0x1b6
+    sub_15a7();                                 //call sub_15a7
+    _ax = 0x05b6;                               //mov ax, 0x5b6
+    sub_15a7();                                 //call sub_15a7
+    _al = 0xbd;                                 //mov al, 0xbd
+    _ah = 0x10;                                 //mov ah, 0x10
+    _ah = _ah | memory(_ds, 2329);              //or ah, byte ptr [0x919]
+    sub_15a7();                                 //call sub_15a7
+    memory16(_ds, 370) -= 1;                    //dec word ptr [0x172]
+    if (memory16(_ds, 370) != 0)                //jnz loc_1381
+        goto loc_1381;
+    sub_122b();                                 //call sub_122b
+loc_1381:                                       //loc_1381:
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+}
+
+void sub_138b()
+{
+    if (memory(_cs, 0x16E4) != 0x03)            //jnz loc_13a6
+        goto loc_13a6;
+    if (memory(_cs, 0x16E3) == 0x00)            //jz loc_13a3
+        goto loc_13a3;
+    sub_133b();                                 //call sub_133b
+    sub_12ab();                                 //call sub_12ab
+    goto loc_13a6;                              //jmp loc_13a6
+loc_13a3:                                       //loc_13a3:
+    sub_16e5();                                 //call sub_16e5
+loc_13a6:                                       //loc_13a6:
+    memory16(_cs, 0x16E0) += 1;                 //inc word ptr cs:[0x16e0]
+    memory(_cs, 0x16E2) += 1;                   //inc byte ptr cs:[0x16e2]
+    memory(_cs, 0x16E2) &= 0x03;                //and byte ptr cs:[0x16e2], 0x3
+    if (memory(_cs, 0x16E2) == 0)               //jz loc_13bf
+        goto loc_13bf;
+    _push(_ax);                                 //push ax
+    _al = 0x20;                                 //mov al, 0x20
+    _out(32, _al);                              //out 0x20, al
+    _ax = _pop();                               //pop ax
+    return;                                     //iret
+loc_13bf:                                       //loc_13bf:
+    {sub_0d27(); return; };                     //
+}
+
+void sub_13c2()
+{
+    _ax |= _ax;                                 //or ax, ax
+    if (_ax != 0)                               //jnz loc_13c9
+        goto loc_13c9;
+    goto loc_144d;                              //jmp loc_144d
+loc_13c9:                                       //loc_13c9:
+    if (memory(_ds, _di + 6) < 0x0f)            //jc loc_1417
+        goto loc_1417;
+    _cl += 0x0f;                                //add cl, 0xf
+    if (memory(_ds, _di + 6) == _cl)            //jz loc_13e0
+        goto loc_13e0;
+    sub_14e9();                                 //call sub_14e9
+    _al = memory(_ds, _di + 1);                 //mov al, byte ptr [di+0x1]
+    sub_147d();                                 //call sub_147d
+loc_13e0:                                       //loc_13e0:
+    _cl = memory(_ds, _di + 5);                 //mov cl, byte ptr [di+0x5]
+    _cl -= 0x06;                                //sub cl, 0x6
+    _ah = 0x10;                                 //mov ah, 0x10
+    _ah >>= _cl;                                //shr ah, cl
+    _ah = (~_ah);                               //not ah
+    _ah = _ah & memory(_ds, 2329);              //and ah, byte ptr [0x919]
+    _al = 0xbd;                                 //mov al, 0xbd
+    sub_15a7();                                 //call sub_15a7
+    if (memory(_ds, _di + 5) != 0x06)           //jnz loc_140d
+        goto loc_140d;
+    _ax = 0x57a6;                               //mov ax, 0x57a6
+    sub_15a7();                                 //call sub_15a7
+    _ax = 0x00b6;                               //mov ax, 0xb6
+    sub_15a7();                                 //call sub_15a7
+    _ax = 0x05b6;                               //mov ax, 0x5b6
+    sub_15a7();                                 //call sub_15a7
+loc_140d:                                       //loc_140d:
+    _ah = memory(_ds, 2329);                    //mov ah, byte ptr [0x919]
+    _al = 0xbd;                                 //mov al, 0xbd
+    sub_15a7();                                 //call sub_15a7
     return;                                     //ret
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 56h");                           //db 56h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 69h");                           //db 69h
-    _STOP_("db c7h");                           //db c7h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 15h");                           //db 15h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db b3h");                           //db b3h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 15h");                           //db 15h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 48h");                           //db 48h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 6dh");                           //db 6dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 77h");                           //db 77h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db ach");                           //db ach
-    _STOP_("db a8h");                           //db a8h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 65h");                           //db 65h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db cch");                           //db cch
-    _STOP_("db 86h");                           //db 86h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 87h");                           //db 87h
-    _STOP_("db 66h");                           //db 66h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db aeh");                           //db aeh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 60h");                           //db 60h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 15h");                           //db 15h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 11h");                           //db 11h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 9dh");                           //db 9dh
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 5fh");                           //db 5fh
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 56h");                           //db 56h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 31h");                           //db 31h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db efh");                           //db efh
-    _STOP_("db 22h");                           //db 22h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 4ch");                           //db 4ch
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db a6h");                           //db a6h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 3ah");                           //db 3ah
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 2fh");                           //db 2fh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db aah");                           //db aah
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 5fh");                           //db 5fh
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 9dh");                           //db 9dh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 3fh");                           //db 3fh
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db cfh");                           //db cfh
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 65h");                           //db 65h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 84h");                           //db 84h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 48h");                           //db 48h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db c1h");                           //db c1h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 38h");                           //db 38h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 9dh");                           //db 9dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db d4h");                           //db d4h
-    _STOP_("db 22h");                           //db 22h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db b2h");                           //db b2h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db a6h");                           //db a6h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db a6h");                           //db a6h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db b6h");                           //db b6h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 9ah");                           //db 9ah
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 91h");                           //db 91h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db c1h");                           //db c1h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e2h");                           //db e2h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 71h");                           //db 71h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db e1h");                           //db e1h
-    _STOP_("db d0h");                           //db d0h
-    _STOP_("db e1h");                           //db e1h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db e1h");                           //db e1h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db cch");                           //db cch
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 70h");                           //db 70h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db dch");                           //db dch
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 97h");                           //db 97h
-    _STOP_("db 1ah");                           //db 1ah
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 76h");                           //db 76h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 97h");                           //db 97h
-    _STOP_("db 28h");                           //db 28h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 6bh");                           //db 6bh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db cbh");                           //db cbh
-    _STOP_("db b7h");                           //db b7h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 43h");                           //db 43h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db c8h");                           //db c8h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db edh");                           //db edh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 67h");                           //db 67h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 3fh");                           //db 3fh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 3fh");                           //db 3fh
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db dch");                           //db dch
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db f7h");                           //db f7h
-    _STOP_("db e1h");                           //db e1h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 3fh");                           //db 3fh
-    _STOP_("db 2ah");                           //db 2ah
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db b7h");                           //db b7h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 9fh");                           //db 9fh
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fbh");                           //db fbh
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 77h");                           //db 77h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 9fh");                           //db 9fh
-    _STOP_("db 48h");                           //db 48h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db d3h");                           //db d3h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 3ch");                           //db 3ch
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 29h");                           //db 29h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 22h");                           //db 22h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db c8h");                           //db c8h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db b4h");                           //db b4h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db d4h");                           //db d4h
-    _STOP_("db 22h");                           //db 22h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 19h");                           //db 19h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 9fh");                           //db 9fh
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 77h");                           //db 77h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 97h");                           //db 97h
-    _STOP_("db 48h");                           //db 48h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 17h");                           //db 17h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 43h");                           //db 43h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db eah");                           //db eah
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 73h");                           //db 73h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 6eh");                           //db 6eh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 67h");                           //db 67h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 05h");                           //db 05h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 2ch");                           //db 2ch
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8dh");                           //db 8dh
-    _STOP_("db 44h");                           //db 44h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db ach");                           //db ach
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 45h");                           //db 45h
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db beh");                           //db beh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db b2h");                           //db b2h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fdh");                           //db fdh
-    _STOP_("sp-trace-fail");                    //sub_1269 endp_failed
-    _STOP_("continues");                        //sub_15a7 proc near
+loc_1417:                                       //loc_1417:
+    _cl += 0x02;                                //add cl, 0x2
+    _dx = _ax;                                  //mov dx, ax
+    _ah = _dl;                                  //mov ah, dl
+    _al = memory(_ds, _di + 5);                 //mov al, byte ptr [di+0x5]
+    _al += 0xa0;                                //add al, 0xa0
+    sub_15a7();                                 //call sub_15a7
+    if (memory(_ds, _di + 16) == 0x01)          //jz loc_143a
+        goto loc_143a;
+    _al = memory(_ds, _di + 5);                 //mov al, byte ptr [di+0x5]
+    _al += 0xb0;                                //add al, 0xb0
+    _ah = 0x00;                                 //mov ah, 0x0
+    sub_15a7();                                 //call sub_15a7
+    _dx |= _dx;                                 //or dx, dx
+    if (_dx == 0)                               //jz loc_144d
+        goto loc_144d;
+loc_143a:                                       //loc_143a:
+    _ah = _dh;                                  //mov ah, dh
+    _cl <<= 1;                                  //shl cl, 1
+    _cl <<= 1;                                  //shl cl, 1
+    _ah |= _cl;                                 //or ah, cl
+    _ah |= 0x20;                                //or ah, 0x20
+    _al = memory(_ds, _di + 5);                 //mov al, byte ptr [di+0x5]
+    _al += 0xb0;                                //add al, 0xb0
+    sub_15a7();                                 //call sub_15a7
+loc_144d:                                       //loc_144d:
+    _al = memory(_ds, _di + 4);                 //mov al, byte ptr [di+0x4]
+    memory(_ds, _di + 16) = _al;                //mov byte ptr [di+0x10], al
+    return;                                     //ret
+loc_1454:                                       //loc_1454:
+    _ah = _al;                                  //mov ah, al
+    _al &= 0x0f;                                //and al, 0xf
+    _cl = 0x04;                                 //mov cl, 0x4
+    _ah &= 0x70;                                //and ah, 0x70
+    _ah >>= _cl;                                //shr ah, cl
+    if (_ah == 0x07)                            //jz loc_146f
+        goto loc_146f;
+    _bl = _ah;                                  //mov bl, ah
+    _bx <<= 1;                                  //shl bx, 1
+    _indirectCall(memory16(_ds, _bx + 2330));   //call word ptr [bx+0x91a]
+    _STOP_("goto loc_12e5");                    //jmp loc_12e5
+loc_146f:                                       //loc_146f:
+    _bl = _al;                                  //mov bl, al
+    _bx <<= 1;                                  //shl bx, 1
+    _indirectCall(memory16(_ds, _bx + 2344));   //call word ptr [bx+0x928]
+    _STOP_("goto loc_12e5");                    //jmp loc_12e5
+}
+
+void sub_147a()
+{
+    memory(_ds, _di) = _al;                     //mov byte ptr [di], al
+}
+
+void sub_147d()
+{
+    memory(_ds, _di + 1) = _al;                 //mov byte ptr [di+0x1], al
+    _al += 1;                                   //inc al
+    _bl = memory(_ds, _di + 6);                 //mov bl, byte ptr [di+0x6]
+    _cl = _bl;                                  //mov cl, bl
+    _bh = 0x00;                                 //mov bh, 0x0
+    _bx <<= 1;                                  //shl bx, 1
+    _bx = _bx + memory16(_ds, 2327);            //add bx, word ptr [0x917]
+    _bx = memory16(_ds, _bx);                   //mov bx, word ptr [bx]
+    if (_cl < 0x0f)                             //jc loc_1497
+        goto loc_1497;
+    _bx += 1;                                   //inc bx
+loc_1497:                                       //loc_1497:
+    _cl = _al;                                  //mov cl, al
+    _ch = _ch ^ _ch;                            //xor ch, ch
+    _ah = memory(_ds, _bx + 2);                 //mov ah, byte ptr [bx+0x2]
+    _ah &= 0x3f;                                //and ah, 0x3f
+    _ah -= 0x3f;                                //sub ah, 0x3f
+    _ah = -_ah;                                 //neg ah
+    _al = _al ^ _al;                            //xor al, al
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _ax >>= 1;                                  //shr ax, 1
+    _mul(_cx);                                  //mul cx
+    _al = 0x3f;                                 //mov al, 0x3f
+    _al -= _ah;                                 //sub al, ah
+    _bl = memory(_ds, _di + 5);                 //mov bl, byte ptr [di+0x5]
+    _bh = 0x00;                                 //mov bh, 0x0
+    _bl = memory(_ds, _bx + 2395);              //mov bl, byte ptr [bx+0x95b]
+    if (_bl > 0x0d)                             //ja loc_14c7
+        goto loc_14c7;
+    _bl += 0x03;                                //add bl, 0x3
+loc_14c7:                                       //loc_14c7:
+    _bl = memory(_ds, _bx + 2376);              //mov bl, byte ptr [bx+0x948]
+    _ah = _al;                                  //mov ah, al
+    _al = _bl;                                  //mov al, bl
+    _al += 0x40;                                //add al, 0x40
+    sub_15a7();                                 //call sub_15a7
+}
+
+void sub_14d5()
+{
+    memory(_ds, _di + 2) = _al;                 //mov byte ptr [di+0x2], al
+}
+
+void sub_14d9()
+{
+    memory(_ds, _di + 3) = _al;                 //mov byte ptr [di+0x3], al
+}
+
+void sub_14dd()
+{
+    memory(_ds, _di + 4) = _al;                 //mov byte ptr [di+0x4], al
+}
+
+void sub_14e1()
+{
+    memory(_ds, _di + 5) = _al;                 //mov byte ptr [di+0x5], al
+}
+
+void sub_14e5()
+{
+    if (_al != 0x01)                            //jnz loc_1512
+        _STOP_("goto loc_1512");
+    _STOP_("sp-trace-fail");                    //sub_14e5 endp_failed
+    _STOP_("continues");                        //sub_14e9 proc near
+}
+
+void sub_14e9()
+{
+    _bl = memory(_ds, _di + 9);                 //mov bl, byte ptr [di+0x9]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bl += 0x0f;                                //add bl, 0xf
+    memory(_ds, _di + 6) = _bl;                 //mov byte ptr [di+0x6], bl
+    _bx <<= 1;                                  //shl bx, 1
+    _bx = _bx + memory16(_ds, 2327);            //add bx, word ptr [0x917]
+    _bx = memory16(_ds, _bx);                   //mov bx, word ptr [bx]
+    _cl = memory(_ds, _bx);                     //mov cl, byte ptr [bx]
+    memory(_ds, _di + 5) = _cl;                 //mov byte ptr [di+0x5], cl
+    _ah = 0x10;                                 //mov ah, 0x10
+    _cl -= 0x06;                                //sub cl, 0x6
+    _ah >>= _cl;                                //shr ah, cl
+    _ah = _ah | memory(_ds, 2329);              //or ah, byte ptr [0x919]
+    memory(_ds, 2329) = _ah;                    //mov byte ptr [0x919], ah
+    goto loc_1534;                              //jmp loc_1534
+loc_1512:                                       //loc_1512:
+    if (_FIXME_)                                //jc loc_1516
+        goto loc_1516;
+    _al -= 1;                                   //dec al
+loc_1516:                                       //loc_1516:
+    memory(_ds, _di + 6) = _al;                 //mov byte ptr [di+0x6], al
+    _cl = memory(_ds, _di + 5);                 //mov cl, byte ptr [di+0x5]
+    _flags.carry = _cl < 0x06;                  //sub cl, 0x6
+    _cl -= 0x06;
+    if (_flags.carry)                           //jc loc_1534
+        goto loc_1534;
+    _ah = 0x10;                                 //mov ah, 0x10
+    _ah >>= _cl;                                //shr ah, cl
+    _ah = (~_ah);                               //not ah
+    _ah = _ah & memory(_ds, 2329);              //and ah, byte ptr [0x919]
+    memory(_ds, 2329) = _ah;                    //mov byte ptr [0x919], ah
+    _al = 0xbd;                                 //mov al, 0xbd
+    sub_15a7();                                 //call sub_15a7
+loc_1534:                                       //loc_1534:
+    _bl = memory(_ds, _di + 5);                 //mov bl, byte ptr [di+0x5]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bl = memory(_ds, _bx + 2395);              //mov bl, byte ptr [bx+0x95b]
+    if (memory(_ds, _di + 5) > 0x06)            //ja loc_1546
+        goto loc_1546;
+    _bl += 0x03;                                //add bl, 0x3
+loc_1546:                                       //loc_1546:
+    _dl = memory(_ds, _bx + 2376);              //mov dl, byte ptr [bx+0x948]
+    _bl = memory(_ds, _di + 6);                 //mov bl, byte ptr [di+0x6]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bx <<= 1;                                  //shl bx, 1
+    _bx = _bx + memory16(_ds, 2327);            //add bx, word ptr [0x917]
+    _bx = memory16(_ds, _bx);                   //mov bx, word ptr [bx]
+    if (memory(_ds, _di + 6) < 0x0f)            //jc loc_155e
+        goto loc_155e;
+    _bx += 1;                                   //inc bx
+loc_155e:                                       //loc_155e:
+    sub_15de();                                 //call sub_15de
+    _dl -= 0x03;                                //sub dl, 0x3
+    _bx += 0x0005;                              //add bx, 0x5
+    if (memory(_ds, _di + 5) >= 0x07)           //jnc loc_157b
+        goto loc_157b;
+    sub_15de();                                 //call sub_15de
+    _ah = memory(_ds, _bx + 5);                 //mov ah, byte ptr [bx+0x5]
+    _al = memory(_ds, _di + 5);                 //mov al, byte ptr [di+0x5]
+    _al += 0xc0;                                //add al, 0xc0
+    sub_15a7();                                 //call sub_15a7
+loc_157b:                                       //loc_157b:
+    return;
+}
+
+void sub_157c()
+{
+    _lea(_ax, _ds, _si + 2);                    //lea ax, [si+0x2]
+    memory16(_ds, _di + 10) = _ax;              //mov word ptr [di+0xa], ax
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+}
+
+void sub_1585()
+{
+    _si = memory16(_ds, _di + 10);              //mov si, word ptr [di+0xa]
+}
+
+void sub_1589()
+{
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+}
+
+void sub_158c()
+{
+    _lodsb<MemData, DirForward>();              //lodsb
+    memory(_ds, _di + 12) = _al;                //mov byte ptr [di+0xc], al
+}
+
+void sub_1591()
+{
+    memory(_ds, _di + 12) -= 1;                 //dec byte ptr [di+0xc]
+    if (memory(_ds, _di + 12) == 0)             //jz loc_1599
+        goto loc_1599;
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+    return;                                     //ret
+loc_1599:                                       //loc_1599:
+    _si += 1;                                   //inc si
+    _si += 1;                                   //inc si
+}
+
+void sub_159c()
+{
+    _ax = _pop();                               //pop ax
+    _si = 0xfffe;                               //mov si, 0xfffe
+    memory(_ds, 2482) -= 1;                     //dec byte ptr [0x9b2]
+    _STOP_("goto loc_1327");                    //jmp loc_1327
 }
 
 void sub_15a7()
 {
-    WORD _cs = _seg001;
-
     _push(_dx);                                 //push dx
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
@@ -4108,277 +3278,161 @@ loc_165e:                                       //loc_165e:
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 00h");                           //db 00h
     _STOP_("db 02h");                           //db 02h
-    _STOP_("db 50h");                           //db 50h
-    _STOP_("db 53h");                           //db 53h
-    _STOP_("db 51h");                           //db 51h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 57h");                           //db 57h
-    _STOP_("db 56h");                           //db 56h
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 55h");                           //db 55h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 8fh");                           //db 8fh
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 8eh");                           //db 8eh
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 72h");                           //db 72h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 83h");                           //db 83h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db f6h");                           //db f6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 7bh");                           //db 7bh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db a0h");                           //db a0h
-    _STOP_("db 81h");                           //db 81h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 6dh");                           //db 6dh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 13h");                           //db 13h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db b8h");                           //db b8h
-    _STOP_("db 98h");                           //db 98h
-    _STOP_("db 3ah");                           //db 3ah
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 2eh");                           //db 2eh
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 01h");                           //db 01h
-    _STOP_("db 77h");                           //db 77h
-    _STOP_("db 4dh");                           //db 4dh
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db ach");                           //db ach
-    _STOP_("db a8h");                           //db a8h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 54h");                           //db 54h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 10h");                           //db 10h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 1eh");                           //db 1eh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 32h");                           //db 32h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 87h");                           //db 87h
-    _STOP_("db 20h");                           //db 20h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0dh");                           //db 0dh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db d3h");                           //db d3h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db c4h");                           //db c4h
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 42h");                           //db 42h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 60h");                           //db 60h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db f9h");                           //db f9h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 75h");                           //db 75h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 40h");                           //db 40h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 12h");                           //db 12h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 89h");                           //db 89h
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 5dh");                           //db 5dh
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 1fh");                           //db 1fh
-    _STOP_("db 5eh");                           //db 5eh
-    _STOP_("db 5fh");                           //db 5fh
-    _STOP_("db 5ah");                           //db 5ah
-    _STOP_("db 59h");                           //db 59h
-    _STOP_("db 5bh");                           //db 5bh
-    _STOP_("db 58h");                           //db 58h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db e0h");                           //db e0h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db b1h");                           //db b1h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 70h");                           //db 70h
-    _STOP_("db d2h");                           //db d2h
-    _STOP_("db ech");                           //db ech
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db 07h");                           //db 07h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 08h");                           //db 08h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db dch");                           //db dch
-    _STOP_("db 88h");                           //db 88h
-    _STOP_("db 87h");                           //db 87h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db 8dh");                           //db 8dh
-    _STOP_("db 3ch");                           //db 3ch
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db d8h");                           //db d8h
-    _STOP_("db d1h");                           //db d1h
-    _STOP_("db e3h");                           //db e3h
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db 97h");                           //db 97h
-    _STOP_("db 16h");                           //db 16h
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db e9h");                           //db e9h
-    _STOP_("db 7eh");                           //db 7eh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db 24h");                           //db 24h
-    _STOP_("db fch");                           //db fch
-    _STOP_("db e6h");                           //db e6h
-    _STOP_("db 61h");                           //db 61h
-    _STOP_("db beh");                           //db beh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db b2h");                           //db b2h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db ebh");                           //db ebh
-    _STOP_("db bch");                           //db bch
-    _STOP_("db 8dh");                           //db 8dh
-    _STOP_("db 44h");                           //db 44h
-    _STOP_("db 02h");                           //db 02h
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 36h");                           //db 36h
-    _STOP_("db 0ah");                           //db 0ah
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db a2h");                           //db a2h
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 0ch");                           //db 0ch
-    _STOP_("db 0bh");                           //db 0bh
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 03h");                           //db 03h
-    _STOP_("db 8bh");                           //db 8bh
-    _STOP_("db 34h");                           //db 34h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db 46h");                           //db 46h
-    _STOP_("db c3h");                           //db c3h
     _STOP_("sp-trace-fail");                    //sub_164f endp_failed
-    _STOP_("continues");                        //sub_17eb proc near
+    _STOP_("continues");                        //sub_16e5 proc near
+}
+
+void sub_16e5()
+{
+    _push(_ax);                                 //push ax
+    _push(_bx);                                 //push bx
+    _push(_cx);                                 //push cx
+    _push(_dx);                                 //push dx
+    _push(_di);                                 //push di
+    _push(_si);                                 //push si
+    _push(_ds);                                 //push ds
+    _push(_es);                                 //push es
+    _push(_bp);                                 //push bp
+    _flags.direction = false;                   //cld
+    _ax = 0x168f;                               //mov ax, 0x168f
+    _ds = _ax;                                  //mov ds, ax
+    _si = memory16(_ds, 2823);                  //mov si, word ptr [0xb07]
+    if (_si < 0xfffffffe)                       //jc loc_1700
+        goto loc_1700;
+    goto loc_1783;                              //jmp loc_1783
+loc_1700:                                       //loc_1700:
+    if (!(memory(_cs, 0x16E4) & 0x02))          //jz loc_1783
+        goto loc_1783;
+    memory(_ds, 2432) -= 1;                     //dec byte ptr [0x980]
+    if (memory(_ds, 2432) != 0)                 //jnz loc_1716
+        goto loc_1716;
+    _al = memory(_ds, 0x981);                   //mov al, [0x981]
+    memory(_ds, 0x980) = _al;                   //mov [0x980], al
+    goto loc_1783;                              //jmp loc_1783
+loc_1716:                                       //loc_1716:
+    if (memory(_ds, 2825) != 0x02)              //jnz loc_172f
+        goto loc_172f;
+    if (memory(_ds, 2835) == 0x01)              //jz loc_172f
+        goto loc_172f;
+    _ax = 0x3a98;                               //mov ax, 0x3a98
+    _out(66, _al);                              //out 0x42, al
+    _al = _ah;                                  //mov al, ah
+    _out(66, _al);                              //out 0x42, al
+    goto loc_172f;                              //jmp loc_172f
+loc_172f:                                       //loc_172f:
+    memory(_ds, 2825) -= 0x01;                  //sub byte ptr [0xb09], 0x1
+    if (_FIXME_)                                //ja loc_1783
+        goto loc_1783;
+loc_1736:                                       //loc_1736:
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _lodsb<MemData, DirForward>();              //lodsb
+    if (_al & 0x80)                             //jnz loc_1791
+        goto loc_1791;
+    _ah = _al;                                  //mov ah, al
+    _ah &= 0x0f;                                //and ah, 0xf
+    memory(_ds, 2830) = _ah;                    //mov byte ptr [0xb0e], ah
+    _cl = 0x04;                                 //mov cl, 0x4
+    _al >>= _cl;                                //shr al, cl
+    memory(_ds, 0xb0d) = _al;                   //mov [0xb0d], al
+    _al = 0x10;                                 //mov al, 0x10
+    _cl = memory(_ds, 2831);                    //mov cl, byte ptr [0xb0f]
+    _al >>= _cl;                                //shr al, cl
+    _bl = memory(_ds, 2830);                    //mov bl, byte ptr [0xb0e]
+    _bh = _bh ^ _bh;                            //xor bh, bh
+    _bx <<= 1;                                  //shl bx, 1
+    _ax = memory16(_ds, _bx + 2848);            //mov ax, word ptr [bx+0xb20]
+    _cl = memory(_ds, 2829);                    //mov cl, byte ptr [0xb0d]
+    _ax >>= _cl;                                //shr ax, cl
+    _out(66, _al);                              //out 0x42, al
+    _al = _ah;                                  //mov al, ah
+    _out(66, _al);                              //out 0x42, al
+    _al = 0x60;                                 //mov al, 0x60
+    _cl = memory(_ds, 2831);                    //mov cl, byte ptr [0xb0f]
+    if (_cl != 0x07)                            //jnz loc_177e
+        goto loc_177e;
+    _al = 0x40;                                 //mov al, 0x40
+    _cl = memory(_ds, 2834);                    //mov cl, byte ptr [0xb12]
+loc_177e:                                       //loc_177e:
+    _al >>= _cl;                                //shr al, cl
+    memory(_ds, 0xb09) = _al;                   //mov [0xb09], al
+loc_1783:                                       //loc_1783:
+    memory16(_ds, 2823) = _si;                  //mov word ptr [0xb07], si
+    _bp = _pop();                               //pop bp
+    _es = _pop();                               //pop es
+    _ds = _pop();                               //pop ds
+    _si = _pop();                               //pop si
+    _di = _pop();                               //pop di
+    _dx = _pop();                               //pop dx
+    _cx = _pop();                               //pop cx
+    _bx = _pop();                               //pop bx
+    _ax = _pop();                               //pop ax
+    return;                                     //ret
+loc_1791:                                       //loc_1791:
+    _ah = _al;                                  //mov ah, al
+    _al &= 0x0f;                                //and al, 0xf
+    _cl = 0x04;                                 //mov cl, 0x4
+    _ah &= 0x70;                                //and ah, 0x70
+    _ah >>= _cl;                                //shr ah, cl
+    if (_ah == 0x07)                            //jz loc_17a9
+        goto loc_17a9;
+    _bl = _ah;                                  //mov bl, ah
+    memory(_ds, _bx + 2831) = _al;              //mov byte ptr [bx+0xb0f], al
+    goto loc_1736;                              //jmp loc_1736
+loc_17a9:                                       //loc_17a9:
+    if (_al == 0x0f)                            //jz loc_17b8
+        goto loc_17b8;
+    _bl = _al;                                  //mov bl, al
+    _bx <<= 1;                                  //shl bx, 1
+    _indirectCall(memory16(_ds, _bx + 2838));   //call word ptr [bx+0xb16]
+    goto loc_1736;                              //jmp loc_1736
+loc_17b8:                                       //loc_17b8:
+    _in(_al, 97);                               //in al, 0x61
+    _al &= 0xfc;                                //and al, 0xfc
+    _out(97, _al);                              //out 0x61, al
+    _si = 0xfffe;                               //mov si, 0xfffe
+    memory(_ds, 2482) -= 1;                     //dec byte ptr [0x9b2]
+    goto loc_1783;                              //jmp loc_1783
+}
+
+void sub_17c7()
+{
+    _lea(_ax, _ds, _si + 2);                    //lea ax, [si+0x2]
+    memory16(_ds, 0x0b0a) = _ax;                //mov [0xb0a], ax
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+}
+
+void sub_17d0()
+{
+    _si = memory16(_ds, 2826);                  //mov si, word ptr [0xb0a]
+}
+
+void sub_17d5()
+{
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+}
+
+void sub_17d8()
+{
+    _al = memory(_ds, _si);                     //mov al, byte ptr [si]
+    memory(_ds, 0xb0c) = _al;                   //mov [0xb0c], al
+    _si += 1;                                   //inc si
+}
+
+void sub_17df()
+{
+    memory(_ds, 2828) -= 1;                     //dec byte ptr [0xb0c]
+    if (memory(_ds, 2828) == 0)                 //jz loc_17e8
+        goto loc_17e8;
+    _si = memory16(_ds, _si);                   //mov si, word ptr [si]
+    return;                                     //ret
+loc_17e8:                                       //loc_17e8:
+    _si += 1;                                   //inc si
+    _si += 1;                                   //inc si
 }
 
 void sub_17eb()
 {
 loc_17eb:
-    WORD _cs = _seg001;
-
     _al = memory(_cs, 0x16E4);                  //mov al, cs:[0x16e4]
     _al &= 0x03;                                //and al, 0x3
     if (_al != 0x03)                            //jnz loc_17fc
@@ -4703,8 +3757,6 @@ loc_1a61:                                       //loc_1a61:
 
 void sub_1a8d()
 {
-    WORD _cs = _seg001;
-
     sub_3160();                                 //call sub_3160
     if (memory(_cs, 0x1) != 0x05)               //jnz loc_1ae4
         goto loc_1ae4;
@@ -4896,8 +3948,6 @@ void sub_1c09()
 
 void sub_1c1a()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_1c2f
         goto loc_1c2f;
     _push(_dx);                                 //push dx
@@ -4915,8 +3965,6 @@ loc_1c2f:                                       //loc_1c2f:
 
 void sub_1c30()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_1c45
         goto loc_1c45;
     _push(_dx);                                 //push dx
@@ -4963,8 +4011,6 @@ loc_1c45:                                       //loc_1c45:
 
 void sub_1c61()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -5177,17 +4223,17 @@ loc_1e74:                                       //loc_1e74:
     _cx >>= 1;                                  //shr cx, 1
 loc_1e76:                                       //loc_1e76:
     _ax = memory16(_ds, _bp + _si + 0);         //mov ax, word ptr ds:[bp+si]
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     memory(_es, _di) &= _al;                    //and byte ptr es:[di], al
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     memory(_es, _di) |= _al;                    //or byte ptr es:[di], al
     _di -= 1;                                   //dec di
     _al = _ah;                                  //mov al, ah
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     memory(_es, _di) &= _al;                    //and byte ptr es:[di], al
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     memory(_es, _di) |= _al;                    //or byte ptr es:[di], al
     _di -= 1;                                   //dec di
     if (--_cx)                                  //loop loc_1e76
@@ -5317,23 +4363,23 @@ loc_1fa1:                                       //loc_1fa1:
     _cbw();                                     //cbw
     _si += _ax;                                 //add si, ax
     _al = memory(_ds, _bp + _si + -1);          //mov al, byte ptr ds:[bp+si-0x1]
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dh = _al;                                  //mov dh, al
     _al = memory(_ds, _si - 1);                 //mov al, byte ptr [si-0x1]
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     memory(_cs, 0x1C4D) += 1;                   //inc byte ptr cs:[0x1c4d]
     goto loc_1ffa;                              //jmp loc_1ffa
 loc_1fd7:                                       //loc_1fd7:
     _al = memory(_ds, _bp + _si + 0);           //mov al, byte ptr ds:[bp+si]
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _ah = _al;                                  //mov ah, al
     _al &= _ch;                                 //and al, ch
     _al |= _dh;                                 //or al, dh
     _rol(_al, _cl);                             //rol al, cl
     memory(_es, _di) &= _al;                    //and byte ptr es:[di], al
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dh = _al;                                  //mov dh, al
     _al &= _ch;                                 //and al, ch
     _al |= _dl;                                 //or al, dl
@@ -5421,7 +4467,7 @@ loc_20b5:                                       //loc_20b5:
     _ch = _ch ^ _ch;                            //xor ch, ch
 loc_20b7:                                       //loc_20b7:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _al = (~_al);                               //not al
     _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
     _di += 1;                                   //inc di
@@ -5459,7 +4505,7 @@ loc_20ee:                                       //loc_20ee:
     _dx = _pop();                               //pop dx
 loc_2111:                                       //loc_2111:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _xchg(memory(_es, _di), _al);               //xchg byte ptr es:[di], al
     _di += 1;                                   //inc di
     if (--_cx)                                  //loop loc_2111
@@ -5480,7 +4526,7 @@ loc_2111:                                       //loc_2111:
     goto loc_24a9;                              //jmp loc_24a9
 loc_213c:                                       //loc_213c:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
@@ -5531,7 +4577,7 @@ loc_2190:                                       //loc_2190:
     _ax = _ax ^ _ax;                            //xor ax, ax
 loc_21b5:                                       //loc_21b5:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
@@ -5570,13 +4616,13 @@ loc_21f6:                                       //loc_21f6:
     _ax -= 1;                                   //dec ax
     _si -= _ax;                                 //sub si, ax
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _cx += 1;                                   //inc cx
     goto loc_2219;                              //jmp loc_2219
 loc_220a:                                       //loc_220a:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
@@ -5636,13 +4682,13 @@ loc_228d:                                       //loc_228d:
     _ax -= 1;                                   //dec ax
     _si -= _ax;                                 //sub si, ax
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _cx += 1;                                   //inc cx
     goto loc_22ae;                              //jmp loc_22ae
 loc_22a1:                                       //loc_22a1:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _dl = _al;                                  //mov dl, al
     _al &= _ch;                                 //and al, ch
     _al |= _ah;                                 //or al, ah
@@ -5918,8 +4964,6 @@ loc_24bf:                                       //loc_24bf:
 
 void sub_24c9()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -6353,8 +5397,6 @@ loc_27b0:                                       //loc_27b0:
 
 void sub_27df()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) >= 0x03)               //jnc loc_27ec
         goto loc_27ec;
     sub_3160();                                 //call sub_3160
@@ -6386,8 +5428,6 @@ loc_2810:                                       //loc_2810:
 
 void sub_2811()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) >= 0x03)               //jnc loc_281d
         goto loc_281d;
     sub_3160();                                 //call sub_3160
@@ -6651,8 +5691,6 @@ loc_2a08:                                       //loc_2a08:
 
 void sub_2a0d()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_cx);                                 //push cx
     _push(_dx);                                 //push dx
@@ -6679,7 +5717,7 @@ loc_2a36:                                       //loc_2a36:
 loc_2a40:                                       //loc_2a40:
     _lodsb<MemData, DirForward>();              //lodsb
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_es();                                 //xlat es
     memory(_es, 25845) |= _al;                  //or byte ptr es:[0x64f5], al
     _al = _ah;                                  //mov al, ah
     _push(_es);                                 //push es
@@ -6719,7 +5757,7 @@ loc_2a82:                                       //loc_2a82:
 loc_2a8c:                                       //loc_2a8c:
     _lodsb<MemData, DirForward>();              //lodsb
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_es();                                 //xlat es
     memory(_es, 25845) |= _al;                  //or byte ptr es:[0x64f5], al
     _al = _ah;                                  //mov al, ah
     sub_2e53();                                 //call sub_2e53
@@ -6743,8 +5781,6 @@ loc_2aa6:                                       //loc_2aa6:
 
 void sub_2ab1()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_2b0d
         goto loc_2b0d;
     _push(_ds);                                 //push ds
@@ -6771,7 +5807,7 @@ loc_2ae0:                                       //loc_2ae0:
 loc_2aea:                                       //loc_2aea:
     _lodsb<MemData, DirForward>();              //lodsb
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_es();                                 //xlat es
     memory(_es, 25845) |= _al;                  //or byte ptr es:[0x64f5], al
     _al = _ah;                                  //mov al, ah
     _push(_es);                                 //push es
@@ -6818,7 +5854,7 @@ loc_2b3a:                                       //loc_2b3a:
 loc_2b44:                                       //loc_2b44:
     _lodsb<MemData, DirForward>();              //lodsb
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_es();                                 //xlat es
     memory(_es, 25845) |= _al;                  //or byte ptr es:[0x64f5], al
     _al = _ah;                                  //mov al, ah
     sub_2e53();                                 //call sub_2e53
@@ -6839,8 +5875,6 @@ loc_2b44:                                       //loc_2b44:
 
 void sub_2b67()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_2b88
         goto loc_2b88;
     _ax <<= 1;                                  //shl ax, 1
@@ -6872,8 +5906,6 @@ loc_2b9f:                                       //loc_2b9f:
 
 void sub_2ba2()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -6910,7 +5942,7 @@ loc_2be9:                                       //loc_2be9:
     memory(_ds, 25845) = 0x01;                  //mov byte ptr [0x64f5], 0x1
     _al = _bl;                                  //mov al, bl
     _bx = memory16(_ds, 25846);                 //mov bx, word ptr [0x64f6]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _bh = _bh ^ _bh;                            //xor bh, bh
     if (_di < 0x3c00)                           //jc loc_2c0b
         goto loc_2c0b;
@@ -6946,7 +5978,7 @@ loc_2c38:                                       //loc_2c38:
     memory(_ds, 25845) = 0x01;                  //mov byte ptr [0x64f5], 0x1
     _al = _bl;                                  //mov al, bl
     _bx = memory16(_ds, 25846);                 //mov bx, word ptr [0x64f6]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _bh = _bh ^ _bh;                            //xor bh, bh
     if (_di < 0x5c80)                           //jc loc_2c5a
         goto loc_2c5a;
@@ -6987,8 +6019,6 @@ loc_2c7d:                                       //loc_2c7d:
 
 void sub_2c87()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_2cfb
         goto loc_2cfb;
     _push(_bx);                                 //push bx
@@ -7111,8 +6141,6 @@ loc_2d5c:                                       //loc_2d5c:
 
 void sub_2d62()
 {
-    WORD _cs = _seg001;
-
     _push(_ds);                                 //push ds
     _push(_es);                                 //push es
     _ax = 0x168f;                               //mov ax, 0x168f
@@ -7175,8 +6203,6 @@ loc_2dca:                                       //loc_2dca:
 
 void sub_2ddc()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc sub_2e53
         { sub_2e53(); return; }
     _di += 0x3e80;                              //add di, 0x3e80
@@ -7264,8 +6290,6 @@ void sub_2df5()
 
 void sub_2e53()
 {
-    WORD _cs = _seg001;
-
     _push(_si);                                 //push si
     _push(_ds);                                 //push ds
     _push(_bp);                                 //push bp
@@ -7490,8 +6514,6 @@ loc_2ffd:                                       //loc_2ffd:
 
 void sub_3009()
 {
-    WORD _cs = _seg001;
-
     _bl = memory(_ds, 21072);                   //mov bl, byte ptr [0x5250]
     _bh = memory(_ds, _bx + 20640);             //mov bh, byte ptr [bx+0x50a0]
     memory(_ds, 20619) = _bh;                   //mov byte ptr [0x508b], bh
@@ -7547,8 +6569,6 @@ loc_3067:                                       //loc_3067:
 
 void sub_307d()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     if (memory(_cs, 0x1) == 0xff)               //jz loc_308d
@@ -7658,8 +6678,6 @@ loc_315e:                                       //loc_315e:
 
 void sub_3160()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -7767,8 +6785,6 @@ loc_3239:                                       //loc_3239:
 
 void sub_3243()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_dx);                                 //push dx
     if (memory(_cs, 0x1) == 0x00)               //jz loc_325f
@@ -7803,8 +6819,6 @@ loc_3269:                                       //loc_3269:
 
 void sub_3271()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_32a4
         goto loc_32a4;
     sub_10d3();                                 //call sub_10d3
@@ -7862,8 +6876,6 @@ loc_32be:                                       //loc_32be:
 
 void sub_32dc()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_32f3
         goto loc_32f3;
     _push(_ax);                                 //push ax
@@ -7881,8 +6893,6 @@ loc_32f3:                                       //loc_32f3:
 
 void sub_32f4()
 {
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x1) < 0x03)                //jc loc_330d
         goto loc_330d;
     _push(_ax);                                 //push ax
@@ -9012,7 +8022,7 @@ loc_3a9a:                                       //loc_3a9a:
     _di += _ax;                                 //add di, ax
     _bx = 0x72a3;                               //mov bx, 0x72a3
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al != 0)                               //jnz loc_3ade
         goto loc_3ade;
@@ -9036,7 +8046,7 @@ loc_3ac9:                                       //loc_3ac9:
     if (_ax >= 0x0100)                          //jnc loc_3ade
         goto loc_3ade;
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_3ae8
         goto loc_3ae8;
@@ -9104,7 +8114,7 @@ loc_3b25:                                       //loc_3b25:
     _di -= _ax;                                 //sub di, ax
     _bx = 0x74a3;                               //mov bx, 0x74a3
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x7f;                                //and al, 0x7f
     if (_al != 0)                               //jnz loc_3b78
         goto loc_3b78;
@@ -9117,7 +8127,7 @@ loc_3b25:                                       //loc_3b25:
     goto loc_3d5a;                              //jmp loc_3d5a
 loc_3b6b:                                       //loc_3b6b:
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x7f;                                //and al, 0x7f
     if (_al != 0)                               //jnz loc_3b78
         goto loc_3b78;
@@ -9153,10 +8163,10 @@ loc_3bb8:                                       //loc_3bb8:
     _bx = 0x72a3;                               //mov bx, 0x72a3
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _xchg(_ah, _al);                            //xchg ah, al
     _bx = 0x73a3;                               //mov bx, 0x73a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if ((short)memory16(_ds, _si + 2) > (short)0x0006)
         goto loc_3bd1;
     _al = _al ^ _al;                            //xor al, al
@@ -9214,10 +8224,10 @@ loc_3c35:                                       //loc_3c35:
     _push(_bx);                                 //push bx
     _bx = 0x72a3;                               //mov bx, 0x72a3
     _ah = _al;                                  //mov ah, al
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _xchg(_ah, _al);                            //xchg ah, al
     _bx = _pop();                               //pop bx
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if (_al == 0x09)                            //jz loc_3bfe
         goto loc_3bfe;
     if (_al != 0x08)                            //jnz loc_3c5d
@@ -10293,7 +9303,7 @@ loc_4585:                                       //loc_4585:
     _lea(_di, _ds, _bx + 256);                  //lea di, [bx+0x100]
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
     _bx = 0x73a3;                               //mov bx, 0x73a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _ah = _ah ^ _ah;                            //xor ah, ah
     _bx = _ax;                                  //mov bx, ax
     _bx <<= 1;                                  //shl bx, 1
@@ -10310,10 +9320,10 @@ loc_45a5:                                       //loc_45a5:
     _ah = memory(_es, _bx);                     //mov ah, byte ptr es:[bx]
     _al = memory(_es, _bx + 256);               //mov al, byte ptr es:[bx+0x100]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _xchg(_al, _ah);                            //xchg al, ah
     _bx = 0x74a3;                               //mov bx, 0x74a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x7f;                                //and al, 0x7f
     _bl = _al;                                  //mov bl, al
     _bh = _bh ^ _bh;                            //xor bh, bh
@@ -10335,7 +9345,7 @@ loc_45ef:                                       //loc_45ef:
     _push(_di);                                 //push di
     _di += _dx;                                 //add di, dx
     _al = memory(_es, _di + 256);               //mov al, byte ptr es:[di+0x100]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al |= _al;                                 //or al, al
     if (_al == 0)                               //jz loc_460c
         goto loc_460c;
@@ -10343,7 +9353,7 @@ loc_45ef:                                       //loc_45ef:
     _di += _dx;                                 //add di, dx
     _di += _dx;                                 //add di, dx
     _al = memory(_es, _di + 256);               //mov al, byte ptr es:[di+0x100]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al |= _al;                                 //or al, al
     if (_al != 0)                               //jnz loc_4612
         goto loc_4612;
@@ -10366,7 +9376,7 @@ void sub_4617()
     _di = _bx;                                  //mov di, bx
     _al = memory(_es, _bx);                     //mov al, byte ptr es:[bx]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _ah = _ah ^ _ah;                            //xor ah, ah
     _bx = _ax;                                  //mov bx, ax
     _bx <<= 1;                                  //shl bx, 1
@@ -10384,7 +9394,7 @@ void sub_4631()
     _di = _bx;                                  //mov di, bx
     _al = memory(_es, _bx);                     //mov al, byte ptr es:[bx]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if (_al == 0x04)                            //jz loc_4645
         goto loc_4645;
     if (_al != 0x02)                            //jnz loc_464f
@@ -10692,17 +9702,17 @@ loc_485c:                                       //loc_485c:
     _di += _ax;                                 //add di, ax
     _es = memory16(_ds, 21100);                 //mov es, word ptr [0x526c]
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if (_al == 0x06)                            //jz loc_48bc
         goto loc_48bc;
     _dx = 0xfff0;                               //mov dx, 0xfff0
     _al = memory(_es, _di + -1);                //mov al, byte ptr es:[di-0x1]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if (_al == 0x06)                            //jz loc_48b8
         goto loc_48b8;
     _dx = -_dx;                                 //neg dx
     _al = memory(_es, _di + 1);                 //mov al, byte ptr es:[di+0x1]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     if (_al == 0x06)                            //jz loc_48b8
         goto loc_48b8;
     _dx = _dx ^ _dx;                            //xor dx, dx
@@ -10803,13 +9813,13 @@ void sub_495b()
     _di += _ax;                                 //add di, ax
     _ax = memory16(_es, _di);                   //mov ax, word ptr es:[di]
     _bx = 0x73a3;                               //mov bx, 0x73a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x07;                                //and al, 0x7
     if (_al == 0)                               //jz loc_49af
         goto loc_49af;
     _dx = 0xffd0;                               //mov dx, 0xffd0
     _al = _ah;                                  //mov al, ah
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x07;                                //and al, 0x7
     if (_al == 0)                               //jz loc_49a8
         goto loc_49a8;
@@ -11157,33 +10167,17 @@ loc_4c37:                                       //loc_4c37:
     _dx = _pop();                               //pop dx
     _bx = _pop();                               //pop bx
     _ax = _pop();                               //pop ax
-    return;                                     //ret
-    _STOP_("db bdh");                           //db bdh
-    _STOP_("db c0h");                           //db c0h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db e8h");                           //db e8h
-    _STOP_("db 7dh");                           //db 7dh
-    _STOP_("db ffh");                           //db ffh
-    _STOP_("db b0h");                           //db b0h
-    _STOP_("db 0eh");                           //db 0eh
-    _STOP_("db 8ah");                           //db 8ah
-    _STOP_("db 26h");                           //db 26h
-    _STOP_("db 85h");                           //db 85h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db e4h");                           //db e4h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db a3h");                           //db a3h
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 52h");                           //db 52h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 0fh");                           //db 0fh
-    _STOP_("db 65h");                           //db 65h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("sp-trace-fail");                    //sub_4c2a endp_failed
-    _STOP_("continues");                        //sub_4c65 proc near
+}
+
+void sub_4c4d()
+{
+    _bp = 0x00c0;                               //mov bp, 0xc0
+    sub_4bd0();                                 //call sub_4bd0
+    _al = 0x0e;                                 //mov al, 0xe
+    _ah = memory(_ds, 21125);                   //mov ah, byte ptr [0x5285]
+    _ah &= 0x80;                                //and ah, 0x80
+    memory16(_ds, 0x5280) = _ax;                //mov [0x5280], ax
+    memory(_ds, 25871) = 0x06;                  //mov byte ptr [0x650f], 0x6
 }
 
 void sub_4c65()
@@ -11218,19 +10212,7 @@ loc_4ca1:                                       //loc_4ca1:
 
 void sub_4ca2()
 {
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("sp-trace-fail");                    //sub_4ca2 endp_failed
-    _STOP_("continues");                        //sub_4ca3 proc near
-}
-
-void sub_4ca3()
-{
-    WORD _cs = _seg001;
-
-    _push(_cs);                                 //push cs
-    _bx += _ax;                                 //add bx, ax
-    _STOP_("sp-trace-fail");                    //sub_4ca3 endp_failed
-    _STOP_("continues");                        //sub_4ca8 proc near
+    memory(_ds, 25894) |= 0x01;                 //or byte ptr [0x6526], 0x1
 }
 
 void sub_4ca8()
@@ -11290,8 +10272,6 @@ void sub_4d0c()
 
 void sub_4d10()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -11537,13 +10517,13 @@ loc_4ea5:                                       //loc_4ea5:
     _es = memory16(_ds, 21100);                 //mov es, word ptr [0x526c]
     _bx = 0x72a3;                               //mov bx, 0x72a3
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_4f00
         goto loc_4f00;
     _dx = 0x0010;                               //mov dx, 0x10
     _al = memory(_es, _di + -1);                //mov al, byte ptr es:[di-0x1]
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al != 0)                               //jnz loc_4efa
         goto loc_4efa;
@@ -11984,8 +10964,6 @@ loc_5244:                                       //loc_5244:
 
 void sub_5252()
 {
-    WORD _cs = _seg001;
-
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
     if (_al == 0x05)                            //jz loc_5260
         goto loc_5260;
@@ -12067,8 +11045,6 @@ loc_52cd:                                       //loc_52cd:
 
 void sub_52ec()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
@@ -12107,8 +11083,6 @@ loc_5315:                                       //loc_5315:
 
 void sub_5338()
 {
-    WORD _cs = _seg001;
-
     _ax = 0x168f;                               //mov ax, 0x168f
     _ds = _ax;                                  //mov ds, ax
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
@@ -12182,8 +11156,6 @@ loc_53be:                                       //loc_53be:
 
 void sub_53c8()
 {
-    WORD _cs = _seg001;
-
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
     if (_al == 0x05)                            //jz loc_53d9
         goto loc_53d9;
@@ -12286,8 +11258,6 @@ loc_5459:                                       //loc_5459:
 
 void sub_5477()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -12345,7 +11315,7 @@ loc_54d8:                                       //loc_54d8:
     _cl = 0x04;                                 //mov cl, 0x4
 loc_54dc:                                       //loc_54dc:
     _lodsb<MemData, DirForward>();              //lodsb
-    _xlat();                                    //xlat
+    _xlat_cs();                                 //xlat cs
     _flags.carry = !!(_al & 0x80);              //shl al, 1
     _al <<= 1;
     _rcl(_ah, 1);                               //rcl ah, 1
@@ -12420,8 +11390,6 @@ loc_5529:                                       //loc_5529:
 
 void sub_5557()
 {
-    WORD _cs = _seg001;
-
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
     if (_al == 0x05)                            //jz loc_5566
         goto loc_5566;
@@ -12553,8 +11521,6 @@ void sub_562d()
 void sub_5645()
 {
 loc_5645:
-    WORD _cs = _seg001;
-
     if (memory(_cs, 0x3) == 0x00)               //jz loc_56cb
         goto loc_56cb;
     _al = memory(_cs, 0x1);                     //mov al, cs:[0x1]
@@ -12977,26 +11943,16 @@ void sub_59a1()
     memory(_ds, 1049) = 0x10;                   //mov byte ptr [0x419], 0x10
     memory(_ds, 1050) += 1;                     //inc byte ptr [0x41a]
 loc_59ba:                                       //loc_59ba:
-    return;                                     //ret
-    _STOP_("db 80h");                           //db 80h
-    _STOP_("db 3eh");                           //db 3eh
-    _STOP_("db 1bh");                           //db 1bh
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db 09h");                           //db 09h
-    _STOP_("db 74h");                           //db 74h
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db feh");                           //db feh
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 1bh");                           //db 1bh
-    _STOP_("db 04h");                           //db 04h
-    _STOP_("db c6h");                           //db c6h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 06h");                           //db 06h
-    _STOP_("db 65h");                           //db 65h
-    _STOP_("db 00h");                           //db 00h
-    _STOP_("db c3h");                           //db c3h
-    _STOP_("sp-trace-fail");                    //sub_59a1 endp_failed
-    _STOP_("continues");                        //sub_59cc proc near
+    return;
+}
+
+void sub_59bb()
+{
+    if (memory(_ds, 1051) == 0x09)              //jz loc_59c6
+        goto loc_59c6;
+    memory(_ds, 1051) += 1;                     //inc byte ptr [0x41b]
+loc_59c6:                                       //loc_59c6:
+    memory(_ds, 25862) = 0x00;                  //mov byte ptr [0x6506], 0x0
 }
 
 void sub_59cc()
@@ -13436,7 +12392,7 @@ loc_5d17:                                       //loc_5d17:
     memory(_ds, _si + 2) &= 0xf0;               //and byte ptr [si+0x2], 0xf0
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_5d2b
         goto loc_5d2b;
@@ -13597,7 +12553,7 @@ loc_5e5a:                                       //loc_5e5a:
     sub_5ee4();                                 //call sub_5ee4
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_5e71
         goto loc_5e71;
@@ -13736,7 +12692,7 @@ loc_5f5f:                                       //loc_5f5f:
     sub_5ee4();                                 //call sub_5ee4
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_5f76
         goto loc_5f76;
@@ -13864,7 +12820,7 @@ loc_606e:                                       //loc_606e:
     sub_5ee4();                                 //call sub_5ee4
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_608a
         goto loc_608a;
@@ -13973,7 +12929,7 @@ loc_614a:                                       //loc_614a:
     sub_5ee4();                                 //call sub_5ee4
     _al = memory(_es, _di + 65280);             //mov al, byte ptr es:[di+0xff00]
     _bx = 0x72a3;                               //mov bx, 0x72a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
     _al &= 0x01;                                //and al, 0x1
     if (_al == 0)                               //jz loc_6166
         goto loc_6166;
@@ -14533,13 +13489,11 @@ void sub_6567()
     _es = memory16(_ds, 21100);                 //mov es, word ptr [0x526c]
     _al = memory(_es, _di);                     //mov al, byte ptr es:[di]
     _bx = 0x73a3;                               //mov bx, 0x73a3
-    _xlat();                                    //xlat
+    _xlat_ds();                                 //xlat ds
 }
 
 void sub_6582()
 {
-    WORD _cs = _seg001;
-
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
     _push(_si);                                 //push si
@@ -14574,8 +13528,6 @@ loc_65ad:                                       //loc_65ad:
 
 void sub_65be()
 {
-    WORD _cs = _seg001;
-
     _push(_ax);                                 //push ax
     _push(_bx);                                 //push bx
     _push(_cx);                                 //push cx
@@ -14668,6 +13620,129 @@ loc_6615:                                       //loc_6615:
     _cx = _pop();                               //pop cx
     _bx = _pop();                               //pop bx
     _ax = _pop();                               //pop ax
+    return;                                     //ret
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db aah");                           //db aah
+    _STOP_("db ffh");                           //db ffh
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 55h");                           //db 55h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db c0h");                           //db c0h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db 00h");                           //db 00h
+    _STOP_("db c0h");                           //db c0h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
+    _STOP_("db 80h");                           //db 80h
 }
 
 

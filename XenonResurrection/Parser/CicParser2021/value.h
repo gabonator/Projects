@@ -1482,6 +1482,14 @@ public:
             return;
         }
 
+        if ( CUtils::match("^byte ptr cs:\\[bx\\]$", value.c_str(), matches) )
+        {
+            m_eRegLength = r8;
+            m_eType = cs_ptr_bx;
+            m_nValue = 0;
+            return;
+        }
+
         if ( CUtils::match("^byte ptr cs:\\[(.*)\\]$", value.c_str(), matches) )
         {
             m_eRegLength = r8;

@@ -69,6 +69,7 @@ public:
     vector<string> mNewArguments;
     string mDefaultMemory{"MemAuto"};
     string mDefaultDirection{"DirAuto"};
+    bool mImportCs{true};
 
     void addSegmentInfo(string name, int begin, int end, int base)
     {
@@ -138,6 +139,10 @@ public:
         _ASSERT(0);
         return ofs;
     }
+    bool importCs()
+    {
+        return mImportCs;
+    }
 
 };
 /*
@@ -169,6 +174,11 @@ bool _ReturnsCarry(string name)
 bool _ReturnsZero(string name)
 {
     return custom.isReturningZero(name);
+}
+
+bool _ImportCs()
+{
+    return custom.importCs();
 }
 
 int FixPtr(int ofs)
@@ -474,7 +484,7 @@ bool doExport(ostream& output, std::vector<string>& flist)
             }
         }
                 
-        if (usingCs)
+        if (usingCs && _ImportCs())
         {
             int nBegin = e.FindLabel(sp.m_arrCode, testLabel);
 
@@ -586,6 +596,7 @@ void doConfig(const string& jsonFile)
     {
         custom.mDefaultMemory = json["defaults"]["memory"].GetString();
         custom.mDefaultDirection = json["defaults"]["direction"].GetString();
+        custom.mImportCs = json["defaults"]["importCs"].GetNumber() != 0;
     }
 }
 
