@@ -29,12 +29,6 @@ var _datab = new ArrayBuffer(0x10000*20);
 var memory = new Uint8Array(_datab, 0, 0x10000*20);
 var memorys = new Int8Array(_datab, 0, 0x10000*20);
 
-//var _video = new Uint8Array(0x12000);
-
-var _stackb = new ArrayBuffer(0x100*2);
-var _stack = new Uint16Array(_stackb, 0, 0x100);
-var _stacks = new Int16Array(_stackb, 0, 0x100);
-
 var r0 = new ArrayBuffer(16);
 var r16 = new Uint16Array(r0, 0, 8);
 var r16s = new Int16Array(r0, 0, 8);
@@ -57,7 +51,7 @@ flags = {carry:0, direction:0, zero:0};
     ss = 0x01ed-0x087c+0x168f;
     bp = 0x091c;
     es = ds;
-
+    sp = 64;
     memory[ds*16 + 0x0080] = 0;
     memory[ds*16 + 0x0081] = 0x0d;
 
@@ -100,10 +94,10 @@ if(1)
   }, 50);
 } else{
   sequence.next();
-  sequence.next();
-  sequence.next();
-  sequence.next();
-  sequence.next();
+//  sequence.next();
+//  sequence.next();
+//  sequence.next();
+//  sequence.next();
   display();
 }
 
@@ -112,34 +106,29 @@ function assert(x)
   if (!x) 
     throw new Error("assertion failed");
 }
-
-var _k = 0;
     document.onkeydown = function(evt) {
         evt = evt || window.event;
+        var p = 1;
         switch (evt.keyCode)
         {
-          case 65: memory[_dseg*16+0x9191] -= 0x1; break;
-          case 38: _k |= 1; break;  // up
-          case 40: _k |= 2; break;  // down
-          case 37: _k |= 4; break; // left
-          case 39: _k |= 8; break; // right
-          case 32: _k |= 0x80;
-           if (!(memory[_dseg*16+0x8f59] & 0x80))
-                memory[_dseg*16+0x8F5B] = 0xff;
+          case 38: memory[0x168f * 16 + 0x488] = p; break;  // up
+          case 40: memory[0x168f * 16 + 0x490] = p; break;  // down
+          case 37: memory[0x168f * 16 + 0x48b] = p; break; // left
+          case 39: memory[0x168f * 16 + 0x48b] = p; break; // right
+          case 32: memory[0x168f * 16 + 0x45c] = p; break;        
         }
-//        memory[_dseg*16+0x8f59] = _k;
     }
     document.onkeyup = function(evt) {
         evt = evt || window.event;
+        var p = 0;
         switch (evt.keyCode)
         {
-          case 38: _k &= ~1; break;
-          case 40: _k &= ~2; break;
-          case 37: _k &= ~4; break;
-          case 39: _k &= ~8; break;
-          case 32: _k &= ~0x80; break;
+          case 38: memory[0x168f * 16 + 0x488] = p; break;  // up
+          case 40: memory[0x168f * 16 + 0x490] = p; break;  // down
+          case 37: memory[0x168f * 16 + 0x48b] = p; break; // left
+          case 39: memory[0x168f * 16 + 0x48b] = p; break; // right
+          case 32: memory[0x168f * 16 + 0x45c] = p; break;        
         }
-//        memory[_dseg*16+0x8f59] = _k;
     }
 
 </script>

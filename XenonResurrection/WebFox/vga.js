@@ -6,6 +6,7 @@ class VGA
     this.palette = new Uint8Array(0x300);
     this.readcolorindex = 0;
     this.writecolorindex = 0;
+    this.xpal = new Uint8Array(0x300);
   }
 
   PortWrite16(port, data)
