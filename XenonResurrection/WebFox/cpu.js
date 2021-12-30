@@ -555,7 +555,7 @@ function sar16(r, c)
 
 function rol16(r, c)
 {
-    assert(c>=1 && c<8);
+    assert(c>=0 && c<8);
     r16[r] = (r16[r] << c) | (r16[r] >> (16-c));
 }
 

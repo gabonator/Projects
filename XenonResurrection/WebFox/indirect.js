@@ -48,5 +48,6 @@ function* indirectCall(ofs)
         case 0x158c: yield* sub_158c(); return;
         case 0x1591: yield* sub_1591(); return;
     }
-    throw "Indirect";
+    console.log("Unimplemented indirect call "+ofs.toString(16));
+    //throw "Indirect";
 }

@@ -6502,14 +6502,14 @@ function* sub_2994() {
     r16[ax] -= 1;
     if (r16s[ax] >= 0)
         {
-        sub_29b5(0x29f2);
+        yield* sub_29b5(0x29f2);
         return;
     }
     r16[ax] = 0x0013;
-    sub_29b5(0x29f2);
+    yield* sub_29b5(0x29f2);
 }
-function* sub_29b5() {
-    var pc = 0;
+function* sub_29b5(pc) {
+    if (!pc) pc = 0;
     do switch (pc) {
     case 0:
         if (pc == 0x29f2) {
@@ -11828,7 +11828,7 @@ function* sub_495b() {
         memory16set(ds*16+r16[di] + 6, r16[ax]);
         memory[ds*16+25873] = 0x04;
         r16[ax] = 0xffff;
-        _xchg(memory16get(ds*16+r16[di] + 4), r16[ax]);
+        var t = memory16get(ds*16+r16[di] + 4); memory16set(ds*16+r16[di] + 4, r16[ax]); r16[ax] = t; //_xchg(memory16get(ds*16+r16[di] + 4), r16[ax]);
         memory16set(ds*16+0x5292, r16[ax]);
         memory[ds*16+25865] = 0x10;
         memory[ds*16+25877] = 0x00;
@@ -11884,7 +11884,7 @@ function* sub_4ae9() {
             pc = 0x4aff;
             break;
         }
-        _xchg(memory16get(ds*16+21138), r16[ax]);
+        var t = memory16get(ds*16+21138); memory16set(ds*16+21138, r16[ax]); r16[ax] = t; //_xchg(memory16get(ds*16+21138), r16[ax]);
         memory16set(ds*16+r16[di] + 4, r16[ax]);
         r8[ah] &= 0x1f;
         r8[al] = 0x00;
