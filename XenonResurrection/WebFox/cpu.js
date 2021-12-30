@@ -232,6 +232,13 @@ function lodsb_data_forward()
   r8[al] = memory[ds*16 + r16[si]++];
 }
 
+function lodsb_data_backward()
+{
+  assert(ds < 0xa000 && ds*16 + r16[si] < memory.length && r16[si] <= 0xffff);
+  r8[al] = memory[ds*16 + r16[si]--];
+}
+
+
 function lodsw_data_forward()
 {
   assert(ds < 0xa000 && ds*16 + r16[si] < memory.length && r16[si] <= 0xffff);
@@ -452,7 +459,8 @@ function pop()
     sp += 2;
     return o;
 }
-function lea(r, s, o)
+
+function _lea(r, s, o)
 {
   r16[r] = o;
 }
@@ -557,6 +565,12 @@ function rol16(r, c)
     r8[r] = (r8[r] << c) | (r8[r] >> (8-c));
 } */
 
+function rol8(r, c)
+{
+    assert(c>=0 && c<8);
+    r8[r] = (r8[r] << c) | (r8[r] >> (8-c));
+}
+
 function ror8(r, c)
 {
     assert(c>=0 && c<8);
@@ -612,6 +626,15 @@ function _div16(v)
     var remain = r16[ax] % v;
     r16[ax] = result;
     r16[dx] = remain;
+}
+
+function _div8(v)
+{
+    assert(v != 0);
+    var result = Math.floor(r16[ax] / v);
+    var remain = r16[ax] % v;
+    r8[al] = result;
+    r8[ah] = remain;
 }
 
 /*
@@ -695,6 +718,12 @@ function memoryVideoOr(seg, ofs, v)
     video.write(seg*16+ofs, video.read(seg*16+ofs) | v);
 }
 
+function memoryVideoAdd(seg, ofs, v)
+{
+    video.write(seg*16+ofs, video.read(seg*16+ofs) + v);
+}
+
+
 function _repne_scasb()
 {
     assert(flags.direction == 0);
@@ -775,6 +804,15 @@ function _rcl8(r, c)
     flags.carry = newCarry;
 }
 
+function _rclm8(r, c)
+{
+    assert(c == 1);
+    var newCarry = !!(memory[r] & 0x80);
+    memory[r] <<= 1;
+    memory[r] |= flags.carry;
+    flags.carry = newCarry;
+}
+
 
 
 function _xlatcs()
@@ -791,3 +829,10 @@ function _xlates()
 {
     r8[al] = memory[es*16 + r16[bx] + r8[al]];
 }
+
+function _cmc()
+{
+    flags.carry = !flags.carry;
+}
+
+

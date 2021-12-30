@@ -19,6 +19,7 @@ background: #000000;
 </script>
 
 <script src="fox.js"></script>
+<script src="indirect.js"></script>
 <script src="fox.resources.js"></script>
 <script src="ega.js"></script>
 <script src="vga.js"></script>
@@ -91,7 +92,7 @@ if(1)
   {
     sequence.next();
     display();
-  }, 50);
+  }, 25);
 } else{
   sequence.next();
 //  sequence.next();
@@ -114,7 +115,7 @@ function assert(x)
           case 38: memory[0x168f * 16 + 0x488] = p; break;  // up
           case 40: memory[0x168f * 16 + 0x490] = p; break;  // down
           case 37: memory[0x168f * 16 + 0x48b] = p; break; // left
-          case 39: memory[0x168f * 16 + 0x48b] = p; break; // right
+          case 39: memory[0x168f * 16 + 0x48d] = p; break; // right
           case 32: memory[0x168f * 16 + 0x45c] = p; break;        
         }
     }
@@ -126,7 +127,7 @@ function assert(x)
           case 38: memory[0x168f * 16 + 0x488] = p; break;  // up
           case 40: memory[0x168f * 16 + 0x490] = p; break;  // down
           case 37: memory[0x168f * 16 + 0x48b] = p; break; // left
-          case 39: memory[0x168f * 16 + 0x48b] = p; break; // right
+          case 39: memory[0x168f * 16 + 0x48d] = p; break; // right
           case 32: memory[0x168f * 16 + 0x45c] = p; break;        
         }
     }

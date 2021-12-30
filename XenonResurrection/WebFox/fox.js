@@ -944,7 +944,7 @@ function* sub_05b7() {
     case 0:
         flags.carry = memory[ds*16+25862] < 0x01;
         memory[ds*16+25862] -= 0x01;
-        memory[ds*16+25862] = memory(ds, 25862) + 0x00 + flags.carry;
+        memory[ds*16+25862] = memory[ds*16 + 25862] + 0x00 + flags.carry;
         if (memory[ds*16+25862] == 0) {
             pc = 0x05c6;
             break;
@@ -2205,7 +2205,7 @@ function* sub_0d51() {
             pc = 0x0e1c;
             break;
         }
-        memory[cs*16+0x16E4] = memory(cs, 0x16E4) ^ 0x02;
+        memory[cs*16+0x16E4] = memory[cs*16 + 0x16E4] ^ 0x02;
         if (memory[cs*16+0x16E3] == 0x01) {
             pc = 0x0e1c;
             break;
@@ -2314,7 +2314,7 @@ function* sub_0e33() {
             pc = 0x0ede;
             break;
         }
-        memory[ds*16+528] = memory(ds, 528) ^ 0x01;
+        memory[ds*16+528] = memory[ds*16 + 528] ^ 0x01;
         yield* sub_0efe();
         if (!flags.carry) {
             pc = 0x0ede;
@@ -2460,7 +2460,7 @@ function* sub_0efe() {
             break;
         }
         memory16set(ds*16+1042, r16[bx]);
-        _lea(r16[di], ds, r16[bx] + r16[di] + 10);
+        _lea(di, ds, r16[bx] + r16[di] + 10);
         memory[ds*16+1041] = 0x08;
         r8[ah] = memory[ds*16+r16[di]];
         r16[bx] = r16[bx] ^ r16[bx];
@@ -3392,7 +3392,7 @@ function* sub_14e9() {
     } while (1);
 }
 function* sub_157c() {
-    _lea(r16[ax], ds, r16[si] + 2);
+    _lea(ax, ds, r16[si] + 2);
     memory16set(ds*16+r16[di] + 10, r16[ax]);
     r16[si] = memory16get(ds*16+r16[si]);
 }
@@ -3793,7 +3793,7 @@ function* sub_16e5() {
     } while (1);
 }
 function* sub_17c7() {
-    _lea(r16[ax], ds, r16[si] + 2);
+    _lea(ax, ds, r16[si] + 2);
     memory16set(ds*16+0x0b0a, r16[ax]);
     r16[si] = memory16get(ds*16+r16[si]);
 }
@@ -4507,7 +4507,6 @@ function* sub_1c61() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        clearimage();
         push(r16[ax]);
         push(r16[bx]);
         push(r16[cx]);
@@ -4569,7 +4568,7 @@ function* loc_1c7f() {
         r16[bx] = memory16get(ds*16+r16[si] + 4);
         flags.carry = !!(r16[bx] & 0x8000);
         r16[bx] <<= 1;
-        _rcl(memory[cs*16+0x1C48], 1);
+        _rclm8(cs*16+0x1C48, 1);
         r8[al] = 0x01;
         if (!(r8[bh] & 0x80)) {
             pc = 0x1caf;
@@ -4720,7 +4719,7 @@ function* loc_1c7f() {
         memory[cs*16+0x1C4A] -= r8[al];
         memory[cs*16+0x1C49] += 1;
         memory[cs*16+0x1C56] = r8[al];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = ~memory[cs*16+0x1C57];
     case 0x1de8:
         memory[ds*16+r16[si] + 5] |= 0x20;
         if (memory[cs*16+0x1] < 0x03) {
@@ -5135,7 +5134,7 @@ function* loc_203a() {
         r8[al] = 0x02;
         out8(r16[dx], r8[al]);
         r8[al] = memory[cs*16+0x1C5E];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = (~memory[cs*16+ 0x1C57]);
         r16[dx] = pop();
     case 0x20ee:
         push(r16[dx]);
@@ -5231,7 +5230,7 @@ function* loc_203a() {
         r8[al] = 0x02;
         out8(r16[dx], r8[al]);
         r8[al] = memory[cs*16+0x1C5E];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = (~memory[cs*16+ 0x1C57]);
         r16[dx] = pop();
     case 0x2190:
         push(r16[dx]);
@@ -5362,7 +5361,7 @@ function* loc_203a() {
         r8[al] = 0x02;
         out8(r16[dx], r8[al]);
         r8[al] = memory[cs*16+0x1C5E];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = (~memory[cs*16+ 0x1C57]);
         r16[dx] = pop();
     case 0x226a:
         push(r16[dx]);
@@ -5547,7 +5546,7 @@ function* loc_203a() {
         r8[al] = 0x02;
         out8(r16[dx], r8[al]);
         r8[al] = memory[cs*16+0x1C5E];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = (~memory[cs*16 + 0x1C57]);
     case 0x2398:
         memory[cs*16+0x1C4D] = r8[al];
         r16[dx] = 0x03c5;
@@ -5651,7 +5650,7 @@ function* loc_203a() {
         r8[al] = 0x02;
         out8(r16[dx], r8[al]);
         r8[al] = memory[cs*16+0x1C5E];
-        memory[cs*16+0x1C57] = (~memory(cs, 0x1C57));
+        memory[cs*16+0x1C57] = (~memory[cs*16+ 0x1C57]);
     case 0x2445:
         memory[cs*16+0x1C4D] = r8[al];
         r16[dx] = 0x03c5;
@@ -8786,7 +8785,7 @@ function* sub_372f() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        _lea(r16[di], ds, r16[si] + 18);
+        _lea(di, ds, r16[si] + 18);
         r8[cl] = 0x04;
         memory16set(ds*16+r16[si] + 4, r16[ax]);
         r16[ax] = memory16get(ds*16+0x5270);
@@ -10814,32 +10813,32 @@ function* sub_414b() {
         r16[dx] = 0x0001;
         flags.carry = memory[ds*16+25883] < r8[dl];
         memory[ds*16+25883] -= r8[dl];
-        memory[ds*16+25883] = memory(ds, 25883) + r8[dh] + flags.carry;
+        memory[ds*16+25883] = memory[ds*16 + 25883] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25878] < r8[dl];
         memory[ds*16+25878] -= r8[dl];
-        memory[ds*16+25878] = memory(ds, 25878) + r8[dh] + flags.carry;
+        memory[ds*16+25878] = memory[ds*16 + 25878] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25860] < r8[dl];
         memory[ds*16+25860] -= r8[dl];
-        memory[ds*16+25860] = memory(ds, 25860) + r8[dh] + flags.carry;
+        memory[ds*16+25860] = memory[ds*16 + 25860] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25872] < r8[dl];
         memory[ds*16+25872] -= r8[dl];
-        memory[ds*16+25872] = memory(ds, 25872) + r8[dh] + flags.carry;
+        memory[ds*16+25872] = memory[ds*16 + 25872] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25873] < r8[dl];
         memory[ds*16+25873] -= r8[dl];
-        memory[ds*16+25873] = memory(ds, 25873) + r8[dh] + flags.carry;
+        memory[ds*16+25873] = memory[ds*16 + 25873] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25874] < r8[dl];
         memory[ds*16+25874] -= r8[dl];
-        memory[ds*16+25874] = memory(ds, 25874) + r8[dh] + flags.carry;
+        memory[ds*16+25874] = memory[ds*16 + 25874] + r8[dh] + flags.carry;
         flags.carry = memory[ds*16+25876] < r8[dl];
         memory[ds*16+25876] -= r8[dl];
-        memory[ds*16+25876] = memory(ds, 25876) + r8[dh] + flags.carry;
+        memory[ds*16+25876] = memory[ds*16 + 25876] + r8[dh] + flags.carry;
         if (memory16get(ds*16+21130) != 0x0000) {
             pc = 0x4447;
             break;
         }
         flags.carry = memory[ds*16+25875] < r8[dl];
         memory[ds*16+25875] -= r8[dl];
-        memory[ds*16+25875] = memory(ds, 25875) + r8[dh] + flags.carry;
+        memory[ds*16+25875] = memory[ds*16 + 25875] + r8[dh] + flags.carry;
     case 0x4447:
         r16[ax] = memory16get(ds*16+0x5282);
         r16[ax] = r16[ax] | memory16get(ds*16+21130);
@@ -10851,7 +10850,7 @@ function* sub_414b() {
     case 0x4454:
         flags.carry = memory[ds*16+25861] < r8[dl];
         memory[ds*16+25861] -= r8[dl];
-        memory[ds*16+25861] = memory(ds, 25861) + r8[dh] + flags.carry;
+        memory[ds*16+25861] = memory[ds*16 + 25861] + r8[dh] + flags.carry;
         if (memory[ds*16+25861]==0) {
             pc = 0x447a;
             break;
@@ -11043,7 +11042,7 @@ function* sub_4561() {
             break;
         }
         push(r16[bx]);
-        _lea(r16[di], ds, r16[bx] + 256);
+        _lea(di, ds, r16[bx] + 256);
         r8[al] = memory[es*16+r16[di]];
         r16[bx] = 0x73a3;
         _xlatds();
@@ -12231,7 +12230,7 @@ function* sub_4cf0() {
 function* sub_4cf6() {
     flags.carry = memory[ds*16+25871] < 0x01;
     memory[ds*16+25871] -= 0x01;
-    memory[ds*16+25871] = memory(ds, 25871) + 0x00 + flags.carry;
+    memory[ds*16+25871] = memory[ds*16 + 25871] + 0x00 + flags.carry;
     memory[ds*16+25885] = 0x00;
     memory[ds*16+25894] = 0x02;
     return;
@@ -12291,7 +12290,7 @@ function* sub_4d10() {
         r8[al] = r8[ah];
         r8[ah] = r8[ah] ^ r8[ah];
         r8[dl] = 0x0c;
-        _div(r8[dl]);
+        _div8(r8[dl]);
         r8[al] = r8[bl];
         _mul8(r8[ah]);
         r16[ax] <<= 1;
@@ -12302,7 +12301,7 @@ function* sub_4d10() {
         r16[ax] = r16[di];
         r8[ah] = r8[ah] ^ r8[ah];
         r8[dl] = 0x14;
-        _div(r8[dl]);
+        _div8(r8[dl]);
         r8[al] = r8[ah];
         r8[ah] = r8[ah] ^ r8[ah];
         r8[cl] = r8[bh];
@@ -13551,10 +13550,10 @@ function* sub_5477() {
         _xlatcs();
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r8[ah], 1);
+        _rcl8(ah, 1);
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r8[ah], 1);
+        _rcl8(ah, 1);
         r8[cl] -= 1;
         if (r8[cl] != 0) {
             pc = 0x54dc;
@@ -14995,7 +14994,7 @@ function* sub_5cca() {
     case 0x5d4c:
         flags.carry = memory[ds*16+r16[si] + 20] < 0x01;
         memory[ds*16+r16[si] + 20] -= 0x01;
-        memory[ds*16+r16[si] + 20] = memory(ds, r16[si] + 20) + 0x00 + flags.carry;
+        memory[ds*16+r16[si] + 20] = memory[ds*16 + r16[si] + 20] + 0x00 + flags.carry;
         if (_FIXME_) {
             pc = 0x5dcd;
             break;
@@ -16218,7 +16217,7 @@ function* sub_63f1() {
         }
         flags.carry = memory[ds*16+r16[si] + 15] < 0x01;
         memory[ds*16+r16[si] + 15] -= 0x01;
-        memory[ds*16+r16[si] + 15] = memory(ds, r16[si] + 15) + 0x00 + flags.carry;
+        memory[ds*16+r16[si] + 15] = memory[ds*16 +r16[si] + 15] + 0x00 + flags.carry;
         if (memory[ds*16+r16[si] + 15] != 0) {
             pc = 0x6495;
             break;
@@ -16544,16 +16543,16 @@ function* sub_65be() {
         r16[bx] = r16[bx] ^ r16[bx];
         flags.carry = !!(r8[dh] & 0x80);
         r8[dh] <<= 1;
-        _rcl(r16[bx], 1);
+        _rcl16(bx, 1);
         flags.carry = !!(r8[dl] & 0x80);
         r8[dl] <<= 1;
-        _rcl(r16[bx], 1);
+        _rcl16(bx, 1);
         flags.carry = !!(r8[ah] & 0x80);
         r8[ah] <<= 1;
-        _rcl(r16[bx], 1);
+        _rcl16(bx, 1);
         flags.carry = !!(r8[al] & 0x80);
         r8[al] <<= 1;
-        _rcl(r16[bx], 1);
+        _rcl16(bx, 1);
         r16[bx] <<= 1;
         r16[bx] += bp;
         r16[bx] = r16[bx] + memory16get(cs*16+0x6676);
@@ -16561,10 +16560,10 @@ function* sub_65be() {
         bp = bp ^ 0x0001;
         flags.carry = !!(r8[bl] & 0x80);
         r8[bl] <<= 1;
-        _rcl(memory16get(cs*16+0x66DB), 1);
+        _rclm16(cs*16+0x66DB, 1);
         flags.carry = !!(r8[bl] & 0x80);
         r8[bl] <<= 1;
-        _rcl(memory16get(cs*16+0x66DB), 1);
+        _rclm16(cs*16+0x66DB, 1);
         if (--r16[cx]) {
             pc = 0x6615;
             break;
