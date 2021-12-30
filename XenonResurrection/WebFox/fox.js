@@ -4504,6 +4504,7 @@ function* sub_1c30() {
     } while (1);
 }
 function* sub_1c61() {
+    collect = [];
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4701,6 +4702,16 @@ function* loc_1c7f() {
         pc = 0x1de8;
         break;
     case 0x1db0:
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:memory16get(cs*16 + 0x1C4E),
+         w:memory[cs*16 + 0x1C4A],
+         h:memory[cs*16 + 0x1C52],
+         o:memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+
         r8[cl] = memory[cs*16+0x0];
         sar16(ax, r8[cl]);
         memory16set(cs*16+0x1C58, memory16get(cs*16+0x1C58) + r16[ax]);
