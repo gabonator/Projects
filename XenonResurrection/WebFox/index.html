@@ -22,7 +22,7 @@ background: #000000;
 <img id="back1" src="l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
 <img id="map" src="l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
 
-<canvas id="canvas" style="position:absolute; left:0px; top:0px; width:960px; height:600px;"></canvas><br>
+<canvas id="canvas" style="border:solid 1px #808080; position:absolute; left:0px; top:0px; width:1200px; height:600px;"></canvas><br>
 
 <img id="glow0" src="glow.gif" style="position:absolute; left:402px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
 <img id="glow1" src="glow.gif" style="position:absolute; left:1872px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
@@ -85,7 +85,7 @@ flags = {carry:0, direction:0, zero:0};
 
 var can = document.getElementById("canvas");
 var ctx = can.getContext('2d');
-can.width = 320;
+can.width = 400;
 can.height = 200;
 var data = ctx.createImageData(can.width, can.height);
 
@@ -114,7 +114,7 @@ function display()
 //  ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pixels = data.data;
   for (var y=0; y<200; y++)
-    for (var x=0; x<320; x++)
+    for (var x=0; x<400; x++)
     {
       pixels[p++] = 0;
       pixels[p++] = 0;
@@ -173,10 +173,12 @@ function display()
 
   var pixel = (x, y, c) =>
   {
-    data.data[(x+y*320)*4] = (c>>16) & 0xff;
-    data.data[(x+y*320)*4+1] = (c>>8) & 0xff;
-    data.data[(x+y*320)*4+2] = c & 0xff;
-    data.data[(x+y*320)*4+3] = 0xff;
+    if (x<0 || x>=400 || y<0 || y>=200)
+      return;
+    data.data[(x+y*400)*4] = (c>>16) & 0xff;
+    data.data[(x+y*400)*4+1] = (c>>8) & 0xff;
+    data.data[(x+y*400)*4+2] = c & 0xff;
+    data.data[(x+y*400)*4+3] = 0xff;
   } 
 
   can.style.left = correctionX;

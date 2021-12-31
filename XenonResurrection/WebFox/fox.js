@@ -4559,6 +4559,24 @@ function* loc_1c7f() {
     var pc = 0;
     do switch (pc) {
     case 0:
+/*
+       var rel8x = memory[ds*16+r16[bx] + 26927];
+       if (rel8x & 0x0080) rel8x |= 0xff00;
+       
+       var rel8y = memory[ds*16+r16[bx] + 26928];
+       if (rel8y & 0x0080) rel8y |= 0xff00;
+       collect.push({
+         x:(-rel8x + memory16get(ds*16+r16[si])) - (memory16get(ds*16+21104)<<4), 
+         y:rel8y + memory16get(ds*16+r16[si] + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+r16[bx] + 26213)>>8),
+         w:(memory16get(ds*16+r16[bx] + 26213) & 0xff) >> memory[cs*16+0x0],
+         h:memory16get(ds*16+r16[bx] + 26213)>>8, 
+         o:memory16get(ds*16+r16[bx] + 0x5aa4),
+         s:memory16get(ds*16+r16[bx] + 0x5dc4),
+         t:memory[cs*16 + 0x1C48]&128
+        });
+*/
+
+
         r16[ax] = r16[ax] ^ r16[ax];
         memory[cs*16+0x1C49] = r8[al];
         memory[cs*16+0x1C53] = r8[al];
@@ -4577,9 +4595,29 @@ function* loc_1c7f() {
         }
         r8[al] = 0x41;
         r8[bh] &= 0x7f;
+
     case 0x1caf:
+
+       var rel8x = memory[ds*16+r16[bx] + 26927];
+       if (rel8x & 0x0080) rel8x |= 0xff00;
+       
+       var rel8y = memory[ds*16+r16[bx] + 26928];
+       if (rel8y & 0x0080) rel8y |= 0xff00;
+       collect.push({
+         x:(-rel8x + memory16get(ds*16+r16[si])) - (memory16get(ds*16+21104)<<4), 
+         y:rel8y + memory16get(ds*16+r16[si] + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+r16[bx] + 26213)>>8),
+         w:(memory16get(ds*16+r16[bx] + 26213) & 0xff) >> memory[cs*16+0x0],
+         h:memory16get(ds*16+r16[bx] + 26213)>>8, 
+         o:memory16get(ds*16+r16[bx] + 0x5aa4),
+         s:memory16get(ds*16+r16[bx] + 0x5dc4),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+
+
         memory[cs*16+0x1C5E] = r8[al];
         r16[dx] = memory16get(ds*16+r16[bx] + 26213);
+
+
         r8[al] = memory[ds*16+r16[bx] + 26927];
         if (!(memory[cs*16+0x1C48] & 0x01)) {
             pc = 0x1cc9;
@@ -4598,6 +4636,24 @@ function* loc_1c7f() {
         r16[cx] <<= 1;
         r16[ax] -= r16[cx];
         r16[cx] = r16[ax];
+
+
+/*
+       var rel8x = memory[ds*16+r16[bx] + 26927];
+       if (rel8x & 0x0080) rel8x |= 0xff00;
+       
+       var rel8y = memory[ds*16+r16[bx] + 26928];
+       if (rel8y & 0x0080) rel8y |= 0xff00;
+       collect.push({
+         x:(-rel8x + memory16get(ds*16+r16[si])) - (memory16get(ds*16+21104)<<4), 
+         y:rel8y + memory16get(ds*16+r16[si] + 2) + 1 - (memory16get(ds*16+21106) << 4) - r8[dh],//memory16get(cs*16 + 0x1C4E),
+         w:r8[dl] >> memory[cs*16+0x0], //memory[cs*16 + 0x1C4A],
+         h:r8[dh], //memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 0x5aa4) + 0, //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 0x5dc4), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+*/
         memory16set(cs*16+0x1C50, r16[ax]);
         if (r16s[ax] < signed16(0x0140)) {
             pc = 0x1cea;
@@ -4614,6 +4670,26 @@ function* loc_1c7f() {
         }
         return;
     case 0x1cf4:
+/*
+push(r16[ax]);
+        r8[al] = memory[ds*16+r16[bx] + 26928];
+        _cbw();
+
+        r16[ax] += memory16get(ds*16+r16[si] + 2) + 1;
+        r16[ax] -= memory16get(ds*16+21106) << 4;
+
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:r16[ax] - r8[dh],//memory16get(cs*16 + 0x1C4E),
+         w:r8[dl] >> memory[cs*16+0x0], //memory[cs*16 + 0x1C4A],
+         h:r8[dh], //memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 0x5aa4) + 0, //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 0x5dc4), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+r16[ax] = pop();
+*/
+
         r8[al] = memory[ds*16+r16[bx] + 26928];
         _cbw();
         r16[ax] = r16[ax] + memory16get(ds*16+r16[si] + 2);
@@ -4625,6 +4701,17 @@ function* loc_1c7f() {
         r16[cx] <<= 1;
         flags.carry2 = r16s[ax] > r16s[cx];
         r16[ax] -= r16[cx];
+/*
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:r16[ax] - r8[dh],//memory16get(cs*16 + 0x1C4E),
+         w:r8[dl] >> memory[cs*16+0x0], //memory[cs*16 + 0x1C4A],
+         h:r8[dh], //memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 0x5aa4) + 0, //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 0x5dc4), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+*/
         if (flags.carry2) {
             pc = 0x1d10;
             break;
@@ -4634,6 +4721,17 @@ function* loc_1c7f() {
         memory16set(ds*16+0x5278, r16[ax]);
         memory[cs*16+0x1C52] = r8[dh];
         memory[cs*16+0x1C4C] = r8[dh];
+/*
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:r16[ax] - r8[dh],//memory16get(cs*16 + 0x1C4E),
+         w:r8[dl] >> memory[cs*16+0x0], //memory[cs*16 + 0x1C4A],
+         h:memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 0x5aa4) + 0, //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 0x5dc4), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+*/
         flags.carry = r8[al] < r8[dh];
         r8[al] -= r8[dh];
         r8[ah] -= 0x00 + flags.carry;
@@ -4643,6 +4741,17 @@ function* loc_1c7f() {
         }
         return;
     case 0x1d2a:
+/*
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:r16[ax],//memory16get(cs*16 + 0x1C4E),
+         w:r8[dl] >> memory[cs*16+0x0], //memory[cs*16 + 0x1C4A],
+         h:memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 0x5aa4) + 0, //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 0x5dc4), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+*/
         memory16set(cs*16+0x1C4E, r16[ax]);
         r8[cl] = memory[cs*16+0x0];
         r8[dl] >>= r8[cl];
@@ -4668,6 +4777,18 @@ function* loc_1c7f() {
         _mul8(memory[ds*16+21084]);
         r16[di] = r16[ax];
     case 0x1d60:
+/*
+       collect.push({
+         x:memory16get(cs*16 + 0x1C50), 
+         y:memory16get(cs*16 + 0x1C4E),
+         w:memory[cs*16 + 0x1C4A],
+         h:memory[cs*16 + 0x1C52],
+         o:memory16get(ds*16+r16[bx] + 23204) + r16[cx], //memory16get(cs*16 + 0x1C5A), 
+         s:memory16get(ds*16+r16[bx] + 24004), //memory16get(cs*16 + 0x1C5C),
+         t:memory[cs*16 + 0x1C48]&1
+        });
+
+*/
         r16[di] = r16[di] + memory16get(ds*16+21098);
         memory16set(cs*16+0x1C58, r16[di]);
         r16[ax] = memory16get(ds*16+r16[bx] + 24004);
@@ -4676,6 +4797,8 @@ function* loc_1c7f() {
         r16[ax] += r16[cx];
         memory16set(cs*16+0x1C5A, r16[ax]);
         r16[ax] = memory16get(ds*16+0x5278);
+
+
         flags.carry2 = r16s[ax] <= signed16(0x00c0);
         r16[ax] -= 0x00c0;
         if (flags.carry2) {
@@ -4702,16 +4825,6 @@ function* loc_1c7f() {
         pc = 0x1de8;
         break;
     case 0x1db0:
-       collect.push({
-         x:memory16get(cs*16 + 0x1C50), 
-         y:memory16get(cs*16 + 0x1C4E),
-         w:memory[cs*16 + 0x1C4A],
-         h:memory[cs*16 + 0x1C52],
-         o:memory16get(cs*16 + 0x1C5A), 
-         s:memory16get(cs*16 + 0x1C5C),
-         t:memory[cs*16 + 0x1C48]&1
-        });
-
         r8[cl] = memory[cs*16+0x0];
         sar16(ax, r8[cl]);
         memory16set(cs*16+0x1C58, memory16get(cs*16+0x1C58) + r16[ax]);
