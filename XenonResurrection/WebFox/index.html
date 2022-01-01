@@ -14,30 +14,32 @@ background: #000000;
 </head>
 <body>
 
-<img id="sky0" src="l1_sky.png" style="position:absolute; left:0px; top:0px; width:3312px; height:1776px;">
-<img id="sky1" src="l1_sky.png" style="position:absolute; left:3312px; top:0px; width:3312px; height:1776px;">
-<img id="moon" src="moon.png" style="position:absolute; left:700px; top:40px; width:100px; height:100px; mix-blend-mode: lighten; opacity:0.8">
+<div id="viewport" style="position: absolute; width:1200px; height:600px; overflow:hidden">
+<img class="overlay" id="sky0" src="l1_sky.png" style="position:absolute; left:0px; top:0px; width:3312px; height:1776px;">
+<img class="overlay" id="sky1" src="l1_sky.png" style="position:absolute; left:3312px; top:0px; width:3312px; height:1776px;">
+<img class="overlay" id="moon" src="moon.png" style="position:absolute; left:700px; top:40px; width:100px; height:100px; mix-blend-mode: lighten; opacity:0.8">
 
-<img id="back0" src="l1_back.png" style="position:absolute; left:0px; top:0px; width:3303px; height:1776px; opacity:1">
-<img id="back1" src="l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
-<img id="map" src="l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
+<img class="overlay" id="back0" src="l1_back.png" style="position:absolute; left:0px; top:0px; width:3303px; height:1776px; opacity:1">
+<img class="overlay" id="back1" src="l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
+<img class="overlay" id="map" src="l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
 
 <canvas id="canvas" style="border:solid 1px #808080; position:absolute; left:0px; top:0px; width:1200px; height:600px;"></canvas><br>
 
-<img id="glow0" src="glow.gif" style="position:absolute; left:402px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img id="glow1" src="glow.gif" style="position:absolute; left:1872px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img id="glow2" src="glow.gif" style="position:absolute; left:2628px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img id="glow3" src="glow.gif" style="position:absolute; left:3568px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img id="steam0" src="steam.gif" style="position:absolute; left:22px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam1" src="steam.gif" style="position:absolute; left:402px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam2" src="steam.gif" style="position:absolute; left:912px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam3" src="steam.gif" style="position:absolute; left:1362px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam4" src="steam.gif" style="position:absolute; left:1772px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam5" src="steam.gif" style="position:absolute; left:2372px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam6" src="steam.gif" style="position:absolute; left:2852px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam7" src="steam.gif" style="position:absolute; left:3282px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img id="steam8" src="steam.gif" style="position:absolute; left:3762px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="glow0" src="glow.gif" style="position:absolute; left:402px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow1" src="glow.gif" style="position:absolute; left:1872px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow2" src="glow.gif" style="position:absolute; left:2628px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow3" src="glow.gif" style="position:absolute; left:3568px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="steam0" src="steam.gif" style="position:absolute; left:22px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam1" src="steam.gif" style="position:absolute; left:402px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam2" src="steam.gif" style="position:absolute; left:912px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam3" src="steam.gif" style="position:absolute; left:1362px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam4" src="steam.gif" style="position:absolute; left:1772px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam5" src="steam.gif" style="position:absolute; left:2372px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam6" src="steam.gif" style="position:absolute; left:2852px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam7" src="steam.gif" style="position:absolute; left:3282px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam8" src="steam.gif" style="position:absolute; left:3762px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
 
+</div>
 
 <script>
 </script>
@@ -50,6 +52,7 @@ background: #000000;
 <script src="cpu.js"></script>
 
 <script>
+var scene = "";
 var collect = [];
 var _datab = new ArrayBuffer(0x10000*20);
 var memory = new Uint8Array(_datab, 0, 0x10000*20);
@@ -108,114 +111,129 @@ var overlay = [
 
 var oldScrollX = 25*3*16;
 var oldScrollY = 0*3*16;
+var overlays = document.getElementsByClassName("overlay");
+for (var i=0; i<overlays.length; i++)
+  overlays[i].style.display = "none";
 function display()
 {
-  var p = 0;
-//  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var pixels = data.data;
-  for (var y=0; y<200; y++)
-    for (var x=0; x<400; x++)
-    {
-      pixels[p++] = 0;
-      pixels[p++] = 0;
-      pixels[p++] = 0;
-      pixels[p++] = 0;
-    }
-
-/*
-  for (var y=0; y<200; y++)
-    for (var x=0; x<320; x++)
-    {
-      var c = video.getPixel(x, y);
-      pixels[p++] = c>>16;
-      pixels[p++] = (c>>8)&0xff;
-      pixels[p++] = c & 0xff;
-      pixels[p++] = 255;
-    }
-*/
-
-  var map = document.getElementById("map");
-  var newScrollX = memory16get(0x168f*16 + 0x5270)*3*16;
-  var newScrollY = memory16get(0x168f*16 + 0x5272)*3*16;
-
-  var scrollX = Math.floor(oldScrollX*0.9+newScrollX*0.1);
-  var scrollY = Math.floor(oldScrollY*0.9+newScrollY*0.1);
-  oldScrollX = scrollX;
-  oldScrollY = scrollY;
-
-//  var scrollX = newScrollX;
-//  var scrollY = newScrollY;
-
-  var correctionX = newScrollX - scrollX;
-  var correctionY = newScrollY - scrollY;
-  map.style.left = -scrollX;
-  map.style.top = -scrollY;
-
-  for (var i=0; i<overlay.length; i++)
+  if (scene != "game")
   {
-    var o = document.getElementById(overlay[i].id);
-    o.style.left = overlay[i].left*3-scrollX;
-    o.style.top = overlay[i].top*3-scrollY;
+    var p = 0;
+    var pixels = data.data;
+    var padding = 400-320;
+    p += (padding/2)*4;
+//    p= 80*4;
+    for (var y=0; y<200; y++)
+    {
+      for (var x=0; x<320; x++)
+      {
+        var c = video.getPixel(x, y);
+        pixels[p++] = c>>16;
+        pixels[p++] = (c>>8)&0xff;
+        pixels[p++] = c & 0xff;
+        pixels[p++] = 255;
+      }
+      p += (padding)*4;
+    }
+  } else 
+  {
+    for (var i=0; i<overlays.length; i++)
+      overlays[i].style.display = "";
+
+    var p = 0;
+    var pixels = data.data;
+    for (var y=0; y<200; y++)
+      for (var x=0; x<400; x++)
+      {
+        pixels[p++] = 0;
+        pixels[p++] = 0;
+        pixels[p++] = 0;
+        pixels[p++] = 0;
+      }
+
+
+    var map = document.getElementById("map");
+    var newScrollX = memory16get(0x168f*16 + 0x5270)*3*16;
+    var newScrollY = memory16get(0x168f*16 + 0x5272)*3*16;
+
+    var scrollX = Math.floor(oldScrollX*0.9+newScrollX*0.1);
+    var scrollY = Math.floor(oldScrollY*0.9+newScrollY*0.1);
+    oldScrollX = scrollX;
+    oldScrollY = scrollY;
+
+  //  var scrollX = newScrollX;
+  //  var scrollY = newScrollY;
+
+    var correctionX = newScrollX - scrollX;
+    var correctionY = newScrollY - scrollY;
+    map.style.left = -scrollX;
+    map.style.top = -scrollY;
+
+    for (var i=0; i<overlay.length; i++)
+    {
+      var o = document.getElementById(overlay[i].id);
+      o.style.left = overlay[i].left*3-scrollX;
+      o.style.top = overlay[i].top*3-scrollY;
+    }
+    var back0 = document.getElementById("back0");
+    back0.style.left = -scrollX*0.3;
+    back0.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+    var back1 = document.getElementById("back1");
+    back1.style.left = -scrollX*0.3+3303;
+    back1.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+
+    var sky0 = document.getElementById("sky0");
+    sky0.style.left = -scrollX*0.1;
+    sky0.style.top = 0;
+    var sky1 = document.getElementById("sky1");
+    sky1.style.left = -scrollX*0.1+3312;
+    sky1.style.top = 0;
+
+    var pixel = (x, y, c) =>
+    {
+      if (x<0 || x>=400 || y<0 || y>=200)
+        return;
+      data.data[(x+y*400)*4] = (c>>16) & 0xff;
+      data.data[(x+y*400)*4+1] = (c>>8) & 0xff;
+      data.data[(x+y*400)*4+2] = c & 0xff;
+      data.data[(x+y*400)*4+3] = 0xff;
+    } 
+
+    can.style.left = correctionX;
+    can.style.top = correctionY;
+      for(var i=0; i<collect.length; i++)
+      {
+          var frame = collect[i].w*collect[i].h;
+          var pitch = collect[i].w;
+          for (var y=0; y<collect[i].h; y++)
+          {
+              for (var x=0; x<collect[i].w*8; x++)
+              {
+                  var plane0 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*0];
+                  var plane1 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*1];
+                  var plane2 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*2];
+                  var plane3 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*3];
+                  var plane4 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*4];
+                  var p0 = (plane0 >> (7-(x&7)))&1;
+                  var p1 = (plane1 >> (7-(x&7)))&1;
+                  var p2 = (plane2 >> (7-(x&7)))&1;
+                  var p3 = (plane3 >> (7-(x&7)))&1;
+                  var p4 = (plane4 >> (7-(x&7)))&1;
+                  var p = p1 + 2*p2 + 4*p3 + 8*p4;
+                  p = ega.palette[p];
+                  if (p0)
+                  {
+                      if (!collect[i].t)
+                          pixel(signed16(collect[i].x)+ x, signed16(collect[i].y) + y, p);
+                      else
+                          pixel(signed16(collect[i].x) + collect[i].w*8-1 - x, signed16(collect[i].y) + y, p);
+                  }
+
+              }
+          }
+      }
   }
-  var back0 = document.getElementById("back0");
-  back0.style.left = -scrollX*0.3;
-  back0.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
-  var back1 = document.getElementById("back1");
-  back1.style.left = -scrollX*0.3+3303;
-  back1.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
-
-  var sky0 = document.getElementById("sky0");
-  sky0.style.left = -scrollX*0.1;
-  sky0.style.top = 0;
-  var sky1 = document.getElementById("sky1");
-  sky1.style.left = -scrollX*0.1+3312;
-  sky1.style.top = 0;
-
-  var pixel = (x, y, c) =>
-  {
-    if (x<0 || x>=400 || y<0 || y>=200)
-      return;
-    data.data[(x+y*400)*4] = (c>>16) & 0xff;
-    data.data[(x+y*400)*4+1] = (c>>8) & 0xff;
-    data.data[(x+y*400)*4+2] = c & 0xff;
-    data.data[(x+y*400)*4+3] = 0xff;
-  } 
-
-  can.style.left = correctionX;
-  can.style.top = correctionY;
-    for(var i=0; i<collect.length; i++)
-    {
-        var frame = collect[i].w*collect[i].h;
-        var pitch = collect[i].w;
-        for (var y=0; y<collect[i].h; y++)
-        {
-            for (var x=0; x<collect[i].w*8; x++)
-            {
-                var plane0 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*0];
-                var plane1 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*1];
-                var plane2 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*2];
-                var plane3 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*3];
-                var plane4 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*4];
-                var p0 = (plane0 >> (7-(x&7)))&1;
-                var p1 = (plane1 >> (7-(x&7)))&1;
-                var p2 = (plane2 >> (7-(x&7)))&1;
-                var p3 = (plane3 >> (7-(x&7)))&1;
-                var p4 = (plane4 >> (7-(x&7)))&1;
-                var p = p1 + 2*p2 + 4*p3 + 8*p4;
-                p = ega.palette[p];
-                if (p0)
-                {
-                    if (!collect[i].t)
-                        pixel(signed16(collect[i].x)+ x, signed16(collect[i].y) + y, p);
-                    else
-                        pixel(signed16(collect[i].x) + collect[i].w*8-1 - x, signed16(collect[i].y) + y, p);
-                }
-
-            }
-        }
-    }
   ctx.putImageData(data, 0, 0);
-
 }
 var _iter = 0;
 function* _sync(k)

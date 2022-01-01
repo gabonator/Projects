@@ -107,13 +107,16 @@ function* entry() {
         es = pop();
         ds = pop();
         memory16set(ds*16+0x000e, r16[ax]);
+        scene = "greeting";
         yield* sub_183f();
         yield* sub_1198();
         r16[ax] = 0x4000;
         out8(64, r8[al]);
         r8[al] = r8[ah];
         out8(64, r8[al]);
+        scene = "titus";
         yield* sub_53a2();
+        scene = "logo";
         yield* sub_52ec();
         yield* sub_24c9();
         r16[ax] = memory16get(ds*16+0x04c1);
@@ -126,12 +129,15 @@ function* entry() {
             pc = 0x00e9;
             break;
         }
+        scene = "menu";
         yield* sub_51c6();
         yield* sub_3160();
         memory[ds*16+1051] = 0x02;
         memory[ds*16+1049] = 0x10;
         memory[ds*16+1050] = 0x00;
+        scene = "info";
         yield* sub_0173();
+        scene = "game";
     case 0x00e9:
         yield* sub_3160();
         r8[al] = memory[ds*16+0x5250];
