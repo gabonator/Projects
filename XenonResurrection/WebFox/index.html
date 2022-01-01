@@ -50,6 +50,7 @@ background: #000000;
 <script src="ega.js"></script>
 <script src="vga.js"></script>
 <script src="cpu.js"></script>
+<script src="touch.js"></script>
 
 <script>
 var scene = "";
@@ -113,7 +114,11 @@ var oldScrollX = 25*3*16;
 var oldScrollY = 0*3*16;
 var overlays = document.getElementsByClassName("overlay");
 for (var i=0; i<overlays.length; i++)
+{
   overlays[i].style.display = "none";
+  overlays[i].draggable = false;
+  overlays[i].userSelect = "none";
+}
 function display()
 {
   if (scene != "game")
@@ -289,6 +294,41 @@ evt.preventDefault();
         }
 evt.preventDefault();
     }
+
+// mouse
+var pressed = false;
+
+window.onPress = (p) => {
+  pressed = true;
+  if (scene != "game")
+    memory[0x168f * 16 + 0x45c] = 1; 
+  else
+  {
+     memory[0x168f * 16 + 0x488] = p.y < 200/3;
+     memory[0x168f * 16 + 0x490] = p.y > 200*2/3;
+     memory[0x168f * 16 + 0x48b] = p.x < 300/3;
+     memory[0x168f * 16 + 0x48d] = p.x > 300*2/3;
+  }
+}
+
+window.onRelease = (p) => {
+  pressed = false;
+  memory[0x168f * 16 + 0x488] = 0;
+  memory[0x168f * 16 + 0x490] = 0;
+  memory[0x168f * 16 + 0x48b] = 0;
+  memory[0x168f * 16 + 0x48d] = 0;
+  memory[0x168f * 16 + 0x45c] = 0;
+}
+
+window.onMove = (p) => {
+  if (pressed)
+  {
+     memory[0x168f * 16 + 0x488] = p.y < 200/3;
+     memory[0x168f * 16 + 0x490] = p.y > 200*2/3;
+     memory[0x168f * 16 + 0x48b] = p.x < 300/3;
+     memory[0x168f * 16 + 0x48d] = p.x > 300*2/3;
+  }
+}
 
 </script>
 </body>
