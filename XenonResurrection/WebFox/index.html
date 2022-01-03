@@ -54,7 +54,7 @@ background: #000000;
 
 <script>
 var scene = "";
-var collect = [];
+var collect = [], tiles = {};
 var _datab = new ArrayBuffer(0x10000*20);
 var memory = new Uint8Array(_datab, 0, 0x10000*20);
 var memorys = new Int8Array(_datab, 0, 0x10000*20);
@@ -206,37 +206,55 @@ function display()
 
     can.style.left = correctionX;
     can.style.top = correctionY;
-      for(var i=0; i<collect.length; i++)
-      {
-          var frame = collect[i].w*collect[i].h;
-          var pitch = collect[i].w;
-          for (var y=0; y<collect[i].h; y++)
-          {
-              for (var x=0; x<collect[i].w*8; x++)
-              {
-                  var plane0 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*0];
-                  var plane1 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*1];
-                  var plane2 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*2];
-                  var plane3 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*3];
-                  var plane4 = memory[collect[i].s*16+ collect[i].o+y*pitch+Math.floor(x/8)+frame*4];
-                  var p0 = (plane0 >> (7-(x&7)))&1;
-                  var p1 = (plane1 >> (7-(x&7)))&1;
-                  var p2 = (plane2 >> (7-(x&7)))&1;
-                  var p3 = (plane3 >> (7-(x&7)))&1;
-                  var p4 = (plane4 >> (7-(x&7)))&1;
-                  var p = p1 + 2*p2 + 4*p3 + 8*p4;
-                  p = ega.palette[p];
-                  if (p0)
-                  {
-                      if (!collect[i].t)
-                          pixel(signed16(collect[i].x)+ x, signed16(collect[i].y) + y, p);
-                      else
-                          pixel(signed16(collect[i].x) + collect[i].w*8-1 - x, signed16(collect[i].y) + y, p);
-                  }
 
-              }
+
+    for (var i in tiles)
+    {
+      var obj = tiles[i];
+      var bx = memory16get(0x168f*16 + 0x5270)*16;
+      var by = memory16get(0x168f*16 + 0x5272)*16;
+      for (var y=0; y<obj.h; y++)
+      {
+          for (var x=0; x<obj.w*8; x++)
+          {
+             var p = ega.getSpritePixel(x, y, obj.o, 2);
+             if (p != 2)
+               pixel(signed16(obj.x) + x - bx, signed16(obj.y) + y - by, ega.palette[p]);
           }
       }
+    }
+    for(var i=0; i<collect.length; i++)
+    {
+        var obj = collect[i];
+        var frame = obj.w*obj.h;
+        var pitch = obj.w;
+        for (var y=0; y<obj.h; y++)
+        {
+            for (var x=0; x<obj.w*8; x++)
+            {
+                var plane0 = memory[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*0];
+                var plane1 = memory[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*1];
+                var plane2 = memory[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*2];
+                var plane3 = memory[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*3];
+                var plane4 = memory[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*4];
+                var p0 = (plane0 >> (7-(x&7)))&1;
+                var p1 = (plane1 >> (7-(x&7)))&1;
+                var p2 = (plane2 >> (7-(x&7)))&1;
+                var p3 = (plane3 >> (7-(x&7)))&1;
+                var p4 = (plane4 >> (7-(x&7)))&1;
+                var p = p1 + 2*p2 + 4*p3 + 8*p4;
+                p = ega.palette[p];
+                if (p0)
+                {
+                    if (!obj.t)
+                        pixel(signed16(obj.x)+ x, signed16(obj.y) + y, p);
+                    else
+                        pixel(signed16(obj.x) + obj.w*8-1 - x, signed16(obj.y) + y, p);
+                }
+
+            }
+        }
+    }
   }
   ctx.putImageData(data, 0, 0);
 }

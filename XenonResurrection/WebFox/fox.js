@@ -4511,6 +4511,36 @@ function* sub_1c30() {
 }
 function* sub_1c61() {
     collect = [];
+/*
+    push(ds);
+    ds = 0x168f;
+    for (var i=0x567e; i >= 0x527c; i-=0x0012)
+    {
+       if (memory16get(ds*16 + i + 4) != 0xffff)
+       {
+         var bb = memory16get(ds*16+i + 4);
+         if (memory16get(ds*16+bb + 0x5aa4) == 0xa47) console.log("hit!");
+         var rel8x = memory[ds*16+bb + 26927];
+         if (rel8x & 0x0080) rel8x |= 0xff00;
+         
+         var rel8y = memory[ds*16+bb + 26928];
+         if (rel8y & 0x0080) rel8y |= 0xff00;
+
+         //in: ds, bx, si(i), cs(const)
+         collect.push({
+           x:(-rel8x + memory16get(ds*16+i)) - (memory16get(ds*16+21104)<<4), 
+           y:rel8y + memory16get(ds*16+i + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+bb + 26213)>>8),
+           w:(memory16get(ds*16+bb + 26213) & 0xff) >> memory[cs*16+0x0],
+           h:memory16get(ds*16+bb + 26213)>>8, 
+           o:memory16get(ds*16+bb + 0x5aa4),
+           s:memory16get(ds*16+bb + 0x5dc4),
+           t:memory[cs*16 + 0x1C48]&128
+          });
+
+       }
+    }
+    ds = pop();
+*/
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4566,6 +4596,7 @@ function* loc_1c7f() {
     do switch (pc) {
     case 0:
 /*
+       //in: ds, bx, si, cs
        var rel8x = memory[ds*16+r16[bx] + 26927];
        if (rel8x & 0x0080) rel8x |= 0xff00;
        
@@ -4580,8 +4611,8 @@ function* loc_1c7f() {
          s:memory16get(ds*16+r16[bx] + 0x5dc4),
          t:memory[cs*16 + 0x1C48]&128
         });
-*/
 
+*/
 
         r16[ax] = r16[ax] ^ r16[ax];
         memory[cs*16+0x1C49] = r8[al];
@@ -7076,6 +7107,16 @@ function* sub_2ba2() {
         }
         r16[di] -= 0x1e00;
     case 0x2c5a:
+        tiles[r16[si]] = {
+          x: (r16[si]&0xff)*16, // - memory16get(0x168f*16 + 0x5270)*16,
+          y: (r16[si]>>8)*16, // - memory16get(0x168f*16 + 0x5272)*16,
+          w:2,
+          h:16, 
+          o:0x5dc0 + r8[al]*32,
+          s:0xa000,
+          t:0
+        };
+
         yield* sub_2de8();
         r16[di] -= 1;
         r16[di] -= 1;
@@ -14282,7 +14323,7 @@ function* sub_5737() {
         memory[ds*16+25853] -= 1;
     case 0x5888:
         bp = sp;
-        r16[si] = memory16get(ds*16+bp + 0);
+        r16[si] = memory16get(ss*16+bp + 0);
         memory[ds*16+r16[si] + 7] |= 0x80;
     case 0x5891:
         r16[si] = pop();
@@ -14608,7 +14649,12 @@ function* sub_5a04() {
         yield* sub_596f();
     case 0x5a57:
         return;
-    case 0x5a58:
+    } while (1)
+}
+function* loc_5a58() {
+    var pc = 0;
+    do switch (pc) {
+    case 0:
         if (r8[al] & 0x40) {
             pc = 0x5a98;
             break;
@@ -14666,7 +14712,8 @@ function* sub_5ab8() {
             pc = 0x5ac1;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x5ac1:
         r16[ax] = memory16get(ds*16+r16[si] + 20);
         r16[dx] = memory16get(ds*16+r16[si] + 15);
@@ -14848,7 +14895,8 @@ function* sub_5bbb() {
             pc = 0x5bc5;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x5bc5:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15029,7 +15077,8 @@ function* sub_5cca() {
             pc = 0x5cd4;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x5cd4:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15212,7 +15261,8 @@ function* sub_5dce() {
             pc = 0x5dd8;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x5dd8:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15432,7 +15482,8 @@ function* sub_5ef2() {
             pc = 0x5efc;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x5efc:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15600,7 +15651,8 @@ function* sub_5ef2() {
             pc = 0x6008;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x6008:
         return;
         memory[ds*16+r16[si] + 7] &= 0x3f;
@@ -15611,7 +15663,8 @@ function* sub_5ef2() {
             pc = 0x6019;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x6019:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15754,7 +15807,8 @@ function* sub_60e0() {
             pc = 0x60ea;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x60ea:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -15988,7 +16042,8 @@ function* sub_622e() {
             pc = 0x6238;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x6238:
         yield* sub_63c9();
         if (memory[ds*16+r16[si] + 5] & 0x20) {
@@ -16092,7 +16147,8 @@ function* sub_62c9() {
             pc = 0x62d3;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x62d3:
         r8[al] = memory[ds*16+r16[si] + 14];
         if (r8[al] != 0x00) {
@@ -16253,7 +16309,7 @@ function* sub_63bf() {
         r8[al] = memory[ds*16+r16[si] + 7];
         if (!(r8[al] & 0xc0))
         { yield* sub_63c9(); return; }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
         return;
     } while (1);
 }
@@ -16307,7 +16363,8 @@ function* sub_63f1() {
             pc = 0x63fb;
             break;
         }
-        _STOP_("goto loc_5a58");
+        yield* loc_5a58();
+        return;
     case 0x63fb:
         if (memory[ds*16+r16[si] + 5] & 0x20) {
             pc = 0x6404;

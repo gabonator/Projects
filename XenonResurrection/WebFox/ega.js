@@ -55,6 +55,25 @@ class EGA
   	return this.palette[b];
   }
 
+  getSpritePixel(x, y, addr, pitch)
+  {
+  	var off = y * pitch + (x >> 3);
+	var mask = 0x80 >> (x & 7);
+  	var b = 0;
+
+   	addr += off;
+  	var latch = this.memory[addr];
+  	if ( latch & mask ) b |= 1;
+		latch >>= 8;
+  	if ( latch & mask ) b |= 2;
+		latch >>= 8;
+  	if ( latch & mask ) b |= 4;
+		latch >>= 8;
+  	if ( latch & mask ) b |= 8;
+		latch >>= 8;
+  	return b;
+  }
+
   write(addr, val)
   {
                 addr -= 0xa0000;
