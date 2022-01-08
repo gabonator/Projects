@@ -142,6 +142,7 @@ function* entry() {
         yield* sub_3160();
         r8[al] = memory[ds*16+0x5250];
         yield* sub_2eb7();
+        _processMap();
         yield* sub_378d();
         yield* sub_56cc();
         r16[ax] = 0x168f;
@@ -7107,6 +7108,7 @@ function* sub_2ba2() {
         }
         r16[di] -= 0x1e00;
     case 0x2c5a:
+//        console.log("tile: "+r16[si].toString(16));
         tiles[r16[si]] = {
           x: (r16[si]&0xff)*16, // - memory16get(0x168f*16 + 0x5270)*16,
           y: (r16[si]>>8)*16, // - memory16get(0x168f*16 + 0x5272)*16,
@@ -12457,6 +12459,16 @@ function* sub_4d10() {
         r8[bl] = 0x28;
         r8[bh] = 0x01;
     case 0x4d52:
+        tiles[r16[di]] = {
+          x: (r16[di]&0xff)*16,
+          y: (r16[di]>>8)*16,
+          w:2,
+          h:16, 
+          o:0x5dc0 + 0*32,
+          s:0xa000,
+          t:0
+        };
+
         r16[ax] = r16[di];
         r8[al] = r8[ah];
         r8[ah] = r8[ah] ^ r8[ah];

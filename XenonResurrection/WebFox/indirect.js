@@ -47,6 +47,8 @@ function* indirectCall(ofs)
         case 0x14dd: yield* sub_14dd(); return; // sound
         case 0x158c: yield* sub_158c(); return;
         case 0x1591: yield* sub_1591(); return;
+
+        case 0x4814: yield* sub_4814(); return;
     }
     console.log("Unimplemented indirect call "+ofs.toString(16));
     //throw "Indirect";

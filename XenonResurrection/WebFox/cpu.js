@@ -215,7 +215,12 @@ function out8(p, v)
 {
     if (video && video.PortWrite8(p, v))
         return;
-    if (p == 0x388 || p == 0x389 || p == 0x3c9 || p == 0x3c8)
+    if (p == 0x388 || p == 0x389)
+    {
+        console.log("sound");
+        return;
+    }
+    if (p == 0x3c9 || p == 0x3c8)
         return;
     console.log("out8: "+p.toString(16) + " <- " + v.toString(16));
 }
