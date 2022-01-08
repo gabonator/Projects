@@ -96,7 +96,11 @@ function* sub_164f()
   var audio = "diamond.aac";
   new Audio("sounds/"+audio).play();
 }
-
+var level = -1;
+function _setLevel(l)
+{
+  level = l;
+}
 function _processMap()
 {
   for (var i=0; i<37*256; i++)
@@ -176,22 +180,45 @@ for (var i=0; i<overlays.length; i++)
   overlays[i].userSelect = "none";
 }
 
-var ingamemusic = null;
+var currentSong = null;
+function playSong(song)
+{
+  if (currentSong && currentSong.myurl == song)
+    return;
+
+  if (currentSong)
+    currentSong.pause();
+  
+  currentSong = new Audio(song);
+  currentSong.myurl = song;
+  currentSong.loop = true;
+  currentSong.play();
+}
+
 function display()
 {
-  if (scene == "game" && !ingamemusic)
+//  if (scene == "greeting")
+//    playSong("music/menu.mp3");
+  if (scene == "game")
+    playSong(level == 0 ? "music/level1.mp3" : "music/level2.mp3");
+  if (scene == "info")
+    playSong("music/info.mp3");
+
+  if (scene != "game" || level > 0)
   {
-    ingamemusic = new Audio("music/level1.mp3").play();
-  }
-  if (scene != "game")
-  {
+    for (var i=0; i<overlays.length; i++)
+      overlays[i].style.display = "none";
+
     var p = 0;
     var pixels = data.data;
-    var padding = 400-320;
-    p += (padding/2)*4;
+    var padding = (400-320)/2*4;
+//    p += (padding/2)*4;
 //    p= 80*4;
     for (var y=0; y<200; y++)
     {
+      for (var x=0; x<padding; x++)
+        pixels[p++] = 0;
+      
       for (var x=0; x<320; x++)
       {
         var c = video.getPixel(x, y);
@@ -200,7 +227,9 @@ function display()
         pixels[p++] = c & 0xff;
         pixels[p++] = 255;
       }
-      p += (padding)*4;
+
+      for (var x=0; x<padding; x++)
+        pixels[p++] = 0;
     }
   } else 
   {
@@ -350,6 +379,9 @@ function assert(x)
 }
     document.onkeydown = function(evt) {
         evt = evt || window.event;
+        // cant play without user interaction
+        if (scene=="greeting")
+          playSong("music/menu.mp3");
         var p = 1;
         switch (evt.keyCode)
         {
@@ -379,6 +411,9 @@ evt.preventDefault();
 var pressed = false;
 
 window.onPress = (p) => {
+  if (scene=="greeting")
+    playSong("music/menu.mp3");
+
   pressed = true;
   if (scene != "game")
     memory[0x168f * 16 + 0x45c] = 1; 

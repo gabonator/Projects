@@ -141,6 +141,7 @@ function* entry() {
     case 0x00e9:
         yield* sub_3160();
         r8[al] = memory[ds*16+0x5250];
+        _setLevel(r8[al]);
         yield* sub_2eb7();
         _processMap();
         yield* sub_378d();
@@ -212,6 +213,9 @@ function* sub_0158() {
     } while (1);
 }
 function* sub_0173() {
+    var oldScene = scene;
+    scene = "info";
+
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -282,6 +286,8 @@ function* sub_0173() {
         r16[cx] = pop();
         r16[bx] = pop();
         r16[ax] = pop();
+
+        scene = oldScene;
         return;
     } while (1);
 }
@@ -485,6 +491,9 @@ function* sub_027b() {
     } while (1);
 }
 function* sub_0333() {
+    var oldscene = scene;
+    scene = "info";
+
     push(r16[ax]);
     push(r16[bx]);
     push(r16[cx]);
@@ -523,6 +532,7 @@ function* sub_0333() {
     r16[cx] = pop();
     r16[bx] = pop();
     r16[ax] = pop();
+    scene = oldscene;
 }
 function* sub_038a() {
     var pc = 0;
@@ -606,13 +616,14 @@ function* sub_03f2() {
         {
             yield* _sync();
             // std::cout << "Ignore keyboard\n";
-            r8[al] = 1;
+            //r8[al] = 1;
         }
         if (r8[al] == 0) {
             pc = 0x03f7;
             break;
         }
     case 0x0403:
+        yield* _sync();
         yield* sub_0805();
         r8[al] = memory[ds*16+0x42b];
         r8[al] = r8[al] | memory[ds*16+1150];
@@ -7539,7 +7550,7 @@ function* sub_2eb7() {
         }
         r8[al] += 0x07;
     case 0x2eca:
-        memory[ds*16+0x5256] = r8[al];
+        memory[ds*16+0x5256] = r8[al];  // set level char
         r16[di] = 0x72a3;
         r16[cx] = 0x0bf4;
         r8[al] = 0xff;
