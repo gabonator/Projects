@@ -795,18 +795,19 @@ bool slowdown{false};
 
 void onKey(int k, int p)
 {
+    static int keys = 0;
     switch (k)
     {
         case SDL_SCANCODE_Q: memory(0x1040, 0x7e44) = p ? 0xff:0; break;
-        case SDL_SCANCODE_W: memory(0x168f, 1069) = p; break;
-        case SDL_SCANCODE_E: memory(0x168f, 1070) = p; break;
+        case SDL_SCANCODE_W: memory(0x1040, 0x7e44) = p ? 0x40:0; break;
+        case SDL_SCANCODE_E: memory(0x1040, 0x7e44) = p ? 0x80:0; break;
         case SDL_SCANCODE_R: memory(0x168f, 1084) = p; break;
 
-        case SDL_SCANCODE_UP: memory(0x168f, 0x488) = p; break; // up
-        case SDL_SCANCODE_DOWN: memory(0x168f, 0x490) = p; break; // down
-        case SDL_SCANCODE_RIGHT: memory(0x168f, 0x48d) = p; break; // left
-        case SDL_SCANCODE_LEFT: memory(0x168f, 0x48b) = p; break; // right
-        case SDL_SCANCODE_SPACE: memory(0x168f, 0x45c) = p; break; // enter
+        case SDL_SCANCODE_UP: keys = p ? (keys | 8) : (keys & ~8); break;
+        case SDL_SCANCODE_DOWN: keys = p ? (keys | 4) : (keys & ~4); break;
+        case SDL_SCANCODE_RIGHT: keys = p ? (keys | 1) : (keys & ~1); break;
+        case SDL_SCANCODE_LEFT: keys = p ? (keys | 2) : (keys & ~2); break;
+        case SDL_SCANCODE_SPACE: keys = p ? (keys | 16) : (keys & ~16); break; // enter
         case SDL_SCANCODE_P: memory(0x168f, 0x459) = p; break;
         case SDL_SCANCODE_Z:
         {
@@ -814,6 +815,7 @@ void onKey(int k, int p)
             break;
         }
     }
+    memory(0x1040, 0x7e44) = keys;
     //memory16(0x168f, 0x5285) = 1;
     // ds:1069, ds:1070, ds:1084, ds:1067
 }
@@ -891,4 +893,11 @@ sub_0433 returns zero flag
  
  
  warning: CMP+RET
-*/
+ 
+ 
+ keyb: 90
+up: 8, 18
+ down: 4
+ right:1
+ left2:
+ */

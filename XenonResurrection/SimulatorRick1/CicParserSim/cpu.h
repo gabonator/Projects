@@ -297,6 +297,14 @@ void _lodsb()
     _al = SRC::Get8(_ds, DIR::Move(_si));
 }
 
+template <class DST, class SRC, class DIR>
+void _cmpsb()
+{
+    DIR::Assert();
+    int a = SRC::Get8(_ds, DIR::Move(_si));
+    int b = SRC::Get8(_es, DIR::Move(_di));
+    _flags.zero = a==b ? 1 : 0;
+}
 
 
 //

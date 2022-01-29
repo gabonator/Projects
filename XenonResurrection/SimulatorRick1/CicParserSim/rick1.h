@@ -223,18 +223,18 @@ loc_0107:                                       //loc_0107:
     sub_0445();                                 //call sub_0445
     if (!_flags.zero)                                //jnz loc_012a
         goto loc_012a;
-    sub_2b4d();                                 //call sub_2b4d
+    sub_2b4d();                                 //call sub_2b4d -- keyb something
 loc_011b:                                       //loc_011b:
     sub_0445();                                 //call sub_0445
-    if (_FIXME_)                                //jz loc_011b
+    if (_flags.zero)                                //jz loc_011b
         goto loc_011b;
 loc_0120:                                       //loc_0120:
     sub_0445();                                 //call sub_0445
-    if (_FIXME_)                                //jnz loc_0120
+    if (!_flags.zero)                                //jnz loc_0120
         goto loc_0120;
 loc_0125:                                       //loc_0125:
     sub_0445();                                 //call sub_0445
-    if (_FIXME_)                                //jz loc_0125
+    if (_flags.zero)                                //jz loc_0125
         goto loc_0125;
 loc_012a:                                       //loc_012a:
     _al = memory(_ds, 0x7d92);                  //mov al, [0x7d92]
@@ -622,7 +622,7 @@ loc_041d:                                       //loc_041d:
         goto loc_0427;
     _bl |= 0x40;                                //or bl, 0x40
 loc_0427:                                       //loc_0427:
-    memory(_ds, 32324) = _bl;                   //mov byte ptr [0x7e44], bl
+    memory(_ds, 32324) = _bl;                   //mov byte ptr [0x7e44], bl -- set keyboard char
     _bx = _pop();                               //pop bx
     _ds = _pop();                               //pop ds
     _al = 0x61;                                 //mov al, 0x61
@@ -651,6 +651,7 @@ loc_0440:                                       //loc_0440:
 
 void sub_0445()
 {
+    _sync();
     _al = memory(_ds, 0x7e44);                  //mov al, [0x7e44]
     _al &= 0x80;                                //and al, 0x80
     _flags.zero = _al == 0x80;
@@ -658,6 +659,7 @@ void sub_0445()
 
 void sub_044d()
 {
+    _sync();
     _al = memory(_ds, 0x7e44);                  //mov al, [0x7e44]
     _al &= 0x40;                                //and al, 0x40
     _flags.zero = _al == 0x40;
@@ -665,6 +667,7 @@ void sub_044d()
 
 void sub_0455()
 {
+    _sync();
     _al = memory(_ds, 0x7e44);                  //mov al, [0x7e44]
     _al &= 0x80;                                //and al, 0x80
     _flags.zero = _al == 0x80;
@@ -1984,9 +1987,8 @@ void sub_0f2a()
     _cx = 0x03e0;                               //mov cx, 0x3e0
 loc_0f40:                                       //loc_0f40:
     _bx += 1;                                   //inc bx
-    assert(0);
-    //_cmpsb<MemData, MemData, DirForward>();     //cmpsb
-    if (_bx != 0)                               //jnz loc_0f4b
+    _cmpsb<MemData, MemData, DirForward>();     //cmpsb
+    if (_flags.zero)                               //jnz loc_0f4b
         goto loc_0f4b;
 loc_0f47:                                       //loc_0f47:
     _cx -= 1;                                   //dec cx
@@ -2465,11 +2467,13 @@ void sub_12ae()
 {
     if (memory(_ds, 32117) == 0x00)             //jz loc_12b9
         goto loc_12b9;
+    _flags.zero = false;
     return;                                     //ret
 loc_12b9:                                       //loc_12b9:
     _di = 0x7e7e;                               //mov di, 0x7e7e
-    _STOP_("sp-trace-fail");                    //sub_12ae endp_failed
-    _STOP_("continues");                        //sub_12bc proc near
+    sub_12bc();
+    //_STOP_("sp-trace-fail");                    //sub_12ae endp_failed
+    //_STOP_("continues");                        //sub_12bc proc near
 }
 
 void sub_12bc()
@@ -2502,10 +2506,12 @@ loc_12ff:                                       //loc_12ff:
     if (_bx < _ax)                              //jc loc_1312
         goto loc_1312;
     _al = 0;                                    //sub al, al
+    _flags.zero = true;
     return;                                     //ret
 loc_1312:                                       //loc_1312:
     _al = 0;                                    //sub al, al
     _al -= 1;                                   //dec al
+    _flags.zero = false;
 }
 
 void sub_1317()
@@ -4112,7 +4118,7 @@ loc_20f0:                                       //loc_20f0:
     if (_al >= 0x10)                            //jnc loc_2102
         goto loc_2102;
     sub_2205();                                 //call sub_2205
-    if (_FIXME_)                                //jz loc_210d
+    if (_flags.zero)                                //jz loc_210d
         goto loc_210d;
     goto loc_21de;                              //jmp loc_21de
 loc_2102:                                       //loc_2102:
@@ -4254,6 +4260,7 @@ loc_222a:                                       //loc_222a:
         goto loc_2237;
     _ax = _pop();                               //pop ax
     memory(_ds, _si + 38) = 0x02;               //mov byte ptr [si+0x26], 0x2
+    _flags.zero = true;
     return;                                     //ret
 loc_2237:                                       //loc_2237:
     _si += 0x0030;                              //add si, 0x30
@@ -4262,6 +4269,7 @@ loc_2237:                                       //loc_2237:
 loc_223c:                                       //loc_223c:
     _ax = 0;                                    //sub ax, ax
     _ax += 1;                                   //inc ax
+    _flags.zero = false;
     _ax = _pop();                               //pop ax
 }
 
@@ -4322,7 +4330,7 @@ loc_229b:                                       //loc_229b:
     _dx = memory16(_ds, 32386);                 //mov dx, word ptr [0x7e82]
     _dx += 0x000a;                              //add dx, 0xa
     sub_13ed();                                 //call sub_13ed
-    if (_FIXME_)                                //jz loc_22b2
+    if (_flags.zero)                                //jz loc_22b2
         goto loc_22b2;
     return;                                     //ret
 loc_22b2:                                       //loc_22b2:
@@ -4795,7 +4803,7 @@ loc_268f:                                       //loc_268f:
     if (!(memory(_ds, _si) & 0x80))             //jz loc_26a2
         goto loc_26a2;
     sub_12ae();                                 //call sub_12ae
-    if (_FIXME_)                                //jnz loc_26a2
+    if (!_flags.zero)                                //jnz loc_26a2
         goto loc_26a2;
     {sub_19cf(); return; };                     //
 loc_26a2:                                       //loc_26a2:
@@ -4887,8 +4895,9 @@ loc_2757:                                       //loc_2757:
     memory(_ds, _si + 40) = _al;                //mov byte ptr [si+0x28], al
     _bx += 1;                                   //inc bx
     _al = memory(_ds, _bx);                     //mov al, byte ptr [bx]
-    _FIXME_;                                    //and al, al
-    _al &= _al;
+    //_FIXME_;                                    //and al, al
+    //_al &= _al;
+    _flags.sign = !!(_al & 0x80);
     if (!_flags.sign)                           //jns loc_276e
         goto loc_276e;
     _flags.carry = (_al + memory(_ds, _si + 2)) >= 0x100;
@@ -4910,8 +4919,9 @@ loc_2777:                                       //loc_2777:
     _cl = memory(_ds, _bx);                     //mov cl, byte ptr [bx]
     _ch = 0;                                    //sub ch, ch
     _ax = memory16(_ds, _si + 4);               //mov ax, word ptr [si+0x4]
-    _FIXME_;                                    //and cl, cl
-    _cl &= _cl;
+    //_FIXME_;                                    //and cl, cl
+    //_cl &= _cl;
+    _flags.sign = !!(_cl & 0x80);
     if (!_flags.sign)                           //jns loc_278b
         goto loc_278b;
     _ch -= 1;                                   //dec ch
