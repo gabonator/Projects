@@ -139,7 +139,16 @@ function setSegmentState(segment, lit) {
 <body>
 <input type=button value="short click" onClick="setShortClick()">
 <input type=button value="long click" onClick="setLongClick()">
-<div class="simulator">
+
+<br><br>
+<div>
+<div style="width:80px; height:80px; padding-right:8px; float:left; text-align:right">
+Auto<br>
+<br>
+<br>
+Manual
+</div>
+<div class="simulator" style="float:left;">
   <div class="display">
     <div class="digit">
       <div class="segA" ID="d9s0"></div>
@@ -196,6 +205,8 @@ function setSegmentState(segment, lit) {
   </div>
 </div>
 
+</div>
+<br style="clear:left;">
 
 <div id="display" style="font-size:80px; font-family: monospace; white-space: pre;"></div><br>
 <div id="time" style="font-size:14px;"></div><br>
