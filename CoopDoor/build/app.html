@@ -1,0 +1,368 @@
+<!-- https://gist.github.com/Grezzo/3babdcfffe837a89c31a -->
+<style type="text/css">
+div.simulator {
+  width: 350px;
+  text-align: center;
+}
+div.display {
+  height: 78px;
+  background: black;
+}
+div.digit {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 2px;
+  margin-right: 2px;
+	display: inline-block;
+	height: 70px;
+	width: 52px;
+	position: relative;
+  transform: skew(170deg);
+}
+div.segA {
+	width: 16px;
+	border-top: 10px solid #333;
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+	position: absolute;
+	left: 2px;
+}
+div.segB {
+	height: 16px;
+	border-top: 10px solid transparent;
+	border-right: 10px solid #333;
+	border-bottom: 5px solid transparent;
+	position: absolute;
+	top: 2px;
+	left: 30px
+}
+div.segC {
+	height: 16px;
+	border-top: 5px solid transparent;
+	border-right: 10px solid #333;
+	border-bottom: 10px solid transparent;
+	position: absolute;
+	top: 37px;
+	left: 30px
+}
+div.segD {
+	width: 16px;
+	border-bottom: 10px solid #333;
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+	position: absolute;
+	left: 2px;
+	bottom: 0px;
+}
+div.segE {
+	height: 16px;
+	border-top: 5px solid transparent;
+	border-left: 10px solid #333;
+	border-bottom: 10px solid transparent;
+	position: absolute;
+	top: 37px;
+}
+div.segF {
+	height: 16px;
+	border-top: 10px solid transparent;
+	border-left: 10px solid #333;
+	border-bottom: 5px solid transparent;
+	position: absolute;
+	top: 2px;
+}
+div.segGTop {
+	width: 16px;
+	border-bottom: 5px solid #333;
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+	position: absolute;
+	left: 2px;
+	top: 30px;
+}
+div.segGBottom {
+	width: 16px;
+	border-top: 5px solid #333;
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+	position: absolute;
+	top: 35px;
+	left: 2px;
+}
+div.segH {
+	position: absolute;
+	top: 60px;
+	left: 42px;
+	border-radius: 5px; /*Makes it a circle*/
+	width: 10px;
+	height: 10px;
+  background: #333;
+}
+</style>
+
+<script type="text/javascript">
+dark = "#333";
+light = "red";
+//Set right border/backround section of right div to illuminate display
+function setSegmentState(segment, lit) {
+  colour = lit ? light : dark;
+  if (segment.substr(0, 2) == "d9")
+    colour = lit ? "#bbb" : "#222";
+
+  piece = segment.substr(3, 1);
+  switch(piece) {
+    case "0":
+      document.getElementById(segment).style.borderTopColor = colour;
+      break;
+    case "1":
+    case "2":
+      document.getElementById(segment).style.borderRightColor = colour;
+      break;
+    case "3":
+      document.getElementById(segment).style.borderBottomColor = colour;
+      break;
+    case "4":
+    case "5":
+      document.getElementById(segment).style.borderLeftColor = colour;
+      break;
+    case "6":
+      //This segment (the central "G" one) is made of two div's borders
+      document.getElementById(segment + "Bottom").style.borderTopColor = colour;
+      document.getElementById(segment + "Top").style.borderBottomColor = colour;
+      break;
+    case "7":
+      document.getElementById(segment).style.background = colour;
+      break;
+  }
+}
+</script>
+</head>
+<body>
+<input type=button value="short click" onClick="setShortClick()">
+<input type=button value="long click" onClick="setLongClick()">
+<div class="simulator">
+  <div class="display">
+    <div class="digit">
+      <div class="segA" ID="d9s0"></div>
+      <div class="segD" ID="d9s3"></div>
+    </div><div class="digit">
+      <div class="segA" ID="d0s0"></div>
+      <div class="segB" ID="d0s1"></div>
+      <div class="segC" ID="d0s2"></div>
+      <div class="segD" ID="d0s3"></div>
+      <div class="segE" ID="d0s4"></div>
+      <div class="segF" ID="d0s5"></div>
+      <div class="segGTop" ID="d0s6Top"></div>
+      <div class="segGBottom" ID="d0s6Bottom"></div>
+    </div><div class="digit">
+      <div class="segA" ID="d1s0"></div>
+      <div class="segB" ID="d1s1"></div>
+      <div class="segC" ID="d1s2"></div>
+      <div class="segD" ID="d1s3"></div>
+      <div class="segE" ID="d1s4"></div>
+      <div class="segF" ID="d1s5"></div>
+      <div class="segGTop" ID="d1s6Top"></div>
+      <div class="segGBottom" ID="d1s6Bottom"></div>
+    </div><div class="digit">
+      <div class="segA" ID="d2s0"></div>
+      <div class="segB" ID="d2s1"></div>
+      <div class="segC" ID="d2s2"></div>
+      <div class="segD" ID="d2s3"></div>
+      <div class="segE" ID="d2s4"></div>
+      <div class="segF" ID="d2s5"></div>
+      <div class="segGTop" ID="d2s6Top"></div>
+      <div class="segGBottom" ID="d2s6Bottom"></div>
+      <div class="segH" ID="d2s7"></div>
+    </div><div class="digit">
+      <div class="segA" ID="d3s0"></div>
+      <div class="segB" ID="d3s1"></div>
+      <div class="segC" ID="d3s2"></div>
+      <div class="segD" ID="d3s3"></div>
+      <div class="segE" ID="d3s4"></div>
+      <div class="segF" ID="d3s5"></div>
+      <div class="segGTop" ID="d3s6Top"></div>
+      <div class="segGBottom" ID="d3s6Bottom"></div>
+      <div class="segH" ID="d3s7"></div>
+    </div><div class="digit">
+      <div class="segA" ID="d4s0"></div>
+      <div class="segB" ID="d4s1"></div>
+      <div class="segC" ID="d4s2"></div>
+      <div class="segD" ID="d4s3"></div>
+      <div class="segE" ID="d4s4"></div>
+      <div class="segF" ID="d4s5"></div>
+      <div class="segGTop" ID="d4s6Top"></div>
+      <div class="segGBottom" ID="d4s6Bottom"></div>
+      <div class="segH" ID="d4s7"></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="display" style="font-size:80px; font-family: monospace; white-space: pre;"></div><br>
+<div id="time" style="font-size:14px;"></div><br>
+<div id="status" style="font-size:14px;"></div><br>
+<input type=button value="+1 hr" onClick="addOffset(60*60)">
+<input type=button value="+1 min" onClick="addOffset(60)">
+<input type=button value="-1 min" onClick="addOffset(-60)">
+<input type=button value="-1 hr" onClick="addOffset(-60*60)">
+
+<script src="app_inline.js"></script>
+<script>
+/*
+function showDisplay(msg)
+{
+  let convert = {'*': 0b0110011,
+'|': 0b0000101,'-': 0b0000010,'_': 0b1001110,'0': 0b1111101,'1': 0b1100000,
+'2': 0b0111110,'3': 0b1111010,'4': 0b1100011,'5': 0b1011011,'6': 0b1011111,
+'7': 0b1110000,'8': 0b1111111,'9': 0b1111011,'A': 0b1110111,'B': 0b1001111,
+'c': 0b0001110,'C': 0b0011101,'D': 0b1101110,'E': 0b0011111,'e': 0b0011111,
+'F': 0b0010111,
+'G': 0b1011101,'H': 0b1100111,'I': 0b1100000,'J': 0b1101000,
+'l': 0b0001101,'L': 0b0001101,
+'M': 0b1010100,'N': 0b1000110,'O': 0b1111101,'o': 0b1001110,'P': 0b0110111,
+'Q': 0b1110011,'R': 0b0000110,'s': 0b1011011,'S': 0b1011011,'T': 0b0001111,
+'U': 0b1101101,'V': 0b1101101,
+'Y': 0b1101011,'Z': 0b0111110,' ': 0b0000000,
+'^': 0b0110011};
+
+  // top, right top, right bottom, bottom, left bottom, left top, middle
+  let tabl = [0b0010000, 0b0100000, 0b1000000, 0b0001000, 0b0000100, 0b0000001, 0b0000010, 0b10000000];
+  var k=0;
+  for (var i=0; i<5; i++)
+    for (var j=0; j<((i>1)?8:7); j++)
+      setSegmentState("d" + i + "s" + j, false);
+
+  for (var i=0; i<5 && k < msg.length; i++, k++)
+  {
+    var segments = convert[msg[k]];
+    if (msg[k+1] == '.' || msg[k+1] == ':')
+    {
+      segments |= 128;
+      k++;
+    }
+
+    for (var j=0; j<((i>1)?8:7); j++)
+      setSegmentState("d" + i + "s" + j, segments & tabl[j]);
+  } 
+}
+*/
+function ShowDisplay(buf)
+{
+  let tabl = [0b0010000, 0b0100000, 0b1000000, 0b0001000, 0b0000100, 0b0000001, 0b0000010, 0b10000000];
+  for (var i=0; i<5; i++)
+    for (var j=0; j<((i>1)?8:7); j++)
+      setSegmentState("d" + i + "s" + j, buf[i] & tabl[j]);
+}
+
+var offset = 0;
+var click = false, longclick = false;
+var inhibit = null;
+function addOffset(o) { offset += o*1000; inhibit = null; }
+function setShortClick() { click = true; inhibit = null; }
+function setLongClick() { longclick = true; inhibit = null; }
+//window.miniApp = new MiniApp()
+
+Module['noRun'] = true;	
+
+window.onload = () => {
+  Module['imports'] = {
+    apiDebug: (ptr) => { 
+      var msg = Module['imports'].log(ptr);
+      if (msg == "Actuator open")
+      {
+        document.querySelector("#status").innerHTML = "opened";
+        document.querySelector("#status").style = "font-size:20px; background: #00bb00; width:120px; color:white;";
+      }
+      if (msg == "Actuator close")
+      {
+        document.querySelector("#status").innerHTML = "closed";
+        document.querySelector("#status").style = "font-size:20px; background: #bb0000; width:120px; color:white;";
+      }
+      console.log("apiDebug: '" + msg + "'") ;
+    },
+    apiShow: (ptr) => {
+      console.log("apiShow: " + Module['imports'].log(ptr));
+//      showDisplay(Module['imports'].log(ptr));
+      document.querySelector("#display").innerHTML = Module['imports'].log(ptr);
+    },
+    apiShowSegments: (ptr) => {
+      var buf = [];
+      for (var i=0; i<5; i++)
+        buf.push(Module['memory'][ptr+i]);
+      ShowDisplay(buf);
+    },
+    apiGetDateTime: (ptr) => { 
+      var d = new Date(new Date().getTime() + offset);
+
+      var buf = [d.getUTCHours(), d.getUTCMinutes(), d.getSeconds(),
+        d.getUTCDate(), d.getUTCMonth()+1, 0,
+        d.getUTCFullYear()&255, d.getUTCFullYear()>>8];
+
+      document.querySelector("#time").innerHTML = d;
+
+      for (var i=0; i<buf.length; i++)
+        Module['memory'][ptr+i] = buf[i];
+      return true; 
+    },
+    apiCursor: (a, b) => { 
+      setSegmentState("d9s0", a);
+      setSegmentState("d9s3", b);
+    },
+    apiSleep: (ms) =>
+    {
+      inhibit = new Date().getTime() + ms;
+    },
+    apiShortClick: () => { 
+      if (!click)
+        return false;
+      click = false;
+      return true;
+    },
+    apiLongClick: () => { 
+      if (!longclick)
+        return false;
+      longclick = false;
+      return true;
+    },
+/*
+    js_getKey: () => { return window.miniApp.getKey(); },
+    js_getPixel: (x, y) => { return window.miniApp.getPixel(); },
+    js_init : () => { return window.miniApp.init(); },
+    js_loop : () => { return window.miniApp.loop(); },
+    js_running : () => { return window.miniApp.running(); },
+    js_setPixel : (x, y, rgb) => { return window.miniApp.setPixel(x, y, rgb); },
+    js_ticks : () => { return window.miniApp.ticks(); },
+    js_flashRead : (ptr, ofs, size) => { return window.miniApp.flashRead(ptr, ofs, size); },
+    js_flashWrite : (ptr, ofs, size) => { return window.miniApp.flashWrite(ptr, ofs, size); },
+*/
+    log: (ptr) => {
+      var text = "";
+      for (var i=0; i<50 && Module['memory'][ptr+i] != 0; i++)
+        text += String.fromCharCode(Module['memory'][ptr+i]);
+      return text;
+//      console.log(text); 
+    }
+  };
+
+  Module['exports'] = {
+    appFinish: null,
+    appInit: null,
+    appLoop: null
+  };
+
+  if (Module['run']) 
+    Module['run']()
+};
+
+Module['onRuntimeInitialized'] = () =>
+{
+  Module.appInit();
+  setInterval(() =>
+  {
+    if (inhibit && inhibit > new Date().getTime())
+      return;
+    Module.appLoop();
+  }, 100);
+}
+</script>
+<script src="app_app.js"></script>
+</body>
