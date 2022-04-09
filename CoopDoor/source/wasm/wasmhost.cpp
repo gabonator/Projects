@@ -18,6 +18,7 @@ extern "C" {
   void apiShowSegments(uint8_t* p);
   bool apiStorageSave(uint8_t* buffer, int len);
   bool apiStorageLoad(uint8_t* buffer, int len);
+  void apiChangeTime(int8_t h, int8_t m, int8_t d, int8_t mon, int8_t y);
 };
 
 class CKurinApp : public CKurin
@@ -118,6 +119,7 @@ protected:
   }
   virtual void ChangeTime(int8_t h, int8_t m, int8_t d, int8_t mon, int8_t y) override
   {
+    apiChangeTime(h, m, d, mon, y);
   }
 };
   

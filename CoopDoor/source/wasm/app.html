@@ -213,6 +213,7 @@ Manual
 <div id="display" style="font-size:80px; font-family: monospace; white-space: pre;"></div><br>
 <div id="time" style="font-size:14px;"></div><br>
 <div id="status" style="font-size:14px;"></div><br>
+<input type=checkbox id="rtc_ok" checked>RTC 
 <input type=button value="+1 hr" onClick="addOffset(60*60)">
 <input type=button value="+1 min" onClick="addOffset(60)">
 <input type=button value="-1 min" onClick="addOffset(-60)">
@@ -220,44 +221,7 @@ Manual
 
 <script src="app_inline.js"></script>
 <script>
-/*
-function showDisplay(msg)
-{
-  let convert = {'*': 0b0110011,
-'|': 0b0000101,'-': 0b0000010,'_': 0b1001110,'0': 0b1111101,'1': 0b1100000,
-'2': 0b0111110,'3': 0b1111010,'4': 0b1100011,'5': 0b1011011,'6': 0b1011111,
-'7': 0b1110000,'8': 0b1111111,'9': 0b1111011,'A': 0b1110111,'B': 0b1001111,
-'c': 0b0001110,'C': 0b0011101,'D': 0b1101110,'E': 0b0011111,'e': 0b0011111,
-'F': 0b0010111,
-'G': 0b1011101,'H': 0b1100111,'I': 0b1100000,'J': 0b1101000,
-'l': 0b0001101,'L': 0b0001101,
-'M': 0b1010100,'N': 0b1000110,'O': 0b1111101,'o': 0b1001110,'P': 0b0110111,
-'Q': 0b1110011,'R': 0b0000110,'s': 0b1011011,'S': 0b1011011,'T': 0b0001111,
-'U': 0b1101101,'V': 0b1101101,
-'Y': 0b1101011,'Z': 0b0111110,' ': 0b0000000,
-'^': 0b0110011};
 
-  // top, right top, right bottom, bottom, left bottom, left top, middle
-  let tabl = [0b0010000, 0b0100000, 0b1000000, 0b0001000, 0b0000100, 0b0000001, 0b0000010, 0b10000000];
-  var k=0;
-  for (var i=0; i<5; i++)
-    for (var j=0; j<((i>1)?8:7); j++)
-      setSegmentState("d" + i + "s" + j, false);
-
-  for (var i=0; i<5 && k < msg.length; i++, k++)
-  {
-    var segments = convert[msg[k]];
-    if (msg[k+1] == '.' || msg[k+1] == ':')
-    {
-      segments |= 128;
-      k++;
-    }
-
-    for (var j=0; j<((i>1)?8:7); j++)
-      setSegmentState("d" + i + "s" + j, segments & tabl[j]);
-  } 
-}
-*/
 function ShowDisplay(buf)
 {
   let tabl = [0b0010000, 0b0100000, 0b1000000, 0b0001000, 0b0000100, 0b0000001, 0b0000010, 0b10000000];
@@ -315,7 +279,7 @@ window.onload = () => {
 
       for (var i=0; i<buf.length; i++)
         Module['memory'][ptr+i] = buf[i];
-      return true; 
+      return document.querySelector("#rtc_ok").checked; 
     },
     apiCursor: (a, b) => { 
       setSegmentState("d9s0", a);
@@ -357,6 +321,9 @@ window.onload = () => {
       for (var i=0; i<b.length; i++)
         Module['memory'][buffer+i] = b[i];
       return true;
+    },
+    apiChangeTime: (h, m, d, mon, y) => {
+      offset += (((mon*31 + y*365 + d)*24 + h)*60 + m)*60 *1000;
     },
     log: (ptr) => {
       var text = "";
