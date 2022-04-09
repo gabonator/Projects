@@ -139,6 +139,8 @@ function setSegmentState(segment, lit) {
 <body>
 <input type=button value="short click" onClick="setShortClick()">
 <input type=button value="long click" onClick="setLongClick()">
+<input type=button value="<" onClick="setMove(-1)">
+<input type=button value=">" onClick="setMove(1)">
 
 <br><br>
 <div>
@@ -265,11 +267,12 @@ function ShowDisplay(buf)
 }
 
 var offset = 0;
-var click = false, longclick = false;
+var click = false, longclick = false, move = 0;
 var inhibit = null;
 function addOffset(o) { offset += o*1000; inhibit = null; }
 function setShortClick() { click = true; inhibit = null; }
 function setLongClick() { longclick = true; inhibit = null; }
+function setMove(d) { move += d; inhibit = null; }
 //window.miniApp = new MiniApp()
 
 Module['noRun'] = true;	
@@ -334,17 +337,27 @@ window.onload = () => {
       longclick = false;
       return true;
     },
-/*
-    js_getKey: () => { return window.miniApp.getKey(); },
-    js_getPixel: (x, y) => { return window.miniApp.getPixel(); },
-    js_init : () => { return window.miniApp.init(); },
-    js_loop : () => { return window.miniApp.loop(); },
-    js_running : () => { return window.miniApp.running(); },
-    js_setPixel : (x, y, rgb) => { return window.miniApp.setPixel(x, y, rgb); },
-    js_ticks : () => { return window.miniApp.ticks(); },
-    js_flashRead : (ptr, ofs, size) => { return window.miniApp.flashRead(ptr, ofs, size); },
-    js_flashWrite : (ptr, ofs, size) => { return window.miniApp.flashWrite(ptr, ofs, size); },
-*/
+    apiOnMove: () => {
+      var old = move;
+      move = 0;
+      return old;
+    },
+    apiStorageSave: (buffer, len) => {
+      var b = [];
+      for (var i=0; i<len; i++)
+        b.push(Module['memory'][buffer+i]);
+      console.log("Save buffer");
+      console.log(b);
+      return true;
+    },
+    apiStorageLoad: (buffer, len) => {
+      var b = [106, 17, 1, 2, 1, 225, 0, 171, 0, 0, 0, 0, 11];
+      if (len != b.length)
+        throw "Wrong length";
+      for (var i=0; i<b.length; i++)
+        Module['memory'][buffer+i] = b[i];
+      return true;
+    },
     log: (ptr) => {
       var text = "";
       for (var i=0; i<50 && Module['memory'][ptr+i] != 0; i++)

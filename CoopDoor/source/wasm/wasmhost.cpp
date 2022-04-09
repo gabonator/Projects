@@ -12,9 +12,12 @@ extern "C" {
   void apiCursor(bool a, bool b);
   bool apiShortClick();
   bool apiLongClick();
+  int apiOnMove();
   bool apiGetDateTime(DateTime_t* p);
   void apiSleep(int ms);
   void apiShowSegments(uint8_t* p);
+  bool apiStorageSave(uint8_t* buffer, int len);
+  bool apiStorageLoad(uint8_t* buffer, int len);
 };
 
 class CKurinApp : public CKurin
@@ -64,8 +67,9 @@ protected:
     return apiLongClick();
   }
 
-  virtual void SetupAttribute(CKurin::EAttribute attr) override
+  virtual int OnMove() override
   {
+    return apiOnMove();
   }
 
   uint8_t CharToSegments(char c)
@@ -83,7 +87,7 @@ protected:
       case 'J': return 0b1101000; case 'L': return 0b0001101; case 'M': return 0b1010100;
       case 'N': return 0b1000110; case 'O': return 0b1111101; case 'o': return 0b1001110; case 'P': return 0b0110111;
       case 'Q': return 0b1110011; case 'R': return 0b0000110; case 'r': return 0b0000110; case 'S': return 0b1011011;
-      case 'T': return 0b0001111; case 'U': return 0b1101101; case 'V': return 0b1101101;
+      case 'T': return 0b0001111; case 't': return 0b0001111;  case 'U': return 0b1101101; case 'V': return 0b1101101;
       case 'Y': return 0b1101011; case 'Z': return 0b0111110; case '^': return 0b0110011;
       default: return 0b0000000;
     };
@@ -103,6 +107,17 @@ protected:
       }
     } 
     apiShowSegments(buf);
+  }
+  virtual bool StorageSave(uint8_t* buffer, int len) override
+  {
+    return apiStorageSave(buffer, len);
+  }
+  virtual bool StorageLoad(uint8_t* buffer, int len) override
+  {
+    return apiStorageLoad(buffer, len);
+  }
+  virtual void ChangeTime(int8_t h, int8_t m, int8_t d, int8_t mon, int8_t y) override
+  {
   }
 };
   

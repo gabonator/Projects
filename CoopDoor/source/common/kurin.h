@@ -24,8 +24,13 @@ class CKurin
     SetupYear,
     SetupLatitude,
     SetupLongitude,
+    SetupSunriseOffset,
+    SetupSunsetOffset,
     SetupUtc,
     SetupDone,
+    //LoadError
+    ErrorLoad1,
+    ErrorLoad2
   };
 
   enum class EMode {
@@ -34,7 +39,7 @@ class CKurin
     Open,
     Close
   };
-
+/*
 protected:
   enum class EAttribute {
     None,
@@ -45,16 +50,17 @@ protected:
     Year,
     Latitude,
     Longitude,
-    Utc
+    Utc,
+    SunriseOffset,
+    SunsetOffset
   };
-
+*/
 private:
   CAstro mAstro;
   CAstro::State_t mAstroState;
 
   EState mState{EState::Start};
   EMode mMode{EMode::None};
-//  char mMsg[8];
   DateTime_t mTime;
   
   int mLastDay{-1};
@@ -63,9 +69,10 @@ private:
   uint8_t mTick{0};
 
 protected:
-  int mLatitude{481}; // 4.81
-  int mLongitude{171}; // 17.1
-  int8_t mUtc{1};
+  int16_t mLatitude{481}; // 4.81
+  int16_t mLongitude{171}; // 17.1
+  int16_t mSunriseOffset{0};
+  int16_t mSunsetOffset{0};
 
 protected:
   virtual bool UpdateTime(DateTime_t& datetime) = 0;
@@ -75,7 +82,11 @@ protected:
   virtual void ShowCursor(bool automatic, bool manual) = 0;
   virtual bool OnShortPress() = 0;
   virtual bool OnLongPress() = 0;
-  virtual void SetupAttribute(EAttribute attr) = 0;
+  virtual int OnMove() = 0;
+  //virtual void SetupAttribute(EAttribute attr) = 0;
+  virtual bool StorageSave(uint8_t* buffer, int len) = 0;
+  virtual bool StorageLoad(uint8_t* buffer, int len) = 0;
+  virtual void ChangeTime(int8_t h, int8_t m, int8_t d, int8_t mon, int8_t y) = 0;
 
 public:
   void Init()
@@ -87,6 +98,8 @@ public:
     mAstroState = mAstro.Sunrise(
       {static_cast<int16_t>(mTime.year), static_cast<int8_t>(mTime.month), static_cast<int8_t>(mTime.day)}, 
       {mLatitude*0.1f, mLongitude*0.1f});
+    mAstroState.sunrise += mSunriseOffset / 60.0f;
+    mAstroState.sunset += mSunsetOffset / 60.0f;
   }
 
   bool IsDaylight()
@@ -102,7 +115,7 @@ public:
     {
       if (!UpdateTime(mTime))
       {
-        Show("Error");
+        Show((mTick++ & 1) ? "rtc" : "Error");
         Sleep(2000);
         return;
       }
@@ -112,70 +125,9 @@ public:
         Calculate(); // TODO: show message? calc?
         mLastDay = mTime.day;
       }
-  
-      if (OnLongPress())
-      {
-        SetupAttribute(EAttribute::None);
-        if (mState >= EState::Setup)       
-          mState = EState::Time;
-        else
-          mState = EState::Setup;
-      }
-  
-      if (OnShortPress())
-      {
-        if (mState >= EState::Setup)       
-        {
-          mState = (EState)((int)mState+1);
-        } else
-        {
-          switch (mMode)
-          {
-            case EMode::None:
-              // wait until startup sequence is finished
-              break;
-            case EMode::Auto:
-              mMode = EMode::Close;
-              mState = EState::Close;
-              mActuatorOpened = false;
-    //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
-              UpdateActuator(mActuatorOpened);
-              break;
-            case EMode::Close:
-              mMode = EMode::Open;
-              mState = EState::Open;
-              mActuatorOpened = true;
-    //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
-              UpdateActuator(mActuatorOpened);
-              break;
-            case EMode::Open:
-              mMode = EMode::Auto;
-              mState = EState::Auto;
-              mLastMinute = mTime.minute; // forbid auto update, show message first
-    //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
-              break;
-          }
-        }
-      }
-  
-      if (mMode == EMode::Auto && mLastMinute != mTime.minute)
-      {
-        mLastMinute = mTime.minute;
-  
-        bool newDaylight = IsDaylight();
-        if (mActuatorOpened != newDaylight)
-        {
-          // Update actuator
-          mActuatorOpened = newDaylight;
-          UpdateActuator(mActuatorOpened);
-          if (mActuatorOpened)
-            mState = EState::Open;
-          else
-            mState = EState::Close;
-        }
-      }
+      CheckControls();
     }
-    
+
     const char* prefix = "";
     switch (mState)
     {
@@ -184,14 +136,21 @@ public:
         Sleep(2000);
         break;
       case EState::Version: 
-        mMode = EMode::Auto;
-        Show("VER1.0");
+        Show("VER1.1");
         Sleep(2000);
+        if (!LoadSettings())
+        {
+          mState = EState::ErrorLoad1;
+          // then sets auto mode
+          return;
+        } else {
+          mMode = EMode::Auto; // jumps to open/close info
+        }
         break;
       case EState::State:
         ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
         Show(mActuatorOpened ? " OPEN" : "CLOSE");
-        Sleep(2000);
+        Sleep(5000);
         break;
       case EState::Sunrise: 
       {
@@ -244,12 +203,12 @@ public:
         return;
       // Setup
       case EState::Setup:
-        SetupAttribute(EAttribute::None);
+//        SetupAttribute(EAttribute::None);
         Show("SETUP");
         Sleep(2000);
         break;
       case EState::SetupHour:
-        SetupAttribute(EAttribute::Hour);
+//        SetupAttribute(EAttribute::Hour);
         if (mTick++ & 1) 
           Show("T%02d:%02d", mTime.LocalHour(), mTime.LocalMinute());
          else
@@ -257,7 +216,7 @@ public:
         Sleep(500);
         return;
       case EState::SetupMinute:
-        SetupAttribute(EAttribute::Minute);
+//        SetupAttribute(EAttribute::Minute);
         if (mTick++ & 1) 
           Show("T%02d:%02d", mTime.LocalHour(), mTime.LocalMinute());
          else
@@ -265,7 +224,7 @@ public:
         Sleep(500);
         return;
       case EState::SetupDay:
-        SetupAttribute(EAttribute::Day);
+//        SetupAttribute(EAttribute::Day);
         prefix = (mTime.LocalDay() < 10 && mTime.LocalMonth() < 10) ? "D " : "D";
         if (mTick++ & 1) 
           Show("%s%d.%d.", prefix, mTime.LocalDay(), mTime.LocalMonth());
@@ -276,7 +235,7 @@ public:
         Sleep(500);
         return;
       case EState::SetupMonth:
-        SetupAttribute(EAttribute::Month);
+//        SetupAttribute(EAttribute::Month);
         prefix = (mTime.LocalDay() < 10 && mTime.LocalMonth() < 10) ? "D " : "D";
         if (mTick++ & 1) 
           Show("%s%d.%d.", prefix, mTime.LocalDay(), mTime.LocalMonth());
@@ -287,7 +246,7 @@ public:
         Sleep(500);
         return;
       case EState::SetupYear:
-        SetupAttribute(EAttribute::Year);
+//        SetupAttribute(EAttribute::Year);
         if (mTick++ & 1) 
           Show("Y%d", mTime.LocalYear());
         else
@@ -295,42 +254,234 @@ public:
         Sleep(500);
         return;
       case EState::SetupLatitude:
-        SetupAttribute(EAttribute::Latitude);
+//        SetupAttribute(EAttribute::Latitude);
         if (mTick++ & 1) 
-          Show("LA%d.%2d", mLatitude/100, mLatitude%100);  //todo 100/1?
+          Show("LA%d.%02d", mLatitude/100, mLatitude%100);  //todo 100/1?
         else
           Show("LA");
         Sleep(500);
         return;
       case EState::SetupLongitude:
-        SetupAttribute(EAttribute::Longitude);
+//        SetupAttribute(EAttribute::Longitude);
         if (mTick++ & 1) 
-          Show("Lo%d.%2d", mLongitude/100, mLongitude%100);
+          Show("Lo%d.%02d", mLongitude/100, mLongitude%100);
         else
           Show("Lo");
         Sleep(500);
         return;
       case EState::SetupUtc:
-        SetupAttribute(EAttribute::Utc);
+//        SetupAttribute(EAttribute::Utc);
         if (mTick++ & 1)
         {
-          if (mUtc>=0) 
-            Show("Utc %d", mUtc);
+          if (mTime.GetTimezone()>=0) 
+            Show("Utc %d", mTime.GetTimezone());
           else
-            Show("Utc%d", mUtc);
+            Show("Utc%d", mTime.GetTimezone());
         }
         else
           Show("Utc");
         Sleep(500);
         return;
-      case EState::SetupDone: // todo minute offset?
+      case EState::SetupSunriseOffset:
+//        SetupAttribute(EAttribute::SunriseOffset);
+        if (mTick++ & 1)
+        {
+          if (mSunriseOffset>=0) 
+            Show("OP %d", mSunriseOffset);
+          else
+            Show("OP%d", mSunriseOffset);
+        }
+        else
+          Show("OP");
+        Sleep(500);
+        return;
+      case EState::SetupSunsetOffset:
+//        SetupAttribute(EAttribute::SunsetOffset);
+        if (mTick++ & 1)
+        {
+          if (mSunsetOffset>=0) 
+            Show("CL %d", mSunsetOffset);
+          else
+            Show("CL%d", mSunsetOffset);
+        }
+        else
+          Show("Op");
+        Sleep(500);
+        return;
+      case EState::SetupDone:
+        SaveSettings();
+        Calculate();
         Show("SET");
-        SetupAttribute(EAttribute::None);
+//        SetupAttribute(EAttribute::None);
         Sleep(2000);
         mState = EState::Time;
+        return;
+
+      case EState::ErrorLoad1:
+        Show("LOAD");
+        Sleep(2000);
+        break;
+      case EState::ErrorLoad2:
+        Show("ERROR");
+        Sleep(2000);
+        mState = EState::Time;
+        mMode = EMode::Auto; // shown at startup
         return;
     }
 
     mState = (EState)((int)mState+1);
+  }
+  void CheckControls()
+  {
+    if (OnLongPress())
+    {
+      //SetupAttribute(EAttribute::None);
+      if (mState >= EState::Setup)       
+        mState = EState::Time;
+      else
+        mState = EState::Setup;
+    }
+
+    if (OnShortPress())
+    {
+      if (mState >= EState::Setup)       
+      {
+        mState = (EState)((int)mState+1);
+      } else
+      {
+        switch (mMode)
+        {
+          case EMode::None:
+            // wait until startup sequence is finished
+            break;
+          case EMode::Auto:
+            mMode = EMode::Close;
+            mState = EState::Close;
+            mActuatorOpened = false;
+  //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
+            UpdateActuator(mActuatorOpened);
+            break;
+          case EMode::Close:
+            mMode = EMode::Open;
+            mState = EState::Open;
+            mActuatorOpened = true;
+  //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
+            UpdateActuator(mActuatorOpened);
+            break;
+          case EMode::Open:
+            mMode = EMode::Auto;
+            mState = EState::Auto;
+            mLastMinute = mTime.minute; // forbid auto update, show message first
+  //          ShowCursor(mMode == EMode::Auto, mMode != EMode::Auto);
+            break;
+        }
+      }
+    }
+
+    if (mMode == EMode::Auto && mLastMinute != mTime.minute)
+    {
+      mLastMinute = mTime.minute;
+
+      bool newDaylight = IsDaylight();
+      if (mActuatorOpened != newDaylight)
+      {
+        // Update actuator
+        mActuatorOpened = newDaylight;
+        UpdateActuator(mActuatorOpened);
+        if (mActuatorOpened)
+          mState = EState::Open;
+        else
+          mState = EState::Close;
+      }
+    }
+
+    int m = OnMove();
+    if (m!=0)
+    {
+      switch (mState)
+      {
+        case EState::SetupHour:
+          ChangeTime(m, 0, 0, 0, 0);
+          break;
+        case EState::SetupMinute:
+          ChangeTime(0, m, 0, 0, 0);
+          break;
+        case EState::SetupDay:
+          ChangeTime(0, 0, m, 0, 0);
+          break;
+        case EState::SetupMonth:
+          ChangeTime(0, 0, 0, m, 0);
+          break;
+        case EState::SetupYear:
+          ChangeTime(0, 0, 0, 0, m);
+          break;
+        case EState::SetupLatitude:
+          mLatitude += m;
+          break;
+        case EState::SetupLongitude:
+          mLongitude += m;
+          break;
+        case EState::SetupSunriseOffset:
+          mSunriseOffset += m*5;
+          break;
+        case EState::SetupSunsetOffset:
+          mSunsetOffset += m*5;
+          break;
+        case EState::SetupUtc:
+          DateTimeTimezone += m;
+          DateTimeTimezoneDls += m;
+          break;
+        default:
+          break;
+      }
+      mTick = 1;
+    }
+  }
+
+  bool SaveSettings()
+  {
+    uint8_t buffer[13] =
+    {0x6a, 0x11, 
+     static_cast<uint8_t>(DateTimeTimezone), 
+     static_cast<uint8_t>(DateTimeTimezoneDls),
+     static_cast<uint8_t>(mLatitude >> 8), 
+     static_cast<uint8_t>(mLatitude & 255),
+     static_cast<uint8_t>(mLongitude >> 8), 
+     static_cast<uint8_t>(mLongitude & 255),
+     static_cast<uint8_t>(mSunriseOffset >> 8), 
+     static_cast<uint8_t>(mSunriseOffset & 255),
+     static_cast<uint8_t>(mSunsetOffset >> 8), 
+     static_cast<uint8_t>(mSunsetOffset & 255),
+     0x00};
+
+    const int crci = sizeof(buffer)-1;
+    for (int i=0; i<crci; i++)
+      buffer[crci] += buffer[i];
+    return StorageSave(buffer, sizeof(buffer));
+  }
+
+  bool LoadSettings()
+  {
+    uint8_t buffer[13];
+    if (!StorageLoad(buffer, sizeof(buffer)))
+      return false;
+
+    if (buffer[0] != 0x6a || buffer[1] != 0x11)
+      return false;
+
+    const int crci = sizeof(buffer)-1;
+    for (int i=0; i<crci; i++)
+      buffer[crci] -= buffer[i];
+    if (buffer[crci] != 0)
+      return false;
+
+    DateTimeTimezone = buffer[2];
+    DateTimeTimezoneDls = buffer[3];
+    mLongitude = (buffer[4]<<8) | buffer[5];
+    mLatitude = (buffer[6]<<8) | buffer[7];
+    mSunriseOffset = (buffer[8]<<8) | buffer[9];
+    mSunsetOffset = (buffer[10]<<8) | buffer[11];
+    // TODO: sanity check?
+    return true;
   }
 };

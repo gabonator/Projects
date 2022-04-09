@@ -1,3 +1,6 @@
+int8_t DateTimeTimezone = +1;
+int8_t DateTimeTimezoneDls = +2;
+
 struct DateTime_t
 {
   uint8_t hour;
@@ -33,7 +36,7 @@ struct DateTime_t
 
   int GetTimezone()
   {
-    return IsDls() ? +2 : +1;
+    return IsDls() ? DateTimeTimezoneDls : DateTimeTimezone;
   }
 
   int GetTimestamp()
