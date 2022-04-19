@@ -54,7 +54,7 @@ private:
   uint8_t mTick{0};
 
 protected:
-  int16_t mLatitude{481}; // 4.81
+  int16_t mLatitude{481}; // 48.1
   int16_t mLongitude{171}; // 17.1
   int16_t mSunriseOffset{0};
   int16_t mSunsetOffset{0};
@@ -101,6 +101,7 @@ public:
 
       if (!UpdateTime(mTime))
       {
+        // TODO: use goto instead
         Show((mTick++ & 1) ? "rtc" : "Error");
         Sleep(2000);
         return;
@@ -252,14 +253,14 @@ public:
         return;
       case EState::SetupLatitude:
         if (mTick++ & 1) 
-          Show("LA%d.%02d", mLatitude/100, mLatitude%100);  //todo 100/1?
+          Show("LA%2d.%d", mLatitude/10, mLatitude%10);  //todo 100/1?
         else
           Show("LA");
         Sleep(500);
         return;
       case EState::SetupLongitude:
         if (mTick++ & 1) 
-          Show("Lo%d.%02d", mLongitude/100, mLongitude%100);
+          Show("Lo%2d.%d", mLongitude/10, mLongitude%10);
         else
           Show("Lo");
         Sleep(500);
@@ -449,8 +450,8 @@ public:
 
     DateTimeTimezone = buffer[2];
     DateTimeTimezoneDls = buffer[3];
-    mLongitude = (buffer[4]<<8) | buffer[5];
-    mLatitude = (buffer[6]<<8) | buffer[7];
+    mLatitude = (buffer[4]<<8) | buffer[5];
+    mLongitude = (buffer[6]<<8) | buffer[7];
     mSunriseOffset = (buffer[8]<<8) | buffer[9];
     mSunsetOffset = (buffer[10]<<8) | buffer[11];
     // TODO: sanity check?
