@@ -229,15 +229,14 @@ private:
         if (attributes["humidity"] == 99)
         {
             sprintf(desc, "Ch: <%d> Temp: <%d.%d\xf8""C>",
-            (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)abs(attributes["temperature10"]) % 10);
+            (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)abs((int)attributes["temperature10"]) % 10);
         }
         else
         {
             sprintf(desc, "Ch: <%d> Temp: <%d.%d\xf8""C> Humidity: <%d%%>",
-                    (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)abs(attributes["temperature10"]) % 10, (int)attributes["humidity"]);
+                    (int)attributes["channel"], (int)attributes["temperature10"] / 10, (int)abs((int)attributes["temperature10"]) % 10, (int)attributes["humidity"]);
         }
     }
 
     virtual const char* GetString(int i) override { return nullptr; }
 };
-
