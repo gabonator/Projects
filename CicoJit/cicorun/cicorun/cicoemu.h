@@ -80,6 +80,7 @@ public:
 #define memoryVideoSet ctx->memoryVideoSet8
 #define memoryVideoGet16 ctx->memoryVideoGet16
 #define memoryVideoSet16 ctx->memoryVideoSet16
+#define memoryVideoAnd(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & val)
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push

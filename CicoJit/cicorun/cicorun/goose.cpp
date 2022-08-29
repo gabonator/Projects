@@ -473,11 +473,11 @@ sub_13498();
 sub_10b8e();
 sub_13383();
 ax = memory16(ds, 0x954c);
-if (!(ax & 0x0080))
+if (ax & 0x0080)
 goto loc_10197;
 memory16(ds, 0x8e80)++;
 bx = memory16(ds, 0x8e80);
-if (!(bx & 0x0007))
+if (bx & 0x0007)
 goto loc_10195;
 bx >>= 1;
 bx >>= 1;
@@ -500,7 +500,7 @@ sub_101ad();
 loc_1017e:
 goto loc_10195;
 loc_10180:
-if (!(al & 0x80))
+if (al & 0x80)
 goto loc_10189;
 sub_1019d();
 goto loc_10195;
@@ -687,11 +687,11 @@ return;
 loc_102e4:
 ax = 0x0003;
 interrupt(0x33);
-if (bx & 0x0001)
+if (!(bx & 0x0001))
 goto loc_102f5;
 memory16(ds, 0x954c) |= 0x0080;
 loc_102f5:
-if (bx & 0x0002)
+if (!(bx & 0x0002))
 goto loc_10300;
 memory16(ds, 0x954c) |= 0x0020;
 loc_10300:
@@ -747,7 +747,7 @@ al = 0x0b;
 sub_13840();
 sub_10f3c();
 goto loc_10fda;
-stop(0); //   gap of 2 bytes
+stop(0); //  inc gap of 2 bytes
 loc_1100e:
 al = 0x0b;
 sub_13840();
@@ -770,9 +770,9 @@ loc_11034:
 goto loc_10fda;
 loc_11036:
 al = memory(ds, si);
-if (!(al & 0x80))
+if (al & 0x80)
 return;
-if (al & 0x02)
+if (!(al & 0x02))
 goto loc_11054;
 push(si);
 bl = memory(ds, si + 18);
@@ -834,9 +834,9 @@ loc_10ba4:
 si = 0x1b8a;
 loc_10ba7:
 al = memory(ds, si);
-if (!(al & 0x80))
+if (al & 0x80)
 goto loc_10bc2;
-if (al & 0x01)
+if (!(al & 0x01))
 goto loc_10bbd;
 if (cl != memory(ds, si + 2))
 goto loc_10bbd;
@@ -1363,7 +1363,7 @@ push(cx);
 sub_101c0();
 pop(cx);
 ax = memory16(ds, 0x954c);
-if (al & 0x80)
+if (!(al & 0x80))
 goto loc_101bd;
 return;
 loc_101bd:
@@ -1428,7 +1428,7 @@ al = -al;
 al += 0x3f;
 al <<= 1;
 bl = al;
-memory16(ds, bx - 37417) |= cx;
+memory16(ds, bx - 37417 + 0x10000) |= cx;
 goto loc_106c2;
 loc_106eb:
 al = memory(ds, 0x9501);
@@ -1481,7 +1481,7 @@ out(dx, ax);
 ax = 0x0f01;
 out(dx, ax);
 cx = 0x4000;
-rep_stosw<MemAuto, DirAuto>();
+rep_stosw<MemVideo, DirAuto>();
 ax = 0x8f29;
 memory16(ds, 0x8f25) = ax;
 memory16(ds, 0x8f23) = 0x03f0;
@@ -1674,6 +1674,7 @@ out(dx, ax);
 ax = 0x0f07;
 out(dx, ax);
 pop(bp);
+sp += 10;
 }
 // extracting 1000:2200, converted 44, to convert 64, failed 0
 void sub_12200()
@@ -2153,7 +2154,7 @@ al = memory(ds, si + 10);
 ah = 0x00;
 push(ax);
 bx = memory16(ds, si + 13);
-bx = memory16(ds, bx - 38120);
+bx = memory16(ds, bx - 38120 + 0x10000);
 al = memory(ds, si + 17);
 memory(cs, 0x0d95) = al;
 cl = al;
@@ -2289,6 +2290,7 @@ goto loc_137b2;
 loc_137d5:
 sp = bp;
 pop(bp);
+sp += 8;
 return;
 loc_137db:
 sub_13801();
@@ -2437,6 +2439,7 @@ memory16(ds, bp + 4) = ax;
 goto loc_135bf;
 loc_136d0:
 pop(bp);
+sp += 4;
 }
 // extracting 1000:31e7, converted 59, to convert 117, failed 0
 void sub_131e7()
@@ -2533,6 +2536,7 @@ al -= 0x0a;
 loc_1270d:
 memory(ds, 0x94a9) = al;
 pop(bp);
+sp += 8;
 }
 // extracting 1000:2714, converted 62, to convert 115, failed 0
 void sub_12714()
@@ -3022,7 +3026,7 @@ push(di);
 cx = 0x1f40;
 loc_13406:
 lodsb<MemAuto, DirAuto>();
-memory(es, di) &= al;
+memoryVideoAnd(es, di, al);
 di++;
 if (--cx)
 goto loc_13406;
@@ -3070,6 +3074,7 @@ pop(ds);
 ax = 0x0005;
 out(dx, ax);
 pop(bp);
+sp += 4;
 }
 // extracting 1000:0b7c, converted 76, to convert 120, failed 0
 void sub_10b7c()
@@ -3077,7 +3082,7 @@ void sub_10b7c()
 si = 0x1b8a;
 loc_10b7f:
 al = memory(ds, si);
-if (!(al & 0x80))
+if (al & 0x80)
 return;
 memory(ds, si) = 0x00;
 si += 0x0017;
@@ -3196,14 +3201,14 @@ memory16(ds, si + 15) = ax;
 // extracting 1000:0b58, converted 81, to convert 110, failed 0
 void sub_10b58()
 {
-ax = 0x03a5;
+ax = 0x03a5 + 0x1000;
 es = ax;
 di = 0x1b8a;
 loc_10b60:
 al = memory(ds, di);
-if (!(al & 0x80))
+if (al & 0x80)
 goto loc_10b78;
-if (!(al & 0x01))
+if (al & 0x01)
 goto loc_10b73;
 push(di);
 cx = 0x0017;
@@ -3505,6 +3510,7 @@ out(dx, ax);
 al++;
 out(dx, ax);
 pop(bp);
+sp += 8;
 }
 // extracting 1000:3914, converted 95, to convert 86, failed 0
 void sub_13914()
@@ -3638,7 +3644,7 @@ memory(ds, 0x94e7) = al;
 void sub_12f50()
 {
 al = memory(ds, si);
-if (!(al & 0x20))
+if (al & 0x20)
 goto loc_12f5e;
 ah = memory(ds, 0x951a);
 al = 0xf8;
@@ -3656,9 +3662,9 @@ memory(ds, si) = 0x00;
 si = 0x1ba1;
 loc_12f74:
 al = memory(ds, si);
-if (!(al & 0x80))
+if (al & 0x80)
 goto loc_12f8f;
-if (al & 0x01)
+if (!(al & 0x01))
 goto loc_12f8a;
 al = memory(ds, si + 18);
 if (al != 0x0f)
@@ -3803,6 +3809,7 @@ if (--cx)
 goto loc_10910;
 loc_10946:
 pop(bp);
+sp += 2;
 }
 // extracting 1000:0f9d, converted 102, to convert 74, failed 0
 void sub_10f9d()
@@ -3846,7 +3853,7 @@ al = memory(ds, 0x944a);
 al += 0x06;
 memory(ds, si + 3) = al;
 al = memory(ds, si);
-if (!(al & 0x20))
+if (al & 0x20)
 goto loc_11d10;
 memory16(ds, si + 5) -= 0x0008;
 memory(ds, si + 3) += cl;
@@ -3871,7 +3878,7 @@ loc_10c32:
 ax = memory16(ds, bp + 8);
 ax -= memory16(ds, 0x9528);
 ax &= 0x03ff;
-if (ax & 0x0200)
+if (!(ax & 0x0200))
 goto loc_10c44;
 ax |= 0xfc00;
 loc_10c44:
@@ -4011,7 +4018,7 @@ bl >>= 1;
 if (bl == memory(cs, 0x0d95))
 goto loc_10d4f;
 out(dx, ax);
-memory(es, di) &= bl;
+memoryVideoAnd(es, di, bl);
 loc_10d4f:
 ah >>= 1;
 if (ah != 0)
@@ -4023,7 +4030,7 @@ bh &= 0x0f;
 if (bh == memory(cs, 0x0d95))
 goto loc_10d64;
 out(dx, ax);
-memory(es, di) &= bh;
+memoryVideoAnd(es, di, bh);
 loc_10d64:
 ah >>= 1;
 if (ah != 0)
@@ -4036,6 +4043,7 @@ goto loc_10d18;
 loc_10d6d:
 pop(si);
 si += 0x00a0;
+si &= 0xffff;
 pop(di);
 di += memory16(cs, 0x0d93);
 di &= 0x7fff;
@@ -4054,6 +4062,7 @@ ax = 0x0f07;
 out(dx, ax);
 loc_10d8f:
 pop(bp);
+sp += 8;
 }
 // extracting 1000:3801, converted 105, to convert 69, failed 0
 void sub_13801()
@@ -4163,7 +4172,7 @@ out(dx, ax);
 cx = 0x0007;
 loc_1261e:
 al = memory(es, di);
-if (!(bl & al))
+if (bl & al)
 goto loc_1262d;
 memory(es, di) = bl;
 memory(es, di + 8192) = bl;
@@ -4182,6 +4191,7 @@ out(dx, ax);
 ax = 0x0000;
 out(dx, ax);
 pop(bp);
+sp += 4;
 }
 // extracting 1000:2536, converted 108, to convert 57, failed 0
 void sub_12536()
@@ -4295,6 +4305,7 @@ if (--cx)
 goto loc_129c9;
 pop(ds);
 pop(bp);
+sp += 4;
 }
 // extracting 1000:296f, converted 113, to convert 39, failed 0
 void sub_1296f()
@@ -4525,7 +4536,7 @@ bx += memory16(ds, bp - 65532);
 cl = memory(ds, bx);
 push(cx);
 cl &= 0x1f;
-if (cl & 0x10)
+if (!(cl & 0x10))
 goto loc_10881;
 cl |= 0xe0;
 loc_10881:
@@ -4545,7 +4556,7 @@ al = cl;
 cbw();
 pop(cx);
 pop(bx);
-if (!(cl & 0x80))
+if (cl & 0x80)
 goto loc_108a6;
 bl = memory(ds, bx + 1435);
 goto loc_108aa;
@@ -4558,6 +4569,7 @@ cx = -cx;
 cx += 0x003f;
 sp = bp;
 pop(bp);
+sp += 4;
 }
 // extracting 1000:094a, converted 123, to convert 20, failed 0
 void sub_1094a()
@@ -4629,6 +4641,7 @@ cx = ~cx;
 ax = memory16(ds, bx - 37545);
 ax &= cx;
 pop(bp);
+sp += 4;
 }
 // extracting 1000:0a1b, converted 125, to convert 16, failed 0
 void sub_10a1b()
@@ -4666,4 +4679,129 @@ ax = 0x0000;
 push(ax);
 sub_1269e();
 }
-
+void sub_10010();
+void sub_10600();
+void sub_1333c();
+void sub_12762();
+void sub_105ec();
+void sub_10442();
+void sub_10588();
+void sub_10591();
+void sub_1382a();
+void sub_100a9();
+void sub_100cf();
+void sub_100fd();
+void sub_10637();
+void sub_133b3();
+void sub_133d7();
+void sub_10644();
+void sub_10103();
+void sub_10da7();
+void sub_13423();
+void sub_121dc();
+void sub_101c0();
+void sub_10fda();
+void sub_132fe();
+void sub_10b8e();
+void sub_134a8();
+void sub_131a4();
+void sub_1220d();
+void sub_13383();
+void sub_1064d();
+void sub_1279f();
+void sub_128da();
+void sub_139b8();
+void sub_13472();
+void sub_10d98();
+void sub_13498();
+void sub_129db();
+void sub_101ad();
+void sub_1019d();
+void sub_109a4();
+void sub_1069a();
+void sub_10e3d();
+void sub_13439();
+void sub_12cea();
+void sub_12200();
+void sub_1264a();
+void sub_12a7f();
+void sub_122b1();
+void sub_1033b();
+void sub_12c45();
+void sub_10529();
+void sub_13840();
+void sub_10e07();
+void sub_10f3c();
+void sub_10dc0();
+void sub_10e84();
+void sub_10bdc();
+void sub_136d4();
+void sub_135bc();
+void sub_131e7();
+void sub_13209();
+void sub_1269e();
+void sub_12714();
+void sub_1252f();
+void sub_12542();
+void sub_12577();
+void sub_1258a();
+void sub_125bf();
+void sub_125d2();
+void sub_12464();
+void sub_1239b();
+void sub_12809();
+void sub_12959();
+void sub_12907();
+void sub_133e5();
+void sub_13291();
+void sub_10b7c();
+void sub_10541();
+void sub_12a64();
+void sub_10674();
+void sub_12121();
+void sub_10b58();
+void sub_107af();
+void sub_10bc5();
+void sub_1250b();
+void sub_12553();
+void sub_1259b();
+void sub_1237c();
+void sub_122e1();
+void sub_122f9();
+void sub_12311();
+void sub_12c07();
+void sub_12c9a();
+void sub_104f3();
+void sub_12d9a();
+void sub_13914();
+void sub_12329();
+void sub_12ddc();
+void sub_12df6();
+void sub_12f50();
+void sub_11b57();
+void sub_108ba();
+void sub_10f9d();
+void sub_11cd9();
+void sub_10c24();
+void sub_13801();
+void sub_122c1();
+void sub_125e3();
+void sub_12536();
+void sub_1257e();
+void sub_125c6();
+void sub_12872();
+void sub_129ae();
+void sub_1296f();
+void sub_123d4();
+void sub_123ec();
+void sub_12404();
+void sub_1241c();
+void sub_12434();
+void sub_1244c();
+void sub_12cc7();
+void sub_13059();
+void sub_107fd();
+void sub_1094a();
+void sub_109e9();
+void sub_10a1b();
+void sub_1268a();

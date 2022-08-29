@@ -220,7 +220,7 @@ void cicocontext_t::callIndirect(int a)
 }
 void cicocontext_t::cbw()
 {
-    assert(0);
+    ctx->a.r8.h = (ctx->a.r8.l & 0x80) ? 0xff : 0;
 }
 void cicocontext_t::div(int)
 {
@@ -237,7 +237,8 @@ int main(int argc, const char * argv[])
 {
     CicoContext::ctx = new CicoContext::cicocontext_t();
     CicoContext::ctx->_ss = 0x1000;
-    CicoContext::ctx->_sp = 0x200;
+    CicoContext::ctx->_cs = 0x3A56;
+    CicoContext::ctx->_sp = 0x20;
     memset(mem, 0, sizeof(mem));
     FILE* f = fopen("/Users/gabrielvalky/Documents/git/Projects/CicoJit/capout/GOOSE.EXE", "rb");
     fread(mem, 53684, 1, f);

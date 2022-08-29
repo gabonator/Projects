@@ -447,10 +447,10 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             switch (op)
             {
                 case X86_INS_JE:
-                    sprintf(tmp, "%s & %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
+                    sprintf(tmp, "!(%s & %s)", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
                     return tmp;
                 case X86_INS_JNE:
-                    sprintf(tmp, "!(%s & %s)", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
+                    sprintf(tmp, "%s & %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
                     return tmp;
                 default:
                     assert(0);
@@ -723,7 +723,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 keepLastCompare = true;
                 break;
             case X86_INS_RET:
-                text.push_back(format("return;"));
+                if (x86.op_count == 0)
+                    text.push_back(format("return;"));
+                else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM)
+                {
+                    text.push_back(format("sp += %d;", x86.operands[0].imm));
+                    text.push_back(format("return;"));
+                }
+                else
+                    assert(0);
                 break;
             case X86_INS_CMP:
             case X86_INS_TEST:
