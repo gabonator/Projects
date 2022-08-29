@@ -218,6 +218,7 @@ Manual
 <input type=button value="+1 min" onClick="addOffset(60)">
 <input type=button value="-1 min" onClick="addOffset(-60)">
 <input type=button value="-1 hr" onClick="addOffset(-60*60)">
+<input type=button value="set" onClick="setTime()">
 
 <script src="app_inline.js"></script>
 <script>
@@ -233,12 +234,18 @@ function ShowDisplay(buf)
 var offset = 0;
 var click = false, longclick = false, move = 0;
 var inhibit = null;
+function setTime() {
+  var p = prompt("Set new time", new Date());
+//  var d = new Date(p);
+  offset = new Date(p).getTime() - new Date().getTime();// - new Date().getTimezoneOffset()*1000*60;
+console.log("offset", offset);
+}
 function addOffset(o) { offset += o*1000; inhibit = null; }
 function setShortClick() { click = true; inhibit = null; }
 function setLongClick() { longclick = true; inhibit = null; }
 function setMove(d) { move += d; inhibit = null; }
 //window.miniApp = new MiniApp()
-
+var first = true;
 Module['noRun'] = true;	
 
 window.onload = () => {

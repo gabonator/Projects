@@ -52,6 +52,17 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
       console.log(curfunc + ": " + l + " ; LOST TEST!")
   }
 
+  if (lastInstruction && (lastInstruction.substr(0, 3) == "cmp" ||
+      lastInstruction.substr(0, 4) == "test"))
+  {
+    const jump = ["jz", "jnz", "jns", "jc", "jnc"];
+    var matching = jump.find(x=>l.indexOf(x) != -1);
+    if (!matching)
+    {
+      console.log("Warning: Compare '"+lastInstruction+"' follows instruction '"+l+"' in " + curfunc);
+    }
+  }
+
   if (lastInstruction && lastInstruction.substr(-1) == ":") // label
   {
     if (l.substr(0, 3) != "cmp" &&
@@ -89,8 +100,12 @@ var lines = fs.readFileSync(process.argv[2]).toString().split("\n").map(x=>{
         1
        )
     {
-      console.log(curfunc + ": " + lastInstruction + " " + l);
+      console.log("Warning: jumping after label, check flags: " + curfunc + ": " + lastInstruction + " " + l);
     }
+  }
+  if (l.indexOf(",-") != -1)
+  {
+    console.log("Warning: negative number: " + curfunc + ": " + l);
   }
 
   var db = l.match("\\?\\?\\s+([0-9A-Fa-f]{2}h)")

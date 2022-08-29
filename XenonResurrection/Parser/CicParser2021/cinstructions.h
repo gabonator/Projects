@@ -185,6 +185,8 @@ public:
                     m_strInsertion = "_flags.sign = !!(_bx & 0x8000)";
                 else if (op1 == "_dx" && op2 == "_dx")
                     m_strInsertion = "_flags.sign = !!(_dx & 0x8000)";
+                else if (op1 == "_cx" && op2 == "_cx")
+                    m_strInsertion = "_flags.sign = !!(_cx & 0x8000)";
                 else if (op1 == "_bp" && op2 == "_bp")
                     m_strInsertion = "_flags.sign = !!(_bp & 0x8000)";
                 else if (op1 == "_al" && op2 == "_al")

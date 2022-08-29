@@ -3,15 +3,28 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2DD1C32E25881F440029B1E4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD1C32D25881F440029B1E4 /* main.cpp */; };
+		2D25A88E28B90C4F00BFA561 /* libcapstone.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D25A88628B9094000BFA561 /* libcapstone.5.dylib */; };
+		2D25A89128B9104500BFA561 /* libcapstone.5.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2D25A88628B9094000BFA561 /* libcapstone.5.dylib */; };
+		2DD7972728B82A680053DD90 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DD7972628B82A680053DD90 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2DD1C32825881F440029B1E4 /* CopyFiles */ = {
+		2D25A89228B9104500BFA561 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2D25A89128B9104500BFA561 /* libcapstone.5.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2DD7972128B82A680053DD90 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -23,135 +36,130 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2DD1C32A25881F440029B1E4 /* CicParser2021 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CicParser2021; sourceTree = BUILT_PRODUCTS_DIR; };
-		2DD1C32D25881F440029B1E4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		2DD1C33725881F7E0029B1E4 /* label.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = label.h; sourceTree = "<group>"; };
-		2DD1C33825881F7E0029B1E4 /* value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = value.h; sourceTree = "<group>"; };
-		2DD1C33925881F7E0029B1E4 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
-		2DD1C33B25881F7E0029B1E4 /* instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instructions.h; sourceTree = "<group>"; };
-		2DD1C33D25881F7E0029B1E4 /* matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matchers.h; sourceTree = "<group>"; };
-		2DD1C33E25881F7E0029B1E4 /* parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
-		2DD1C34125881F7E0029B1E4 /* cvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvalue.h; sourceTree = "<group>"; };
-		2DD1C34225881F7E0029B1E4 /* cexport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cexport.h; sourceTree = "<group>"; };
-		2DD1C34625881F7F0029B1E4 /* serializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serializer.h; sourceTree = "<group>"; };
-		2DD1C34A25881F7F0029B1E4 /* cinstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinstructions.h; sourceTree = "<group>"; };
+		2D25A88628B9094000BFA561 /* libcapstone.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcapstone.5.dylib; path = ../../../ext/capstone/libcapstone.5.dylib; sourceTree = "<group>"; };
+		2D25A88A28B90AF800BFA561 /* libcapstone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcapstone.a; path = ../../../ext/capstone/libcapstone.a; sourceTree = "<group>"; };
+		2DD7972328B82A680053DD90 /* cicodis */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cicodis; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DD7972628B82A680053DD90 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2DD1C32725881F440029B1E4 /* Frameworks */ = {
+		2DD7972028B82A680053DD90 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D25A88E28B90C4F00BFA561 /* libcapstone.5.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2DD1C32125881F440029B1E4 = {
+		2D25A88528B9093F00BFA561 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2DD1C32C25881F440029B1E4 /* CicParser2021 */,
-				2DD1C32B25881F440029B1E4 /* Products */,
+				2D25A88A28B90AF800BFA561 /* libcapstone.a */,
+				2D25A88628B9094000BFA561 /* libcapstone.5.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2DD7971A28B82A680053DD90 = {
+			isa = PBXGroup;
+			children = (
+				2DD7972528B82A680053DD90 /* cicodis */,
+				2DD7972428B82A680053DD90 /* Products */,
+				2D25A88528B9093F00BFA561 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		2DD1C32B25881F440029B1E4 /* Products */ = {
+		2DD7972428B82A680053DD90 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2DD1C32A25881F440029B1E4 /* CicParser2021 */,
+				2DD7972328B82A680053DD90 /* cicodis */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2DD1C32C25881F440029B1E4 /* CicParser2021 */ = {
+		2DD7972528B82A680053DD90 /* cicodis */ = {
 			isa = PBXGroup;
 			children = (
-				2DD1C32D25881F440029B1E4 /* main.cpp */,
-				2DD1C34225881F7E0029B1E4 /* cexport.h */,
-				2DD1C34A25881F7F0029B1E4 /* cinstructions.h */,
-				2DD1C34125881F7E0029B1E4 /* cvalue.h */,
-				2DD1C33B25881F7E0029B1E4 /* instructions.h */,
-				2DD1C33725881F7E0029B1E4 /* label.h */,
-				2DD1C33D25881F7E0029B1E4 /* matchers.h */,
-				2DD1C33E25881F7E0029B1E4 /* parser.h */,
-				2DD1C34625881F7F0029B1E4 /* serializer.h */,
-				2DD1C33925881F7E0029B1E4 /* utils.h */,
-				2DD1C33825881F7E0029B1E4 /* value.h */,
+				2DD7972628B82A680053DD90 /* main.cpp */,
 			);
-			path = CicParser2021;
+			path = cicodis;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2DD1C32925881F440029B1E4 /* CicParser2021 */ = {
+		2DD7972228B82A680053DD90 /* cicodis */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2DD1C33125881F440029B1E4 /* Build configuration list for PBXNativeTarget "CicParser2021" */;
+			buildConfigurationList = 2DD7972A28B82A680053DD90 /* Build configuration list for PBXNativeTarget "cicodis" */;
 			buildPhases = (
-				2DD1C32625881F440029B1E4 /* Sources */,
-				2DD1C32725881F440029B1E4 /* Frameworks */,
-				2DD1C32825881F440029B1E4 /* CopyFiles */,
+				2DD7971F28B82A680053DD90 /* Sources */,
+				2DD7972028B82A680053DD90 /* Frameworks */,
+				2DD7972128B82A680053DD90 /* CopyFiles */,
+				2D25A89228B9104500BFA561 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = CicParser2021;
-			productName = CicParser2021;
-			productReference = 2DD1C32A25881F440029B1E4 /* CicParser2021 */;
+			name = cicodis;
+			productName = cicodis;
+			productReference = 2DD7972328B82A680053DD90 /* cicodis */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		2DD1C32225881F440029B1E4 /* Project object */ = {
+		2DD7971B28B82A680053DD90 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1220;
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1320;
 				TargetAttributes = {
-					2DD1C32925881F440029B1E4 = {
-						CreatedOnToolsVersion = 12.2;
+					2DD7972228B82A680053DD90 = {
+						CreatedOnToolsVersion = 13.2.1;
 					};
 				};
 			};
-			buildConfigurationList = 2DD1C32525881F440029B1E4 /* Build configuration list for PBXProject "CicParser2021" */;
-			compatibilityVersion = "Xcode 9.3";
+			buildConfigurationList = 2DD7971E28B82A680053DD90 /* Build configuration list for PBXProject "cicodis" */;
+			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 2DD1C32125881F440029B1E4;
-			productRefGroup = 2DD1C32B25881F440029B1E4 /* Products */;
+			mainGroup = 2DD7971A28B82A680053DD90;
+			productRefGroup = 2DD7972428B82A680053DD90 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2DD1C32925881F440029B1E4 /* CicParser2021 */,
+				2DD7972228B82A680053DD90 /* cicodis */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2DD1C32625881F440029B1E4 /* Sources */ = {
+		2DD7971F28B82A680053DD90 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD1C32E25881F440029B1E4 /* main.cpp in Sources */,
+				2DD7972728B82A680053DD90 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		2DD1C32F25881F440029B1E4 /* Debug */ = {
+		2DD7972828B82A680053DD90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -196,7 +204,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -204,13 +212,13 @@
 			};
 			name = Debug;
 		};
-		2DD1C33025881F440029B1E4 /* Release */ = {
+		2DD7972928B82A680053DD90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -249,31 +257,31 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		2DD1C33225881F440029B1E4 /* Debug */ = {
+		2DD7972B28B82A680053DD90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 854TMBK4HM;
-				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/;
+				HEADER_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/include/;
+				LIBRARY_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		2DD1C33325881F440029B1E4 /* Release */ = {
+		2DD7972C28B82A680053DD90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 854TMBK4HM;
-				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/;
+				HEADER_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/include/;
+				LIBRARY_SEARCH_PATHS = /Users/gabrielvalky/Documents/git/ext/capstone/;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -281,25 +289,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2DD1C32525881F440029B1E4 /* Build configuration list for PBXProject "CicParser2021" */ = {
+		2DD7971E28B82A680053DD90 /* Build configuration list for PBXProject "cicodis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2DD1C32F25881F440029B1E4 /* Debug */,
-				2DD1C33025881F440029B1E4 /* Release */,
+				2DD7972828B82A680053DD90 /* Debug */,
+				2DD7972928B82A680053DD90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2DD1C33125881F440029B1E4 /* Build configuration list for PBXNativeTarget "CicParser2021" */ = {
+		2DD7972A28B82A680053DD90 /* Build configuration list for PBXNativeTarget "cicodis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2DD1C33225881F440029B1E4 /* Debug */,
-				2DD1C33325881F440029B1E4 /* Release */,
+				2DD7972B28B82A680053DD90 /* Debug */,
+				2DD7972C28B82A680053DD90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 2DD1C32225881F440029B1E4 /* Project object */;
+	rootObject = 2DD7971B28B82A680053DD90 /* Project object */;
 }

@@ -773,12 +773,12 @@ WORD& memory16(WORD segment, int offset)
     _ASSERT(ofs >= 0 && ofs < sizeof(datasegment));
     return *(WORD*)(datasegment + ofs);
 }
-
+int check = 1;
 BYTE& memory(WORD segment, int offset)
 {
-    if (segment*16 + offset == 0x1040*16+0x423a)
+    if (segment*16 + offset == 0x1040*16+0x7e44  && check)
     {
-        int f = 9;
+        int f = 9; // marked block for redraw
     }
     _ASSERT(offset <= 0xffff && offset >= 0);
     _ASSERT(segment >= 0x1000 && segment < 0xa000);
@@ -808,12 +808,11 @@ void onKey(int k, int p)
         case SDL_SCANCODE_RIGHT: keys = p ? (keys | 1) : (keys & ~1); break;
         case SDL_SCANCODE_LEFT: keys = p ? (keys | 2) : (keys & ~2); break;
         case SDL_SCANCODE_SPACE: keys = p ? (keys | 16) : (keys & ~16); break; // enter
+            
+        case SDL_SCANCODE_Z: keys = p ? (keys | 128) : (keys & ~128); break; // PAUSE
+        case SDL_SCANCODE_X: keys = p ? (keys | 64) : (keys & ~64); break; // ESC
+        case SDL_SCANCODE_A: memory(0x1040, 0x7d6c) = p ? 0xff : 0x00; break; // ESC
         case SDL_SCANCODE_P: memory(0x168f, 0x459) = p; break;
-        case SDL_SCANCODE_Z:
-        {
-           
-            break;
-        }
     }
     memory(0x1040, 0x7e44) = keys;
     //memory16(0x168f, 0x5285) = 1;
@@ -836,7 +835,7 @@ void _sync()
         mSdl.SetPixel(x, y, mVideo->GetPixel(x, y));
       }
     mSdl.Loop();
-    SDL_Delay(20);
+    SDL_Delay(10);
 }
 
 int main(int argc, const char * argv[]) {
@@ -888,6 +887,12 @@ sub_0433 returns zero flag
  Seg_5:341b:0454 c3              RET
 
  
+ Seg_5:341b:0b61 a808            TEST        AL,0x8
+ Seg_5:341b:0b63 8ac3            MOV         AL,BL
+ Seg_5:341b:0b65 740e            JZ          LAB_341b_0b75
+ Seg_5:341b:0b67 90              NOP
+
+ 
  parser todo:
  mov SS!!!! :bp
  
@@ -900,4 +905,7 @@ up: 8, 18
  down: 4
  right:1
  left2:
+ 
+ sub_0d1d mark all for redraw
+ sub_0f81 scroll map
  */

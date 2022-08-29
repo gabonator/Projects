@@ -621,8 +621,8 @@ public:
   int minTemperature{300}; // * 0.1 'C
   int maxTemperature{500}; // * 0.1 'C
   int currentThreshold{150}; // mA
-  int currentMax{8000}; // mA
-  int maxOnTime{10*60}; // seconds
+  int currentMax{4000}; // mA
+  int maxOnTime{30*60}; // seconds
   int inhibiteLongRun{3*60*60}; // seconds
   int inhibiteHighCurrent{3*60*60}; // seconds
   int inhibiteSensorError{30*60}; // seconds

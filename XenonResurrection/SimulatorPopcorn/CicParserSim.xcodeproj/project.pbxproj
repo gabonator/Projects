@@ -251,7 +251,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = CicParserSim/CicParserSim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LHXY425M9Z;
+				DEVELOPMENT_TEAM = 854TMBK4HM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.12_1/include/SDL2;
 				OTHER_LDFLAGS = (
@@ -267,7 +267,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = CicParserSim/CicParserSim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LHXY425M9Z;
+				DEVELOPMENT_TEAM = 854TMBK4HM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.12_1/include/SDL2;
 				OTHER_LDFLAGS = (

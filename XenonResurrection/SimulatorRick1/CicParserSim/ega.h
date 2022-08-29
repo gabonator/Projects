@@ -253,18 +253,74 @@ public:
             for (int i=0; i<16; i++)
             {
                 int rgb = ::memory(_es, _dx+i);
-                int r = ((rgb & 4) ? 3 : 0) + ((rgb & 32) ? 1 : 0);
-                int g = ((rgb & 2) ? 3 : 0) + ((rgb & 16) ? 1 : 0);
-                int b = ((rgb & 1) ? 3 : 0) + ((rgb & 8) ? 1 : 0);
+                
+                int r = ((rgb & 4) ? 2 : 0) + ((rgb & 32) ? 1 : 0);
+                int g = ((rgb & 2) ? 2 : 0) + ((rgb & 16) ? 1 : 0);
+                int b = ((rgb & 1) ? 2 : 0) + ((rgb & 8) ? 1 : 0);
+                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << "  (" << rgb << ") " <<
+                    (rgb & 1) << ((rgb >> 1) &1) << ((rgb >> 2) &1) <<
+                    ((rgb >> 3) &1) << ((rgb >> 4) &1) << ((rgb >> 5) &1) << 
+                std:: endl;
+                assert(!(rgb & 0xc0));
                 r = r * 255 / 3;
                 g = g * 255 / 3;
                 b = b * 255 / 3;
-//                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
                 palette[i] = b | (g << 8) | (r << 16);
+                
+                if (i==11)
+                    palette[i] = 0xff5555; // red
+                if (i==12)
+                    palette[i] = 0x555555; // dark gray
+                // 12 dark gray
+                // 14 light gray
+                if (i==15)
+                    palette[i] = 0xffffff; // red
+                //SetPaletteIndex(i, rgb);
+                 
             }
+            //palette[5] = 0xff;
+            //palette[1] = 0xff;
+            //palette[2] = 0xff;
+            
+            //palette[6] = 0xff;
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
             // << " data " << (int)_es << ":" << (int)_dx << endl;
+            
+            /*
+             bp 2608:0786
+             sm 022d:9714
+             sm 022d:9718
+             00: black          ...
+             01: dark blue      ..1
+             02: dark green     .1.
+             03:
+             04: dark red       1..
+             05: dark purple    1.1
+             06: brown          11.
+             07: gray           111
+             08: black          ...
+             09: blue           ..2
+             0a: blue-green     .21
+             0b: blue-greed     .12
+             0c: red            2.. 12=8+4
+             0d: purple         2.2
+             0e: brown          22.
+             0f: gray           222
+             10: dark gray      111
+             11: lighter blue nice  113
+             12: ligher green       131
+             13: cyan               133
+             14: red lighter        311
+             15: ping lighter       313
+             16: yellow lighter     331
+             
+             12: strong green
+             24: dark red !?
+             20: black
+             40: black
+             80: black
+             */
             return true;
         }
         if (_ax == 0x1012)
@@ -621,7 +677,7 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 5000)
+        if (q++ > 1000)
         {
             _sync();
             q= 0;

@@ -344,7 +344,7 @@ loc_00c5:                                       //loc_00c5:
     sub_0173();                                 //call sub_0173
 loc_00e9:                                       //loc_00e9:
     sub_3160();                                 //call sub_3160
-    _al = memory(_ds, 0x5250);                  //mov al, [0x5250]
+    _al = memory(_ds, 0x5250);                  //mov al, [0x5250]  -- set level
     sub_2eb7();                                 //call sub_2eb7
     sub_378d();                                 //call sub_378d
     sub_56cc();                                 //call sub_56cc
