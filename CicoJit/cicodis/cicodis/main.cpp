@@ -36,7 +36,8 @@ struct address_t {
 
 enum class inject_t {
     none = 0,
-    carry = 1
+    carry = 1,
+    zero = 2
 };
 
 address_t operator +(const address_t a, int b)
@@ -91,10 +92,15 @@ public: // remove!
     bool mMark{false};
     inject_t mInject{inject_t::none};
     std::string mComment;
+    bool mForceFlagCondition{false};
     
 public:
-    CapInstr(address_t addr, const std::string& comment)
+    CapInstr(address_t addr, int size, const std::string& comment)
     {
+        strcpy(mMnemonic, "");
+        strcpy(mOperands, "");
+        mAddress = addr;
+        mSize = size;
         mMark = true;
         mComment = comment;
     }
@@ -214,12 +220,18 @@ public:
         mBase = base;
     }
     
+    const uint8_t* GetBufferAt(address_t addr)
+    {
+        uint64_t address = addr.segment*16 + addr.offset;
+        assert(address - mBase > 0x200 && address - mBase+32 < mSize);
+        return mpBuffer + address - mBase;
+    }
+    
     std::shared_ptr<CapInstr> Disasm(address_t addr)
     {
         uint64_t address = addr.segment*16 + addr.offset;
         size_t codeSize = 32;
-        assert(address - mBase > 0x200 && address - mBase+32 < mSize);
-        const uint8_t* buf = mpBuffer + address - mBase;
+        const uint8_t* buf = GetBufferAt(addr);
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
 /*
         print_insn_detail(_handle, CS_MODE_16, mInsn);
@@ -289,7 +301,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         {
             int gapsize = (int)addr - (int)nextAddr;
             assert(gapsize <= 4);
-            std::shared_ptr<CapInstr> gap = std::shared_ptr<CapInstr>(new CapInstr(nextAddr, format("gap of %d bytes", gapsize)));
+            std::shared_ptr<CapInstr> gap = std::shared_ptr<CapInstr>(new CapInstr(nextAddr, gapsize, format("gap of %d bytes", gapsize)));
             instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(nextAddr, gap));
         }
 
@@ -347,42 +359,37 @@ std::string ToCString(const cs_x86_op& op)
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID && op.mem.disp == 0)
             sprintf(offset, "%s", cs_reg_name(_handle, op.mem.base));
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
-            sprintf(offset, "%s %c %d", cs_reg_name(_handle, op.mem.base), op.mem.disp >= 0 ? '+' : '-', abs(op.mem.disp & 0xffff));
+        {
+            if (op.mem.base != X86_REG_BP)
+                sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), op.mem.disp & 0xffff);
+            else
+            {
+                if ((op.mem.disp & 0xffff) < 60000)
+                    sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), op.mem.disp & 0xffff);
+                else
+                    sprintf(offset, "%s - %d", cs_reg_name(_handle, op.mem.base), 0x10000-abs(op.mem.disp & 0xffff));
+            }
+        }
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp == 0)
-            sprintf(offset, "%s + %s", cs_reg_name(_handle, op.mem.base),  cs_reg_name(_handle, op.mem.index));
+            sprintf(offset, "%s + %s", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index));
         else
             assert(0);
         
         char tmp[64];
-        sprintf(tmp, "memory%s(%s, %s)", op.size == 2 ? "16" : "", op.mem.segment == X86_REG_INVALID ? "ds" : cs_reg_name(_handle, op.mem.segment), offset);
+        const char* segment = "?";
+        switch (op.mem.segment)
+        {
+            case X86_REG_INVALID:
+                segment = op.mem.base == X86_REG_BP ? "ss" : "ds";
+                break;
+            default:
+                segment = cs_reg_name(_handle, op.mem.segment);
+        }
+
+        sprintf(tmp, "memory%s(%s, %s)", op.size == 2 ? "16" : "", segment, offset);
         return tmp;
     }
 
-    /*
-    if (op.type == X86_OP_MEM && op.size == 2 && op.mem.base == X86_REG_INVALID)
-    {
-        char tmp[32];
-        sprintf(tmp, "memory16(%s, 0x%04llx)", op.mem.segment == X86_REG_INVALID ? "ds" : cs_reg_name(_handle, op.mem.segment), op.mem.disp & 0xffff);
-        return tmp;
-    }
-    if (op.type == X86_OP_MEM && op.size == 1 && op.mem.base == X86_REG_INVALID)
-    {
-        char tmp[32];
-        sprintf(tmp, "memory(%s, 0x%04llx)", op.mem.segment == X86_REG_INVALID ? "ds" : cs_reg_name(_handle, op.mem.segment), op.mem.disp & 0xffff);
-        return tmp;
-    }
-    if (op.type == X86_OP_MEM && op.size == 1 && op.mem.base != X86_REG_INVALID && op.mem.disp == 0)
-    {
-        char tmp[32];
-        sprintf(tmp, "memory(%s, %s)", op.mem.segment == X86_REG_INVALID ? "ds" : cs_reg_name(_handle, op.mem.segment), cs_reg_name(_handle, op.mem.base));
-        return tmp;
-    }
-    if (op.type == X86_OP_MEM && op.size == 1 && op.mem.base != X86_REG_INVALID && op.mem.disp > 0)
-    {
-        char tmp[32];
-        sprintf(tmp, "memory(%s, %s + %d)", op.mem.segment == X86_REG_INVALID ? "ds" : cs_reg_name(_handle, op.mem.segment), cs_reg_name(_handle, op.mem.base), (int)op.mem.disp);
-        return tmp;
-    }*/
     assert(0);
     return "?";
 }
@@ -397,6 +404,19 @@ std::string SignedType(const cs_x86_op& op)
     return "?";
 }
 
+std::string MakeCFlagCondition(x86_insn op)
+{
+    switch (op)
+    {
+        case X86_INS_JE:
+            return "flags.zero";
+        case X86_INS_JNE:
+            return "!flags.zero";
+        default:
+            assert(0);
+            return "stop()";
+    }
+}
 std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
 {
     const cs_x86& x86 = inst->mDetail;
@@ -425,6 +445,9 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
                     return tmp;
                 case X86_INS_JNS:
                     sprintf(tmp, "(%s)%s >= 0", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str());
+                    return tmp;
+                case X86_INS_JL:
+                    sprintf(tmp, "(%s)%s < (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
                     return tmp;
                 case X86_INS_JLE:
                     sprintf(tmp, "(%s)%s <= (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
@@ -456,10 +479,12 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
                     assert(0);
             }
             break;
+        case X86_INS_ADD:
         case X86_INS_SUB:
         case X86_INS_AND:
         case X86_INS_DEC:
         case X86_INS_SHR:
+        case X86_INS_INC:
             assert(x86.op_count >= 1);
             //assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
             switch (op)
@@ -529,6 +554,16 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
+    
+    auto GetPrev = [&](const std::shared_ptr<CapInstr>& p)->std::shared_ptr<CapInstr>
+    {
+        for (int i=0; i<code.size(); i++)
+            if (code[i]->mAddress == p->mAddress)
+                return code[i-1];
+        assert(0);
+        return {};
+    };
+    
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
         const cs_x86& x86 = instr->mDetail;
@@ -536,7 +571,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         
         if (instr->mMark)
         {
-            text.push_back(format("stop(0); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
+            text.push_back(format("stop(); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
             continue;
         }
         
@@ -554,7 +589,21 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 {
                     case X86_INS_SHR:
                         text.push_back(format("flags.carry = %s & 1;", ToCString(x86.operands[0]).c_str()));
+                        break;
                     default:
+                        assert(0);
+                        break;
+                }
+            } else
+            if ((int)instr->mInject & (int)inject_t::zero)
+            {
+                switch (instr->mId)
+                {
+                    case X86_INS_CMP:
+                        text.push_back(format("flags.zero = %s == %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                        break;
+                    default:
+                        assert(0);
                         break;
                 }
             } else
@@ -646,6 +695,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_INC:
                 text.push_back(format("%s++;", ToCString(x86.operands[0]).c_str()));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_DEC:
                 text.push_back(format("%s--;", ToCString(x86.operands[0]).c_str()));
@@ -679,7 +730,17 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_ADD:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 text.push_back(format("%s += %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
+                /*
+            case X86_INS_ADC:
+                assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
+                text.push_back(format("%s += %s + flags.carry;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                lastCompare = instr;
+                keepLastCompare = true;
+                break;
+                 */
             case X86_INS_AND:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 text.push_back(format("%s &= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
@@ -749,26 +810,64 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_JB:
             case X86_INS_JG:
             case X86_INS_JA:
+            case X86_INS_JL:
                 assert(x86.op_count == 1 &&
                        x86.operands[0].type == X86_OP_IMM &&
                        x86.operands[0].size == 2);
 
-                if (!lastCompare)
+                if (!lastCompare && !instr->mForceFlagCondition)
                 {
-                    if (code[0]->mAddress == address_t{0x1000, 0x0541} ||
-                        code[0]->mAddress == address_t{0x1000, 0x0c24} ||
-                        code[0]->mAddress == address_t{0x1000, 0x22c1} ||
-                        false)
+                    // try to follow all paths to this instruction
+                    if (instr->mLabel)
                     {
-                        text.push_back(format("stop();")); // TODO!\n");
-                        break;
+                        // find all paths to this label
+                        std::vector<std::shared_ptr<CapInstr>> allPaths;
+                        std::shared_ptr<CapInstr> prev = GetPrev(instr);
+                        if (prev && prev->mId != X86_INS_JMP && prev->mId != X86_INS_RET)
+                            allPaths.push_back(prev);
+
+                        for (const std::shared_ptr<CapInstr>& i : code)
+                        {
+                            if (i->NextBranch() == instr->mAddress)
+                            {
+                                assert(!i->mLabel);
+                                allPaths.push_back(GetPrev(i));
+                            }
+                        }
+                        if (allPaths.size() == 1)
+                            lastCompare = allPaths[0];
+                        else
+                        {
+                            if (allPaths.size() == 2 &&
+                                allPaths[0]->mId == X86_INS_CMP &&
+                                allPaths[1]->mId == X86_INS_CMP &&
+                                allPaths[0]->mDetail.op_count == 2 &&
+                                allPaths[1]->mDetail.op_count == 2 &&
+                                allPaths[0]->mDetail.operands[0].type == X86_OP_REG &&
+                                allPaths[1]->mDetail.operands[0].type == X86_OP_REG &&
+                                allPaths[0]->mDetail.operands[0].reg == allPaths[1]->mDetail.operands[0].reg)
+                            {
+                                if (instr->mId == X86_INS_JE || instr->mId == X86_INS_JNE)
+                                {
+                                    allPaths[0]->mInject = (inject_t)((int)allPaths[0]->mInject | (int)inject_t::zero);
+                                    allPaths[1]->mInject = (inject_t)((int)allPaths[0]->mInject | (int)inject_t::zero);
+                                    instr->mForceFlagCondition = true;
+                                    modified = true;
+                                }
+                            }
+                        }
                     }
                 }
                 {
-                    assert(lastCompare);
                     inject_t injectPrev = lastCompare ? lastCompare->mInject : inject_t::none;
 
-                    text.push_back(format("if (%s)", MakeCCondition(lastCompare, instr->mId).c_str()));
+                    if (!instr->mForceFlagCondition)
+                    {
+                        assert(lastCompare);
+                        text.push_back(format("if (%s)", MakeCCondition(lastCompare, instr->mId).c_str()));
+                    }
+                    else
+                        text.push_back(format("if (%s)", MakeCFlagCondition(instr->mId).c_str()));
                     text.push_back(format("goto loc_%x;", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
                     keepLastCompare = true;
                     if (injectPrev != (lastCompare ? lastCompare->mInject : inject_t::none))
@@ -846,6 +945,29 @@ void OptimizeCode(std::vector<std::string>& text)
 }
 
 
+struct MZHeader
+{
+    char id[2];
+    uint16_t lastPageBytes;
+    uint16_t full512Pages;
+    uint16_t relocations;
+    uint16_t headerSize16;
+    uint16_t minMemory;
+    uint16_t maxMemory;
+    uint16_t ss;
+    uint16_t sp;
+    uint16_t checksum;
+    uint16_t ip;
+    uint16_t cs;
+    uint16_t relocationOffset;
+    uint16_t overlayNumber;
+};
+struct MZRelocation
+{
+    uint16_t offset;
+    uint16_t segment;
+};
+
 int main(int argc, const char * argv[]) {
     std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/capst/GOOSE.EXE", std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
@@ -855,6 +977,28 @@ int main(int argc, const char * argv[]) {
     if (!file.read(buffer.data(), size))
         throw "problem";
 
+    MZHeader* header = (MZHeader*)&buffer[0];
+    assert(header->id[0] == 'M' && header->id[1] == 'Z');
+    
+    printf(R"(
+void start()
+{
+  cs = 0x%04x;
+  ss = 0x%04x;
+  sp = 0x%04x; // check!
+  sub_%x();
+}
+)", header->cs+0x1000, header->ss+0x1000, header->sp, (0x1000+header->cs)*16+header->ip);
+
+    // fix relocations, we are loading the image to 1000:0000
+    for (int i=0; i<header->relocations; i++)
+    {
+        MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
+        int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
+        uint16_t* addr = (uint16_t*)&buffer[linearOffset];
+        *addr += 0x1000;
+    }
+
     Capstone cap;
     cap.Set(buffer, 0x10000 - 0x200);
     
@@ -862,8 +1006,17 @@ int main(int argc, const char * argv[]) {
     std::vector<address_t> failed;
     std::list<address_t> toProcess;
     toProcess.push_back({0x1000, 0x0010});
-    //toProcess.push_back({0x1000, 0x2872});
-    //toProcess.push_back({0x1000, 0x2762});
+    //toProcess.push_back({0x1000, 0x0bdc});
+    
+    for (int i=0; i<=136; i+=4)
+    {
+        const uint8_t* p = cap.GetBufferAt({0x1000, 0x105a+i/2});
+        address_t targ{0x1000, p[1]*256+p[0]};
+//        printf("case 0x%x: sub_%x(); // %04x:%04x\n", targ.linearOffset(), targ.linearOffset(), targ.segment, targ.offset);
+        toProcess.push_back(targ);
+    }
+    
+    
     while (!toProcess.empty())
     {
         address_t method = toProcess.front();
@@ -892,233 +1045,9 @@ int main(int argc, const char * argv[]) {
         OptimizeCode(text);
         for (const auto& l : text)
             printf("%s\n", l.c_str());
+        //break;
     }
     for (const auto decl : processed)
         printf("void sub_%x();\n", decl.linearOffset());
     return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-static const char *get_fpu_flag_name(uint64_t flag)
-{
-  return "xxxx";
-}
-
-static const char *get_eflag_name(uint64_t flag)
-{
-  return "yyyy";
-}
-
-static void print_string_hex(const char *comment, unsigned char *str, size_t len)
-{
-    unsigned char *c;
-
-    printf("%s", comment);
-    for (c = str; c < str + len; c++) {
-        printf("0x%02x ", *c & 0xff);
-    }
-
-    printf("\n");
-}
-
-
-
-
-static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins)
-{
-    int count, i;
-    cs_x86 *x86;
-    cs_regs regs_read, regs_write;
-    uint8_t regs_read_count, regs_write_count;
-
-    // detail can be NULL on "data" instruction if SKIPDATA option is turned ON
-    if (ins->detail == NULL)
-        return;
-
-    x86 = &(ins->detail->x86);
-
-    print_string_hex("\tPrefix:", x86->prefix, 4);
-
-    print_string_hex("\tOpcode:", x86->opcode, 4);
-
-    printf("\trex: 0x%x\n", x86->rex);
-
-    printf("\taddr_size: %u\n", x86->addr_size);
-    printf("\tmodrm: 0x%x\n", x86->modrm);
-    if (x86->encoding.modrm_offset != 0) {
-        printf("\tmodrm_offset: 0x%x\n", x86->encoding.modrm_offset);
-    }
-    
-    printf("\tdisp: 0x%" PRIx64 "\n", x86->disp);
-    if (x86->encoding.disp_offset != 0) {
-        printf("\tdisp_offset: 0x%x\n", x86->encoding.disp_offset);
-    }
-    
-    if (x86->encoding.disp_size != 0) {
-        printf("\tdisp_size: 0x%x\n", x86->encoding.disp_size);
-    }
-    
-    // SIB is not available in 16-bit mode
-    if ((mode & CS_MODE_16) == 0) {
-        printf("\tsib: 0x%x\n", x86->sib);
-        if (x86->sib_base != X86_REG_INVALID)
-            printf("\t\tsib_base: %s\n", cs_reg_name(_handle, x86->sib_base));
-        if (x86->sib_index != X86_REG_INVALID)
-            printf("\t\tsib_index: %s\n", cs_reg_name(_handle, x86->sib_index));
-        if (x86->sib_scale != 0)
-            printf("\t\tsib_scale: %d\n", x86->sib_scale);
-    }
-
-    // XOP code condition
-    if (x86->xop_cc != X86_XOP_CC_INVALID) {
-        printf("\txop_cc: %u\n", x86->xop_cc);
-    }
-
-    // SSE code condition
-    if (x86->sse_cc != X86_SSE_CC_INVALID) {
-        printf("\tsse_cc: %u\n", x86->sse_cc);
-    }
-
-    // AVX code condition
-    if (x86->avx_cc != X86_AVX_CC_INVALID) {
-        printf("\tavx_cc: %u\n", x86->avx_cc);
-    }
-
-    // AVX Suppress All Exception
-    if (x86->avx_sae) {
-        printf("\tavx_sae: %u\n", x86->avx_sae);
-    }
-
-    // AVX Rounding Mode
-    if (x86->avx_rm != X86_AVX_RM_INVALID) {
-        printf("\tavx_rm: %u\n", x86->avx_rm);
-    }
-
-    // Print out all immediate operands
-    count = cs_op_count(ud, ins, X86_OP_IMM);
-    if (count) {
-        printf("\timm_count: %u\n", count);
-        for (i = 1; i < count + 1; i++) {
-            int index = cs_op_index(ud, ins, X86_OP_IMM, i);
-            printf("\t\timms[%u]: 0x%" PRIx64 "\n", i, x86->operands[index].imm);
-            if (x86->encoding.imm_offset != 0) {
-                printf("\timm_offset: 0x%x\n", x86->encoding.imm_offset);
-            }
-            
-            if (x86->encoding.imm_size != 0) {
-                printf("\timm_size: 0x%x\n", x86->encoding.imm_size);
-            }
-        }
-    }
-
-    if (x86->op_count)
-        printf("\top_count: %u\n", x86->op_count);
-
-    // Print out all operands
-    for (i = 0; i < x86->op_count; i++) {
-        cs_x86_op *op = &(x86->operands[i]);
-
-        switch((int)op->type) {
-            case X86_OP_REG:
-                printf("\t\toperands[%u].type: REG = %s\n", i, cs_reg_name(_handle, op->reg));
-                break;
-            case X86_OP_IMM:
-                printf("\t\toperands[%u].type: IMM = 0x%" PRIx64 "\n", i, op->imm);
-                break;
-            case X86_OP_MEM:
-                printf("\t\toperands[%u].type: MEM\n", i);
-                if (op->mem.segment != X86_REG_INVALID)
-                    printf("\t\t\toperands[%u].mem.segment: REG = %s\n", i, cs_reg_name(_handle, op->mem.segment));
-                if (op->mem.base != X86_REG_INVALID)
-                    printf("\t\t\toperands[%u].mem.base: REG = %s\n", i, cs_reg_name(_handle, op->mem.base));
-                if (op->mem.index != X86_REG_INVALID)
-                    printf("\t\t\toperands[%u].mem.index: REG = %s\n", i, cs_reg_name(_handle, op->mem.index));
-                if (op->mem.scale != 1)
-                    printf("\t\t\toperands[%u].mem.scale: %u\n", i, op->mem.scale);
-                if (op->mem.disp != 0)
-                    printf("\t\t\toperands[%u].mem.disp: 0x%" PRIx64 ", %d\n", i, op->mem.disp, (int)op->mem.disp);
-                break;
-            default:
-                break;
-        }
-
-        // AVX broadcast type
-        if (op->avx_bcast != X86_AVX_BCAST_INVALID)
-            printf("\t\toperands[%u].avx_bcast: %u\n", i, op->avx_bcast);
-
-        // AVX zero opmask {z}
-        if (op->avx_zero_opmask != false)
-            printf("\t\toperands[%u].avx_zero_opmask: TRUE\n", i);
-
-        printf("\t\toperands[%u].size: %u\n", i, op->size);
-
-        switch(op->access) {
-            default:
-                break;
-            case CS_AC_READ:
-                printf("\t\toperands[%u].access: READ\n", i);
-                break;
-            case CS_AC_WRITE:
-                printf("\t\toperands[%u].access: WRITE\n", i);
-                break;
-            case CS_AC_READ | CS_AC_WRITE:
-                printf("\t\toperands[%u].access: READ | WRITE\n", i);
-                break;
-        }
-    }
-
-    // Print out all registers accessed by this instruction (either implicit or explicit)
-    if (!cs_regs_access(ud, ins,
-                regs_read, &regs_read_count,
-                regs_write, &regs_write_count)) {
-        if (regs_read_count) {
-            printf("\tRegisters read:");
-            for(i = 0; i < regs_read_count; i++) {
-                printf(" %s", cs_reg_name(_handle, regs_read[i]));
-            }
-            printf("\n");
-        }
-
-        if (regs_write_count) {
-            printf("\tRegisters modified:");
-            for(i = 0; i < regs_write_count; i++) {
-                printf(" %s", cs_reg_name(_handle, regs_write[i]));
-            }
-            printf("\n");
-        }
-    }
-
-    if (x86->eflags || x86->fpu_flags) {
-        for(i = 0; i < ins->detail->groups_count; i++) {
-            if (ins->detail->groups[i] == X86_GRP_FPU) {
-                printf("\tFPU_FLAGS:");
-                for(i = 0; i <= 63; i++)
-                    if (x86->fpu_flags & ((uint64_t)1 << i)) {
-                        printf(" %s", get_fpu_flag_name((uint64_t)1 << i));
-                    }
-                printf("\n");
-                break;
-            }
-        }
-
-        if (i == ins->detail->groups_count) {
-            printf("\tEFLAGS:");
-            for(i = 0; i <= 63; i++)
-                if (x86->eflags & ((uint64_t)1 << i)) {
-                    printf(" %s", get_eflag_name((uint64_t)1 << i));
-                }
-            printf("\n");
-        }
-    }
-
-    printf("\n");
 }

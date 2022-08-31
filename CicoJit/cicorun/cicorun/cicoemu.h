@@ -31,7 +31,7 @@ public:
   int _si, _di, _bp;
   int _cs, _ds, _ss, _es, _sp;
     
-  bool interrupts, direction, carry;
+  bool interrupts, direction, carry, zero;
   uint8_t& memory8(int seg, int ofs);
   uint16_t& memory16(int seg, int ofs);
     uint8_t memoryVideoGet8(int seg, int ofs);
@@ -48,8 +48,9 @@ public:
   void stop(int a = 0);
   void callIndirect(int a);
     void cbw();
-    void div(int);
-    void sar(int, int);
+    void div(uint16_t& r);
+    void div(uint8_t& r);
+    void sar(uint16_t& a, uint8_t b);
 };
 #ifndef _HOST
 #define ax ctx->a.r16
@@ -81,6 +82,7 @@ public:
 #define memoryVideoGet16 ctx->memoryVideoGet16
 #define memoryVideoSet16 ctx->memoryVideoSet16
 #define memoryVideoAnd(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & val)
+#define memoryVideoOr(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) | val)
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push
@@ -145,6 +147,12 @@ template <class DST, class DIR> void stosw()
     DST::Set8(es, DIR::Move(di), ah);
 }
 
+template <class DST, class DIR> void stosb()
+{
+    DIR::Assert();
+    DST::Set8(es, DIR::Move(di), al);
+}
+
 template <typename DST, typename DIR> void rep_stosw()
 {
     assert(cx == 0x7a34 || cx < 0x5000);
@@ -155,7 +163,15 @@ template <typename DST, typename DIR> void rep_stosw()
         cx = 0;
     }
 }
-template <typename SRC, typename DIR> void rep_stosb() { assert(0); }
+template <typename DST, typename DIR> void rep_stosb()
+{
+    if (cx)
+    {
+        while (cx--)
+            stosb<DST, DIR>();
+        cx = 0;
+    }
+}
 template <typename SRC, typename DST, typename DIR> void rep_movsw()
 {
     assert(cx < 0x6000);
