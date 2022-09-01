@@ -14,19 +14,25 @@
 #include <capstone/capstone.h>
 
 csh _handle;
-static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
+//static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
+
+std::string format(const char* fmt, ...)
+{
+    char buf[256];
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
+    return std::string(buf);
+}
 
 struct address_t {
     int segment{-1};
     int offset{-1};
-    operator bool() const
+
+    bool isValid() const
     {
         return segment != -1;
-    }
-    operator int() const
-    {
-        assert(segment != -1);
-        return segment*0x10+offset;
     }
     int linearOffset() const
     {
@@ -49,16 +55,29 @@ bool operator==(const address_t& a, const address_t& b)
 {
     return a.linearOffset() == b.linearOffset();
 }
-/*
-bool operator==(const address_t& a, const address_t& b)
-{
-    return a.segment == b.segment && a.offset == b.offset;
-}
+
 bool operator!=(const address_t& a, const address_t& b)
 {
-    return a.segment != b.segment || a.offset != b.offset;
+    return a.linearOffset() != b.linearOffset();
 }
-*/
+
+bool operator <(const address_t& a, const address_t& b)
+{
+    return a.linearOffset() < b.linearOffset();
+}
+bool operator >(const address_t& a, const address_t& b)
+{
+    return a.linearOffset() > b.linearOffset();
+}
+
+bool operator >=(const address_t& a, const address_t& b)
+{
+    return a.linearOffset() >= b.linearOffset();
+}
+bool operator <=(const address_t& a, const address_t& b)
+{
+    return a.linearOffset() <= b.linearOffset();
+}
 
 struct cmp_adress_t {
     bool operator()(const address_t& a, const address_t& b) const {
@@ -66,15 +85,58 @@ struct cmp_adress_t {
     }
 };
 
-std::string format(const char* fmt, ...)
-{
-    char buf[256];
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(buf, fmt, args);
-    va_end(args);
-    return std::string(buf);
-}
+struct switch_t {
+    address_t origin;
+    address_t begin;
+    int elements{0};
+    enum switch_e {
+      Words
+    } type{Words};
+    x86_reg selector{X86_REG_INVALID};
+    const uint8_t* baseptr{nullptr};
+    
+    
+    address_t GetBaseAddress() const
+    {
+        return {begin.segment, begin.offset};
+    }
+    address_t GetAddressAt(int i) const
+    {
+        return {begin.segment, begin.offset + i*2};
+    }
+    int GetSize() const
+    {
+        return 2;
+    }
+    address_t GetTarget(int i) const //(const uint8_t* data)
+    {
+        uint16_t* parts = (uint16_t*)baseptr;
+        return address_t{0x1000, parts[i]};
+    }
+    std::string GetCase(int i) const
+    {
+        return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
+    }
+    std::string GetSelector() const
+    {
+        return cs_reg_name(_handle, selector);
+    }
+};
+
+struct function_t {
+    address_t begin;
+    int length;
+    // analysis
+    bool setsCarry{false};
+    bool setsZero{false};
+    bool discards[X86_REG_ENDING] {0};
+};
+
+struct cmp_function_t {
+    bool operator()(const function_t& a, const function_t& b) const {
+        return a.begin.segment*0x10+a.begin.offset < b.begin.segment*0x10+b.begin.offset;
+    }
+};
 
 class CapInstr
 {
@@ -263,19 +325,19 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->Next()).segment != -1)
             if (instructions.find(pc) == instructions.end())
             {
-                if ((int)pc < (int)address)
+                if (pc.linearOffset() < address.linearOffset())
                 {
                     instr->mMark = true;
                     continue;
                 } else {
-                    assert((int)pc >= (int)address);
+                    assert(pc.linearOffset() >= address.linearOffset());
                     trace.push_back(pc);
                 }
             }
         if ((pc = instr->NextBranch()).segment != -1)
             if (instructions.find(pc) == instructions.end())
             {
-                assert((int)pc >= (int)address);
+                assert(pc.linearOffset() >= address.linearOffset());
                 trace.push_back(pc);
             }
     }
@@ -283,8 +345,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     for( auto iter = instructions.begin(); iter != instructions.end(); iter++ )
     {
         address_t branch = iter->second->NextBranch();
-        if (iter->second->Next() &&
-            (int)iter->second->Next() != (int)iter->second->NextFollowing())
+        if (iter->second->Next().isValid() &&
+            iter->second->Next().linearOffset() != iter->second->NextFollowing().linearOffset())
             branch = iter->second->Next();
         if (branch.segment != -1)
             instructions.find(branch)->second->mLabel = true;
@@ -297,9 +359,9 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     {
         address_t addr = iter->first;
         std::shared_ptr<CapInstr> instr = iter->second;
-        if (nextAddr.segment != -1 && (int)addr != (int)nextAddr)
+        if (nextAddr.segment != -1 && addr.linearOffset() != nextAddr.linearOffset())
         {
-            int gapsize = (int)addr - (int)nextAddr;
+            int gapsize = addr.linearOffset() - nextAddr.linearOffset();
             assert(gapsize <= 4);
             std::shared_ptr<CapInstr> gap = std::shared_ptr<CapInstr>(new CapInstr(nextAddr, gapsize, format("gap of %d bytes", gapsize)));
             instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(nextAddr, gap));
@@ -317,10 +379,10 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         std::shared_ptr<CapInstr> instr = iter->second;
         if (nextAddr.segment != -1)
         {
-            if ((int)addr != (int)nextAddr)
+            if (addr != nextAddr)
                 return false;
             
-            assert((int)addr == (int)nextAddr);
+            assert(addr == nextAddr);
         }
             
         nextAddr = instr->NextFollowing();
@@ -547,10 +609,32 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
         }
 }
 
-bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text)
+void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& switches)
+{
+    std::shared_ptr<CapInstr> prev;
+    for (const std::shared_ptr<CapInstr>& instr : code)
+    {
+        if (instr->mId == X86_INS_CALL)
+        {
+            const cs_x86& x86 = instr->mDetail;
+            if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2 &&
+                x86.operands[0].mem.base != X86_REG_INVALID)
+            {
+                assert(prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1);
+                assert(x86.operands[0].mem.segment == X86_REG_CS);
+                assert(x86.operands[0].mem.scale == 1);
+                assert(x86.operands[0].mem.base == X86_REG_BX);
+                switches.push_back({instr->mAddress, address_t{0x1000, (int)x86.operands[0].mem.disp}, -1, switch_t::Words, x86.operands[0].mem.base});
+            }
+        }
+        prev = instr;
+    }
+}
+
+bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches)
 {
     bool modified = false;
-    text.push_back(format("void sub_%x()", (int)code[0]->mAddress));
+    text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
@@ -578,7 +662,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         if (instr->mLabel)
         {
             lastCompare.reset();
-            text.push_back(format("loc_%x:", (int)instr->mAddress));
+            text.push_back(format("loc_%x:", instr->mAddress.linearOffset()));
         }
 
         if (instr->mInject != inject_t::none)
@@ -868,7 +952,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     }
                     else
                         text.push_back(format("if (%s)", MakeCFlagCondition(instr->mId).c_str()));
-                    text.push_back(format("goto loc_%x;", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
+                    text.push_back(format("goto loc_%x;", address_t{instr->mAddress.segment, (int)x86.operands[0].imm}.linearOffset()));
                     keepLastCompare = true;
                     if (injectPrev != (lastCompare ? lastCompare->mInject : inject_t::none))
                         modified = true;
@@ -876,14 +960,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_JCXZ:
                 text.push_back(format("if (cx == 0)"));
-                text.push_back(format("goto loc_%x;", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
+                text.push_back(format("goto loc_%x;", address_t{instr->mAddress.segment, (int)x86.operands[0].imm}.linearOffset()));
                 break;
             case X86_INS_JMP:
                 assert(x86.op_count == 1 &&
                        x86.operands[0].type == X86_OP_IMM &&
                        x86.operands[0].size == 2);
 
-                text.push_back(format("goto loc_%x;", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
+                text.push_back(format("goto loc_%x;", address_t{instr->mAddress.segment, (int)x86.operands[0].imm}.linearOffset()));
                 break;
             case X86_INS_LOOP:
                 assert(x86.op_count == 1 &&
@@ -891,17 +975,32 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                        x86.operands[0].size == 2);
 
                text.push_back(format("if (--cx)"));
-               text.push_back(format("goto loc_%x;", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
+               text.push_back(format("goto loc_%x;", address_t{instr->mAddress.segment, (int)x86.operands[0].imm}.linearOffset()));
                 break;
 
             case X86_INS_CALL:
+                
                 if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
                 {
-                    text.push_back(format("sub_%x();", (int)address_t{instr->mAddress.segment, (int)x86.operands[0].imm}));
+                    text.push_back(format("sub_%x();", address_t{instr->mAddress.segment, (int)x86.operands[0].imm}.linearOffset()));
                 } else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2)
                 {
-                    // TODO: possible to use switch after analysis finish
-                    text.push_back(format("callIndirect(%s);", ToCString(x86.operands[0]).c_str()));
+                    const auto sw = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
+                        return sw.origin == instr->mAddress;
+                    });
+                    if (sw != switches.end() && sw->elements != -1)
+                    {
+                        text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
+                        text.push_back("{");
+                        for (int i=0; i<sw->elements; i++)
+                            text.push_back(sw->GetCase(i));
+                        text.push_back("default:");
+                        text.push_back("assert(0);");
+                        text.push_back("}");
+                        // TODO: possible to use switch after analysis finish
+                    } else {
+                        text.push_back(format("callIndirect(%s);", ToCString(x86.operands[0]).c_str()));
+                    }
                 } else
                     assert(0);
                 break;
@@ -981,6 +1080,10 @@ int main(int argc, const char * argv[]) {
     assert(header->id[0] == 'M' && header->id[1] == 'Z');
     
     printf(R"(
+#include "cicoemu.h"
+using namespace CicoContext;
+void sub_%x();
+
 void start()
 {
   cs = 0x%04x;
@@ -988,7 +1091,8 @@ void start()
   sp = 0x%04x; // check!
   sub_%x();
 }
-)", header->cs+0x1000, header->ss+0x1000, header->sp, (0x1000+header->cs)*16+header->ip);
+)", (0x1000+header->cs)*16+header->ip, header->cs+0x1000,
+           header->ss+0x1000, header->sp, (0x1000+header->cs)*16+header->ip);
 
     // fix relocations, we are loading the image to 1000:0000
     for (int i=0; i<header->relocations; i++)
@@ -1000,12 +1104,14 @@ void start()
     }
 
     Capstone cap;
-    cap.Set(buffer, 0x10000 - 0x200);
+    cap.Set(buffer, 0x10000 - header->headerSize16*0x10);
     
-    std::vector<address_t> processed;
+    //std::map<address_t, CapFunction_t> functions;
+    std::map<address_t, function_t, cmp_adress_t> processed;
     std::vector<address_t> failed;
     std::list<address_t> toProcess;
-    toProcess.push_back({0x1000, 0x0010});
+    std::vector<switch_t> switches;
+    toProcess.push_back({header->cs+0x1000, header->ip});
     //toProcess.push_back({0x1000, 0x0bdc});
     
     for (int i=0; i<=136; i+=4)
@@ -1021,33 +1127,97 @@ void start()
     {
         address_t method = toProcess.front();
         toProcess.pop_front();
-        
-        if (std::find(processed.begin(), processed.end(), method) != processed.end())
+
+        if (processed.find(method) != processed.end())
             continue;
-        processed.push_back(method);
+        if (std::find(failed.begin(), failed.end(), method) != failed.end())
+            continue;
 
         std::vector<std::shared_ptr<CapInstr>> code;
-        printf("// extracting %04x:%04x, converted %d, to convert %d, failed %d\n", method.segment, method.offset, processed.size(), toProcess.size(), failed.size());
+//        printf("// extracting %04x:%04x, converted %d, to convert %d, failed %d\n", method.segment, method.offset, processed.size(), toProcess.size(), failed.size());
         if (!ExtractMethod(cap, method, code))
         {
             printf("Conversion failed!\n");
             failed.push_back(method);
             continue;
         }
+        int size = code[code.size()-1]->NextFollowing().linearOffset() - code[0]->mAddress.linearOffset();
+        processed.insert(std::pair<address_t, function_t>(method, function_t{method, size}));
+
         //DumpCode(code);
         FindCalls(code, toProcess);
+        FindSwitches(code, switches);
+    }
+    auto CheckOverlap = [&](const address_t& begin, int size)
+    {
+        return std::find_if(processed.begin(), processed.end(), [&](const auto& t){
+            const function_t& func = t.second;
+            return !((begin >= func.begin + func.length) || (begin+size < func.begin));
+        }) != processed.end();
+    };
+    
+    for (auto& sw : switches)
+    {
+        sw.baseptr = cap.GetBufferAt(sw.GetBaseAddress());
+        
+        for (int i=0; i<200; i++)
+        {
+            address_t addr = sw.GetAddressAt(i);
+            int size = sw.GetSize();
+            if (CheckOverlap(addr, size))
+            {
+                sw.elements = i;
+                break;
+            }
+            toProcess.push_back(sw.GetTarget(i));
+        }
+        assert(sw.elements != -1);
+    }
+    
+    while (!toProcess.empty())
+    {
+        address_t method = toProcess.front();
+        toProcess.pop_front();
+
+        if (processed.find(method) != processed.end())
+            continue;
+        if (std::find(failed.begin(), failed.end(), method) != failed.end())
+            continue;
+
+        std::vector<std::shared_ptr<CapInstr>> code;
+        //printf("// extracting %04x:%04x, converted %d, to convert %d, failed %d\n", method.segment, method.offset, processed.size(), toProcess.size(), failed.size());
+        if (!ExtractMethod(cap, method, code))
+        {
+            printf("Conversion failed!\n");
+            failed.push_back(method);
+            continue;
+        }
+        int size = code[code.size()-1]->NextFollowing().linearOffset() - code[0]->mAddress.linearOffset();
+        processed.insert(std::pair<address_t, function_t>(method, function_t{method, size}));
+
+        FindCalls(code, toProcess);
+        FindSwitches(code, switches);
+    }
+    
+    for (const auto& decl : processed)
+        printf("void sub_%x();\n", decl.second.begin.linearOffset());
+     
+    for (const auto& decl : processed)
+    {
+        std::vector<std::shared_ptr<CapInstr>> code;
+        if (!ExtractMethod(cap, decl.first, code))
+            assert(0);
+
         std::vector<std::string> text;
-        if (DumpCodeAsC(code, text))
+        if (DumpCodeAsC(code, text, switches))
         {
             text.clear();
-            DumpCodeAsC(code, text);
+            DumpCodeAsC(code, text, switches);
         }
         OptimizeCode(text);
         for (const auto& l : text)
             printf("%s\n", l.c_str());
-        //break;
     }
-    for (const auto decl : processed)
-        printf("void sub_%x();\n", decl.linearOffset());
+    
     return 0;
 }

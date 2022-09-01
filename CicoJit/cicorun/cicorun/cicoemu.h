@@ -5,14 +5,6 @@
 namespace CicoContext
 {
 
-/*
-template <MemAuto, DirAuto> void rep_stosw();
-template <MemAuto, DirAuto> void rep_stosb();
-template <MemAuto, DirAuto> void rep_movsw();
-template <MemAuto, DirAuto> void rep_movsb();
-template <MemAuto, DirAuto> void lodsw();
-template <MemAuto, DirAuto> void lodsb();
-*/
 class cicocontext_t {
 public:
     struct register_t
@@ -26,32 +18,31 @@ public:
       };
     } a, b, c, d;
 
-  //int _ah, _al, _bh, _bl, _ch, _cl, _dh, _dl;
-  //int _ax, _bx, _cx, _dx,
-  int _si, _di, _bp;
-  int _cs, _ds, _ss, _es, _sp;
-    
-  bool interrupts, direction, carry, zero;
-  uint8_t& memory8(int seg, int ofs);
-  uint16_t& memory16(int seg, int ofs);
+    int _si, _di, _bp;
+    int _cs, _ds, _ss, _es, _sp;
+
+    bool interrupts, direction, carry, zero;
+    uint8_t& memory8(int seg, int ofs);
+    uint16_t& memory16(int seg, int ofs);
     uint8_t memoryVideoGet8(int seg, int ofs);
     void memoryVideoSet8(int seg, int ofs, uint8_t data);
     uint16_t memoryVideoGet16(int seg, int ofs);
     void memoryVideoSet16(int seg, int ofs, uint16_t data);
-  void _int(int i);
-  void out(int port, int val);
-  void in(uint8_t& val, int port);
-  void push(const uint16_t& r);
-  void pop(uint16_t& r);
+    void _int(int i);
+    void out(int port, int val);
+    void in(uint8_t& val, int port);
+    void push(const uint16_t& r);
+    void pop(uint16_t& r);
     void push(const int& r);
     void pop(int& r);
-  void stop(int a = 0);
-  void callIndirect(int a);
+    void stop(int a = 0);
+    void callIndirect(int a);
     void cbw();
     void div(uint16_t& r);
     void div(uint8_t& r);
     void sar(uint16_t& a, uint8_t b);
 };
+
 #ifndef _HOST
 #define ax ctx->a.r16
 #define bx ctx->b.r16
@@ -155,7 +146,6 @@ template <class DST, class DIR> void stosb()
 
 template <typename DST, typename DIR> void rep_stosw()
 {
-    assert(cx == 0x7a34 || cx < 0x5000);
     if (cx)
     {
         while (cx--)
@@ -174,7 +164,6 @@ template <typename DST, typename DIR> void rep_stosb()
 }
 template <typename SRC, typename DST, typename DIR> void rep_movsw()
 {
-    assert(cx < 0x6000);
     assert(cx);
     while (cx--)
         movsw<DST, SRC, DIR>();
@@ -182,7 +171,6 @@ template <typename SRC, typename DST, typename DIR> void rep_movsw()
 }
 template <typename SRC, typename DST, typename DIR> void rep_movsb()
 {
-    assert(cx < 0x6000);
     assert(cx);
     while (cx--)
         movsb<DST, SRC, DIR>();
@@ -201,63 +189,7 @@ template <typename SRC, typename DIR> void lodsb()
     al = SRC::Get8(ds, DIR::Move(si));
 }
 
-
-
-
 #else
 extern cicocontext_t* ctx;
 #endif
-
-
-
-
-
-/*
-
-void interrupt(int i)
-{
-    ctx->_int(i);
-}
-void out(int a, int b)
-{
-    ctx->out(a, b);
-}
-void in(int a, int b)
-{
-    ctx->in(a, b);
-}
-//  {  }
-void push(int a)
-{
-    ctx->push(a);
-}
-//  {  }
-void pop(int a)
-{
-    ctx->pop(a);
-
-}
-//  {  }
-void stop(int a = 0)
-{
-    ctx->stop(a);
-}
-//  {  }
-void callIndirect(int a)
-{
-    ctx->callIndirect(a);
-}
-uint8_t& memory(int seg, int ofs)
-{
-    return ctx->memory8(seg, ofs);
-}
-
-uint16_t& memory16(int seg, int ofs)
-{
-    return ctx->memory16(seg, ofs);
-}
-void cbw();
-void div(int);
-void sar(int, int);
- */
 }
