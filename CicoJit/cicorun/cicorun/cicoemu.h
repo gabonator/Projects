@@ -32,15 +32,15 @@ public:
     void out(int port, int val);
     void in(uint8_t& val, int port);
     void push(const uint16_t& r);
-    void pop(uint16_t& r);
+    uint16_t pop();
     void push(const int& r);
     void pop(int& r);
     void stop(int a = 0);
     void callIndirect(int a);
     void cbw();
-    void div(uint16_t& r);
-    void div(uint8_t& r);
-    void sar(uint16_t& a, uint8_t b);
+    void div(uint16_t r);
+    void div(uint8_t r);
+    uint16_t sar(uint16_t a, uint8_t b);
 };
 
 #ifndef _HOST

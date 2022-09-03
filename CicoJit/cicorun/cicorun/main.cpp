@@ -210,11 +210,11 @@ void cicocontext_t::push(const uint16_t& r)
     ctx->_sp -= 2;
     assert(ctx->_sp > 0);
 }
-void cicocontext_t::pop(uint16_t& r)
+uint16_t cicocontext_t::pop(void)
 {
     assert(ctx->_sp <= 0xffff);
     ctx->_sp += 2;
-    r = memory16(ctx->_ss, ctx->_sp);
+    return memory16(ctx->_ss, ctx->_sp);
 }
 void cicocontext_t::push(const int& r)
 {
@@ -236,24 +236,25 @@ void cicocontext_t::cbw()
 {
     ctx->a.r8.h = (ctx->a.r8.l & 0x80) ? 0xff : 0;
 }
-void cicocontext_t::div(uint16_t& r)
+void cicocontext_t::div(uint16_t r)
 {
     uint16_t result = ctx->a.r16 / r;
     uint16_t remain = ctx->a.r16 % r;
     ctx->a.r16 = result;
     ctx->d.r16 = remain;
 }
-void cicocontext_t::div(uint8_t& r)
+void cicocontext_t::div(uint8_t r)
 {
     uint16_t result = ctx->a.r16 / r;
     uint16_t remain = ctx->a.r16 % r;
     ctx->a.r8.l = result;
     ctx->d.r8.h = remain;
 }
-void cicocontext_t::sar(uint16_t& a, uint8_t b)
+uint16_t cicocontext_t::sar(uint16_t a, uint8_t b)
 {
-    int16_t& sa = (short&)a;
+    int16_t sa = (short)a;
     sa >>= b;
+    return sa;
 }
 }
 

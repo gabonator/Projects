@@ -10,7 +10,6 @@ void start()
   sp = 0x0100; // check!
   sub_10010();
 }
-
 void sub_10010();
 void sub_100a9();
 void sub_100cf();
@@ -356,7 +355,7 @@ loc_10189:
 al &= 0x3f;
 push(ax);
 sub_1019d();
-pop(ax);
+ax = pop();
 al++;
 sub_1019d();
 loc_10195:
@@ -378,7 +377,7 @@ cx = 0x1f40;
 loc_101b0:
 push(cx);
 sub_101c0();
-pop(cx);
+cx = pop();
 ax = memory16(ds, 0x954c);
 if (!(al & 0x80))
 goto loc_101bd;
@@ -473,7 +472,7 @@ bx = 0x8e8a;
 al = memory(ds, bx + 21);
 if (al == 0x00)
 goto loc_10289;
-stop(); // jmp loc_10096
+stop(); // jmp loc_10096 
 loc_10289:
 sub_10529();
 loc_1028c:
@@ -680,7 +679,7 @@ ds = ax;
 al = 0x09;
 ah = 0x25;
 interrupt(0x21);
-pop(ds);
+ds = pop();
 }
 void sub_104f3()
 {
@@ -791,7 +790,7 @@ ds = ax;
 al = 0x1c;
 ah = 0x25;
 interrupt(0x21);
-pop(ds);
+ds = pop();
 al = 0x36;
 out(0x0043, al);
 ax = 0x4d0e;
@@ -808,7 +807,7 @@ ds = ax;
 al = 0x24;
 ah = 0x25;
 interrupt(0x21);
-pop(ds);
+ds = pop();
 }
 void sub_10600()
 {
@@ -850,8 +849,8 @@ push(di);
 push(cx);
 ax = 0x3d00;
 interrupt(0x21);
-pop(cx);
-pop(dx);
+cx = pop();
+dx = pop();
 if (!flags.carry)
 goto loc_10659;
 return;
@@ -863,7 +862,7 @@ push(ds);
 ds = ax;
 ax = 0x3f00;
 interrupt(0x21);
-pop(ds);
+ds = pop();
 ax = 0x3e00;
 bx = memory16(ds, 0x8f1e);
 interrupt(0x21);
@@ -875,8 +874,8 @@ push(cx);
 cx = 0x0000;
 ax = 0x3c00;
 interrupt(0x21);
-pop(cx);
-pop(dx);
+cx = pop();
+dx = pop();
 if (!flags.carry)
 goto loc_10683;
 return;
@@ -1006,7 +1005,7 @@ sub_107af();
 si = 0x0274;
 sub_10bc5();
 memory16(ds, 0x0279) += 0x0018;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_10786;
 memory(ds, 0x027d) = 0x08;
@@ -1014,7 +1013,7 @@ sub_107af();
 si = 0x0274;
 sub_10bc5();
 memory16(ds, 0x8f23) -= 0x0010;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_10759;
 }
@@ -1059,7 +1058,7 @@ div(cl);
 push(ax);
 ah = 0x00;
 memory16(ss, bp - 2) = ax;
-pop(ax);
+ax = pop();
 al = ah;
 ah = 0x00;
 cl = 0x03;
@@ -1121,8 +1120,8 @@ goto loc_10885;
 loc_10896:
 al = cl;
 cbw();
-pop(cx);
-pop(bx);
+cx = pop();
+bx = pop();
 if (cl & 0x80)
 goto loc_108a6;
 bl = memory(ds, bx + 1435);
@@ -1135,7 +1134,7 @@ cx = memory16(ss, bp - 6);
 cx = -cx;
 cx += 0x003f;
 sp = bp;
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_108ba()
@@ -1165,7 +1164,7 @@ bh = 0x00;
 al = memory(ds, bx + 38190);
 if (al == 0x00)
 goto loc_108f9;
-pop(ax);
+ax = pop();
 goto loc_10946;
 loc_108f9:
 bx <<= 1;
@@ -1175,7 +1174,7 @@ loc_10902:
 memory(ds, si + 19) = 0x0a;
 ax = memory16(ss, bp + 4);
 memory(ds, si + 20) = al;
-pop(ax);
+ax = pop();
 cx = 0x000a;
 loc_10910:
 flags.carry = ax & 1;
@@ -1195,7 +1194,7 @@ if (ax == 0x0000)
 goto loc_10932;
 push(si);
 sub_10b58();
-pop(si);
+si = pop();
 goto loc_1093f;
 loc_10932:
 push(si);
@@ -1204,16 +1203,16 @@ if (si == 0x0000)
 goto loc_1093e;
 sub_10a1b();
 loc_1093e:
-pop(si);
+si = pop();
 loc_1093f:
-pop(cx);
-pop(ax);
+cx = pop();
+ax = pop();
 loc_10941:
 memory(ds, si + 19)--;
 if (--cx)
 goto loc_10910;
 loc_10946:
-pop(bp);
+bp = pop();
 sp += 2;
 }
 void sub_1094a()
@@ -1241,7 +1240,7 @@ cl += memory(ds, bx + 1393);
 dl--;
 goto loc_10966;
 loc_10978:
-pop(si);
+si = pop();
 memory(ds, si + 3) = cl;
 al = memory(ds, si + 20);
 ah = 0x00;
@@ -1293,7 +1292,7 @@ goto loc_109e1;
 bx += 0x0100;
 loc_109e1:
 memory16(ds, bx + 37545) &= cx;
-pop(bp);
+bp = pop();
 sp += 6;
 }
 void sub_109e9()
@@ -1318,7 +1317,7 @@ loc_10a0f:
 cx = ~cx;
 ax = memory16(ds, bx + 37545);
 ax &= cx;
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_10a1b()
@@ -1389,13 +1388,13 @@ bx += dx;
 bx += dx;
 if ((short)bx < (short)memory16(ds, 0x1b8f))
 goto loc_10ac7;
-pop(ax);
+ax = pop();
 al = memory(ds, 0x9429);
 ah = 0x00;
 bx = memory16(ds, 0x942c);
 return;
 loc_10ac7:
-pop(bx);
+bx = pop();
 loc_10ac8:
 bx -= 0x0018;
 memory16(ds, 0x942c)--;
@@ -1451,12 +1450,12 @@ bx += dx;
 bx += dx;
 if ((short)bx < (short)memory16(ss, bp + 6))
 goto loc_10b47;
-pop(ax);
+ax = pop();
 ax = 0x0001;
 bx = memory16(ds, 0x942c);
 goto loc_10b54;
 loc_10b47:
-pop(bx);
+bx = pop();
 loc_10b48:
 bx -= 0x0018;
 memory16(ds, 0x942c)--;
@@ -1465,7 +1464,7 @@ goto loc_10b28;
 loc_10b51:
 ax = 0x0000;
 loc_10b54:
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_10b58()
@@ -1483,7 +1482,7 @@ push(di);
 cx = 0x0017;
 flags.direction = false;
 rep_movsb<MemAuto, MemAuto, DirAuto>();
-pop(si);
+si = pop();
 return;
 loc_10b73:
 di += 0x0017;
@@ -1522,8 +1521,8 @@ goto loc_10bbd;
 push(cx);
 push(si);
 sub_10bdc();
-pop(si);
-pop(cx);
+si = pop();
+cx = pop();
 loc_10bbd:
 si += 0x0017;
 goto loc_10ba7;
@@ -1680,11 +1679,11 @@ ax >>= cl;
 ah = al;
 bx = memory16(ds, 0x942e);
 es = bx;
-pop(cx);
+cx = pop();
 cx = memory16(ss, bp + 6);
 cx >>= 1;
 al = 0x08;
-pop(ds);
+ds = pop();
 bx = memory16(ss, bp + 4);
 loc_10d13:
 push(ax);
@@ -1749,18 +1748,18 @@ loc_10d6b:
 if (--cx)
 goto loc_10d18;
 loc_10d6d:
-pop(si);
+si = pop();
 si += 0x00a0;
-pop(di);
+di = pop();
 di += memory16(cs, 0x0d93);
 di &= 0x7fff;
-pop(cx);
-pop(bx);
-pop(ax);
+cx = pop();
+bx = pop();
+ax = pop();
 bx--;
 if (bx != 0)
 goto loc_10d13;
-pop(ds);
+ds = pop();
 ax = 0xff08;
 out(dx, ax);
 ax = 0x0005;
@@ -1768,7 +1767,7 @@ out(dx, ax);
 ax = 0x0f07;
 out(dx, ax);
 loc_10d8f:
-pop(bp);
+bp = pop();
 sp += 8;
 }
 void sub_10d98()
@@ -1884,8 +1883,8 @@ push(cx);
 push(ax);
 push(ax);
 sub_108ba();
-pop(ax);
-pop(cx);
+ax = pop();
+cx = pop();
 ax++;
 ax &= 0x003f;
 if (--cx)
@@ -2079,11 +2078,12 @@ case 60: sub_1171f(); break;
 case 62: sub_11b09(); break;
 case 64: sub_11b4a(); break;
 case 66: sub_12f50(); break;
+case 68: sub_112a7(); break;
 default:
 assert(0);
 }
 loc_11053:
-pop(si);
+si = pop();
 loc_11054:
 si += 0x0017;
 goto loc_10fe3;
@@ -2185,8 +2185,8 @@ ax++;
 loc_11158:
 memory16(ds, 0x952c) = ax;
 ax += 0x0003;
-sar(ax, 1);
-sar(ax, 1);
+ax = sar(ax, 1);
+ax = sar(ax, 1);
 ax += memory16(ds, 0x1b8f);
 if ((short)ax >= (short)0x0014)
 goto loc_11174;
@@ -2387,7 +2387,7 @@ push(ax);
 ax = memory16(ds, si + 7);
 push(ax);
 sub_107fd();
-pop(si);
+si = pop();
 if ((char)al < (char)memory(ds, si + 3))
 goto loc_11338;
 sub_12092();
@@ -2399,7 +2399,7 @@ push(ax);
 memory(ds, si + 20) = cl;
 push(cx);
 sub_10ad5();
-pop(si);
+si = pop();
 if (ax == 0x0000)
 return;
 push(si);
@@ -2411,7 +2411,7 @@ sub_11c0a();
 al = memory(ds, si);
 if (al & 0x80)
 goto loc_11382;
-pop(bx);
+bx = pop();
 push(bx);
 al = memory(ds, si + 3);
 al -= memory(ds, bx + 3);
@@ -2431,11 +2431,11 @@ goto loc_1137d;
 loc_1137a:
 sub_12662();
 loc_1137d:
-pop(si);
+si = pop();
 push(si);
 sub_12047();
 loc_11382:
-pop(si);
+si = pop();
 }
 void sub_11384()
 {
@@ -2473,7 +2473,7 @@ push(ax);
 ax = memory16(ds, si + 7);
 push(ax);
 sub_107fd();
-pop(si);
+si = pop();
 al += 0x04;
 memory(ds, si + 3) = al;
 memory(ds, si + 20) = cl;
@@ -2499,7 +2499,7 @@ cl = memory(ds, si + 20);
 ch = 0x00;
 push(cx);
 sub_10ad5();
-pop(si);
+si = pop();
 if (ax == 0x0000)
 return;
 push(si);
@@ -2514,11 +2514,11 @@ goto loc_11427;
 sub_120db();
 al = 0x06;
 sub_13840();
-pop(si);
+si = pop();
 push(si);
 memory(ds, si) = 0x00;
 loc_11427:
-pop(si);
+si = pop();
 }
 void sub_11429()
 {
@@ -2571,7 +2571,7 @@ push(ax);
 ax = memory16(ds, si + 7);
 push(ax);
 sub_107fd();
-pop(si);
+si = pop();
 al += 0x08;
 memory(ds, si + 3) = al;
 memory(ds, si + 20) = cl;
@@ -2620,7 +2620,7 @@ push(ax);
 ax = memory16(ds, si + 7);
 push(ax);
 sub_107fd();
-pop(si);
+si = pop();
 memory(ds, si + 3) = al;
 memory(ds, si + 20) = cl;
 memory(ds, si + 4) = bl;
@@ -2707,9 +2707,9 @@ sub_12092();
 al = 0x03;
 sub_13840();
 sub_12662();
-pop(si);
+si = pop();
 loc_115ba:
-pop(di);
+di = pop();
 loc_115bb:
 di += 0x0017;
 goto loc_1154b;
@@ -2739,7 +2739,7 @@ memory(ds, 0x9518) = 0x00;
 loc_115f3:
 push(si);
 sub_11def();
-pop(si);
+si = pop();
 loc_115f8:
 sub_110c6();
 }
@@ -2811,7 +2811,7 @@ push(ax);
 ax = memory16(ds, si + 7);
 push(ax);
 sub_107fd();
-pop(si);
+si = pop();
 if ((char)al < (char)memory(ds, si + 3))
 goto loc_11691;
 sub_12092();
@@ -3145,7 +3145,7 @@ bh = 0x00;
 bx <<= 1;
 ax = memory16(ds, bx + 5251);
 memory16(ds, si + 15) = ax;
-pop(bx);
+bx = pop();
 if (bl < 0x02)
 goto loc_1196b;
 ax = memory16(ds, 0x1b8f);
@@ -3193,7 +3193,7 @@ memory(ds, 0x1b8e) = 0x00;
 si = 0x1b8a;
 bx = 0x0d49;
 sub_12121();
-pop(si);
+si = pop();
 }
 void sub_11993()
 {
@@ -3284,7 +3284,7 @@ bh = 0x00;
 bx <<= 1;
 ax = memory16(ds, bx + 5239);
 memory16(ds, si + 15) = ax;
-pop(bx);
+bx = pop();
 loc_11a56:
 if (bl < 0x01)
 goto loc_11a9a;
@@ -3516,7 +3516,7 @@ loc_11c2a:
 si += 0x0017;
 goto loc_11c16;
 loc_11c2f:
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_11c33()
@@ -3541,7 +3541,7 @@ memory16(ds, 0x9544) = ax;
 push(ax);
 al = 0x06;
 sub_13840();
-pop(ax);
+ax = pop();
 ax = bx;
 push(ax);
 al = memory(ds, 0x1b9e);
@@ -3758,13 +3758,13 @@ sub_12121();
 sub_10b58();
 if (si == 0x0000)
 goto loc_11eb0;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_11eb0;
 sub_116d6();
 loc_11eb0:
-pop(si);
+si = pop();
 al = memory(ds, 0x9518);
 if (al != 0x00)
 goto loc_11eb9;
@@ -3794,13 +3794,13 @@ memory16(ds, si + 15) = ax;
 sub_10b58();
 if (si == 0x0000)
 goto loc_11f09;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_11f09;
 sub_115fc();
 loc_11f09:
-pop(si);
+si = pop();
 }
 void sub_11f0b()
 {
@@ -3832,13 +3832,13 @@ sub_12121();
 sub_10b58();
 if (si == 0x0000)
 goto loc_11f63;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_11f63;
 sub_116d6();
 loc_11f63:
-pop(si);
+si = pop();
 al = memory(ds, 0x9518);
 if (al != 0x00)
 goto loc_11f6c;
@@ -3867,13 +3867,13 @@ si = di;
 sub_10b58();
 if (si == 0x0000)
 goto loc_11fb8;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_11fb8;
 sub_115fc();
 loc_11fb8:
-pop(si);
+si = pop();
 }
 void sub_11fba()
 {
@@ -3901,13 +3901,13 @@ sub_12121();
 sub_10b58();
 if (si == 0x0000)
 goto loc_12003;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_12003;
 sub_11429();
 loc_12003:
-pop(si);
+si = pop();
 }
 void sub_12005()
 {
@@ -3932,13 +3932,13 @@ si = di;
 sub_10b58();
 if (si == 0x0000)
 goto loc_12045;
-pop(ax);
+ax = pop();
 push(ax);
 if (ax <= si)
 goto loc_12045;
 sub_117f4();
 loc_12045:
-pop(si);
+si = pop();
 }
 void sub_12047()
 {
@@ -4035,7 +4035,7 @@ memory16(ds, 0x12a5) &= 0x03ff;
 loc_12119:
 si = 0x129e;
 sub_10b58();
-pop(si);
+si = pop();
 }
 void sub_12121()
 {
@@ -4182,7 +4182,7 @@ cx = ax;
 loc_12239:
 push(cx);
 sub_12542();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12239;
 loc_12240:
@@ -4200,7 +4200,7 @@ cx = ax;
 loc_12257:
 push(cx);
 sub_1258a();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12257;
 loc_1225e:
@@ -4216,7 +4216,7 @@ cx = ax;
 loc_12272:
 push(cx);
 sub_125bf();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12272;
 goto loc_12284;
@@ -4225,7 +4225,7 @@ cx = ax;
 loc_1227d:
 push(cx);
 sub_125d2();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_1227d;
 loc_12284:
@@ -4241,7 +4241,7 @@ cx = ax;
 loc_12298:
 push(cx);
 sub_12464();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12298;
 goto loc_122aa;
@@ -4250,7 +4250,7 @@ cx = ax;
 loc_122a3:
 push(cx);
 sub_1239b();
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_122a3;
 loc_122aa:
@@ -4427,7 +4427,7 @@ loc_123ae:
 push(ax);
 al = 0x08;
 sub_13840();
-pop(ax);
+ax = pop();
 if (ax == 0x0001)
 goto loc_123d4;
 if (ax == 0x0002)
@@ -4884,7 +4884,7 @@ ax = 0x0001;
 out(dx, ax);
 ax = 0x0000;
 out(dx, ax);
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_1264a()
@@ -4978,8 +4978,8 @@ memory(ds, 0x94a9)++;
 push(ax);
 push(si);
 sub_122c1();
-pop(si);
-pop(ax);
+si = pop();
+ax = pop();
 loc_12701:
 memory(ds, 0x94aa) = al;
 al = memory(ds, 0x94a9);
@@ -4988,7 +4988,7 @@ goto loc_1270d;
 al -= 0x0a;
 loc_1270d:
 memory(ds, 0x94a9) = al;
-pop(bp);
+bp = pop();
 sp += 8;
 }
 void sub_12714()
@@ -5024,11 +5024,11 @@ push(ax);
 ax = 0x0002;
 push(ax);
 sub_12cea();
-pop(si);
-pop(dx);
+si = pop();
+dx = pop();
 dx += 0x0002;
 loc_1275e:
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12722;
 }
@@ -5086,7 +5086,7 @@ memory(ds, bx) = al;
 bx++;
 if (--cx)
 goto loc_127c9;
-pop(bx);
+bx = pop();
 bx <<= 1;
 bx += 0x9455;
 memory16(ds, 0x9451) = bx;
@@ -5163,8 +5163,8 @@ al = memory(ds, si);
 memory(ds, si) = 0xff;
 memory(ds, di) = al;
 di++;
-pop(si);
-pop(cx);
+si = pop();
+cx = pop();
 if (--cx)
 goto loc_1283c;
 }
@@ -5220,13 +5220,13 @@ if (al < memory(ds, si + 5))
 goto loc_128d0;
 loc_128d0:
 al = 0x00;
-pop(di);
-pop(si);
+di = pop();
+si = pop();
 return;
 loc_128d5:
 al = 0x01;
-pop(di);
-pop(si);
+di = pop();
+si = pop();
 }
 void sub_128da()
 {
@@ -5241,18 +5241,18 @@ di += 0x0002;
 push(si);
 push(di);
 sub_12959();
-pop(di);
-pop(si);
+di = pop();
+si = pop();
 di += 0x0002;
 ax = memory16(ds, di);
 di += 0x0002;
 push(si);
 push(di);
 sub_12907();
-pop(di);
-pop(si);
+di = pop();
+si = pop();
 si++;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_128e3;
 }
@@ -5293,10 +5293,10 @@ push(si);
 push(ax);
 push(dx);
 sub_129ae();
-pop(si);
-pop(dx);
+si = pop();
+dx = pop();
 dx += 0x0006;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_12926;
 }
@@ -5344,10 +5344,10 @@ loc_129a0:
 push(ax);
 push(dx);
 sub_129ae();
-pop(dx);
+dx = pop();
 dx += 0x0006;
-pop(si);
-pop(cx);
+si = pop();
+cx = pop();
 if (--cx)
 goto loc_12975;
 }
@@ -5385,10 +5385,10 @@ loc_129a0:
 push(ax);
 push(dx);
 sub_129ae();
-pop(dx);
+dx = pop();
 dx += 0x0006;
-pop(si);
-pop(cx);
+si = pop();
+cx = pop();
 if (--cx)
 goto loc_12975;
 }
@@ -5413,8 +5413,8 @@ di += 0x009a;
 si += 0x009a;
 if (--cx)
 goto loc_129c9;
-pop(ds);
-pop(bp);
+ds = pop();
+bp = pop();
 sp += 4;
 }
 void sub_129db()
@@ -5571,7 +5571,7 @@ push(ax);
 ax = 0x0000;
 push(ax);
 sub_1269e();
-pop(ax);
+ax = pop();
 if (al == 0x00)
 goto loc_12b59;
 if (al == 0x01)
@@ -5758,7 +5758,7 @@ push(ax);
 ax = 0x0002;
 push(ax);
 sub_12d9a();
-pop(ax);
+ax = pop();
 if (al != 0x06)
 goto loc_12cbc;
 al = 0x00;
@@ -5825,7 +5825,7 @@ cx = memory16(ss, bp + 8);
 cx >>= 1;
 ah = 0x80;
 al = 0x08;
-pop(ds);
+ds = pop();
 bx = memory16(ss, bp + 6);
 loc_12d19:
 push(ax);
@@ -5892,25 +5892,25 @@ loc_12d74:
 if (--cx)
 goto loc_12d1e;
 loc_12d76:
-pop(si);
+si = pop();
 si += 0x00a0;
-pop(di);
+di = pop();
 di += 0x0028;
 di &= 0x7fff;
-pop(cx);
-pop(bx);
-pop(ax);
+cx = pop();
+bx = pop();
+ax = pop();
 bx--;
 if (bx != 0)
 goto loc_12d19;
-pop(ds);
+ds = pop();
 ax = 0xff08;
 out(dx, ax);
 ax = 0x0005;
 out(dx, ax);
 ax = 0x0f07;
 out(dx, ax);
-pop(bp);
+bp = pop();
 sp += 10;
 }
 void sub_12d9a()
@@ -5933,12 +5933,12 @@ loc_12db8:
 push(di);
 cx = memory16(ss, bp + 8);
 rep_stosb<MemVideo, DirAuto>();
-pop(di);
+di = pop();
 push(di);
 di += 0x2000;
 cx = memory16(ss, bp + 8);
 rep_stosb<MemVideo, DirAuto>();
-pop(di);
+di = pop();
 di += 0x0028;
 bx--;
 if (bx != 0)
@@ -5947,7 +5947,7 @@ ax = 0x0000;
 out(dx, ax);
 al++;
 out(dx, ax);
-pop(bp);
+bp = pop();
 sp += 8;
 }
 void sub_12ddc()
@@ -5972,7 +5972,7 @@ void sub_12e02()
 push(si);
 sub_11b80();
 sub_1309d();
-pop(si);
+si = pop();
 ax = memory16(ds, 0x952a);
 ax >>= 1;
 ax >>= 1;
@@ -6034,8 +6034,8 @@ goto loc_12e7c;
 ax = 0xffc0;
 loc_12e7c:
 memory16(ds, 0x951e) = ax;
-sar(ax, 1);
-sar(ax, 1);
+ax = sar(ax, 1);
+ax = sar(ax, 1);
 memory(ds, si + 22) += al;
 al = memory(ds, si + 22);
 ax &= 0x007f;
@@ -6062,7 +6062,7 @@ bl = 0x0c;
 div(bl);
 ah = 0x00;
 loc_12ebe:
-pop(bx);
+bx = pop();
 memory16(ds, si + 7) = ax;
 al = memory(ds, bx + 6005);
 memory(ds, si + 4) = al;
@@ -6148,7 +6148,7 @@ if (al != 0x0f)
 goto loc_12f8a;
 push(si);
 sub_13059();
-pop(si);
+si = pop();
 loc_12f8a:
 si += 0x0017;
 goto loc_12f74;
@@ -6161,14 +6161,14 @@ bx = ax;
 al = memory(ds, bx + 5749);
 cbw();
 cx = ax;
-sar(cx, 1);
+cx = sar(cx, 1);
 ax += cx;
 ax += 0x0080;
 memory16(ds, si + 5) = ax;
 al = memory(ds, bx + 5877);
 cbw();
 cx = ax;
-sar(cx, 1);
+cx = sar(cx, 1);
 ax += cx;
 ax += 0x0080;
 if (ax == 0x0000)
@@ -6219,7 +6219,7 @@ return;
 loc_1301f:
 push(ax);
 sub_13130();
-pop(ax);
+ax = pop();
 ax >>= 1;
 memory(ds, si + 4) = al;
 bx = ax;
@@ -6375,7 +6375,7 @@ return;
 loc_13167:
 push(cx);
 sub_1315e();
-pop(cx);
+cx = pop();
 sub_13170();
 return;
 loc_13170:
@@ -6385,7 +6385,7 @@ return;
 loc_13178:
 push(cx);
 sub_13170();
-pop(cx);
+cx = pop();
 sub_13181();
 return;
 loc_13181:
@@ -6395,7 +6395,7 @@ return;
 loc_13188:
 push(cx);
 sub_13181();
-pop(cx);
+cx = pop();
 sub_13191();
 return;
 loc_13191:
@@ -6406,7 +6406,7 @@ return;
 loc_1319b:
 push(cx);
 sub_13191();
-pop(cx);
+cx = pop();
 sub_1315e();
 }
 void sub_1315e()
@@ -6458,10 +6458,10 @@ push(cx);
 cx = 0x0020;
 rep_movsb<MemVideo, MemAuto, DirAuto>();
 di += 0x0008;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_131d2;
-pop(ds);
+ds = pop();
 ax = 0x0000;
 out(dx, ax);
 al++;
@@ -6526,13 +6526,13 @@ cx = 0x0020;
 rep_movsb<MemVideo, MemVideo, DirAuto>();
 si += 0x0008;
 di += 0x0008;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_132b0;
-pop(ds);
+ds = pop();
 ax = 0x0005;
 out(dx, ax);
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_132fe()
@@ -6561,10 +6561,10 @@ cx = 0x0020;
 rep_movsb<MemVideo, MemVideo, DirAuto>();
 si &= 0x7fff;
 di += 0x0008;
-pop(cx);
+cx = pop();
 if (--cx)
 goto loc_13326;
-pop(ds);
+ds = pop();
 ax = 0x0005;
 out(dx, ax);
 }
@@ -6631,7 +6631,7 @@ ax = memory16(ds, 0x94f8);
 es = ax;
 di = 0x0000;
 dx = 0x03ce;
-pop(ax);
+ax = pop();
 ah = al;
 al = 0x00;
 out(dx, ax);
@@ -6684,12 +6684,12 @@ memoryVideoAnd(es, di, al);
 di++;
 if (--cx)
 goto loc_13406;
-pop(di);
-pop(ax);
+di = pop();
+ax = pop();
 ah >>= 1;
 if (ah != 0)
 goto loc_13400;
-pop(ds);
+ds = pop();
 ax = 0x0f02;
 out(dx, ax);
 dl = 0xce;
@@ -7001,7 +7001,7 @@ ax >>= 1;
 memory16(ss, bp + 4) = ax;
 goto loc_135bf;
 loc_136d0:
-pop(bp);
+bp = pop();
 sp += 4;
 }
 void sub_136d4()
@@ -7094,9 +7094,8 @@ bx -= memory16(ss, bp - 2);
 memory16(ss, bp - 6) = bx;
 bx = memory16(ss, bp - 10);
 di += memory16(ss, bp - 10);
-di &= 0xffff;
 loc_1379d:
-memory(es, di) |= al;
+memory(es, di & 0xffff) |= al;
 if (--cx)
 goto loc_1377c;
 goto loc_137d5;
@@ -7108,7 +7107,6 @@ sub_13801();
 cx = memory16(ss, bp - 4);
 loc_137b2:
 di += memory16(ss, bp - 10);
-di &= 0xffff;
 bx = memory16(ss, bp - 6);
 bx += memory16(ss, bp - 2);
 memory16(ss, bp - 6) = bx;
@@ -7122,12 +7120,12 @@ goto loc_137d0;
 al = 0x80;
 di++;
 loc_137d0:
-memory(es, di) |= al;
+memory(es, di & 0xffff) |= al;
 if (--cx)
 goto loc_137b2;
 loc_137d5:
 sp = bp;
-pop(bp);
+bp = pop();
 sp += 8;
 return;
 loc_137db:
@@ -7203,7 +7201,7 @@ goto loc_13866;
 push(bx);
 memory(ds, 0x9550) = al;
 sub_13914();
-pop(bx);
+bx = pop();
 return;
 loc_13866:
 ah = memory(ds, 0x9551);

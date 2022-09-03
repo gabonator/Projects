@@ -27,6 +27,110 @@ std::string format(const char* fmt, ...)
     return std::string(buf);
 }
 
+std::string ToCString(const cs_x86_op& op);
+
+const char* SignedType(const cs_x86_op& op)
+{
+    if (op.size == 1)
+        return "char";
+    if (op.size == 2)
+        return "short";
+    assert(0);
+    return "?";
+}
+
+std::string assign(const cs_x86& x86, const char* fmt_, ...)
+{
+    char fmt[256];
+    char tok[32];
+    strcpy(fmt, fmt_);
+    char* p = fmt;
+    while ((p = strstr(p, "$")) != nullptr)
+    {
+        char replace[64];
+        p++;
+        tok[0] = 0;
+        for (int i=0; i<32; i++)
+        {
+            tok[i] = p[i];
+            if ((p[i] >= '0' && p[i] <= '9') || (p[i] >= 'a' && p[i] <= 'z') )
+                continue;
+            
+            tok[i] = 0;
+            break;
+        }
+        
+        strcpy(replace, "");
+        if (strcmp(tok, "reg0") == 0)
+        {
+            assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_REG);
+            strcpy(replace, ToCString(x86.operands[0]).c_str());
+        }
+        if (strcmp(tok, "reg1") == 0)
+        {
+            assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_REG);
+            strcpy(replace, ToCString(x86.operands[1]).c_str());
+        }
+        if (strcmp(tok, "immd0") == 0)
+        {
+            assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
+            sprintf(replace, "%d", (int)x86.operands[0].imm);
+        }
+        if (strcmp(tok, "immx0") == 0)
+        {
+            assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
+            sprintf(replace, "0x%x", (int)x86.operands[0].imm);
+        }
+        if (strcmp(tok, "immd1") == 0)
+        {
+            assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
+            sprintf(replace, "%d", (int)x86.operands[1].imm);
+        }
+        if (strcmp(tok, "immx1") == 0)
+        {
+            assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
+            sprintf(replace, "0x%x", (int)x86.operands[1].imm);
+        }
+        if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0)
+        {
+            assert(x86.op_count >= 1);
+            strcpy(replace, ToCString(x86.operands[0]).c_str());
+        }
+        if (strcmp(tok, "wr1") == 0 || strcmp(tok, "rd1") == 0 || strcmp(tok, "rw1") == 0)
+        {
+            assert(x86.op_count >= 2);
+            strcpy(replace, ToCString(x86.operands[1]).c_str());
+        }
+        if (strcmp(tok, "sig0") == 0)
+        {
+            assert(x86.op_count >= 1);
+            strcpy(replace, SignedType(x86.operands[0]));
+        }
+        if (strcmp(tok, "sig1") == 0)
+        {
+            assert(x86.op_count >= 2);
+            strcpy(replace, SignedType(x86.operands[1]));
+        }
+
+        assert(replace[0] > 0);
+        char temp[128];
+        memcpy(temp, fmt, (p-1)-fmt);
+        temp[p-1-fmt] = 0;
+        strcat(temp, replace);
+        strcat(temp, p+strlen(tok));
+        strcpy(fmt, temp);
+        if (p-fmt>=strlen(fmt))
+            break;
+    }
+    
+    char buf[256];
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
+    return std::string(buf);
+}
+
 struct address_t {
     int segment{-1};
     int offset{-1};
@@ -526,16 +630,6 @@ std::string ToCString(const cs_x86_op& op)
     return "?";
 }
 
-std::string SignedType(const cs_x86_op& op)
-{
-    if (op.size == 1)
-        return "char";
-    if (op.size == 2)
-        return "short";
-    assert(0);
-    return "?";
-}
-
 std::string MakeCFlagCondition(x86_insn op)
 {
     switch (op)
@@ -553,7 +647,6 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
 {
     const cs_x86& x86 = inst->mDetail;
 
-    char tmp[64];
     switch(inst->mId)
     {
         case X86_INS_CMP:
@@ -561,38 +654,27 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             switch (op)
             {
                 case X86_INS_JE:
-                    sprintf(tmp, "%s == %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 == $rd1");
                 case X86_INS_JNE:
-                    sprintf(tmp, "%s != %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 != $rd1");
                 case X86_INS_JAE:
-                    sprintf(tmp, "%s >= %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 >= $rd1");
                 case X86_INS_JGE:
-                    sprintf(tmp, "(%s)%s >= (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 >= ($sig1)$rd1");
                 case X86_INS_JG:
-                    sprintf(tmp, "(%s)%s > (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 > ($sig1)$rd1");
                 case X86_INS_JNS:
-                    sprintf(tmp, "(%s)%s >= 0", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 >= 0");
                 case X86_INS_JL:
-                    sprintf(tmp, "(%s)%s < (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 < ($sig1)$rd1");
                 case X86_INS_JLE:
-                    sprintf(tmp, "(%s)%s <= (%s)%s", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str(), SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 <= ($sig1)$rd1");
                 case X86_INS_JBE:
-                    sprintf(tmp, "%s <= %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 <= $rd1");
                 case X86_INS_JB:
-                    sprintf(tmp, "%s < %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 < $rd1");
                 case X86_INS_JA:
-                    sprintf(tmp, "%s > %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 > $rd1");
                 default:
                     assert(0);
             }
@@ -602,11 +684,9 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             switch (op)
             {
                 case X86_INS_JE:
-                    sprintf(tmp, "!(%s & %s)", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "!($rd0 & $rd1)");
                 case X86_INS_JNE:
-                    sprintf(tmp, "%s & %s", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 & $rd1");
                 default:
                     assert(0);
             }
@@ -622,37 +702,31 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             switch (op)
             {
                 case X86_INS_JE:
-                    sprintf(tmp, "%s == 0", ToCString(x86.operands[0]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 == 0");
                 case X86_INS_JNE:
-                    sprintf(tmp, "%s != 0", ToCString(x86.operands[0]).c_str());
-                    return tmp;
+                    return assign(x86, "$rd0 != 0");
                 case X86_INS_JNS:
-                    sprintf(tmp, "(%s)%s >= 0", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 >= 0");
                 case X86_INS_JS:
-                    sprintf(tmp, "(%s)%s < 0", SignedType(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str());
-                    return tmp;
+                    return assign(x86, "($sig0)$rd0 < 0");
                 case X86_INS_JA:
                     return "stop()";
                 case X86_INS_JAE:
                     if (inst->mInject != inject_t::carry)
                     {
                         inst->mInject = inject_t::carry;
-                        sprintf(tmp, "stop()");
+                        return "stop()";
                     } else {
-                        sprintf(tmp, "!flags.carry");
+                        return "!flags.carry";
                     }
-                    return tmp;
                 case X86_INS_JB:
                     if (inst->mInject != inject_t::carry)
                     {
                         inst->mInject = inject_t::carry;
-                        sprintf(tmp, "stop()");
+                        return "stop();";
                     } else {
-                        sprintf(tmp, "flags.carry");
+                        return "flags.carry";
                     }
-                    return tmp;
 
                 default:
                     assert(0);
@@ -662,8 +736,7 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             switch (op)
             {
                 case X86_INS_JAE:
-                    sprintf(tmp, "!flags.carry");
-                    return tmp;
+                    return "!flags.carry";
                 default:
                     assert(0);
             }
@@ -758,17 +831,17 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 switch (instr->mId)
                 {
                     case X86_INS_SHR:
-                        text.push_back(format("flags.carry = %s & 1;", ToCString(x86.operands[0]).c_str()));
+                        text.push_back(assign(x86, "flags.carry = $rd0 & 1;"));
                         break;
                     case X86_INS_SUB:
-                        text.push_back(format("flags.carry = %s < %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                        text.push_back(assign(x86, "flags.carry = $rd0 < $rd1;"));
                         break;
                     case X86_INS_ADD:
-                        text.push_back(format("flags.carry = (%s + %s) >= 0x%x;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str(), x86.operands[0].size == 1 ? 0x100 : 0x10000));
+                        text.push_back(assign(x86, "flags.carry = ($rd0 + $rd1) >= 0x%x;", x86.operands[0].size == 1 ? 0x100 : 0x10000));
                         break;
                     case X86_INS_INC: // TODO: CHECK!!!
-                        text.push_back(format("flags.carry = %s == 0x%x;", ToCString(x86.operands[0]).c_str(),
-                                              x86.operands[0].size == 1 ? 0x0ff : 0xffff));
+                        text.push_back(assign(x86, "flags.carry = $rd0 == 0x%x;",
+                            x86.operands[0].size == 1 ? 0x0ff : 0xffff));
                         break;
                     default:
                         assert(0);
@@ -780,7 +853,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 switch (instr->mId)
                 {
                     case X86_INS_CMP:
-                        text.push_back(format("flags.zero = %s == %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                        text.push_back(assign(x86, "flags.zero = $rd0 == $rd1;"));
                         break;
                     default:
                         assert(0);
@@ -793,51 +866,42 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         switch (instr->mId)
         {
             case X86_INS_DIV:
-                assert(x86.op_count == 1 &&
-                       x86.operands[0].type == X86_OP_REG);
-                text.push_back(format("div(%s);", ToCString(x86.operands[0]).c_str()));
+//                assert(x86.op_count == 1 &&
+//                       x86.operands[0].type == X86_OP_REG);
+                text.push_back(assign(x86, "div($reg0);"));
                 break;
             case X86_INS_IDIV:
-                assert(x86.op_count == 1 &&
-                       x86.operands[0].type == X86_OP_REG);
-                text.push_back(format("idiv(%s);", ToCString(x86.operands[0]).c_str()));
+//                assert(x86.op_count == 1 &&
+//                       x86.operands[0].type == X86_OP_REG);
+                text.push_back(assign(x86, "idiv($reg0);"));
                 break;
             case X86_INS_MUL:
-                assert(x86.op_count == 1 &&
-                       x86.operands[0].type == X86_OP_REG);
-                text.push_back(format("mul(%s);", ToCString(x86.operands[0]).c_str()));
+//                assert(x86.op_count == 1 &&
+//                       x86.operands[0].type == X86_OP_REG);
+                text.push_back(assign(x86, "mul($reg0);"));
                 break;
 
             case X86_INS_CWDE:
                 text.push_back(format("cbw();"));
                 break;
-
             case X86_INS_NOT:
-                assert(x86.op_count == 1);
-                text.push_back(format("%s = ~%s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "$wr0 = ~$rd0;"));
                 break;
             case X86_INS_NEG:
-                assert(x86.op_count == 1 &&
-                       x86.operands[0].type == X86_OP_REG);
-                text.push_back(format("%s = -%s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "$reg0 = -$reg0;"));
                 break;
             case X86_INS_XOR:
-                assert(x86.op_count == 2);
-                text.push_back(format("%s ^= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$rw0 ^= $reg1;"));
                 break;
-
             case X86_INS_PUSH:
-                assert(x86.op_count == 1 &&
-                       x86.operands[0].type == X86_OP_REG &&
-                       x86.operands[0].size == 2);
-                text.push_back(format("push(%s);", ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "push($reg0);"));
                 keepLastCompare = true;
                 break;
             case X86_INS_POP:
                 assert(x86.op_count == 1 &&
                        x86.operands[0].type == X86_OP_REG &&
                        x86.operands[0].size == 2);
-                text.push_back(format("pop(%s);", ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "$reg0 = pop();"));
                 keepLastCompare = true;
                 break;
 
@@ -911,20 +975,20 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(0);
                 break;
             case X86_INS_INC:
-                text.push_back(format("%s++;", ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "$rw0++;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
             case X86_INS_DEC:
-                text.push_back(format("%s--;", ToCString(x86.operands[0]).c_str()));
+                text.push_back(assign(x86, "$rw0--;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
             case X86_INS_IN:
-                text.push_back(format("in(%s, %s);", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "in($rd0, $rd1);"));
                 break;
             case X86_INS_OUT:
-                text.push_back(format("out(%s, %s);", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "out($rd0, $rd1);"));
                 break;
             case X86_INS_CLD:
                 text.push_back(format("flags.direction = false;"));
@@ -945,14 +1009,13 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back(format("flags.carry = true;"));
                 break;
             case X86_INS_INT:
-                assert(x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM);
-                text.push_back(format("interrupt(0x%x);", (int)x86.operands[0].imm));
+                text.push_back(assign(x86, "interrupt($immx0);"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
             case X86_INS_ADD:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(format("%s += %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$rw0 += $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -962,7 +1025,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
                 else
                     text.push_back("stop(); // inject carry failed");
-                text.push_back(format("%s += %s + flags.carry;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                //text.push_back(assign("%o += %o + flags.carry", x86.operands[0], x86.operands[1]);
+                text.push_back(assign(x86, "$rw0 += $rd1 + flags.carry;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -976,29 +1040,30 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                  */
             case X86_INS_AND:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(format("%s &= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                //text.push_back(assign("%o &= %o", x86.operands[0], x86.operands[1]);
+                text.push_back(assign(x86, "$rw0 &= $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
             case X86_INS_OR:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(format("%s |= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$rw0 |= $rd1;"));
                 //lastCompare = instr;
                 //keepLastCompare = true;
                 break;
             case X86_INS_SUB:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(format("%s -= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$rw0 -= $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
             case X86_INS_SAR:
                 assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_IMM);
-                text.push_back(format("sar(%s, %d);", ToCString(x86.operands[0]).c_str(), (int)x86.operands[1].imm));
+                text.push_back(assign(x86, "$wr0 = sar($rd0, $immd1);"));
                 break;
             case X86_INS_SHL:
                 assert(x86.op_count == 2);
-                text.push_back(format("%s <<= %d;", ToCString(x86.operands[0]).c_str(), (int)x86.operands[1].imm));
+                text.push_back(assign(x86, "$rw0 <<= $immd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -1006,11 +1071,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 if (x86.op_count == 2 && x86.operands[1].type == X86_OP_IMM)
                 {
                     assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_IMM);
-                    text.push_back(format("%s >>= %d;", ToCString(x86.operands[0]).c_str(), (int)x86.operands[1].imm));
+                    text.push_back(assign(x86, "$rw0 >>= $immd1;"));
                 } else
                 if (x86.op_count == 2 && x86.operands[1].type == X86_OP_REG)
                 {
-                    text.push_back(format("%s >>= %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                    text.push_back(assign(x86, "$rw0 >>= $rd1;"));
                 } else
                     assert(0);
                 lastCompare = instr;
@@ -1022,7 +1087,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(format("return;"));
                 else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM)
                 {
-                    text.push_back(format("sp += %d;", x86.operands[0].imm));
+                    text.push_back(assign(x86, "sp += $immd0;"));
                     text.push_back(format("return;"));
                 }
                 else
@@ -1213,14 +1278,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back("}");
                         // TODO: possible to use switch after analysis finish
                     } else {
-                        text.push_back(format("callIndirect(%s);", ToCString(x86.operands[0]).c_str()));
+                        text.push_back(assign(x86, "callIndirect(%rd0);"));
                     }
                 } else
                     assert(0);
                 break;
             case X86_INS_MOV:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(format("%s = %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$wr0 = $rd1;"));
                 keepLastCompare = true;
                 break;
             case X86_INS_LAHF:
@@ -1232,11 +1297,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_RCR:
                 assert(x86.op_count == 2);
-                text.push_back(format("rcr(%s, %s);", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$wr0 = rcr($rd0, $rd1);"));
                 break;
             case X86_INS_RCL:
                 assert(x86.op_count == 2);
-                text.push_back(format("rcl(%s, %s);", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
+                text.push_back(assign(x86, "$wr0 = rcl($rd0, $rd1);"));
                 break;
             case X86_INS_NOP:
                 break;
@@ -1244,15 +1309,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 if (x86.operands[0].size == 1)
                 {
-                    text.push_back(format("tl = %s;", ToCString(x86.operands[0]).c_str()));
-                    text.push_back(format("%s = %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
-                    text.push_back(format("%s = tl;", ToCString(x86.operands[1]).c_str()));
+                    text.push_back(assign(x86, "tl = $rd0;"));
+                    text.push_back(assign(x86, "$wr0 = $rd0;"));
+                    text.push_back(assign(x86, "$wr1 = tl;"));
                 } else
                 if (x86.operands[0].size == 2)
                 {
-                    text.push_back(format("tx = %s;", ToCString(x86.operands[0]).c_str()));
-                    text.push_back(format("%s = %s;", ToCString(x86.operands[0]).c_str(), ToCString(x86.operands[1]).c_str()));
-                    text.push_back(format("%s = tx;", ToCString(x86.operands[1]).c_str()));
+                    text.push_back(assign(x86, "tx = $rd0;"));
+                    text.push_back(assign(x86, "$wr0 = $rd1;"));
+                    text.push_back(assign(x86, "$wr1 = tx;"));
                 } else
                     assert(0);
                 break;
