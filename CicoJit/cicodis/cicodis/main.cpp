@@ -28,6 +28,7 @@ std::string format(const char* fmt, ...)
 }
 
 std::string ToCString(const cs_x86_op& op);
+void GetOpAddress(const cs_x86_op& op, char* segment, char* offset);
 
 const char* SignedType(const cs_x86_op& op)
 {
@@ -39,12 +40,67 @@ const char* SignedType(const cs_x86_op& op)
     return "?";
 }
 
-std::string assign(const cs_x86& x86, const char* fmt_, ...)
+std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
 {
+    const bool getset = true;
     char fmt[256];
     char tok[32];
     strcpy(fmt, fmt_);
     char* p = fmt;
+    
+    if (getset)
+    {
+        bool firstWr = memcmp(fmt, "$wr", 3) == 0;
+        bool firstRdWr = memcmp(fmt, "$rw", 3) == 0;
+        if (firstWr || firstRdWr)
+        {
+            int index = fmt[3] - '0';
+            assert(x86.op_count >= index+1);
+            const cs_x86_op& op = x86.operands[index];
+            assert(op.type == X86_OP_MEM || op.type == X86_OP_REG);
+            if (op.type == X86_OP_MEM)
+            {
+                if (firstRdWr)
+                {
+                    char newfmt[64] = "";
+                    if (strcmp(fmt+4, "++;") == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d + 1;", index, index);
+                    else if (strcmp(fmt+4, "--;") == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d - 1;", index, index);
+                    else if (strncmp(fmt+4, " |= ", 4) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d | %s", index, index, fmt+8);
+                    else if (strncmp(fmt+4, " &= ", 4) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d & %s", index, index, fmt+8);
+                    else if (strncmp(fmt+4, " += ", 4) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d + %s", index, index, fmt+8);
+                    else if (strncmp(fmt+4, " -= ", 4) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d - %s", index, index, fmt+8);
+                    else
+                        assert(0);
+                    strcpy(fmt, newfmt);
+                }
+                char rvalue[32] = "";
+                assert(fmt[5] == '=' && fmt[6] == ' ');
+                strcat(rvalue, fmt+7);
+                assert(rvalue[strlen(rvalue)-1] == ';');
+                rvalue[strlen(rvalue)-1] = 0;
+                
+                std::string rvalue_formatted = vassign(x86, rvalue, args);
+                
+                char segment[32], offset[32], tmp[64];
+                GetOpAddress(op, segment, offset);
+                sprintf(tmp, "memoryASet%s(%s, %s, %s);",
+                        x86.operands[0].size == 2 ? "16" : "", segment, offset, rvalue_formatted.c_str());
+                return tmp;
+            } else {
+                char tmp[64];
+                strcpy(tmp, ToCString(op).c_str());
+                strcat(tmp, fmt+4);
+                strcpy(fmt, tmp);
+            }
+        }
+    }
+    
     while ((p = strstr(p, "$")) != nullptr)
     {
         char replace[64];
@@ -94,12 +150,26 @@ std::string assign(const cs_x86& x86, const char* fmt_, ...)
         if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0)
         {
             assert(x86.op_count >= 1);
-            strcpy(replace, ToCString(x86.operands[0]).c_str());
+            if (getset && x86.operands[0].type == X86_OP_MEM)
+            {
+                char segment[32], offset[32];
+                GetOpAddress(x86.operands[0], segment, offset);
+                sprintf(replace, "memoryAGet%s(%s, %s)",
+                        x86.operands[0].size == 2 ? "16" : "", segment, offset);
+            } else
+                strcpy(replace, ToCString(x86.operands[0]).c_str());
         }
         if (strcmp(tok, "wr1") == 0 || strcmp(tok, "rd1") == 0 || strcmp(tok, "rw1") == 0)
         {
             assert(x86.op_count >= 2);
-            strcpy(replace, ToCString(x86.operands[1]).c_str());
+            if (getset && x86.operands[1].type == X86_OP_MEM)
+            {
+                char segment[32], offset[32];
+                GetOpAddress(x86.operands[1], segment, offset);
+                sprintf(replace, "memoryAGet%s(%s, %s)",
+                        x86.operands[0].size == 2 ? "16" : "", segment, offset);
+            } else
+                strcpy(replace, ToCString(x86.operands[1]).c_str());
         }
         if (strcmp(tok, "sig0") == 0)
         {
@@ -124,12 +194,20 @@ std::string assign(const cs_x86& x86, const char* fmt_, ...)
     }
     
     char buf[256];
-    va_list args;
-    va_start(args, fmt);
     vsprintf(buf, fmt, args);
-    va_end(args);
     return std::string(buf);
 }
+
+
+std::string assign(const cs_x86& x86, const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    std::string str = vassign(x86, fmt, args);
+    va_end(args);
+    return str;
+}
+
 
 struct address_t {
     int segment{-1};
@@ -569,6 +647,44 @@ void DumpCode(const std::vector<std::shared_ptr<CapInstr>>& code)
         instr->Dump();
 }
 
+void GetOpAddress(const cs_x86_op& op, char* segment, char* offset)
+{
+    strcpy(offset, "");
+    
+    if (op.mem.base == X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
+        sprintf(offset, "0x%04x", (int)op.mem.disp & 0xffff);
+    else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID && op.mem.disp == 0)
+        sprintf(offset, "%s", cs_reg_name(_handle, op.mem.base));
+    else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
+    {
+        if (op.mem.base != X86_REG_BP)
+            sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
+        else
+        {
+            if ((op.mem.disp & 0xffff) < 60000)
+                sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
+            else
+                sprintf(offset, "%s - %d", cs_reg_name(_handle, op.mem.base), 0x10000-abs((int)op.mem.disp & 0xffff));
+        }
+    }
+    else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp == 0)
+        sprintf(offset, "%s + %s", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index));
+    else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp != 0)
+        sprintf(offset, "%s + %s + %d", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index), (int)op.mem.disp & 0xffff);
+    else
+        assert(0);
+    
+    strcpy(segment, "?");
+    switch (op.mem.segment)
+    {
+        case X86_REG_INVALID:
+            strcpy(segment, op.mem.base == X86_REG_BP ? "ss" : "ds");
+            break;
+        default:
+            strcpy(segment, cs_reg_name(_handle, op.mem.segment));
+    }
+}
+
 std::string ToCString(const cs_x86_op& op)
 {
     if (op.type == X86_OP_REG)
@@ -587,41 +703,8 @@ std::string ToCString(const cs_x86_op& op)
     }
     if (op.type == X86_OP_MEM)
     {
-        char offset[32] = "";
-        if (op.mem.base == X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
-            sprintf(offset, "0x%04x", op.mem.disp & 0xffff);
-        else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID && op.mem.disp == 0)
-            sprintf(offset, "%s", cs_reg_name(_handle, op.mem.base));
-        else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
-        {
-            if (op.mem.base != X86_REG_BP)
-                sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), op.mem.disp & 0xffff);
-            else
-            {
-                if ((op.mem.disp & 0xffff) < 60000)
-                    sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), op.mem.disp & 0xffff);
-                else
-                    sprintf(offset, "%s - %d", cs_reg_name(_handle, op.mem.base), 0x10000-abs(op.mem.disp & 0xffff));
-            }
-        }
-        else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp == 0)
-            sprintf(offset, "%s + %s", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index));
-        else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp != 0)
-            sprintf(offset, "%s + %s + %d", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index), op.mem.disp & 0xffff);
-        else
-            assert(0);
-        
-        char tmp[64];
-        const char* segment = "?";
-        switch (op.mem.segment)
-        {
-            case X86_REG_INVALID:
-                segment = op.mem.base == X86_REG_BP ? "ss" : "ds";
-                break;
-            default:
-                segment = cs_reg_name(_handle, op.mem.segment);
-        }
-
+        char segment[32], offset[32], tmp[64];
+        GetOpAddress(op, segment, offset);
         sprintf(tmp, "memory%s(%s, %s)", op.size == 2 ? "16" : "", segment, offset);
         return tmp;
     }

@@ -36,6 +36,49 @@ MAPKEY( SDL_SCANCODE_Y, 21 );
 }
 namespace CicoContext
 {
+uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
+{
+    ofs &= 0xffff;
+    if (seg >= 0x1000 && seg < 0xa000)
+        return memory8(seg, ofs);
+    else if (seg >= 0xa000 && seg < 0xe000)
+        return memoryVideoGet8(seg, ofs);
+    else
+        assert(0); // bios
+}
+
+uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
+{
+    ofs &= 0xffff;
+    if (seg >= 0x1000 && seg < 0xa000)
+        return memory16(seg, ofs);
+    else if (seg >= 0xa000 && seg < 0xe000)
+        return memoryVideoGet16(seg, ofs);
+    else
+        assert(0); // bios
+}
+
+void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
+{
+    ofs &= 0xffff;
+    if (seg >= 0x1000 && seg < 0xa000)
+        memory8(seg, ofs) = val;
+    else if (seg >= 0xa000 && seg < 0xe000)
+        memoryVideoSet8(seg, ofs, val);
+    else
+        assert(0); // bios
+}
+
+void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
+{
+    ofs &= 0xffff;
+    if (seg >= 0x1000 && seg < 0xa000)
+        memory16(seg, ofs) = val;
+    else if (seg >= 0xa000 && seg < 0xe000)
+        memoryVideoSet16(seg, ofs, val);
+    else
+        assert(0); // bios
+}
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
     assert(seg >= 0x1000 && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);

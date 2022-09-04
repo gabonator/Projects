@@ -22,6 +22,11 @@ public:
     int _cs, _ds, _ss, _es, _sp;
 
     bool interrupts, direction, carry, zero;
+    void memoryASet8(int seg, int ofs, uint8_t v);
+    void memoryASet16(int seg, int ofs, uint16_t v);
+    uint8_t memoryAGet8(int seg, int ofs);
+    uint16_t memoryAGet16(int seg, int ofs);
+    
     uint8_t& memory8(int seg, int ofs);
     uint16_t& memory16(int seg, int ofs);
     uint8_t memoryVideoGet8(int seg, int ofs);
@@ -74,6 +79,11 @@ public:
 #define memoryVideoSet16 ctx->memoryVideoSet16
 #define memoryVideoAnd(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & val)
 #define memoryVideoOr(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) | val)
+#define memoryASet ctx->memoryASet8
+#define memoryASet16 ctx->memoryASet16
+#define memoryAGet ctx->memoryAGet8
+#define memoryAGet16 ctx->memoryAGet16
+
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push
@@ -89,6 +99,14 @@ public:
 cicocontext_t* ctx;
 
 struct MemAuto
+{
+    static uint8_t Get8(int seg, int nAddr) { return memoryAGet(seg, nAddr); }
+    static void Set8(int seg, int nAddr, uint8_t nData) { memoryASet(seg, nAddr, nData); }
+    static uint16_t Get16(int seg, int nAddr) { return memoryAGet16(seg, nAddr); }
+    static void Set16(int seg, int nAddr, uint16_t nData) { memoryASet16(seg, nAddr, nData); }
+};
+
+struct MemData
 {
     static uint8_t Get8(int seg, int nAddr) { return memory(seg, nAddr); }
     static void Set8(int seg, int nAddr, uint8_t nData) { memory(seg, nAddr) = nData; }
