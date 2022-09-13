@@ -124,7 +124,7 @@ sub_344c4();
 ax = 0x1040;
 ds = ax;
 loc_341bb:
-sub_345e3();// hall of fame
+sub_345e3();
 if (flags.zero)
 goto loc_341bb;
 sub_35ce3();
@@ -166,7 +166,6 @@ di = memoryAGet16(ds, 0x80f3);
 bx = memoryAGet16(ds, 0x80f5);
 sub_34fe7();
 al = memoryAGet(ds, 0x7e46);
-al &= al;
 if (al != 0)
 goto loc_34277;
 loc_34240:
@@ -241,7 +240,6 @@ if (flags.zero)
 goto loc_342d5;
 loc_342da:
 al = memoryAGet(ds, 0x7d92);
-al &= al;
 if (al == 0)
 goto loc_342f3;
 al = memoryAGet(ds, 0x7e46);
@@ -254,12 +252,10 @@ loc_342f1:
 goto loc_34277;
 loc_342f3:
 al = memoryAGet(ds, 0x7d76);
-al &= al;
 if (al == 0)
 goto loc_3430c;
 sub_34f2c();
 al = memoryAGet(ds, 0x7d91);
-al &= al;
 if (al == 0)
 goto loc_3430a;
 goto loc_34243;
@@ -274,7 +270,6 @@ sub_36ce2();
 sub_3496b();
 sub_34dc8();
 al = memoryAGet(ds, 0x7d75);
-al &= al;
 if (al != 0)
 goto loc_34345;
 al = memoryAGet(ds, 0x7e82);
@@ -394,7 +389,7 @@ bx += memoryAGet16(ds, 0x7e4a);
 bx += 0x000d;
 cx = memoryAGet16(ds, 0x7e4c);
 bx += cx;
-al -= al;
+al = 0;
 al ^= bl;
 al ^= ch;
 al ^= cl;
@@ -447,18 +442,17 @@ cx = 0x0005;
 flags.carry = false;
 loc_34452:
 al = memoryAGet(ds, di);
-//stop(/*8*/); // inject carry failed
+// stop(/*8*/); // inject carry failed
 al += memoryAGet(ds, si) + flags.carry;
 if (al < 0x3a)
 goto loc_34460;
 al -= 0x0a;
 flags.carry = false;
 loc_34460:
-    flags.carry = !flags.carry;
+cmc();
 memoryASet(ds, di, al);
 di--;
 si--;
-    //flags.carry = si==0xffff; // gabo check!
 if (--cx)
 goto loc_34452;
 al = memoryAGet(ds, di);
@@ -471,7 +465,7 @@ goto loc_3442b;
 void sub_34470()
 {
 cl = memoryAGet(ds, 0x7e45);
-ch -= ch;
+ch = 0;
 al = 0x01;
 di = 0x014d;
 goto loc_3449a;
@@ -499,7 +493,7 @@ ds = pop();
 void sub_3447f()
 {
 cl = memoryAGet(ds, 0x7e47);
-ch -= ch;
+ch = 0;
 al = 0x02;
 di = 0x0155;
 goto loc_3449a;
@@ -530,7 +524,7 @@ void sub_344b9()
 goto loc_344b9;
 loc_3448e:
 cl = memoryAGet(ds, 0x7e46);
-ch -= ch;
+ch = 0;
 al = 0x03;
 di = 0x015d;
 if (cx != 0x0000)
@@ -787,7 +781,7 @@ void sub_348a8()
 {
 push(ds);
 push(es);
-dx -= dx;
+dx = 0;
 ax = 0x1040;
 ds = ax;
 dx = memoryAGet16(ds, 0x9663);
@@ -879,7 +873,7 @@ al = 0x01;
 out(dx, ax);
 al = 0x05;
 out(dx, ax);
-ax -= ax;
+ax = 0;
 di = ax;
 ax = di;
 cx = 0x0fa0;
@@ -1000,7 +994,7 @@ void sub_34a2e()
 {
 push(si);
 bl = memoryAGet(ds, si + 8);
-bh -= bh;
+bh = 0;
 bx += bx;
 bx += 0x0100;
 ax = memoryAGet16(ds, bx);
@@ -1275,8 +1269,10 @@ bx = 0x0000;
 bl = memoryAGet(ds, si);
 ah -= ah;
 al = memoryAGet(ds, bx);
+    flags.zero = !(al & 0x08);
+
 al = bl;
-if (!(al & 0x08))
+if (flags.zero)
 goto loc_34d25;
 ax = memoryAGet16(ds, 0x7e3c);
 ax++;
@@ -1346,7 +1342,7 @@ di = 0x0004;
 bx = 0x0018;
 loc_34de0:
 cx = 0x0020;
-ax -= ax;
+ax = 0;
 loc_34de5:
 al |= memoryAGet(ds, si);
 if (al)
@@ -1402,7 +1398,7 @@ ds = pop();
 si = pop();
 di = pop();
 bx = pop();
-ax -= ax;
+ax = 0;
 goto loc_34dec;
 loc_34e44:
 memoryASet(ds, si, 0x01);
@@ -1422,7 +1418,7 @@ di = 0x0004;
 bx = 0x0018;
 loc_34e64:
 cx = 0x0020;
-ax -= ax;
+ax = 0;
 loc_34e69:
 al |= memoryAGet(ds, si);
 if (al)
@@ -1478,7 +1474,7 @@ ds = pop();
 si = pop();
 di = pop();
 bx = pop();
-ax -= ax;
+ax = 0;
 goto loc_34e70;
 loc_34ec8:
 bx = 0x3ff0;
@@ -1507,7 +1503,7 @@ memoryASet(ds, 0x7d89, al);
 al = memoryAGet(ds, 0x7e8a);
 memoryASet(ds, 0x7d8c, al);
 al = memoryAGet(ds, 0x7e38);
-ah -= ah;
+ah = 0;
 memoryASet(ds, 0x7d8d, al);
 }
 void sub_34f00()
@@ -1533,7 +1529,6 @@ si = 0x7d0e;
 cx = 0x9810;
 dx = 0x3000;
 ax = memoryAGet16(ds, di);
-ax &= ax;
 if (ax == 0)
 goto loc_3500b;
 si = 0x7d1e;
@@ -1594,7 +1589,7 @@ al = memoryAGet(ds, si + 1);
 al -= memoryAGet(ds, si + 4);
 bl = memoryAGet(ds, 0x7e38);
 bl -= al;
-bh -= bh;
+bh = 0;
 di = memoryAGet16(ds, si + 2);
 if (di != 0x00ff)
 goto loc_34fe7;
@@ -1621,7 +1616,7 @@ memoryASet(ds, 0x7d91, 0xff);
 return;
 loc_34fb6:
 bl = memoryAGet(ds, 0x7d90);
-bh -= bh;
+bh = 0;
 bx += bx;
 bx += bx;
 bx += bx;
@@ -1651,7 +1646,6 @@ si = 0x7d0e;
 cx = 0x9810;
 dx = 0x3000;
 ax = memoryAGet16(ds, di);
-ax &= ax;
 if (ax == 0)
 goto loc_3500b;
 si = 0x7d1e;
@@ -1693,7 +1687,6 @@ si = 0x7d0e;
 cx = 0x9810;
 dx = 0x3000;
 ax = memoryAGet16(ds, di);
-ax &= ax;
 if (ax == 0)
 goto loc_3500b;
 si = 0x7d1e;
@@ -1738,7 +1731,7 @@ stosw<MemAuto, DirAuto>();
 stosw<MemAuto, DirAuto>();
 stosw<MemAuto, DirAuto>();
 cl = memoryAGet(ds, 0x7e45);
-ch -= ch;
+ch = 0;
 di = 0x7337;
 rep_stosb<MemAuto, DirAuto>();
 cl = memoryAGet(ds, 0x7e47);
@@ -1755,7 +1748,7 @@ ds = ax;
 es = ax;
 di = 0x778e;
 al = memoryAGet(ds, 0x7e38);
-ah -= ah;
+ah = 0;
 ax += ax;
 ax &= 0xfff8;
 ax += memoryAGet16(ds, 0x7e3a);
@@ -1805,7 +1798,7 @@ dl = 0x01;
 cx = 0x03e0;
 loc_350f0:
 bx++;
-cmpsb<MemData, MemData, DirAuto>();
+    cmpsb<MemData, MemData, DirAuto>();
 if (!flags.zero)
 goto loc_350fb;
 loc_350f7:
@@ -1964,7 +1957,7 @@ dl = 0x01;
 cx = 0x0400;
 loc_35220:
 bx--;
-cmpsb<MemData, MemData, DirAuto>();
+    cmpsb<MemData, MemData, DirAuto>();
 if (stop(/*1*/))
 goto loc_3522c;
 loc_35227:
@@ -2061,7 +2054,7 @@ al = bl;
 bl >>= 1;
 bl >>= 1;
 bl >>= 1;
-bh -= bh;
+bh = 0;
 dx += bx;
 bx = 0x778e;
 bx += dx;
@@ -2091,13 +2084,13 @@ al = bl;
 bl >>= 1;
 bl >>= 1;
 bl >>= 1;
-bh -= bh;
+bh = 0;
 dx += bx;
 bx = 0x778e;
 dx += bx;
 di = dx;
 bx = 0x0000;
-dl -= dl;
+dl = 0;
 al &= 0x07;
 if (al == 0)
 goto loc_3534f;
@@ -2117,7 +2110,7 @@ al &= 0xf0;
 dl |= al;
 di += 0x001e;
 memoryASet(ds, 0x7d74, dl);
-dl -= dl;
+dl = 0;
 goto loc_353ac;
 stop(/*7*/); //   gap of 1 bytes
 loc_3534f:
@@ -2132,7 +2125,7 @@ al &= 0xf0;
 dl |= al;
 di += 0x001f;
 memoryASet(ds, 0x7d74, dl);
-dl -= dl;
+dl = 0;
 goto loc_353e8;
 stop(/*7*/); //   gap of 65 bytes
 loc_353ac:
@@ -2205,7 +2198,7 @@ si = 0x7e4e;
 sub_3546c();
 di = pop();
 si = pop();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_35440;
 memoryASet(ds, 0x7d67, memoryAGet(ds, 0x7d67) | 0x40);
 loc_35440:
@@ -2234,13 +2227,13 @@ al = bl;
 bl >>= 1;
 bl >>= 1;
 bl >>= 1;
-bh -= bh;
+bh = 0;
 dx += bx;
 bx = 0x778e;
 dx += bx;
 di = dx;
 bx = 0x0000;
-dl -= dl;
+dl = 0;
 al &= 0x07;
 if (al == 0)
 goto loc_353e8;
@@ -2314,7 +2307,7 @@ si = 0x7e4e;
 sub_3546c();
 di = pop();
 si = pop();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_35440;
 memoryASet(ds, 0x7d67, memoryAGet(ds, 0x7d67) | 0x40);
 loc_35440:
@@ -2454,7 +2447,7 @@ flags.carry = al < 0x04;
 al -= 0x04;
 if (!flags.carry)
 goto loc_35509;
-al -= al;
+al = 0;
 loc_35509:
 flags.carry = (ah + 0x20) >= 0x100;
 ah += 0x20;
@@ -2538,7 +2531,7 @@ goto loc_355f3;
 ch = bl;
 bl = memoryAGet(ds, si);
 bl &= 0x7f;
-bh -= bh;
+bh = 0;
 bx += bx;
 bx += bx;
 bx += bx;
@@ -2685,7 +2678,7 @@ dl = memoryAGet(ds, 0x7d72);
 dh = memoryAGet(ds, si + 4);
 al = memoryAGet(ds, si + 5);
 bx = memoryAGet16(ds, 0x7d70);
-ah -= ah;
+ah = 0;
 if (!(bh & 0x80))
 goto loc_3572f;
 ah--;
@@ -2778,7 +2771,6 @@ loc_3580e:
 dx = memoryAGet16(ds, si + 4);
 bl = al;
 al = memoryAGet(ds, 0x7d68);
-al &= al;
 if (al == 0)
 goto loc_35823;
 sub_352ea();
@@ -2802,7 +2794,6 @@ loc_3583e:
 return;
 loc_3583f:
 ax = memoryAGet16(ds, 0x7d70);
-ax &= ax;
 if ((short)ax >= 0)
 goto loc_35865;
 memoryASet16(ds, 0x7d6e, 0x00ff);
@@ -2822,7 +2813,6 @@ if (!(cl & 0x20))
 goto loc_358ac;
 bx = memoryAGet16(ds, 0x7d70);
 al = bh;
-al &= al;
 if ((char)al < 0)
 goto loc_358ac;
 if (al < 0x02)
@@ -2843,9 +2833,9 @@ memoryASet16(ds, 0x7d70, 0x0100);
 al = memoryAGet(ds, 0x7d6c);
 dh = al;
 al = memoryAGet(ds, 0x7d69);
-al &= al;
+tl = al;
 al = dh;
-if (al == 0)
+if (tl == 0)
 goto loc_358c3;
 goto loc_359b8;
 loc_358c3:
@@ -2876,20 +2866,17 @@ if (al != 0x08)
 goto loc_35973;
 memoryASet(ds, 0x7d6b, 0xff);
 al = memoryAGet(ds, 0x7d86);
-al &= al;
 if (al == 0)
 goto loc_35916;
 return;
 loc_35916:
 memoryASet(ds, 0x7d86, 0xff);
 al = memoryAGet(ds, 0x7eae);
-al &= al;
 if (al == 0)
 goto loc_35926;
 return;
 loc_35926:
 al = memoryAGet(ds, 0x7e45);
-al &= al;
 if (al != 0)
 goto loc_35931;
 return;
@@ -2907,7 +2894,6 @@ memoryASet(ds, 0x7eb6, 0x20);
 ax = 0x7d9c;
 memoryASet16(ds, 0x7d9a, ax);
 al = memoryAGet(ds, 0x7d79);
-al &= al;
 if (al != 0)
 goto loc_35967;
 return;
@@ -2927,7 +2913,6 @@ goto loc_35991;
 return;
 loc_35991:
 al = memoryAGet(ds, 0x7e47);
-al &= al;
 if (al != 0)
 goto loc_3599c;
 return;
@@ -3036,8 +3021,9 @@ if (al != 0)
 goto loc_35aac;
 return;
 loc_35aac:
+tl = al;
 al = memoryAGet(ds, si + 2);
-if (al == 0x01)
+if (tl == 0)
 goto loc_35ac0;
 flags.carry = (al + 0xfe) >= 0x100;
 al += 0xfe;
@@ -3162,9 +3148,8 @@ memoryASet(ds, 0x7d7a, 0xfd);
 }
 void sub_35bb1()
 {
-stop(); // check for setting proper return flags!
+//stop(); // check for setting proper return flags!
 al = memoryAGet(ds, 0x7d87);
-al &= al;
 if ((char)al >= 0)
 goto loc_35be0;
 flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
@@ -3180,7 +3165,7 @@ dx += 0x0005;
 memoryASet16(ds, 0x7d7f, dx);
 bl = al;
 sub_352c5();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_35bf4;
 return;
 loc_35be0:
@@ -3243,7 +3228,7 @@ loc_35c31:
 memoryASet(ds, 0x7d85, 0x00);
 return;
 loc_35c37:
-ah -= ah;
+ah = 0;
 al >>= 1;
 di = 0x8138;
 di += ax;
@@ -3262,7 +3247,7 @@ push(si);
 si = 0x7e7e;
 sub_354fb();
 si = pop();
-if (stop(), !flags.zero)
+if (!flags.zero)
 return;
 goto loc_35b7f;
 }
@@ -3384,7 +3369,7 @@ dx = 0x0050;
 mul(dx);
 di += ax;
 bl = memoryAGet(ds, 0x9728);
-bh -= bh;
+bh = 0;
 bx += bx;
 bx += 0x0100;
 si = memoryAGet16(ds, bx);
@@ -3516,7 +3501,7 @@ void sub_35e97()
 {
 if (memoryAGet16(ds, 0x9730) == 0x0000)
 goto loc_35ee0;
-ah -= ah;
+ah = 0;
 bx = memoryAGet16(ds, 0x9734);
 si = memoryAGet16(ds, 0x9732);
 al = memoryAGet(ds, bx + si);
@@ -3812,13 +3797,13 @@ bl = memoryAGet(ds, 0x48f6);
 loc_36105:
 bh = al;
 push(bx);
-bh -= bh;
+bh = 0;
 di = 0x17cf;
 di += bx;
 sub_36161();
 bx = pop();
 al = bh;
-bh -= bh;
+bh = 0;
 bx += 0x48fb;
 memoryASet(ds, bx, al);
 memoryASet(ds, 0x48f6, memoryAGet(ds, 0x48f6) + 1);
@@ -4016,7 +4001,6 @@ push(dx);
 al &= 0xf8;
 dl = al;
 al = memoryAGet(ds, di + 1);
-al &= al;
 if ((char)al >= 0)
 goto loc_36280;
 goto loc_3638e;
@@ -4053,7 +4037,7 @@ memoryASet(ds, si + 28, al);
 dh &= 0x07;
 dl -= memoryAGet(ds, 0x7e38);
 dl += dh;
-dh -= dh;
+dh = 0;
 dx += dx;
 dx += dx;
 dx += dx;
@@ -4065,7 +4049,7 @@ memoryASet16(ds, si + 4, dx);
 memoryASet16(ds, si + 30, dx);
 memoryASet16(ds, si + 12, 0x0000);
 bl = memoryAGet(ds, di + 1);
-bh -= bh;
+bh = 0;
 bx += bx;
 bx += bx;
 bx += bx;
@@ -4116,7 +4100,7 @@ al = memoryAGet(ds, di);
 al &= 0xf8;
 al -= bl;
 al += dl;
-ah -= ah;
+ah = 0;
 ax += ax;
 ax += ax;
 ax += ax;
@@ -4194,7 +4178,6 @@ ds = ax;
 si = 0x7e4e;
 loc_363f9:
 ax = memoryAGet16(ds, si);
-ax &= ax;
 if (ax == 0)
 goto loc_3640d;
 if (ax == 0x00ff)
@@ -4246,6 +4229,8 @@ ah -= ah;
 ax += ax;
 ax += 0x80bf;
 di = ax;
+    //printf("call indirect %04x:%04x - %04x\n", ds, si, memory16(ds, di));
+
     callIndirect(memory16(ds, di)); // gabo
     return;
 stop(/*2*/);
@@ -4262,8 +4247,7 @@ dl = memoryAGet(ds, si + 42);
 dh = memoryAGet(ds, si + 4);
 al = memoryAGet(ds, si + 5);
 cx = memoryAGet16(ds, si + 44);
-ah -= ah;
-ch &= ch;
+ah = 0;
 if ((char)ch >= 0)
 goto loc_366dc;
 ah--;
@@ -4271,7 +4255,6 @@ loc_366dc:
 flags.carry = (dx + cx) >= 0x10000;
 dx += cx;
 al += ah + flags.carry;
-al &= al;
 if (al == 0)
 goto loc_366eb;
 memoryASet(ds, si, 0x00);
@@ -4287,7 +4270,7 @@ al = memoryAGet(ds, si + 38);
 al &= al;
 if ((char)al >= 0)
 goto loc_36718;
-flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
+flags.carry = (al + memory(ds, si + 2)) >= 0x100;
 al += memoryAGet(ds, si + 2);
 memoryASet(ds, si + 2, al);
 if (!flags.carry)
@@ -4310,7 +4293,7 @@ loc_3683f:
 sub_36853();
 if (!(memoryAGet(ds, si) & 0x80))
 return;
-sub_3545e(); // gabo fall!
+sub_3545e();
 if (!flags.zero)
 return;
 goto loc_35b7f;
@@ -4398,7 +4381,7 @@ loc_364c3:
 memoryASet(ds, 0x7d8e, 0xff);
 sub_3653b();
 sub_3555c();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_364d3;
 goto loc_36674;
 loc_364d3:
@@ -4411,7 +4394,7 @@ bl += 0x18;
 loc_364ee:
 dx = memoryAGet16(ds, 0x7eb2);
 sub_354c7();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36502;
 memoryASet(ds, 0x7eae, 0x00);
 goto loc_36674;
@@ -4419,7 +4402,7 @@ loc_36502:
 if (memoryAGet(ds, 0x7d85) == 0x00)
 goto loc_36514;
 sub_354fb();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36514;
 goto loc_36674;
 loc_36514:
@@ -4428,12 +4411,12 @@ goto loc_36532;
 bl = memoryAGet(ds, 0x7d7b);
 dx = memoryAGet16(ds, 0x7d7c);
 sub_354c7();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36532;
 memoryASet(ds, si + 46, 0x14);
 loc_36532:
 sub_3545e();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_3653a;
 goto loc_35b7f;
 loc_3653a:
@@ -4467,7 +4450,7 @@ dl = memoryAGet(ds, si + 42);
 dh = memoryAGet(ds, si + 4);
 al = memoryAGet(ds, si + 5);
 cx = memoryAGet16(ds, si + 44);
-ah -= ah;
+ah = 0;
 if (!(ch & 0x80))
 goto loc_36553;
 ah--;
@@ -4511,7 +4494,7 @@ bl &= 0x1c;
 bl >>= 1;
 bl >>= 1;
 bl >>= 1;
-bh -= bh;
+bh = 0;
 bx += 0x8143;
 al = memoryAGet(ds, bx);
 if (!(memoryAGet(ds, si + 38) & 0x80))
@@ -4526,7 +4509,6 @@ al &= 0xf8;
 al |= 0x03;
 memoryASet16(ds, si + 4, ax);
 al = memoryAGet(ds, si + 46);
-al &= al;
 if (al == 0)
 goto loc_365e5;
 al--;
@@ -4534,18 +4516,15 @@ memoryASet(ds, si + 46, al);
 return;
 loc_365e5:
 al = memoryAGet(ds, si + 38);
-al &= al;
 if (al != 0)
 {
-    tl = al & 0x80;
-//    flags.zero = false;
+    tl = al;
 goto loc_365f7;
 }
- //   flags.zero = true;
 return;
 stop(/*7*/); //   gap of 7 bytes
 loc_365f7:
-if (!tl)
+if (!(tl & 0x80)) // gabo! todo!
 goto loc_36607;
 flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
 al += memoryAGet(ds, si + 2);
@@ -4570,7 +4549,6 @@ if (al & 0x04)
 goto loc_36674;
 memoryASet(ds, si + 2, bl);
 al = memoryAGet(ds, 0x7d8e);
-al &= al;
 if (al == 0)
 goto loc_36659;
 al = memoryAGet(ds, si + 2);
@@ -4685,7 +4663,7 @@ bl += 0x18;
 loc_364ee:
 dx = memoryAGet16(ds, 0x7eb2);
 sub_354c7();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36502;
 memoryASet(ds, 0x7eae, 0x00);
 goto loc_36674;
@@ -4774,7 +4752,7 @@ void sub_36853()
 //stop(); // check for setting proper return flags!
 loc_36853:
 al = memoryAGet(ds, si + 38);
-ah -= ah;
+ah = 0;
 bx = memoryAGet16(ds, si + 32);
 cx = bx;
 bx += ax;
@@ -4786,12 +4764,11 @@ al = memoryAGet(ds, bx);
 loc_3686c:
 memoryASet(ds, si + 8, al);
 al = memoryAGet(ds, si + 38);
-al &= al;
 if (al != 0)
 goto loc_36879;
 goto loc_36957;
 loc_36879:
-ah -= ah;
+ah = 0;
 bx = cx;
 bx += ax;
 if (memoryAGet(ds, bx) != 0xff)
@@ -4802,7 +4779,7 @@ stop(/*7*/); //   gap of 1 bytes
 loc_3688e:
 al++;
 memoryASet(ds, si + 38, al);
-ah -= ah;
+ah = 0;
 bx = cx;
 bx += ax;
 if (memoryAGet(ds, bx) != 0xff)
@@ -4821,7 +4798,6 @@ if (memoryAGet(ds, bx) != 0xff)
 goto loc_368fd;
 loc_368bd:
 al = memoryAGet(ds, 0x7d75);
-al &= al;
 if (al != 0)
 goto loc_368d4;
 if (!(memoryAGet(ds, si + 20) & 0x01))
@@ -4855,7 +4831,6 @@ al++;
 memoryASet(ds, si + 40, al);
 bx++;
 al = memoryAGet(ds, bx);
-al &= al;
 if ((char)al >= 0)
 goto loc_3691e;
 flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
@@ -4875,15 +4850,13 @@ loc_36927:
 memoryASet(ds, si + 2, al);
 bx++;
 cl = memoryAGet(ds, bx);
-ch -= ch;
+ch = 0;
 ax = memoryAGet16(ds, si + 4);
-cl &= cl;
 if ((char)cl >= 0)
 goto loc_3693b;
 ch--;
 loc_3693b:
 ax += cx;
-ah &= ah;
 if (ah == 0)
 goto loc_36953;
 if (ah == 0x01)
@@ -4912,7 +4885,6 @@ loc_3697a:
 if (!(al & 0x40))
 goto loc_3699e;
 al = memoryAGet(ds, 0x7d6a);
-al &= al;
 if (al == 0)
 goto loc_3699b;
 bl = memoryAGet(ds, 0x7d7b);
@@ -4926,7 +4898,6 @@ loc_3699e:
 if (!(al & 0x20))
 goto loc_369ca;
 al = memoryAGet(ds, 0x7eae);
-al &= al;
 if (al == 0)
 goto loc_369c7;
 bl = memoryAGet(ds, 0x7d7e);
@@ -4946,7 +4917,6 @@ loc_369d1:
 return;
 loc_369d2:
 al = memoryAGet(ds, 0x7d85);
-al &= al;
 if (al == 0)
 goto loc_369d1;
 bl = memoryAGet(ds, 0x7d82);
@@ -5001,17 +4971,16 @@ stop(/*7*/); //   gap of 868 bytes
 loc_36a11:
 sub_36a8b();
 sub_3545e();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36a1f;
 sub_35b7f();
 loc_36a1f:
 sub_3555c();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36a27;
 goto loc_36674;
 loc_36a27:
 al = memoryAGet(ds, 0x7eae);
-al &= al;
 if (al != 0)
 goto loc_36a34;
 goto loc_36a5c;
@@ -5025,22 +4994,20 @@ goto loc_36a4c;
 bl += 0x18;
 loc_36a4c:
 sub_354c7();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36a5c;
 memoryASet(ds, 0x7eae, 0x00);
 goto loc_36674;
 loc_36a5c:
 al = memoryAGet(ds, 0x7d85);
-al &= al;
 if (al == 0)
 goto loc_36a6e;
 sub_354fb();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36a6e;
 goto loc_36674;
 loc_36a6e:
 al = memoryAGet(ds, 0x7d6a);
-al &= al;
 if (al != 0)
 goto loc_36a79;
 loc_36a78:
@@ -5049,7 +5016,7 @@ loc_36a79:
 bl = memoryAGet(ds, 0x7d7b);
 dx = memoryAGet16(ds, 0x7d7c);
 sub_354c7();
-if (stop(), !flags.zero)
+if (!flags.zero)
 goto loc_36a78;
 memoryASet(ds, si + 46, 0x14);
 }
@@ -5082,7 +5049,6 @@ return;
 stop(/*7*/); //   gap of 990 bytes
 loc_36a8b:
 al = memoryAGet(ds, si + 46);
-al &= al;
 if (al == 0)
 goto loc_36a98;
 memoryASet(ds, si + 46, memoryAGet(ds, si + 46) - 1);
@@ -5194,7 +5160,7 @@ dl = memoryAGet(ds, si + 42);
 dh = memoryAGet(ds, si + 4);
 al = memoryAGet(ds, si + 5);
 bx = memoryAGet16(ds, si + 44);
-ah -= ah;
+ah = 0;
 if (!(bh & 0x80))
 goto loc_36b92;
 ah--;
@@ -5280,7 +5246,7 @@ bx = 0x8147;
 loc_36c5c:
 al = memoryAGet(ds, si + 2);
 al &= 0x0e;
-ah -= ah;
+ah = 0;
 al >>= 1;
 al >>= 1;
 al >>= 1;
@@ -5289,12 +5255,10 @@ al = memoryAGet(ds, bx);
 al += memoryAGet(ds, si + 32);
 memoryASet(ds, si + 8, al);
 al = memoryAGet(ds, si + 40);
-al &= al;
 if (al != 0)
 goto loc_36c85;
 memoryASet(ds, si + 40, 0x02);
 al = 0x02;
-al &= al;
 loc_36c85:
 if (stop(/*1*/))
 goto loc_36c95;
@@ -5344,7 +5308,6 @@ void sub_36ce2()
 {
 si = memoryAGet16(ds, 0x7d9a);
 ch = memoryAGet(ds, si);
-ch &= ch;
 if (ch != 0)
 goto loc_36cf2;
 goto loc_36cfd;

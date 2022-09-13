@@ -189,6 +189,16 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
             assert(x86.op_count >= 1);
             strcpy(replace, x86.operands[0].size == 1 ? "0x80" : "0x8000");
         }
+        if (strcmp(tok, "tmp0") == 0)
+        {
+            assert(x86.op_count >= 1);
+            if (x86.operands[0].size == 1)
+                strcpy(replace, "tl");
+            else if (x86.operands[0].size == 2)
+                strcpy(replace, "tx");
+            else
+                assert(0);
+        }
 
         assert(replace[0] > 0);
         char temp[128];
@@ -234,7 +244,9 @@ struct address_t {
 enum class inject_t {
     none = 0,
     carry = 1,
-    zero = 2
+    zero = 2,
+    discard = 0x1000,
+    temp = 0x2000
 };
 
 address_t operator +(const address_t a, int b)
@@ -337,7 +349,7 @@ struct cmp_function_t {
     }
 };
 
-class CapInstr
+class CapInstr : public std::enable_shared_from_this<CapInstr>
 {
 public: // remove!
     x86_insn mId;
@@ -405,7 +417,7 @@ public:
                        x86->operands[0].size == 2);
                 if (x86->operands[0].type == X86_OP_IMM)
                 {
-                    mNextInstr = {addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
+                    mNextInstr = fromRelative(x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
                     //mNextInstr = {0x1000, (int)x86->operands[0].imm};
                     sprintf(mOperands, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
                 } else {
@@ -421,7 +433,7 @@ public:
                 assert(x86->op_count == 1 &&
                        x86->operands[0].type == X86_OP_IMM &&
                        x86->operands[0].size == 2);
-                mBranchInstr = {addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
+                mBranchInstr = fromRelative( x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
                 //1723:003b: 1723:003b      je    0x726f   ->1726f
                 sprintf(mOperands, "loc_%x", mBranchInstr.linearOffset());
                 break;
@@ -470,7 +482,25 @@ public:
             printf("        \tloc_%x:\n", mAddress.segment*0x10+mAddress.offset);
         printf("%04x:%04x\t  %s\t%s\n", mAddress.segment, mAddress.offset, mMnemonic, mOperands);
     }
+    address_t fromRelative(uint64_t offset);
 };
+
+address_t fromRelative(int segment, uint64_t offset)
+{
+    return address_t{segment, (int)offset - 0x41b0};
+    //return address_t{segment, (int)offset - segment*16 + 0x10000};
+}
+
+address_t fromRelative(const std::shared_ptr<CapInstr>& instr, uint64_t offset)
+{
+    return fromRelative(instr->mAddress.segment, offset);
+    // address_t{instr->mAddress.segment, (int)offset - instr->mAddress.segment*16 + 0x10000};
+}
+
+address_t CapInstr::fromRelative(uint64_t offset)
+{
+    return ::fromRelative(mAddress.segment, offset);
+}
 
 class Capstone
 {
@@ -543,7 +573,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         trace.pop_front();
         assert(pc.offset >= 0 && pc.offset < 0xffff);
         
-        if (trace.size() == 0)
+        if (0 && trace.size() == 0)
         {
             // start processing indirect jumps when everything is finished
             assert(indirectJumps.size() <= 1);
@@ -580,7 +610,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             continue;
         
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
-        instr->Dump();
+        //instr->Dump();
         instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, instr));
         
         if (instr->mId == X86_INS_INT && instr->mDetail.operands[0].imm == 0x21)
@@ -614,7 +644,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0xffff);
+                assert(pc.offset >= 0 && pc.offset < 0x2fff);
                 trace.push_back(pc);
                 /*
                 if (pc.linearOffset() < address.linearOffset())
@@ -638,7 +668,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->NextBranch()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0xffff);
+                assert(pc.offset >= 0 && pc.offset < 0x2fff);
                 trace.push_back(pc);
                 /*
                 //assert(pc.linearOffset() >= address.linearOffset());
@@ -695,8 +725,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(nextAddr, gap));
         }
 
-        printf("%04x:%04x %s %s (%d)\n", iter->first.segment, iter->first.offset,
-               iter->second->mMnemonic, iter->second->mOperands, instr->mSize);
+        //printf("%04x:%04x %s %s (%d)\n", iter->first.segment, iter->first.offset,
+        //       iter->second->mMnemonic, iter->second->mOperands, instr->mSize);
         nextAddr = instr->NextFollowing();
     }
     
@@ -811,10 +841,35 @@ std::string MakeCFlagCondition(x86_insn op)
             return "stop(/*4*/)";
     }
 }
+
+// TODO: cleanup
+std::map<address_t, std::string, cmp_adress_t> notices;
+address_t noticeCurrentMethod;
+
 std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
 {
     const cs_x86& x86 = inst->mDetail;
-
+    if ((int)inst->mInject & (int)inject_t::discard)
+    {
+        switch (op)
+        {
+            case X86_INS_JE:
+                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                return assign(x86, "$tmp0 == 0");
+            case X86_INS_JNE:
+                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                return assign(x86, "$tmp0 != 0");
+            case X86_INS_JAE:
+                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                return assign(x86, "$tmp0 >= $rd1");
+            case X86_INS_JNS:
+                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                return assign(x86, "($sig0)$tmp0 >= 0");
+            default:
+                assert(0);
+        }
+        assert(0);
+    }
     switch(inst->mId)
     {
         case X86_INS_CMP:
@@ -903,7 +958,8 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             }
             break;
         case X86_INS_CALL:
-            printf("// Check if function %s sets proper flags!\n", inst->mOperands);
+            notices.insert(std::pair<address_t, std::string>(noticeCurrentMethod, "check for setting proper return flags!"));
+            //printf("// Check if function %s sets proper flags!\n", inst->mOperands);
             
         case X86_INS_INT:
             switch (op)
@@ -912,6 +968,10 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
                     return "!flags.carry";
                 case X86_INS_JB:
                     return "flags.carry";
+                case X86_INS_JE:
+                    return "flags.zero";
+                case X86_INS_JNE:
+                    return "!flags.zero";
                 default:
                     assert(0);
             }
@@ -946,8 +1006,8 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
 
             if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
             {
-                int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
-                toProcess.push_back(address_t{instr->mAddress.segment, newOfs});
+                //int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
+                toProcess.push_back(fromRelative(instr, x86.operands[0].imm));
                 
                 //toProcess.push_back(address_t{/*instr->mAddress.segment*/ 0x1000, (int)x86.operands[0].imm});
                 //toProcess.push_back(address_t{instr->mAddress.segment, (int)x86.operands[0].imm});
@@ -994,14 +1054,64 @@ void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vecto
     }
 }
 
+bool checkDiscards(const cs_x86_op& prev, const cs_x86_op& next)
+{
+    if (prev.type != next.type)
+        return false;
+    if (prev.type == X86_OP_MEM)
+    {
+        return prev.mem.index == next.mem.index &&
+            prev.mem.scale == next.mem.scale &&
+            prev.mem.segment == next.mem.segment &&
+            prev.mem.base == next.mem.base &&
+            prev.mem.disp == next.mem.disp;
+    }
+    if (prev.type == X86_OP_REG)
+    {
+        return prev.reg == next.reg;
+    }
+    return false;
+}
+
+bool checkDiscards(const cs_x86_op& op, std::shared_ptr<CapInstr> next)
+{
+    if (next->mDetail.op_count == 0)
+        return false;
+    if (next->mDetail.op_count == 1)
+        return checkDiscards(op, next->mDetail.operands[0]);
+    if (next->mDetail.op_count == 2)
+        return checkDiscards(op, next->mDetail.operands[0]) || checkDiscards(op, next->mDetail.operands[0]);
+
+    assert(0);
+    return false;
+}
+
+bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> next)
+{
+    if (prev->mDetail.op_count == 0)
+        return false;
+    if (prev->mDetail.op_count == 1)
+        return checkDiscards(prev->mDetail.operands[0], next);
+    if (prev->mDetail.op_count == 2)
+        return checkDiscards(prev->mDetail.operands[0], next) || checkDiscards(prev->mDetail.operands[1], next);
+    assert(0);
+    return false;
+}
+
 bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps)
 {
+    noticeCurrentMethod = code[0]->mAddress; // TODO: cleanup
+
     bool modified = false;
     text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
-    
+    const auto& notice = notices.find(code[0]->mAddress);
+    if (notice != notices.end())
+    {
+        text.push_back(format("stop(); // %s", notice->second.c_str()));
+    }
     auto GetPrev = [&](const std::shared_ptr<CapInstr>& p)->std::shared_ptr<CapInstr>
     {
         for (int i=0; i<code.size(); i++)
@@ -1063,11 +1173,24 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     case X86_INS_CMP:
                         text.push_back(assign(x86, "flags.zero = $rd0 == $rd1;"));
                         break;
+                    case X86_INS_TEST:
+                        text.push_back(assign(x86, "flags.zero = !($rd0 & $rd1);"));
+                        break;
                     default:
                         assert(0);
                         break;
                 }
             } else
+            if ((int)instr->mInject & (int)inject_t::discard)
+            {
+                assert(0);
+            } else
+            if ((int)instr->mInject & (int)inject_t::temp)
+            {
+                assert(instr->mInject == inject_t::temp);
+                text.push_back(assign(x86, "$tmp0 = $rd0;"));
+            }
+            else
                 assert(0);
         }
 
@@ -1094,7 +1217,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back(assign(x86, "$wr0 = ~$rd0;"));
                 break;
             case X86_INS_NEG:
-                text.push_back(assign(x86, "$reg0 = -$reg0;"));
+                text.push_back(assign(x86, "$wr0 = -$rd0;"));
                 break;
             case X86_INS_XOR:
                 text.push_back(assign(x86, "$rw0 ^= $rd1;"));
@@ -1273,7 +1396,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_AND:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 //text.push_back(assign("%o &= %o", x86.operands[0], x86.operands[1]);
-                text.push_back(assign(x86, "$rw0 &= $rd1;"));
+                if (assign(x86, "$rd0") != assign(x86, "$rd1"))
+                    text.push_back(assign(x86, "$rw0 &= $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -1286,7 +1410,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_SUB:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
-                text.push_back(assign(x86, "$rw0 -= $rd1;"));
+                if (assign(x86, "$rd0") == assign(x86, "$rd1"))
+                    text.push_back(assign(x86, "$wr0 = 0;"));
+                else
+                    text.push_back(assign(x86, "$rw0 -= $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -1409,9 +1536,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     else
                         text.push_back(format("if (%s)", MakeCFlagCondition(instr->mId).c_str()));
                     
-                    address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                    //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
-                    text.push_back(format("goto loc_%x;", target.linearOffset()));
+                    text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
                     keepLastCompare = true;
                     if (injectPrev != (lastCompare ? lastCompare->mInject : inject_t::none))
                         modified = true;
@@ -1419,10 +1546,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_JCXZ:
             {
-                address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
                 text.push_back(format("if (cx == 0)"));
-                text.push_back(format("goto loc_%x;", target.linearOffset()));
+                text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
             }
                 break;
             case X86_INS_JMP:
@@ -1439,9 +1566,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(x86.op_count == 1 && x86.operands[0].size == 2);
                 if (x86.operands[0].type == X86_OP_IMM)
                 {
-                    address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                    //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
-                    text.push_back(format("goto loc_%x;", target.linearOffset()));
+                    text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
                 }
                 else
                 {
@@ -1469,9 +1596,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
 
                 text.push_back(format("if (--cx)"));
             {
-                address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
-                text.push_back(format("goto loc_%x;", target.linearOffset()));
+                text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
             }
                 break;
 
@@ -1483,9 +1610,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(lastCompare);
                 text.push_back(format("if (--cx && %s)", MakeCCondition(lastCompare, X86_INS_JNE).c_str()));
             {
-                address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
-                text.push_back(format("goto loc_%x;", target.linearOffset()));
+                text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
             }
                 break;
 
@@ -1497,17 +1624,17 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(lastCompare);
                 text.push_back(format("if (--cx && %s)", MakeCCondition(lastCompare, X86_INS_JE).c_str()));
             {
-                address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
+                //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
-                text.push_back(format("goto loc_%x;", target.linearOffset()));
+                text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
             }
                 break;
 
             case X86_INS_CALL:
                 if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
                 {
-                    int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
-                    text.push_back(format("sub_%x();", address_t{instr->mAddress.segment, newOfs}.linearOffset()));
+                    //int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
+                    text.push_back(format("sub_%x();", /*address_t{instr->mAddress.segment, newOfs}*/fromRelative(instr, x86.operands[0].imm).linearOffset()));
                     lastCompare = instr;
                     keepLastCompare = true;
                 } else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2)
@@ -1540,6 +1667,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_MOV:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 text.push_back(assign(x86, "$wr0 = $rd1;"));
+                if (lastCompare && checkDiscards(x86.operands[0], lastCompare))
+                    lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::discard);
                 keepLastCompare = true;
                 break;
             case X86_INS_LAHF:
@@ -1550,8 +1679,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("flags.zero = (ah >> 1) & 1;");
                 break;
             case X86_INS_RCR:
-                assert(x86.operands[0].size == 1);
-                text.push_back(assign(x86, "$wr0 = rcr($rd0, $rd1);"));
+                text.push_back(assign(x86, "$wr0 = rcr($rd0, $rd1);")); // 8bit/16bit!
                 break;
             case X86_INS_RCL:
                 assert(x86.operands[0].size == 1);
@@ -1585,6 +1713,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_AAA:
                 text.push_back("aaa();");
                 break;
+            case X86_INS_CMC:
+                text.push_back("cmc();");
+                break;
+            case X86_INS_CMPSB:
+                text.push_back("cmpsb();");
+                break;
             case X86_INS_PUSHF:
                 text.push_back("tx = flags.carry | (flags.zero << 1);");
                 text.push_back("push(tx);");
@@ -1603,6 +1737,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             lastCompare.reset();
     }
     text.push_back(format("}"));
+
+    for (const auto& instr : code)
+        instr->mInject = inject_t((int)instr->mInject & ~(int)inject_t::discard);
+
     return modified;
     //X86_INS_MOV
 }
@@ -1711,7 +1849,17 @@ void start()
     toProcess.push_back({header->cs+0x1000, header->ip});
     //toProcess.push_back({0x1040, 0x1bfa0-0x10400});
     
-    //toProcess.push_back({0x1040, 0x1c3b0-0x10400});
+#define X(x) toProcess.push_back({0x341b, x});
+    X(0x1448);
+    X(0x22cb);
+    X(0x228c);
+    X(0x259b);
+    X(0x2575);
+    X(0x1a01);
+    X(0x1a48);
+    X(0x2313);
+    X(0x2861);
+    //toProcess.push_back({0x1040, 0x1c3b0-0x10400}););
     /*
 #define X(x) toProcess.push_back({0x1040, 0x##x - 0x10400});
     
@@ -1834,7 +1982,7 @@ void start()
             assert(0);
 
         std::vector<std::string> text;
-        if (DumpCodeAsC(code, text, switches, jumps))
+        if (DumpCodeAsC(code, text, switches, jumps)) // TODO: collect all notices
         {
             text.clear();
             DumpCodeAsC(code, text, switches, jumps);
@@ -1843,6 +1991,9 @@ void start()
         for (const auto& l : text)
             printf("%s\n", l.c_str());
     }
-    
+
+    for (const auto& decl : notices)
+        printf("// Notice: sub_%x(): %s\n", decl.first.segment*0x10+decl.first.offset, decl.second.c_str());
+
     return 0;
 }
