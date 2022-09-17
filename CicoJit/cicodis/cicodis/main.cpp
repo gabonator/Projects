@@ -16,6 +16,7 @@
 #include <capstone/platform.h>
 #include <capstone/capstone.h>
 
+const bool verbose_asm = true;
 csh _handle;
 int _cs;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
@@ -78,6 +79,10 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                         sprintf(newfmt, "$wr%d = $rd%d + %s", index, index, fmt+8);
                     else if (strncmp(fmt+4, " -= ", 4) == 0)
                         sprintf(newfmt, "$wr%d = $rd%d - %s", index, index, fmt+8);
+                    else if (strncmp(fmt+4, " ^= ", 4) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d ^ %s", index, index, fmt+8);
+                    else if (strncmp(fmt+4, " >>= ", 5) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d >> %s", index, index, fmt+9);
                     else
                         assert(0);
                     strcpy(fmt, newfmt);
@@ -241,12 +246,21 @@ struct address_t {
     }
 };
 
+address_t fromRelative(int segment, uint64_t offset);
+
 enum class inject_t {
     none = 0,
     carry = 1,
     zero = 2,
+    stop = 0x400,
     discard = 0x1000,
-    temp = 0x2000
+    temp = 0x2000,
+    returnZero = 0x4000,
+    returnCarry = 0x8000,
+    setZeroFlag = 0x10,
+    clearZeroFlag = 0x20,
+    setCarryFlag = 0x40,
+    clearCarryFlag = 0x80
 };
 
 address_t operator +(const address_t a, int b)
@@ -322,7 +336,7 @@ struct switch_t {
             case CallWords:
                 return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
             case JumpWords:
-                return format("case %d: goto loc_%x;", i*2, GetTarget(i).linearOffset()-0x10000+_cs*0x10);
+                return format("case %d: goto loc_%x;", i*2, /*GetTarget(i).linearOffset()-0x10000+_cs*0x10*/ GetTarget(i).linearOffset());
             default:
                 assert(0);
                 return "stop(/*3*/);";
@@ -487,8 +501,9 @@ public:
 
 address_t fromRelative(int segment, uint64_t offset)
 {
-    return address_t{segment, (int)offset - 0x41b0};
-    //return address_t{segment, (int)offset - segment*16 + 0x10000};
+    // rd1
+    //return address_t{segment, (int)offset - 0x41b0};
+    return address_t{segment, (int)offset - segment*16 + 0x10000};
 }
 
 address_t fromRelative(const std::shared_ptr<CapInstr>& instr, uint64_t offset)
@@ -538,7 +553,7 @@ public:
     const uint8_t* GetBufferAt(address_t addr)
     {
         uint64_t address = addr.segment*16 + addr.offset;
-        assert(address - mBase > 0x200 && address - mBase+1 <= mSize);
+        assert(address - mBase > 0x0 && address - mBase+1 <= mSize);
         return mpBuffer + address - mBase;
     }
     
@@ -561,7 +576,48 @@ public:
     }
 };
 
-bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& indirectJumps)
+bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    if (strcmp(instr->mMnemonic, "sub") == 0 &&
+        strcmp(instr->mOperands, "al, al") == 0)
+        return true;
+    if (strcmp(instr->mMnemonic, "jne") == 0)
+        return true;
+    return false;
+}
+
+bool ClearsZeroFlag(const std::shared_ptr<CapInstr>& instr1, const std::shared_ptr<CapInstr>& instr2)
+{
+    if (!instr1)
+        return false;
+    if (strcmp(instr1->mMnemonic, "sub") == 0 &&
+        strcmp(instr1->mOperands, "al, al") == 0 &&
+        strcmp(instr2->mMnemonic, "dec") == 0 &&
+        strcmp(instr2->mOperands, "al") == 0)
+        return true;
+    if (strcmp(instr1->mMnemonic, "sub") == 0 &&
+        strcmp(instr1->mOperands, "ax, ax") == 0 &&
+        strcmp(instr2->mMnemonic, "inc") == 0 &&
+        strcmp(instr2->mOperands, "ax") == 0)
+        return true;
+    return false;
+}
+
+bool SetsCarryFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    if (strcmp(instr->mMnemonic, "stc") == 0)
+        return true;
+    return false;
+}
+
+bool ClearsCarryFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    if (strcmp(instr->mMnemonic, "clc") == 0)
+        return true;
+    return false;
+}
+
+bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& indirectJumps, inject_t injectReturn)
 {
     std::list<address_t> trace;
     trace.push_back(address);
@@ -573,7 +629,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         trace.pop_front();
         assert(pc.offset >= 0 && pc.offset < 0xffff);
         
-        if (0 && trace.size() == 0)
+        if (0 && trace.size() == 0) // skip indirect jumps
         {
             // start processing indirect jumps when everything is finished
             assert(indirectJumps.size() <= 1);
@@ -610,7 +666,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             continue;
         
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
-        //instr->Dump();
+        //if (verbose_asm)
+          //  instr->Dump();
         instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, instr));
         
         if (instr->mId == X86_INS_INT && instr->mDetail.operands[0].imm == 0x21)
@@ -644,7 +701,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0x2fff);
+                assert(pc.offset >= 0 && pc.offset < 0x7fff);
                 trace.push_back(pc);
                 /*
                 if (pc.linearOffset() < address.linearOffset())
@@ -668,7 +725,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->NextBranch()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0x2fff);
+                assert(pc.offset >= 0 && pc.offset < 0xbfff);
                 trace.push_back(pc);
                 /*
                 //assert(pc.linearOffset() >= address.linearOffset());
@@ -737,6 +794,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     }
         
     nextAddr = address_t{};
+    std::shared_ptr<CapInstr> prev1, prev2;
     for( auto iter = instructions.begin(); iter != instructions.end(); iter++ )
     {
         address_t addr = iter->first;
@@ -750,9 +808,67 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
             
         nextAddr = instr->NextFollowing();
+        if (injectReturn != inject_t::none && (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF))
+        {
+            if (injectReturn == inject_t::returnZero)
+            {
+                if (prev1->mId == X86_INS_CMP || prev1->mId == X86_INS_AND)
+                {
+                    prev1->mInject = inject_t((int)prev1->mInject | (int)inject_t::zero);
+                    printf("// INJECT: use instruction in sub_%x()\n", address.linearOffset());
+                }
+                else
+                if (SetsZeroFlag(prev1))
+                {
+                    assert(instr->mInject == inject_t::none);
+                    instr->mInject = inject_t::setZeroFlag;
+                    printf("// INJECT: set sub_%x()\n", address.linearOffset());
+                }
+                else if (ClearsZeroFlag(prev2, prev1))
+                {
+                    assert(instr->mInject == inject_t::none);
+                    instr->mInject = inject_t::clearZeroFlag;
+                    printf("// INJECT: clear sub_%x()\n", address.linearOffset());
+                } else
+                {
+                    instr->mInject = inject_t::stop;
+                    printf("// INJECT: Error: cannot inject zero flag in sub_%x()!\n",
+                           address.linearOffset());
+    //                assert(0);
+                }
+            } else
+            if (injectReturn == inject_t::returnCarry)
+            {
+                // TOTO: check if there is function call before, mark function, run again!
+                if (SetsCarryFlag(prev1))
+                {
+                    assert(instr->mInject == inject_t::none);
+                    //instr->mInject = inject_t::setCarryFlag;
+                    printf("// INJECT: use set sub_%x()\n", address.linearOffset());
+                }
+                else if (ClearsCarryFlag(prev1))
+                {
+                    assert(instr->mInject == inject_t::none);
+                    //instr->mInject = inject_t::clearCarryFlag;
+                    printf("// INJECT: use clear sub_%x()\n", address.linearOffset());
+                } else
+                {
+                    instr->mInject = inject_t::stop;
+                    printf("// INJECT: Error: cannot inject carry flag in sub_%x()!\n",
+                           address.linearOffset());
+                }
+            }
+        }
         code.push_back(instr);
-//        instr->Dump();
+        if (instr->mId != X86_INS_NOP && instr->mId != X86_INS_POP && instr->mId != X86_INS_MOV)
+        {
+            prev2 = prev1;
+            prev1 = instr;
+        }
+        if (verbose_asm)
+            instr->Dump();
     }
+    
     return true;
 }
 
@@ -844,9 +960,10 @@ std::string MakeCFlagCondition(x86_insn op)
 
 // TODO: cleanup
 std::map<address_t, std::string, cmp_adress_t> notices;
-address_t noticeCurrentMethod;
+std::map<address_t, inject_t> functionInjects;
+//address_t noticeCurrentMethod;
 
-std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
+std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapInstr>& inst, x86_insn op)
 {
     const cs_x86& x86 = inst->mDetail;
     if ((int)inst->mInject & (int)inject_t::discard)
@@ -958,9 +1075,25 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             }
             break;
         case X86_INS_CALL:
-            notices.insert(std::pair<address_t, std::string>(noticeCurrentMethod, "check for setting proper return flags!"));
-            //printf("// Check if function %s sets proper flags!\n", inst->mOperands);
-            
+            switch (op)
+            {
+                case X86_INS_JE:
+                    functionInjects.insert(std::pair<address_t, inject_t>(fromRelative(inst, x86.operands[0].imm), inject_t::returnZero));
+                    break;
+                case X86_INS_JNE:
+                    functionInjects.insert(std::pair<address_t, inject_t>(fromRelative(inst, x86.operands[0].imm), inject_t::returnZero));
+                    break;
+                case X86_INS_JAE:
+                    functionInjects.insert(std::pair<address_t, inject_t>(fromRelative(inst, x86.operands[0].imm), inject_t::returnCarry));
+                    break;
+                case X86_INS_JB:
+                    functionInjects.insert(std::pair<address_t, inject_t>(fromRelative(inst, x86.operands[0].imm), inject_t::returnCarry));
+                    break;
+                default:
+                    return "stop(/*call - strange cond*/)";
+                    //assert(0);
+            }
+            // fall through
         case X86_INS_INT:
             switch (op)
             {
@@ -977,6 +1110,7 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
             }
             break;
         case X86_INS_OR:
+        case X86_INS_XOR:
             switch (op)
             {
                 case X86_INS_JE:
@@ -988,7 +1122,8 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
                 case X86_INS_JNS:
                     return assign(x86, "!($rd0 & $msb0)");
                 default:
-                    assert(0);
+                    return assign(x86, "stop(/*condition!*/)");
+                    //assert(0);
             }
             break;
             
@@ -1000,6 +1135,7 @@ std::string MakeCCondition(std::shared_ptr<CapInstr>& inst, x86_insn op)
 void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<address_t>& toProcess)
 {
     for (const std::shared_ptr<CapInstr>& instr : code)
+    {
         if (instr->mId == X86_INS_CALL)
         {
             const cs_x86& x86 = instr->mDetail;
@@ -1026,6 +1162,16 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
             } else
                 assert(0);
         }
+        if (instr->mId == X86_INS_LCALL)
+        {
+            const cs_x86& x86 = instr->mDetail;
+            if (x86.op_count == 2 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
+            {
+                toProcess.push_back(address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm});
+            }
+        }
+
+    }
 }
 
 void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& switches)
@@ -1100,10 +1246,11 @@ bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> nex
 
 bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps)
 {
-    noticeCurrentMethod = code[0]->mAddress; // TODO: cleanup
+    //noticeCurrentMethod = code[0]->mAddress; // TODO: cleanup
 
     bool modified = false;
-    text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
+    text.push_back(format("void sub_%x() // %04x:%04x", code[0]->mAddress.linearOffset(),
+                          code[0]->mAddress.segment, code[0]->mAddress.offset));
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
@@ -1123,12 +1270,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
     
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
+        inject_t injectLater = inject_t::none;
         const cs_x86& x86 = instr->mDetail;
         keepLastCompare = false;
         
         if (instr->mMark)
         {
-            text.push_back(format("stop(/*7*/); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
+            if (instr->mComment != "gap of 1 bytes")
+                text.push_back(format("stop(/*7*/); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
             continue;
         }
         
@@ -1161,6 +1310,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back(assign(x86, "flags.carry = $rd0 == 0x%x;",
                             x86.operands[0].size == 1 ? 0x0ff : 0xffff));
                         break;
+                    case X86_INS_DEC:
+                        text.push_back(assign(x86, "flags.carry = $rd0 == 0;"));
+                        break;
                     default:
                         assert(0);
                         break;
@@ -1176,6 +1328,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     case X86_INS_TEST:
                         text.push_back(assign(x86, "flags.zero = !($rd0 & $rd1);"));
                         break;
+                    case X86_INS_AND:
+                        injectLater = inject_t::zero;
+//                        text.push_back(assign(x86, "flags.zero = $rd0 == 0;"));
+                        break;
                     default:
                         assert(0);
                         break;
@@ -1190,6 +1346,26 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(instr->mInject == inject_t::temp);
                 text.push_back(assign(x86, "$tmp0 = $rd0;"));
             }
+            else if ((int)instr->mInject & (int)inject_t::setZeroFlag)
+            {
+                text.push_back(assign(x86, "flags.zero = true;"));
+            }
+            else if ((int)instr->mInject & (int)inject_t::clearZeroFlag)
+            {
+                text.push_back(assign(x86, "flags.zero = false;"));
+            }
+            else if ((int)instr->mInject & (int)inject_t::setCarryFlag)
+            {
+                text.push_back(assign(x86, "flags.carry = true;"));
+            }
+            else if ((int)instr->mInject & (int)inject_t::clearCarryFlag)
+            {
+                text.push_back(assign(x86, "flags.carry = false;"));
+            }
+            else if ((int)instr->mInject & (int)inject_t::stop)
+            {
+                text.push_back(assign(x86, "stop(/*inject ret*/);"));
+            }
             else
                 assert(0);
         }
@@ -1200,15 +1376,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back(assign(x86, "div($reg0);"));
                 break;
             case X86_INS_IDIV:
-                assert(x86.operands[0].size == 1);
-                text.push_back(assign(x86, "idiv($reg0);"));
+                assert(x86.operands[0].size == 1 || x86.operands[0].size == 2);
+                text.push_back(assign(x86, "idiv($rd0);"));
                 break;
             case X86_INS_IMUL:
                 assert(x86.operands[0].size == 1);
                 text.push_back(assign(x86, "imul($reg0);"));
                 break;
             case X86_INS_MUL:
-                text.push_back(assign(x86, "mul($reg0);"));
+                text.push_back(assign(x86, "mul($rd0);"));
                 break;
             case X86_INS_CWDE:
                 text.push_back(format("cbw();"));
@@ -1221,6 +1397,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_XOR:
                 text.push_back(assign(x86, "$rw0 ^= $rd1;"));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_PUSH:
                 text.push_back(assign(x86, "push($rd0);"));
@@ -1297,13 +1475,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(0);
                 break;
             case X86_INS_LODSB:
-                if (strcmp(instr->mMnemonic, "lodsb") == 0 &&
-                    strcmp(instr->mOperands, "al, byte ptr [si]") == 0)
-                {
+                assert(strcmp(instr->mMnemonic, "lodsb") == 0);
+                if (strcmp(instr->mOperands, "al, byte ptr [si]") == 0)
                     text.push_back(format("lodsb<MemAuto, DirAuto>();"));
-                    break;
-                }
-                assert(0);
+                else if (strcmp(instr->mOperands, "al, byte ptr es:[si]") == 0)
+                    text.push_back(format("lodsb<MemAuto, DirAuto>(es);"));
+                else if (strcmp(instr->mOperands, "al, byte ptr ss:[si]") == 0)
+                    text.push_back(format("lodsb<MemAuto, DirAuto>(ss);"));
+                else
+                    assert(0);
                 break;
             case X86_INS_INC:
                 text.push_back(assign(x86, "$rw0++;"));
@@ -1418,8 +1598,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 keepLastCompare = true;
                 break;
             case X86_INS_SAR:
-                assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_IMM);
-                text.push_back(assign(x86, "$wr0 = sar($rd0, $immd1);"));
+                assert(x86.op_count == 2);
+                if (x86.operands[1].type == X86_OP_IMM)
+                    text.push_back(assign(x86, "$wr0 = sar($rd0, $immd1);"));
+                else
+                    text.push_back(assign(x86, "$wr0 = sar($rd0, $rd1);"));
                 break;
             case X86_INS_SHL:
                 assert(x86.op_count == 2);
@@ -1528,7 +1711,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         if (lastCompare)
                         {
                             assert(lastCompare);
-                            text.push_back(format("if (%s)", MakeCCondition(lastCompare, instr->mId).c_str()));
+                            text.push_back(format("if (%s)", MakeCCondition(code[0]->mAddress, lastCompare, instr->mId).c_str()));
                         } else {
                             text.push_back("if (stop(/*1*/))");
                         }
@@ -1608,7 +1791,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                        x86.operands[0].size == 2);
 
                 assert(lastCompare);
-                text.push_back(format("if (--cx && %s)", MakeCCondition(lastCompare, X86_INS_JNE).c_str()));
+                text.push_back(format("if (--cx && %s)", MakeCCondition(code[0]->mAddress, lastCompare, X86_INS_JNE).c_str()));
             {
                 //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
@@ -1622,7 +1805,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                        x86.operands[0].size == 2);
 
                 assert(lastCompare);
-                text.push_back(format("if (--cx && %s)", MakeCCondition(lastCompare, X86_INS_JE).c_str()));
+                text.push_back(format("if (--cx && %s)", MakeCCondition(code[0]->mAddress, lastCompare, X86_INS_JE).c_str()));
             {
                 //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
 
@@ -1664,6 +1847,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 } else
                     assert(0);
                 break;
+            case X86_INS_LCALL:
+                text.push_back(format("sub_%x();", address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm}.linearOffset()));
+                break;
             case X86_INS_MOV:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 text.push_back(assign(x86, "$wr0 = $rd1;"));
@@ -1679,10 +1865,18 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("flags.zero = (ah >> 1) & 1;");
                 break;
             case X86_INS_RCR:
+                // TODO: prev carry!
+                //assert(lastCompare);
+                //lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
+                text.push_back(assign(x86, "stop(/*carry*/);")); // 8bit/16bit!
                 text.push_back(assign(x86, "$wr0 = rcr($rd0, $rd1);")); // 8bit/16bit!
                 break;
             case X86_INS_RCL:
+                // TODO: prev carry!
+//                assert(lastCompare);
+//                lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
                 assert(x86.operands[0].size == 1);
+                text.push_back(assign(x86, "stop(/*carry*/);")); // 8bit/16bit!
                 text.push_back(assign(x86, "$wr0 = rcl($rd0, $rd1);"));
                 break;
             case X86_INS_ROR:
@@ -1714,10 +1908,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("aaa();");
                 break;
             case X86_INS_CMC:
-                text.push_back("cmc();");
+                text.push_back("flags.carry = !flags.carry;");
                 break;
             case X86_INS_CMPSB:
-                text.push_back("cmpsb();");
+                text.push_back("cmpsb<MemData, MemData, DirAuto>();");
                 break;
             case X86_INS_PUSHF:
                 text.push_back("tx = flags.carry | (flags.zero << 1);");
@@ -1728,8 +1922,36 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("flags.carry = tx & 1;");
                 text.push_back("flags.zero = (tx << 1) & 1;");
                 break;
-
+            case X86_INS_LES:
+            case X86_INS_LDS:
+            case X86_INS_LEA:
+            case X86_INS_SCASB:
+//            case X86_INS_LCALL:
+            case X86_INS_CDQ:
+            case X86_INS_SBB:
+            case X86_INS_XLATB:
+            case X86_INS_DAS:
+            case X86_INS_DAA:
+                text.push_back(format("stop(); // %s %s", instr->mMnemonic, instr->mOperands));
+                break;
             default:
+                assert(0);
+        }
+
+        if (injectLater != inject_t::none)
+        {
+            if ((int)instr->mInject & (int)inject_t::zero)
+            {
+                switch (instr->mId)
+                {
+                    case X86_INS_AND:
+                        text.push_back(assign(x86, "flags.zero = $rd0 == 0;"));
+                        break;
+                    default:
+                        assert(0);
+                        break;
+                }
+            } else
                 assert(0);
         }
 
@@ -1796,8 +2018,13 @@ int main(int argc, const char * argv[]) {
     //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick1/rick1.exe", std::ios::binary | std::ios::ate);
     //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cat.exe", std::ios::binary | std::ios::ate);
     //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/rick2/rd2.exe", std::ios::binary | std::ios::ate);
-    std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick1/rick1.exe", std::ios::binary | std::ios::ate);
-
+    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick1/rick1.exe", std::ios::binary | std::ios::ate);
+    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cat.exe", std::ios::binary | std::ios::ate);
+    
+    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/av/av.exe", std::ios::binary | std::ios::ate);
+    
+    std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/NEBEGA.EXE",
+                       std::ios::binary | std::ios::ate);
     
 
     
@@ -1846,9 +2073,10 @@ void start()
     std::vector<address_t> failed;
     std::list<address_t> toProcess;
     std::vector<switch_t> switches;
-    toProcess.push_back({header->cs+0x1000, header->ip});
-    //toProcess.push_back({0x1040, 0x1bfa0-0x10400});
+    //toProcess.push_back({header->cs+0x1000, header->ip});
+    toProcess.push_back({0x1000, 0x04f8});
     
+    /* // rick dangerous 1
 #define X(x) toProcess.push_back({0x341b, x});
     X(0x1448);
     X(0x22cb);
@@ -1859,6 +2087,8 @@ void start()
     X(0x1a48);
     X(0x2313);
     X(0x2861);
+    X(0x25a3);
+     */
     //toProcess.push_back({0x1040, 0x1c3b0-0x10400}););
     /*
 #define X(x) toProcess.push_back({0x1040, 0x##x - 0x10400});
@@ -1926,7 +2156,7 @@ void start()
             std::vector<switch_t> jumps;
             std::vector<std::shared_ptr<CapInstr>> code;
             //printf("// extracting %04x:%04x, converted %d, to convert %d, failed %d\n", method.segment, method.offset, processed.size(), toProcess.size(), failed.size());
-            if (!ExtractMethod(cap, method, code, jumps))
+            if (!ExtractMethod(cap, method, code, jumps, inject_t::none))
             {
                 //assert(0);
                 printf("Conversion of %04x:%04x failed!\n", method.segment, method.offset);
@@ -1936,6 +2166,7 @@ void start()
             int size = code[code.size()-1]->NextFollowing().linearOffset() - code[0]->mAddress.linearOffset();
             processed.insert(std::pair<address_t, function_t>(method, function_t{method, size}));
 
+            break;
             FindCalls(code, toProcess);
             FindSwitches(code, switches);
             //break;
@@ -1974,11 +2205,27 @@ void start()
     for (const auto& decl : processed)
         printf("void sub_%x();\n", decl.second.begin.linearOffset());
      
+    // collect notices
+    for (const auto& decl : processed)
+    {
+        std::vector<switch_t> jumps;
+        std::vector<std::string> text;
+        std::vector<std::shared_ptr<CapInstr>> code;
+        if (!ExtractMethod(cap, decl.first, code, jumps, inject_t::none))
+            assert(0);
+
+        DumpCodeAsC(code, text, switches, jumps);
+    }
+
+    // dump
     for (const auto& decl : processed)
     {
         std::vector<switch_t> jumps;
         std::vector<std::shared_ptr<CapInstr>> code;
-        if (!ExtractMethod(cap, decl.first, code, jumps))
+        auto injectptr = functionInjects.find(decl.first);
+        inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
+
+        if (!ExtractMethod(cap, decl.first, code, jumps, inject))
             assert(0);
 
         std::vector<std::string> text;

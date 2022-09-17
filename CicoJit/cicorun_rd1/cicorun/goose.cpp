@@ -117,6 +117,14 @@ void sub_36ce2();
 void sub_36cfd();
 void sub_36d04();
 void sub_36d18();
+// Jump to first in 341b:0292
+// Jump to first in 341b:0309
+// Jump to first in 341b:1a48
+// Jump to first in 341b:2263
+// Jump to first in 341b:2313
+// Jump to first in 341b:259b
+// Jump to first in 341b:2861
+// Jump to first in 341b:28db
 void sub_341b0()
 {
 sub_34720();
@@ -442,14 +450,14 @@ cx = 0x0005;
 flags.carry = false;
 loc_34452:
 al = memoryAGet(ds, di);
-// stop(/*8*/); // inject carry failed
+//stop(/*8*/); // inject carry failed
 al += memoryAGet(ds, si) + flags.carry;
 if (al < 0x3a)
 goto loc_34460;
 al -= 0x0a;
 flags.carry = false;
 loc_34460:
-cmc();
+flags.carry = !flags.carry;
 memoryASet(ds, di, al);
 di--;
 si--;
@@ -580,6 +588,8 @@ al = 0x09;
 interrupt(0x21);
 ds = pop();
 }
+// INJECT: set sub_345e3()
+// INJECT: clear sub_345e3()
 void sub_345e3()
 {
     sync();
@@ -587,27 +597,28 @@ al = memoryAGet(ds, 0x7e44);
 al &= 0x10;
 if (al == 0)
 goto loc_345f0;
-al -= al;
-    flags.zero = true; // gabo
+al = 0;
+flags.zero = true;
 return;
 loc_345f0:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false; // gabo
+flags.zero = false;
 }
+// INJECT: use instruction in sub_345f5()
 void sub_345f5()
 {
-    sync();
 al = memoryAGet(ds, 0x7e44);
 al &= 0x80;
-    flags.zero = al == 0x80; // gabo????????
+flags.zero = al == 0x80;
 }
+// INJECT: use instruction in sub_345fd()
 void sub_345fd()
 {
     sync();
 al = memoryAGet(ds, 0x7e44);
 al &= 0x40;
-    flags.zero = al == 0x40;
+flags.zero = al == 0x40;
 }
 void sub_34720()
 {
@@ -1267,12 +1278,11 @@ void sub_34d08()
 {
 bx = 0x0000;
 bl = memoryAGet(ds, si);
-ah -= ah;
+ah = 0;
 al = memoryAGet(ds, bx);
-    flags.zero = !(al & 0x08);
-
+tl = al;
 al = bl;
-if (flags.zero)
+if (tl == 0)
 goto loc_34d25;
 ax = memoryAGet16(ds, 0x7e3c);
 ax++;
@@ -1798,7 +1808,7 @@ dl = 0x01;
 cx = 0x03e0;
 loc_350f0:
 bx++;
-    cmpsb<MemData, MemData, DirAuto>();
+cmpsb<MemData, MemData, DirAuto>();
 if (!flags.zero)
 goto loc_350fb;
 loc_350f7:
@@ -1957,8 +1967,8 @@ dl = 0x01;
 cx = 0x0400;
 loc_35220:
 bx--;
-    cmpsb<MemData, MemData, DirAuto>();
-if (stop(/*1*/))
+cmpsb<MemData, MemData, DirAuto>();
+if (!flags.zero)
 goto loc_3522c;
 loc_35227:
 cx--;
@@ -2045,6 +2055,7 @@ di = 0x760e;
 cx = 0x0080;
 rep_stosw<MemAuto, DirAuto>();
 }
+// INJECT: use instruction in sub_352c5()
 void sub_352c5()
 {
 dx &= 0x00f8;
@@ -2063,6 +2074,7 @@ bx = 0x0000;
 bl = al;
 al = memoryAGet(ds, bx);
 al &= 0x40;
+flags.zero = al == 0;
 }
 void sub_352ea()
 {
@@ -2335,11 +2347,13 @@ si++;
 if (--cx)
 goto loc_35450;
 }
+// INJECT: Error: cannot inject zero flag in sub_3545e()!
+// INJECT: set sub_3545e()
+// INJECT: clear sub_3545e()
 void sub_3545e()
 {
 if (memoryAGet(ds, 0x7d75) == 0x00)
 goto loc_35469;
-    flags.zero = false; // gabo
 return;
 loc_35469:
 di = 0x7e7e;
@@ -2366,18 +2380,20 @@ ax += 0x0008;
 loc_354af:
 cl = memoryAGet(ds, si + 16);
 cl--;
-ch -= ch;
+ch = 0;
 bx += cx;
 if (bx < ax)
 goto loc_354c2;
-al -= al;
-    flags.zero  =true;
+al = 0;
+flags.zero = true;
 return;
 loc_354c2:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_3546c()
+// INJECT: clear sub_3546c()
 void sub_3546c()
 {
 al = memoryAGet(ds, di + 2);
@@ -2403,18 +2419,20 @@ ax += 0x0008;
 loc_354af:
 cl = memoryAGet(ds, si + 16);
 cl--;
-ch -= ch;
+ch = 0;
 bx += cx;
 if (bx < ax)
 goto loc_354c2;
-al -= al;
-    flags.zero = true;
+al = 0;
+flags.zero = true;
 return;
 loc_354c2:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_354c7()
+// INJECT: clear sub_354c7()
 void sub_354c7()
 {
 al = memoryAGet(ds, si + 2);
@@ -2427,18 +2445,20 @@ ax = memoryAGet16(ds, si + 4);
 if (dx < ax)
 goto loc_354f6;
 cl = memoryAGet(ds, si + 16);
-ch -= ch;
+ch = 0;
 ax += cx;
 if (ax < dx)
 goto loc_354f6;
-al -= al;
-    flags.zero = true;
+al = 0;
+flags.zero = true;
 return;
 loc_354f6:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_354fb()
+// INJECT: clear sub_354fb()
 void sub_354fb()
 {
 al = memoryAGet(ds, 0x7ee0);
@@ -2466,25 +2486,27 @@ bx = ax;
 ax -= 0x0004;
 if (!(ah & 0x80))
 goto loc_35539;
-ax -= ax;
+ax = 0;
 loc_35539:
 bx += 0x001d;
 cx = memoryAGet16(ds, si + 4);
 if (bx < cx)
 goto loc_35557;
 dl = memoryAGet(ds, si + 16);
-dh -= dh;
+dh = 0;
 cx += dx;
 if (cx < ax)
 goto loc_35557;
-al -= al;
-    flags.zero = true;
+al = 0;
+flags.zero = true;
 return;
 loc_35557:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_3555c()
+// INJECT: clear sub_3555c()
 void sub_3555c()
 {
 push(si);
@@ -2509,8 +2531,8 @@ cx = pop();
 loc_3558b:
 push(di);
 si = pop();
-al -= al;
-    flags.zero = true;
+al = 0;
+flags.zero = true;
 return;
 loc_35590:
 si += 0x0030;
@@ -2519,10 +2541,12 @@ if (--cx)
 goto loc_35579;
 push(di);
 si = pop();
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_3559d()
+// INJECT: clear sub_3559d()
 void sub_3559d()
 {
 al = memoryAGet(ds, si + 22);
@@ -2553,20 +2577,20 @@ goto loc_355f3;
 ax = memoryAGet16(ds, si + 24);
 if (ax >= dx)
 goto loc_355f3;
-ch -= ch;
+ch = 0;
 cx += cx;
 cx += cx;
 cx += cx;
 ax += cx;
 if (ax < dx)
 goto loc_355f3;
-al -= al;
-    flags.zero = true;
+al = 0;
+flags.zero = true;
 return;
 loc_355f3:
-al -= al;
+al = 0;
 al--;
-    flags.zero = false;
+flags.zero = false;
 }
 void sub_355f8()
 {
@@ -3148,7 +3172,6 @@ memoryASet(ds, 0x7d7a, 0xfd);
 }
 void sub_35bb1()
 {
-//stop(); // check for setting proper return flags!
 al = memoryAGet(ds, 0x7d87);
 if ((char)al >= 0)
 goto loc_35be0;
@@ -4114,34 +4137,38 @@ dx = pop();
 di += 0x0005;
 goto loc_3625c;
 }
+// INJECT: set sub_36395()
+// INJECT: clear sub_36395()
 void sub_36395()
 {
 push(ax);
 si = 0x7f0e;
 cx = 0x0005;
-ax -= ax;
+ax = 0;
 loc_3639e:
 if (ax != memoryAGet16(ds, si))
 goto loc_363ab;
 ax = pop();
 memoryASet(ds, si + 38, 0x00);
-    flags.zero = true;
+flags.zero = true;
 return;
 loc_363ab:
 si += 0x0030;
 if (--cx)
 goto loc_3639e;
-ax -= ax;
+ax = 0;
 ax++;
 ax = pop();
-    flags.zero = false;
+flags.zero = false;
 }
+// INJECT: set sub_363b5()
+// INJECT: clear sub_363b5()
 void sub_363b5()
 {
 push(ax);
 si = 0x7ffe;
 cx = 0x0003;
-ax -= ax;
+ax = 0;
 loc_363be:
 if (al == memoryAGet(ds, si))
 goto loc_363cd;
@@ -4153,23 +4180,23 @@ if (--cx)
 goto loc_363be;
 si = 0x7ffe;
 cx = 0x0003;
-ax -= ax;
+ax = 0;
 loc_363da:
 if (ax != memoryAGet16(ds, si))
 goto loc_363e7;
 ax = pop();
 memoryASet(ds, si + 38, 0x02);
-    flags.zero = true;
+flags.zero = true;
 return;
 loc_363e7:
 si += 0x0030;
 if (--cx)
 goto loc_363da;
 loc_363ec:
-ax -= ax;
+ax = 0;
 ax++;
 ax = pop();
-    flags.zero = false;
+flags.zero = false;
 }
 void sub_363f1()
 {
@@ -4190,7 +4217,6 @@ goto loc_363f9;
 // Jump to first in 341b:2263
 void sub_36413()
 {
-//stop(); // check for setting proper return flags!
 goto loc_36413;
 loc_35b7f:
 al = memoryAGet(ds, 0x7d75);
@@ -4225,14 +4251,12 @@ goto loc_36431;
 goto loc_3683f;
 stop(/*7*/); //   gap of 1 bytes
 loc_36431:
-ah -= ah;
+ah = 0;
 ax += ax;
 ax += 0x80bf;
 di = ax;
-    //printf("call indirect %04x:%04x - %04x\n", ds, si, memory16(ds, di));
-
-    callIndirect(memory16(ds, di)); // gabo
-    return;
+callIndirect(memory16(ds, di)); // gabo
+return;
 stop(/*2*/);
 stop(/*7*/); //   gap of 629 bytes
 loc_366b1:
@@ -4267,10 +4291,9 @@ ax = memoryAGet16(ds, si + 44);
 ax += 0x0080;
 memoryASet16(ds, si + 44, ax);
 al = memoryAGet(ds, si + 38);
-al &= al;
 if ((char)al >= 0)
 goto loc_36718;
-flags.carry = (al + memory(ds, si + 2)) >= 0x100;
+flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
 al += memoryAGet(ds, si + 2);
 memoryASet(ds, si + 2, al);
 if (!flags.carry)
@@ -4749,7 +4772,6 @@ goto loc_36826;
 }
 void sub_36853()
 {
-//stop(); // check for setting proper return flags!
 loc_36853:
 al = memoryAGet(ds, si + 38);
 ah = 0;
@@ -5255,12 +5277,13 @@ al = memoryAGet(ds, bx);
 al += memoryAGet(ds, si + 32);
 memoryASet(ds, si + 8, al);
 al = memoryAGet(ds, si + 40);
+    tl = al;
 if (al != 0)
 goto loc_36c85;
 memoryASet(ds, si + 40, 0x02);
 al = 0x02;
 loc_36c85:
-if (stop(/*1*/))
+if (!(tl & 0x80))
 goto loc_36c95;
 flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
 al += memoryAGet(ds, si + 2);
@@ -5363,19 +5386,3 @@ bx--;
 if (bx != 0)
 goto loc_36d1b;
 }
-// Notice: sub_341b0(): check for setting proper return flags!
-// Notice: sub_352ea(): check for setting proper return flags!
-// Notice: sub_3536c(): check for setting proper return flags!
-// Notice: sub_3555c(): check for setting proper return flags!
-// Notice: sub_35bb1(): check for setting proper return flags!
-// Notice: sub_35bf8(): check for setting proper return flags!
-// Notice: sub_35ce3(): check for setting proper return flags!
-// Notice: sub_36239(): check for setting proper return flags!
-// Notice: sub_36413(): check for setting proper return flags!
-// Notice: sub_3643c(): check for setting proper return flags!
-// Notice: sub_3647b(): check for setting proper return flags!
-// Notice: sub_364c3(): check for setting proper return flags!
-// Notice: sub_36725(): check for setting proper return flags!
-// Notice: sub_3674b(): check for setting proper return flags!
-// Notice: sub_36853(): check for setting proper return flags!
-// Notice: sub_36a11(): check for setting proper return flags!

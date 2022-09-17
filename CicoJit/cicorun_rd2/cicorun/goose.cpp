@@ -7,7 +7,7 @@ void start()
 {
   cs = 0x1040;
   ss = 0x1000;
-  sp = 0x0100; // check!
+  sp = 0x0400; // check!
   sub_1c276();
   // header size: 0x0200
 }
