@@ -6,6 +6,11 @@
 //
 
 /*
+ 
+cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfile.cpp
+ cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfolder/
+cicodis rd1.exe 1000:0232 -resume /games/rd1/cicocode/ -asm?
+
  todo: if (--cx && bl & al)
  */
 #include <iostream>
@@ -15,8 +20,12 @@
 #include <list>
 #include <capstone/platform.h>
 #include <capstone/capstone.h>
+#include <sstream>
+#include <string>
+#include <regex>
 
-const bool verbose_asm = true;
+bool verbose_asm = false;
+bool segofs_in_comment = false;
 csh _handle;
 int _cs;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
@@ -235,7 +244,13 @@ std::string assign(const cs_x86& x86, const char* fmt, ...)
 struct address_t {
     int segment{-1};
     int offset{-1};
-
+    address_t() {}
+    address_t(long s, long o) : segment{(int)s}, offset{(int)o}
+    {
+    }
+    address_t(int s, int o) : segment{s}, offset{o}
+    {
+    }
     bool isValid() const
     {
         return segment != -1;
@@ -701,7 +716,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0x7fff);
+                assert(pc.offset >= 0 && pc.offset < 0xcfff);
                 trace.push_back(pc);
                 /*
                 if (pc.linearOffset() < address.linearOffset())
@@ -725,7 +740,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->NextBranch()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0xbfff);
+                assert(pc.offset >= 0 && pc.offset < 0xdfff);
                 trace.push_back(pc);
                 /*
                 //assert(pc.linearOffset() >= address.linearOffset());
@@ -789,7 +804,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     
     if (instructions.begin()->first != address)
     {
-        printf("// Jump to first in %04x:%04x\n", address.segment, address.offset);
+//        printf("// Jump to first in %04x:%04x\n", address.segment, address.offset);
         code.push_back(std::shared_ptr<CapInstr>(new CapInstr(X86_INS_JMP, address)));
     }
         
@@ -815,20 +830,20 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                 if (prev1->mId == X86_INS_CMP || prev1->mId == X86_INS_AND)
                 {
                     prev1->mInject = inject_t((int)prev1->mInject | (int)inject_t::zero);
-                    printf("// INJECT: use instruction in sub_%x()\n", address.linearOffset());
+//                    printf("// INJECT: use instruction in sub_%x()\n", address.linearOffset());
                 }
                 else
                 if (SetsZeroFlag(prev1))
                 {
                     assert(instr->mInject == inject_t::none);
                     instr->mInject = inject_t::setZeroFlag;
-                    printf("// INJECT: set sub_%x()\n", address.linearOffset());
+//                    printf("// INJECT: set sub_%x()\n", address.linearOffset());
                 }
                 else if (ClearsZeroFlag(prev2, prev1))
                 {
                     assert(instr->mInject == inject_t::none);
                     instr->mInject = inject_t::clearZeroFlag;
-                    printf("// INJECT: clear sub_%x()\n", address.linearOffset());
+//                    printf("// INJECT: clear sub_%x()\n", address.linearOffset());
                 } else
                 {
                     instr->mInject = inject_t::stop;
@@ -844,13 +859,13 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                 {
                     assert(instr->mInject == inject_t::none);
                     //instr->mInject = inject_t::setCarryFlag;
-                    printf("// INJECT: use set sub_%x()\n", address.linearOffset());
+//                    printf("// INJECT: use set sub_%x()\n", address.linearOffset());
                 }
                 else if (ClearsCarryFlag(prev1))
                 {
                     assert(instr->mInject == inject_t::none);
                     //instr->mInject = inject_t::clearCarryFlag;
-                    printf("// INJECT: use clear sub_%x()\n", address.linearOffset());
+//                    printf("// INJECT: use clear sub_%x()\n", address.linearOffset());
                 } else
                 {
                     instr->mInject = inject_t::stop;
@@ -910,6 +925,8 @@ void GetOpAddress(const cs_x86_op& op, char* segment, char* offset)
     {
         case X86_REG_INVALID:
             strcpy(segment, op.mem.base == X86_REG_BP ? "ss" : "ds");
+            if (op.mem.base == X86_REG_BP)
+                strcat(offset, "- 2");
             break;
         default:
             strcpy(segment, cs_reg_name(_handle, op.mem.segment));
@@ -959,7 +976,7 @@ std::string MakeCFlagCondition(x86_insn op)
 }
 
 // TODO: cleanup
-std::map<address_t, std::string, cmp_adress_t> notices;
+//std::map<address_t, std::string, cmp_adress_t> notices;
 std::map<address_t, inject_t> functionInjects;
 //address_t noticeCurrentMethod;
 
@@ -1052,7 +1069,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 case X86_INS_JA:
                     return "stop(/*ja*/)";
                 case X86_INS_JG:
-                    return "stop(/*jg*/)";
+                    return assign(x86, "($sig0)$rd0 > 0");
                 case X86_INS_JAE:
                     if (inst->mInject != inject_t::carry)
                     {
@@ -1143,7 +1160,9 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
             if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
             {
                 //int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
-                toProcess.push_back(fromRelative(instr, x86.operands[0].imm));
+                address_t newAddr = fromRelative(instr, x86.operands[0].imm);
+                if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
+                    toProcess.push_back(newAddr);
                 
                 //toProcess.push_back(address_t{/*instr->mAddress.segment*/ 0x1000, (int)x86.operands[0].imm});
                 //toProcess.push_back(address_t{instr->mAddress.segment, (int)x86.operands[0].imm});
@@ -1167,7 +1186,9 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
             const cs_x86& x86 = instr->mDetail;
             if (x86.op_count == 2 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
             {
-                toProcess.push_back(address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm});
+                address_t newAddr = address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm};
+                if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
+                    toProcess.push_back(newAddr);
             }
         }
 
@@ -1176,7 +1197,7 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
 
 void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& switches)
 {
-    return;
+    //return; // TODO:
     std::shared_ptr<CapInstr> prev;
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
@@ -1244,21 +1265,23 @@ bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> nex
     return false;
 }
 
-bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps)
+bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps, bool lines = false)
 {
-    //noticeCurrentMethod = code[0]->mAddress; // TODO: cleanup
-
     bool modified = false;
-    text.push_back(format("void sub_%x() // %04x:%04x", code[0]->mAddress.linearOffset(),
+    if (segofs_in_comment)
+        text.push_back(format("void sub_%x() // %04x:%04x", code[0]->mAddress.linearOffset(),
                           code[0]->mAddress.segment, code[0]->mAddress.offset));
+    else
+        text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
+                       
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
-    const auto& notice = notices.find(code[0]->mAddress);
-    if (notice != notices.end())
-    {
-        text.push_back(format("stop(); // %s", notice->second.c_str()));
-    }
+//    const auto& notice = notices.find(code[0]->mAddress);
+//    if (notice != notices.end())
+//    {
+//        text.push_back(format("stop(); // %s", notice->second.c_str()));
+//    }
     auto GetPrev = [&](const std::shared_ptr<CapInstr>& p)->std::shared_ptr<CapInstr>
     {
         for (int i=0; i<code.size(); i++)
@@ -1276,7 +1299,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         
         if (instr->mMark)
         {
-            if (instr->mComment != "gap of 1 bytes")
+            if (instr->mComment.substr(0, 6) == "gap of")
+                text.push_back(format("// %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
+            else
                 text.push_back(format("stop(/*7*/); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
             continue;
         }
@@ -1286,7 +1311,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             lastCompare.reset();
             text.push_back(format("loc_%x:", instr->mAddress.linearOffset()));
         }
-
+        
+        if (lines)
+            text.push_back(format("L(0x%x);", instr->mAddress.linearOffset()));
+            
         if (instr->mInject != inject_t::none)
         {
             if ((int)instr->mInject & (int)inject_t::carry)
@@ -1396,7 +1424,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back(assign(x86, "$wr0 = -$rd0;"));
                 break;
             case X86_INS_XOR:
-                text.push_back(assign(x86, "$rw0 ^= $rd1;"));
+                if (assign(x86, "$rd0") == assign(x86, "$rd1"))
+                    text.push_back(assign(x86, "$rw0 = 0;"));
+                else
+                    text.push_back(assign(x86, "$rw0 ^= $rd1;"));
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -1515,9 +1546,13 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_CLC:
                 text.push_back(format("flags.carry = false;"));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_STC:
                 text.push_back(format("flags.carry = true;"));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_INT:
                 text.push_back(assign(x86, "interrupt($immx0);"));
@@ -1868,8 +1903,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 // TODO: prev carry!
                 //assert(lastCompare);
                 //lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
-                text.push_back(assign(x86, "stop(/*carry*/);")); // 8bit/16bit!
-                text.push_back(assign(x86, "$wr0 = rcr($rd0, $rd1);")); // 8bit/16bit!
+                if (!lastCompare || (lastCompare->mId != X86_INS_RCR &&
+                                     lastCompare->mId != X86_INS_STC &&
+                                     lastCompare->mId != X86_INS_CLC))
+                {
+                    text.push_back(assign(x86, "stop(/*carry*/);")); // 8bit/16bit!
+                }
+                text.push_back(assign(x86, "$wr0 = rcr($rd0, $immd1);")); // 8bit/16bit!
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_RCL:
                 // TODO: prev carry!
@@ -1989,6 +2031,58 @@ void OptimizeCode(std::vector<std::string>& text)
     }
 }
 
+void PrintFormatted(FILE* f, std::vector<std::string>& text)
+{
+    std::string prefix = "";
+    std::string curline;
+    std::string nexline;
+    bool prevIf = false;
+    for (const auto& l : text)
+    {
+        if (l.substr(0,2) == "L(")
+        {
+            curline = l + "  ";
+            continue;
+        }
+        if (l == "}" && !curline.empty())
+        {
+            fprintf(f, "%s%s\n%s\n", prefix.c_str(), curline.c_str(), l.c_str());
+            curline.clear();
+            if (l == "}")
+                prefix = prefix.substr(0, prefix.length()-2);
+            continue;
+        }
+
+        if (l == "}")
+            prefix = prefix.substr(0, prefix.length()-2);
+        
+        if (l.substr(l.length()-1, 1) == ":")
+            fprintf(f, "%s\n", l.c_str());
+        else
+            fprintf(f, "%s%s%s%s\n", prefix.c_str(), curline.c_str(), nexline.c_str(), l.c_str());
+        
+        nexline.clear();
+        if (l.substr(0,2) == "if" && !curline.empty())
+        {
+            nexline.assign(curline.size(), ' ');
+        }
+
+        curline.clear();
+        
+        if (l == "{")
+            prefix += "  ";
+        if (prevIf)
+        {
+            prefix = prefix.substr(0, prefix.length()-2);
+            prevIf = false;
+        }
+        if (l.substr(0, 2) == "if")
+        {
+            prefix += "  ";
+            prevIf = true;
+        }
+    }
+}
 
 struct MZHeader
 {
@@ -2014,19 +2108,56 @@ struct MZRelocation
 };
 
 int main(int argc, const char * argv[]) {
-//    std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/capst/GOOSE.EXE", std::ios::binary | std::ios::ate);
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick1/rick1.exe", std::ios::binary | std::ios::ate);
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cat.exe", std::ios::binary | std::ios::ate);
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/rick2/rd2.exe", std::ios::binary | std::ios::ate);
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputRick1/rick1.exe", std::ios::binary | std::ios::ate);
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/InputCat/cat.exe", std::ios::binary | std::ios::ate);
+    const char* executable = nullptr;
+    const char* methods = nullptr;
+    const char* output = nullptr;
+    bool outputFolder = false;
+    const char* resume = nullptr;
+    bool recursive = false;
+    bool lines = false;
     
-    //std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/av/av.exe", std::ios::binary | std::ios::ate);
-    
-    std::ifstream file("/Users/gabrielvalky/Documents/git/Projects/CicoJit/games/NEBEGA.EXE",
-                       std::ios::binary | std::ios::ate);
-    
+    for (int i=1; i<argc; i++)
+    {
+        const char* arg = argv[i];
+        if (arg[0] == '-')
+        {
+            if (strcmp(arg, "-recursive") == 0)
+                recursive = true;
+            else if (strcmp(arg, "-asm") == 0)
+                verbose_asm = true;
+            else if (strcmp(arg, "-lines") == 0)
+                lines = true;
+            else if (strcmp(arg, "-o") == 0)
+            {
+                output = argv[++i];
+                if (output[strlen(output)-1] == '/')
+                    outputFolder = true;
+            }
+            else if (strcmp(arg, "-resume") == 0)
+                resume = argv[++i];
+            else
+                assert(0);
 
+            
+           //cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfile.cpp
+            //cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfolder/
+           //cicodis rd1.exe 1000:0232 -resume /games/rd1/cicocode/ -asm?
+
+        } else {
+            if (!executable)
+                executable = arg;
+            else if (!methods)
+                methods = arg;
+            else
+                assert(0);
+        }
+    }
+    if (!executable)
+    {
+        printf("No exe file specified.\n");
+        return 0;
+    }
+    std::ifstream file(executable, std::ios::binary | std::ios::ate);
     
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -2037,24 +2168,52 @@ int main(int argc, const char * argv[]) {
 
     MZHeader* header = (MZHeader*)&buffer[0];
     assert(header->id[0] == 'M' && header->id[1] == 'Z');
-    
-    printf(R"(
-#include "cicoemu.h"
-using namespace CicoContext;
-void sub_%x();
+    FILE* fout = (output && !outputFolder) ? fopen(output, "w") : stdout;
 
+    auto startWriting = [&](const std::string& id){
+        if (outputFolder)
+        {
+            fout = fopen(format("%s%s", output, id.c_str()).c_str(), "w");
+            fprintf(fout, "#include \"cicoemu.h\"\n");
+            fprintf(fout, "using namespace CicoContext;\n");
+            fprintf(fout, "\n");
+        }
+    };
+    auto finishWriting = [&](){
+        if (outputFolder)
+        {
+            fclose(fout);
+            fout = stdout;
+        }
+    };
+    
+    if (methods && strstr(methods, "start"))
+    {
+        startWriting("start.cpp");
+        if (outputFolder)
+            fprintf(fout, "import(sub_%x);\n", (0x1000+header->cs)*16+header->ip);
+        else
+            fprintf(fout, "void sub_%x();\n", (0x1000+header->cs)*16+header->ip);
+
+        fprintf(fout, R"(
 void start()
 {
+  headerSize = 0x%04x;
+  ds = 0x%04x;
   cs = 0x%04x;
   ss = 0x%04x;
-  sp = 0x%04x; // check!
+  sp = 0x%04x;
   sub_%x();
-  // header size: 0x%04x
 }
-)", (0x1000+header->cs)*16+header->ip, header->cs+0x1000,
-           header->ss+0x1000, header->sp, (0x1000+header->cs)*16+header->ip,
-           header->headerSize16*16);
-
+)",
+        header->headerSize16*16,
+        header->cs+0x1000,
+        header->cs+0x1000,
+        header->ss+0x1000,
+        header->sp,
+        (0x1000+header->cs)*16+header->ip);
+        finishWriting();
+    }
     _cs = header->cs+0x1000;
     
     // fix relocations, we are loading the image to 1000:0000
@@ -2066,6 +2225,11 @@ void start()
         *addr += 0x1000;
     }
 
+    if (!methods)
+    {
+        printf("Nothing to do\n");
+        return 0;
+    }
     Capstone cap;
     cap.Set(buffer, 1*0x10000 - header->headerSize16*0x10);
     
@@ -2073,74 +2237,40 @@ void start()
     std::vector<address_t> failed;
     std::list<address_t> toProcess;
     std::vector<switch_t> switches;
-    //toProcess.push_back({header->cs+0x1000, header->ip});
-    toProcess.push_back({0x1000, 0x04f8});
     
-    /* // rick dangerous 1
-#define X(x) toProcess.push_back({0x341b, x});
-    X(0x1448);
-    X(0x22cb);
-    X(0x228c);
-    X(0x259b);
-    X(0x2575);
-    X(0x1a01);
-    X(0x1a48);
-    X(0x2313);
-    X(0x2861);
-    X(0x25a3);
-     */
-    //toProcess.push_back({0x1040, 0x1c3b0-0x10400}););
-    /*
-#define X(x) toProcess.push_back({0x1040, 0x##x - 0x10400});
-    
-    X(10524);
-    X(10533);
-    X(10594);
-    X(105A1);
-    X(105CC);
-    X(10702);
-    X(107F1);
-    X(10836);
-    X(1087B);
-    X(109C4);
-    X(109D3);
-    X(109EE);
-    X(10A67);
-    X(1091B);
-    X(10D03);
-    X(10DF8);
-    X(10D3D);
-    X(10E23);
-    X(10E40);
-    X(11162);
-    X(112D6);
-    X(11376);
-    X(107AC);
-    X(108DD);
-    X(111F1);
-    X(10BC4);
-    X(10C2E);
-    X(10EE8);
-    X(109A5);
-    X(10986);
-    X(10EA6);
-    X(10EC0);
-    X(10E7F);
-    X(1A168);
-    X(1A121);
-    X(1A155);
-    X(1A137);
-    X(1A1BC);
-    X(1A1E4);
-    X(1A2F6);
-    X(1A23E);
-    X(1A1E6);
-    X(1A13F);
+    if (methods)
+    {
+        std::istringstream is(methods);
+        std::string token;
+        std::regex functionHex("^([0-9a-fA-f]+)$");
+        std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
+        // tokenize by comma
+        while (getline(is, token, ','))
+        {
+            std::smatch matches;
+            
+            if (token == "start")
+                toProcess.push_back({header->cs+0x1000, header->ip});
+            else if (std::regex_search(token, matches, functionHex))
+            {
+                std::string strAddr = matches.str(1);
+                int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
+                int addrSeg = _cs;
+                int addrOfs = addr - addrSeg*16;
+                assert(addrOfs >= 0 && addrOfs < 0xffff);
+                toProcess.push_back({addrSeg, addrOfs});
+            } else if (std::regex_search(token, matches, functionSegofs))
+            {
+                std::string strSeg = matches.str(1);
+                std::string strOfs = matches.str(2);
+                int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
+                int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
+                toProcess.push_back({addrSeg, addrOfs});
+            } else
+                assert(0);
+        }
+    }
 
-    
-    
-    */
-    
     auto TraceFunctions = [&]()
     {
         while (!toProcess.empty())
@@ -2166,10 +2296,11 @@ void start()
             int size = code[code.size()-1]->NextFollowing().linearOffset() - code[0]->mAddress.linearOffset();
             processed.insert(std::pair<address_t, function_t>(method, function_t{method, size}));
 
-            break;
-            FindCalls(code, toProcess);
-            FindSwitches(code, switches);
-            //break;
+            if (recursive)
+            {
+                FindCalls(code, toProcess);
+                FindSwitches(code, switches);
+            }
         }
     };
     
@@ -2202,10 +2333,11 @@ void start()
         assert(sw.elements != -1);
     }
         
-    for (const auto& decl : processed)
-        printf("void sub_%x();\n", decl.second.begin.linearOffset());
+    if (!outputFolder)
+        for (const auto& decl : processed)
+            fprintf(fout, "void sub_%x();\n", decl.second.begin.linearOffset());
      
-    // collect notices
+    // collect notices, TODO: check
     for (const auto& decl : processed)
     {
         std::vector<switch_t> jumps;
@@ -2229,18 +2361,53 @@ void start()
             assert(0);
 
         std::vector<std::string> text;
-        if (DumpCodeAsC(code, text, switches, jumps)) // TODO: collect all notices
+        if (DumpCodeAsC(code, text, switches, jumps, lines)) // TODO: collect all notices
         {
             text.clear();
-            DumpCodeAsC(code, text, switches, jumps);
+            DumpCodeAsC(code, text, switches, jumps, lines);
         }
         OptimizeCode(text);
-        for (const auto& l : text)
-            printf("%s\n", l.c_str());
+        startWriting(format("sub_%x.cpp", code[0]->mAddress.linearOffset()));
+        if (outputFolder)
+        {
+            std::vector<switch_t> localswitches;
+            std::list<address_t> imports;
+            FindCalls(code, imports);
+            FindSwitches(code, localswitches);
+
+            for (const switch_t& lsw : localswitches)
+            {
+                const auto sw = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
+                    return sw.origin == lsw.origin;
+                });
+                if (sw != switches.end() && sw->elements != -1)
+                {
+                    for (int i=0; i<sw->elements; i++)
+                    {
+                        address_t target = sw->GetTarget(i);
+                        if (std::find(imports.begin(), imports.end(), target) == imports.end())
+                            imports.push_back(target);
+                    }
+                }
+            }
+
+            if (!imports.empty())
+            {
+                for (const auto& decl : imports)
+                {
+                    if (decl.linearOffset() != code[0]->mAddress.linearOffset())
+                        fprintf(fout, "import(sub_%x);\n", decl.linearOffset());
+                }
+                fprintf(fout, "\n");
+            }
+        }
+        PrintFormatted(fout, text);
+        finishWriting();
     }
 
-    for (const auto& decl : notices)
-        printf("// Notice: sub_%x(): %s\n", decl.first.segment*0x10+decl.first.offset, decl.second.c_str());
+    fclose(fout);
+//    for (const auto& decl : notices)
+//        printf("// Notice: sub_%x(): %s\n", decl.first.segment*0x10+decl.first.offset, decl.second.c_str());
 
     return 0;
 }
