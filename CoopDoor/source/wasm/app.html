@@ -218,6 +218,7 @@ Manual
 <input type=button value="+1 min" onClick="addOffset(60)">
 <input type=button value="-1 min" onClick="addOffset(-60)">
 <input type=button value="-1 hr" onClick="addOffset(-60*60)">
+<input type=button value="set" onClick="setCustom()">
 
 <script src="app_inline.js"></script>
 <script>
@@ -237,6 +238,14 @@ function addOffset(o) { offset += o*1000; inhibit = null; }
 function setShortClick() { click = true; inhibit = null; }
 function setLongClick() { longclick = true; inhibit = null; }
 function setMove(d) { move += d; inhibit = null; }
+function setCustom(o) { 
+
+  var d = new Date(new Date().getTime() + offset);
+  var user = prompt("Set new date", d);
+  if (user)
+    offset = new Date(user).getTime() - new Date().getTime();
+}
+
 //window.miniApp = new MiniApp()
 
 Module['noRun'] = true;	

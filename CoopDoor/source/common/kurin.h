@@ -79,6 +79,7 @@ public:
 
   void Calculate()
   {
+    Show(" CALC");
     mAstroState = mAstro.Sunrise(
       {static_cast<int16_t>(mTime.year), static_cast<int8_t>(mTime.month), static_cast<int8_t>(mTime.day)}, 
       {mLatitude*0.1f, mLongitude*0.1f});
@@ -139,7 +140,7 @@ public:
         Sleep(2000);
         break;
       case EState::Version: 
-        Show("VER1.1");
+        Show("VER1.2");
         Sleep(2000);
         if (!LoadSettings())
         {

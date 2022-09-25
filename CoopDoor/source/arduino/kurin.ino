@@ -365,18 +365,21 @@ protected:
   }
   virtual bool StorageSave(uint8_t* buffer, int len) { return false; }
   virtual bool StorageLoad(uint8_t* buffer, int len) { return false; }
+  
   virtual void ChangeTime(int8_t h, int8_t m, int8_t d, int8_t mon, int8_t y) 
   {
+    RTC.stopClock();    
     if (h != 0)
       RTC.setHours((RTC.getHours()+h+24)%24);
     if (m != 0)
       RTC.setMinutes(min(max(0, RTC.getMinutes()+m), 59));
     if (d != 0)
       RTC.setDay(min(max(1, RTC.getDay()+d), 31));
-    if (m != 0)
+    if (mon != 0)
       RTC.setMonth(min(max(1, RTC.getMonth()+mon), 12));
     if (y != 0)
       RTC.setYear(max(2000, RTC.getYear()+y));
+     RTC.startClock();      
   }
 
   uint8_t CharToSegments(char c)
