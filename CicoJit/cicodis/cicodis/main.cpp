@@ -92,6 +92,8 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                         sprintf(newfmt, "$wr%d = $rd%d ^ %s", index, index, fmt+8);
                     else if (strncmp(fmt+4, " >>= ", 5) == 0)
                         sprintf(newfmt, "$wr%d = $rd%d >> %s", index, index, fmt+9);
+                    else if (strncmp(fmt+4, " <<= ", 5) == 0)
+                        sprintf(newfmt, "$wr%d = $rd%d << %s", index, index, fmt+9);
                     else
                         assert(0);
                     strcpy(fmt, newfmt);
@@ -1033,7 +1035,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 case X86_INS_JA:
                     return assign(x86, "$rd0 > $rd1");
                 default:
-                    assert(0);
+                    return "stop(/*72*/)";
+                    //assert(0);
             }
             break;
         case X86_INS_TEST:
@@ -1088,7 +1091,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     }
 
                 default:
-                    assert(0);
+                    return "stop(/*71*/)";
+                    //assert(0);
             }
             break;
         case X86_INS_CALL:
@@ -1145,7 +1149,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
             break;
             
         default:
-            assert(0);
+            return "stop(/*70*/)";
+            //assert(0);
     }
 }
 
@@ -1197,7 +1202,7 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
 
 void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& switches)
 {
-    //return; // TODO:
+    return; // TODO:
     std::shared_ptr<CapInstr> prev;
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
@@ -1342,7 +1347,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back(assign(x86, "flags.carry = $rd0 == 0;"));
                         break;
                     default:
-                        assert(0);
+                        text.push_back("stop(/*74*/);");
+                        //assert(0);
                         break;
                 }
             } else
@@ -1917,7 +1923,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 // TODO: prev carry!
 //                assert(lastCompare);
 //                lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
-                assert(x86.operands[0].size == 1);
+                //assert(x86.operands[0].size == 1);
                 text.push_back(assign(x86, "stop(/*carry*/);")); // 8bit/16bit!
                 text.push_back(assign(x86, "$wr0 = rcl($rd0, $rd1);"));
                 break;
