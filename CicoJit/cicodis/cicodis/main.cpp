@@ -53,6 +53,14 @@ const char* SignedType(const cs_x86_op& op)
     return "?";
 }
 
+std::string enclose(const std::string& str)
+{
+    assert(str[str.length()-1] == ';');
+    if (str.find(" ") == std::string::npos)
+        return str.substr(0, str.length()-1);
+    return format("(%s)", str.substr(0, str.length()-1).c_str());
+}
+
 std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
 {
     const bool getset = true;
@@ -81,19 +89,19 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                     else if (strcmp(fmt+4, "--;") == 0)
                         sprintf(newfmt, "$wr%d = $rd%d - 1;", index, index);
                     else if (strncmp(fmt+4, " |= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d | %s", index, index, fmt+8);
+                        sprintf(newfmt, "$wr%d = $rd%d | %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " &= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d & %s", index, index, fmt+8);
+                        sprintf(newfmt, "$wr%d = $rd%d & %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " += ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d + %s", index, index, fmt+8);
+                        sprintf(newfmt, "$wr%d = $rd%d + %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " -= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d - %s", index, index, fmt+8);
+                        sprintf(newfmt, "$wr%d = $rd%d - %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " ^= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d ^ %s", index, index, fmt+8);
+                        sprintf(newfmt, "$wr%d = $rd%d ^ %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " >>= ", 5) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d >> %s", index, index, fmt+9);
+                        sprintf(newfmt, "$wr%d = $rd%d >> %s;", index, index, enclose(fmt+9).c_str());
                     else if (strncmp(fmt+4, " <<= ", 5) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d << %s", index, index, fmt+9);
+                        sprintf(newfmt, "$wr%d = $rd%d << %s;", index, index, enclose(fmt+9).c_str());
                     else
                         assert(0);
                     strcpy(fmt, newfmt);
@@ -1057,6 +1065,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
         case X86_INS_DEC:
         case X86_INS_SHR:
         case X86_INS_INC:
+        case X86_INS_ADC:
             assert(x86.op_count >= 1);
             //assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
             switch (op)
@@ -1599,10 +1608,19 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 else
                     text.push_back("stop(/*8*/); // inject carry failed");
                 //text.push_back(assign("%o += %o + flags.carry", x86.operands[0], x86.operands[1]);
-                if ((int)instr->mInject & (int)inject_t::carry)
-                    text.push_back(assign(x86, "$rw0 += $rd1 + tl;"));
-                else
-                    text.push_back(assign(x86, "$rw0 += $rd1 + flags.carry;"));
+                if (assign(x86, "$rd1") == "0x00" || assign(x86, "$rd1") == "0x0000")
+                {
+                    if ((int)instr->mInject & (int)inject_t::carry)
+                        text.push_back(assign(x86, "$rw0 += tl;"));
+                    else
+                        text.push_back(assign(x86, "$rw0 += flags.carry;"));
+                } else
+                {
+                    if ((int)instr->mInject & (int)inject_t::carry)
+                        text.push_back(assign(x86, "$rw0 += $rd1 + tl;"));
+                    else
+                        text.push_back(assign(x86, "$rw0 += $rd1 + flags.carry;"));
+                }
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
@@ -1644,6 +1662,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(assign(x86, "$wr0 = sar($rd0, $immd1);"));
                 else
                     text.push_back(assign(x86, "$wr0 = sar($rd0, $rd1);"));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_SHL:
                 assert(x86.op_count == 2);
@@ -1970,14 +1990,70 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("flags.carry = tx & 1;");
                 text.push_back("flags.zero = (tx << 1) & 1;");
                 break;
+            case X86_INS_XLATB:
+                switch (instr->mDetail.prefix[1])
+                {
+                    case 0:
+                    case X86_PREFIX_DS:
+                        text.push_back("al = memory(ds, bx+al);");
+                        break;
+                    case X86_PREFIX_CS:
+                        text.push_back("al = memory(cs, bx+al);");
+                        break;
+                    case X86_PREFIX_ES:
+                        text.push_back("al = memory(es, bx+al);");
+                        break;
+                    case X86_PREFIX_SS:
+                        text.push_back("al = memory(ss, bx+al);");
+                        break;
+                    default:
+                        assert(0);
+                }
+                break;
+            case X86_INS_SCASB:
+                if (strcmp(instr->mMnemonic, "scasb") != 0)
+                {
+                    text.push_back(format("stop(); // %s %s", instr->mMnemonic, instr->mOperands));
+                    break;
+                }
+                assert(strcmp(instr->mMnemonic, "scasb") == 0);
+                assert(strcmp(instr->mOperands, "al, byte ptr es:[di]") == 0);
+                //assert(instr->mDetail.prefix[0]==0 && instr->mDetail.prefix[1]==0); // WTF?
+                text.push_back("flags.zero = memoryAGet(es, di++) == al;");
+                break;
+            case X86_INS_CDQ:
+                text.push_back("dx = ax & 0x8000 ? 0xffff : 0x0000;");
+                break;
+            case X86_INS_SBB:
+                assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
+                if (!lastCompare)
+                    text.push_back("stop(/*81*/);");
+                else
+                {
+                    if (lastCompare->mInject == inject_t::none)
+                    {
+                        lastCompare->mInject = inject_t::carry;
+                        modified = true;
+                    } else if (lastCompare->mInject == inject_t::carry)
+                    {
+                    } else
+                        assert(0);
+                    assert(lastCompare->mInject == inject_t::none || lastCompare->mInject == inject_t::carry);
+                    lastCompare->mInject = inject_t::carry;
+                }
+                if (assign(x86, "$rd1") == "0x00" || assign(x86, "$rd1") == "0x0000")
+                    text.push_back(assign(x86, "$rw0 -= flags.carry;"));
+                else
+                    text.push_back(assign(x86, "$rw0 -= $rd1 + flags.carry;"));
+                lastCompare = instr;
+                keepLastCompare = true;
+
+                //text.push_back("dx = ax & 0x8000 ? 0xffff : 0x0000;");
+                break;
             case X86_INS_LES:
             case X86_INS_LDS:
             case X86_INS_LEA:
-            case X86_INS_SCASB:
 //            case X86_INS_LCALL:
-            case X86_INS_CDQ:
-            case X86_INS_SBB:
-            case X86_INS_XLATB:
             case X86_INS_DAS:
             case X86_INS_DAA:
                 text.push_back(format("stop(); // %s %s", instr->mMnemonic, instr->mOperands));
