@@ -1,0 +1,91 @@
+<script src="wasm.js"></script>
+<script>
+class Interface
+{
+  constructor()
+  {
+    for (var y=0; y<9; y++)
+    {
+      for (var x=0; x<9; x++)
+        document.write(`<span id="pad${y}${x}" style="display:inline-block; width:32px; height:32px;" onmousedown="launchpad.press(${x}, ${y})" onmouseup="launchpad.release(${x}, ${y})"></span>`)
+      document.write(`<br>`);
+    }
+  }
+  update(colors)
+  {
+    var luma = i => Math.floor(Math.pow(i/255, 0.5)*255);
+    for (var y=0; y<9; y++)
+      for (var x=0; x<9; x++)
+      {
+        var color32 = colors[(y)*10+x+1];
+        var r = luma((color32 >> 16) & 0xff);
+        var g = luma((color32 >> 8) & 0xff);
+        var b = luma((color32 >> 0) & 0xff);
+
+        var colorHtml = `rgba(${r}, ${g}, ${b}, 1)`
+        document.getElementById(`pad${y}${x}`).style.background = colorHtml;
+      }
+  }
+}
+
+class Launchpad
+{
+  constructor(ui)
+  {
+    this.ui = ui;
+    WebAssembly.instantiate(wasmBinary, {}).then(obj =>
+    {
+      this.exports = obj.instance.exports;
+      this.MODE = new Uint8Array(
+        this.exports.memory.buffer,
+        this.exports.MODE.value,
+        1
+      );
+      this.TICKSMS = new Uint32Array(
+        this.exports.memory.buffer,
+        this.exports.TICKSMS.value,
+        4
+      );
+      this.LED_BUFFER = new Uint32Array(
+        this.exports.memory.buffer,
+        this.exports.LED_BUFFER.value,
+        64*4
+      );
+
+      this.MODE[0] = 5;
+      setInterval(()=>{ this.loop() }, 45);
+    });
+  }
+  loop()
+  {
+    this.TICKSMS[0] = (new Date()).getTime();
+    this.exports.new_loop();
+    this.ui.update(this.LED_BUFFER);
+  }
+  press(x, y)
+  {
+    this.exports.new_onPress(x+1+y*10, 0);
+  }
+  release(x, y)
+  {
+    this.exports.new_onRelease(x+1+y*10);
+  }
+}  
+
+var ui = new Interface();
+var launchpad = new Launchpad(ui);
+
+document.addEventListener("keydown", e => {
+  var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
+  var escKey = 27;
+  switch (e.keyCode)
+  {
+    case leftKey: launchpad.press(6, 8); break;
+    case rightKey: launchpad.press(8, 8); break;
+    case upKey: launchpad.press(7, 7); break;
+    case downKey: launchpad.press(7, 8); break;
+    case escKey: launchpad.press(0, 7); break;
+  }
+});
+
+</script>

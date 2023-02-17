@@ -1,0 +1,2 @@
+https://www.reddit.com/r/Novation/comments/nfhrws/bricked_launchpad_mini_mk3/
+CPU: stm32f401cbu6
