@@ -5,13 +5,22 @@
 #include "snake.h"
 #include "paint.h"
 #include "drops.h"
+#include "tictactoe.h"
+#include "flappybird.h"
+#include "adventure.h"
 CAppLightpen appLightpen;
 CAppSnake appSnake;
 CAppPaint appPaint;
 CAppDrops appDrops;
+CAppTictactoe appTictactoe;
+CAppFlappybird appFlappybird;
+CAppAdventure appAdventure;
 #include "menu.h"
 
 CAppMenu appMenu;
+//CApp* appCurrent = &appTictactoe;
+//CApp* appCurrent = &appFlappybird;
+//CApp* appCurrent = &appAdventure;
 CApp* appCurrent = &appMenu;
 CApp* appLast = nullptr;
 
