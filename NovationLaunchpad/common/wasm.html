@@ -87,10 +87,14 @@ class Launchpad
 
 var ui = new Interface();
 var launchpad = new Launchpad(ui);
+var keysPressed = {};
 
 document.addEventListener("keydown", e => {
   var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
   var escKey = 27;
+  if (e.keyCode in keysPressed)
+    return
+  keysPressed[e.keyCode] = 1;
   switch (e.keyCode)
   {
     case leftKey: launchpad.press(6, 8); break;
@@ -98,6 +102,19 @@ document.addEventListener("keydown", e => {
     case upKey: launchpad.press(7, 7); break;
     case downKey: launchpad.press(7, 8); break;
     case escKey: launchpad.press(5, 0); break;
+  }
+});
+document.addEventListener("keyup", e => {
+  var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
+  var escKey = 27;
+  delete keysPressed[e.keyCode];
+  switch (e.keyCode)
+  {
+    case leftKey: launchpad.release(6, 8); break;
+    case rightKey: launchpad.release(8, 8); break;
+    case upKey: launchpad.release(7, 7); break;
+    case downKey: launchpad.release(7, 8); break;
+    case escKey: launchpad.release(5, 0); break;
   }
 });
 

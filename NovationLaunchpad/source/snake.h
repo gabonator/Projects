@@ -92,8 +92,8 @@ public:
     }
     if (apple == point_t{0, 0})
     {
-      apple.x = random.get() % 16;
-      apple.y = random.get() % 16;
+      apple.x = gRandom.get() % 16;
+      apple.y = gRandom.get() % 16;
       if (game[apple.y*16+apple.x] == ' ')
       {
         game[apple.y*16+apple.x] = '*';
@@ -217,7 +217,7 @@ public:
       return b == ' ' || b == '*';
     };
 
-    random.addEntropy(ticks());
+    gRandom.addEntropy(ticks());
     switch (y*10+x)
     {
       case 77: if (safe(0, -1)) {dir.dx = 0; dir.dy = -1;} break;

@@ -22,7 +22,7 @@ public:
   }
 };
 
-CPRNG random;
+CPRNG gRandom;
 
 template <typename T> T min(T a, T b)
 {
