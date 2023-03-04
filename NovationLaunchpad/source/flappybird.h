@@ -34,12 +34,19 @@ public:
     dy += 1;
     dy = max(-40, min(dy, 40));
     y += dy;
-    if (y >= 8*256)
-      y -= 8*256;
+    if (y >= 8*256-1)
+      y = 8*256-1;
     if (y < 0)
-      y += 8*256;
+      y = 0;
     
-    if (tick++ >= 20)
+    int speed = 20;
+    int distance = 5;
+    if (score > 10)
+    {
+    }
+
+
+    if (tick++ >= speed)
     {
       tick = 0;
       for (int y=0; y<8; y++)
@@ -48,7 +55,7 @@ public:
       for (int y=0; y<8; y++)
           map[8][y] = 0;
 
-      if (walltick++ >= 5)
+      if (walltick++ >= distance)
       {
         score++;
 

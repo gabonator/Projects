@@ -35,6 +35,7 @@ redirect(getSymbol("ptr_startup"), getSymbol("old_startup"), getSymbol("new_star
 redirect(getSymbol("ptr_loop"), getSymbol("old_loop"), getSymbol("new_loop"));
 redirect(getSymbol("ptr_updateScreen"), getSymbol("old_updateScreen"), getSymbol("new_updateScreen"));
 redirect(getSymbol("ptr_usbStatus"), getSymbol("old_usbStatus"), getSymbol("new_usbStatus"));
+redirect(getSymbol("ptr_introGradient"), getSymbol("old_introGradient"), getSymbol("new_introGradient"));
 
 function swizzle(ptr, pold, pnew)
 {
@@ -56,6 +57,18 @@ console.log((pold>>0)&0xff, (pold>>8)&0xff, (pold>>16)&0xff, (pold>>24)&0xff);
   buf[ptr+3] = (pnew>>24)&0xff;
 }
 
+function instr(base, i)
+{
+    buf[base-firmwareBase] = i >> 8;
+    buf[base+1-firmwareBase] = i & 255;
+}
+function instr4(base, i)
+{
+    buf[base-firmwareBase] = (i >> 24) & 255;
+    buf[base+1-firmwareBase] = (i >> 16) & 255;
+    buf[base+2-firmwareBase] = (i >> 8) & 255;
+    buf[base+3-firmwareBase] = (i >> 0) & 255;
+}
 function nop(base, pairs)
 {
   for (var i=0; i<pairs; i++)
@@ -73,7 +86,6 @@ function redirect(address, oldtarget, newtarget)
   var curtarget = thumbBlDisassembly(bytes, address);
   if (oldtarget != curtarget)
     throw "error";
-  console.log("target", oldtarget.toString(16), curtarget.toString(16));
   var newbytes = thumbBlAssembly(address, newtarget);
   if ((thumbBlDisassembly(newbytes, address)|1) != (newtarget|1))
     throw "error";

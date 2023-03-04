@@ -26,9 +26,9 @@ class Interface
       for (var x=0; x<9; x++)
       {
         var color32 = colors[(y)*10+x+1];
-        var r = luma((color32 >> 16) & 0xff);
-        var g = luma((color32 >> 8) & 0xff);
-        var b = luma((color32 >> 0) & 0xff);
+        var r = luma((color32 >> 16) & 0xfc);
+        var g = luma((color32 >> 8) & 0xfc);
+        var b = luma((color32 >> 0) & 0xfc);
 
         var colorHtml = `rgba(${r}, ${g}, ${b}, 1)`
         document.getElementById(`pad${y}${x}`).style.background = colorHtml;
@@ -41,6 +41,7 @@ class Launchpad
   constructor(ui)
   {
     this.ui = ui;
+    this.t0 = (new Date()).getTime();
     WebAssembly.instantiate(wasmBinary, {}).then(obj =>
     {
       this.exports = obj.instance.exports;
@@ -67,7 +68,7 @@ class Launchpad
   }
   loop()
   {
-    this.TICKSMS[0] = (new Date()).getTime();
+    this.TICKSMS[0] = (new Date()).getTime()-this.t0;
     for (var i=0; i<45; i+=5)
     {
       this.exports.new_loop();
@@ -87,10 +88,14 @@ class Launchpad
 
 var ui = new Interface();
 var launchpad = new Launchpad(ui);
+var keysPressed = {};
 
 document.addEventListener("keydown", e => {
   var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
   var escKey = 27;
+  if (e.keyCode in keysPressed)
+    return
+  keysPressed[e.keyCode] = 1;
   switch (e.keyCode)
   {
     case leftKey: launchpad.press(6, 8); break;
@@ -98,6 +103,19 @@ document.addEventListener("keydown", e => {
     case upKey: launchpad.press(7, 7); break;
     case downKey: launchpad.press(7, 8); break;
     case escKey: launchpad.press(5, 0); break;
+  }
+});
+document.addEventListener("keyup", e => {
+  var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
+  var escKey = 27;
+  delete keysPressed[e.keyCode];
+  switch (e.keyCode)
+  {
+    case leftKey: launchpad.release(6, 8); break;
+    case rightKey: launchpad.release(8, 8); break;
+    case upKey: launchpad.release(7, 7); break;
+    case downKey: launchpad.release(7, 8); break;
+    case escKey: launchpad.release(5, 0); break;
   }
 });
 

@@ -1,6 +1,6 @@
 MEMORY
 {
-  rom (rx) :   ORIGIN = 0x0801C4B0, LENGTH = 8K
+  rom (rx) :   ORIGIN = 0x0801C4B0, LENGTH = 10K
   ram (rwx) :  ORIGIN = 0x2000d000, LENGTH = 4K
 }
 
@@ -26,6 +26,11 @@ SECTIONS
     old_startup = 0x0800d98c;
     ptr_usbStatus = 0x0800f512;
     old_usbStatus = 0x08011a98;
+    fontData = 0x0801aa08;
+    fontOffsets = 0x0801b250;
+    ptr_introGradient = 0x08011660;
+    old_introGradient = 0x08011378;
+    INTROPHASE = 0x200089EC;
   }
   .text : {
     *(.text*)

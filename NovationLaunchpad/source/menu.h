@@ -1,15 +1,16 @@
+extern "C" {
+  extern uint16_t fontOffsets[95];
+  extern uint8_t fontData[425];
+}
 
-static const uint8_t menu[] = {
-    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
-    0b00010000, 0b11111100, 0b01111100, 0b11110000, 0b11111000, 0b11111000, 0b01111000, 0b00000000,
-    0b00101000, 0b10000010, 0b10000010, 0b10001000, 0b10000000, 0b10000000, 0b10000100, 0b00000000,
-    0b00101000, 0b10000010, 0b10000000, 0b10000100, 0b10000000, 0b10000000, 0b10000000, 0b00000000,
-    0b01000100, 0b11111100, 0b10000000, 0b10000100, 0b11110000, 0b11110000, 0b10011100, 0b00000000,
-    0b01111100, 0b10000010, 0b10000000, 0b10000100, 0b10000000, 0b10000000, 0b10000100, 0b00000000,
-    0b10000010, 0b10000010, 0b10000010, 0b10001000, 0b10000000, 0b10000000, 0b10000100, 0b00000000,
-    0b10000010, 0b11111100, 0b01111100, 0b11110000, 0b11111000, 0b10000000, 0b01111000, 0b00000000,
-    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
-  };
+static const char* labels[] = {
+  "Paint", "Color test", "Snake", "Light pen", "Rain", "Flappy bird", "Tic tac toe", "Adventure"
+};
+static const uint32_t colors[] = {
+  0xff0000, 0x0020ff, 0x00ff00, 0xff0080, 0x00ff80, 0x80ff00, 0x80ff80, 0x00ff00
+};
+CApp* apps[] = {
+  &appPaint, &appColortest, &appSnake, &appLightpen, &appDrops, &appFlappybird, &appTictactoe, &appAdventure};
 
 class CAppMenu : public CApp
 {
@@ -27,50 +28,82 @@ class CAppMenu : public CApp
     0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000
   };
 #endif
-  int ofs{0};
-  int target{0};
-  int32_t last{0};
+  int sx{0};
+  int sy{2*8};
+  int ty{2*8};
+  int last;
+  int wait;
+  int dir;
 
 public:
-  uint32_t getPixel(int x, int y)
+  virtual void enter() override
   {
-    int blk = x/8;
-    x &= 7;
-    return (menu[blk+y*8] & (128>>x)) ? 0x808080 : 0;
+    for (int x=0; x<9; x++)   
+      pixel(x, 0) = 0;
+    last = 0;
+    wait = 10;
+    dir = 1;
   }
 
   virtual void loop() override
   {
-    if (ticks() - last < 10)
+    if (ticks() - last < 60)
       return;
     last = ticks();
 
-    const int k = 32;
-    ofs = (ofs*(256-k) + target*k) / 256;
+    if (ty>sy)
+      sy++;
+    else if (ty<sy)
+      sy--;
+    if (wait > 0)
+      wait--;
+    else
+    {
+      sx += dir;
 
-    for (int y=0; y<9; y++)
-      for (int x=0; x<8; x++)
-        pixel(x, y) = getPixel(ofs/1024+x, y);
+      if (dir == 1 && sx > getTextWidth(labels[sy/8])-9)
+      {
+        wait = 50;
+        dir = -1;
+      }
+      if (dir == -1 && sx <= 0)
+      {
+        sx = 0;
+        dir = 1;
+        wait = 100;
+      }
+    }
+
+    uint8_t buffer[9] = {0};
+    renderText(buffer, -sx, sy%8, labels[sy/8]);
+    if (sy/8+1 < sizeof(labels)/sizeof(labels[0]))
+      renderText(buffer, -sx, (sy%8)-8, labels[sy/8+1]);
+
+    for (int y=0; y<8; y++)
+      for (int x=0; x<9; x++)   
+        pixel(x, y+1) = (buffer[x] & (1<<y)) ? colors[(y+sy)/8] : 0x000000;
   }
 
   virtual void onPress(int x, int y, int v) override
   {
-    if (x == 2 && y == 0 && target > 0)
-      target -= 1024*8;
-    if (x == 3 && y == 0 && target < 1024*8*7)
-      target += 1024*8;
-    if (x==0 && y==0)
+    if (x+y*10 == 0 && ty > 0)
     {
-      switch ((target+256)/1024/8)
-      {
-        case 0: go(appPaint); break;
-        case 1: go(appSnake); break;
-        case 2: go(appLightpen); break;
-        case 3: go(appDrops); break;
-        case 4: go(appFlappybird); break;
-        case 5: go(appTictactoe); break;
-        case 6: go(appAdventure); break;
-      }
+      ty -= 8;
+      wait = 0;
+      dir = -1;
+    }
+    if (x+y*10 == 1 && ty+8 < sizeof(labels)/sizeof(labels[0])*8)
+    {
+      ty += 8;
+      wait = 0;
+      dir = -1;
+    }
+    if (x+y*10 == 2 || x+y*10 == 3)
+    {
+      sx = 0;
+      wait = 100;
+      dir = 1;
+      go(*apps[sy/8]);
     }
   }
 };

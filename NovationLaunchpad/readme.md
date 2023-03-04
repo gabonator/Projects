@@ -12,6 +12,9 @@ This project extend the functionality of these launchpads by injecting extra cod
 Extras:
 - disassembly - objdump disassembly of original firmware
 - stock firmware, ghidra disassembly, web flasher: https://github.com/mat1jaczyyy/LP-Firmware-Utility
+- PCB photos: https://www.reddit.com/r/Novation/comments/nfhrws/bricked_launchpad_mini_mk3/
+- CPU: stm32f401cbu6
+- https://www.st.com/en/microcontrollers-microprocessors/stm32f401.html
 
 Try it online: [WASM build](https://rawgit.valky.eu/gabonator/Projects/master/NovationLaunchpad/build/wasm.html)
 

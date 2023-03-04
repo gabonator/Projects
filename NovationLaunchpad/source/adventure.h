@@ -82,6 +82,18 @@ public:
     return 0xff00ff;
   }
 
+  int dither(int x, int y, int v)
+  {
+    static const uint8_t pattern[] = {
+      0, 8, 2, 10,
+      12, 4, 14, 6,
+      3, 11, 1, 9,
+      15, 7, 13, 5};
+    int i = pattern[(y&3)*4+(x&3)];
+    int base = v & ~3;
+    int rem = v & 15;
+    return base + ((i<rem) ? 4 : 0);
+  }
   virtual void loop() override
   {
     if (ticks() - last < 50)
@@ -144,11 +156,12 @@ public:
 
     for (int _y=0; _y<9; _y++)
     {
-      int h = min(max(0, 20-y-_y), 255);
-      uint32_t clear = h | (h<<8);
-
+      int h0 = min(max(0, 20-y-_y), 255);
       for (int _x=0; _x<9; _x++)
       {
+        int h = dither(x+_x, y+_y, h0);
+        uint32_t clear = h | (h<<8);
+
         uint32_t background = (((_x+x/3+1024)/2+(_y+y/3+1024)/2) & 1) ? 0 : 0x202020;
         pixel(_x, _y) = color(getmap(x+_x, y+_y), background, clear);
 //        if (x+_x == playerx && y+_y == playery)

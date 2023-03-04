@@ -26,9 +26,9 @@ class Interface
       for (var x=0; x<9; x++)
       {
         var color32 = colors[(y)*10+x+1];
-        var r = luma((color32 >> 16) & 0xff);
-        var g = luma((color32 >> 8) & 0xff);
-        var b = luma((color32 >> 0) & 0xff);
+        var r = luma((color32 >> 16) & 0xfc);
+        var g = luma((color32 >> 8) & 0xfc);
+        var b = luma((color32 >> 0) & 0xfc);
 
         var colorHtml = `rgba(${r}, ${g}, ${b}, 1)`
         document.getElementById(`pad${y}${x}`).style.background = colorHtml;
@@ -41,6 +41,7 @@ class Launchpad
   constructor(ui)
   {
     this.ui = ui;
+    this.t0 = (new Date()).getTime();
     WebAssembly.instantiate(wasmBinary, {}).then(obj =>
     {
       this.exports = obj.instance.exports;
@@ -67,7 +68,7 @@ class Launchpad
   }
   loop()
   {
-    this.TICKSMS[0] = (new Date()).getTime();
+    this.TICKSMS[0] = (new Date()).getTime()-this.t0;
     for (var i=0; i<45; i+=5)
     {
       this.exports.new_loop();
