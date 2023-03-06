@@ -1,5 +1,5 @@
 extern "C" {
-  extern uint16_t fontOffsets[95];
+  extern uint16_t fontOffsets[97];
   extern uint8_t fontData[425];
 }
 
@@ -14,23 +14,9 @@ CApp* apps[] = {
 
 class CAppMenu : public CApp
 {
-// TODO: can't be inside class - check which section was used, bug in linker script?
-#if 0
-  /*const*/ uint8_t menu[9*5] = {
-    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
-    0b00010000, 0b11111100, 0b01111100, 0b11110000, 0b00000000,
-    0b00101000, 0b10000010, 0b10000010, 0b10001000, 0b00000000,
-    0b00101000, 0b10000010, 0b10000000, 0b10000100, 0b00000000,
-    0b01000100, 0b11111100, 0b10000000, 0b10000100, 0b00000000,
-    0b01111100, 0b10000010, 0b10000000, 0b10000100, 0b00000000,
-    0b10000010, 0b10000010, 0b10000010, 0b10001000, 0b00000000,
-    0b10000010, 0b11111100, 0b01111100, 0b11110000, 0b00000000,
-    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000
-  };
-#endif
   int sx{0};
-  int sy{2*8};
-  int ty{2*8};
+  int sy{5*8};
+  int ty{5*8};
   int last;
   int wait;
   int dir;

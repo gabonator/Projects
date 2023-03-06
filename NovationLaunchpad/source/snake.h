@@ -40,6 +40,7 @@ class CAppSnake : public CApp
   int32_t appleDisappear{0};
   int32_t appleAppear{0};
 
+  int score{0};
   int speed{400};
   char game[16*16+1] = 
     "################"
@@ -63,10 +64,26 @@ class CAppSnake : public CApp
   int32_t last = 0;
 
 public:
+  void reset()
+  {
+    score = 0;
+    speed = 400;
+    pos = {8, 8};
+    dir = {0, 0};
+    tail.count = 0;
+    tailTime = 0;
+    tailLen = 4;
+    for (int y=0; y<16; y++)
+      for (int x=0; x<16; x++)
+        if (game[y*16+x] == 'h' || game[y*16+x] == 'o')
+          game[y*16+x] = ' ';
+  }
+
   virtual void enter() override
   {
     last = ticks();
   }
+
   void doApple()
   {
     if (appleDisappear != 0)
@@ -109,11 +126,29 @@ public:
   virtual void loop() override
   {
     doApple();
-    doMove();
+    if (!doMove())
+    {
+      die();
+      reset();
+      return;
+    }
     doDraw();
   }
 
-  void doMove()
+  void die()
+  {
+    if (score > 2)
+    {
+      appMarquee.show(this, "Game over   Snake score \x7f ", score);
+      appTransition.chain(&appMarquee);
+      go(appTransition);
+    } else {
+      appTransition.chain(this);
+      go(appTransition);
+    }
+  }
+
+  bool doMove()
   {
     passed += ticks()-last;
     last = ticks();
@@ -125,23 +160,14 @@ public:
       {
         if (game[pos.y*16+pos.x] == '*')
         {
+          score++;
           if (speed > 100)
             speed -= 5;
           appleDisappear = ticks();
           if (tailLen < 63)
             tailLen++;
         } else {
-          speed = 400;
-          pos = {8, 8};
-          dir = {0, 0};
-          tail.count = 0;
-          tailTime = 0;
-          tailLen = 4;
-          for (int y=0; y<16; y++)
-            for (int x=0; x<16; x++)
-              if (game[y*16+x] == 'h' || game[y*16+x] == 'o')
-                game[y*16+x] = ' ';
-          break;
+          return false;
         }
       }
       game[pos.y*16+pos.x] = 'h';
@@ -163,6 +189,7 @@ public:
         tail[0] = pos;
       }
     }
+    return true;
   }
 
   void doDraw()

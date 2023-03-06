@@ -1,5 +1,5 @@
 extern "C" {
-  extern uint16_t fontOffsets[95];
+  extern uint16_t fontOffsets[97];
   extern uint8_t fontData[425];
 }
 
@@ -9,7 +9,10 @@ int CApp::getTextWidth(const char* msg)
   while (*msg)
   {
     int c = *msg++ - 0x20;
-    w += fontOffsets[c+1] - fontOffsets[c];
+    if (c == 0x5f)
+      w += 5;
+    else
+      w += fontOffsets[c+1] - fontOffsets[c];
   }
   return w;
 }
@@ -21,7 +24,7 @@ void CApp::renderText(uint8_t* buffer, int x, int y, const char* msg)
   for (int i=0; msg[i]; i++)
   {
     int c = msg[i] - 0x20;
-    int w = fontOffsets[c+1] - fontOffsets[c];
+    int w = c == 0x5f ? 5 : (fontOffsets[c+1] - fontOffsets[c]);
     if (x >= -w && x < 9)
     {
       for (int px=0; px<w; px++)

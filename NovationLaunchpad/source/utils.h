@@ -55,3 +55,45 @@ public:
     return data[count-1];
   }
 };
+
+void strcpy(char *dst, const char *src)
+{
+  while((*dst++ = *src++) != 0);
+}
+
+int strlen(const char *str)
+{
+  const char *s;
+  for (s = str; *s; ++s);
+  return (s - str);
+}
+
+#if 1
+extern "C" char* itoa(int value, char* result, int base) 
+{
+    if (base != 10) 
+    { 
+      *result = '\0'; 
+      return result; 
+    }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "0123456789" [tmp_value - value * 10];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
+#endif
