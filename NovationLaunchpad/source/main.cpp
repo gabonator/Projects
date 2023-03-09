@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "utils.h"
 #include "app.h"
+#include "imports.h"
 #include "marquee.h"
 CAppMarquee appMarquee;
 #include "transition.h"
@@ -13,6 +14,7 @@ CAppTransition appTransition;
 #include "flappybird.h"
 #include "adventure.h"
 #include "colortest.h"
+#include "water.h"
 CAppLightpen appLightpen;
 CAppSnake appSnake;
 CAppPaint appPaint;
@@ -21,49 +23,11 @@ CAppTictactoe appTictactoe;
 CAppFlappybird appFlappybird;
 CAppAdventure appAdventure;
 CAppColortest appColortest;
-
+CAppWater appWater;
 #include "menu.h"
-
 CAppMenu appMenu;
-//CApp* appCurrent = &appTictactoe;
-//CApp* appCurrent = &appFlappybird;
-//CApp* appCurrent = &appAdventure;
-//CApp* appCurrent = &appSnake;
-//CApp* appCurrent = &appColortest;
 CApp* appCurrent = &appMenu;
 CApp* appLast = nullptr;
-
-extern "C" {
-  extern uint32_t LED_BUFFER[];
-  extern uint8_t MODE;
-  extern int32_t TICKSMS;
-  extern int32_t INTROPHASE;
-  extern uint8_t fontData[];
-  extern uint16_t fontOffsets[];
-
-  void old_loop();
-  void new_loop();
-  void old_onPress(int, int);
-  void new_onPress(int, int);
-  void old_onRelease(int);
-  void new_onRelease(int);
-  void old_updateScreen();
-  void new_updateScreen();
-  int old_usbStatus();
-  int new_usbStatus();
-  void old_startup();
-  void new_startup();
-  void old_introGradient(int, uint32_t);
-  void new_introGradient(int, uint32_t);
-
-  extern uint32_t _sidata;
-  extern uint32_t _sdata;
-  extern uint32_t _edata;
-  extern uint32_t _sbss;
-  extern uint32_t _ebss;
-  extern uint32_t _sinit;
-  extern uint32_t _einit;
-}
 
 #include "text.h"
 
@@ -176,9 +140,6 @@ void new_introGradient(int i, uint32_t c)
    0b00111100,
    0b00000000};
 
-//  if (INTROPHASE > 2240) // 1990, 2200, 2500x, 2400x, 2350x, 2240
-//    INTROPHASE = 0;
-
   // logo
   int y = i/10, x=i%10;
   int p = y<sizeof(mask) ? (mask[y] & (256>>x)) : 0;
@@ -198,41 +159,18 @@ void new_introGradient(int i, uint32_t c)
 
     c = (r << 16) | (g << 8) | b;
   }
-/*
-  // fade to drums
-  if (*phase > 2200-400 && y > 0 && x < 9 && x > 0)
-  {
-    int tint = (*phase-1500)*(256+24*16)/400;
-    int segment = (x/5)+(y/5)*2;
-    uint32_t colors[] = {0xff30a0, 0x3fff3f, 0xff00ff, 0x5078f0};
-    uint8_t delay[] = {0, 24, 8, 16};
-    uint32_t c2 = colors[segment];
-    tint = max(0, min(tint-delay[segment]*16, 256));
 
-    int r1 = c>>16;
-    int g1 = (c>>8)&255;
-    int b1 = (c>>0)&255;
-    int r2 = c2>>16;
-    int g2 = (c2>>8)&255;
-    int b2 = (c2>>0)&255;
-    int r = r1+(r2-r1)*tint/256;
-    int g = g1+(g2-g1)*tint/256;
-    int b = b1+(b2-b1)*tint/256;
-    c = (r << 16) | (g << 8) | b;
-  }
-
-*/
   // fade to keys
   if (INTROPHASE > 2200-400 && y > 0)
   {
-    int tint = (INTROPHASE-(2200-400))*(256+24*16)/400;
-    int segment = (y-1)/2;
-    uint32_t colors[] = {0x000000, 0x40b0f0, 0xf020f0};
-    uint8_t delay[] = {24, 16, 8, 0};
-    tint = max(0, min(tint-delay[segment]*16, 256));
-    uint8_t pat[] = {
+    static const uint32_t colors[] = {0x000000, 0x40b0f0, 0xf020f0};
+    static const uint8_t delay[] = {24, 16, 8, 0};
+    static const uint8_t pat[] = {
       0,  0, 1, 1, 0, 1, 1, 1, 0,   0, 
       0,  2, 1, 1, 1, 1, 1, 1, 2,   0};
+    int tint = (INTROPHASE-(2200-400))*(256+24*16)/400;
+    int segment = (y-1)/2;
+    tint = max(0, min(tint-delay[segment]*16, 256));
     uint32_t c2 = colors[pat[(i+10)%20]];
     int r1 = c>>16;
     int g1 = (c>>8)&255;
@@ -288,7 +226,7 @@ extern "C" {
   void old_onPress(int, int) {}
   void old_onRelease(int) {}
   void old_updateScreen() {}
-  int old_usbStatus() { return 0; }
+  int old_usbStatus() { return 1; }
   void old_startup() {}
 
   uint8_t fontData[425] = { 

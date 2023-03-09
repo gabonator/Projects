@@ -31,6 +31,7 @@ SECTIONS
     ptr_introGradient = 0x08011660;
     old_introGradient = 0x08011378;
     INTROPHASE = 0x200089EC;
+    WATERDEMO = 0x20008864;
   }
   .text : {
     *(.text*)

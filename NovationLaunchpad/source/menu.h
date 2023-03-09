@@ -4,13 +4,21 @@ extern "C" {
 }
 
 static const char* labels[] = {
-  "Paint", "Color test", "Snake", "Light pen", "Rain", "Flappy bird", "Tic tac toe", "Adventure"
+  "Paint", "Color test", "Snake", "Light pen", "Rain", 
+  "Flappy bird", "Tic tac toe", "Adventure", 
+  "Water"
 };
+
 static const uint32_t colors[] = {
-  0xff0000, 0x0020ff, 0x00ff00, 0xff0080, 0x00ff80, 0x80ff00, 0x80ff80, 0x00ff00
+  0xff0000, 0x0020ff, 0x00ff00, 0xff0080, 
+  0x00ff80, 0x80ff00, 0x80ff80, 0x00ff00,
+  0xff0000
 };
+
 CApp* apps[] = {
-  &appPaint, &appColortest, &appSnake, &appLightpen, &appDrops, &appFlappybird, &appTictactoe, &appAdventure};
+  &appPaint, &appColortest, &appSnake, &appLightpen, 
+  &appDrops, &appFlappybird, &appTictactoe, &appAdventure,
+  &appWater};
 
 class CAppMenu : public CApp
 {
@@ -36,6 +44,11 @@ public:
     if (ticks() - last < 60)
       return;
     last = ticks();
+
+    if (ty>sy+8)
+      sy++;
+    if (ty<sy-8)
+      sy--;
 
     if (ty>sy)
       sy++;
