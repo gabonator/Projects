@@ -213,6 +213,7 @@ extern "C" {
   uint32_t LED_BUFFER[10*10];
   uint8_t MODE;
   int32_t TICKSMS;
+  uint8_t WATERDEMO;
 
   uint32_t _sidata;
   uint32_t _sdata;

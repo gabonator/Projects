@@ -1,9 +1,14 @@
+<div id="panel"></div>
+<div id="help" style="padding-top:20px;">
+Use &#x2191; &#x2193; keys to switch between menu entries and &#x2192; to enter. Tap <b>U</b> to return back to menu. Some applications use arrow keys for movement (Snake, Adventure, Flappy bird) 
+</div>
 <script src="wasm.js"></script>
 <script>
 class Interface
 {
   constructor()
   {
+    var html = "";
     for (var y=0; y<9; y++)
     {
       for (var x=0; x<9; x++)
@@ -13,10 +18,11 @@ class Interface
           text = ["&#x2191;", "&#x2193;", "&#x2190;", "&#x2192;", "S", "D", "K", "U", ""][x];
         else if (x==8)
           text = "&gt;"
-        document.write(`<span id="pad${y}${x}" style="user-select: none; display:inline-block; width:32px; height:32px; color:#808080; line-height:30px; overflow:hidden; text-align:center;" onmousedown="launchpad.press(${x}, ${y})" onmouseup="launchpad.release(${x}, ${y})">${text}</span>`)
+        html += `<span id="pad${y}${x}" style="user-select: none; display:inline-block; width:32px; height:32px; color:#808080; line-height:30px; overflow:hidden; text-align:center;" onmousedown="launchpad.press(${x}, ${y})" onmouseup="launchpad.release(${x}, ${y})">${text}</span>`;
       }
-      document.write(`<br>`);
+      html += `<br>`;
     }
+    document.getElementById("panel").innerHTML = html;
   }
   update(colors)
   {

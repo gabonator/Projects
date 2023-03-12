@@ -36,6 +36,14 @@ redirect(getSymbol("ptr_loop"), getSymbol("old_loop"), getSymbol("new_loop"));
 redirect(getSymbol("ptr_updateScreen"), getSymbol("old_updateScreen"), getSymbol("new_updateScreen"));
 redirect(getSymbol("ptr_usbStatus"), getSymbol("old_usbStatus"), getSymbol("new_usbStatus"));
 redirect(getSymbol("ptr_introGradient"), getSymbol("old_introGradient"), getSymbol("new_introGradient"));
+string(0x0801c0a0, "pub.valky.eu/2013/novation/?method=usb&upn=");
+
+function string(ptr, str)
+{
+  for (var i=0; i<str.length; i++)
+    buf[ptr+i-firmwareBase] = str.charCodeAt(i);
+  buf[ptr+str.length-firmwareBase] = 0;
+}
 
 function swizzle(ptr, pold, pnew)
 {
@@ -45,11 +53,9 @@ function swizzle(ptr, pold, pnew)
       buf[ptr+1] != ((pold>>8)&0xff) ||
       buf[ptr+2] != ((pold>>16)&0xff) ||
       buf[ptr+3] != ((pold>>24)&0xff))
-{
-console.log(buf[ptr+0], buf[ptr+1], buf[ptr+2], buf[ptr+3]);
-console.log((pold>>0)&0xff, (pold>>8)&0xff, (pold>>16)&0xff, (pold>>24)&0xff);
+  {
     throw "error";
-}
+  }
 
   buf[ptr+0] = (pnew>>0)&0xff;
   buf[ptr+1] = (pnew>>8)&0xff;
