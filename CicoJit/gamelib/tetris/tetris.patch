@@ -1,0 +1,47 @@
+diff --git a/etetris.cpp b/etetris.cpp
+index b107ff3..0ba7822 100644
+--- a/etetris.cpp
++++ b/etetris.cpp
+@@ -893,11 +893,10 @@ loc_18b6e:
+ void sub_18b77()
+ {
+   dx = memoryAGet16(ds, 0x4289);
+-  stop(/*8*/); // inject carry failed
++  flags.carry = 0;
+   dx += 0x8249 + flags.carry;
+   cx = memoryAGet16(ds, 0x4289);
+   cx &= 0x000f;
+-  flags.carry = 0;
+   dx = rcr(dx, cl);
+ loc_18b89:
+   cx = memoryAGet16(ds, 0x4289);
+@@ -1554,8 +1553,8 @@ loc_19175:
+ }
+ void sub_1918b()
+ {
+-  if (memoryAGet(ds, 0x5d11) != 0x01)
+-    goto loc_19193;
++//  if (memoryAGet(ds, 0x5d11) != 0x01)
++//    goto loc_19193;
+   return;
+ loc_19193:
+   push(bp);
+@@ -2767,6 +2766,7 @@ loc_19e29:
+     goto loc_19e3f;
+   di -= 0x5ccc;
+   di <<= 1;
++    if (di==14) di = 8; // replace up with rotate
+   switch (di)
+   {
+     case 0: goto loc_19e42;
+@@ -4154,9 +4154,8 @@ void sub_1ab24()
+ void sub_1ab3e()
+ {
+   dx = memoryAGet16(ds, 0x4289);
+-  tl = flags.carry;
++  tl = 0;
+   flags.carry = (dx + 0x9428 + tl) >= 0x10000;
+-  stop(/*8*/); // inject carry failed
+   dx += 0x9428 + tl;
+   cl = 0x03;
+   dx = rcr(dx, cl);

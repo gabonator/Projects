@@ -1,0 +1,1 @@
+rm -rf dos goose goose.cpp
