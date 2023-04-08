@@ -753,12 +753,17 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         {
             assert(instr->mDetail.op_count == 1);
             const auto& op = instr->mDetail.operands[0];
-            assert(op.mem.segment == X86_REG_INVALID); // ds?
-            assert(op.mem.base == X86_REG_DI);
-            assert(_ds);
-            address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
-            const uint8_t* ptr = cap.GetBufferAt(table);
-            indirectJumps.push_back({instr->mAddress, address_t{_cs, 0}, -1, switch_t::JumpWords, op.mem.base, ptr});
+            if (op.mem.segment == X86_REG_INVALID)
+            {
+                assert(op.mem.segment == X86_REG_INVALID); // ds?
+                assert(op.mem.base == X86_REG_DI);
+                assert(_ds);
+                address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
+                const uint8_t* ptr = cap.GetBufferAt(table);
+                indirectJumps.push_back({instr->mAddress, address_t{_cs, 0}, -1, switch_t::JumpWords, op.mem.base, ptr});
+            } else {
+                printf("// skipping indirect jump\n");
+            }
         }
             
         if ((pc = instr->Next()).isValid())
@@ -1279,11 +1284,21 @@ void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vecto
             if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2 &&
                 x86.operands[0].mem.base != X86_REG_INVALID)
             {
-                assert(prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1);
-                assert(x86.operands[0].mem.segment == X86_REG_CS);
-                assert(x86.operands[0].mem.scale == 1);
-                assert(x86.operands[0].mem.base == X86_REG_BX);
-                switches.push_back({instr->mAddress, address_t{_cs, (int)x86.operands[0].mem.disp}, -1, switch_t::CallWords, x86.operands[0].mem.base});
+//                assert(prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1);
+                if (prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1)
+                {
+                    if (x86.operands[0].mem.segment == X86_REG_CS)
+                    {
+                        assert(x86.operands[0].mem.segment == X86_REG_CS);
+                        assert(x86.operands[0].mem.scale == 1);
+                        assert(x86.operands[0].mem.base == X86_REG_BX);
+                        switches.push_back({instr->mAddress, address_t{_cs, (int)x86.operands[0].mem.disp},
+                            -1, switch_t::CallWords, x86.operands[0].mem.base});
+                    } else
+                        printf("// skipping indirect call\n");
+                } else {
+                    printf("// skipping indirect call\n");
+                }
             }
         }
         prev = instr;
@@ -2142,9 +2157,29 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
 
                 //text.push_back("dx = ax & 0x8000 ? 0xffff : 0x0000;");
                 break;
+            case X86_INS_INT3:
+                break;
+            case X86_INS_LEA:
+            {
+                assert(x86.op_count == 2 && x86.operands[0].type == X86_OP_REG &&
+                       x86.operands[1].type == X86_OP_MEM &&
+                       x86.operands[1].size == 2 &&
+                       x86.operands[1].reg == X86_REG_INVALID &&
+                       x86.operands[1].mem.segment == X86_REG_INVALID &&
+                       x86.operands[1].mem.index == X86_REG_INVALID);
+                
+                if (x86.operands[1].mem.base == X86_REG_SI)
+                    text.push_back(assign(x86, "$wr0 = si + 0x%x; /*chk4*/", x86.operands[1].mem.disp));
+                else if (x86.operands[1].mem.base == X86_REG_DI)
+                    text.push_back(assign(x86, "$wr0 = di + 0x%x; /*chk4*/", x86.operands[1].mem.disp));
+                else if (x86.operands[1].mem.base == X86_REG_INVALID)
+                    text.push_back(assign(x86, "$wr0 = 0x%x;", x86.operands[1].mem.disp));
+                else
+                    assert(0);
+            }
+                break;
             case X86_INS_LES:
             case X86_INS_LDS:
-            case X86_INS_LEA:   
 //            case X86_INS_LCALL:
             case X86_INS_DAS:
             case X86_INS_DAA:
@@ -2162,6 +2197,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_FSTP:
             case X86_INS_OUTSB:
             case X86_INS_FCMOVE:
+            case X86_INS_JO:
                 text.push_back(format("stop(); // %s %s", instr->mMnemonic, instr->mOperands));
                 break;
             default:
