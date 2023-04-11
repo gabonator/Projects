@@ -1,0 +1,1 @@
+rm -rf dos cat cat.cpp

@@ -673,14 +673,15 @@ bool ClearsCarryFlag(const std::shared_ptr<CapInstr>& instr)
     return false;
 }
 
-bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& indirectJumps, inject_t injectReturn, const std::vector<address_t>& extraLabels)
+bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& indirectJumps, inject_t injectReturn, const std::vector<std::pair<address_t, address_t>>& extraLabels)
 {
     std::list<address_t> trace;
     trace.push_back(address);
     std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> instructions;
     
-    for (const address_t& addr : extraLabels)
-        trace.push_back(addr);
+    for (const std::pair<address_t, address_t>& pair : extraLabels)
+        if (pair.first.linearOffset() == address.linearOffset())
+            trace.push_back(pair.second);
     
     while (!trace.empty())
     {
@@ -831,11 +832,10 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
     }
     
-    for (const address_t& addr : extraLabels)
-    {
-        if (instructions.find(addr) != instructions.end())
-            instructions.find(addr)->second->mLabel = true;
-    }
+    for (const std::pair<address_t, address_t>& pair : extraLabels)
+        if (pair.first.linearOffset() == address.linearOffset())
+            if (instructions.find(pair.second) != instructions.end())
+                instructions.find(pair.second)->second->mLabel = true;
 
     // fix small gaps
     address_t nextAddr;
@@ -2371,7 +2371,7 @@ int main(int argc, const char * argv[]) {
     bool recursive = false;
     bool lines = false;
     bool printctx = false;
-    std::vector<address_t> extraLabels;
+    const char* extraLabelsStr = nullptr;
     
     for (int i=1; i<argc; i++)
     {
@@ -2387,27 +2387,7 @@ int main(int argc, const char * argv[]) {
             else if (strcmp(arg, "-ctx") == 0)
                 printctx = true;
             else if (strcmp(arg, "-labels") == 0)
-            {
-                std::istringstream is(argv[++i]);
-                std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
-                //std::regex functionName("^sub_([0-9a-fA-f]+)$");
-                //std::regex labelName("^sub_([0-9a-fA-f]+)$");
-
-                std::string token;
-                while (getline(is, token, ','))
-                {
-                    std::smatch matches;
-                    if (std::regex_search(token, matches, functionSegofs))
-                    {
-                        std::string strSeg = matches.str(1);
-                        std::string strOfs = matches.str(2);
-                        int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
-                        int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
-                        extraLabels.push_back({addrSeg, addrOfs});
-                    } else
-                        assert(0);
-                }
-            }
+                extraLabelsStr = argv[++i];
             else if (strcmp(arg, "-o") == 0)
             {
                 output = argv[++i];
@@ -2506,6 +2486,49 @@ void start()
     }
     _cs = header->cs+0x1000;
     
+    // map extra labels
+    std::vector<std::pair<address_t, address_t>> extraLabels;
+    if (extraLabelsStr)
+    {
+        std::istringstream is(extraLabelsStr);
+        std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
+        std::regex functionName("^sub_([0-9a-fA-f]+)$");
+        std::regex labelName("^loc_([0-9a-fA-f]+)$");
+
+        std::string token;
+        address_t parent;
+        while (getline(is, token, ','))
+        {
+            std::smatch matches;
+            if (std::regex_search(token, matches, functionName))
+            {
+                std::string strAddr = matches.str(1);
+                int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
+                int addrSeg = _cs;
+                int addrOfs = addr - addrSeg*16;
+                assert(addrOfs >= 0 && addrOfs < 0xffff);
+                parent = {addrSeg, addrOfs};
+            } else
+            if (std::regex_search(token, matches, labelName))
+            {
+                std::string strAddr = matches.str(1);
+                int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
+                int addrSeg = _cs;
+                int addrOfs = addr - addrSeg*16;
+                assert(addrOfs >= 0 && addrOfs < 0xffff);
+                extraLabels.push_back({parent, {addrSeg, addrOfs}});
+            } else
+            if (std::regex_search(token, matches, functionSegofs))
+            {
+                std::string strSeg = matches.str(1);
+                std::string strOfs = matches.str(2);
+                int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
+                int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
+                extraLabels.push_back({parent, {addrSeg, addrOfs}});
+            } else
+                assert(0);
+        }
+    }
     // fix relocations, we are loading the image to 1000:0000
     for (int i=0; i<header->relocations; i++)
     {
