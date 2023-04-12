@@ -559,7 +559,9 @@ address_t fromRelative(int segment, uint64_t offset)
 {
     // rd1
     //return address_t{segment, (int)offset - 0x41b0};
-    return address_t{segment, (int)offset - segment*16 + 0x10000};
+    //return address_t{segment, (int)offset+0x018a-0xadaa};
+    //return address_t{segment, (int)offset - segment*16 + 0x10000};
+    return address_t{segment, (int)offset};
 }
 
 address_t fromRelative(const std::shared_ptr<CapInstr>& instr, uint64_t offset)
@@ -615,7 +617,7 @@ public:
     
     std::shared_ptr<CapInstr> Disasm(address_t addr)
     {
-        uint64_t address = addr.segment*16 + addr.offset;
+        uint64_t address = addr.segment*16*0 + addr.offset;
         size_t codeSize = 32;
         const uint8_t* buf = GetBufferAt(addr);
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
@@ -763,7 +765,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             if (op.mem.segment == X86_REG_INVALID)
             {
                 assert(op.mem.segment == X86_REG_INVALID); // ds?
-                assert(op.mem.base == X86_REG_DI);
+                assert(op.mem.base == X86_REG_DI || op.mem.base == X86_REG_SI);
                 assert(_ds);
                 address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
                 const uint8_t* ptr = cap.GetBufferAt(table);
@@ -800,8 +802,17 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->NextBranch()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
-                assert(pc.offset >= 0 && pc.offset < 0xffff);
-                trace.push_back(pc);
+                if (!(pc.offset >= 0 && pc.offset < 0xffff))
+                {
+                    printf("// Skipping jump to %04x:%04x (%x) in %04x:%04x on %04x:%04x\n",
+                           pc.segment, pc.offset, pc.linearOffset(), address.segment, address.offset,
+                           instr->mAddress.segment, instr->mAddress.offset);
+                }
+                    else
+                    {
+                    assert(pc.offset >= 0 && pc.offset < 0xffff);
+                    trace.push_back(pc);
+                    }
                 /*
                 //assert(pc.linearOffset() >= address.linearOffset());
                 if (pc.linearOffset() >= address.linearOffset() && abs(pc.linearOffset() - address.linearOffset()) < 0x700)
@@ -2423,6 +2434,7 @@ int main(int argc, const char * argv[]) {
     std::ifstream file(executable, std::ios::binary | std::ios::ate);
     
     std::streamsize size = file.tellg();
+    assert(size >= 1024 && size < 1024*1024);
     file.seekg(0, std::ios::beg);
 
     std::vector<char> buffer(size);
@@ -2733,3 +2745,5 @@ void start()
 
     return 0;
 }
+
+// 2461 -> 5261
