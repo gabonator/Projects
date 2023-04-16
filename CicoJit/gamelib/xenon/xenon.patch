@@ -1,0 +1,143 @@
+diff --git a/./xenon.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/goose.cpp
+index db7340a..ce68031 100644
+--- a/./xenon.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/goose.cpp
+@@ -312,7 +312,7 @@ loc_10032:
+   in(al, dx);
+   al &= 0x80;
+   if (--cx && al == ah)
+-    goto loc_10052;
++      stop(); //goto loc_10052;
+   if (stop(/*1*/))
+     goto loc_10061;
+   return;
+@@ -777,7 +777,8 @@ loc_101b2:
+   di = pop();
+   push(es);
+   push(di);
+-  stop(); // les di, ptr [0x236c]
++    di = memoryAGet16(ds, 0x236c);
++    es = memoryAGet16(ds, 0x236c + 2); // gabo
+   stosb<MemAuto, DirAuto>();
+   memoryASet16(ds, 0x236c, di);
+   di = pop();
+@@ -810,7 +811,8 @@ loc_101fc:
+   di &= 0x0fff;
+   push(es);
+   push(di);
+-  stop(); // les di, ptr [0x236c]
++    di = memoryAGet16(ds, 0x236c);
++    es = memoryAGet16(ds, 0x236c + 2); // gabo
+   stosb<MemAuto, DirAuto>();
+   memoryASet16(ds, 0x236c, di);
+   di = pop();
+@@ -902,7 +904,7 @@ loc_102bd:
+ loc_102c2:
+   al--;
+   stosb<MemAuto, DirAuto>();
+-  if (stop(/*1*/))
++    if (al != 0)
+     goto loc_102c2;
+   cx = 0x0080;
+   rep_stosb<MemAuto, DirAuto>();
+@@ -1197,8 +1199,9 @@ void sub_104f2()
+   sub_15e8a();
+   memoryASet16(ds, 0x3048, 0x0000);
+ loc_1053b:
+-  if ((short)memoryAGet16(ds, 0x3048) < (short)0x0028)
+-    goto loc_1053b;
++    sync();
++//  if ((short)memoryAGet16(ds, 0x3048) < (short)0x0028)
++//    goto loc_1053b;
+   sub_15e5e();
+   sub_15c8b();
+   ax = ds;
+@@ -1368,7 +1371,7 @@ loc_10605:
+ loc_10608:
+   ah = 0;
+   interrupt(0x16);
+-  if (ah == 0x1c)
++  //if (ah == 0x1c)
+     goto loc_10657;
+   if (ah == 0x41)
+     goto loc_10652;
+@@ -1835,6 +1838,7 @@ void sub_10fb4()
+   bx <<= 1;
+   push(memoryAGet16(cs, bx + 4038));
+   bx = memoryAGet16(ds, 0x8e74);
++    callIndirect(/*cs,*/ pop()); // gabo!
+ }
+ void sub_10fd2()
+ {
+@@ -3447,13 +3451,13 @@ void sub_13615()
+   cx = memoryAGet16(ds, 0x9190);
+ loc_13620:
+   ax = memoryAGet16(ds, si);
+-  if (stop(/*82*/))
++    if ((short)ax < 0)                         //js short loc_13643
+     goto loc_13643;
+   if ((short)bx <= (short)ax)
+     goto loc_1363e;
+   if ((short)cx > (short)ax)
+     goto loc_1363e;
+-  bx = memoryAGet16(ds, si + 2);
++  bx = memoryAGet16(ds, si + 2);  // bx = sprite/object index??
+   push(si);
+   sub_10fb4();
+   si = pop();
+@@ -8552,9 +8556,10 @@ void sub_205a9()
+ void sub_205ae()
+ {
+   sub_10ef1();
++//    sync();
+ loc_205b3:
+-  if (memoryAGet16(ds, 0x3046) == 0x0000)
+-    goto loc_205b3;
++//  if (memoryAGet16(ds, 0x3046) == 0x0000)
++//    goto loc_205b3;
+   memoryASet16(ds, 0x3046, 0x0000);
+   bx = memoryAGet16(ds, 0x425b);
+   ax = memoryAGet16(ds, 0x4259);
+@@ -8648,7 +8653,7 @@ void sub_20653()
+   cx = 0x0050;
+ loc_2066c:
+   lodsw<MemAuto, DirAuto>();
+-  if (stop(/*82*/))
++    if ((short)ax < 0)                         //js short loc_206EA
+     goto loc_206ea;
+   bx = ax;
+   lodsw<MemAuto, DirAuto>();
+@@ -8735,9 +8740,9 @@ void sub_20854()
+   flags.carry = ax < memoryAGet16(ds, 0x9156);
+   ax -= memoryAGet16(ds, 0x9156);
+   dx -= memoryAGet16(ds, 0x9158) + flags.carry;
+-  if (stop(/*70*/))
++    if ((short)ax < 0)                         //js short loc_208CF
+     goto loc_208cf;
+-  if (stop(/*70*/))
++    if (ax != 0)                               //jnz short loc_2086B
+     goto loc_2086b;
+   if (!(ax & ax))
+     goto loc_208ce;
+@@ -8887,8 +8892,8 @@ void sub_209e9()
+ loc_205ae:
+   sub_10ef1();
+ loc_205b3:
+-  if (memoryAGet16(ds, 0x3046) == 0x0000)
+-    goto loc_205b3;
++//  if (memoryAGet16(ds, 0x3046) == 0x0000)
++//    goto loc_205b3;
+   memoryASet16(ds, 0x3046, 0x0000);
+   bx = memoryAGet16(ds, 0x425b);
+   ax = memoryAGet16(ds, 0x4259);
+@@ -9099,8 +9104,9 @@ loc_20b27:
+   memoryASet(es, di + 8192, memoryAGet(es, di + 8192) & al);
+   memoryASet(es, di + 8232, memoryAGet(es, di + 8232) & al);
+   memoryASet(es, di + 8272, memoryAGet(es, di + 8272) & al);
++    flags.carry = al & 1;
+   al = ror(al, 0x01);
+-  if (stop(/*1*/))
++    if (!flags.carry)
+     goto loc_20b47;
+   di++;
+ loc_20b47:

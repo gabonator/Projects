@@ -190,8 +190,7 @@ void cicocontext_t::_int(int i)
         while (filename[strlen(filename)-1]==' ')
             filename[strlen(filename)-1] = 0;
         printf("Opening %s\n", filename);
-        //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
-        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/_ccomic/dos/";
+        char fullname[128] = "dos/";
         strcat(fullname, filename);
         for (int i=0; i<128 && fullname[i]; i++)
             if (fullname[i] == '\\')
@@ -592,7 +591,7 @@ int main(int argc, const char * argv[])
     CicoContext::ctx = new CicoContext::cicocontext_t();
 
     memset(mem, 0, sizeof(mem));
-    FILE* f = fopen("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/_ccomic/dos/comic.exe", "rb");
+    FILE* f = fopen("dos/comic.exe", "rb");
     fread(mem, 97488, 1, f);
     fclose(f);
 

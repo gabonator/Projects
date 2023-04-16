@@ -232,7 +232,7 @@ void cicocontext_t::_int(int i)
             filename[strlen(filename)-1] = 0;
         printf("Opening %s\n", filename);
         //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
-        char fullname[128] = "dos/XENON2/";
+        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/xenon/dos/XENON2/";
         strcat(fullname, filename);
         for (int i=0; i<128 && fullname[i]; i++)
             if (fullname[i] == '\\')
@@ -721,8 +721,7 @@ uint8_t cicocontext_t::ror(uint8_t r, int l)
 }
 uint16_t cicocontext_t::ror(uint16_t r, int l)
 {
-    assert(0);
-    return 0;
+    return (r >> l) | (r << (16-l));
 }
 void cicocontext_t::sync(void)
 {
@@ -731,53 +730,35 @@ void cicocontext_t::sync(void)
 
 }
 
-void sub_1f2ba();
-void sub_1f3c7();
-void sub_1f3a7();
-void sub_1f3d7();
-void sub_2058d();
-void sub_205a9();
-void sub_211cc();
-void sub_1f492();
-void sub_205ae();
-void sub_2098c();
-void sub_209e9();
-void sub_209e9();
+void sub_1758f();
+void sub_1655b();
+void sub_14311();
+void sub_1714a();
+void sub_14759();
+void sub_172c4();
+void sub_137df();
+void sub_10853();
+void sub_10761();
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
     switch (a)
     {
-        case 0x002a: sub_1f2ba(); break;
-        case 0x0094: break;
-        case 0x0117: sub_1f3a7(); break; //
-        case 0x0137: sub_1f3c7(); break; // 1f29:0137
-        case 0x0147: sub_1f3d7(); break; //
-        case 0x1319: sub_205a9(); break; //
-        case 0x1f3c: sub_211cc(); break; //
-        case 0x0202: sub_1f492(); break;
-        case 0x131e: sub_205ae(); break;
-        case 0x16fc: sub_2098c(); break;
-        case 0x1759: sub_209e9(); break; // high scores
+        case 0x6284: break;
+        case 0x758f: sub_1758f(); break;
+        case 0x655b: sub_1655b(); break; // enter shop
+        case 0x4311: sub_14311(); break;
+        case 0x714A: sub_1714a(); break;
+        case 0x4759: sub_14759(); break;
+        case 0x72c4: sub_172c4(); break;
+        case 0x37df: // fire
+            sub_137df(); break;
+        case 0x0853: sub_10853(); break; // draw ship
+        case 0x0761: sub_10761(); break;
+
         default:
+            break;
             assert(0);
     }
-    
-    /*
-    switch (a)
-    {
-        case 0x1448: sub_355f8(); break;
-        case 0x22cb: sub_3647b(); break;
-        case 0x228c: sub_3643c(); break;
-        case 0x259b: sub_3674b(); break;
-        case 0x2575: sub_36725(); break;
-        case 0x1a01: sub_35bb1(); break;
-        //case 0x1a48: sub_15658(); break;
-        case 0x2313: sub_364c3(); break;
-        case 0x2861: sub_36a11(); break;
-        case 0x25a3: sub_36753(); break; // 0x341b0+0x25a3
-        default:
-            assert(0);
-    }*/
 }
 // 18452
 
@@ -788,7 +769,7 @@ int main(int argc, const char * argv[])
     CicoContext::ctx = new CicoContext::cicocontext_t();
 
     memset(mem, 0, sizeof(mem));
-    FILE* f = fopen("dos/XENON2/XENON2.EXE", "rb");
+    FILE* f = fopen("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/xenon/dos/XENON2/XENON2.EXE", "rb");
     fread(mem, 123496, 1, f);
     fclose(f);
 

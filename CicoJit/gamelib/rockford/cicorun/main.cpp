@@ -15,9 +15,10 @@ CEga mEga;
 CCga mCga;
 CVideoAdapter* mVideo = &mEga;
 int lastKey = -1;
-
-uint8_t mem[0x50000];
+char root[1024];
+uint8_t mem[0x90000];
 extern unsigned char font[2048];
+int headerSize = 0;
 
 void _sync()
 {
@@ -61,10 +62,34 @@ uint8_t memoryBiosGet8(int seg, int ofs)
     assert(0);
     return 0;
 }
+uint8_t memoryPsp(int seg, int ofs)
+{
+    assert(0);
+    return 0;
+}
+uint16_t memoryPsp16(int seg, int ofs)
+{
+    // https://en.wikipedia.org/wiki/Program_Segment_Prefix
+    switch (ofs)
+    {
+        case 0x02:
+            //     Segment of the first byte beyond the memory allocated to the program
+            return 0x5000;
+        case 0x2c:
+            // Environment segment;
+            return 0x4fff;
+        default:
+            assert(0);
+            return 0;
+    }
+}
+
 uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
 {
     ofs &= 0xffff;
-    if (seg >= 0x1000 && seg < 0xa000)
+    if (seg == 0x1000 && ofs < 256)
+        return memoryPsp(seg, ofs);
+    else if (seg >= 0x1000 && seg < 0xa000)
         return memory8(seg, ofs);
     else if (seg >= 0xa000 && seg < 0xe000)
         return memoryVideoGet8(seg, ofs);
@@ -88,13 +113,17 @@ uint16_t memoryBiosGet16(int seg, int ofs)
         return 0;
     if (seg == 0x0040 && ofs == 0x0063) // int?
         return 0x3d4;
+    if (seg == 0x0000 && ofs < 400)
+        return 0;
     assert(0);
     return 0;
 }
 uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 {
     ofs &= 0xffff;
-    if (seg >= 0x1000 && seg < 0xa000)
+    if (seg == 0x1000 && ofs < 256)
+        return memoryPsp16(seg, ofs);
+    else if (seg >= 0x1000 && seg < 0xa000)
         return memory16(seg, ofs);
     else if (seg >= 0xa000 && seg < 0xe000)
         return memoryVideoGet16(seg, ofs);
@@ -106,7 +135,9 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
     ofs &= 0xffff;
-    if (seg >= 0x1000 && seg < 0xa000)
+    if (seg == 0x1000 && ofs < 256)
+        assert(0);
+    else if (seg >= 0x1000 && seg < 0xa000)
         memory8(seg, ofs) = val;
     else if (seg >= 0xa000 && seg < 0xe000)
         memoryVideoSet8(seg, ofs, val);
@@ -117,7 +148,9 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
     ofs &= 0xffff;
-    if (seg >= 0x1000 && seg < 0xa000)
+    if (seg == 0x1000 && ofs < 256)
+        assert(0);
+    else if (seg >= 0x1000 && seg < 0xa000)
         memory16(seg, ofs) = val;
     else if (seg >= 0xa000 && seg < 0xe000)
         memoryVideoSet16(seg, ofs, val);
@@ -132,7 +165,7 @@ uint8_t& cicocontext_t::memory8(int seg, int ofs){
     }
     assert(seg >= 0x1000 && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);
     int addr = seg*16 + ofs;
-    addr -= 0x10000 - 0x200;
+    addr -= 0x10000 - headerSize;
     assert(addr > 0 && addr < sizeof(mem));
     if (addr == 0x86d2)
     {
@@ -144,7 +177,7 @@ uint8_t& cicocontext_t::memory8(int seg, int ofs){
 uint16_t& cicocontext_t::memory16(int seg, int ofs){
     assert(seg >= 0x1000 && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);
     int addr = seg*16 + ofs;
-    addr -= 0x10000 - 0x200;
+    addr -= 0x10000 - headerSize;
     assert(addr > 0 && addr < sizeof(mem));
     if (addr == 0x86d2)
     {
@@ -213,7 +246,9 @@ void cicocontext_t::_int(int i)
         }
         printf("Opening %s\n", filename);
         //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
-        char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rick2/dos/";
+        char fullname[1024];
+        strcpy(fullname, root);
+        strcat(fullname, "/");
         strcat(fullname, filename);
         for (int i=0; i<128 && fullname[i]; i++)
             if (fullname[i] == '\\')
@@ -244,7 +279,7 @@ void cicocontext_t::_int(int i)
             uint8_t* buf = new uint8_t[ctx->c.r16];
             int c = fread(buf, 1, (size_t)ctx->c.r16, f);
             for (int i=0; i<c; i++)
-                ctx->memory8(ctx->_ds, ctx->d.r16+i) = buf[i];
+                ctx->memoryASet8(ctx->_ds, ctx->d.r16+i, buf[i]);
             delete[] buf;
             //std::cout << "read " << _cx << " (" << c << ")" << endl;
             assert(c);
@@ -317,7 +352,10 @@ void cicocontext_t::_int(int i)
     if (i == 0x10 && ctx->a.r8.h == 0x06)
         return;
     if (i == 0x21 && ctx->a.r8.h == 0x4a)
+    {
+        ctx->carry = false;
         return;
+    }
     if (i == 0x21 && ctx->a.r8.h == 0x48)
     {
         static int freeMem = 0x2000;
@@ -365,7 +403,52 @@ void cicocontext_t::_int(int i)
         if (mVideo->Interrupt(ctx))
             return;
     }
+    if (i == 0x21 && ctx->a.r8.h == 0x2c)
+    {
+        printf("get time\n");
+        ctx->c.r8.h = 1; // hr
+        ctx->c.r8.l = 20; // min
+        ctx->d.r8.h = 17; // sec
+        ctx->d.r8.l = 50; // hundredths
+        return;
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x44)
+    {
+        ctx->carry = 0;
+        return;
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x30)
+    {
+        ctx->a.r16 = 0x0003;
+        return;
+    }
+    if (i == 0x1A)
+    {
+        auto getTick = []() -> uint32_t {
+            struct timespec ts;
+            unsigned theTick = 0U;
+            clock_gettime( CLOCK_REALTIME, &ts );
+            theTick  = ts.tv_nsec / 1000000;
+            theTick += ts.tv_sec * 1000;
+            return theTick;
+        };
 
+        static uint32_t base = 0;
+        int now = getTick();
+        if (ctx->a.r8.h == 0)
+        {
+            if (base == 0)
+                base = now;
+            now -= base;
+            now = now /6; //* 65536 / (1000*60*60);
+            ctx->c.r16 = now >> 16;
+            ctx->d.r16 = now & 0xffff;
+        } else {
+            assert(ctx->a.r8.h == 1 && ctx->c.r16 == 0 && ctx->d.r16 == 0);
+            base = now;
+        }
+        return;
+    }
     printf("int %d\n", i);
     assert(0);
 }
@@ -401,11 +484,20 @@ void cicocontext_t::in(uint8_t& val, int port)
         val = 0;
         return;
     }
+    if (port == 0x61)
+    {
+        printf("timer skip\n");
+        return;
+    }
     assert(0);
 }
 
 void cicocontext_t::push(const uint16_t& r)
 {
+    if (ctx->_sp < 20)
+    {
+        int f = 9;
+    }
     ctx->_sp -= 2;
     memory16(ctx->_ss, ctx->_sp) = r;
     assert(ctx->_sp > 0);
@@ -454,112 +546,17 @@ void cicocontext_t::div(uint8_t r)
 }
 }
 
-#define X(x) void sub_##x();
-
-X(10524);
-X(10533);
-X(10594);
-X(105a1);
-X(105cc);
-X(10702);
-X(107f1);
-X(10836);
-X(1087b);
-X(109c4);
-X(109d3);
-X(109ee);
-X(10a67);
-X(1091b);
-X(10d03);
-X(10df8);
-X(10d3d);
-X(10e23);
-X(10e40);
-X(11162);
-X(112d6);
-X(11376);
-X(107ac);
-X(108dd);
-X(111f1);
-X(10bc4);
-X(10c2e);
-X(10ee8);
-X(109a5);
-X(10986);
-X(10ea6);
-X(10ec0);
-X(10e7f);
-X(1a168);
-X(1a121);
-X(1a155);
-X(1a137);
-X(1a1bc);
-X(1a1e4);
-X(1a2f6);
-X(1a23e);
-X(1a1e6);
-X(1a13f);
-#undef X
-
+//void sub_1cbed();
+//void sub_1e5a1();
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
-#define X(x) case (0x##x): sub_##x(); break;
-    switch(0x10400 + a)
+    switch (a)
     {
-            X(10524);
-            X(10533);
-            X(10594);
-            X(105a1);
-            X(105cc);
-            X(10702);
-            X(107f1);
-            X(10836);
-            X(1087b);
-            X(109c4);
-            X(109d3);
-            X(109ee);
-            X(10a67);
-            X(1091b);
-            X(10d03);
-            X(10df8);
-            X(10d3d);
-            X(10e23);
-            X(10e40);
-            X(11162);
-            X(112d6);
-            X(11376);
-            X(107ac);
-            X(108dd);
-            X(111f1);
-            X(10bc4);
-            X(10c2e);
-            X(10ee8);
-            X(109a5);
-            X(10986);
-            X(10ea6);
-            X(10ec0);
-            X(10e7f);
-            X(1a168);
-            X(1a121);
-            X(1a155);
-            X(1a137);
-            X(1a1bc);
-            X(1a1e4);
-            X(1a2f6);
-            X(1a23e);
-            X(1a1e6);
-            X(1a13f);
-        case 0x10ee7: break;
-        case 0x10ee6: break;
-        case 0x10ee5: break;
-        case 0x10ee4: break;
-            
-            default:
+//        case 0xcbed: sub_1cbed(); return;
+//        case 0xe5a1: sub_1e5a1(); return;
+        default:
             assert(0);
     }
-    //if (0x10400 + a == 0x109ee)
-//        _sync(); //
-
 }
 
 void CicoContext::cicocontext_t::cmc()
@@ -691,12 +688,21 @@ uint8_t cicocontext_t::ror(uint8_t r, int l)
 }
 uint16_t cicocontext_t::ror(uint16_t r, int l)
 {
-    assert(0);
-    return 0;
+    return (r >> l) | (r << (16-l));
 }
 void cicocontext_t::sync(void)
 {
     _sync();
+}
+void cicocontext_t::load(const char* path, const char* file, int size)
+{
+    char fpath[1024];
+    sprintf(root, path);
+    sprintf(fpath, "%s/%s", path, file);
+    FILE* f = fopen(fpath, "rb");
+    fread(mem, size, 1, f);
+    fclose(f);
+    headerSize = this->_headerSize;
 }
 
 }
@@ -706,9 +712,6 @@ int main(int argc, const char * argv[])
     CicoContext::ctx = new CicoContext::cicocontext_t();
 
     memset(mem, 0, sizeof(mem));
-    FILE* f = fopen("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rick2/rd2.exe", "rb");
-    fread(mem, 50927, 1, f);
-    fclose(f);
 
     mSdl.Init();
     start();
