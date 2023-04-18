@@ -38,6 +38,7 @@ bool segofs_in_comment = false;
 csh _handle;
 int _cs;
 int _ds = 0;
+int _loadBase = 0x1000;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
 
@@ -2112,7 +2113,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 }
                 else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM)
                 {
-                    text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
+                    text.push_back(assign(x86, "callIndirect($rd0);"));
                 }
                 else
                     text.push_back(format("stop(); // %s %s", instr->mMnemonic, instr->mOperands));
@@ -2496,6 +2497,8 @@ int main(int argc, const char * argv[]) {
                 lines = true;
             else if (strcmp(arg, "-ctx") == 0)
                 printctx = true;
+            else if (strcmp(arg, "-load") == 0)
+                _loadBase = (int)strtol(argv[++i], nullptr, 16);
             else if (strcmp(arg, "-labels") == 0)
                 extraLabelsStr = argv[++i];
             else if (strcmp(arg, "-o") == 0)
@@ -2579,16 +2582,17 @@ using namespace CicoContext;
     {
         startWriting("start.cpp");
         if (outputFolder)
-            fprintf(fout, "import(sub_%x);\n", (0x1000+header->cs)*16+header->ip);
+            fprintf(fout, "import(sub_%x);\n", (_loadBase+header->cs)*16+header->ip);
         else
-            fprintf(fout, "void sub_%x();\n", (0x1000+header->cs)*16+header->ip);
+            fprintf(fout, "void sub_%x();\n", (_loadBase+header->cs)*16+header->ip);
 
         fprintf(fout, R"(
 void start()
 {
   headerSize = 0x%04x;
-  ds = 0x%04x;
   cs = 0x%04x;
+  ds = 0x%04x;
+  es = 0x%04x;
   ss = 0x%04x;
   sp = 0x%04x;
   load("%s", "%s", %d);
@@ -2596,15 +2600,16 @@ void start()
 }
 )",
         header->headerSize16*16,
-        header->cs+0x1000,
-        header->cs+0x1000,
-        header->ss+0x1000,
+        header->cs+_loadBase,
+        header->cs+_loadBase - 0x10,
+        header->cs+_loadBase - 0x10,
+        header->ss+_loadBase,
         header->sp,
         execPath.c_str(), execName.c_str(), execSize,
-        (0x1000+header->cs)*16+header->ip);
+        (_loadBase+header->cs)*16+header->ip);
         finishWriting();
     }
-    _cs = header->cs+0x1000;
+    _cs = header->cs+_loadBase;
     
     // map extra labels
     std::vector<std::pair<address_t, address_t>> extraLabels;
@@ -2655,7 +2660,7 @@ void start()
         MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
         int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
         uint16_t* addr = (uint16_t*)&buffer[linearOffset];
-        *addr += 0x1000;
+        *addr += _loadBase;
     }
 
     if (!methods)
@@ -2664,7 +2669,7 @@ void start()
         return 0;
     }
     Capstone cap;
-    cap.Set(buffer, 1*0x10000 - header->headerSize16*0x10);
+    cap.Set(buffer, 16*_loadBase - header->headerSize16*0x10);
     
     std::map<address_t, function_t, cmp_adress_t> processed;
     std::vector<address_t> failed;
@@ -2684,7 +2689,7 @@ void start()
             std::smatch matches;
             
             if (token == "start")
-                toProcess.push_back({header->cs+0x1000, header->ip});
+                toProcess.push_back({header->cs+_loadBase, header->ip});
             else if (std::regex_search(token, matches, functionHex))
             {
                 std::string strAddr = matches.str(1);
