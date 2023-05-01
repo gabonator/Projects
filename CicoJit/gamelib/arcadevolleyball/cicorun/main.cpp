@@ -10,6 +10,12 @@
 #include "cicoemu.h"
 #include "ega.h"
 #include <list>
+//#include "game/game.h"
+
+namespace CicoContext{
+    cicocontext_t* ctx;
+}
+
 CSdl mSdl;
 //CEga mVideo;
 CEga mEga;
@@ -43,6 +49,7 @@ void onKey(int k, int p)
 
   //            case SDL_SCANCODE_SPACE: lastKey = 57; break;
               case SDL_SCANCODE_LEFT:
+                 //a57:9c8 = 2|0xfffe, a57:9ca = 0/2
                   keyBuffer.push_back(0);
                   keyBuffer.push_back('M'); break;
               case SDL_SCANCODE_RIGHT:
@@ -54,35 +61,62 @@ void onKey(int k, int p)
               case SDL_SCANCODE_DOWN:
                   keyBuffer.push_back(0);
                   keyBuffer.push_back('P'); break;
-
-              case SDL_SCANCODE_TAB: lastKey = 'L'; break;
-              case SDL_SCANCODE_A: lastKey = 0x1f; break;
-              case SDL_SCANCODE_B: lastKey = 0x10; break;
-              //case SDL_SCANCODE_C: lastKey = 0x13; break; // reset high scores
-              case SDL_SCANCODE_D: lastKey = 0x01; break;
-              
-              case SDL_SCANCODE_N: lastKey = 0x31; break;
-              case SDL_SCANCODE_Y: lastKey = 0x15; break;
-              
-              case SDL_SCANCODE_Z: lastKey = 0x71; break;
-              case SDL_SCANCODE_X: lastKey = 0xd1; break;
-              case SDL_SCANCODE_C: lastKey = 0x0d; break;
+                  
+//              case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3c) = p; break;
+//              case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3d) = p; break;
+//              case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3e) = p; break;
+//              case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3f) = p; break;
+//              case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x40) = p; break;
+//              case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x41) = p; break;
+//              case SDL_SCANCODE_SPACE: CicoContext::ctx->memory8(0x1228, 0x8244) = p; break;
           }
+
+    switch (k)
+    {
+        case SDL_SCANCODE_LEFT:
+            CicoContext::ctx->memory16(0xa57, 0x9c8) = p ? -2 : 0;
+            break;
+        case SDL_SCANCODE_RIGHT:
+            CicoContext::ctx->memory16(0xa57, 0x9c8) = p ? 2 : 0;
+            break;
+        case SDL_SCANCODE_UP:
+            CicoContext::ctx->memory16(0xa57, 0x9c8+4) = p ? 1 : 0;
+            break;
+    }
 }
 namespace CicoContext
 {
 uint8_t memoryBiosGet8(int seg, int ofs)
 {
+    if (seg == 0xffff && ofs == 0x000e)
+        return 0xfc;
     if (seg == 0xf000 && ofs == 0xfffe)
         return 0xfc; // pc at
     if (seg == 0x0040 && ofs == 0x0087)
         return 0x00; // ega active
+    if (seg == 0x0040 && ofs == 0x0088)
+        return 0x09;
     if (seg == 0x0040 && ofs == 0x0017) // http://www.powernet.co.za/info/bios/mem/40_0017.htm
         return 0x00; // shift keys
     if (seg == 0xf000 && ofs >= 0xfa6e && ofs < (0xfa6e + sizeof(font)))
         return font[ofs-0xfa6e];
     if (seg == 0x0040 && ofs == 0x0010)
         return 0x26;
+    if (seg == 0x0040 && ofs == 0x006c)
+    {
+        auto getTick = []() -> uint32_t {
+            struct timespec ts;
+            unsigned theTick = 0U;
+            clock_gettime( CLOCK_REALTIME, &ts );
+            theTick  = ts.tv_nsec / 1000000;
+            theTick += ts.tv_sec * 1000;
+            return theTick;
+        };
+
+        return getTick()/54; // 0xd1; // number of ticks since midnight 54ms
+    }
+    if (seg == 0x0000 && ofs == 0x0000)
+        return 0x1a;
     assert(0);
     return 0;
 }
@@ -91,7 +125,7 @@ uint8_t memoryPsp(int seg, int ofs)
     if (seg == 0x1d3)
     {
         const char env[] = "PATH=Z:\\" "\x00" "COMSPEC=Z:\\COMMAND.COM" "\x00"
-          "BLASTER=A220 I7 D1 H5 T6" "\x00\x00\x01\x00" "C:\\AV\\AV.EXE"
+          "BLASTER=A220 I7 D1 H5 T6" "\x00\x00\x01\x00" "C:\\BUM\\B.EXE"
           "\x00\x00\x00\x00\x00\x00\x00";
         if (ofs<sizeof(env))
             return env[ofs];
@@ -173,6 +207,8 @@ uint16_t memoryBiosGet16(int seg, int ofs)
         return 0x3d4;
     if (seg == 0x0000 && ofs < 400)
         return 0;
+    if (seg == 0x0040 && ofs == 0x0080)
+        return 0x1e;
     assert(0);
     return 0;
 }
@@ -210,6 +246,17 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
     ofs &= 0xffff;
+    if (seg*16+ofs==0x12280 + 0x4dfe)
+    {
+        printf("setting 1228:4dfe <= %04x\n", val);
+        int f =9;
+    }
+    if (seg*16+ofs==0x12280 + 0x4e00)
+    {
+        printf("setting 1228:4e00 <= %04x\n", val);
+        int f = 9;
+    }
+
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
     {
         assert(0); // ???
@@ -224,7 +271,11 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 }
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
-    if (seg==0x4800 && ofs == 0xa42e)
+    if (seg*16+ofs==0x12280 +0x4e00)
+    {
+        int f = 9;
+    }
+    if (seg*16+ofs==0x3f430 + 0x0004)
     {
         int f = 9;
     }
@@ -240,11 +291,6 @@ uint8_t& cicocontext_t::memory8(int seg, int ofs){
 }
 
 uint16_t& cicocontext_t::memory16(int seg, int ofs){
-//    if (seg == 0xa57 && ofs == 0xffc6+4)
-//    {
-//        int f = 9;
-//    }
-
     assert(seg >= 0x01ed && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);
     int addr = seg*16 + ofs;
     addr -= 0x01ed0 - headerSize;
@@ -270,12 +316,18 @@ uint16_t cicocontext_t::memoryVideoGet16(int seg, int ofs)
 
 void cicocontext_t::memoryVideoSet16(int seg, int ofs, uint16_t data)
 {
-    assert(0);
+    assert(data == 0);
+    memoryVideoSet8(seg, ofs, data & 0xff);
+    memoryVideoSet8(seg, ofs+1, data >> 8);
 }
 
 void cicocontext_t::_int(int i)
 {
     static FILE* f = nullptr;
+    if (i == 0x10 && ctx->a.r16 == 0x1012)
+    {
+        int f = 9;
+    }
     if (i == 0x12)
     {
         ctx->a.r16 = 0x800;
@@ -299,6 +351,7 @@ void cicocontext_t::_int(int i)
         // read file DS:DX filename
         // AX = file handle
         char filename[100];
+        int j = 0;
         for (int i=0; i<100; i++)
         {
             char c = ctx->memory8(ctx->_ds, ctx->d.r16+i);
@@ -306,8 +359,11 @@ void cicocontext_t::_int(int i)
                 break;
             if (c >= 'a' && c <= 'z')
                 c -= 'a' - 'A';
-            filename[i] = c;
-            filename[i+1] = 0;
+            if (c != ' ')
+            {
+                filename[j++] = c;
+                filename[j] = 0;
+            }
         }
         printf("Opening %s\n", filename);
         //char fullname[128] = "/Users/gabrielvalky/Documents/git/Projects/XenonResurrection/Input/binary/";
@@ -321,12 +377,13 @@ void cicocontext_t::_int(int i)
         
         ctx->carry = 0;
         assert(f == nullptr);
-        ctx->a.r16 = 1;
+        ctx->a.r16 = 5;
         
         f = fopen(fullname, "rb");
         if(!f)
         {
             printf("Not found: %s\n", filename);
+            assert(0);
             ctx->carry = 1;
             ctx->a.r16 = 0;
         }
@@ -341,6 +398,7 @@ void cicocontext_t::_int(int i)
             printf("no file opened!\n");
             return;
         } else {
+            printf("Read %d bytes -> %04x:%04x\n", ctx->c.r16, ctx->_ds, ctx->d.r16);
             uint8_t* buf = new uint8_t[ctx->c.r16];
             int c = fread(buf, 1, (size_t)ctx->c.r16, f);
             for (int i=0; i<c; i++)
@@ -348,6 +406,7 @@ void cicocontext_t::_int(int i)
             delete[] buf;
             //std::cout << "read " << _cx << " (" << c << ")" << endl;
             assert(c);
+            ctx->a.r16 = c;
             ctx->carry = 0;
             return;
         }
@@ -359,15 +418,21 @@ void cicocontext_t::_int(int i)
         ctx->carry = 0;
         return;
     }
+    static int _videoMode = -1;
     if (i == 0x10 && ctx->a.r8.h == 0x00)
     {
         // set video mode
         printf("Set video mode: %d\n", ctx->a.r8.l);
+        _videoMode = ctx->a.r8.l;
         switch (ctx->a.r8.l)
         {
             case 0x13:
                 mVideo = &mVga; break;
             case 13:
+            case 0x12:
+            case 0x10:
+            case 0x02: // 80x25 16 shades of gray text (CGA,EGA,MCGA,VGA)?
+
             case 1:
                 mVideo = &mEga; break;
             case 4:
@@ -428,11 +493,12 @@ void cicocontext_t::_int(int i)
     }
     if (i == 0x21 && ctx->a.r8.h == 0x48)
     {
-        static int freeMem = 0x2000;
+        static int freeMem = 0x1D9E;
         // _bx size
         printf("malloc %d bytes -> %04x:0000\n", ctx->b.r16, freeMem);
         ctx->a.r16 = freeMem;
         freeMem += ctx->b.r16;
+        freeMem ++;
         ctx->carry = false;
         return;
     }
@@ -449,9 +515,37 @@ void cicocontext_t::_int(int i)
     }
     if (i == 0x10 && ctx->a.r8.h == 0x0f)
     {
-        ctx->a.r16 = 0x5003;
-        ctx->b.r8.h = 0x00;
-        return;
+        if (_videoMode==-1)
+        {
+            ctx->a.r16 = 0x5003;
+            ctx->b.r8.h = 0x00;
+            return;
+        }
+        if (_videoMode==0x12)
+        {
+            ctx->a.r16 = 0x5012;
+            ctx->b.r8.h = 0x00;
+            return;
+        }
+        if (_videoMode==0x13)
+        {
+            ctx->a.r16 = 0x2813;
+            ctx->b.r8.h = 0x00;
+            return;
+        }
+        if (_videoMode==0x10)
+        {
+            ctx->a.r16 = 0x5010;
+            ctx->b.r8.h = 0x00;
+            return;
+        }
+        if (_videoMode==0x4)
+        {
+            ctx->a.r16 = 0x2804;
+            ctx->b.r8.h = 0x00;
+            return;
+        }
+        assert(0);
     }
     if (i == 0x10 && ctx->a.r8.h == 0x1a)
     {
@@ -488,6 +582,8 @@ void cicocontext_t::_int(int i)
     }
     if (i == 0x21 && ctx->a.r8.h == 0x44)
     {
+        ctx->a.r16 = 0x80d3;
+        ctx->d.r16 = 0x80d3;
         ctx->carry = 0;
         return;
     }
@@ -564,7 +660,75 @@ void cicocontext_t::_int(int i)
         ctx->a.r16 = 0;
         return;
     }
+    if (i == 0x21 && ctx->a.r8.h == 0x42)
+    {
+        if (ctx->a.r8.l == 2 && ctx->c.r16 == 0 && ctx->d.r16 == 0)
+        {
+            assert(f);
+            fseek(f, 0L, SEEK_END);
+            ctx->a.r16 = ftell(f);
+            fseek(f, 0L, SEEK_SET);
+            ctx->d.r16 = 0;
+            return;
+        }
+        if (ctx->a.r8.l == 1)
+        {
+            assert(ctx->c.r16 == 0);
+            assert(f);
+            fseek(f, ctx->d.r16, SEEK_CUR);
+            ctx->d.r16 = ftell(f);
+            ctx->a.r16 = 0;
+            return;
+        }
+        if (ctx->a.r8.l == 1 && ctx->d.r16 == 0)
+        {
+            assert(f);
+            fseek(f, ctx->c.r16, SEEK_CUR);
+            return;
+        }
+        if (ctx->a.r8.l == 0)
+        {
+            assert(f);
+            fseek(f, ctx->d.r16, SEEK_SET);
+            return;
+        }
 
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x19)
+    {
+        ctx->a.r8.l = 0x02;
+        return;
+    }
+    if (i == 0x15 && ctx->a.r8.h == 0x06)
+    {
+        //wtf?
+        return;
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x43)
+    {
+        // read file DS:DX filename
+        // AX = file handle
+        char filename[100];
+        for (int i=0; i<100; i++)
+        {
+            char c = ctx->memory8(ctx->_ds, ctx->d.r16+i);
+            if (!c)
+                break;
+            if (c >= 'a' && c <= 'z')
+                c -= 'a' - 'A';
+            filename[i] = c;
+            filename[i+1] = 0;
+        }
+        printf("GetAttribute %s\n", filename);
+        ctx->c.r16 = 1<<5;
+        return;
+    }
+
+    if (i == 0x10 && ctx->a.r16 == 0x1015)
+    {
+        // read dac @ bx, ch, cl, dh
+        return;
+    }
     printf("int %d\n", i);
     assert(0);
 }
@@ -596,7 +760,7 @@ void cicocontext_t::in(uint8_t& val, int port)
     }
     if (port == 0x201)
     {
-        printf("joystick skip\n");
+//        printf("joystick skip\n");
         val = 0;
         return;
     }
@@ -613,6 +777,35 @@ void cicocontext_t::in(uint8_t& val, int port)
     if (port == 0x388) //audio
     {
         val = 0x60;
+        return;
+    }
+    if (port == 0x3b5) //mono
+    {
+        val = 0xff;
+        return;
+    }
+    if (port == 0x301)
+    {
+        val = 0xff;
+        //?
+        return;
+    }
+    if (port == 0x331)
+    {
+        val = 0xbf;
+        //?
+        return;
+    }
+    if (port == 0x40)
+    {
+        static int counter = 0;
+        val = (counter++ & 2) ? 0xff:0x00;
+        return;
+    }
+
+    if (port == 0x3d4 || port == 0x3d5)
+    {
+        printf("skip pal\n");
         return;
     }
 
@@ -686,9 +879,29 @@ void cicocontext_t::div(uint8_t r)
 }
 }
 
-//void sub_1cbed();
-//void sub_1e5a1();
-//void sub_1017d();
+void sub_bb32();
+void sub_c91e();
+void sub_df4f();
+void sub_fb7f();
+void sub_c27e();
+void sub_f9c4();
+void sub_e600();
+void sub_e2e4();
+void sub_ca60();
+void sub_ca8b();
+void sub_12245();
+void sub_d016();
+void sub_d080();
+void sub_d0d7();
+void sub_d500();
+void sub_d530();
+void sub_d250();
+void sub_d283();
+void sub_dac0();
+void sub_dae7();
+void sub_fbb9();
+void sub_fdcd();
+
 void sub_204d();
 void sub_5d62();
 void sub_8e60();
@@ -727,7 +940,8 @@ void sub_4693();
 void sub_4928();
 void sub_9014();
 void sub_473c();
-
+void sub_8fa9();
+void sub_43f0();
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
 //    sync();
@@ -779,6 +993,8 @@ void CicoContext::cicocontext_t::callIndirect(int a)
         case 0x4928: sub_4928(); return;
         case 0x9014: sub_9014(); return;
         case 0x473c: sub_473c(); return;
+        case 0x8fa9: sub_8fa9(); return;
+        case 0x43f0: sub_43f0(); return;
         default:
             assert(0);
     }
@@ -815,7 +1031,9 @@ void cicocontext_t::mul(uint16_t r)
 }
 void cicocontext_t::imul(uint16_t r)
 {
-    assert(0);
+    int v = (int16_t)ctx->a.r16 * (int16_t)r;
+    ctx->a.r16 = v & 0xffff;
+    ctx->d.r16 = v >> 16;
 }
 void cicocontext_t::imul(uint8_t r)
 {

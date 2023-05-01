@@ -291,6 +291,11 @@ public:
         {
             
         }
+        if (ctx->a.r8.h == 0x02)
+        {
+            // set cursor
+            return true;
+        }
 
         printf("not implemented!\n");
         assert(0);
@@ -564,7 +569,9 @@ public:
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
         dwAddr -= 0xa000 * 16;
-
+        if (bWrite){
+            int f = 9;
+        }
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
 
@@ -580,7 +587,7 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 5000)
+        if (q++ > 500)
         {
             _sync(); 
             q= 0;
@@ -612,9 +619,9 @@ public:
         uLatch.u32Data = egamemory[dwAddr];
         /*
         l.u8Data[0] = egamemory[dwAddr];
-        l.u8Data[1] = egamemory[dwAddr+0x2000];
-        l.u8Data[2] = egamemory[dwAddr+0x4000];
-        l.u8Data[3] = egamemory[dwAddr+0x6000];
+        l.u8Data[1] = egamemory[dwAddr+ 0x2000];
+        l.u8Data[2] = egamemory[dwAddr+ 0x4000];
+        l.u8Data[3] = egamemory[dwAddr+ 0x6000];
         */
         //7return uLatch.u32Data;
     }
@@ -629,9 +636,9 @@ public:
         TLatch l;
         l.u32Data = dwData;
         egamemory[dwAddr] = l.u8Data[0];
-        egamemory[dwAddr+0x2000] = l.u8Data[1];
-        egamemory[dwAddr+0x4000] = l.u8Data[2];
-        egamemory[dwAddr+0x6000] = l.u8Data[3];
+        egamemory[dwAddr+ 0x2000] = l.u8Data[1];
+        egamemory[dwAddr+ 0x4000] = l.u8Data[2];
+        egamemory[dwAddr+ 0x6000] = l.u8Data[3];
 */
     }
 

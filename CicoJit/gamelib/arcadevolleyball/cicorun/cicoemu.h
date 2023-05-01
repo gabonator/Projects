@@ -138,7 +138,8 @@ public:
 #define sync ctx->sync
 #define cmc ctx->cmc
 #define aaa ctx->aaa
-cicocontext_t* ctx;
+
+extern cicocontext_t* ctx;
 
 struct MemAuto
 {
@@ -254,6 +255,12 @@ template <typename SRC, typename DIR> void lodsb_es()
 {
     DIR::Assert();
     al = SRC::Get8(es, DIR::Move(si));
+}
+
+template <typename SRC, typename DIR> void lodsb_ss()
+{
+    DIR::Assert();
+    al = SRC::Get8(ss, DIR::Move(si));
 }
 
 template <class DST, class SRC, class DIR> void cmpsb()
