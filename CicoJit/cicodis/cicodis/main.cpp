@@ -17,7 +17,7 @@
 #include <regex>
 
 bool verbose_asm = false;
-bool segofs_in_comment = true;
+bool segofs_in_comment = false;
 csh _handle;
 int _cs;
 int _ds = 0;
@@ -503,15 +503,21 @@ public:
                 break;
 
             case X86_INS_JMP:
-                assert(x86->op_count == 1 &&
-                       x86->operands[0].size == 2);
-                if (x86->operands[0].type == X86_OP_IMM)
+                if (x86->op_count == 1 &&
+                    x86->operands[0].size == 2)
                 {
-                    mNextInstr = fromRelative(x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
-                    //mNextInstr = {0x1000, (int)x86->operands[0].imm};
-                    sprintf(mOperands, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
+                    assert(x86->op_count == 1 &&
+                           x86->operands[0].size == 2);
+                    if (x86->operands[0].type == X86_OP_IMM)
+                    {
+                        mNextInstr = fromRelative(x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
+                        //mNextInstr = {0x1000, (int)x86->operands[0].imm};
+                        sprintf(mOperands, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
+                    } else {
+                        mNextInstr = {};
+                    }
                 } else {
-                    mNextInstr = {};
+                    int f = 9;
                 }
                 break;
                 
@@ -932,7 +938,11 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if (nextAddr.segment != -1)
         {
             if (addr != nextAddr)
+            {
+                printf("Failed instruction flow at %04x:%04x '%s %s' -> %04x:%04x, gap %d bytes\n", addr.segment, addr.offset, instr->mMnemonic, instr->mOperands, nextAddr.segment, nextAddr.offset,
+                       nextAddr.linearOffset()-addr.linearOffset());
                 return false;
+            }
             
             assert(addr == nextAddr);
         }
@@ -1898,6 +1908,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 //assert(0);
                 break;
             case X86_INS_LODSB:
+                if (strcmp(instr->mMnemonic, "rep lodsb") == 0 &&
+                    strcmp(instr->mOperands, "al, byte ptr es:[si]") == 0)
+                {
+                    text.push_back(format("rep_lodsb<MemAuto, DirAuto>();"));
+                    break;
+                }
                 assert(strcmp(instr->mMnemonic, "lodsb") == 0);
                 if (strcmp(instr->mOperands, "al, byte ptr [si]") == 0)
                     text.push_back(format("lodsb<MemAuto, DirAuto>();"));
@@ -2187,7 +2203,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_JMP:
                 if (x86.op_count == 0)
                 {
-                    text.push_back(format("goto loc_%x;", instr->mAddress.linearOffset()));
+                    text.push_back(format("stop(/* %s %s */);", instr->mMnemonic, instr->mOperands));
+                    //text.push_back(format("goto loc_%x;", instr->mAddress.linearOffset()));
                     break;
                 }
                 if (instr->Next() == instr->NextFollowing())
@@ -2745,6 +2762,8 @@ int main(int argc, const char * argv[]) {
                 verbose_asm = true;
             else if (strcmp(arg, "-lines") == 0)
                 lines = true;
+            else if (strcmp(arg, "-segofscomment") == 0)
+                segofs_in_comment = true;
             else if (strcmp(arg, "-ctx") == 0)
                 printctx = true;
             else if (strcmp(arg, "-reloc") == 0)
@@ -2894,17 +2913,19 @@ public:
         else
             fprintf(fout, "void sub_%x();\n", (_loadBase+header->cs)*16+header->ip);
 
+        fprintf(fout, "void fixReloc(uint16_t seg);\n");
+
         fprintf(fout, R"(
 void start()
 {
-  headerSize = 0x%04x;
-  cs = 0x%04x;
-  ds = 0x%04x;
-  es = 0x%04x;
-  ss = 0x%04x;
-  sp = 0x%04x;
-  load("%s", "%s", %d);
-  sub_%x();
+    headerSize = 0x%04x;
+    cs = 0x%04x;
+    ds = 0x%04x;
+    es = 0x%04x;
+    ss = 0x%04x;
+    sp = 0x%04x;
+    load("%s", "%s", %d);
+    %ssub_%x();
 }
 )",
         header->headerSize16*16,
@@ -2914,12 +2935,13 @@ void start()
         header->ss+_loadBase,
         header->sp,
         execPath.c_str(), execName.c_str(), execSize,
+        _dumpReloc ? "fixReloc(cs);\n    " : "",
         (_loadBase+header->cs)*16+header->ip);
         finishWriting();
     }
     _cs = header->cs+_loadBase;
     
-    // map extra labels
+    // map extra labels 
     std::vector<std::pair<address_t, address_t>> extraLabels;
     if (extraLabelsStr)
     {
@@ -3058,6 +3080,15 @@ void start()
             {
                 //assert(0);
                 printf("Conversion of %04x:%04x failed!\n", method.segment, method.offset);
+                
+                if (verbose_asm)
+                {
+                    printf("\nAssembly listing of faield %04x:%04x sub_%x()\n", method.segment, method.offset,
+                           method.segment*16+ method.offset);
+                    for (const auto& instr : code)
+                        instr->Dump();
+                }
+
                 failed.push_back(method);
                 continue;
             }

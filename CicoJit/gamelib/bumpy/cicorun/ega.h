@@ -96,7 +96,7 @@ public:
         
         static int t=0;
         if (t++ > 800){
-            t = 0; _sync();
+//            t = 0; _sync();
             
         }
     }
@@ -178,7 +178,7 @@ public:
     {
         nWriteMode = 0;
         nReadMode = 0;
-        cfgAddr = 0;
+        cfgAddr = 0x2000;
 
         cfgReadMapSelect = 0; // 3CF.4
         cfgBitMask = 0xff;
@@ -448,7 +448,7 @@ public:
         int mask = 0x80 >> (x % 8);
 
         //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
-        int page = cfgAddr;
+        int page = 0x2000; //cfgAddr;
     
         int shift = page*4;
         uint8_t b = 0;
@@ -587,7 +587,7 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 500)
+        if (q++ > 5000)
         {
             _sync(); 
             q= 0;

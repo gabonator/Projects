@@ -250,6 +250,10 @@ template <typename SRC, typename DIR> void lodsb()
     DIR::Assert();
     al = SRC::Get8(ds, DIR::Move(si));
 }
+template <typename SRC, typename DIR> void rep_lodsb()
+{
+    assert(0);
+}
 
 template <typename SRC, typename DIR> void lodsb_es()
 {
