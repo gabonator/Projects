@@ -4999,7 +4999,7 @@ loc_3cf9: // 01ed:1e29
     ah = 0x00;
     ax <<= 1;
     bx = ax;
-    printf("indirect loc_3cf9: bx=%04x => %04x:%04x\n", bx, cs, memoryAGet16(ds, bx + 1994));
+//    printf("indirect sprite loc_3cf9: bx=%04x => %04x:%04x\n", bx, cs, memoryAGet16(ds, bx + 1994));
 //    for (int i=0; i<0x40; i+=2)
 //        printf("indi %02x => %04x:%04x\n", i, cs, memoryAGet16(ds, i + 1994));
     callIndirect(cs*16+memoryAGet16(ds, bx + 1994));
@@ -5396,9 +5396,9 @@ void sub_425e() // 01ed:238e
         goto loc_426a;
     sub_ca53();
 loc_426a: // 01ed:239a
-    printf("calling indirect al=%02x, dl=%02x, tofs=%04x\n",
-           memoryAGet(ds, 0x792c), memoryAGet(ds, 0x792a),
-           memoryAGet(ds, 0x792c)*0x22 + memoryAGet(ds, 0x792a)*2);
+//    printf("calling indirect sprite al=%02x, dl=%02x, tofs=%04x\n",
+//           memoryAGet(ds, 0x792c), memoryAGet(ds, 0x792a),
+//           memoryAGet(ds, 0x792c)*0x22 + memoryAGet(ds, 0x792a)*2);
 
     al = memoryAGet(ds, 0x792c);
     ah = 0x00;

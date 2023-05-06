@@ -233,6 +233,7 @@ template <typename SRC, typename DST, typename DIR> void rep_movsw()
 }
 template <typename SRC, typename DST, typename DIR> void rep_movsb()
 {
+    if (cx == 0) return;
     assert(cx);
     while (cx--)
         movsb<DST, SRC, DIR>();

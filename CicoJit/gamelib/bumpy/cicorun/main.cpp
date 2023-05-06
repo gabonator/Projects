@@ -222,16 +222,6 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
     ofs &= 0xffff;
-    if (seg*16+ofs==0x12280 + 0x4dfe)
-    {
-        printf("setting 1228:4dfe <= %04x\n", val);
-        int f =9;
-    }
-    if (seg*16+ofs==0x12280 + 0x4e00)
-    {
-        printf("setting 1228:4e00 <= %04x\n", val);
-        int f = 9;
-    }
 
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
     {
@@ -316,7 +306,10 @@ void cicocontext_t::_int(int i)
             char c = ctx->memory8(ctx->_ds, ctx->d.r16+i);
             assert(c);
             if (c == '$')
+            {
+                fflush(stdout);
                 return;
+            }
             printf("%c", c);
         }
         assert(0);
@@ -725,6 +718,10 @@ void cicocontext_t::out(int port, uint16_t val)
 }
 void cicocontext_t::out(int port, uint8_t val)
 {
+    if (port == 0x3c8)
+    {
+        int f = 9;
+    }
     if (mVideo->PortWrite8(port, val))
     {
         return;
@@ -788,7 +785,7 @@ void cicocontext_t::in(uint8_t& val, int port)
 
     if (port == 0x3d4 || port == 0x3d5)
     {
-        printf("skip pal\n");
+        val = mVideo->PortRead8(port);
         return;
     }
 
@@ -797,14 +794,7 @@ void cicocontext_t::in(uint8_t& val, int port)
 
 void cicocontext_t::push(const uint16_t& r)
 {
-    if (r==0x8888)
-    {
-        int f = 9;
-    }
-    if (ctx->_sp < 20)
-    {
-        int f = 9;
-    }
+    assert (ctx->_sp > 20);
     ctx->_sp -= 2;
     memory16(ctx->_ss, ctx->_sp) = r;
     assert(ctx->_sp > 0);
@@ -939,7 +929,6 @@ void sub_6f3f();
 void sub_41a2();
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
-//    printf("%04x:%04x\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16);
 //    sync();
     switch (a)
     {

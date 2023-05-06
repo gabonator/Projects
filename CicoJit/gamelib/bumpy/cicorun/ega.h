@@ -5,6 +5,7 @@ class CVideoAdapter
 public:
     virtual bool PortWrite16(int port, int data) = 0;
     virtual bool PortWrite8(int port, int data) = 0;
+    virtual uint8_t PortRead8(int port) { assert(0); return 0; }
     virtual bool Interrupt(CicoContext::cicocontext_t* ctx) = 0;
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) = 0;
     virtual uint8_t Read(uint32_t dwAddr) = 0;
@@ -178,7 +179,7 @@ public:
     {
         nWriteMode = 0;
         nReadMode = 0;
-        cfgAddr = 0x2000;
+        cfgAddr = 0x0000;
 
         cfgReadMapSelect = 0; // 3CF.4
         cfgBitMask = 0xff;
@@ -301,11 +302,12 @@ public:
         assert(0);
         return false;
     }
-
+    int last3c4reg = 0;
     virtual bool PortWrite16(int port, int data) override
     {
         if ( port == 0x3c4 )
         {
+            last3c4reg = data & 0xff;
             if ( (data & 0x00ff) == 0x02 )
             {
                 /*
@@ -325,6 +327,10 @@ public:
             {
                 // undocumented??
                 return true;
+            }
+            if (data == 0x080c)
+            {
+            
             }
         }
         if ( port == 0x3d4 )
@@ -376,6 +382,9 @@ public:
         palette[index] = b | (g << 8) | (r << 16);
 
     }
+    
+    int crtReg = 0;
+
     virtual bool PortWrite8(int port, int data) override
     {
         static int lastPort = 0, lastData = 0;
@@ -413,7 +422,6 @@ public:
         {
             return PortWrite16 ( lastPort, (data<<8)|lastData);
         }
-        static int crtReg = 0;
         if (port == 0x3d4)
         {
             crtReg = data;
@@ -427,18 +435,49 @@ public:
         
         if (port == 0x3c4)
         {
-            crtReg = data;
+            last3c4reg = data;
+//            crtReg = data;
             return true;
         }
         if (port == 0x3c5)
         {
-            PortWrite16(0x3c4, (data << 8)|crtReg);
+            PortWrite16(0x3c4, (data << 8)|last3c4reg);
+            return true;
+        }
+        // vga pal
+        static int colorindex = 0;
+        if (port == 0x3c8)
+        {
+            //_sync();
+            //std::cout << "Set write color " << (int)data << "\n";
+            colorindex = data*3/2;
+            return true;
+        }
+        if (port == 0x3c9)
+        {
+            int base = colorindex/3;
+            int ch = colorindex%3;
+            ((uint8_t*)palette)[base*4+2-ch] = data*4;
+            colorindex++;
             return true;
         }
 
         return false;
     }
 
+    virtual uint8_t PortRead8(int port)
+    {
+        //        3d4h index 0Ch (W):  CRTC: Start Address High Register
+        //        bit 0-7  Upper 8 bits of the start address of the display buffer
+
+        if (crtReg == 0x0c)
+        {
+            return cfgAddr>>8;
+        }
+        assert(0);
+        return 0;
+    }
+    
     virtual uint32_t GetPixel(int x, int y) override
     {
         uint8_t* _video = (uint8_t*)egamemory;
@@ -448,7 +487,7 @@ public:
         int mask = 0x80 >> (x % 8);
 
         //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
-        int page = 0x2000; //cfgAddr;
+        int page = cfgAddr;
     
         int shift = page*4;
         uint8_t b = 0;
