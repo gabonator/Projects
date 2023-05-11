@@ -21,8 +21,8 @@ public:
       };
     } a, b, c, d, temp;
 
-    uint16_t _si, _di, _bp;
-    uint16_t _cs, _ds, _ss, _es, _sp;
+    int _si, _di, _bp;
+    int _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
     bool interrupts, direction, carry, zero /*, sign*/;
@@ -31,7 +31,12 @@ public:
     virtual void memoryASet16(int seg, int ofs, uint16_t v);
     virtual uint8_t memoryAGet8(int seg, int ofs);
     virtual uint16_t memoryAGet16(int seg, int ofs);
-    
+
+    virtual void memoryBiosSet8(int seg, int ofs, uint8_t v);
+    virtual void memoryBiosSet16(int seg, int ofs, uint16_t v);
+    virtual uint8_t memoryBiosGet8(int seg, int ofs);
+    virtual uint16_t memoryBiosGet16(int seg, int ofs);
+
     virtual uint8_t& memory8(int seg, int ofs);
     virtual uint16_t& memory16(int seg, int ofs);
     virtual uint8_t memoryVideoGet8(int seg, int ofs);
@@ -115,6 +120,11 @@ public:
 #define memoryAGet ctx->memoryAGet8
 #define memoryAGet16 ctx->memoryAGet16
 
+#define memoryBiosSet ctx->memoryBiosSet8
+#define memoryBiosSet16 ctx->memoryBiosSet16
+#define memoryBiosGet ctx->memoryBiosGet8
+#define memoryBiosGet16 ctx->memoryBiosGet16
+
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push
@@ -165,6 +175,14 @@ struct MemVideo
     static void Set16(int seg, int nAddr, uint16_t nData) { memoryVideoSet16(seg, nAddr, nData); }
 };
 
+struct MemBios
+{
+    static uint8_t Get8(int seg, int nAddr) { return memoryBiosGet(seg, nAddr); }
+    static void Set8(int seg, int nAddr, uint8_t nData) { memoryBiosSet(seg, nAddr, nData); }
+    static uint16_t Get16(int seg, int nAddr) { return memoryBiosGet16(seg, nAddr); }
+    static void Set16(int seg, int nAddr, uint16_t nData) { memoryBiosSet16(seg, nAddr, nData); }
+};
+
 struct DirAuto
 {
     static void Assert()
@@ -177,6 +195,19 @@ struct DirAuto
             return i--;
         else
             return i++ & 0xffff;
+    }
+};
+
+struct DirForward
+{
+    static void Assert()
+    {
+    }
+    template<class T>
+    static T Move(T& i)
+    {
+        assert(!flags.direction);
+        return i++;
     }
 };
 

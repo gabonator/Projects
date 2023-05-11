@@ -26,6 +26,7 @@ bool _simpleStack = false;
 bool _stackGuard = false;
 bool _dumpReloc = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
+bool gNeedToRerun = false;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
 
 std::string format(const char* fmt, ...)
@@ -318,6 +319,22 @@ struct address_t {
     {
         return segment*0x10+offset;
     }
+    static address_t fromString(const std::string& s)
+    {
+        std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
+        std::smatch matches;
+        if (std::regex_search(s, matches, functionSegofs))
+        {
+            std::string strSeg = matches.str(1);
+            std::string strOfs = matches.str(2);
+            int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
+            int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
+            return {addrSeg, addrOfs};
+        }
+        assert(0);
+        return {0, 0};
+    }
+        
 };
 
 address_t fromRelative(int segment, uint64_t offset);
@@ -725,20 +742,21 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     for (const std::pair<address_t, address_t>& pair : extraLabels)
         if (pair.first.linearOffset() == address.linearOffset())
             trace.push_back(pair.second);
-    
+
     while (!trace.empty())
     {
         address_t pc = trace.front();
         trace.pop_front();
         assert(pc.offset >= 0 && pc.offset < 0xffff);
-        
         if (trace.size() == 0) // skip indirect jumps
         {
             // start processing indirect jumps when everything is finished
-            assert(indirectJumps.size() <= 1);
+            //assert(indirectJumps.size() <= 1);
             for (int i=0; i<indirectJumps.size(); i++)
             {
                 switch_t& sw = indirectJumps[i];
+                if (instructions.find(sw.origin) == instructions.end())
+                    continue;
                 
                 // already processed all entries?
                 if (sw.elements != -1)
@@ -794,6 +812,17 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                 {
                     continue;
                 }
+            }
+        }
+        
+        if (instr->IsIndirectJump())
+        {
+            for (int i=0; i<indirectJumps.size(); i++)
+            {
+                switch_t& sw = indirectJumps[i];
+                if (sw.origin == instr->mAddress && sw.elements > 0)
+                    for (int j=0; j<sw.elements; j++)
+                        trace.push_back(sw.GetTarget(j));
             }
         }
         
@@ -888,6 +917,23 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         {
             iter->second->mLabel = true;
         }
+        
+        if (iter->second->IsIndirectJump())
+        {
+            for (int i=0; i<indirectJumps.size(); i++)
+            {
+                switch_t& sw = indirectJumps[i];
+                if (sw.origin == iter->second->mAddress && sw.elements > 0)
+                    for (int j=0; j<sw.elements; j++)
+                    {
+                        auto tinst = instructions.find(sw.GetTarget(j));
+                        assert(tinst != instructions.end());
+                        tinst->second->mLabel = true;
+                    }
+            }
+        }
+        
+
     }
     
     for (const std::pair<address_t, address_t>& pair : extraLabels)
@@ -1030,10 +1076,29 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                     assert(prev1->mDetail.operands[0].type == X86_OP_IMM);
                     
                     address_t targetAddr = fromRelative(instr, prev1->mDetail.operands[0].imm);
+                    
+                    //addInject(targetAddr, inject_t::zero);
+                    auto injectptr = functionInjects.find(targetAddr);
+                    if (injectptr != functionInjects.end())
+                    {
+                        if (!((int)injectptr->second & (int)injectReturn))
+                        {
+                            gNeedToRerun = true;
+                            injectptr->second = (inject_t)((int)injectptr->second | (int)injectReturn);
+                        }
+                    }
+                    else
+                    {
+                        gNeedToRerun = true;
+                        functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
+                    }
+
+                    /*
                     auto injectptr = functionInjects.find(targetAddr);
                     int inject = injectptr != functionInjects.end() ? (int)injectptr->second : (int)inject_t::none;
                     inject |= (int)inject_t::zero;
                     functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, (inject_t)inject));
+                     */
                 }
                 else if (prev1->mId == X86_INS_CMP || prev1->mId == X86_INS_AND)
                 {
@@ -1605,6 +1670,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
     {
         if (!ins->IsInstruction())
             continue;
+        if (ins->mId == X86_INS_PUSH || ins->mId == X86_INS_POP)
+            continue;
         if (ins->mDetail.op_count >= 1)
         {
             std::string arg0 = assign(ins->mDetail, "$rd0");
@@ -1924,6 +1991,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_MOVSB:
                 assert(strcmp(instr->mOperands, "byte ptr es:[di], byte ptr [si]") == 0);
+                keepLastCompare = true;
                 if (strcmp(instr->mMnemonic, "rep movsb") == 0)
                 {
                     text.push_back(format("rep_movsb<MemAuto, MemAuto, DirAuto>();"));
@@ -1938,6 +2006,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_MOVSW:
                 //assert(strcmp(instr->mOperands, "word ptr es:[di], word ptr [si]") == 0);
+                keepLastCompare = true;
                 if (strcmp(instr->mMnemonic, "movsw") == 0)
                 {
                     text.push_back(format("movsw<MemAuto, MemAuto, DirAuto>();"));
@@ -2277,8 +2346,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back("assert(0);");
                         text.push_back("}");
                     } else {
-                        text.push_back(assign(x86, "stop(/*2*/); // (%s %s) jump Indirect $rd0",
-                                       instr->mMnemonic, instr->mOperands));
+//                        text.push_back(assign(x86, "stop(/*2*/); // (%s %s) jump Indirect $rd0",
+//                                       instr->mMnemonic, instr->mOperands));
+                        text.push_back(assign(x86, "stop(/*2*/); // %04x:%04x %s %s - jump Indirect $rd0",
+                                       instr->mAddress.segment, instr->mAddress.offset, instr->mMnemonic, instr->mOperands));
                     }
                 }
                 //else
@@ -2746,7 +2817,12 @@ void PrintFormatted(FILE* f, std::vector<std::string>& text)
             prefix = prefix.substr(0, prefix.length()-4);
         
         if (l.substr(l.length()-1, 1) == ":" || l.find(": // ") != std::string::npos)
-            fprintf(f, "%s\n", l.c_str());
+        {
+            if (l == "default:")
+                fprintf(f, "%s%s%s%s\n", prefix.c_str(), curline.c_str(), nexline.c_str(), l.c_str());
+            else
+                fprintf(f, "%s\n", l.c_str());
+        }
         else
             fprintf(f, "%s%s%s%s\n", prefix.c_str(), curline.c_str(), nexline.c_str(), l.c_str());
         
@@ -2807,7 +2883,8 @@ int main(int argc, const char * argv[]) {
     bool lines = false;
     bool printctx = false;
     const char* extraLabelsStr = nullptr;
-    
+    std::vector<switch_t> jumpTables;
+
     for (int i=1; i<argc; i++)
     {
         const char* arg = argv[i];
@@ -2843,7 +2920,19 @@ int main(int argc, const char * argv[]) {
                 resume = argv[++i];
             else if (strcmp(arg, "-assume_ds") == 0)
                 _ds = (int)strtol(argv[++i], nullptr, 16);
-            else
+            else if (strcmp(arg, "-jumptable") == 0)
+            {
+                // -jumptable 01ed:46dc 01ed:4725 4 jumpwords bx
+                address_t indirectJumpAddr = address_t::fromString(argv[++i]);
+                address_t jumpTableBegin = address_t::fromString(argv[++i]);
+                int jumpTableEntries = (int)strtol(argv[++i], nullptr, 10);
+                const char* jumpTableEntryType = argv[++i];
+                assert(strcmp(jumpTableEntryType, "jumpwords") == 0);
+                const char* jumpSelector = argv[++i];
+                assert(strcmp(jumpSelector, "bx") == 0);
+                
+                jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, switch_t::JumpWords, X86_REG_BX, nullptr});
+            } else
                 assert(0);
 
             
@@ -3075,6 +3164,12 @@ void start()
     std::vector<address_t> failed;
     std::list<address_t> toProcess;
     std::vector<switch_t> switches;
+    std::vector<switch_t> jumps;
+    for (switch_t& s : jumpTables)
+    {
+        s.baseptr = cap.GetBufferAt(s.begin);
+        jumps.push_back(s);
+    }
     
     if (methods)
     {
@@ -3130,7 +3225,7 @@ void start()
             if (std::find(failed.begin(), failed.end(), method) != failed.end())
                 continue;
 
-            std::vector<switch_t> jumps;
+//            std::vector<switch_t> jumps;
             std::vector<std::shared_ptr<CapInstr>> code;
             //printf("// extracting %04x:%04x, converted %d, to convert %d, failed %d\n", method.segment, method.offset, processed.size(), toProcess.size(), failed.size());
             if (!ExtractMethod(cap, method, code, jumps, inject_t::none, extraLabels))
@@ -3169,7 +3264,12 @@ void start()
         }) != processed.end();
     };
     
-    TraceFunctions();
+    gNeedToRerun = true;
+    while (gNeedToRerun)
+    {
+        gNeedToRerun = false;
+        TraceFunctions();
+    }
     for (auto& sw : switches)
     {
         sw.baseptr = cap.GetBufferAt(sw.GetBaseAddress());
@@ -3196,7 +3296,7 @@ void start()
     // collect notices, TODO: check
     for (const auto& decl : processed)
     {
-        std::vector<switch_t> jumps;
+//        std::vector<switch_t> jumps;
         std::vector<std::string> text;
         std::vector<std::shared_ptr<CapInstr>> code;
         if (!ExtractMethod(cap, decl.first, code, jumps, inject_t::none, extraLabels))
@@ -3213,10 +3313,27 @@ void start()
         DumpCodeAsC(code, text, switches, jumps);
     }
 
+    gNeedToRerun = true;
+    while (gNeedToRerun)
+    {
+        gNeedToRerun = false;
+        for (const auto& decl : processed)
+        {
+//            std::vector<switch_t> jumps;
+            std::vector<std::shared_ptr<CapInstr>> code;
+            auto injectptr = functionInjects.find(decl.first);
+            inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
+
+            if (!ExtractMethod(cap, decl.first, code, jumps, inject, extraLabels))
+                assert(0);
+        }
+    }
+
+
     // dump
     for (const auto& decl : processed)
     {
-        std::vector<switch_t> jumps;
+//        std::vector<switch_t> jumps;
         std::vector<std::shared_ptr<CapInstr>> code;
         auto injectptr = functionInjects.find(decl.first);
         inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;

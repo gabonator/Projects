@@ -1,6 +1,5 @@
 // Other linker flags: /opt/homebrew/lib/libSDL2.dylib
 // System header search paths: /opt/homebrew/include/SDL2
-
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
@@ -29,6 +28,7 @@ extern unsigned char font[2048];
 int headerSize = 0;
 
 std::list<char> keyBuffer;
+int newkey = -1;
 
 void _sync()
 {
@@ -37,31 +37,31 @@ void _sync()
         mSdl.SetPixel(x, y, mVideo->GetPixel(x, y));
     mSdl.Loop();
 }
+static int keys = 0;
+
+void syncKeyb()
+{
+    mSdl.Loop(true);
+}
 
 void onKey(int k, int p)
 {
-    static int keys = 0;
     if (k == SDL_SCANCODE_ESCAPE) exit(1);
-//      if (p)
-          switch (k)
-          {
-              case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3c) = p; break;
-              case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3d) = p; break;
-              case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3e) = p; break;
-              case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3f) = p; break;
-              case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x40) = p; break;
-              case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x41) = p; break;
-              case SDL_SCANCODE_RETURN: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x1c) = p; break;
-              case SDL_SCANCODE_SPACE: if (p) keys |= 0x10; else keys &= ~0x10; break;
-              case SDL_SCANCODE_UP: if (p) keys |= 0x1; else keys &= ~0x1; break;
-              case SDL_SCANCODE_DOWN: if (p) keys |= 0x2; else keys &= ~0x2; break;
-              case SDL_SCANCODE_LEFT: if (p) keys |= 0x4; else keys &= ~0x4; break;
-              case SDL_SCANCODE_RIGHT: if (p) keys |= 0x8; else keys &= ~0x8; break;
+      switch (k)
+      {
+          case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3c) = p; break;
+          case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3d) = p; break;
+          case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3e) = p; break;
+          case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3f) = p; break;
+          case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x40) = p; break;
+          case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x41) = p; break;
+          case SDL_SCANCODE_UP: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'H') = p; break;
+          case SDL_SCANCODE_RIGHT: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'M') = p; break;
+          case SDL_SCANCODE_DOWN: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'P') = p; break;
+          case SDL_SCANCODE_LEFT: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'K') = p; break;
+          case SDL_SCANCODE_SPACE: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x1c) = p; break;
           }
-    CicoContext::ctx->memory8(0x1228, 0x8244) = keys;
 }
-namespace CicoContext
-{
 uint8_t memoryBiosGet8(int seg, int ofs)
 {
     if (seg == 0xffff && ofs == 0x000e)
@@ -113,21 +113,6 @@ uint8_t memoryPsp(int seg, int ofs)
     if (seg == 0x1dd && ofs == 0x81)
         return 0x0d;
 
-    /*
-    if (seg == 0x01d3)
-    {
-        return 0;
-    }
-    assert(seg == 0x01dd);
-    switch (ofs)
-    {
-        case 0x80: return 0;
-        case 0x81: return 0x0d;
-        default:
-            assert(0);
-            return 0;
-    }
-     */
     assert(0);
 }
 uint16_t memoryPsp16(int seg, int ofs)
@@ -149,20 +134,6 @@ uint16_t memoryPsp16(int seg, int ofs)
             assert(0);
             return 0;
     }
-}
-
-uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
-{
-    ofs &= 0xffff;
-    if ((seg == 0x01ed || seg == 0x01dd || seg == 0x01d3) && ofs < 256)
-        return memoryPsp(seg, ofs);
-    else
-    if (seg >= 0x01ed && seg < 0xa000)
-        return memory8(seg, ofs);
-    else if (seg >= 0xa000 && seg < 0xe000)
-        return memoryVideoGet8(seg, ofs);
-    else
-        return memoryBiosGet8(seg, ofs); // bios
 }
 void memoryBiosSet8(int seg, int ofs, uint8_t v)
 {
@@ -188,12 +159,52 @@ uint16_t memoryBiosGet16(int seg, int ofs)
     assert(0);
     return 0;
 }
+
+namespace CicoContext
+{
+
+uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
+{
+//    assert(seg >= 0x01ed && seg < 0xa000);
+    ofs &= 0xffff;
+    if ((seg == 0x01ed || seg == 0x01dd || seg == 0x01d3) && ofs < 256)
+        return memoryPsp(seg, ofs);
+    else
+    if (seg >= 0x01ed && seg < 0xa000)
+        return memory8(seg, ofs);
+    else if (seg >= 0xa000 && seg < 0xe000)
+        return memoryVideoGet8(seg, ofs);
+    else
+        return memoryBiosGet8(seg, ofs); // bios
+}
+uint8_t cicocontext_t::memoryBiosGet8(int seg, int ofs)
+{
+    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
+        return ::memoryPsp(seg, ofs);
+    return ::memoryBiosGet8(seg, ofs);
+}
+void cicocontext_t::memoryBiosSet8(int seg, int ofs, uint8_t val)
+{
+    assert(0);
+}
+uint16_t cicocontext_t::memoryBiosGet16(int seg, int ofs)
+{
+    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
+        return ::memoryPsp16(seg, ofs);
+    return ::memoryBiosGet16(seg, ofs);
+}
+void cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t val)
+{
+    if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
+        assert(0); // ???
+    else
+        ::memoryBiosSet16(seg, ofs, val);
+}
+
 uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 {
-    if (seg == 0xa57 && ofs == 0x007e)
-    {
-        int f = 9;
-    }
+//    assert(seg >= 0x01ed && seg < 0xa000);
+//    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
     if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
         return memoryPsp16(seg, ofs);
@@ -208,6 +219,8 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
+//    assert (seg >= 0x01ed && seg < 0xa000);
+//    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
         assert(0);
@@ -221,6 +234,8 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
+//    assert(seg >= 0x01ed && seg < 0xa000);
+
     ofs &= 0xffff;
 
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
@@ -237,27 +252,14 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 }
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
-    if (seg*16+ofs==0x26290 + 0x06a8)
-    {
-        int f = 9;
-    }
     assert(seg >= 0x01ed && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);
     int addr = seg*16 + ofs;
     addr -= 0x01ed0 - headerSize;
     assert(addr > 0 && addr < sizeof(mem));
-    if (addr == 0x86d2)
-    {
-        int f = 9;
-    }
     return mem[addr];
 }
 
 uint16_t& cicocontext_t::memory16(int seg, int ofs){
-    if (seg*16+ofs==0x26290 +0x06a8)
-    {
-        int f = 9; // fixed by ed9:c67
-    }
-
     assert(seg >= 0x01ed && seg < 0xa000 && ofs >= 0 && ofs <= 0xffff);
     int addr = seg*16 + ofs;
     addr -= 0x01ed0 - headerSize;
@@ -376,7 +378,7 @@ void cicocontext_t::_int(int i)
             {
                 // memory overlap!
                 int overlap = ((ctx->d.r16+i) >> 16) ? 0x1000 : 0;
-                ctx->memoryASet8(ctx->_ds+overlap, ctx->d.r16+i, buf[i]);
+                ctx->memoryASet8(ctx->_ds+overlap, (ctx->d.r16+i)&65535, buf[i]);
             }
             delete[] buf;
             //std::cout << "read " << _cx << " (" << c << ")" << endl;
@@ -927,9 +929,129 @@ void sub_6d99();
 void sub_6e1e();
 void sub_6f3f();
 void sub_41a2();
+void sub_6ef5();
+void sub_6f0f();
+void sub_6d14();
+void sub_3d2e();
+void sub_8391();
+void sub_86e3();
+void sub_40b7();
+void sub_86cb();
+void sub_46e0();
+void sub_3d60();
+void sub_6214();
+void sub_6307();
+void sub_43a7();
+void sub_86b2();
+void sub_4008();
+void sub_8702();
+void sub_871b();
+void sub_87b6();
+void sub_87f2();
+void sub_8760();
+void sub_878b();
+void sub_832d();
+void sub_869a();
+void sub_43da();
+
+void sub_3d92();
+void sub_3e0e();
+/*
+ // 11d7a-11dfa, 80 b, 40 w
+ {
+     bool tmp[65536] = {0};
+     for (int i=0; i<40; i++)
+     {
+         int adr =memoryAGet16(ds, 1994+i*2);
+         if (tmp[adr])
+             continue;
+         tmp[adr] =1;
+         printf("case 0x%x: sub_%x(); break; // %04x:%04x\n",
+                cs*16+adr, cs*16+adr, cs, adr);
+     }
+ }
+ printf("%02x %02x %02x %02x  %02x %02x %02x %02x\n",
+        memoryAGet(ds, 1994), memoryAGet(ds, 1994+1),
+        memoryAGet(ds, 1994+2), memoryAGet(ds, 1994+3),
+        memoryAGet(ds, 1994+4), memoryAGet(ds, 1994+5),
+        memoryAGet(ds, 1994+6), memoryAGet(ds, 1994+7));
+
+ */
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
+    //01ed:1e90,01ed:64c1,01ed:1e5e,01ed:4344,01ed:5025
+//    Skipping indirect=01ed:1e90
+//    Skipping indirect=01ed:64c1x
 //    sync();
+    //kipping indirect=01ed:1e5e
+    //kipping indirect=01ed:1e5e
+    //Skipping indirect=01ed:4344
+    //Skipping indirect=01ed:5025
+    //Skipping indirect=01ed:1e90
+    //=01ed:2810
+    switch (a)
+    {
+        case 0x8518: sub_8518(); return; // 01ed:6648
+        case 0x8fe1: sub_8fe1(); return; // 01ed:7111
+        case 0x85e7: sub_85e7(); return; // 01ed:6717
+        case 0x841e: sub_841e(); return; // 01ed:654e
+        case 0x8457: sub_8457(); return; // 01ed:6587
+        case 0x84cb: sub_84cb(); return; // 01ed:65fb
+        case 0x8569: sub_8569(); return; // 01ed:6699
+        case 0x81f6: sub_81f6(); return; // 01ed:6326
+        case 0x83ec: sub_83ec(); return; // 01ed:651c
+        case 0x84b5: sub_84b5(); return; // 01ed:65e5
+        case 0x84f7: sub_84f7(); return; // 01ed:6627
+        case 0x85a8: sub_85a8(); return; // 01ed:66d8
+        case 0x8242: sub_8242(); return; // 01ed:6372
+        case 0x8405: sub_8405(); return; // 01ed:6535
+        case 0x860a: sub_860a(); return; // 01ed:673a
+        case 0x83b2: sub_83b2(); return; // 01ed:64e2
+        case 0x84e1: sub_84e1(); return; // 01ed:6611
+        case 0x83cf: sub_83cf(); return; // 01ed:64ff
+        case 0x834e: sub_834e(); return; // 01ed:647e
+        case 0x8618: sub_8618(); return; // 01ed:6748
+        case 0x8659: sub_8659(); return; // 01ed:6789
+        case 0x81d5: sub_81d5(); return; // 01ed:6305
+        case 0x82dc: sub_82dc(); return; // 01ed:640c
+        case 0x832d: sub_832d(); return; // 01ed:645d
+        case 0x84a2: sub_84a2(); return; // 01ed:65d2
+        case 0x87ce: sub_87ce(); return; // 01ed:68fe
+        case 0x880a: sub_880a(); return; // 01ed:693a
+        case 0x8391: sub_8391(); return; // 01ed:64c1
+        case 0x86b2: sub_86b2(); return; // 01ed:67e2
+        case 0x86e3: sub_86e3(); return; // 01ed:6813
+        case 0x869a: sub_869a(); return; // 01ed:67ca
+        case 0x86cb: sub_86cb(); return; // 01ed:67fb
+        case 0x8702: sub_8702(); return; // 01ed:6832
+        case 0x871b: sub_871b(); return; // 01ed:684b
+        case 0x87b6: sub_87b6(); return; // 01ed:68e6
+        case 0x87f2: sub_87f2(); return; // 01ed:6922
+        case 0x8760: sub_8760(); return; // 01ed:6890
+        case 0x878b: sub_878b(); return; // 01ed:68bb
+            
+            // sub_3cd2
+        case 0x47c9: sub_47c9(); return; // 01ed:28f9
+        case 0x4286: sub_4286(); return; // 01ed:23b6
+        case 0x42f3: sub_42f3(); return; // 01ed:2423
+        case 0x4340: sub_4340(); return; // 01ed:2470
+        case 0x435e: sub_435e(); return; // 01ed:248e
+        case 0x43a7: sub_43a7(); return; // 01ed:24d7
+        case 0x43da: sub_43da(); return; // 01ed:250a
+        case 0x447d: sub_447d(); return; // 01ed:25ad
+        case 0x4180: sub_4180(); return; // 01ed:22b0
+        case 0x6214: sub_6214(); return; // 01ed:4344
+        case 0x6307: sub_6307(); return; // 01ed:4437
+        case 0x3d2e: sub_3d2e(); return; // 01ed:1e5e
+        case 0x3d60: sub_3d60(); return; // 01ed:1e90
+        case 0x3d92: sub_3d92(); return; // 01ed:1ec2
+        case 0x3e0e: sub_3e0e(); return; // 01ed:1f3e
+        case 0x4008: sub_4008(); return; // 01ed:2138
+        case 0x40b7: sub_40b7(); return; // 01ed:21e7
+    }
+    //if (a != 0x12245 && a != 0xfbb9)
+    //if (a != 0xd500 && a != 0xd530 && a != 0xd810 && a != 0xd840)
+    //    printf("indi %x\n", a);
     switch (a)
     {
         case 0xbb32: sub_bb32(); return;
@@ -959,54 +1081,26 @@ void CicoContext::cicocontext_t::callIndirect(int a)
         case 0xd810: sub_d810(); return;
         case 0xd840: sub_d840(); return;
         case 0xd593: sub_d593(); return;
-        case 0x8fe1: sub_8fe1(); return;
-        case 0x85e7: sub_85e7(); return;
-        case 0x841e: sub_841e(); return;
-        case 0x8457: sub_8457(); return;
-        case 0x84cb: sub_84cb(); return;
-        case 0x47c9: sub_47c9(); return;
-        case 0x4286: sub_4286(); return;
-        case 0x42f3: sub_42f3(); return;
-        case 0x4340: sub_4340(); return;
-        case 0x435e: sub_435e(); return;
-            
-        case 0x8518: sub_8518(); return;
-        case 0x85a8: sub_85a8(); return;
-        case 0x8242: sub_8242(); return;
-        case 0x8405: sub_8405(); return;
-        case 0x84b5: sub_84b5(); return;
-        case 0x84f7: sub_84f7(); return;
-            
-        case 0x8569: sub_8569(); return;
-        case 0x84e1: sub_84e1(); return;
-        case 0x81f6: sub_81f6(); return;
-        case 0x83ec: sub_83ec(); return;
-        case 0x860a: sub_860a(); return;
-        case 0x83b2: sub_83b2(); return;
-        case 0x83cf: sub_83cf(); return;
+                        
         case 0x3d0d: sub_3d0d(); return;
-        case 0x834e: sub_834e(); return;
-        case 0x8659: sub_8659(); return;
-        case 0x8618: sub_8618(); return;
-        case 0x84a2: sub_84a2(); return;
-        case 0x880a: sub_880a(); return;
-        case 0x82dc: sub_82dc(); return;
-        case 0x87ce: sub_87ce(); return;
         case 0xd37f: sub_d37f(); return;
         case 0xd65d: sub_d65d(); return;
         case 0xd665: sub_d665(); return;
         case 0x4191: sub_4191(); return;
-        case 0x4180: sub_4180(); return;
-        case 0x81d5: sub_81d5(); return;
-        case 0x447d: sub_447d(); return;
+//        case 0x81d5: sub_81d5(); return;
         case 0x6c8f: sub_6c8f(); return;
         case 0x6f29: sub_6f29(); return;
         case 0x6d99: sub_6d99(); return;
         case 0x6f3f: sub_6f3f(); return;
         case 0x6e1e: sub_6e1e(); return;
         case 0x41a2: sub_41a2(); return;
+        case 0x6ef5: sub_6ef5(); return;
+            
+        case 0x6f0f: sub_6f0f(); return;
+        case 0x6d14: sub_6d14(); return;
+        case 0x46e0: sub_46e0(); return;
         default:
-            printf("Skipping indirect=%04x:%04x\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16);
+            printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16, a, a);
             //assert(0);
     }
 }

@@ -338,7 +338,7 @@ public:
             if ( (data & 0x00ff) == 0x0c )
             {
                 SetAddrHi( data >>8 );
-                _sync();
+//                _sync();
                 return true;
             }
             if ( (data & 0x00ff) == 0x0d )
@@ -626,9 +626,9 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 5000)
+        if (q++ > 50000)
         {
-            _sync(); 
+            _sync();
             q= 0;
         }
     }
