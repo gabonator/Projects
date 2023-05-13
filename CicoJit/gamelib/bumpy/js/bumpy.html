@@ -16,22 +16,20 @@ var r16s = new Int16Array(r0, 0, 8);
 var r8 = new Uint8Array(r0, 0, 16);
 var r8s = new Int8Array(r0, 0, 16);
 
-var memorybuf = new ArrayBuffer(0x10000*20);
-var memory = new Uint8Array(memorybuf, 0, 0x10000*20);
-var memorys = new Int8Array(memorybuf, 0, 0x10000*20);
+var memorybuf = new ArrayBuffer(0x10000*14);
+var memory = new Uint8Array(memorybuf, 0, 0x10000*14);
+var memorys = new Int8Array(memorybuf, 0, 0x10000*14);
 var flags = {carry:0, direction:0, zero:0};
 
 var headerSize = 0;
 
 // mess
-  EGA.init();
+EGA.init();
 var can = document.getElementById("canvas");
 var ctx = can.getContext('2d');
 can.width = 320;
 can.height = 200;
 var data = ctx.createImageData(can.width, can.height);
-
-
 </script>
 <script src="bumpy.js"></script>
 <script>
@@ -290,6 +288,8 @@ function rep_movsw_data_data_forward()
 }
 function rep_movsb_data_data_forward()
 {
+  if (r16[cx] == 0)
+    return;
   assert(ds && es)
   assert(es < 0xa000 && ds < 0xa000 && r16[cx] > 0 && flags.direction == 0);
   assert(ds*16 + si < memory.length && es*16 + di < memory.length);
@@ -342,7 +342,7 @@ function rep_movsw_data_video_forward()
   r16[cx] = 0;
 }
 
-// bios
+// bios / psp
 function memoryBiosSet16(seg, ofs, v)
 {
 }
@@ -356,10 +356,10 @@ function memoryBiosGet16(seg, ofs)
         switch (ofs)
         {
             case 0x02:
-                //     Segment of the first byte beyond the memory allocated to the program
+                // Segment of the first byte beyond the memory allocated to the program
                 return 0x9fff;
             case 0x2c:
-                // Environment segment;
+                // Environment segment
                 return 0x1d3;
             default:
                 assert(0);
@@ -397,16 +397,12 @@ function memoryBiosGet(seg, ofs)
         return 0x00; // ega active
     if (seg == 0x0040 && ofs == 0x0088)
         return 0x09;
-    if (seg == 0x0040 && ofs == 0x0017) // http://www.powernet.co.za/info/bios/mem/40_0017.htm
+    if (seg == 0x0040 && ofs == 0x0017) 
         return 0x00; // shift keys
-    if (seg == 0xf000 && ofs >= 0xfa6e && ofs < (0xfa6e + sizeof(font)))
-        return font[ofs-0xfa6e];
     if (seg == 0x0040 && ofs == 0x0010)
         return 0x26;
     if (seg == 0x0040 && ofs == 0x006c)
-    {
-        return (new Date().getTime())/1000 /54; // 0xd1; // number of ticks since midnight 54ms
-    }
+        return (new Date().getTime())/1000/54; // number of ticks since midnight 54ms
     if (seg == 0x0000 && ofs == 0x0000)
         return 0x1a;
     assert(0);
@@ -439,19 +435,17 @@ function interrupt(i)
     {
         var now = new Date().getTime() / 1000;
         if (r8[ah] == 4)
-        {
-            
+        {            
         }
         else if (r8[ah] == 0)
         {
            if (!window.baseTick)
                window.baseTick = now;
             now -= window.baseTick;
-            now = now /6; //* 65536 / (1000*60*60);
+            now = now / 6;
             r16[cx] = now >> 16;
             r16[dx] = now & 0xffff;
         } else {
-//            assert(ctx->a.r8.h == 1 && ctx->c.r16 == 0 && ctx->d.r16 == 0);
             window.baseTick = now;
         }
         return;
@@ -536,7 +530,7 @@ function interrupt(i)
         window.currentFile = null;
         return;
     }
-    console.log("int ", i.toString(16), r8[ah].toString(16));
+    console.log("unimplemented interrupt ", i.toString(16), r8[ah].toString(16));
     assert(0);
 }
 function out8(port, v)
@@ -579,6 +573,61 @@ function* callIndirect(addr)
 {
     switch (addr)
     {
+        case 0x8518: yield* sub_8518(); return; // 01ed:6648
+        case 0x8fe1: yield* sub_8fe1(); return; // 01ed:7111
+        case 0x85e7: yield* sub_85e7(); return; // 01ed:6717
+        case 0x841e: yield* sub_841e(); return; // 01ed:654e
+        case 0x8457: yield* sub_8457(); return; // 01ed:6587
+        case 0x84cb: yield* sub_84cb(); return; // 01ed:65fb
+        case 0x8569: yield* sub_8569(); return; // 01ed:6699
+        case 0x81f6: yield* sub_81f6(); return; // 01ed:6326
+        case 0x83ec: yield* sub_83ec(); return; // 01ed:651c
+        case 0x84b5: yield* sub_84b5(); return; // 01ed:65e5
+        case 0x84f7: yield* sub_84f7(); return; // 01ed:6627
+        case 0x85a8: yield* sub_85a8(); return; // 01ed:66d8
+        case 0x8242: yield* sub_8242(); return; // 01ed:6372
+        case 0x8405: yield* sub_8405(); return; // 01ed:6535
+        case 0x860a: yield* sub_860a(); return; // 01ed:673a
+        case 0x83b2: yield* sub_83b2(); return; // 01ed:64e2
+        case 0x84e1: yield* sub_84e1(); return; // 01ed:6611
+        case 0x83cf: yield* sub_83cf(); return; // 01ed:64ff
+        case 0x834e: yield* sub_834e(); return; // 01ed:647e
+        case 0x8618: yield* sub_8618(); return; // 01ed:6748
+        case 0x8659: yield* sub_8659(); return; // 01ed:6789
+        case 0x81d5: yield* sub_81d5(); return; // 01ed:6305
+        case 0x82dc: yield* sub_82dc(); return; // 01ed:640c
+        case 0x832d: yield* sub_832d(); return; // 01ed:645d
+        case 0x84a2: yield* sub_84a2(); return; // 01ed:65d2
+        case 0x87ce: yield* sub_87ce(); return; // 01ed:68fe
+        case 0x880a: yield* sub_880a(); return; // 01ed:693a
+        case 0x8391: yield* sub_8391(); return; // 01ed:64c1
+        case 0x86b2: yield* sub_86b2(); return; // 01ed:67e2
+        case 0x86e3: yield* sub_86e3(); return; // 01ed:6813
+        case 0x869a: yield* sub_869a(); return; // 01ed:67ca
+        case 0x86cb: yield* sub_86cb(); return; // 01ed:67fb
+        case 0x8702: yield* sub_8702(); return; // 01ed:6832
+        case 0x871b: yield* sub_871b(); return; // 01ed:684b
+        case 0x87b6: yield* sub_87b6(); return; // 01ed:68e6
+        case 0x87f2: yield* sub_87f2(); return; // 01ed:6922
+        case 0x8760: yield* sub_8760(); return; // 01ed:6890
+        case 0x878b: yield* sub_878b(); return; // 01ed:68bb
+        case 0x47c9: yield* sub_47c9(); return; // 01ed:28f9
+        case 0x4286: yield* sub_4286(); return; // 01ed:23b6
+        case 0x42f3: yield* sub_42f3(); return; // 01ed:2423
+        case 0x4340: yield* sub_4340(); return; // 01ed:2470
+        case 0x435e: yield* sub_435e(); return; // 01ed:248e
+        case 0x43a7: yield* sub_43a7(); return; // 01ed:24d7
+        case 0x43da: yield* sub_43da(); return; // 01ed:250a
+        case 0x447d: yield* sub_447d(); return; // 01ed:25ad
+        case 0x4180: yield* sub_4180(); return; // 01ed:22b0
+        case 0x6214: yield* sub_6214(); return; // 01ed:4344
+        case 0x6307: yield* sub_6307(); return; // 01ed:4437
+        case 0x3d2e: yield* sub_3d2e(); return; // 01ed:1e5e
+        case 0x3d60: yield* sub_3d60(); return; // 01ed:1e90
+        case 0x3d92: yield* sub_3d92(); return; // 01ed:1ec2
+        case 0x3e0e: yield* sub_3e0e(); return; // 01ed:1f3e
+        case 0x4008: yield* sub_4008(); return; // 01ed:2138
+        case 0x40b7: yield* sub_40b7(); return; // 01ed:21e7
         case 0xbb32: yield* sub_bb32(); return;
         case 0xc91e: yield* sub_c91e(); return;
         case 0xdf4f: yield* sub_df4f(); return;
@@ -606,64 +655,46 @@ function* callIndirect(addr)
         case 0xd810: yield* sub_d810(); return;
         case 0xd840: yield* sub_d840(); return;
         case 0xd593: yield* sub_d593(); return;
-        case 0x8fe1: yield* sub_8fe1(); return;
-        case 0x85e7: yield* sub_85e7(); return;
-        case 0x841e: yield* sub_841e(); return;
-        case 0x8457: yield* sub_8457(); return;
-        case 0x84cb: yield* sub_84cb(); return;
-        case 0x47c9: yield* sub_47c9(); return;
-        case 0x4286: yield* sub_4286(); return;
-        case 0x42f3: yield* sub_42f3(); return;
-        case 0x4340: yield* sub_4340(); return;
-        case 0x435e: yield* sub_435e(); return;
-            
-        case 0x8518: yield* sub_8518(); return;
-        case 0x85a8: yield* sub_85a8(); return;
-        case 0x8242: yield* sub_8242(); return;
-        case 0x8405: yield* sub_8405(); return;
-        case 0x84b5: yield* sub_84b5(); return;
-        case 0x84f7: yield* sub_84f7(); return;
-            
-        case 0x8569: yield* sub_8569(); return;
-        case 0x84e1: yield* sub_84e1(); return;
-        case 0x81f6: yield* sub_81f6(); return;
-        case 0x83ec: yield* sub_83ec(); return;
-        case 0x860a: yield* sub_860a(); return;
-        case 0x83b2: yield* sub_83b2(); return;
-        case 0x83cf: yield* sub_83cf(); return;
         case 0x3d0d: yield* sub_3d0d(); return;
-        case 0x834e: yield* sub_834e(); return;
-        case 0x8659: yield* sub_8659(); return;
-        case 0x8618: yield* sub_8618(); return;
-        case 0x84a2: yield* sub_84a2(); return;
-        case 0x880a: yield* sub_880a(); return;
-        case 0x82dc: yield* sub_82dc(); return;
-        case 0x87ce: yield* sub_87ce(); return;
         case 0xd37f: yield* sub_d37f(); return;
         case 0xd65d: yield* sub_d65d(); return;
         case 0xd665: yield* sub_d665(); return;
         case 0x4191: yield* sub_4191(); return;
-        case 0x4180: yield* sub_4180(); return;
-        case 0x81d5: yield* sub_81d5(); return;
-        case 0x447d: yield* sub_447d(); return;
         case 0x6c8f: yield* sub_6c8f(); return;
         case 0x6f29: yield* sub_6f29(); return;
         case 0x6d99: yield* sub_6d99(); return;
         case 0x6f3f: yield* sub_6f3f(); return;
         case 0x6e1e: yield* sub_6e1e(); return;
         case 0x41a2: yield* sub_41a2(); return;
+        case 0x6ef5: yield* sub_6ef5(); return;
+        case 0x6f0f: yield* sub_6f0f(); return;
+        case 0x6d14: yield* sub_6d14(); return;
+        case 0x46e0: yield* sub_46e0(); return;
     }
     console.log("no indirect for ", addr.toString(16));
     assert(0);
 }
 
+var skipSync = false;
 function* sync(k)
 {
+  // lowers framerate to half during gameplay
+//  if (skipSync)
+//  {
+//    skipSync = false;
+//    return;
+//  }
+  yield 0;
+}
+
+function* syncKeyb(k)
+{
+  skipSync = true;
   yield 0;
 }
 
 // app
-var _keybuf = [];
+var bumpyStartupLevel = window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
 var sequence = start();
 sequence.next();
 memory[0x1228 * 16 + 0x4d44 + 0x3d] = 1; // F3 - vga
@@ -674,18 +705,14 @@ sequence.next();
 memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
 sequence.next();
 
-function* syncKey()
-{
-//  if (_keybuf.length)
-//    memory[0x1228 * 16 + 0x8244] = _keybuf.shift();
-}
-
 setInterval( ()=>
 {
-  if (_keybuf.length)
-    memory[0x1228 * 16 + 0x8244] = _keybuf.shift()
   sequence.next();
-  display();
+  if (EGA.access)
+  {
+    EGA.access = false;
+    display();
+  }
 }, 20);
 
 // mess
@@ -704,33 +731,29 @@ function display()
     }
   ctx.putImageData(data, 0, 0);
 }
-
-    var _k = 0;
     document.onkeydown = function(evt) {
         evt = evt || window.event;
         switch (evt.keyCode)
         {
-          case 38: _k |= 1; break;  // up
-          case 40: _k |= 2; break;  // down
-          case 37: _k |= 4; break; // left
-          case 39: _k |= 8; break; // right
-          case 32: _k |= 0x10; break;
+          case 38: memory[0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 1; break; // up
+          case 39: memory[0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 1; break; // right
+          case 40: memory[0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 1; break; // down
+          case 37: memory[0x1228 * 16 + 0x4d44 + "K".charCodeAt(0)] = 1; break; // left
+          case 32: memory[0x1228 * 16 + 0x4d44 + 0x1c] = 1; break; // space -> enter
+          case 27: memory[0x1228 * 16 + 0x4d44 + 1] = 1; break; // esc
         }
-        _keybuf.push(_k);
-//        memory[0x1228 * 16 + 0x8244] = _k;
     }
     document.onkeyup = function(evt) {
         evt = evt || window.event;
         switch (evt.keyCode)
         {
-          case 38: _k &= ~1; break;
-          case 40: _k &= ~2; break;
-          case 37: _k &= ~4; break;
-          case 39: _k &= ~8; break;
-          case 32: _k &= ~0x10; break;
+          case 38: memory[0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 0; break; // up
+          case 39: memory[0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 0; break; // right
+          case 40: memory[0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 0; break; // down
+          case 37: memory[0x1228 * 16 + 0x4d44 + "K".charCodeAt(0)] = 0; break; // left
+          case 32: memory[0x1228 * 16 + 0x4d44 + 0x1c] = 0; break; // space -> enter
+          case 27: memory[0x1228 * 16 + 0x4d44 + 1] = 0; break; // esc
         }
-        _keybuf.push(_k);
-//        memory[0x1228 * 16 + 0x8244] = _k;
     }
 
 </script>

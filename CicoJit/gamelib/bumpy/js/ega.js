@@ -3,6 +3,7 @@ var EGA = {
     [0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
 	   0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff],
   memory : null,
+  access : false,
   getPixel : function(x, y)
   {
   	var off = y * 40 + (x >> 3);
@@ -23,6 +24,7 @@ var EGA = {
   },
   write : function(addr, val)
   {
+                this.access = true;
                 addr -= 0xa0000;
                 if (this.nWriteMode != 1)
 			this.LoadLatch(addr);
@@ -101,18 +103,19 @@ var EGA = {
 	{
 		this.cfgAddr &= 0x00ff;
 		this.cfgAddr |= b<<8;
+                this.access = true;
 	},
 	SetAddrLo : function(b)
 	{
 		this.cfgAddr &= 0xff00;
 		this.cfgAddr |= b;
+                this.access = true;
 	},
 	SetMapMask : function(b) // 3c5.2
 	{
 		this.cfgMapMask = b;
 		this.full_map_mask = this.arrFillTable[b & 15];
 		this.full_not_map_mask = ~this.full_map_mask;
-//console.log("mask: " + b + " " + this.full_map_mask.toString(16));
 	},
 	SetSR : function(b)
 	{
@@ -302,81 +305,14 @@ var EGA = {
 	assert(0);
 
         return false;
-/*
-    virtual bool PortWrite8(int port, int data) override
-    {
-        static int lastPort = 0, lastData = 0;
-        if ( port == 0x3c0 )
-        {
-            static int index = -1;
-            if (index == -1)
-            {
-                if (data <= 0x10)
-                    index = data;
-            }
-            else
-            {
-                SetPaletteIndex(index, data);
-                index = -1;
-            }
-//            std::cout << "port 3c0 ignore\n";
-            return true;
-        }
-        if ( port == 0x3ce )
-        {
-            lastPort = 0x3ce;
-            lastData = data;
-            return true;
-        }
-        if (port == 0x3cf)                                                             
-        {
-            return PortWrite16 ( lastPort, (data<<8)|lastData);
-        }
-
-        return false;
-    }
-
-*/
     },
     SetPaletteIndex: function(index, rgb)
     {
-/*
-        var r = ((rgb & 4) ? 2 : 0) + ((rgb & 32) ? 1 : 0);
-        var g = ((rgb & 2) ? 2 : 0) + ((rgb & 16) ? 1 : 0);
-        var b = ((rgb & 1) ? 2 : 0) + ((rgb & 8) ? 1 : 0);
-        r = Math.floor(r * 255 / 3);
-        g = Math.floor(g * 255 / 3);
-        b = Math.floor(b * 255 / 3);
-*/
-//        this.palette[index] = b | (g << 8) | (r << 16);
-//console.log(index, rgb, this.palette[index].toString(16));
-//        console.log(index, this.palette[index].toString(16));
     },
-   Interrupt: function()
-   {
-        if (r16[ax] == 0x1012)
-        {
-            for (var i=0; i<r16[cx]; i++)
-            {
-                var r = memory[es*16 + r16[dx]+i*3]*4;
-                var g = memory[es*16 + r16[dx]+i*3+1]*4;
-                var b = memory[es*16 + r16[dx]+i*3+2]*4;
-                
-                var palIndex = r16[bx] + i;
-                this.palette[palIndex] = b | (g << 8) | (r << 16);
-            }
-            return true;
-        }
-        if (r16[ax] == 0x1000)
-          return true;
-      console.log("ega int: ah="+r8[ah].toString(16)+" al="+r8[al].toString(16));
-     return true;
-   },
-   PortRead8: function(port)
-   {
+    PortRead8: function(port)
+    {
       if (EGA._crtReg == 0x0c)
           return EGA.cfgAddr>>8;
       assert(0);
-  }
-
+    }
 };
