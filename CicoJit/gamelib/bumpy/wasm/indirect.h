@@ -100,9 +100,9 @@ namespace CicoContext
 {
   void cicocontext_t::callIndirect(int a)
   {
-    char temp[128];
-    sprintf(temp, "callIndirect(%x)", a);
-    apiPrint(temp);
+//    char temp[128];
+//    sprintf(temp, "callIndirect(%x)", a);
+//    apiPrint(temp);
     switch (a)
     {
         case 0x8518: sub_8518(); return; // 01ed:6648

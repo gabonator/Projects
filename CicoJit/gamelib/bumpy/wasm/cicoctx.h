@@ -23,7 +23,7 @@ public:
 
     int _headerSize;
     bool interrupts, direction, carry, zero;
-    uint8_t memory[0x10000*15];
+    uint8_t memory[0x10000*10];
 /*
     void memorySet8(int seg, int ofs, uint8_t v);
     void memorySet16(int seg, int ofs, uint16_t v);

@@ -4,15 +4,30 @@
 #include <setjmp.h>
 #define _HOST
 #include "cicoctx.h"
+#include <emscripten.h>
+#include <emscripten/fiber.h>
+#include <string.h>
+#include "ega.h"
 
-jmp_buf bufferA, bufferB;
-bool resumeJump{false};
+CEga mVideo;
+
+uint32_t mVideoPixels[320*200];
+
+    emscripten_fiber_t main_context;
+    char main_asyncify_stack[1024];
+
+    emscripten_fiber_t fiber_context;
+    char fiber_asyncify_stack[1024];
+    alignas(16) char fiber_c_stack[4096];
+
+//jmp_buf bufferA, bufferB;
+//bool resumeJump{false};
 
 // javascript imports
 extern "C" {
 int sprintf ( char * str, const char * format, ... );
   void apiPrint(char* msg);
-  void apiRead(char* name, void* ofs);
+  int apiRead(char* name, int readofs, int readlen, void* targetofs);
 };
 
 #include "indirect.h"
@@ -90,22 +105,28 @@ namespace CicoContext
     return 0;
   }
 
-  void cicocontext_t::memoryVideoSet8(int seg, int ofs, uint8_t v)
+  void cicocontext_t::memoryVideoSet8(int seg, int ofs, uint8_t data)
   {
+    mVideo.Write(seg*16+ofs, data);
   }
-  void cicocontext_t::memoryVideoSet16(int seg, int ofs, uint16_t v)
+  void cicocontext_t::memoryVideoSet16(int seg, int ofs, uint16_t data)
   {
+    memoryVideoSet8(seg, ofs, data & 0xff);
+    memoryVideoSet8(seg, ofs+1, data >> 8);
   }
   uint8_t cicocontext_t::memoryVideoGet8(int seg, int ofs)
   {
-    return 0;
+    return mVideo.Read(seg*16+ofs);
   }
   uint16_t cicocontext_t::memoryVideoGet16(int seg, int ofs)
   {
-    return 0;
+    return memoryVideoGet8(seg, ofs) | (memoryVideoGet8(seg, ofs+1) << 8);
   }
   void cicocontext_t::callInterrupt(int i)
   {
+    static char currentFile[128];
+    static int currentOfs{0};
+
     if (i == 0x21 && ctx.a.r8.h == 0x30)
     {
         ctx.a.r16 = 0x0005;
@@ -189,7 +210,46 @@ namespace CicoContext
         apiPrint(temp);
         return;
     }
-    apiPrint((char*)"unhanled interrupt");
+    if (i == 0x21 && ctx.a.r8.h == 0x3d)
+    {
+        char filename[100];
+        int j = 0;
+        for (int i=0; i<100; i++)
+        {
+            char c = ctx.memory[ctx._ds*16+ctx.d.r16+i];
+            if (!c)
+                break;
+            if (c >= 'a' && c <= 'z')
+                c -= 'a' - 'A';
+            if (c != ' ')
+            {
+                filename[j++] = c;
+                filename[j] = 0;
+            }
+        }
+        apiPrint(filename);
+        strcpy(currentFile, filename);
+        currentOfs = 0;
+        ctx.carry = 0;
+        ctx.a.r16 = 5;
+        return;
+    }
+    if (i == 0x21 && ctx.a.r8.h == 0x3f)
+    {
+        int readBytes = apiRead(currentFile, currentOfs, ctx.c.r16, &memory[ctx._ds*16+ctx.d.r16]);
+        assert(readBytes > 0);
+        currentOfs += readBytes;
+        ctx.a.r16 = readBytes;
+        ctx.carry = 0;
+        return;
+    }
+    if (i == 0x21 && ctx.a.r8.h == 0x3e)
+    {   
+        return;
+    }
+    char temp[128];
+    sprintf(temp, "unhanled interrupt 0x%02x ah=0x%02x", i, ctx.a.r8.h);
+    apiPrint(temp);
     assert(0);
   }
   bool cicocontext_t::stop(const char* msg)
@@ -200,13 +260,15 @@ namespace CicoContext
   {
     apiPrint((char*)"load!");
     int ofs = ctx._cs*16 - ctx._headerSize;
-    apiRead((char*)file, &ctx.memory[ofs]);
+    apiRead((char*)file, 0, size, &ctx.memory[ofs]);
   } 
   void cicocontext_t::out(int port, uint8_t val)
   {
+    mVideo.PortWrite8(port, val);
   }
   void cicocontext_t::out(int port, uint16_t val)
   {
+    mVideo.PortWrite16(port, val);
   }
   void cicocontext_t::in(uint8_t& val, int port)
   {
@@ -218,34 +280,72 @@ namespace CicoContext
         val = (counter++ & 2) ? 0xff:0x00;
     if (port == 0x201)
         val = 0;
+    if (port == 0x3d4 || port == 0x3d5)
+        val = mVideo.PortRead8(port);
   }
   void cicocontext_t::sync()
   {
-    apiPrint((char*)"--x");
-    resumeJump = true;
-    apiPrint((char*)"sync");
-    apiPrint((char*)"--y");
-    if (!setjmp(bufferB))
-    {
-      apiPrint((char*)"--v");
-      longjmp(bufferA, 1);
-      apiPrint((char*)"--w");
-    } else {
-      apiPrint((char*)"--z");
-    } 
-//    assert(0);
+//    apiPrint((char*)"--sync-1");
+    emscripten_sleep(20);
+//    emscripten_fiber_swap(&fiber_context, &main_context);
   }
   void cicocontext_t::syncKeyb()
   {
-    apiPrint((char*)"syncKeyb");
-    assert(0);
+    emscripten_sleep(20);
   }
 };
 
+void fiberFunc(void* userData) {
+/*
+  apiPrint((char*)"--fiber-1");
+  start();
+  apiPrint((char*)"--fiber-2");
+*/
+}
+
+extern "C" uint8_t* appMemory() { 
+  return CicoContext::ctx.memory;
+}
+
+extern "C" uint32_t* appVideo() { 
+  mVideo.blit(mVideoPixels);
+  return mVideoPixels;
+}
+
 // javascript exports
-extern "C" void appLoop() { }
-extern "C" void appFinish() {}
+extern "C" void appLoop() { 
+/*
+  apiPrint((char*)"--loop-1");
+  emscripten_fiber_swap(&main_context, &fiber_context);
+  apiPrint((char*)"--loop-2");
+*/
+}
+extern "C" void appFinish() {
+//emscripten_cancel_main_loop();
+}
+int i = 0;
 extern "C" void appInit() { 
+  start();
+/*
+    void* p = &i;
+    apiPrint((char*)"--init-1");
+    emscripten_fiber_init_from_current_context(&main_context, main_asyncify_stack, sizeof(main_asyncify_stack));
+    emscripten_fiber_init(&fiber_context, fiberFunc, p, fiber_c_stack, sizeof(fiber_c_stack), fiber_asyncify_stack, sizeof(fiber_asyncify_stack));
+    apiPrint((char*)"--init-2");
+    emscripten_fiber_swap(&main_context, &fiber_context);
+    apiPrint((char*)"--init-3");
+*/
+/*
+  EMSCRIPTEN_RESULT result = emscripten_fiber_init();
+  if (result != EMSCRIPTEN_RESULT_SUCCESS) {
+    printf("Failed to initialize fiber system\n");
+    return;
+  }
+  result = emscripten_fiber_create(&fiber, fiberFunc, NULL);
+  if (result != EMSCRIPTEN_RESULT_SUCCESS) {
+    printf("Failed to create fiber\n");
+    return;
+  }
   apiPrint((char*)"--a");
   if (!setjmp(bufferA))
   {  
@@ -263,4 +363,7 @@ extern "C" void appInit() {
   } else {
     apiPrint((char*)"--g");
   }
+*/
+//  emscripten_set_main_loop(start, 0, 1);
+//  start();
 }
