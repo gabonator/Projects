@@ -1,12 +1,7 @@
 #include "cicoctx.h"
 using namespace CicoContext;
 
-extern "C" {
-  int sprintf ( char * str, const char * format, ... );
-  void apiPrint(char* msg);
-};
-
-int bumpyStartupLevel = 1;
+extern "C" int bumpyStartupLevel = 1;
 
 void sub_1ed0();
 void fixReloc(uint16_t seg);
@@ -4943,7 +4938,7 @@ loc_3cac:
 }
 void sub_3cae()
 {
-    syncKeyb();
+//    syncKeyb();
     push(0x7777);
     push(bp);
     bp = sp;
@@ -7497,6 +7492,7 @@ loc_516b:
     memorySet(ds, 0x8244, 0x00);
     goto loc_5175;
 loc_5172:
+    sync();
     sub_3cae();
 loc_5175:
     al = memoryGet(ds, 0x8244);
@@ -8212,6 +8208,7 @@ loc_580c:
     sub_5958();
     goto loc_5944;
 loc_58ec:
+    sync();
     sub_3cae();
     if (!(memoryGet(ds, 0x8244) & 0x01))
         goto loc_58fb;
@@ -21616,6 +21613,7 @@ loc_d5d2:
     al >>= 1;
     out(dx, al);
     si -= bp;
+    assert(es >= 0xa000 && ds < 0xa000);
     movsb<MemVideo, MemData, DirForward>();
     ah = ch;
     si = pop();

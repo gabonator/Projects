@@ -23,7 +23,7 @@ public:
 
     int _headerSize;
     bool interrupts, direction, carry, zero;
-    uint8_t memory[0x10000*10];
+    uint8_t memory[0x10000*14];
 /*
     void memorySet8(int seg, int ofs, uint8_t v);
     void memorySet16(int seg, int ofs, uint16_t v);
@@ -238,13 +238,13 @@ struct DirForward
     }
 };
 
-template <typename SRC, typename DST, typename DIR> void movsw()
+template <typename DST, typename SRC, typename DIR> void movsw()
 {
     DIR::Assert();
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
 }
-template <typename SRC, typename DST, typename DIR> void movsb ()
+template <typename DST, typename SRC, typename DIR> void movsb ()
 {
     DIR::Assert();
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
@@ -281,7 +281,7 @@ template <typename DST, typename DIR> void rep_stosb()
         cx = 0;
     }
 }
-template <typename SRC, typename DST, typename DIR> void rep_movsw()
+template <typename DST, typename SRC, typename DIR> void rep_movsw()
 {
     if (!cx)
         return;
@@ -289,7 +289,7 @@ template <typename SRC, typename DST, typename DIR> void rep_movsw()
         movsw<DST, SRC, DIR>();
     cx = 0;
 }
-template <typename SRC, typename DST, typename DIR> void rep_movsb()
+template <typename DST, typename SRC, typename DIR> void rep_movsb()
 {
     if (cx == 0) return;
     assert(cx);

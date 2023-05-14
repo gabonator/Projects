@@ -22,6 +22,7 @@ public:
     uint32_t egamemory[MemSize];
     int nWriteMode;
     int nReadMode;
+    bool modified{false};
     union TLatch
     {
         uint32_t u32Data;
@@ -91,7 +92,7 @@ public:
         full_map_mask                = 0xffffffff;
         full_not_map_mask            = ~full_map_mask;
         full_bit_mask                = 0xffffffff;
-    
+        modified = false;
         memset(egamemory, 0, sizeof(egamemory));
     }
     
@@ -339,6 +340,7 @@ public:
         }
         if (port == 0x3c9)
         {
+            //modified = true;
             int base = colorindex/3;
             int ch = colorindex%3;
             ((uint8_t*)palette)[base*4+ch] = data*4;
@@ -433,6 +435,7 @@ public:
     {
         cfgAddr &= 0x00ff;
         cfgAddr |= ((uint16_t)b)<<8;
+            modified = true;
         //std::cout << "video addr="<<std::hex << cfgAddr<<"\n";
     }
 
@@ -440,6 +443,7 @@ public:
     {
         cfgAddr &= 0xff00;
         cfgAddr |= b;
+            modified = true;
     }
 
     void SetMapMask(uint8_t b) // 3c5.2
@@ -491,10 +495,8 @@ public:
         
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
+        modified = true;
         dwAddr -= 0xa000 * 16;
-        if (bWrite){
-            int f = 9;
-        }
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
 
@@ -509,16 +511,12 @@ public:
 
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
-        static int q = 0;
-        if (q++ > 50000)
-        {
-//            _sync();
-            q= 0;
-        }
     }
 
     virtual uint8_t Read(uint32_t dwAddr) override
     {
+//        if (dwAddr < 0xa0000 || dwAddr - 0xa0000 >= sizeof(egamemory))
+//          return 0;
         dwAddr -= 0xa000 * 16;
         assert( dwAddr < sizeof(egamemory) );
         LoadLatch(dwAddr); //((uint32_t*)&egamemory[dwAddr])[dwAddr];
@@ -611,8 +609,11 @@ public:
         return 0;
     }
 
-void blit(uint32_t* pixels)
+bool blit(uint32_t* pixels)
 {
+  if (!modified)
+    return false;
+  modified = false;
 /*
         uint8_t* _video = (uint8_t*)egamemory;
         uint32_t off = (int)y * 40L + ((int)x / 8L);
@@ -646,6 +647,7 @@ void blit(uint32_t* pixels)
                 *pixels++ = palette[index >> 7];
             }
         }
+  return true;
 }
 
 };

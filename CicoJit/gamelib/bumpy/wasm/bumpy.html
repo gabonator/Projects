@@ -127,9 +127,21 @@ var memoryOfs = 0;
     var imageData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
 
 
+var counter = 0;
 function __onSleep()
 {
+  switch (counter++)
+  {
+    case 1: HEAP8[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
+    case 2: HEAP8[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
+    case 3: HEAP8[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
+    case 4: HEAP8[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
+  }
+
   var ptr = _appVideo();
+  if (!ptr)
+    return;
+
     const data = new Uint8ClampedArray(Module.asm.memory.buffer, ptr, 320 * 200 * 4);
     const img = new ImageData(data, 320, 200);
     this.ctx.putImageData(img, 0, 0);
@@ -140,7 +152,11 @@ setInterval(()=>{
 //  var ptr = _appVideo();
 //  console.log("video", ptr);
 }, 1000);
+
+var bumpyStartupLevel = window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
+
 function ready() {
+  HEAP8[Module.asm.bumpyStartupLevel.value] = bumpyStartupLevel;
   _appInit();
   memoryOfs = _appMemory();
 //  _appLoop();
@@ -162,10 +178,10 @@ memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
         var mo = memoryOfs // Module.asm.memory;
         switch (evt.keyCode)
         {
-          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
-          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
-
-          case 38: memory[mo+0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 1; break; // right
+//          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
+//          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
+          case 38: memory[mo+0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 1; break; // right
+          case 39: memory[mo+0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 1; break; // right
           case 40: memory[mo+0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 1; break; // down
           case 37: memory[mo+0x1228 * 16 + 0x4d44 + "K".charCodeAt(0)] = 1; break; // left
           case 32: memory[mo+0x1228 * 16 + 0x4d44 + 0x1c] = 1; break; // space -> enter
@@ -178,8 +194,8 @@ memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
         var mo = memoryOfs // Module.asm.memory;
         switch (evt.keyCode)
         {
-          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
-          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
+//          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
+//          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
           case 38: memory[mo+0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 0; break; // up
           case 39: memory[mo+0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 0; break; // right
           case 40: memory[mo+0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 0; break; // down

@@ -13,16 +13,6 @@ CEga mVideo;
 
 uint32_t mVideoPixels[320*200];
 
-    emscripten_fiber_t main_context;
-    char main_asyncify_stack[1024];
-
-    emscripten_fiber_t fiber_context;
-    char fiber_asyncify_stack[1024];
-    alignas(16) char fiber_c_stack[4096];
-
-//jmp_buf bufferA, bufferB;
-//bool resumeJump{false};
-
 // javascript imports
 extern "C" {
 int sprintf ( char * str, const char * format, ... );
@@ -116,6 +106,7 @@ namespace CicoContext
   }
   uint8_t cicocontext_t::memoryVideoGet8(int seg, int ofs)
   {
+    assert(seg*16+ofs >= 0xa0000 && seg*16+ofs-0xa0000 < 0x10000*2*4);
     return mVideo.Read(seg*16+ofs);
   }
   uint16_t cicocontext_t::memoryVideoGet16(int seg, int ofs)
@@ -285,85 +276,26 @@ namespace CicoContext
   }
   void cicocontext_t::sync()
   {
-//    apiPrint((char*)"--sync-1");
-    emscripten_sleep(20);
-//    emscripten_fiber_swap(&fiber_context, &main_context);
-  }
-  void cicocontext_t::syncKeyb()
-  {
-    emscripten_sleep(20);
+    emscripten_sleep(30);
   }
 };
-
-void fiberFunc(void* userData) {
-/*
-  apiPrint((char*)"--fiber-1");
-  start();
-  apiPrint((char*)"--fiber-2");
-*/
-}
 
 extern "C" uint8_t* appMemory() { 
   return CicoContext::ctx.memory;
 }
 
 extern "C" uint32_t* appVideo() { 
-  mVideo.blit(mVideoPixels);
+  if (!mVideo.blit(mVideoPixels))
+    return nullptr;
   return mVideoPixels;
 }
 
 // javascript exports
 extern "C" void appLoop() { 
-/*
-  apiPrint((char*)"--loop-1");
-  emscripten_fiber_swap(&main_context, &fiber_context);
-  apiPrint((char*)"--loop-2");
-*/
 }
 extern "C" void appFinish() {
-//emscripten_cancel_main_loop();
 }
 int i = 0;
 extern "C" void appInit() { 
   start();
-/*
-    void* p = &i;
-    apiPrint((char*)"--init-1");
-    emscripten_fiber_init_from_current_context(&main_context, main_asyncify_stack, sizeof(main_asyncify_stack));
-    emscripten_fiber_init(&fiber_context, fiberFunc, p, fiber_c_stack, sizeof(fiber_c_stack), fiber_asyncify_stack, sizeof(fiber_asyncify_stack));
-    apiPrint((char*)"--init-2");
-    emscripten_fiber_swap(&main_context, &fiber_context);
-    apiPrint((char*)"--init-3");
-*/
-/*
-  EMSCRIPTEN_RESULT result = emscripten_fiber_init();
-  if (result != EMSCRIPTEN_RESULT_SUCCESS) {
-    printf("Failed to initialize fiber system\n");
-    return;
-  }
-  result = emscripten_fiber_create(&fiber, fiberFunc, NULL);
-  if (result != EMSCRIPTEN_RESULT_SUCCESS) {
-    printf("Failed to create fiber\n");
-    return;
-  }
-  apiPrint((char*)"--a");
-  if (!setjmp(bufferA))
-  {  
-    apiPrint((char*)"--b");
-    if (resumeJump)
-    {
-      apiPrint((char*)"--c");
-      longjmp(bufferB, 1);
-      apiPrint((char*)"--d");
-    } else {
-      apiPrint((char*)"--e");
-      start(); 
-      apiPrint((char*)"--f");
-    }
-  } else {
-    apiPrint((char*)"--g");
-  }
-*/
-//  emscripten_set_main_loop(start, 0, 1);
-//  start();
 }
