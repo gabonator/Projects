@@ -13,6 +13,10 @@ CEga mVideo;
 
 uint32_t mVideoPixels[320*200];
 
+extern "C" uint8_t asyncifyBuffer[];
+uint8_t asyncifyBuffer[4096+12];
+extern "C" uint8_t* appMemory = CicoContext::ctx.memory;
+
 // javascript imports
 extern "C" {
 int sprintf ( char * str, const char * format, ... );
@@ -276,13 +280,16 @@ namespace CicoContext
   }
   void cicocontext_t::sync()
   {
+//    apiPrint((char*)"a");
     emscripten_sleep(30);
+//    apiPrint((char*)"b");
+
   }
 };
 
-extern "C" uint8_t* appMemory() { 
-  return CicoContext::ctx.memory;
-}
+//extern "C" uint8_t* appMemory() { 
+//  return CicoContext::ctx.memory;
+//}
 
 extern "C" uint32_t* appVideo() { 
   if (!mVideo.blit(mVideoPixels))

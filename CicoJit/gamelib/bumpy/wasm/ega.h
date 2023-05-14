@@ -150,7 +150,7 @@ public:
 */
         if (ctx->a.r16 == 0x0b)
         {
-            printf( "set pallete not impl\n");
+//            printf( "set pallete not impl\n");
             
             return true;
         }
@@ -183,7 +183,7 @@ public:
             return true;
         }
 
-        printf("not implemented!\n");
+//        printf("not implemented!\n");
         assert(0);
         return false;
     }
@@ -250,7 +250,7 @@ public:
             }
         }
        // _ASSERT(0);
-        printf( "Unknown EGA reg\n");
+//        printf( "Unknown EGA reg\n");
         return true;
 
         return false;

@@ -15,9 +15,9 @@ BASE=http://localhost:8084/
 
 INCLUDES=
 #EXPORTED="['_appLoop', '_appInit', '_appFinish', '_apiDebug', '_apiShow']"
-EXPORTED="['_appLoop', '_appInit', '_appFinish', '_appMemory', '_appVideo', '_bumpyStartupLevel']"
+EXPORTED="['_appLoop', '_appInit', '_appFinish', '_appMemory', '_appVideo', '_bumpyStartupLevel', '_asyncifyBuffer']"
 #CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=65536 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0"
-CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=2097152 -s MINIMAL_RUNTIME=0 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -sASYNCIFY "
+CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=2097152 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -sASYNCIFY "
 DEFINES="-DEMSCRIPTEN"
 emcc $INCLUDES $SOURCE -gsource-map -O3 --std=c++11 $CONFIGURATION $DEFINES --source-map-base $BASE -s EXPORTED_FUNCTIONS="${EXPORTED}" -o $NAME.js || exit 1
 #node /Users/gabrielvalky/Documents/git/LA104/system/os_platform/wasm/htmllite/package.js $NAME
@@ -36,6 +36,7 @@ EOM
 
 node pack app
 rm pack.js
-cp ../app.js app.js
+#cp ../app.js app.js
+rm app.js
 cp ../bumpy.html .
 cp ../../js/resources.js .

@@ -2,6 +2,7 @@
 
 <script src="app_inline.js"></script>
 <script>
+/*
     ABORT = false;
      function _apiPrint(ptr)
     { 
@@ -22,15 +23,24 @@
     }
 
   Module['wasm'] = Module['wasmBinary'];
-
+*/
 </script>
-<script src="app.js"></script>
+<!--<script src="app.js"></script>-->
 <script src="resources.js"></script>
 <!--<script src="fibers.js"></script>-->
 <script>
-/*
+
 var Module = typeof Module !== 'undefined' ? Module : {};
 
+  function ___assert_fail(condition, filename, line, func) {
+      abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
+    }
+  function _emscripten_memcpy_big(dest, src, num) {
+      HEAPU8.copyWithin(dest, src, src + num);
+    }
+
+  var HEAPU8;
+  var HEAPU32;
 function Main() 
 {
   var WASM_PAGE_SIZE = 65536;
@@ -38,16 +48,17 @@ function Main()
   var DYNAMICTOP_PTR = 11856;
 
   var abort = (what) => { throw 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.'};
-
   var env =
-     { "abort": abort, 
-       "_abort": abort,
-       "__assert_fail": abort, 
-       "__setErrNo": abort, 
-       "emscripten_get_heap_size": abort, 
-       "emscripten_memcpy_big": abort, 
-       "emscripten_resize_heap": abort,
-       "abortOnCannotGrowMemory": abort, 
+     { "abort": () => {console.log("abort1"); abort()}, 
+       "_abort": () => {console.log("abort2"); abort()},
+       "__assert_fail": ___assert_fail, 
+       "__setErrNo": () => {console.log("abort3"); abort()}, 
+       "emscripten_get_heap_size": () => {console.log("abort4"); abort()}, 
+       "emscripten_memcpy_big": (dest, src, num) => {
+         HEAPU8.copyWithin(dest, src, src + num);
+       }, 
+       "emscripten_resize_heap": () => {console.log("abort6"); abort()},
+       "abortOnCannotGrowMemory": () => {console.log("abort7"); abort()}, 
        "DYNAMICTOP_PTR": DYNAMICTOP_PTR,
        memory:new WebAssembly.Memory({ 'initial': TOTAL_MEMORY / WASM_PAGE_SIZE, 'maximum': TOTAL_MEMORY / WASM_PAGE_SIZE }),
        table:new WebAssembly.Table({'initial': 84,'maximum': 84,'element': 'anyfunc'}),
@@ -59,9 +70,11 @@ function Main()
   for (var i in imports)
     env[i] = imports[i];
 
-  return WebAssembly.instantiate(new Uint8Array(Module['wasmBinary']), {env:env})
+  return WebAssembly.instantiate(new Uint8Array(Module['wasmBinary']), {env:env,wasi_snapshot_preview1: env})
   .then( output => 
    {
+    HEAPU8 = new Uint8Array(output.instance.exports.memory.buffer);
+    HEAP32 = new Int32Array(output.instance.exports.memory.buffer);
     var exports = output.instance.exports;
     Module['asm'] = exports;
     if (Module["asm"]["__wasm_call_ctors"]) Module["asm"]["__wasm_call_ctors"]();
@@ -71,10 +84,13 @@ function Main()
     for (var i in _exports)
       Module[i] = _exports[i] = Module["asm"][i];
 
-    Module["memory"] = new Uint8Array(exports.memory.buffer);        
+    Module["memory"] = new Uint8Array(exports.memory.buffer);
     return output;
   });
 };
+
+var rewinding = false;
+var startup = 0;
 
   Module['imports'] = {
     apiPrint: (ptr) => { 
@@ -87,37 +103,106 @@ function Main()
         text += String.fromCharCode(Module['memory'][ptr+i]);
       return text;
     },
-    apiRead: (ptrName, ptrData) => {
-//      console.log(Module['imports'].string(ptrName), ptrData)
+    apiRead: (ptrName, readOfs, readLen, ptrData) =>
+    {
       var name = Module['imports'].string(ptrName);
+      console.log("Read ", name);
       var b = Module[name];
+      var willRead = Math.min(b.length-readOfs, readLen);
       var memory = Module['memory'];
-      for (var i=0; i<b.length; i++)
-        memory[i+ptrData] = b[i];
+      for (var i=0; i<readLen; i++)
+        memory[i+ptrData] = b[i+readOfs];
+      return willRead;
     },
-    emscripten_fiber_swap: _emscripten_fiber_swap,
-    emscripten_fiber_init_from_current_context: _emscripten_fiber_init_from_current_context,
-    emscripten_fiber_init: _emscripten_fiber_init,
+    // https://gov.near.org/t/discussion-synchronous-contracts/11869/8
+    emscripten_sleep: () => {
+        if (!rewinding)
+        {
+          var ptr = Module.asm.asyncifyBuffer.value;
+          HEAP32[((ptr)>>2)] = ptr+12;
+          HEAP32[(((ptr)+(4))>>2)] = ptr+12 + 4096;
+          HEAP32[(((ptr)+(8))>>2)] = 0;
+          Module.asm.asyncify_start_unwind(ptr);
+
+          setTimeout( ()=> {
+            rewinding = true;
+
+            Module.asm.asyncify_start_rewind(ptr);
+            Module.asm.appInit();
+            Module.asm.asyncify_stop_unwind();
+
+          }, 30);
+
+        } else {
+          Module.asm.asyncify_stop_rewind();
+
+        var memory = Module["memory"]//HEAPU8;
+  switch (startup++)
+  {
+    case 1: memory[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
+    case 2: memory[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
+    case 3: memory[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
+    case 4: memory[memoryOfs+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
+  }
+  var ptr = Module.asm.appVideo();
+  if (ptr)
+  {
+    const data = new Uint8ClampedArray(Module.asm.memory.buffer, ptr, 320 * 200 * 4);
+    const img = new ImageData(data, 320, 200);
+    this.ctx.putImageData(img, 0, 0);
+  }
+
+          rewinding = false;
+          return 0;
+        }
+    },
+    fd_close: () => {
+     console.log("close");
+      throw "close"
+    },
+    fd_write: () => {
+     console.log("write");
+
+      throw "write"
+    },
+    fd_seek: () => {
+     console.log("seek");
+
+      throw "seek"
+    },
+    __assert_fail: () => {
+     console.log("assert");
+
+       throw "assert";
+    }
+//    emscripten_fiber_swap: () => {}
+//    emscripten_fiber_init_from_current_context: _emscripten_fiber_init_from_current_context,
+//    emscripten_fiber_init: _emscripten_fiber_init,
   }
   Module['exports'] = {
     appFinish: null,
     appInit: null,
-    appLoop: null
+    appLoop: null,
+    appVideo: null
   };
 Module['run'] = Main;
 
+var memoryOfs = -1;
 Main().then( (m)=>
 {
-  console.log("pre call");
+  memoryOfs = HEAP32[Module.asm.appMemory.value>>2];
+  console.log("pre main call");
   Module.appInit();
-  console.log("post call");
+  Module.asm.asyncify_stop_unwind();
 
-  console.log("pre call2");
-  Module.appInit();
-  console.log("post call2");
-//  console.log(m.instance.exports.appInit());
+  console.log("post main call");
 });
-*/
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var imageData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+
+/*
 setTimeout(ready, 100);
 var phase = 0;
 var memoryOfs = 0;
@@ -161,25 +246,17 @@ function ready() {
   memoryOfs = _appMemory();
 //  _appLoop();
 // switch(phase++)
-/*
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3d] = 1; // F3 - vga
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3d] = 0;
-memory[0x1228 * 16 + 0x4d44 + 0x3f] = 1; // F5 - no sound
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
-*/
 }
-
+*/
     document.onkeydown = function(evt) {
         evt = evt || window.event;
-        var memory = HEAP8;
+        var memory = Module["memory"]//HEAPU8;
         var mo = memoryOfs // Module.asm.memory;
+//        console.log(mo);
         switch (evt.keyCode)
         {
-//          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
-//          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
+          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 1; break; 
+          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 1; break; 
           case 38: memory[mo+0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 1; break; // right
           case 39: memory[mo+0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 1; break; // right
           case 40: memory[mo+0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 1; break; // down
@@ -190,12 +267,13 @@ memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
     }
     document.onkeyup = function(evt) {
         evt = evt || window.event;
-        var memory = HEAP8;
+        var memory = Module["memory"]//HEAPU8;
         var mo = memoryOfs // Module.asm.memory;
+//        console.log(mo);
         switch (evt.keyCode)
         {
-//          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
-//          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
+          case 0x33: memory[mo+0x1228 * 16 + 0x4d44 + 0x3d] = 0; break; 
+          case 0x35: memory[mo+0x1228 * 16 + 0x4d44 + 0x3f] = 0; break; 
           case 38: memory[mo+0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 0; break; // up
           case 39: memory[mo+0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = 0; break; // right
           case 40: memory[mo+0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = 0; break; // down
