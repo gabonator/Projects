@@ -1,7 +1,8 @@
 #include "cicoctx.h"
 using namespace CicoContext;
 
-extern "C" int bumpyStartupLevel = 1;
+int bumpyStartupLevel = 1;
+const char* bumpyScene = "";
 
 void sub_1ed0();
 void fixReloc(uint16_t seg);
@@ -3067,6 +3068,7 @@ loc_2b42:
     sub_6a1e();
     goto loc_2c19;
 loc_2baa:
+    bumpyScene = "game";
     sub_b281();
     memorySet(ds, 0x79b3, al);
     sub_325c();
@@ -7411,6 +7413,7 @@ loc_508d:
     memorySet(ds, 0x8244, 0x00);
     goto loc_50a0;
 loc_5094:
+    bumpyScene = "splash";
     sync();
     sub_3cae();
     ax = memoryGet16(ds, 0x119c);
@@ -7906,6 +7909,7 @@ loc_552d:
     sp++;
     goto loc_56d9;
 loc_55cf:
+    bumpyScene = "menu";
     al = memoryGet(ds, 0x79b5);
     ah = 0x00;
     ax <<= 1;
@@ -8208,6 +8212,7 @@ loc_580c:
     sub_5958();
     goto loc_5944;
 loc_58ec:
+    bumpyScene = "levels";
     sync();
     sub_3cae();
     if (!(memoryGet(ds, 0x8244) & 0x01))
@@ -11869,6 +11874,7 @@ loc_78b2:
     sp += 0x0008;
     goto loc_7b30;
 loc_791a:
+    bumpyScene = "highscores";
     if (!(memoryGet(ss, bp - 1) & 0x01))
         goto loc_7984;
     if ((short)memoryGet16(ss, bp - 6) <= (short)0x01ac)
@@ -20833,6 +20839,7 @@ loc_cd70:
     if (--cx)
         goto loc_cd5d;
 loc_cd76:
+    bumpyScene = "startup";
     sync();
     al = 0x3c;
     push(cs);
