@@ -1,4 +1,5 @@
 var bumpyStartupLevel = 1;
+var bumpyScene = "";
 
 function* start() {
     headerSize = 0x1200;
@@ -2781,6 +2782,7 @@ function* sub_2ae8() {
         pc = 0x2c19;
         break;
     case 0x2baa:
+        bumpyScene = "game";
         yield* sub_b281();
         memory[ds*16 + 0x79b3] = r8[al];
         yield* sub_325c();
@@ -5004,7 +5006,6 @@ function* sub_3cae() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        yield* syncKeyb();
         push(0x7777);
         push(bp);
         bp = sp;
@@ -8089,6 +8090,7 @@ function* sub_4fad() {
         pc = 0x50a0;
         break;
     case 0x5094:
+        bumpyScene = "splash";
         yield* sync();
         yield* sub_3cae();
         r16[ax] = memory16get(ds, 0x119c);
@@ -8185,6 +8187,7 @@ function* sub_515f() {
         pc = 0x5175;
         break;
     case 0x5172:
+        yield* sync();
         yield* sub_3cae();
     case 0x5175:
         r8[al] = memory[ds*16 + 0x8244];
@@ -8640,6 +8643,7 @@ function* sub_5475() {
         pc = 0x56d9;
         break;
     case 0x55cf:
+        bumpyScene = "menu";
         r8[al] = memory[ds*16 + 0x79b5];
         r8[ah] = 0x00;
         r16[ax] <<= 1;
@@ -8975,6 +8979,8 @@ function* sub_5722() {
         pc = 0x5944;
         break;
     case 0x58ec:
+        bumpyScene = "levels";
+        yield* sync();
         yield* sub_3cae();
         if (!(memory[ds*16 + 0x8244] & 0x01)) {
             pc = 0x58fb;
@@ -13566,6 +13572,7 @@ function* sub_78a3() {
         pc = 0x7b30;
         break;
     case 0x791a:
+        bumpyScene = "highscores";
         if (!(memory[ss*16 + bp - 1] & 0x01)) {
             pc = 0x7984;
             break;
@@ -17756,7 +17763,7 @@ function* sub_9472() {
             break;
         }
         r8[al] &= 0x7f;
-        r8[al] = memory[ds*16+r16[bx]+r8[al]];
+        r8[al] = memory[ds*16 + r16[bx]+r8[al]];
         if (r8[al] == 0) {
             pc = 0x94d3;
             break;
@@ -24423,6 +24430,7 @@ function* sub_cd2e() {
             break;
         }
     case 0xcd76:
+        bumpyScene = "startup";
         yield* sync();
         r8[al] = 0x3c;
         push(cs);

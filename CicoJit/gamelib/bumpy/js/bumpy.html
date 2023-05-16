@@ -687,12 +687,6 @@ function* sync(k)
   yield 0;
 }
 
-function* syncKeyb(k)
-{
-  skipSync = true;
-  yield 0;
-}
-
 // app
 var bumpyStartupLevel = window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
 var sequence = start();
@@ -713,7 +707,7 @@ setInterval( ()=>
     EGA.access = false;
     display();
   }
-}, 20);
+}, 30);
 
 // mess
 function display()

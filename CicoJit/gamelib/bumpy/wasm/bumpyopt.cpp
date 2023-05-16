@@ -21620,7 +21620,6 @@ loc_d5d2:
     al >>= 1;
     out(dx, al);
     si -= bp;
-    assert(es >= 0xa000 && ds < 0xa000);
     movsb<MemVideo, MemData, DirForward>();
     ah = ch;
     si = pop();

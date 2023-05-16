@@ -2,10 +2,11 @@
 using namespace CicoContext;
 
 int bumpyStartupLevel = 1;
+const char* bumpyScene = "";
 
 void sub_1ed0();
 void fixReloc(uint16_t seg);
-void syncKeyb();
+
 void start()
 {
     headerSize = 0x1200;
@@ -3068,6 +3069,7 @@ loc_2b42:
     sub_6a1e();
     goto loc_2c19;
 loc_2baa:
+    bumpyScene = "game";
     sub_b281();
     memoryASet(ds, 0x79b3, al);
     sub_325c();
@@ -4939,7 +4941,7 @@ loc_3cac:
 }
 void sub_3cae()
 {
-    syncKeyb();
+//    syncKeyb();
     push(0x7777);
     push(bp);
     bp = sp;
@@ -7412,6 +7414,7 @@ loc_508d:
     memoryASet(ds, 0x8244, 0x00);
     goto loc_50a0;
 loc_5094:
+    bumpyScene = "splash";
     sync();
     sub_3cae();
     ax = memoryAGet16(ds, 0x119c);
@@ -7493,6 +7496,7 @@ loc_516b:
     memoryASet(ds, 0x8244, 0x00);
     goto loc_5175;
 loc_5172:
+    sync();
     sub_3cae();
 loc_5175:
     al = memoryAGet(ds, 0x8244);
@@ -7906,6 +7910,7 @@ loc_552d:
     sp++;
     goto loc_56d9;
 loc_55cf:
+    bumpyScene = "menu";
     al = memoryAGet(ds, 0x79b5);
     ah = 0x00;
     ax <<= 1;
@@ -8208,6 +8213,8 @@ loc_580c:
     sub_5958();
     goto loc_5944;
 loc_58ec:
+    bumpyScene = "levels";
+    sync();
     sub_3cae();
     if (!(memoryAGet(ds, 0x8244) & 0x01))
         goto loc_58fb;
@@ -11868,6 +11875,7 @@ loc_78b2:
     sp += 0x0008;
     goto loc_7b30;
 loc_791a:
+    bumpyScene = "highscores";
     if (!(memoryAGet(ss, bp - 1) & 0x01))
         goto loc_7984;
     if ((short)memoryAGet16(ss, bp - 6) <= (short)0x01ac)
@@ -15255,7 +15263,7 @@ loc_94d3:
     if (al >= 0xfd)
         goto loc_94e6;
     al &= 0x7f;
-    al = memory(ds, bx+al);
+    al = memoryAGet(ds, bx+al);
     if (al == 0)
         goto loc_94d3;
     dl |= dh;
@@ -20832,6 +20840,7 @@ loc_cd70:
     if (--cx)
         goto loc_cd5d;
 loc_cd76:
+    bumpyScene = "startup";
     sync();
     al = 0x3c;
     push(cs);
