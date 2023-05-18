@@ -1,0 +1,279 @@
+diff --git a/./comic.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/game.cpp
+index ff95e53..34293e9 100644
+--- a/./comic.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/game.cpp
+@@ -4,6 +4,10 @@ using namespace CicoContext;
+ void sub_1ed0();
+ void fixReloc(uint16_t seg);
+ 
++int sign(int i)
++{
++    return i >= 0 ? 1 : -1;
++}
+ void start()
+ {
+     headerSize = 0x0200;
+@@ -85,9 +89,12 @@ void sub_3f80();
+ void sub_4119();
+ void sub_4135();
+ void sub_4159();
++void timer()
++{
++    sub_22c5();
++}
+ void sub_1ed0() // 01ed:0000
+ {
+-    stop(/*unk call conv*/);
+     flags.direction = false;
+     ax = 0x0417;
+     ds = ax;
+@@ -725,6 +732,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -733,7 +741,7 @@ loc_3044: // 01ed:1174
+         goto loc_3071;
+     if (memoryAGet(ds, 0xca33) == 0x01)
+         goto loc_3044;
+-    if (memoryAGet(cs, 0x0388) == 0x01)
++    if (memoryAGet(cs, 0x0388) == 0x01) // jump
+         goto loc_3044;
+     al = memoryAGet(ds, 0x0047);
+     memoryASet(ds, 0xca37, al);
+@@ -937,8 +945,13 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     al = sar(al, 1);
+     bx = si;
++    {
++        int sf = !!((bl+al) & 0x80);
++        int of = sign((int8_t)bl) != sign((int8_t)bl+al);
++        flags.carry = sf == of;
++    }
+     bl += al;
+-    if (stop(/*71*/))
++    if (flags.carry) // jge cico
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -1112,6 +1125,7 @@ void sub_218c() // 01ed:02bc
+ void sub_2213() // 01ed:0343
+ {
+ loc_2213: // 01ed:0343
++    sync(); timer();
+     if (memoryAGet(cs, 0x03ea) != 0x01)
+         goto loc_2213;
+     memoryASet(cs, 0x03ea, 0x00);
+@@ -1194,9 +1208,9 @@ loc_2226: // 01ed:0356
+ loc_22b3: // 01ed:03e3
+     goto loc_2226;
+ }
+-void sub_22c5() // 01ed:03f5
++void sub_22c5() // 01ed:03f5 - timer?
+ {
+-    stop(/*unk call conv*/);
++    //stop(/*unk call conv*/);
+     push(ax);
+     al = memoryAGet(cs, 0x03eb);
+     al++;
+@@ -1261,11 +1275,10 @@ loc_2366: // 01ed:0496
+     bx = pop();
+     es = pop();
+     ax = pop();
+-    stop(); // ljmp cs:[0x3e6]
++    //stop(); // ljmp cs:[0x3e6]
+ }
+ void sub_2373() // 01ed:04a3
+ {
+-    stop(/*unk call conv*/);
+     if (!al)
+         goto loc_23b9;
+     if (al == 0x01)
+@@ -1316,7 +1329,8 @@ loc_23e5: // 01ed:0515
+     al &= 0xfc;
+     out(0x0061, al);
+ loc_23eb: // 01ed:051b
+-    stop(); // iret 
++//    stop(); // iret
++    return;
+ }
+ void sub_23ec() // 01ed:051c
+ {
+@@ -2415,6 +2429,7 @@ loc_2fc5: // 01ed:10f5
+     if (--cx)
+         goto loc_2fc5;
+     ax = 0x0004;
++    sub_2373(); // GABO INT!
+     if (!ax)
+         goto loc_2fe5;
+     cx = 0x0001;
+@@ -2502,7 +2517,7 @@ void sub_33b4() // 01ed:14e4
+ {
+     push(0x7777);
+     goto loc_33b4;
+-loc_2226: // 01ed:0356
++loc_2226: // 01ed:x0356
+     ax = 0x0002;
+     sub_2465();
+     ax = 0x0002;
+@@ -2862,6 +2877,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -3075,7 +3091,7 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     bx = si;
+     bl += al;
+-    if (stop(/*71*/))
++    if ((int8_t)bl >= 0) //stop(/*71*/)) jge
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -3594,6 +3610,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -3807,7 +3824,7 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     bx = si;
+     bl += al;
+-    if (stop(/*71*/))
++    if ((int8_t)bl >= 0) //stop(/*71*/)) jge
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -4322,6 +4339,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -4535,7 +4553,7 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     bx = si;
+     bl += al;
+-    if (stop(/*71*/))
++    if ((int8_t)bl >= 0) //stop(/*71*/)) jge
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -4636,7 +4654,10 @@ loc_3410: // 01ed:1540
+ loc_341e: // 01ed:154e
+     ax = si;
+     if (ah != 0xfe)
++    {
++        flags.zero = false;
+         goto loc_3437;
++    }
+     di = memoryAGet16(ds, 0x5172);
+     if (memoryAGet(ds, di + 4) == 0xff)
+         goto loc_340a;
+@@ -4645,7 +4666,7 @@ loc_341e: // 01ed:154e
+     goto loc_346e;
+     stop(/*7*/); //   
+ loc_3437: // 01ed:1567
+-    if (stop(/*1*/))
++    if (flags.zero) // je cico
+         goto loc_340a;
+     ah += 0x02;
+     al += 0x03;
+@@ -5058,6 +5079,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -5271,7 +5293,7 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     bx = si;
+     bl += al;
+-    if (stop(/*71*/))
++    if ((int8_t)bl >= 0) //stop(/*71*/)) jge
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -5368,7 +5390,10 @@ loc_340f: // 01ed:153f
+ loc_341e: // 01ed:154e
+     ax = si;
+     if (ah != 0xfe)
++    {
++        flags.zero = false;
+         goto loc_3437;
++    }
+     di = memoryAGet16(ds, 0x5172);
+     if (memoryAGet(ds, di + 4) == 0xff)
+         goto loc_340a;
+@@ -5377,7 +5402,7 @@ loc_341e: // 01ed:154e
+     goto loc_346e;
+     stop(/*7*/); //   
+ loc_3437: // 01ed:1567
+-    if (stop(/*1*/))
++    if (flags.zero)
+         goto loc_340a;
+     ah += 0x02;
+     al += 0x03;
+@@ -5790,6 +5815,7 @@ loc_2eab: // 01ed:0fdb
+     goto loc_2df0;
+     //   gap of 231 bytes
+ loc_3044: // 01ed:1174
++    sync(); timer();
+     cx = 0;
+     es = cx;
+     cl = memoryAGet(es, 0x041a);
+@@ -6003,7 +6029,7 @@ loc_32d1: // 01ed:1401
+     al = sar(al, 1);
+     bx = si;
+     bl += al;
+-    if (stop(/*71*/))
++    if ((int8_t)bl >= 0) //stop(/*71*/)) jge
+         goto loc_32e4;
+     bl = 0x00;
+ loc_32e4: // 01ed:1414
+@@ -6780,8 +6806,11 @@ loc_3973: // 01ed:1aa3
+ loc_3985: // 01ed:1ab5
+     goto loc_39f9;
+ loc_3987: // 01ed:1ab7
++    flags.carry = sign((int8_t)al) != sign((int8_t)(al+ah));
+     al += ah;
+-    stop(); // jo loc_39f9
++    if (flags.carry) // jxxx cico
++        goto loc_39f9;
++//    stop(); // jo loc_39f9
+ loc_398b: // 01ed:1abb
+     ah = al;
+     al = memoryAGet(ds, 0x003f);
+@@ -6875,7 +6904,7 @@ loc_3a44: // 01ed:1b74
+     if (ax == 0xffff)
+         goto loc_3abf;
+     dl = memoryAGet(ds, si + 2);
+-    if (stop(/*condition!*/))
++    if ((int8_t)dl > 0) //stop(/*condition!*/)) // jg
+         goto loc_3a5b;
+     dl = -dl;
+     flags.carry = ah < dl;
+@@ -7333,8 +7362,9 @@ loc_3d58: // 01ed:1e88
+         goto loc_3d48;
+     ax = pop();
+     ax++;
++    flags.carry = (int16_t)bx <= 0;
+     bx -= ax;
+-    if (stop(/*71*/))
++    if (flags.carry) // jle! CICO
+         return;
+     memoryASet(ds, 0x0050, memoryAGet(ds, 0x0050) + 1);
+     if ((char)memoryAGet(ds, 0x0050) < (char)0x05)
