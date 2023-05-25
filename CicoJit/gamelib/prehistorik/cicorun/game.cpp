@@ -1,6 +1,54 @@
+#include <vector>
+#include <fstream>
 #include "cicoemu.h"
 using namespace CicoContext;
 #include <stdio.h>
+int problemcounter = 0;
+bool problemactive = false;
+void check6e15();
+
+//std::ifstream logfile{"/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/prehistorik/oo3"};
+//int logline = -1500-9;
+void check6e15()
+{
+    /*
+    if (logline++ < 0)
+        return;
+    std::string ll;
+    std::getline(logfile, ll);
+    std::vector<std::string> regs = {
+        ll.substr(75-1, 8), ll.substr(88-1, 8),
+        ll.substr(101-1, 8), ll.substr(114-1, 8), ll.substr(127-1, 8), ll.substr(140-1, 8),
+        ll.substr(153-1, 8), ll.substr(166-1, 8),
+        ll.substr(178-1, 4), ll.substr(186-1, 4), ll.substr(210-1, 4)};
+    std::vector<int> rvals;
+    std::transform(regs.begin(), regs.end(), std::back_inserter(rvals), [](const std::string& s){
+        return strtol(s.c_str(), nullptr, 16); //std::stoi(s, 16);
+    });
+    if (logline == 150)
+    {
+        int f=9;
+    }
+    enum regid {_ax, _bx, _cx, _dx, _si, _di, _bp, _sp,
+        _ds, _es, _ss};
+    printf("checkpoint %4d\ncico: ax: %04x, bx: %04x, cx: %04x, dx: %04x, si: %04x, di: %04x, bp: %04x, sp: %04x, ds: %04x, es: %04x\n", logline,
+           ax, bx, cx, dx, si, di, bp, sp, ds, es);
+    
+    printf("dbox: ax: %04x, bx: %04x, cx: %04x, dx: %04x, si: %04x, di: %04x, bp: %04x, sp: %04x, ds: %04x, es: %04x\n", rvals[_ax], rvals[_bx], rvals[_cx], rvals[_dx], rvals[_si], rvals[_di], rvals[_bp], rvals[_sp], rvals[_ds], rvals[_es]);
+    assert(ax == rvals[_ax]);
+    assert(bx == rvals[_bx]);
+    assert(cx == rvals[_cx]);
+    assert(dx == rvals[_dx]);
+    assert(si == rvals[_si]);
+    assert(di == rvals[_di]);
+    assert(sp == rvals[_sp]);
+    assert(bp == rvals[_bp]);
+    assert(ds == rvals[_ds]);
+    assert(es == rvals[_es]);
+    assert(ss == rvals[_ss]);
+    // eax: 75, 88, 101, 114, esi 127
+     */
+}
 
 class CStackGuard
 {
@@ -3163,7 +3211,7 @@ loc_211b: // 01ed:024b
     si = pop();
     cs = pop();
 }
-void sub_2122() // 01ed:0252
+void sub_2122() // 01ed:0252 close file my6
 {
     CStackGuardFar sg(0, false);
     if ((short)cx >= 0)
@@ -3213,7 +3261,7 @@ loc_2167: // 01ed:0297
     ax &= 0x000f;
     cs = pop();
 }
-void sub_217d() // 01ed:02ad
+void sub_217d() // 01ed:02ad close file my3-my5
 {
     CStackGuardFar sg(0, false);
     push(cx);
@@ -3231,11 +3279,11 @@ void sub_217d() // 01ed:02ad
     bx &= 0x000f;
     flags.carry = dx < cx;
     flags.zero = dx == cx;
-    if (dx != cx)
+    if (dx != cx)  // finish reading check
         goto loc_219e;
     flags.carry = ax < bx;
     flags.zero = ax == bx;
-loc_219e: // 01ed:02ce
+loc_219e: // 01ed:02ce - finish reading
     cs = pop();
 }
 void sub_219f() // 01ed:02cf
@@ -10891,10 +10939,12 @@ void sub_6e15() // 06c1:0205
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
+    check6e15();
     push(bp);
     bp = sp;
     ax = memoryAGet16(ds, 0x87d8);
-    if (ax != memoryAGet16(ds, 0x87d0))
+    printf("sub_6e15  ds:87d8 = %04x / %04x\n", ax, memoryAGet16(ds, 0x87d0)); // 6c1:20b   1f86:87d8 00 02 04 06 08 0a 0c GABO PROBLEM LATEST
+    if (ax != memoryAGet16(ds, 0x87d0)) // WTF TRACENOW JUMP!!!!
         goto loc_6e56;
     if (memoryAGet16(ds, 0x919a) != 0x0000)
         goto loc_6e49;
@@ -10904,7 +10954,7 @@ void sub_6e15() // 06c1:0205
     push(memoryAGet16(ss, bp + 6));
     push(cs);
     cs = 0x1f4a;
-    sub_1f4af();
+    sub_1f4af(); // tracenow problem
     assert(cs == 0x06c1);
     sp = bp;
     memoryASet16(ds, 0x87d0, ax);
@@ -10928,8 +10978,36 @@ loc_6e56: // 06c1:0246
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_6e6a() // 06c1:025a
+extern bool tracenow;
+int counter6e6a = 0;
+void sub_6e6a() // 06C1:0000025A close file my8 decompress
 {
+    switch (counter6e6a++)
+    {
+        case 0: assert(ax==0x2214 && bx==0x0000 && cx==0x0000 && dx==0x5b96); break;
+        case 1: assert(ax==0x5c29 && bx==0x0004 && cx==0x0000 && dx==0x5c29); break;
+        case 2: assert(ax==0x21bc && bx==0x0008 && cx==0x0000 && dx==0x5c3c); break;
+        case 3: assert(ax==0x21bb && bx==0x21bc && cx==0x0800 && dx==0x000c); break;
+        case 4: assert(ax==0x21bc && bx==0x21bb && cx==0x0008 && dx==0x0060); break;
+            case 5: assert(ax==0x21bb && bx==0x21bc && cx==0x0008 && dx==0x0060); break;
+            case 6: assert(ax==0x21bc && bx==0x000e && cx==0x0008 && dx==0x0000); break;
+        
+        
+//        case 7: assert(ax==0x21bc && bx==0x21bb && cx==0x0008 && dx==0x0060); break;
+//        case 8: assert(ax==0x21bc && bx==0x000e && cx==0x0008 && dx==0x0000); break;
+        case 7: assert(ax==0x21bb && bx==0x21bc && cx==0x0008 && dx==0x0000); break;
+        case 8: assert(ax==0x21bc && bx==0x000e && cx==0x0008 && dx==0x0000); break;
+        case 9: assert(ax==0x21bb && bx==0x21bc && cx==0x0008 && dx==0x0000); break;
+        case 10: assert(ax==0x5c35 && bx==0x0010 && cx==0xfc04 && dx==0x5c25); break;
+        case 11: assert(ax==0x21bc && bx==0x0000 && cx==0x5c26 && dx==0x5ccf); break;
+        case 12: assert(ax==0x21bb && bx==0x21bc && cx==0x5c26 && dx==0x5ccf); break;
+        case 13: assert(ax==0x21bc && bx==0x0022 && cx==0x0008 && dx==0x0000); break;
+        case 14: assert(ax==0x21bb && bx==0x21bc && cx==0x0008 && dx==0x0000); break;
+        case 15: assert(ax==0x21bc && bx==0x0022 && cx==0x0008 && dx==0x0000); break;
+        default:
+            break;
+
+    }
     CStackGuardFar sg(0, true);
     push(0x7777);
     push(si);
@@ -10937,8 +11015,11 @@ void sub_6e6a() // 06c1:025a
     push(bp);
     bp = sp;
     sp -= 0x0006;
+    printf("sub_6e6a entry ax=%04x %04x %04x %04x\n", ax, bx, cx, dx); // wrong!
+//    printf("sub_6e6a - memoryAGet16(ss, bp - 6) = %04x", memoryAGet16(ss, bp - 6));
+    tracenow = true;
     di = memoryAGet16(ss, bp + 16);
-    memoryASet16(ss, bp - 6, 0x0000);
+    memoryASet16(ss, bp - 6, 0x0000); // 2956:5b90
     if (memoryAGet16(ds, 0x87e2) != 0x0000)
         goto loc_6e9f;
 loc_6e81: // 06c1:0271
@@ -10950,7 +11031,7 @@ loc_6e81: // 06c1:0271
 loc_6e8b: // 06c1:027b
     push(memoryAGet16(ss, bp + 10));
     push(cs);
-    sub_6e15();
+    sub_6e15(); // tracenow problem
     sp++;
     sp++;
     bx = memoryAGet16(ss, bp + 12);
@@ -10958,16 +11039,22 @@ loc_6e8b: // 06c1:027b
     memoryASet(es, bx, al);
     memoryASet16(ss, bp + 12, memoryAGet16(ss, bp + 12) + 1);
     goto loc_6e81;
-loc_6e9f: // 06c1:028f
-    ax = memoryAGet16(ss, bp - 6);
-    if (ax != di)
+loc_6e9f: // 06c1:028f  6c1:292   00, 00, 28, 28, 00, 00 28 15?
+    ax = memoryAGet16(ss, bp - 6); // ax = 28! 2956:2170
+    printf("06c1:028f ax=%04x\n", ax);
+    if (ax != di)  // 1172398 should exit after problem active
         goto loc_6ea9;
     goto loc_6f3c;
 loc_6ea9: // 06c1:0299
     push(memoryAGet16(ss, bp + 10));
     push(cs);
     sub_6e15();
-    sp++;
+    if (problemactive)
+    {
+        int f = 9; // line 874105
+    }
+
+    sp++; /// ggg9 exit from int 21
     sp++;
     memoryASet(ss, bp - 3, al);
     al = memoryAGet(ss, bp - 3);
@@ -10998,7 +11085,11 @@ loc_6ed5: // 06c1:02c5
     si++;
     push(memoryAGet16(ss, bp + 10));
     push(cs);
-    sub_6e15();
+    sub_6e15(); // ggg9
+    if (problemactive)
+    {
+        int f = 9; // line 874105
+    }
     sp++;
     sp++;
     memoryASet(ss, bp - 1, al);
@@ -11013,6 +11104,10 @@ loc_6f03: // 06c1:02f3
     push(memoryAGet16(ss, bp + 10));
     push(cs);
     sub_6e15();
+    if (problemactive)
+    {
+        int f = 9; // line 874105
+    }
     sp++;
     sp++;
     bx = memoryAGet16(ss, bp + 12);
@@ -11042,6 +11137,7 @@ loc_6f3c: // 06c1:032c
     si = pop();
     assert(pop() == 0x7777);
     cs = pop();
+    tracenow = false;
 }
 void sub_6f42() // 06c1:0332
 {
@@ -11826,7 +11922,7 @@ loc_74f4: // 06c1:08e4
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_74f7() // 06c1:08e7
+void sub_74f7() // 06c1:08e7 - close file!  ggg
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
@@ -12162,7 +12258,7 @@ void sub_779c() // 06c1:0b8c
     push(ax);
     push(memoryAGet16(ss, bp - 14));
     push(cs);
-    sub_6e6a();
+    sub_6e6a(); // start tracing!
     sp += 0x0008;
     dx = memoryAGet16(ds, 0x87ce);
     ax = memoryAGet16(ds, 0x87cc);
@@ -13411,7 +13507,7 @@ void sub_852f() // 06c1:191f
 loc_855c: // 06c1:194c
     memoryASet16(ss, bp - 8, 0x0000);
     memoryASet16(ss, bp - 10, 0x0000);
-loc_8566: // 06c1:1956
+loc_8566: // 06c1:1956  !!!!!!!! trace begin!!
     al = 0x00;
     push(ax);
     push(memoryAGet16(ss, bp + 14));
@@ -13427,7 +13523,7 @@ loc_8566: // 06c1:1956
     push(ax);
     push(memoryAGet16(ss, bp - 2));
     push(cs);
-    sub_6e6a();
+    sub_6e6a();  // trace here MANUAL FAR CALL!!
     sp += 0x0008;
     ax = 0x0001;
     push(ax);
@@ -13940,6 +14036,8 @@ loc_8986: // 06c1:1d76
     push(memoryAGet16(ss, bp - 10));
     push(memoryAGet16(ss, bp + 10));
     push(cs);
+    printf("pushing 6e6a: %04x %04x %04x %04x\n", ax,memoryAGet16(ss, bp - 8),
+           memoryAGet16(ss, bp - 10), memoryAGet16(ss, bp + 10) );
     sub_6e6a();
     sp += 0x0008;
     si++;
@@ -14028,15 +14126,16 @@ loc_8a4f: // 06c1:1e3f
 loc_8a69: // 06c1:1e59
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_8a6c: // 06c1:1e5c
+    printf("jjm bx=%04x dx=%04x\n", bx, dx);
     if (memoryAGet16(ss, bp - 2) >= 0x00c8)
         goto loc_8a76;
     goto loc_897b;
-loc_8a76: // 06c1:1e66
+loc_8a76: // 06c1:1e66 - close file my9
     push(memoryAGet16(ss, bp - 4));
     push(memoryAGet16(ss, bp - 6));
     push(cs);
     cs = 0x1f01;
-    sub_1f01d();
+    sub_1f01d();  // gabo checkpoint ggg9 06C1:00001E6C  call 1F01:000D
     assert(cs == 0x06c1);
     sp += 0x0004;
     sp = bp;
@@ -14384,11 +14483,12 @@ loc_8d13: // 06c1:2103
     push(ax);
     push(si);
     push(cs);
-    sub_88fc();
+    sync();
+    problemcounter = 4; sub_88fc(); //6c1:2117 - infinite loop!
     sp += 0x000a;
     push(si);
     push(cs);
-    sub_74f7();
+    sub_74f7(); //6c1:211a - close file ggg
     sp++;
     sp++;
     sp = bp;
@@ -17279,10 +17379,12 @@ loc_a9d5: // 0a34:0695
     if (al)
         goto loc_a9d5;
 loc_a9dd: // 0a34:069d
+    sync();
     push(cs);
     sub_a78f();
-    if (!al)
-        goto loc_a9dd;
+    // todo: gabo skip loop
+//    if (!al)
+//        goto loc_a9dd;
 loc_a9e5: // 0a34:06a5
     push(cs);
     sub_a78f();
@@ -18644,9 +18746,10 @@ void sub_b9cf() // 0a34:168f
         goto loc_b9dd;
     si--;
 loc_b9dd: // 0a34:169d
-    ax = memoryAGet16(ds, 0x8dd8);
-    if (ax < si)
-        goto loc_b9dd;
+    sync();
+//    ax = memoryAGet16(ds, 0x8dd8);
+//    if (ax < si)
+//        goto loc_b9dd;
     memoryASet16(ds, 0x8dd8, 0x0000);
     bp = pop();
     si = pop();
@@ -30505,6 +30608,14 @@ void sub_12e24() // 129d:0454
     ds = dx;
     dx = 0x0012;
     interrupt(0x21);
+    if (problemcounter > 0)
+    {
+        if (--problemcounter == 0)
+        {
+            int f = 9;
+            problemactive = true;
+        }
+    }
     ax = 0x0001;
     memoryASet16(cs, 0x000c, ax);
     al = memoryAGet(cs, 0x0012);
@@ -47975,7 +48086,7 @@ loc_1e98a: // 1e96:002a
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_1e98c() // 1e98:000c
+void sub_1e98c() // 1e98:000c close file my2
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
@@ -48002,7 +48113,7 @@ loc_1e9a7: // 1e98:0027
     push(si);
     push(cs);
     cs = 0x1e9b;
-    sub_1e9bb();
+    sub_1e9bb(); // close file
     assert(cs == 0x1e98);
     cx = pop();
 loc_1e9b8: // 1e98:0038
@@ -48011,7 +48122,7 @@ loc_1e9b8: // 1e98:0038
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_1e9bb() // 1e9b:000b
+void sub_1e9bb() // 1e9b:000b close file - my
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
@@ -48199,7 +48310,7 @@ loc_1eab5: // 1ea9:0025
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_1eacc() // 1eac:000c
+void sub_1eacc() // 1eac:000c close file my4
 {
     CStackGuard sg(4, true);
     push(0x7777);
@@ -48634,7 +48745,7 @@ loc_1eddc: // 1ec3:01ac
     cs = 0x01ed;
     sub_217d();
     assert(cs == 0x1ec3);
-    if (!flags.zero)
+    if (!flags.zero) // finish reading 1EC3:000001D9
         goto loc_1ee5e;
     bx = memoryAGet16(ss, bp - 8);
     es = memoryAGet16(ss, bp - 8 + 2);
@@ -48678,7 +48789,7 @@ loc_1ee23: // 1ec3:01f3
     assert(cs == 0x1ec3);
     cx = pop();
     cx = pop();
-loc_1ee5e: // 1ec3:022e
+loc_1ee5e: // 1ec3:022e finish reading
     bx = memoryAGet16(ss, bp - 4);
     es = memoryAGet16(ss, bp - 4 + 2);
     memoryASet16(ds, 0x874a, es);
@@ -48738,6 +48849,10 @@ loc_1eeac: // 1ee6:004c
 void sub_1eeb0() // 1eeb:0000
 {
     CStackGuardFar sg(0, true);
+    if (tracenow)
+    {
+        int f= 9;
+    }
     push(0x7777);
     push(bp); // checkpoint ok 3
     bp = sp;
@@ -48909,7 +49024,7 @@ loc_1f019: // 1eeb:0169
     assert(pop() == 0x7777);
     cs = pop();
 }
-void sub_1f01d() // 1f01:000d
+void sub_1f01d() // 1f01:000d close file my7
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
@@ -49339,7 +49454,7 @@ void sub_1f2d5() // 1f2b:0025
     assert(pop() == 0x7777);
     sp += 2;
 }
-void sub_1f2e7() // 1f2b:0037
+void sub_1f2e7() // 1f2b:0037 close file
 {
     CStackGuardFar sg(0, true);
     push(0x7777);
@@ -49609,7 +49724,7 @@ loc_1f4d2: // 1f4a:0032
     push(memoryAGet16(ss, bp + 16));
     push(memoryAGet16(ss, bp + 14));
     push(memoryAGet16(ss, bp + 12));
-    push(memoryAGet16(ss, bp + 10));
+    push(memoryAGet16(ss, bp + 10)); // tracenow problem!
     push(cs);
     cs = 0x1f57;
     sub_1f572();
@@ -49834,7 +49949,7 @@ void sub_1f63a() // 1f63:000a
     di = si;
     si = memoryAGet16(ss, bp + 10);
     ds = memoryAGet16(ss, bp + 10 + 2);
-    cmpsb<MemData, MemData, DirAuto>();
+    repe_cmpsb<MemData, MemData, DirAuto>(); // F! PROBLEM! 1F63:00000024
     al = memoryAGet(ds, si + 65535);
     al -= memoryAGet(es, di + 65535);
     cbw();

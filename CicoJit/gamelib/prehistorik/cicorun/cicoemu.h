@@ -319,8 +319,25 @@ template <class DST, class SRC, class DIR> void cmpsw()
 template <class DST, class SRC, class DIR> void repe_cmpsw()
 {
     flags.zero = 1;
-    while (cx-- && flags.zero == 1 )
+    while (cx)
+    {
         cmpsw<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
+}
+
+template <class DST, class SRC, class DIR> void repe_cmpsb()
+{
+    flags.zero = 1; // ds:si = ILBM   es:di = BODY
+    while (cx)
+    {
+        cmpsb<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
 }
 
 template <class SRC, class DIR> void repne_scasb(uint8_t value)
