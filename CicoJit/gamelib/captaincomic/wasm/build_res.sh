@@ -1,0 +1,1 @@
+node ../../../cicojs/fsbuild ../dos resources.js
