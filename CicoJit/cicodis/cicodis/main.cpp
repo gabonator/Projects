@@ -1395,6 +1395,10 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     assert(x86.op_count == 1);
                     assert(x86.operands[0].type == X86_OP_IMM);
                 } else {
+                    if (x86.op_count != 2)
+                    {
+                        return "stop(/*lcall*/)";
+                    }
                     assert(x86.op_count == 2);
                     assert(x86.operands[0].type == X86_OP_IMM);
                     assert(x86.operands[1].type == X86_OP_IMM);
@@ -1959,6 +1963,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(format("rep_stosw<MemAuto, DirAuto>();"));
                     break;
                 }
+                if (strcmp(instr->mMnemonic, "repne stosw") == 0)
+                {
+                    text.push_back(format("repne_stosw<MemAuto, DirAuto>();"));
+                    break;
+                }
                 if (strcmp(instr->mMnemonic, "stosw") == 0)
                 {
                     text.push_back(format("stosw<MemAuto, DirAuto>();"));
@@ -1982,6 +1991,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(format("rep_stosb<MemAuto, DirAuto>();"));
                     break;
                 }
+                if (strcmp(instr->mMnemonic, "repne stosb") == 0)
+                {
+                    text.push_back(format("repne_stosb<MemAuto, DirAuto>();"));
+                    break;
+                }
                 if (strcmp(instr->mMnemonic, "stosb") == 0)
                 {
                     text.push_back(format("stosb<MemAuto, DirAuto>();"));
@@ -1995,6 +2009,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 if (strcmp(instr->mMnemonic, "rep movsb") == 0)
                 {
                     text.push_back(format("rep_movsb<MemAuto, MemAuto, DirAuto>();"));
+                    break;
+                }
+                if (strcmp(instr->mMnemonic, "repne movsb") == 0)
+                {
+                    text.push_back(format("repne_movsb<MemAuto, MemAuto, DirAuto>();"));
                     break;
                 }
                 if (strcmp(instr->mMnemonic, "movsb") == 0)
@@ -2017,8 +2036,13 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(format("rep_movsw<MemAuto, MemAuto, DirAuto>();"));
                     break;
                 }
-                text.push_back("PROBLEM-11h");
-                //assert(0);
+                if (strcmp(instr->mMnemonic, "repne movsw") == 0)
+                {
+                    text.push_back(format("repne_movsw<MemAuto, MemAuto, DirAuto>();"));
+                    break;
+                }
+//                text.push_back("PROBLEM-11h");
+                assert(0);
                 break;
             case X86_INS_LODSB:
                 if (strcmp(instr->mMnemonic, "rep lodsb") == 0 &&
@@ -2034,6 +2058,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(format("lodsb_es<MemAuto, DirAuto>();"));
                 else if (strcmp(instr->mOperands, "al, byte ptr ss:[si]") == 0)
                     text.push_back(format("lodsb_ss<MemAuto, DirAuto>();"));
+                else if (strcmp(instr->mOperands, "al, byte ptr cs:[si]") == 0)
+                    text.push_back(format("lodsb_cs<MemAuto, DirAuto>();"));
                 else
                     assert(0);
                 break;
@@ -2577,7 +2603,19 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("flags.carry = !flags.carry;");
                 break;
             case X86_INS_CMPSB:
-                text.push_back("cmpsb<MemData, MemData, DirAuto>();");
+                if (strcmp(instr->mMnemonic, "cmpsb") == 0 &&
+                    strcmp(instr->mOperands, "byte ptr [si], byte ptr es:[di]") == 0)
+                {
+                    text.push_back("cmpsb<MemData, MemData, DirAuto>();");
+                    break;
+                }
+                if (strcmp(instr->mMnemonic, "repe cmpsb") == 0 &&
+                    strcmp(instr->mOperands, "byte ptr [si], byte ptr es:[di]") == 0)
+                {
+                    text.push_back("repe_cmpsb<MemData, MemData, DirAuto>();");
+                    break;
+                }
+                assert(0);
                 break;
             case X86_INS_PUSHF:
                 text.push_back("tx = flags.carry | (flags.zero << 1);");
@@ -2593,16 +2631,16 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 {
                     case 0:
                     case X86_PREFIX_DS:
-                        text.push_back("al = memory(ds, bx+al);");
+                        text.push_back("al = memoryAGet(ds, bx+al);");
                         break;
                     case X86_PREFIX_CS:
-                        text.push_back("al = memory(cs, bx+al);");
+                        text.push_back("al = memoryAGet(cs, bx+al);");
                         break;
                     case X86_PREFIX_ES:
-                        text.push_back("al = memory(es, bx+al);");
+                        text.push_back("al = memoryAGet(es, bx+al);");
                         break;
                     case X86_PREFIX_SS:
-                        text.push_back("al = memory(ss, bx+al);");
+                        text.push_back("al = memoryAGet(ss, bx+al);");
                         break;
                     default:
                         assert(0);

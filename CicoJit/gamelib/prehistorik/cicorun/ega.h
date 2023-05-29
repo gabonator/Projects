@@ -107,8 +107,6 @@ public:
 
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
-        if (bWrite)
-            printf("ega: %02x\n", bWrite);
         assert(dwAddr >= 0xb800*16);
         dwAddr -= 0xb800 * 16;
         assert(dwAddr < MemSize);
@@ -318,10 +316,23 @@ public:
         }
         if (ctx->a.r16 == 0x1015)
         {
+            if (ctx->b.r16 >= 16)
+            {
+                printf("read dac color outside range %d\n", ctx->b.r16);
+                return true;
+            }
+            assert(ctx->b.r16 >= 0 && ctx->b.r16 < 16);
             // read palette DAC
-            ctx->d.r8.h = palette[ctx->b.r16] & 0xff;
-            ctx->c.r8.h = (palette[ctx->b.r16] >> 8) & 0xff;
-            ctx->c.r8.l = (palette[ctx->b.r16] >> 16) & 0xff;
+            ctx->d.r8.h = (palette[ctx->b.r16] & 0xff)/4;
+            ctx->c.r8.h = ((palette[ctx->b.r16] >> 8) & 0xff)/4;
+            ctx->c.r8.l = ((palette[ctx->b.r16] >> 16) & 0xff)/4;
+            return true;
+        }
+        if (ctx->a.r8.h == 0x05)
+        {
+            printf("skip: select active display page %d\n", ctx->a.r8.h);
+//            cfgAddr = ctx->a.r8.h*0x2000;
+            //INT 10,5 - Select Active Display Page
             return true;
         }
 
@@ -484,7 +495,16 @@ public:
         {
             int base = colorindex/3;
             int ch = colorindex%3;
-            ((uint8_t*)palette)[base*4+2-ch] = data*4;
+            if (data == 255) // wtf?
+//            {
+//                for (int i=base; i<16; i++)
+//                    palette[base] = 0xffffff;
+                return true;
+//            }
+
+            assert(data >= 0 && data < 64);
+            printf("set pal %d %d = %d\n", base, 2-ch, data);
+            ((uint8_t*)palette)[base*4+2-ch] = data * 4;
             colorindex++;
             return true;
         }
@@ -514,7 +534,7 @@ public:
         int mask = 0x80 >> (x % 8);
 
         //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
-        int page = 0x2000; //cfgAddr;
+        int page = cfgAddr;
     
         int shift = page*4;
         uint8_t b = 0;
@@ -655,7 +675,7 @@ public:
         static int q = 0;
         if (q++ > 5000)
         {
-            _sync();
+//            _sync();
             q= 0;
         }
     }

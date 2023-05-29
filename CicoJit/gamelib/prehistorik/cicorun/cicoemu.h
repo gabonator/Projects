@@ -352,6 +352,28 @@ template <class SRC, class DIR> void repne_scasb(uint8_t value)
     }
 }
 
+template <typename DST, typename SRC, typename DIR> void repne_movsw()
+{
+    rep_movsw<DST, SRC, DIR>();
+    //assert(0);
+}
+
+template <typename DST, typename SRC, typename DIR> void repne_movsb()
+{
+    rep_movsb<DST, SRC, DIR>();
+//    assert(0);
+}
+
+template <typename DST, typename DIR> void repne_stosb()
+{
+    assert(0);
+}
+template <typename DST, typename DIR> void repne_stosw()
+{
+    assert(0);
+}
+
+
 #else
 extern cicocontext_t* ctx;
 #endif

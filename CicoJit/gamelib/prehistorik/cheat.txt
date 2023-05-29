@@ -1,0 +1,3 @@
+shows mouse cursor on screen
+bp 0a34:16bb
+sm 1f86:8b94

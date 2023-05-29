@@ -11,6 +11,7 @@
 #include <list>
 //#include "game/game.h"
 
+bool tracenow = false;
 namespace CicoContext{
     cicocontext_t* ctx;
 }
@@ -67,6 +68,7 @@ void onKey(int k, int p)
 void onKey(int k, int p)
 {
     if (k == SDL_SCANCODE_ESCAPE) exit(1);
+    CicoContext::ctx->memory8(0x8070, 0x8dc4) = p;
       //if (p)
           switch (k)
           {
@@ -74,9 +76,9 @@ void onKey(int k, int p)
 //              case SDL_SCANCODE_ESCAPE: keyBuffer.push_back(27); break;
 //              case SDL_SCANCODE_RETURN: keyBuffer.push_back(13); break;
 
-              case SDL_SCANCODE_SPACE: lastKey = 57;
-                  CicoContext::ctx->memory8(0x1ed, 0x03a1) = p;
-                  break;
+//              case SDL_SCANCODE_SPACE: lastKey = 57;
+//                  CicoContext::ctx->memory8(0x1ed, 0x03a1) = p;
+//                  break;
 //              case SDL_SCANCODE_LEFT:
 //                 //a57:9c8 = 2|0xfffe, a57:9ca = 0/2
 //                  keyBuffer.push_back(0);
@@ -91,11 +93,41 @@ void onKey(int k, int p)
 //                  keyBuffer.push_back(0);
 //                  keyBuffer.push_back('P'); break;
                    
-                  //0x0386 pause
-              case SDL_SCANCODE_LEFT: CicoContext::ctx->memory8(0x1ed, 0x39a) = p; break;
-              case SDL_SCANCODE_RIGHT: CicoContext::ctx->memory8(0x1ed, 0x39c) = p; break;
-              case SDL_SCANCODE_UP: CicoContext::ctx->memory8(0x1ed, 0x388) = p; break;
-              case SDL_SCANCODE_DOWN: CicoContext::ctx->memory8(0x1ed, 0x39e) = p; break;
+                  //0x0386 pause/*
+              case SDL_SCANCODE_UP: CicoContext::ctx->memory8(0x1f86, 0x8db4) = p; break; // u
+              case SDL_SCANCODE_RIGHT: CicoContext::ctx->memory8(0x1f86, 0x8da6) = p; break; // r
+              case SDL_SCANCODE_LEFT: CicoContext::ctx->memory8(0x1f86, 0x8baf) = p; break;// l
+              case SDL_SCANCODE_SPACE: CicoContext::ctx->memory8(0x1f86, 0x92b5) = p; break;
+              case SDL_SCANCODE_DOWN: CicoContext::ctx->memory8(0x1f86, 0x92b6) = p; break;
+
+              case SDL_SCANCODE_1: CicoContext::ctx->memory8(0x1f86, 0x8b95) = p; break;
+              case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1f86, 0x8ba8) = p; break;
+              case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1f86, 0x8b94) = p; break;
+              case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1f86, 0x8d9e) = p; break;
+
+              case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1f86, 0x8da7) = p; break;
+              case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1f86, 0x8b6a) = p; break;
+              case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1f86, 0x8b94) = p; break;
+              case SDL_SCANCODE_8: CicoContext::ctx->memory8(0x1f86, 0x919c) = p; break;
+
+                             
+                  /*
+                   memoryASet(ds, 0x8b95, al);
+                   memoryASet(ds, 0x8ba8, al);
+                   memoryASet(ds, 0x8b94, al);
+                   memoryASet(ds, 0x8d9e, al);
+                   
+                   memoryASet(ds, 0x92b5, al);
+                   memoryASet(ds, 0x92b6, al);
+                   memoryASet(ds, 0x8db4, al);
+                   
+                   memoryASet(ds, 0x8da6, al);
+                   memoryASet(ds, 0x8baf, al);
+                   */
+              //case SDL_SCANCODE_LEFT: CicoContext::ctx->memory8(0x1ed, 0x39a) = p; break;
+              //case SDL_SCANCODE_RIGHT: CicoContext::ctx->memory8(0x1ed, 0x39c) = p; break;
+              //case SDL_SCANCODE_UP: CicoContext::ctx->memory8(0x1ed, 0x388) = p; break;
+              //case SDL_SCANCODE_DOWN: CicoContext::ctx->memory8(0x1ed, 0x39e) = p; break;
                   //case SDL_SCANCODE
                   /*
               case SDL_SCANCODE_1:
@@ -184,7 +216,9 @@ uint8_t memoryBiosGet8(int seg, int ofs)
     if (seg == 0x0000 && ofs == 0x0000)
         return 0x1a;
     if (seg == 0x0000 && ofs == 0x041a)
-        return 0x00; 
+        return 0x00;
+    if (seg == 0x0000 && ofs == 0x0484)
+        return 40;
     assert(0);
     return 0;
 }
@@ -197,6 +231,9 @@ uint8_t memoryPsp(int seg, int ofs)
           "\x00\x00\x00\x00\x00\x00\x00";
         if (ofs<sizeof(env))
             return env[ofs];
+        if (ofs<0xc0)
+            return 0;
+        
         assert(0);
         return 0;
     }
@@ -342,7 +379,8 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)
     {
-        assert(0); // ???
+        printf("Skip set before app\n");
+//        assert(0); // ???
     }
     else
     if (seg >= loadAddress && seg < 0xa000)
@@ -354,7 +392,7 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 }
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
-    if (seg*16+ofs ==  0x1f860 + 0x8db5)
+    if (seg*16+ofs == 0x1f860 + 0x9896)
     {
         int f = 9;//(0x1ed, 0x387+0x1)
     }
@@ -366,7 +404,7 @@ uint8_t& cicocontext_t::memory8(int seg, int ofs){
 }
 
 uint16_t& cicocontext_t::memory16(int seg, int ofs){
-    if (seg*16+ofs == 0x1f860 +  0x874a)
+    if (seg*16+ofs == 0x1f860 + 0x9896)
     {
         int f = 9;
     }
@@ -481,14 +519,26 @@ void cicocontext_t::_int(int i)
             printf("no file opened!\n");
             return;
         } else {
-            printf("Read %d bytes -> %04x:%04x\n", ctx->c.r16, ctx->_ds, ctx->d.r16);
+//            printf("Read %d bytes -> %04x:%04x\n", ctx->c.r16, ctx->_ds, ctx->d.r16);
             uint8_t* buf = new uint8_t[ctx->c.r16];
             int c = fread(buf, 1, (size_t)ctx->c.r16, f);
-            for (int i=0; i<c; i++)
+            if (ctx->_ds >= 0xa000)
             {
-                // memory overlap!
-                int overlap = ((ctx->d.r16+i) >> 16) ? 0x1000 : 0;
-                ctx->memoryASet8(ctx->_ds+overlap, (ctx->d.r16+i)&65535, buf[i]);
+                //printf("cfg=%d\n", mEga.cfgDataRotate);
+                int shift = (mEga.cfgReadMapSelect*8);
+                uint32_t mask = ~(0xff << shift);
+                for (int i=0; i<c; i++)
+                    mEga.egamemory[ctx->d.r16+i] &= mask;
+                for (int i=0; i<c; i++)
+                    mEga.egamemory[ctx->d.r16+i] |= buf[i]<<shift;
+                //ctx->memoryASet8(ctx->_ds+overlap, (ctx->d.r16+i)&65535, buf[i]);
+            } else {
+                for (int i=0; i<c; i++)
+                {
+                    // memory overlap!
+                    int overlap = ((ctx->d.r16+i) >> 16) ? 0x1000 : 0;
+                    ctx->memoryASet8(ctx->_ds+overlap, (ctx->d.r16+i)&65535, buf[i]);
+                }
             }
             delete[] buf;
             //std::cout << "read " << _cx << " (" << c << ")" << endl;
@@ -597,7 +647,13 @@ void cicocontext_t::_int(int i)
         return;
     }
     if (i == 0x21 && ctx->a.r8.h == 0x40)
+    {
+        for (int j=0; j<ctx->c.r16; j++)
+            printf("%c", ctx->memory8(ctx->_ds, ctx->d.r16 + j));
+        ctx->carry = false;
+        ctx->a.r16 = ctx->c.r16;
         return;
+    }
     if (i == 0x21 && ctx->a.r8.h == 0x3e)
         return;
     if (i == 0x21 && ctx->a.r8.h == 0x49)
@@ -658,12 +714,13 @@ void cicocontext_t::_int(int i)
     if (i == 0x10 && ctx->a.r8.h == 0x10 && ctx->a.r8.l == 0)
     {
         //cout << hex << "\nset text palette[" << (int)_bl << "] = " << (int)_bh << endl;
+        printf("palette [%x] <- %x\n", ctx->b.r8.l, ctx->b.r8.h);
         mEga.SetPaletteIndex(ctx->b.r8.l, ctx->b.r8.h);
         return;
     }
     if (i == 0x10 && ctx->a.r16 == 0x1012)
     {
-        mEga.Interrupt(ctx);
+       // mEga.Interrupt(ctx);
         return;
     }
     if (i == 0x10 && ctx->a.r16 == 0x1200 && ctx->b.r8.l == 0x10)
@@ -692,8 +749,8 @@ void cicocontext_t::_int(int i)
     }
     if (i == 0x21 && ctx->a.r8.h == 0x44)
     {
-        ctx->a.r16 = 0x80d3;
-        ctx->d.r16 = 0x80d3;
+        ctx->a.r16 = 2; //ctx->a.r16 = 0x80d3;
+        ctx->d.r16 = 2; //ctx->d.r16 = 0x80d3;
         ctx->carry = 0;
         return;
     }
@@ -746,10 +803,11 @@ void cicocontext_t::_int(int i)
             ctx->d.r16 = 0;
             return;
         }
-        if (ctx->a.r8.l == 0 && ctx->d.r16 == 0)
+        if (ctx->a.r8.l == 0)
         {
             assert(f);
-            fseek(f, ctx->c.r16, SEEK_SET);
+            fseek(f, ctx->c.r16*0x10000 + ctx->d.r16, SEEK_SET);
+            ctx->carry = false;
             return;
         }
 
@@ -796,12 +854,13 @@ void cicocontext_t::_int(int i)
             fseek(f, ctx->c.r16, SEEK_CUR);
             return;
         }
+        /*
         if (ctx->a.r8.l == 0)
         {
             assert(f);
             fseek(f, ctx->d.r16, SEEK_SET);
             return;
-        }
+        }*/
 
     }
     if (i == 0x21 && ctx->a.r8.h == 0x19)
@@ -839,11 +898,17 @@ void cicocontext_t::_int(int i)
         // read dac @ bx, ch, cl, dh
         return;
     }
+    if (i == 0x21  && ctx->a.r8.h == 0x4c)
+    {
+        printf("Terminate app\n");
+        exit(0);
+    }
     printf("int %d\n", i);
     assert(0);
 }
 void cicocontext_t::out(int port, uint16_t val)
 {
+//    printf("port16 write %x = %x\n", port, val);
     if (mVideo->PortWrite16(port, val))
     {
         return;
@@ -852,6 +917,8 @@ void cicocontext_t::out(int port, uint16_t val)
 }
 void cicocontext_t::out(int port, uint8_t val)
 {
+//    printf("port8 write %x = %x\n", port, val);
+
     if (port == 0x3c8)
     {
         int f = 9;
@@ -1179,6 +1246,7 @@ void sub_2021();
 
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
+#if 1
     printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16, a, a);
 /// 2956:21d8 int 33
     switch (a)
@@ -1374,6 +1442,7 @@ case 0x43f0: sub_43f0(); return;
     }
      */
     assert(0);
+#endif
 }
 
 void CicoContext::cicocontext_t::cmc()
@@ -1513,6 +1582,7 @@ uint16_t cicocontext_t::ror(uint16_t r, int l)
 }
 void cicocontext_t::sync(void)
 {
+    memory16(0x1f86, 0x8dd8)++;
     _sync();
 }
 void cicocontext_t::load(const char* path, const char* file, int size)
@@ -1718,3 +1788,4 @@ unsigned char font[2048] = {
   0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3c, 0x3c, 0x3c, 0x3c, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
+
