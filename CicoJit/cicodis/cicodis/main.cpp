@@ -420,7 +420,7 @@ struct switch_t {
     address_t GetTarget(int i) const //(const uint8_t* data)
     {
         uint16_t* parts = (uint16_t*)baseptr;
-        return address_t{begin.segment, parts[i]};
+        return address_t{origin.segment, parts[i]};
     }
     std::string GetCase(int i) const
     {
@@ -2967,9 +2967,14 @@ int main(int argc, const char * argv[]) {
                 const char* jumpTableEntryType = argv[++i];
                 assert(strcmp(jumpTableEntryType, "jumpwords") == 0);
                 const char* jumpSelector = argv[++i];
-                assert(strcmp(jumpSelector, "bx") == 0);
                 
-                jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, switch_t::JumpWords, X86_REG_BX, nullptr});
+                x86_reg index = X86_REG_INVALID;
+                if (strcmp(jumpSelector, "bx") == 0)
+                    index = X86_REG_BX;
+                if (strcmp(jumpSelector, "di") == 0)
+                    index = X86_REG_DI;
+                assert(index != X86_REG_INVALID);
+                jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, switch_t::JumpWords, index, nullptr});
             } else
                 assert(0);
 
