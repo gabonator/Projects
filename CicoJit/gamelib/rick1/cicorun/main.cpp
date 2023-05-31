@@ -86,6 +86,7 @@ void sub_36753();
 
 void CicoContext::cicocontext_t::callIndirect(int a)
 {
+/*
     switch (a)
     {
         case 0x1448: sub_355f8(); break;
@@ -101,6 +102,8 @@ void CicoContext::cicocontext_t::callIndirect(int a)
         default:
             assert(0);
     }
+*/
+  assert(0);
 }
 
 uint8_t memoryBiosGet8(int seg, int ofs)
@@ -835,7 +838,7 @@ void cicocontext_t::out(int port, uint16_t val)
     {
         return;
     }
-    printf("skip write %x, %x\n", port, val);
+//    printf("skip write %x, %x\n", port, val);
 }
 void cicocontext_t::out(int port, uint8_t val)
 {
@@ -849,7 +852,7 @@ void cicocontext_t::out(int port, uint8_t val)
     {
         return;
     }
-    printf("skip write %x, %x\n", port, val);
+//    printf("skip write %x, %x\n", port, val);
 }
 
 void cicocontext_t::in(uint8_t& val, int port)
@@ -869,7 +872,7 @@ void cicocontext_t::in(uint8_t& val, int port)
     }
     if (port == 0x61)
     {
-        printf("timer skip\n");
+//        printf("timer skip\n");
         return;
     }
     if (port == 0x3c9)

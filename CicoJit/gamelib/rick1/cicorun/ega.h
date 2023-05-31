@@ -237,13 +237,17 @@ public:
             // es:DX!!!! 17 uint8_ts (documentation says es:bx)
             for (int i=0; i<16; i++)
             {
-                int rgb = ctx->memory8(ctx->_es, ctx->d.r16+i);
-                int r = ((rgb & 4) ? 3 : 0) + ((rgb & 32) ? 1 : 0);
-                int g = ((rgb & 2) ? 3 : 0) + ((rgb & 16) ? 1 : 0);
-                int b = ((rgb & 1) ? 3 : 0) + ((rgb & 8) ? 1 : 0);
-                r = r * 255 / 3;
+                int rgb = ctx->memory8(ctx->_es, ctx->d.r16+i); // 1040:9709+15
+                int r = ((rgb & 4) ? 2 : 0) + ((rgb & 32) ? 1 : 0);
+                int g = ((rgb & 2) ? 2 : 0) + ((rgb & 16) ? 1 : 0);
+                int b = ((rgb & 1) ? 2 : 0) + ((rgb & 8) ? 1 : 0);
+                r = r * 255 / 2;
                 g = g * 255 / 3;
-                b = b * 255 / 3;
+                b = b * 255 / 2;
+                if (r>255) r = 255;
+                if (g>255) g = 255;
+                if (b>255) b = 255;
+                printf("pal[%d] = 0x%02x, %d,%d,%d\n", i, rgb, r, g, b);
 //                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
                 palette[i] = b | (g << 8) | (r << 16);
             }

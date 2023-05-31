@@ -1,127 +1,111 @@
-diff --git a/./rick2.cpp b/cicorun/rick2.cpp
-index 88dc60e..ba64a1b 100644
---- a/./rick2.cpp
-+++ b/cicorun/rick2.cpp
-@@ -653,6 +653,7 @@ loc_108aa:
-   di += cx;
-   movsb<MemAuto, MemAuto, DirAuto>();
-   di += 0xff20;
-+  di &= 0xffff; // gabo
-   cx = bp;
-   if (--cx)
-     goto loc_1089b;
-@@ -1093,6 +1094,7 @@ loc_10c15:
-   si = pop();
-   cx = pop();
-   si += 0xfffe;
-+  si &= 0xffff;
-   if (--cx)
-     goto loc_10c15;
-   sub_17047();
-@@ -2233,7 +2235,7 @@ void sub_16222()
-   al &= 0x03;
-   if (al != 0)
-     goto loc_1623e;
--  stop(/*inject ret*/);
+diff --git a/./rick0.cpp b/./rick2.cpp
+index 34c0ad3..555f3dd 100644
+--- a/./rick0.cpp
++++ b/./rick2.cpp
+@@ -2339,7 +2339,7 @@ void sub_16222()
+     al &= 0x03;
+     if (al != 0)
+         goto loc_1623e;
+-    stop(/*inject ret*/);
 +    flags.carry = false; //gabo
-   return;
+     assert(pop() == 0x7777);
+     return;
  loc_1623e:
-   si += 0x0004;
-@@ -2490,7 +2492,10 @@ loc_163f5:
-   ax = pop();
-   al--;
-   if (al == 0)
--    goto loc_16406;
-+  {
-+      flags.carry = false; // gabo
-+  return;
-+  }
-   goto loc_1623e;
+@@ -2597,10 +2597,12 @@ loc_163f5:
+     ax = pop();
+     al--;
+     if (al == 0)
++    {
++        flags.carry = false;
+         goto loc_16406;
++    }
+     goto loc_1623e;
  loc_16406:
-   stop(/*inject ret*/);
-@@ -3758,6 +3763,7 @@ loc_16d3a:
-   memoryASet(ds, 0x97da, 0x01);
-   cx = 0x01e0;
+-    stop(/*inject ret*/);
+     assert(pop() == 0x7777);
+ }
+ void sub_16407()
+@@ -3879,6 +3881,7 @@ loc_16d3a:
+     memoryASet(ds, 0x97da, 0x01);
+     cx = 0x01e0;
  loc_16d57:
 +    sync();
-   push(cx);
-   sub_19b1c();
-   sub_19bdc();
-@@ -7560,6 +7566,7 @@ loc_192c4:
-   if (dx != 0)
-     goto loc_192c4;
-   di += 0xff84;
-+  di &= 0xffff;
-   cx = bp;
-   if (--cx)
-     goto loc_192b1;
-@@ -8213,6 +8220,7 @@ loc_19a10:
+     push(cx);
+     sub_19b1c();
+     sub_19bdc();
+@@ -8294,6 +8297,7 @@ loc_19a10:
  loc_19a45:
-   memoryASet(ds, 0x97da, 0x01);
+     memoryASet(ds, 0x97da, 0x01);
  loc_19a4b:
 +    sync();
-   sub_19bdc();
-   if (!(al & 0x10))
-     goto loc_19a55;
-@@ -8444,6 +8452,11 @@ loc_19c43:
+     sub_19bdc();
+     if (!(al & 0x10))
+         goto loc_19a55;
+@@ -8525,6 +8529,10 @@ loc_19c43:
  }
  void sub_19e18()
  {
-+    //gabo
-+    memory(0x1040, 0xBDA2) = 0xc3;
++    memoryASet(cs, 0xbda2, 0xc3);
 +    flags.carry = false;
-+    return;
++    return; // gabo skip joystick
 +
-   memoryASet16(ds, 0x9a16, 0x0000);
-   callIndirect(memoryAGet16(ds, 0x0026));
+     memoryASet16(ds, 0x9a16, 0x0000);
+     callIndirect(cs, memoryAGet16(ds, 0x0026));
  loc_19e22:
-@@ -9915,6 +9928,7 @@ loc_1bf8f:
+@@ -10057,6 +10065,7 @@ loc_1bf8f:
  }
  void sub_1bfa0()
  {
-+    return; 
-   push(dx);
-   flags.interrupts = false;
-   al = 0x00;
-@@ -10085,6 +10099,9 @@ loc_1c175:
++    return; // gabo
+     push(dx);
+     flags.interrupts = false;
+     al = 0x00;
+@@ -10225,6 +10234,9 @@ loc_1c175:
  }
  void sub_1c1a2()
  {
-+    if (memory(0x1040, 0xBDA2) == 0xC3) return; // gabo
++    if (memory(0x1040, 0xBDA2) == 0xC3)
++        return; // gabo
 +    assert(0);
-+
-   ax = 0x1040;
-   ds = ax;
-   sub_1bf7c();
-@@ -10193,7 +10210,7 @@ loc_1c2d3:
-   goto loc_1c2e2;
-   //   gap of 7 bytes
+     ax = 0x1040;
+     ds = ax;
+     sub_1bf7c();
+@@ -10262,7 +10274,6 @@ loc_1c1e3:
+ }
+ void sub_1c276()
+ {
+-    stop(/*unk call conv*/);
+     goto loc_1c276;
+ loc_19731:
+     ah = 0x09;
+@@ -10329,7 +10340,7 @@ loc_1c2d3:
+     goto loc_1c2e2;
+     //   gap of 7 bytes
  loc_1c2e2:
--  sub_1c4bd();
-+  //sub_1c4bd(); // skip CGA
+-    sub_1c4bd();
++    //sub_1c4bd(); // gabo: skip cga driver
  loc_1c2e5:
-   callIndirect(memoryAGet16(ds, 0x0002));
-   si = 0xbdf6;
-@@ -10225,7 +10242,7 @@ loc_1c312:
-   memoryASet16(ds, 0xab2b, 0x0001);
+     callIndirect(cs, memoryAGet16(ds, 0x0002));
+     si = 0xbdf6;
+@@ -10360,7 +10371,7 @@ loc_1c312:
+     memoryASet16(ds, 0xab2b, 0x0001);
  loc_1c31f:
-   sub_196dd();
--  sub_1ae81();
-+  //sub_1ae81();
-   memoryASet(ds, 0xa860, 0x01);
-   sub_1c4e1();
-   callIndirect(memoryAGet16(ds, 0x002a));
-@@ -10249,10 +10266,10 @@ loc_1c34b:
-   memoryASet16(ds, 0xbdf2, 0x0003);
-   ax = memoryAGet16(ds, 0xbdf2);
-   sub_1aecd();
--  callIndirect(memoryAGet16(ds, 0x0028));
-+  callIndirect(memoryAGet16(ds, 0x0028)); // game!
- loc_1c378:
--  if (memoryAGet(ds, 0xa85e) == 0xff)
--    goto loc_1c378;
-+//  if (memoryAGet(ds, 0xa85e) == 0xff)
-+//    goto loc_1c378;
-   goto loc_1c398;
-   //   gap of 1 bytes
+     sub_196dd();
+-    sub_1ae81();
++//    sub_1ae81(); // gabo skip
+     memoryASet(ds, 0xa860, 0x01);
+     sub_1c4e1();
+     callIndirect(cs, memoryAGet16(ds, 0x002a));
+@@ -10385,9 +10396,9 @@ loc_1c34b:
+     ax = memoryAGet16(ds, 0xbdf2);
+     sub_1aecd();
+     callIndirect(cs, memoryAGet16(ds, 0x0028));
+-loc_1c378:
+-    if (memoryAGet(ds, 0xa85e) == 0xff)
+-        goto loc_1c378;
++//loc_1c378:
++//    if (memoryAGet(ds, 0xa85e) == 0xff)
++//        goto loc_1c378;
+     goto loc_1c398;
  loc_1c382:
+     if (memoryAGet(ds, 0xa85e) == 0xff)

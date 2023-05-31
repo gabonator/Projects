@@ -674,6 +674,9 @@ public:
         uint64_t address = addr.segment*16*0 + addr.offset;
         size_t codeSize = 32;
         const uint8_t* buf = GetBufferAt(addr);
+        if (buf[0] == 0 && buf[1] == 0 && buf[2] == 0)
+            assert(0);
+            
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
         return std::shared_ptr<CapInstr>(new CapInstr(addr, mInsn));
     }
@@ -1780,7 +1783,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             if (instr->mComment.substr(0, 6) == "gap of")
                 text.push_back(format("// %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
             else
-                text.push_back(format("stop(/*7*/); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
+            {
+                if (instr->mMnemonic[0] || instr->mOperands[0] || instr->mComment != "")
+                    text.push_back(format("stop(/*7*/); // %s %s %s", instr->mMnemonic, instr->mOperands, instr->mComment.c_str()));
+            }
             continue;
         }
         
@@ -1900,7 +1906,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             }
             else if ((int)instr->mInject & (int)inject_t::modifyStack)
             {
-                text.push_back(assign(x86, "callIndirect(pop());"));
+                text.push_back(assign(x86, "callIndirect(cs, pop());"));
             }
             else if ((int)instr->mInject & (int)inject_t::overrideStack)
             {
@@ -2456,10 +2462,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         {
                             // ds:imm?
                         }
-                        text.push_back(assign(x86, "callIndirect(cs*16+$rd0);"));
+                        text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
                     }
                 } else
-                    text.push_back(assign(x86, "callIndirect(cs*16+$rd0);"));
+                    text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
                     //assert(0);
                 break;
             case X86_INS_LCALL:
@@ -2480,7 +2486,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 {
                     text.push_back(assign(x86, "push(cs);"));
                     text.push_back(assign(x86, "cs = $rns0;"));
-                    text.push_back(assign(x86, "callIndirect($rd0);")); // not a full addr
+                    text.push_back(assign(x86, "callIndirect(cs, $rd0);")); // not a full addr
                     text.push_back(assign(x86, "assert(cs == 0x%04x);", code.front()->mAddress.segment));
                 }
                 else
@@ -2965,7 +2971,14 @@ int main(int argc, const char * argv[]) {
                 address_t jumpTableBegin = address_t::fromString(argv[++i]);
                 int jumpTableEntries = (int)strtol(argv[++i], nullptr, 10);
                 const char* jumpTableEntryType = argv[++i];
-                assert(strcmp(jumpTableEntryType, "jumpwords") == 0);
+                
+                switch_t::switch_e tableType = switch_t::switch_e::None;
+                if (strcmp(jumpTableEntryType, "jumpwords") == 0)
+                    tableType = switch_t::switch_e::JumpWords;
+                if (strcmp(jumpTableEntryType, "callwords") == 0)
+                    tableType = switch_t::switch_e::CallWords;
+                assert(tableType != switch_t::switch_e::None);
+                
                 const char* jumpSelector = argv[++i];
                 
                 x86_reg index = X86_REG_INVALID;
@@ -2973,8 +2986,13 @@ int main(int argc, const char * argv[]) {
                     index = X86_REG_BX;
                 if (strcmp(jumpSelector, "di") == 0)
                     index = X86_REG_DI;
-                assert(index != X86_REG_INVALID);
-                jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, switch_t::JumpWords, index, nullptr});
+                if (strcmp(jumpSelector, "indirect") == 0)
+                {
+                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, tableType, index, nullptr});
+                } else {
+                    assert(index != X86_REG_INVALID);
+                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, tableType, index, nullptr});
+                }
             } else
                 assert(0);
 
@@ -3108,6 +3126,7 @@ public:
 void start()
 {
     headerSize = 0x%04x;
+    loadAddress = 0x%04x;
     cs = 0x%04x;
     ds = 0x%04x;
     es = 0x%04x;
@@ -3118,6 +3137,7 @@ void start()
 }
 )",
         header->headerSize16*16,
+        _loadBase,
         header->cs+_loadBase,
         header->cs+_loadBase - 0x10,
         header->cs+_loadBase - 0x10,
@@ -3194,6 +3214,7 @@ void start()
     {
         printf("}\n");
     }
+    
 
     if (!methods)
     {
@@ -3253,6 +3274,15 @@ void start()
                 toProcess.push_back({addrSeg, addrOfs});
             } else
                 assert(0);
+        }
+    }
+
+    for (const switch_t& table : jumpTables)
+    {
+        if (table.type == switch_t::switch_e::CallWords && table.origin.offset == (uint16_t)-1)
+        {
+            for (int i=0; i<table.elements; i++)
+                toProcess.push_back(table.GetTarget(i));
         }
     }
 
@@ -3336,6 +3366,38 @@ void start()
         for (const auto& decl : processed)
             fprintf(fout, "void sub_%x();\n", decl.second.begin.linearOffset());
      
+    bool anyIndirectTable = false;
+    for (const switch_t& table : jumpTables)
+    {
+        if (table.type == switch_t::switch_e::CallWords && table.origin.offset == (uint16_t)-1)
+        {
+            if (!anyIndirectTable)
+            {
+                fprintf(fout, "\n");
+                fprintf(fout, "#ifdef callIndirect\n");
+                fprintf(fout, "#undef callIndirect\n");
+                fprintf(fout, "#endif\n");
+                fprintf(fout, "\n");
+                fprintf(fout, "void callIndirect(int seg, int ofs)\n");
+                fprintf(fout, "{\n");
+                anyIndirectTable = true;
+            }
+            fprintf(fout, "    assert(seg == 0x%04x);\n", table.origin.segment);
+            fprintf(fout, "    switch (ofs)\n");
+            fprintf(fout, "    {\n");
+            for (int i=0; i<table.elements; i++)
+                fprintf(fout, "        case 0x%x: sub_%x(); return;\n", table.GetTarget(i).offset, table.GetTarget(i).linearOffset());
+            fprintf(fout, "        default:\n");
+            fprintf(fout, "            break;\n");
+            fprintf(fout, "    }\n");
+        }
+    }
+    if (anyIndirectTable)
+    {
+        fprintf(fout, "    assert(0);\n");
+        fprintf(fout, "}\n");
+    }
+
     // collect notices, TODO: check
     for (const auto& decl : processed)
     {
