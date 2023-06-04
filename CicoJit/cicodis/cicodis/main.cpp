@@ -27,6 +27,8 @@ bool _stackGuard = false;
 bool _dumpReloc = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 bool gNeedToRerun = false;
+int _terminator = -1;
+//int _entryFunction;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
 
 std::string format(const char* fmt, ...)
@@ -196,7 +198,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                             sprintf(replace, "memoryAGet16(%s, %s)", segment, offset);
                             break;
                         case 4: // carefull!
-                            sprintf(replace, "memoryAGet16(%s, %s + 2)*16 + memoryAGet16(%s, %s)", segment, offset, segment, offset);
+                            sprintf(replace, "memoryAGet16(%s, %s + 2), memoryAGet16(%s, %s)", segment, offset, segment, offset);
                             break;
                         default:
                             assert(0);
@@ -539,6 +541,7 @@ public:
                 break;
                 
             case X86_INS_LOOP:
+            case X86_INS_LOOPE:
             case X86_INS_LOOPNE:
             case X86_INS_JAE ... X86_INS_JL:
             case X86_INS_JNE ... X86_INS_JS:
@@ -796,6 +799,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
         instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, instr));
+        if (instr->mAddress.linearOffset() == _terminator)
+            continue;
         
         if (instr->mId == X86_INS_INT && instr->mDetail.operands[0].imm == 0x21)
         {
@@ -1650,13 +1655,15 @@ std::string replaceStr(const std::string& s, const std::string& from, const std:
 
 bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps, bool lines = false)
 {
-    if (code.back()->mId == X86_INS_RET)
-        _currentCall = Near;
-    else
-        if (code.back()->mId == X86_INS_RETF)
-            _currentCall = Far;
-    else
-    {
+    assert(!code.empty());
+    bool noReturn = false;
+//    if (code.back()->mId == X86_INS_RET)
+//        _currentCall = Near;
+//    else
+//        if (code.back()->mId == X86_INS_RETF)
+//            _currentCall = Far;
+//    else
+//    {
         _currentCall = Unknown;
         int retn = 0, retf = 0;
         for (const auto& r : code)
@@ -1670,7 +1677,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             _currentCall = Near;
         if (retn == 0 && retf > 0)
             _currentCall = Far;
-    }
+    if (retn == 0 && retf == 0)
+        noReturn = true;
+//    }
     
     bool usesStack = false;
     for (const auto& ins : code)
@@ -1682,20 +1691,39 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         if (ins->mDetail.op_count >= 1)
         {
             std::string arg0 = assign(ins->mDetail, "$rd0");
+            if (ins->mDetail.operands[0].type == X86_OP_REG && ins->mDetail.operands[0].reg == X86_REG_SP)
+                usesStack = true;
+            /*
+            // TODO: could be optimized!
             if (arg0.find("sp") != std::string::npos || arg0.find("bp") != std::string::npos)
             {
-                usesStack = true;
+                if (ins->mId == X86_INS_MOV && ins->mDetail.op_count == 2 &&
+                    ins->mDetail.operands[0].type == X86_OP_REG &&
+                    ins->mDetail.operands[0].reg == X86_REG_BP &&
+                    (ins->mDetail.operands[1].type == X86_OP_IMM || ins->mDetail.operands[1].type == X86_OP_MEM))
+                {
+                    // uses bp only as variable
+                } else
+                    usesStack = true;
                 break;
-            }
+            }*/
         }
         if (ins->mDetail.op_count >= 2)
         {
+            if (ins->mDetail.operands[1].type == X86_OP_REG && ins->mDetail.operands[1].reg == X86_REG_SP)
+                usesStack = true;
+/*
             std::string arg1 = assign(ins->mDetail, "$rd1");
             if (arg1.find("sp") != std::string::npos || arg1.find("bp") != std::string::npos)
             {
-                usesStack = true;
+                if (ins->mId == X86_INS_CMP && ins->mDetail.op_count == 2 &&
+                    (ins->mDetail.operands[0].reg == X86_REG_BP || ins->mDetail.operands[1].reg == X86_REG_BP))
+                {
+                    
+                } else
+                    usesStack = true;
                 break;
-            }
+            }*/
         }
     }
     
@@ -1729,7 +1757,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back("push(0x7777);");
                 break;
             default:
-                text.push_back("stop(/*unk call conv*/);");
+                if (!noReturn)
+                    text.push_back("stop(/*unk call conv*/);");
         }
     };
     auto functionFooter = [&]()
@@ -1746,7 +1775,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("cs = pop();");
                 break;
             default:
-                text.push_back("stop(/*unk call conv*/);");
+                if (noReturn)
+                    text.push_back("stop(/*no return*/);");
+                else
+                    text.push_back("stop(/*unk call conv*/);");
         }
     };
 
@@ -2406,6 +2438,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                        x86.operands[0].size == 2);
 
                 assert(lastCompare);
+                keepLastCompare = true;
                 text.push_back(format("if (--cx && %s)", MakeCCondition(code[0]->mAddress, lastCompare, X86_INS_JNE).c_str()));
             {
                 //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
@@ -2423,6 +2456,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 {
                     text.push_back("stop(/*e2*/);");
                 }else {
+                    keepLastCompare = true;
                 assert(lastCompare);
                 text.push_back(format("if (--cx && %s)", MakeCCondition(code[0]->mAddress, lastCompare, X86_INS_JE).c_str()));
                 }
@@ -2486,7 +2520,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 {
                     text.push_back(assign(x86, "push(cs);"));
                     text.push_back(assign(x86, "cs = $rns0;"));
-                    text.push_back(assign(x86, "callIndirect(cs, $rd0);")); // not a full addr
+                    if (x86.operands[0].size == 4)
+                        text.push_back(assign(x86, "callIndirect($rd0);")); // not a full addr
+                    else
+                        text.push_back(assign(x86, "callIndirect(cs, $rd0);")); // not a full addr
                     text.push_back(assign(x86, "assert(cs == 0x%04x);", code.front()->mAddress.segment));
                 }
                 else
@@ -2619,6 +2656,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     strcmp(instr->mOperands, "byte ptr [si], byte ptr es:[di]") == 0)
                 {
                     text.push_back("repe_cmpsb<MemData, MemData, DirAuto>();");
+                    break;
+                }
+                if (strcmp(instr->mMnemonic, "repne cmpsb") == 0 &&
+                    strcmp(instr->mOperands, "byte ptr [si], byte ptr es:[di]") == 0)
+                {
+                    text.push_back("repne_cmpsb<MemData, MemData, DirAuto>();");
                     break;
                 }
                 assert(0);
@@ -2993,7 +3036,10 @@ int main(int argc, const char * argv[]) {
                     assert(index != X86_REG_INVALID);
                     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, tableType, index, nullptr});
                 }
-            } else
+            }
+            else if (strcmp(arg, "-terminator") == 0)
+                _terminator = address_t::fromString(argv[++i]).linearOffset();
+            else
                 assert(0);
 
             

@@ -1,207 +1,449 @@
-
-
-diff --git a/./cat.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/goose.cpp
-index f768dac..b45ebba 100644
+diff --git a/./cat.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/game.cpp
+index 5c13e8e..337e6b7 100644
 --- a/./cat.cpp
-+++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/goose.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/game.cpp
 @@ -1,4 +1,5 @@
  #include "cicoemu.h"
 +#include <time.h>
  using namespace CicoContext;
  
  void sub_17230();
-@@ -470,8 +471,19 @@ loc_17468:
-   bx = 0;
- loc_17479:
-   bx <<= 1;
--  stop(/*2*/); // (jmp word ptr cs:[bx + 0x250]) jump Indirect memoryAGet16(cs, bx + 592)
--  //   gap of 16 bytes
-+    switch (bx)
-+    {
-+    case 0: goto loc_17612;
-+    case 2: goto loc_17612;
-+    case 4: goto loc_17689;
-+    case 6: goto loc_175c4;
-+    case 8: goto loc_17579;
-+    case 10: goto loc_1752e;
-+    case 12: goto loc_174da;
-+    case 14: goto loc_17490;
-+    default:
-+    assert(0);
-+    }
- loc_17490:
-   memoryASet16(ds, 0x0004, 0x0007);
-   sub_18e20();
-@@ -855,20 +867,16 @@ void sub_17863()
-     goto loc_1787e;
+@@ -889,7 +890,6 @@ void sub_17863()
  loc_17874:
-   flags.carry = ah & 1;
--  flags.zero = (ah >> 1) & 1;
--  stop(/*carry1*/);
-   memoryASet(ds, bx + 4118, rcr(memoryAGet(ds, bx + 4118), 0x01));
--  ah = flags.carry | (flags.zero << 1);
-+  ah = flags.carry;
-   bx++;
-   if (--cx)
-     goto loc_17874;
-   return;
+     flags.carry = ah & 1;
+     flags.zero = (ah >> 1) & 1;
+-    stop(/*carry1*/);
+     memoryASet(ds, bx + 4118, rcr(memoryAGet(ds, bx + 4118), 0x01));
+     ah = flags.carry | (flags.zero << 1);
+     bx++;
+@@ -899,7 +899,6 @@ loc_17874:
  loc_1787e:
-   flags.carry = ah & 1;
--  flags.zero = (ah >> 1) & 1;
--  stop(/*carry2*/);
-   memoryASet(ds, bx + 4118, rcl(memoryAGet(ds, bx + 4118), 0x01));
--  ah = flags.carry | (flags.zero << 1);
-+  ah = flags.carry;
-   bx--;
-   if (--cx)
-     goto loc_1787e;
-@@ -884,7 +892,7 @@ void sub_17888()
-     goto loc_178a9;
-   if (memoryAGet(ds, 0x055c) >= 0x01)
-     goto loc_178a4;
--  stop(/*inject ret*/);
-+  flags.zero = memoryAGet(ds, 0x055c) == 0x01;
-   return;
+     flags.carry = ah & 1;
+     flags.zero = (ah >> 1) & 1;
+-    stop(/*carry2*/);
+     memoryASet(ds, bx + 4118, rcl(memoryAGet(ds, bx + 4118), 0x01));
+     ah = flags.carry | (flags.zero << 1);
+     bx--;
+@@ -917,7 +916,7 @@ void sub_17888()
+         goto loc_178a9;
+     if (memoryAGet(ds, 0x055c) >= 0x01)
+         goto loc_178a4;
+-    stop(/*inject ret*/);
++    flags.zero = memoryAGet(ds, 0x055c) == 0x01;
+     return;
  loc_178a4:
-   memoryASet(ds, 0x04d6, 0x01);
-@@ -2076,13 +2084,14 @@ loc_18440:
-   if (memoryAGet(ds, 0x069b) != 0x00)
-     goto loc_1845e;
-   sub_184f1();
--  sub_185e7();
--  dx = ax;
+     memoryASet(ds, 0x04d6, 0x01);
+@@ -1107,9 +1106,10 @@ loc_17ab0:
+ loc_17ac2:
+     memoryASet(ds, 0x0571, dl);
+     ax = memoryAGet16(ds, 0x0579);
++    tl = ax > memoryAGet16(ds, 0x2650);
+     ax -= memoryAGet16(ds, 0x2650);
+     dl = 0xff;
+-    if (stop(/*ja*/))
++    if (tl)
+         goto loc_17ad5;
+     dl = 0x01;
+     ax = ~ax;
+@@ -2096,13 +2096,14 @@ loc_18440:
+     if (memoryAGet(ds, 0x069b) != 0x00)
+         goto loc_1845e;
+     sub_184f1();
+-    sub_185e7();
+-    dx = ax;
 -loc_18453:
--  sub_185e7();
--  ax -= dx;
--  if (ax < 0xf8ed)
--    goto loc_18453;
+-    sub_185e7();
+-    ax -= dx;
+-    if (ax < 0xf8ed)
+-        goto loc_18453;
 +    sync();
-+//  sub_185e7();
-+//  dx = ax;
++//    sub_185e7();
++//    dx = ax;
 +//loc_18453:
-+//  sub_185e7();
-+//  ax -= dx;
-+//  if (ax < 0xf8ed)
-+//    goto loc_18453;
-   return;
++//    sub_185e7();
++//    ax -= dx;
++//    if (ax < 0xf8ed)
++//        goto loc_18453;
+     return;
  loc_1845e:
-   dx = 0x0201;
-@@ -2257,14 +2266,21 @@ void sub_185da()
+     dx = 0x0201;
+@@ -2220,7 +2221,6 @@ loc_1855d:
+ }
+ void sub_18568()
+ {
+-    stop(/*unk call conv*/);
+     ax = memoryAGet16(ds, 0x0693);
+     if (ax == memoryAGet16(ds, 0x0691))
+         goto loc_18587;
+@@ -2232,18 +2232,15 @@ void sub_18568()
+         goto loc_18587;
+     sub_1d0a0();
+ loc_18587:
+-    stop(/*unk call conv*/);
+     return;
+ loc_18588:
+     if (!(memoryAGet(ds, 0x06c9) & 0x80))
+         goto loc_18590;
+-    stop(/*unk call conv*/);
+     return;
+ loc_18590:
+     if (memoryAGet(ds, 0x06cc) & 0x80)
+         goto loc_1859d;
+     memoryASet(ds, 0x1f80, 0x09);
+-    stop(/*unk call conv*/);
+     return;
+ loc_1859d:
+     if (!(memoryAGet(ds, 0x06c1) & 0x80))
+@@ -2251,13 +2248,11 @@ loc_1859d:
+     if (memoryAGet(ds, 0x06cb) & 0x80)
+         goto loc_185b1;
+     memoryASet(ds, 0x041c, 0xff);
+-    stop(/*unk call conv*/);
+     return;
+ loc_185b1:
+     if (memoryAGet(ds, 0x06c8) & 0x80)
+         goto loc_185be;
+     memoryASet(ds, 0x041b, 0xff);
+-    stop(/*unk call conv*/);
+     return;
+ loc_185be:
+     if (memoryAGet(ds, 0x06c7) & 0x80)
+@@ -2267,15 +2262,13 @@ loc_185be:
+         goto loc_185d3;
+     sub_1cd51();
+ loc_185d3:
+-    stop(/*unk call conv*/);
+     return;
+ loc_185d4:
+-    stop(/*unk call conv*/);
+     return;
+ loc_185d5:
+     sub_186af();
+     ax = pop();
+-    stop(/*unk call conv*/);
++    stop(/*unk call conv iret*/);
+ }
+ void sub_185da()
+ {
+@@ -2286,14 +2279,13 @@ void sub_185da()
  }
  void sub_185e7()
  {
--  al = 0x00;
--  out(0x0043, al);
--  in(al, 0x40);
--  ah = al;
--  in(al, 0x40);
--  tl = ah;
--  ah = al;
--  al = tl;
+-    al = 0x00;
+-    out(0x0043, al);
+-    in(al, 0x40);
+-    ah = al;
+-    in(al, 0x40);
+-    tl = ah;
+-    ah = al;
+-    al = tl;
 +    sync();
-+        struct timespec ts;
-+        unsigned theTick = 0U;
-+        clock_gettime( CLOCK_REALTIME, &ts );
-+        theTick  = ts.tv_nsec / 1000000;
-+        theTick += ts.tv_sec * 1000;
++    struct timespec ts;
++    unsigned theTick = 0U;
++    clock_gettime( CLOCK_REALTIME, &ts );
++    theTick  = ts.tv_nsec / 1000000;
++    theTick += ts.tv_sec * 1000;
 +    ax = theTick*1193;
-+//  al = 0x00;
-+//  out(0x0043, al);
-+//  in(al, 0x40);
-+//  ah = al;
-+//  in(al, 0x40);
-+//  tl = ah;
-+//  ah = al;
-+//  al = tl;
  }
  void sub_18608()
  {
-@@ -2397,7 +2413,6 @@ loc_1884e:
-   if (flags.carry)
+@@ -2410,13 +2402,11 @@ void sub_18838()
+     if (memoryAGet16(ds, 0x0004) != 0x0007)
+         goto loc_18843;
+     sub_1a32a();
+-    stop(/*inject ret*/);
      return;
-   sub_189dd();
--  stop(/*inject ret*/);
-   return;
+ loc_18843:
+     if (memoryAGet16(ds, 0x0004) == 0x0000)
+         goto loc_1884e;
+     sub_188f6();
+-    stop(/*inject ret*/);
+     return;
+ loc_1884e:
+     al = memoryAGet(ds, 0x057b);
+@@ -2427,7 +2417,6 @@ loc_1884e:
+     if (flags.carry)
+         goto loc_18886;
+     sub_189dd();
+-    stop(/*inject ret*/);
+     return;
  loc_18860:
-   if (memoryAGet(ds, 0x0550) >= 0x02)
-@@ -3757,7 +3772,7 @@ loc_19530:
-     goto loc_19557;
-   memoryASet(ds, 0x1d58, 0x01);
+     if (memoryAGet(ds, 0x0550) >= 0x02)
+@@ -2447,7 +2436,7 @@ loc_18883:
+ loc_18885:
+     flags.carry = false;
+ loc_18886:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_18887()
+ {
+@@ -2961,7 +2950,7 @@ void sub_18d35()
+ loc_18d7a:
+     flags.carry = true;
+ loc_18d7b:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_18d7c()
+ {
+@@ -3033,7 +3022,7 @@ loc_18e0f:
+ loc_18e11:
+     flags.carry = false;
+ loc_18e12:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_18e20()
+ {
+@@ -3578,7 +3567,6 @@ loc_1935a:
+     if (ax > memoryAGet16(ds, 0x0579))
+         goto loc_19364;
+     sub_19366();
+-    stop(/*inject ret*/);
+     return;
+ loc_19364:
+     flags.carry = false;
+@@ -3664,7 +3652,6 @@ void sub_19410()
+     di = 0x0020;
+     cx = 0x0f1e;
+     sub_1a059();
+-    stop(/*inject ret*/);
+     return;
+ loc_19439:
+     flags.carry = false;
+@@ -3675,11 +3662,13 @@ void sub_19440()
+ }
+ void sub_19446()
+ {
++    push(0x7777);
+     ah = 0;
+     interrupt(0x1a);
+     if (dx != memoryAGet16(ds, 0x1d5a))
+         goto loc_19451;
+ loc_19450:
++    assert(pop() == 0x7777);
+     return;
+ loc_19451:
+     cx = dx;
+@@ -3737,6 +3726,7 @@ loc_194cf:
+     if (memoryAGet(ds, 0x1d59) != 0x00)
+         goto loc_194ed;
+ loc_194ec:
++    assert(pop() == 0x7777);
+     return;
+ loc_194ed:
+     ax = 0xb800;
+@@ -3748,6 +3738,7 @@ loc_194ed:
+     memoryASet16(ds, 0x1d66, cx);
+     bp = 0x1d24;
+     sub_19efc();
++    assert(pop() == 0x7777);
+ }
+ void sub_1950c()
+ {
+@@ -3784,7 +3775,7 @@ loc_19530:
+         goto loc_19557;
+     memoryASet(ds, 0x1d58, 0x01);
  loc_19557:
--  stop(/*inject ret*/);
+-    stop(/*inject ret*/);
 +    return;
  }
  void sub_19560()
  {
-@@ -4098,12 +4113,13 @@ void sub_198c0()
-   es = pop();
-   cx = 0x0007;
-   si = 0x1f82;
-+loc_198c8:
-   lodsb<MemAuto, DirAuto>();
-   bx = 0x0007;
-   bx -= cx;
-   if (--cx && al == memoryAGet(ds, bx + 8073))
-     goto loc_198c8;
--  if (stop(/*1*/))
-+  if (al > memoryAGet(ds, bx + 8073)) // TODO: check!
-     goto loc_198d7;
-   return;
- loc_198d7:
-@@ -4906,8 +4922,8 @@ void sub_1a02d()
-   dx = memoryAGet16(ds, 0x2ae5);
-   dl ^= dh;
-   dl >>= 1;
-+  flags.carry = dl & 1;
-   dl >>= 1;
--  stop(/*carry1*/);
-   memoryASet16(ds, 0x2ae5, rcr(memoryAGet16(ds, 0x2ae5), 0x0001));
-   dx = memoryAGet16(ds, 0x2ae5);
+@@ -4095,7 +4086,7 @@ loc_1983e:
+     sub_1cb6b();
+     flags.carry = true;
+ loc_1988d:
+-    stop(/*inject ret*/);
++    return;
  }
-@@ -7173,7 +7189,6 @@ void sub_1b50b()
-   sub_1a059();
-   bx = pop();
-   si = pop();
--  stop(/*inject ret*/);
+ // INJECT: Error: cannot inject carry flag in sub_1988e()!
+ void sub_1988e()
+@@ -4115,7 +4106,6 @@ loc_19897:
+     dh = memoryAGet(ds, 0x1673);
+     cx = 0x0c08;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_198c0()
+ {
+@@ -5579,7 +5569,6 @@ void sub_1a5ea()
+     if (memoryAGet(ds, 0x44bd) == 0x00)
+         goto loc_1a603;
+     sub_1b9e0();
+-    stop(/*inject ret*/);
+     return;
+ loc_1a603:
+     ax = memoryAGet16(ds, 0x327d);
+@@ -5748,7 +5737,7 @@ loc_1a78a:
+     dx -= memoryAGet16(ds, 0x3509);
+     if (dx < 0x000d)
+         goto loc_1a773;
+-    stop(/*inject ret*/);
++    flags.carry = false;
+     return;
+ loc_1a79f:
+     memoryASet(ds, 0x351b, memoryAGet(ds, 0x351b) + 1);
+@@ -6559,6 +6548,7 @@ loc_1af02:
+     ax &= 0xfff8;
+     dx = memoryAGet16(ds, 0x0579);
+     dx &= 0xfff8;
++    flags.carry = ax < dx;
+     if (ax != dx)
+         goto loc_1af3d;
+     memoryASet(ds, 0x3967, 0x01);
+@@ -6566,7 +6556,7 @@ loc_1af02:
+     goto loc_1af55;
+ loc_1af3d:
+     ax = memoryAGet16(ds, 0x3964);
+-    if (stop(/*1*/))
++    if (flags.carry)
+         goto loc_1af4c;
+     flags.carry = ax < memoryAGet16(ds, 0x39c6);
+     ax -= memoryAGet16(ds, 0x39c6);
+@@ -6725,7 +6715,6 @@ void sub_1b082()
+     di = 0x0010;
+     cx = 0x1e0e;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ // INJECT: Error: cannot inject carry flag in sub_1b09e()!
+ void sub_1b09e()
+@@ -6738,7 +6727,6 @@ void sub_1b09e()
+     dh = memoryAGet(ds, 0x057b);
+     cx = 0x0e0e;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_1b0c0()
+ {
+@@ -6931,7 +6919,6 @@ void sub_1b295()
+     di = 0x0018;
+     cx = 0x0e1e;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_1b2c0()
+ {
+@@ -7193,7 +7180,6 @@ void sub_1b50b()
+     sub_1a059();
+     bx = pop();
+     si = pop();
+-    stop(/*inject ret*/);
  }
  // INJECT: Error: cannot inject carry flag in sub_1b52c()!
  void sub_1b52c()
-@@ -9898,10 +9913,10 @@ loc_1ce81:
+@@ -7210,7 +7196,6 @@ void sub_1b52c()
+     sub_1a059();
+     bx = pop();
+     si = pop();
+-    stop(/*inject ret*/);
+ }
+ void sub_1b54c()
+ {
+@@ -7484,7 +7469,7 @@ void sub_1b787()
+         goto loc_1b7a9;
+     memoryASet(ds, 0x40b8, 0xff);
+ loc_1b7a9:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_1b7aa()
+ {
+@@ -7686,7 +7671,6 @@ void sub_1b96e()
+     di = si;
+     cx = 0x0e10;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_1b989()
+ {
+@@ -7742,7 +7726,6 @@ loc_1b9f5:
+     di = 0x0028;
+     cx = 0x0e1e;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_1ba06()
+ {
+@@ -8410,7 +8393,7 @@ loc_1c05f:
+     sub_1cb6b();
+     flags.carry = true;
+ loc_1c06d:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_1c06e()
+ {
+@@ -8645,7 +8628,6 @@ loc_1c266:
+     di = 0x0018;
+     cx = 0x0c08;
+     sub_1a059();
+-    stop(/*inject ret*/);
+ }
+ void sub_1c290()
+ {
+@@ -8996,6 +8978,7 @@ void sub_1c5e0()
+ {
+     if (memoryAGet(ds, 0x0000) == 0x00)
+         return;
++    sync(); // gabo
+     ah = 0;
+     interrupt(0x1a);
+     if (dx == memoryAGet16(ds, 0x5322))
+@@ -9917,10 +9900,10 @@ loc_1ce81:
  }
  void sub_1ce90()
  {
--  interrupt(0x11);
--  al &= 0x30;
--  if (al != 0x30)
--    goto loc_1cec5;
-+//  interrupt(0x11);
-+//  al &= 0x30;
-+//  if (al != 0x30)
-+//    goto loc_1cec5;
-   ax = 0xb800;
-   ds = ax;
-   ax = 0x55aa;
-@@ -10163,6 +10178,7 @@ loc_1d118:
+-    interrupt(0x11);
+-    al &= 0x30;
+-    if (al != 0x30)
+-        goto loc_1cec5;
++//    interrupt(0x11);
++//    al &= 0x30;
++//    if (al != 0x30)
++//        goto loc_1cec5;
+     ax = 0xb800;
+     ds = ax;
+     ax = 0x55aa;
+@@ -10182,6 +10165,7 @@ loc_1d118:
  loc_1d124:
-   ax = memoryAGet16(ds, 0x0693);
+     ax = memoryAGet16(ds, 0x0693);
  loc_1d127:
 +    sync();
-   if (ax == memoryAGet16(ds, 0x0693))
-     goto loc_1d127;
-   if (!(memoryAGet(ds, 0x06c1) & 0x80))
-@@ -10187,6 +10203,7 @@ loc_1d14f:
+     if (ax == memoryAGet16(ds, 0x0693))
+         goto loc_1d127;
+     if (!(memoryAGet(ds, 0x06c1) & 0x80))
+@@ -10206,6 +10190,7 @@ loc_1d14f:
  loc_1d156:
-   ax = memoryAGet16(ds, 0x0693);
+     ax = memoryAGet16(ds, 0x0693);
  loc_1d159:
 +    sync();
-   if (ax == memoryAGet16(ds, 0x0693))
-     goto loc_1d159;
-   ax = 0;
-@@ -10242,6 +10259,7 @@ loc_1d1ce:
+     if (ax == memoryAGet16(ds, 0x0693))
+         goto loc_1d159;
+     ax = 0;
+@@ -10261,6 +10246,7 @@ loc_1d1ce:
  loc_1d1d7:
-   ax = memoryAGet16(ds, 0x0693);
+     ax = memoryAGet16(ds, 0x0693);
  loc_1d1da:
 +    sync();
-   if (ax == memoryAGet16(ds, 0x0693))
-     goto loc_1d1da;
+     if (ax == memoryAGet16(ds, 0x0693))
+         goto loc_1d1da;
+ }
+@@ -10312,7 +10298,7 @@ loc_1d237:
+         goto loc_1d237;
+     flags.carry = true;
+ loc_1d23e:
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_1d23f()
+ {
+@@ -10615,5 +10601,5 @@ loc_1d4df:
+     sub_1cb6b();
+     flags.carry = true;
+ loc_1d51a:
+-    stop(/*inject ret*/);
++    return;
  }
