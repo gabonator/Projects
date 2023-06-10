@@ -1436,10 +1436,29 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
             break;
         case X86_INS_ADD:
         case X86_INS_SUB:
+            assert(x86.op_count >= 1);
+            switch (op)
+            {
+                case X86_INS_JL:
+                    // titus the fox, bounce ball
+                    /*
+                     1020:3d4c       neg     ax
+
+                     1020:3d4e       add     ax, 0x30
+                     1020:3d51       jl      loc_13f55
+                     */
+                    return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js? // not good, check! CF OF!!
+                default:
+                    ;
+                    // fall through
+            }
+
         case X86_INS_AND:
         case X86_INS_DEC:
-        case X86_INS_RCL:
+        case X86_INS_ROL:
+        case X86_INS_ROR:
         case X86_INS_RCR:
+        case X86_INS_RCL:
         case X86_INS_SHR:
         case X86_INS_SHL:
         case X86_INS_INC:
@@ -1457,14 +1476,14 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 case X86_INS_JS:
                     return assign(x86, "($sig0)$rd0 < 0");
                 case X86_INS_JL:
+                    //
                     if (inst->mInject != inject_t::carry)
                     {
                         inst->mInject = inject_t::carry;
                         return "stop(/*5*/)";
                     } else {
-                        return "flags.carry";
+                        return "flags.carry && stop(/*check JL*/)";
                     }
-
 //                    return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js?
                 case X86_INS_JA:
                     return "stop(/*ja*/)";
@@ -1958,6 +1977,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     case X86_INS_SUB:
                         text.push_back(assign(x86, "flags.carry = $rd0 < $rd1;"));
                         break;
+                    case X86_INS_ROL:
+                        text.push_back(assign(x86, "flags.carry = !!($rd0 & $msb0);"));
+                        break;
+                    case X86_INS_ROR:
+                        text.push_back(assign(x86, "flags.carry = $rd0 & 1;"));
+                        break;
                     case X86_INS_RCL:
                     case X86_INS_RCR:
                         // updates carry flag internally
@@ -2082,7 +2107,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_XOR:
                 if (assign(x86, "$rd0") == assign(x86, "$rd1"))
-                    text.push_back(assign(x86, "$rw0 = 0;"));
+                {
+                    if (assign(x86, "$rd0") == "eax")
+                        text.push_back(assign(x86, "ax = 0;")); // 16 bit!
+                    else
+                        text.push_back(assign(x86, "$rw0 = 0;"));
+                }
                 else
                     text.push_back(assign(x86, "$rw0 ^= $rd1;"));
                 lastCompare = instr;
@@ -3549,8 +3579,15 @@ void start()
             fprintf(fout, "    assert(seg == 0x%04x);\n", table.origin.segment);
             fprintf(fout, "    switch (ofs)\n");
             fprintf(fout, "    {\n");
+            std::map<int, int> used;
             for (int i=0; i<table.elements; i++)
+            {
+                int v = table.GetTarget(i).offset;
+                if (used.find(v) != used.end())
+                    continue;
+                used.insert(std::pair<int, int>(v, 0));
                 fprintf(fout, "        case 0x%x: sub_%x(); return;\n", table.GetTarget(i).offset, table.GetTarget(i).linearOffset());
+            }
             fprintf(fout, "        default:\n");
             fprintf(fout, "            break;\n");
             fprintf(fout, "    }\n");

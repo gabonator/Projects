@@ -28,5 +28,6 @@ unzip -d dos -j titus.zip \
   "TITRE.SQZ" \
   "TITREEGA.SQZ" \
   "TITUS.SQZ"
-cp game.exe dos/
+
+unzip unpacked.zip -d dos
 rm titus.zip
