@@ -397,7 +397,8 @@ struct cmp_adress_t {
 struct switch_t {
     address_t origin;
     address_t begin;
-    int elements{0};
+//    int elements{0};
+    std::vector<int> elements;
     enum switch_e {
         None,
         CallWords,
@@ -678,7 +679,10 @@ public:
         size_t codeSize = 32;
         const uint8_t* buf = GetBufferAt(addr);
         if (buf[0] == 0 && buf[1] == 0 && buf[2] == 0)
-            assert(0);
+        {
+            return std::shared_ptr<CapInstr>();
+//            assert(0);
+        }
             
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
         return std::shared_ptr<CapInstr>(new CapInstr(addr, mInsn));
@@ -758,51 +762,56 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         address_t pc = trace.front();
         trace.pop_front();
         assert(pc.offset >= 0 && pc.offset < 0xffff);
-        if (trace.size() == 0) // skip indirect jumps
-        {
-            // start processing indirect jumps when everything is finished
-            //assert(indirectJumps.size() <= 1);
-            for (int i=0; i<indirectJumps.size(); i++)
-            {
-                switch_t& sw = indirectJumps[i];
-                if (instructions.find(sw.origin) == instructions.end())
-                    continue;
-                
-                // already processed all entries?
-                if (sw.elements != -1)
-                    continue;
-                
-                for (int i=0; i<200; i++)
-                {
-                    address_t source = sw.GetAddressAt(i);
-                    if (instructions.find(source) != instructions.end())
-                    {
-                        // case (offset in table) is already part of code, we've gone too far
-                        sw.elements = i;
-                        break;
-                    }
-                    address_t target{_cs, sw.GetTarget(i).offset};
-                    if (target.offset == 0)
-                    {
-                        sw.elements = i-1;
-                        break;
-                    }
-                    auto match = instructions.find(target);
-                    if (match == instructions.end())
-                    {
-                        // try one more label and trace the code again
-                        assert(target.offset <= 0xffff);
-                        trace.push_back(target);
-                        break;
-                    } else
-                        match->second->mLabel = true;
-                }
-            }
-        }
+//        if (trace.size() == 0) // skip indirect jumps
+//        {
+//            // start processing indirect jumps when everything is finished
+//            //assert(indirectJumps.size() <= 1);
+//            for (int i=0; i<indirectJumps.size(); i++)
+//            {
+//                switch_t& sw = indirectJumps[i];
+//                if (instructions.find(sw.origin) == instructions.end())
+//                    continue;
+//
+//                // already processed all entries?
+//                if (sw.elements != -1)
+//                    continue;
+//
+//                for (int i=0; i<200; i++)
+//                {
+//                    address_t source = sw.GetAddressAt(i);
+//                    if (instructions.find(source) != instructions.end())
+//                    {
+//                        // case (offset in table) is already part of code, we've gone too far
+//                        sw.elements = i;
+//                        break;
+//                    }
+//                    address_t target{_cs, sw.GetTarget(i).offset};
+//                    if (target.offset == 0)
+//                    {
+//                        sw.elements = i-1;
+//                        break;
+//                    }
+//                    auto match = instructions.find(target);
+//                    if (match == instructions.end())
+//                    {
+//                        // try one more label and trace the code again
+//                        assert(target.offset <= 0xffff);
+//                        trace.push_back(target);
+//                        break;
+//                    } else
+//                        match->second->mLabel = true;
+//                }
+//            }
+//        }
         if (instructions.find(pc) != instructions.end())
             continue;
         
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
+        if (!instr)
+        {
+            printf("Cannot disassemble %04x:%04x in sub_%x()\n", pc.segment, pc.offset, address.linearOffset());
+            assert(0);
+        }
         instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, instr));
         if (instr->mAddress.linearOffset() == _terminator)
             continue;
@@ -833,36 +842,36 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             for (int i=0; i<indirectJumps.size(); i++)
             {
                 switch_t& sw = indirectJumps[i];
-                if (sw.origin == instr->mAddress && sw.elements > 0)
-                    for (int j=0; j<sw.elements; j++)
+                if (sw.origin == instr->mAddress && !sw.elements.empty())
+                    for (int j : sw.elements)
                         trace.push_back(sw.GetTarget(j));
             }
         }
         
-        if (0 && instr->IsIndirectJump())
-        {
-            assert(instr->mDetail.op_count == 1);
-            const auto& op = instr->mDetail.operands[0];
-            if (op.mem.base == X86_REG_INVALID &&
-                op.mem.segment == X86_REG_INVALID &&
-                op.mem.index == X86_REG_INVALID &&
-                op.mem.scale == 1 &&
-                op.mem.disp != 0)
-            {
-                
-            }
-            else if (op.mem.segment == X86_REG_INVALID)
-            {
-                assert(op.mem.segment == X86_REG_INVALID); // ds?
-                assert(op.mem.base == X86_REG_DI || op.mem.base == X86_REG_SI);
-                assert(_ds);
-                address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
-                const uint8_t* ptr = cap.GetBufferAt(table);
-                indirectJumps.push_back({instr->mAddress, address_t{_cs, 0}, -1, switch_t::JumpWords, op.mem.base, ptr});
-            } else {
-                printf("// skipping indirect jump\n");
-            }
-        }
+//        if (0 && instr->IsIndirectJump())
+//        {
+//            assert(instr->mDetail.op_count == 1);
+//            const auto& op = instr->mDetail.operands[0];
+//            if (op.mem.base == X86_REG_INVALID &&
+//                op.mem.segment == X86_REG_INVALID &&
+//                op.mem.index == X86_REG_INVALID &&
+//                op.mem.scale == 1 &&
+//                op.mem.disp != 0)
+//            {
+//                
+//            }
+//            else if (op.mem.segment == X86_REG_INVALID)
+//            {
+//                assert(op.mem.segment == X86_REG_INVALID); // ds?
+//                assert(op.mem.base == X86_REG_DI || op.mem.base == X86_REG_SI);
+//                assert(_ds);
+//                address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
+//                const uint8_t* ptr = cap.GetBufferAt(table);
+//                indirectJumps.push_back({instr->mAddress, address_t{_cs, 0}, -1, switch_t::JumpWords, op.mem.base, ptr});
+//            } else {
+//                printf("// skipping indirect jump\n");
+//            }
+//        }
             
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
@@ -936,8 +945,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             for (int i=0; i<indirectJumps.size(); i++)
             {
                 switch_t& sw = indirectJumps[i];
-                if (sw.origin == iter->second->mAddress && sw.elements > 0)
-                    for (int j=0; j<sw.elements; j++)
+                if (sw.origin == iter->second->mAddress && !sw.elements.empty())
+                    for (int j : sw.elements)
                     {
                         auto tinst = instructions.find(sw.GetTarget(j));
                         assert(tinst != instructions.end());
@@ -1052,8 +1061,13 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
         if (injectReturn != inject_t::none && (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF))
         {
-            assert(prev1 && prev2);
-            if (instr->mLabel)
+            if (!prev1 || !prev2)
+            {
+                printf("// INJECT: Error: cannot inject zero flag in sub_%x() because no traceback!\n",
+                       address.linearOffset());
+                instr->mInject = inject_t::stop;
+            }
+            else if (instr->mLabel)
             {
                 std::vector<std::shared_ptr<CapInstr>> targets;
                 std::shared_ptr<CapInstr> prev3;
@@ -1669,37 +1683,37 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
 void FindSwitches(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& switches)
 {
 //    return; // TODO:
-    std::shared_ptr<CapInstr> prev;
-    for (const std::shared_ptr<CapInstr>& instr : code)
-    {
-        if (instr->mId == X86_INS_CALL)
-        {
-            if (strcmp(instr->mOperands, "word ptr [si]") == 0)
-                continue;
-            
-            const cs_x86& x86 = instr->mDetail;
-            if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2 &&
-                x86.operands[0].mem.base != X86_REG_INVALID)
-            {
-//                assert(prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1);
-                if (prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1)
-                {
-                    if (x86.operands[0].mem.segment == X86_REG_CS)
-                    {
-                        assert(x86.operands[0].mem.segment == X86_REG_CS);
-                        assert(x86.operands[0].mem.scale == 1);
-//                        assert(x86.operands[0].mem.base == X86_REG_BX);
-                        switches.push_back({instr->mAddress, address_t{_cs, (int)x86.operands[0].mem.disp},
-                            -1, switch_t::CallWords, x86.operands[0].mem.base});
-                    } else
-                        printf("// skipping indirect call\n");
-                } else {
-                    printf("// skipping indirect call\n");
-                }
-            }
-        }
-        prev = instr;
-    }
+//    std::shared_ptr<CapInstr> prev;
+//    for (const std::shared_ptr<CapInstr>& instr : code)
+//    {
+//        if (instr->mId == X86_INS_CALL)
+//        {
+//            if (strcmp(instr->mOperands, "word ptr [si]") == 0)
+//                continue;
+//            
+//            const cs_x86& x86 = instr->mDetail;
+//            if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2 &&
+//                x86.operands[0].mem.base != X86_REG_INVALID)
+//            {
+////                assert(prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1);
+//                if (prev && prev->mId == X86_INS_SHL && prev->mDetail.operands[1].type == X86_OP_IMM && prev->mDetail.operands[1].imm == 1)
+//                {
+//                    if (x86.operands[0].mem.segment == X86_REG_CS)
+//                    {
+//                        assert(x86.operands[0].mem.segment == X86_REG_CS);
+//                        assert(x86.operands[0].mem.scale == 1);
+////                        assert(x86.operands[0].mem.base == X86_REG_BX);
+//                        switches.push_back({instr->mAddress, address_t{_cs, (int)x86.operands[0].mem.disp},
+//                            -1, switch_t::CallWords, x86.operands[0].mem.base});
+//                    } else
+//                        printf("// skipping indirect call\n");
+//                } else {
+//                    printf("// skipping indirect call\n");
+//                }
+//            }
+//        }
+//        prev = instr;
+//    }
 }
 
 bool checkDiscards(const cs_x86_op& prev, const cs_x86_op& next)
@@ -2533,11 +2547,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 else
                 {
                     const auto sw = std::find_if(jumps.begin(), jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
-                    if (sw != jumps.end() && sw->elements != -1)
+                    if (sw != jumps.end() && !sw->elements.empty())
                     {
                         text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
                         text.push_back("{");
-                        for (int i=0; i<sw->elements; i++)
+                        for (int i : sw->elements)
                             text.push_back(sw->GetCase(i));
                         text.push_back("default:");
                         text.push_back("assert(0);");
@@ -2612,11 +2626,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     const auto sw = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
                         return sw.origin == instr->mAddress;
                     });
-                    if (sw != switches.end() && sw->elements != -1)
+                    if (sw != switches.end() && !sw->elements.empty())
                     {
                         text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
                         text.push_back("{");
-                        for (int i=0; i<sw->elements; i++)
+                        for (int i : sw->elements)
                             text.push_back(sw->GetCase(i));
                         text.push_back("default:");
                         text.push_back("assert(0);");
@@ -2652,11 +2666,22 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM)
                 {
                     text.push_back(assign(x86, "push(cs);"));
-                    text.push_back(assign(x86, "cs = $rns0;"));
-                    if (x86.operands[0].size == 4)
-                        text.push_back(assign(x86, "callIndirect($rd0);")); // not a full addr
-                    else
-                        text.push_back(assign(x86, "callIndirect(cs, $rd0);")); // not a full addr
+                    // TODO: cs destroys cs in args!
+                    if (assign(x86, "$rd0").find("cs") == std::string::npos)
+                    {
+                        text.push_back(assign(x86, "cs = $rns0;"));
+                        if (x86.operands[0].size == 4)
+                            text.push_back(assign(x86, "callIndirect($rd0);")); // not a full addr
+                        else
+                            text.push_back(assign(x86, "callIndirect(cs, $rd0);")); // not a full addr
+                    } else {
+                        text.push_back(assign(x86, "tx = cs;"));
+                        text.push_back(assign(x86, "cs = $rns0;"));
+                        if (x86.operands[0].size == 4)
+                            text.push_back(replaceStr(assign(x86, "callIndirect($rd0);"), "cs", "tx")); // not a full addr
+                        else
+                            text.push_back(replaceStr(assign(x86, "callIndirect(cs, $rd0);"), "cs", "tx")); // not a full addr
+                    }
                     text.push_back(assign(x86, "assert(cs == 0x%04x);", code.front()->mAddress.segment));
                 }
                 else
@@ -3160,7 +3185,23 @@ int main(int argc, const char * argv[]) {
                 // -jumptable 01ed:46dc 01ed:4725 4 jumpwords bx
                 address_t indirectJumpAddr = address_t::fromString(argv[++i]);
                 address_t jumpTableBegin = address_t::fromString(argv[++i]);
-                int jumpTableEntries = (int)strtol(argv[++i], nullptr, 10);
+                const char* strJumpEntries = argv[++i];
+
+                std::vector<int> jumpEntries;
+                if (strstr(strJumpEntries, "-"))
+                {
+                    int jumpTableEntriesBegin = (int)strtol(strJumpEntries, nullptr, 10);
+                    strJumpEntries = strstr(strJumpEntries, "-")+1;
+                    int jumpTableEntriesEnd = (int)strtol(strJumpEntries, nullptr, 10);
+                    for (int i=jumpTableEntriesBegin; i<=jumpTableEntriesEnd; i++)
+                        jumpEntries.push_back(i);
+                } else
+                {
+                    int jumpTableEntries = (int)strtol(strJumpEntries, nullptr, 10);
+                    for (int i=0; i<jumpTableEntries; i++)
+                        jumpEntries.push_back(i);
+                }
+                
                 const char* jumpTableEntryType = argv[++i];
                 
                 switch_t::switch_e tableType = switch_t::switch_e::None;
@@ -3179,10 +3220,10 @@ int main(int argc, const char * argv[]) {
                     index = X86_REG_DI;
                 if (strcmp(jumpSelector, "indirect") == 0)
                 {
-                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, tableType, index, nullptr});
+                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
                 } else {
                     assert(index != X86_REG_INVALID);
-                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpTableEntries, tableType, index, nullptr});
+                    jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
                 }
             }
             else if (strcmp(arg, "-terminator") == 0)
@@ -3219,7 +3260,7 @@ int main(int argc, const char * argv[]) {
     
     std::streamsize size = file.tellg();
     int execSize = (int)size;
-    assert(size >= 1024 && size < 1024*1024);
+        assert(size >= 1024 && size < 1024*1024);
     file.seekg(0, std::ios::beg);
 
     std::vector<char> buffer(size);
@@ -3475,7 +3516,7 @@ void start()
     {
         if (table.type == switch_t::switch_e::CallWords && table.origin.offset == (uint16_t)-1)
         {
-            for (int i=0; i<table.elements; i++)
+            for (int i : table.elements)
                 toProcess.push_back(table.GetTarget(i));
         }
     }
@@ -3537,24 +3578,24 @@ void start()
         gNeedToRerun = false;
         TraceFunctions();
     }
-    for (auto& sw : switches)
-    {
-        sw.baseptr = cap.GetBufferAt(sw.GetBaseAddress());
-        
-        for (int i=0; i<2000; i++)
-        {
-            address_t addr = sw.GetAddressAt(i);
-            int size = sw.GetSize();
-            if (CheckOverlap(addr, size))
-            {
-                sw.elements = i;
-                break;
-            }
-            toProcess.push_back(sw.GetTarget(i));
-            TraceFunctions();
-        }
-        assert(sw.elements != -1);
-    }
+//    for (auto& sw : switches)
+//    {
+//        sw.baseptr = cap.GetBufferAt(sw.GetBaseAddress());
+//        
+//        for (int i=0; i<2000; i++)
+//        {
+//            address_t addr = sw.GetAddressAt(i);
+//            int size = sw.GetSize();
+//            if (CheckOverlap(addr, size))
+//            {
+//                sw.elements = i;
+//                break;
+//            }
+//            toProcess.push_back(sw.GetTarget(i));
+//            TraceFunctions();
+//        }
+//        assert(sw.elements != -1);
+//    }
         
     if (!outputFolder)
         for (const auto& decl : processed)
@@ -3580,7 +3621,7 @@ void start()
             fprintf(fout, "    switch (ofs)\n");
             fprintf(fout, "    {\n");
             std::map<int, int> used;
-            for (int i=0; i<table.elements; i++)
+            for (int i : table.elements)
             {
                 int v = table.GetTarget(i).offset;
                 if (used.find(v) != used.end())
@@ -3668,9 +3709,9 @@ void start()
                 const auto sw = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
                     return sw.origin == lsw.origin;
                 });
-                if (sw != switches.end() && sw->elements != -1)
+                if (sw != switches.end() && !sw->elements.empty())
                 {
-                    for (int i=0; i<sw->elements; i++)
+                    for (int i : sw->elements)
                     {
                         address_t target = sw->GetTarget(i);
                         if (std::find(imports.begin(), imports.end(), target) == imports.end())
