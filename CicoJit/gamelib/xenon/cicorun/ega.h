@@ -628,6 +628,8 @@ public:
         if ( _video[shift + off*4 + 1] & mask ) b |= 2;
         if ( _video[shift + off*4 + 2] & mask ) b |= 4;
         if ( _video[shift + off*4 + 3] & mask ) b |= 8;
+//        if (b==0)
+//            return 0x400040;
         return palette[b];
     }
 

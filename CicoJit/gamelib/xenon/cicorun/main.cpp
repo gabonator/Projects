@@ -78,104 +78,8 @@ void onKey(int k, int p)
         CicoContext::ctx->memory8(0x2853, 0x8f59) &= ~code;    
 }
 
-/*
-void sub_16284();
-void sub_1758f();
-void sub_1655b();
-void sub_14311();
-void sub_14759();
-void sub_137df();
-void sub_10853();
-void sub_10761();
-void sub_170f1();
-void sub_16eef();
-void sub_16284();
-void sub_16284();
-void sub_1758f();
-void sub_1655b();
-void sub_1480b();
-void sub_172c4();
-void sub_17520();
-void sub_1714a();
-void sub_10f2b();
-void sub_13998();
-void sub_108b9();
-void sub_128df();
-void sub_12ab2(); 
-void sub_12a6e(); 
-void sub_137ca(); 
-void sub_16d22(); 
-void sub_11f4d();
-void sub_1308c();
-void sub_16a0a();
-void sub_125a8();
-void sub_13835();
-void sub_139ee();
-void sub_1091f();
-void sub_16aad();
-void sub_169d0();
-void sub_20c5e();
-void sub_16ac7();
-void sub_209a6();
-void sub_12ad0();
-void sub_16bca();
-void sub_16e2c();
 
-void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
-{
-    switch (ofs)
-    {
-        case 0x6284: sub_16284(); break;
-        case 0x758f: sub_1758f(); break;
-        case 0x655b: sub_1655b(); break;
-        case 0x4311: sub_14311(); break;
-        case 0x4759: sub_14759(); break;
-        case 0x37df: sub_137df(); break;
-        case 0x0853: sub_10853(); break;
-        case 0x0761: sub_10761(); break;
-        case 0x70f1: sub_170f1(); break;
-        case 0x6eef: sub_16eef(); break;
-//        case 0x6284: sub_16284(); break;
-//        case 0x6284: sub_16284(); break;
-//        case 0x758f: sub_1758f(); break;
-//        case 0x655b: sub_1655b(); break;
-        case 0x480b: sub_1480b(); break;
-        case 0x72c4: sub_172c4(); break;
-        case 0x7520: sub_17520(); break;
-        case 0x714a: sub_1714a(); break;
-        case 0x0f2b: sub_10f2b(); break;
-        case 0x3998: sub_13998(); break;
-        case 0x08b9: sub_108b9(); break;
-        case 0x28df: sub_128df(); break;
-            
-        case 0x2ab2: sub_12ab2(); break;
-        case 0x2a6e: sub_12a6e(); break;
-        case 0x37ca: sub_137ca(); break;
-        case 0x6d22: sub_16d22(); break;
-        case 0x1f4d: sub_11f4d(); break;
-        
-        case 0x308c: sub_1308c(); break;
-        case 0x6a0a: sub_16a0a(); break;
-        case 0x25a8: sub_125a8(); break;
-        case 0x3835: sub_13835(); break;
-        case 0x39ee: sub_139ee(); break;
-        case 0x091f: sub_1091f(); break;
-        case 0x6aad: sub_16aad(); break;
-        case 0x69d0: sub_169d0(); break;
-        case 0x19ce: sub_20c5e(); break; // 1f29:19ce
-        case 0x1716: sub_209a6(); break; // 1f29:1716
-        case 0x6ac7: sub_16ac7(); break;
-        case 0x2ad0: sub_12ad0(); break;
-        case 0x6bca: sub_16bca(); break;
-        case 0x6e2c: sub_16e2c(); break;
-        default:
-            printf("call ind %04x:%04x\n", seg, ofs);
-            assert(0);
-    }
-    
-//    assert(0);
-}
-*/
+
 void sub_1f2ff();
 void sub_208f9();
 void sub_208dc();
@@ -202,6 +106,7 @@ void sub_20ad0();
 void sub_20a39();
 void sub_209e9();
 void sub_2098c();
+void sub_20708();
 void sub_20653();
 void sub_205ed();
 void sub_205ae();
@@ -235,6 +140,7 @@ void sub_10853();
 void sub_10897();
 void sub_108b9();
 void sub_1091f();
+void sub_10ab7();
 void sub_10f2b();
 void sub_11f4d();
 void sub_11fb4();
@@ -245,11 +151,13 @@ void sub_121e9();
 void sub_1221a();
 void sub_1229b();
 void sub_1237e();
+void sub_123ed();
 void sub_1246d();
 void sub_1250b();
 void sub_125a8();
 void sub_1262d();
 void sub_12697();
+void sub_128b8();
 void sub_128df();
 void sub_137df();
 void sub_13801();
@@ -261,6 +169,7 @@ void sub_1399c();
 void sub_139ee();
 void sub_13a99();
 void sub_13aa7();
+void sub_13b55();
 void sub_13b76();
 void sub_13bdf();
 void sub_14311();
@@ -278,6 +187,18 @@ void sub_171dd();
 void sub_172c4();
 void sub_17520();
 void sub_17569();
+void sub_17dde();
+void sub_17e87();
+void sub_1830c();
+void sub_183bd();
+void sub_185d0();
+void sub_1866d();
+void sub_18745();
+void sub_18783();
+void sub_187d5();
+void sub_188a9();
+void sub_189ae();
+void sub_18c3e();
 void sub_12ab2();
 void sub_12aa4();
 void sub_12a48();
@@ -336,17 +257,40 @@ void sub_209a6();
 void sub_224b0();
 void sub_16ac7();
 void sub_12ad0();
+void sub_18e01();
 void sub_128b8();
+void sub_17f32();
+void sub_18e01();
+void sub_18ca7();
+void sub_188a9();
+void sub_119bc();
+void sub_100a4();
+void sub_14311();
+void sub_103a8();
+void sub_189ae();
+void sub_18c3e();
+void sub_17f79();
+void sub_1866d();
+void sub_17dde();
+void sub_180ca();
+void sub_18114();
+void sub_18126();
+void sub_180f5();
+void sub_187d5();
+void sub_18783();
+void sub_17ce6();
+void sub_17bef();
+void sub_17ac4();
+void sub_17e87();
+void sub_185d0();
+void sub_13b55();
+void sub_1830c();
+void sub_18d18();
+void sub_183bd();
+void sub_184e1();
+void sub_18c5f();
 void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
 {
-    if (ofs != 0x853 && ofs != 0x761 && ofs != 0x37df && ofs != 0x3998)
-    if (ofs != 0x480b && ofs != 0x72c4 && ofs != 0x4311 && ofs != 0x655b)
-    if (ofs != 0x4759 && ofs != 0x7520 && ofs != 0x714a && ofs != 0x4759)
-    if (ofs != 0x70f1 && ofs != 0x6eef && ofs != 0x28df && ofs != 0x0f2b )
-    if (ofs != 0x08b9 && ofs != 0x39ee && ofs != 0x091f && ofs != 0x3aa7 && ofs != 0x37ca )
-        if (ofs != 0x1f4d && ofs != 0x6d22 && ofs != 0x3835 && ofs != 0x0f2b )
-        printf("call %04x:%04x\n", seg, ofs);
-    
     switch (seg*0x10000+ofs)
     {
         case 0x1f29006f: sub_1f2ff(); break;
@@ -375,6 +319,7 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x1f2917a9: sub_20a39(); break;
         case 0x1f291759: sub_209e9(); break;
         case 0x1f2916fc: sub_2098c(); break;
+        case 0x1f291478: sub_20708(); break;
         case 0x1f2913c3: sub_20653(); break;
         case 0x1f29135d: sub_205ed(); break;
         case 0x1f29131e: sub_205ae(); break;
@@ -405,6 +350,7 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x10000897: sub_10897(); break;
         case 0x100008b9: sub_108b9(); break;
         case 0x1000091f: sub_1091f(); break;
+        case 0x10000ab7: sub_10ab7(); break;
         case 0x10000f2b: sub_10f2b(); break;
         case 0x10001f4d: sub_11f4d(); break;
         case 0x10001fb4: sub_11fb4(); break;
@@ -415,11 +361,13 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x1000221a: sub_1221a(); break;
         case 0x1000229b: sub_1229b(); break;
         case 0x1000237e: sub_1237e(); break;
+        case 0x100023ed: sub_123ed(); break;
         case 0x1000246d: sub_1246d(); break;
         case 0x1000250b: sub_1250b(); break;
         case 0x100025a8: sub_125a8(); break;
         case 0x1000262d: sub_1262d(); break;
         case 0x10002697: sub_12697(); break;
+        case 0x100028b8: sub_128b8(); break;
         case 0x100028df: sub_128df(); break;
         case 0x10003801: sub_13801(); break;
         case 0x10003835: sub_13835(); break;
@@ -430,6 +378,7 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x100039ee: sub_139ee(); break;
         case 0x10003a99: sub_13a99(); break;
         case 0x10003aa7: sub_13aa7(); break;
+        case 0x10003b55: sub_13b55(); break;
         case 0x10003b76: sub_13b76(); break;
         case 0x10003bdf: sub_13bdf(); break;
         case 0x100069c8: sub_169c8(); break;
@@ -445,8 +394,19 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x100072c4: sub_172c4(); break;
         case 0x10007520: sub_17520(); break;
         case 0x10007569: sub_17569(); break;
-        case 0x10002ab2:
-            sub_12ab2(); break;
+        case 0x10007dde: sub_17dde(); break;
+        case 0x10007e87: sub_17e87(); break;
+        case 0x1000830c: sub_1830c(); break;
+        case 0x100083bd: sub_183bd(); break;
+        case 0x100085d0: sub_185d0(); break;
+        case 0x1000866d: sub_1866d(); break;
+        case 0x10008745: sub_18745(); break;
+        case 0x10008783: sub_18783(); break;
+        case 0x100087d5: sub_187d5(); break;
+        case 0x100088a9: sub_188a9(); break;
+        case 0x100089ae: sub_189ae(); break;
+        case 0x10008c3e: sub_18c3e(); break;
+        case 0x10002ab2: sub_12ab2(); break;
         case 0x10002aa4: sub_12aa4(); break;
         case 0x10002a48: sub_12a48(); break;
         case 0x10002a66: sub_12a66(); break;
@@ -477,11 +437,32 @@ void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
         case 0x1f291716: sub_209a6(); break;
         case 0x1f295213: sub_244a3(); break;
         case 0x1f293220: sub_224b0(); break;
-        case 0x100028b8: sub_128b8(); break;
-    default:
-        stop();
+        case 0x10008e01: sub_18e01(); break;
+        case 0x10007f32: sub_17f32(); break;
+        case 0x10008ca7: sub_18ca7(); break;
+        case 0x100019bc: sub_119bc(); break;
+        case 0x100000a4: sub_100a4(); break;
+        case 0x100003a8: sub_103a8(); break;
+        case 0x10007f79: sub_17f79(); break;
+        case 0x100080ca: sub_180ca(); break;
+        case 0x10008114: sub_18114(); break;
+        case 0x10008126: sub_18126(); break;
+        case 0x100080f5: sub_180f5(); break;
+        case 0x10007ce6: sub_17ce6(); break;
+        case 0x10007bef: sub_17bef(); break;
+        case 0x10007ac4: sub_17ac4(); break;
+        case 0x10008d18: sub_18d18(); break;
+        case 0x100084e1: sub_184e1(); break;
+        case 0x10008c5f: sub_18c5f(); break;
+  
+        default:
+            printf("Skip indirect: %04x:%04x\n", seg, ofs);
     }
 }
+
+
+
+
 
 uint8_t memoryBiosGet8(int seg, int ofs)
 {

@@ -355,7 +355,9 @@ enum class inject_t {
     setZeroFlag = 0x10,
     clearZeroFlag = 0x20,
     setCarryFlag = 0x40,
-    clearCarryFlag = 0x80
+    clearCarryFlag = 0x80,
+    tl_above = 0x100,
+    tl_belowequal = 0x200,
 };
 
 address_t operator +(const address_t a, int b)
@@ -696,6 +698,10 @@ bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
         return true;
     if (strcmp(instr->mMnemonic, "jne") == 0)
         return true;
+    if (strcmp(instr->mMnemonic, "xor") == 0 &&
+        strcmp(instr->mOperands, "ax, ax") == 0)
+        return true;
+
     return false;
 }
 
@@ -715,6 +721,16 @@ bool ClearsZeroFlag(const std::shared_ptr<CapInstr>& instr1, const std::shared_p
         return true;
     if (strcmp(instr2->mMnemonic, "or") == 0 &&
         strcmp(instr2->mOperands, "sp, sp") == 0)
+        return true;
+    if (strcmp(instr1->mMnemonic, "xor") == 0 &&
+        strcmp(instr1->mOperands, "ax, ax") == 0 &&
+        strcmp(instr2->mMnemonic, "dec") == 0 &&
+        strcmp(instr2->mOperands, "ax") == 0)
+        return true;
+    if (strcmp(instr1->mMnemonic, "mov") == 0 &&
+        strcmp(instr1->mOperands, "ax, 0xffff") == 0 &&
+        strcmp(instr2->mMnemonic, "test") == 0 &&
+        strcmp(instr2->mOperands, "ax, ax") == 0)
         return true;
     return false;
 }
@@ -1025,15 +1041,20 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         nextAddr = instr->NextFollowing();
         if (instr->mId == X86_INS_RET)
         {
-            if ((prev11 && prev11->mId == X86_INS_POP) || (prev22 && prev22->mId == X86_INS_PUSH))
+            if ((prev11 && prev11->mId == X86_INS_POP) && (prev22 && prev22->mId == X86_INS_PUSH))
             {
                 // push es
                 // pop ds
             }
-            else if ((prev11 && prev11->mId == X86_INS_PUSH) && (prev22 && prev22->mId == X86_INS_PUSH))
+//            else if ((prev11 && prev11->mId == X86_INS_MOV) && (prev22 && prev22->mId == X86_INS_PUSH))
+//            {
+//                // override stack
+//                instr->mInject = inject_t::overrideStack;
+//            }
+            else if ((prev11 && prev11->mId == X86_INS_PUSH) || (prev22 && prev22->mId == X86_INS_PUSH))
             {
                 // override stack
-                instr->mInject = inject_t::overrideStack;
+                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::overrideStack);
             }
             else if ((prev11 && prev11->mId == X86_INS_PUSH) || (prev22 && prev22->mId == X86_INS_PUSH))
             {
@@ -1172,7 +1193,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                     assert(instr->mInject == inject_t::none);
                     instr->mInject = inject_t::setZeroFlag;
                 }
-                else if (ClearsZeroFlag(prev2, prev1))
+                else if (ClearsZeroFlag(prev2, prev1) || ClearsZeroFlag(prev22, prev11))
                 {
                     assert(instr->mInject == inject_t::none);
                     instr->mInject = inject_t::clearZeroFlag;
@@ -1430,6 +1451,9 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     return assign(x86, "$rd0 < $rd1");
                 case X86_INS_JA:
                     return assign(x86, "$rd0 > $rd1");
+                case X86_INS_JS:
+                    assert (x86.operands[1].type == X86_OP_IMM && x86.operands[1].imm == 0);
+                    return assign(x86, "($sig0)$rd0 < 0");
                 default:
                     return "stop(/*72*/)";
                     //assert(0);
@@ -1443,8 +1467,16 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     return assign(x86, "!($rd0 & $rd1)");
                 case X86_INS_JNE:
                     return assign(x86, "$rd0 & $rd1");
+                case X86_INS_JNS:
+                    assert (x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
+                            x86.operands[0].reg == x86.operands[1].reg);
+                    return assign(x86, "($sig0)$rd0 >= 0");
+                case X86_INS_JS:
+                    assert (x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
+                            x86.operands[0].reg == x86.operands[1].reg);
+                    return assign(x86, "($sig0)$rd0 < 0");
                 default:
-                    return "stop(/*82*/)";
+                    return format("stop(/*82*/)");
                     //assert(0);
             }
             break;
@@ -1462,11 +1494,26 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                      1020:3d51       jl      loc_13f55
                      */
                     return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js? // not good, check! CF OF!!
+                case X86_INS_JA:
+                    if (inst->mInject != inject_t::tl_above)
+                    {
+                        inst->mInject = inject_t::tl_above;
+                        return "stop(/*82*/)";
+                    }
+                    return assign(x86, "tl");
+                case X86_INS_JBE:
+                    if (inst->mInject != inject_t::tl_belowequal)
+                    {
+                        inst->mInject = inject_t::tl_belowequal;
+                        return "stop(/*83*/)";
+                    }
+                    return assign(x86, "tl");
                 default:
                     ;
                     // fall through
             }
 
+        case X86_INS_NEG:
         case X86_INS_AND:
         case X86_INS_DEC:
         case X86_INS_ROL:
@@ -1489,6 +1536,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     return assign(x86, "($sig0)$rd0 >= 0");
                 case X86_INS_JS:
                     return assign(x86, "($sig0)$rd0 < 0");
+                case X86_INS_JLE:
+                    return assign(x86, "($sig0)$rd0 <= 0"); // TODO: not sure!
                 case X86_INS_JL:
                     //
                     if (inst->mInject != inject_t::carry)
@@ -2049,6 +2098,32 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 }
                 any = true;
             }
+            if ((int)instr->mInject & (int)inject_t::tl_above)
+            {
+                switch (instr->mId)
+                {
+                    case X86_INS_SUB:
+                        text.push_back(assign(x86, "tl = $rd0 > $rd1;"));
+                        any = true;
+                        break;
+                    default:
+                        assert(0);
+                        break;
+                }
+            }
+            if ((int)instr->mInject & (int)inject_t::tl_belowequal)
+            {
+                switch (instr->mId)
+                {
+                    case X86_INS_SUB:
+                        text.push_back(assign(x86, "tl = $rd0 <= $rd1;"));
+                        any = true;
+                        break;
+                    default:
+                        assert(0);
+                        break;
+                }
+            }
             if ((int)instr->mInject & (int)inject_t::discard)
             {
                 assert(0);
@@ -2118,6 +2193,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 break;
             case X86_INS_NEG:
                 text.push_back(assign(x86, "$wr0 = -$rd0;"));
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_XOR:
                 if (assign(x86, "$rd0") == assign(x86, "$rd1"))
