@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "app.h"
 #include "imports.h"
+
+// all apps sorted by dependecies
 #include "marquee.h"
 CAppMarquee appMarquee;
 #include "transition.h"
@@ -10,24 +12,26 @@ CAppTransition appTransition;
 #include "snake.h"
 #include "paint.h"
 #include "drops.h"
-#include "tictactoe.h"
 #include "flappybird.h"
 #include "adventure.h"
 #include "colortest.h"
 #include "water.h"
+#include "tictactoe.h"
 CAppLightpen appLightpen;
 CAppSnake appSnake;
 CAppPaint appPaint;
 CAppDrops appDrops;
-CAppTictactoe appTictactoe;
 CAppFlappybird appFlappybird;
 CAppAdventure appAdventure;
 CAppColortest appColortest;
 CAppWater appWater;
+CAppTictactoe appTictactoe;
 #include "menu.h"
+
 CAppMenu appMenu;
 CApp* appCurrent = &appMenu;
 CApp* appLast = nullptr;
+int32_t pressedExit = 0;
 
 #include "text.h"
 
@@ -80,6 +84,17 @@ void new_loop()
   old_loop();
   if (MODE == 5)
   {
+    if (pressedExit != 0)
+    {
+      if (TICKSMS - pressedExit > 1000)
+      {
+        appCurrent->leave();
+        appCurrent = &appMenu;
+        pressedExit = 0;
+        return;
+      }
+    }
+
     if (appLast != appCurrent)
     {
       if (appLast)
@@ -99,6 +114,12 @@ void new_onPress(int a, int b)
   {
     if (a == 5 || a == 6 || a == 7 || a == 8)
     {
+      if (appCurrent != &appMenu)
+      {
+        // keep S/D/K/U button pressed for more than a second to exit an app
+        pressedExit = TICKSMS;
+        return;
+      }
       appCurrent->leave();
       appCurrent = &appMenu;
     }
@@ -110,9 +131,17 @@ void new_onPress(int a, int b)
 
 void new_onRelease(int a)
 {
+  if (pressedExit && appCurrent != &appMenu)
+  {
+    pressedExit = 0;
+    return;
+  }
   old_onRelease(a);
   if (MODE == 5)
+  {
+    pressedExit = 0;
     appCurrent->onRelease(a%10-1, a/10);
+  }
 }
 
 int new_usbStatus()

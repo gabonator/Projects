@@ -36,8 +36,7 @@ redirect(getSymbol("ptr_loop"), getSymbol("old_loop"), getSymbol("new_loop"));
 redirect(getSymbol("ptr_updateScreen"), getSymbol("old_updateScreen"), getSymbol("new_updateScreen"));
 redirect(getSymbol("ptr_usbStatus"), getSymbol("old_usbStatus"), getSymbol("new_usbStatus"));
 redirect(getSymbol("ptr_introGradient"), getSymbol("old_introGradient"), getSymbol("new_introGradient"));
-string(0x0801c0a0, "pub.valky.eu/2013/novation/?method=usb&upn=");
-
+string(0x0801c0a0, "pub.valky.eu/2023/novation/?method=usb&ver=23a&upn=");
 function string(ptr, str)
 {
   for (var i=0; i<str.length; i++)

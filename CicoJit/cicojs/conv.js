@@ -503,7 +503,7 @@ function findGlobals(input, handler)
   return result;
 }
 var fs = require("fs");
-var input = fs.readFileSync("bumpyopt.cpp");
+var input = fs.readFileSync(process.argv[2]);
 var input = input.toString().split("\n");
 
 input = findGlobals(input, (type, name, val) => {

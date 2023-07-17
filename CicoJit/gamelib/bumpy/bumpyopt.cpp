@@ -1969,12 +1969,12 @@ loc_208d:
         goto loc_20aa;
     push(cs);
     cs = memoryGet16(es, bx + 2 + 2);
-    callIndirect(memoryGet16(es, bx + 2 + 2)*16 + memoryGet16(es, bx + 2));
+    callIndirect(memoryGet16(es, bx + 2 + 2), memoryGet16(es, bx + 2));
     assert(cs == 0x01ed);
     ds = pop();
     goto loc_206f;
 loc_20aa:
-    callIndirect(cs*16+memoryGet16(es, bx + 2));
+    callIndirect(cs, memoryGet16(es, bx + 2));
     ds = pop();
     goto loc_206f;
 }
@@ -4988,7 +4988,7 @@ loc_3cf9:
     ah = 0x00;
     ax <<= 1;
     bx = ax;
-    callIndirect(cs*16+memoryGet16(ds, bx + 1994));
+    callIndirect(cs, memoryGet16(ds, bx + 1994));
     goto loc_3d0b;
 loc_3d08:
     sub_46ae();
@@ -10625,7 +10625,7 @@ loc_6c80:
     ah = 0x00;
     ax <<= 1;
     bx = ax;
-    callIndirect(cs*16+memoryGet16(ds, bx + 2160));
+    callIndirect(cs, memoryGet16(ds, bx + 2160));
 loc_6c8d:
     bp = pop();
     assert(pop() == 0x7777);

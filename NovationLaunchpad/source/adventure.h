@@ -159,7 +159,7 @@ public:
       int h0 = min(max(0, 20-y-_y), 255);
       for (int _x=0; _x<9; _x++)
       {
-        int h = dither(x+_x, y+_y, h0);
+        int h = dither(x*0+_x, y*0+_y, h0);
         uint32_t clear = h | (h<<8);
 
         uint32_t background = (((_x+x/3+1024)/2+(_y+y/3+1024)/2) & 1) ? 0 : 0x202020;
