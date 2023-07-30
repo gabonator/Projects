@@ -2,6 +2,7 @@ set -e
 mkdir -p build
 cd build
 arm-none-eabi-g++ -fno-exceptions -fno-rtti -fno-common -Wno-psabi -Os -g -mcpu=cortex-m4 -mlittle-endian \
+  -DSTM32F401xC -I../stm32lib -I../stm32lib/STM32F4xx_StdPeriph_Driver/inc/ \
   -mfpu=fpv4-sp-d16 -mthumb -nostartfiles -ffunction-sections -T ../common/code.lds ../source/main.cpp -o code.elf
 
 arm-none-eabi-objdump -S -marm -d ./code.elf > code.s
