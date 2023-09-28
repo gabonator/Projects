@@ -1,6 +1,6 @@
 # Cold boot fix
 
-This program takes EDC dumps from MPPS application and patches missing Injection quantity (IQ maps for Start of injection phase) entries
+This program takes EDC dumps from MPPS application and patches missing Injection quantity (IQ maps for Start of injection phase) entries. [Test it here](https://rawgit.valky.eu/gabonator/Projects/master/EdcColdStart/index.html)
 
 ![screenshot](screenshot.png)
 
