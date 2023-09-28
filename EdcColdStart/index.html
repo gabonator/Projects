@@ -1,0 +1,412 @@
+<html>
+<head>
+<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+<style>
+:root{--blue:#007bff;--indigo:#6610f2;--purple:#6f42c1;--pink:#e83e8c;--red:#dc3545;--orange:#fd7e14;--yellow:#ffc107;--green:#28a745;--teal:#20c997;--cyan:#17a2b8;--white:#fff;--gray:#6c757d;--gray-dark:#343a40;--primary:#007bff;--secondary:#6c757d;--success:#28a745;--info:#17a2b8;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--dark:#343a40;--breakpoint-xs:0;--breakpoint-sm:576px;--breakpoint-md:768px;--breakpoint-lg:992px;--breakpoint-xl:1200px;--font-family-sans-serif:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--font-family-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}*,::after,::before{box-sizing:border-box}html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}nav{display:block}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;text-align:left;background-color:#fff}[tabindex="-1"]:focus{outline:0!important}h5{margin-top:0;margin-bottom:.5rem}p{margin-top:0;margin-bottom:1rem}ul{margin-top:0;margin-bottom:1rem}sup{position:relative;font-size:75%;line-height:0;vertical-align:baseline}sup{top:-.5em}a{color:#007bff;text-decoration:none;background-color:transparent}a:hover{color:#0056b3;text-decoration:underline}table{border-collapse:collapse}th{text-align:inherit}button{border-radius:0}button:focus{outline:1px dotted;outline:5px auto -webkit-focus-ring-color}button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button{overflow:visible}button{text-transform:none}[type=button],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}[type=button]::-moz-focus-inner,button::-moz-focus-inner{padding:0;border-style:none}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}h5{margin-bottom:.5rem;font-weight:500;line-height:1.2}h5{font-size:1.25rem}.container{width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}@media (min-width:576px){.container{max-width:540px}}@media (min-width:768px){.container{max-width:720px}}@media (min-width:400px){.container{max-width:960px}}@media (min-width:1200px){.container{max-width:1140px}}.row{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-15px;margin-left:-15px}.col-md-12{position:relative;width:100%;padding-right:15px;padding-left:15px}@media (min-width:768px){.col-md-12{-ms-flex:0 0 100%;flex:0 0 100%;max-width:100%}}.table{width:100%;margin-bottom:1rem;color:#212529}.table td,.table th{padding:.75rem;vertical-align:top;border-top:1px solid #dee2e6}.table thead th{vertical-align:bottom;border-bottom:2px solid #dee2e6}.table-bordered{border:1px solid #dee2e6}.table-bordered td,.table-bordered th{border:1px solid #dee2e6}.table-bordered thead th{border-bottom-width:2px}.custom-control-input.is-valid:focus:not(:checked)~.custom-control-label::before,.was-validated .custom-control-input:valid:focus:not(:checked)~.custom-control-label::before{border-color:#28a745}.custom-control-input.is-invalid:focus:not(:checked)~.custom-control-label::before,.was-validated .custom-control-input:invalid:focus:not(:checked)~.custom-control-label::before{border-color:#dc3545}.form-inline{display:-ms-flexbox;display:flex;-ms-flex-flow:row wrap;flex-flow:row wrap;-ms-flex-align:center;align-items:center}.btn{display:inline-block;font-weight:400;color:#212529;text-align:center;vertical-align:middle;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-color:transparent;border:1px solid transparent;padding:.375rem .75rem;font-size:1rem;line-height:1.5;border-radius:.25rem;transition:color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out}@media (prefers-reduced-motion:reduce){.btn{transition:none}}.btn:hover{color:#212529;text-decoration:none}.btn:focus{outline:0;box-shadow:0 0 0 .2rem rgba(0,123,255,.25)}.btn.disabled,.btn:disabled{opacity:.65}.btn-primary{color:#fff;background-color:#007bff;border-color:#007bff}.btn-primary:hover{color:#fff;background-color:#0069d9;border-color:#0062cc}.btn-primary:focus{box-shadow:0 0 0 .2rem rgba(38,143,255,.5)}.btn-primary:disabled{color:#fff;background-color:#007bff;border-color:#007bff}.btn-primary:not(:disabled):not(.disabled).active,.btn-primary:not(:disabled):not(.disabled):active{color:#fff;background-color:#0062cc;border-color:#005cbf}.btn-primary:not(:disabled):not(.disabled).active:focus,.btn-primary:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(38,143,255,.5)}.btn-secondary:not(:disabled):not(.disabled).active,.btn-secondary:not(:disabled):not(.disabled):active{color:#fff;background-color:#545b62;border-color:#4e555b}.btn-secondary:not(:disabled):not(.disabled).active:focus,.btn-secondary:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(130,138,145,.5)}.btn-success:not(:disabled):not(.disabled).active,.btn-success:not(:disabled):not(.disabled):active{color:#fff;background-color:#1e7e34;border-color:#1c7430}.btn-success:not(:disabled):not(.disabled).active:focus,.btn-success:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(72,180,97,.5)}.btn-info:not(:disabled):not(.disabled).active,.btn-info:not(:disabled):not(.disabled):active{color:#fff;background-color:#117a8b;border-color:#10707f}.btn-info:not(:disabled):not(.disabled).active:focus,.btn-info:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(58,176,195,.5)}.btn-warning:not(:disabled):not(.disabled).active,.btn-warning:not(:disabled):not(.disabled):active{color:#212529;background-color:#d39e00;border-color:#c69500}.btn-warning:not(:disabled):not(.disabled).active:focus,.btn-warning:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(222,170,12,.5)}.btn-danger:not(:disabled):not(.disabled).active,.btn-danger:not(:disabled):not(.disabled):active{color:#fff;background-color:#bd2130;border-color:#b21f2d}.btn-danger:not(:disabled):not(.disabled).active:focus,.btn-danger:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(225,83,97,.5)}.btn-light:not(:disabled):not(.disabled).active,.btn-light:not(:disabled):not(.disabled):active{color:#212529;background-color:#dae0e5;border-color:#d3d9df}.btn-light:not(:disabled):not(.disabled).active:focus,.btn-light:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(216,217,219,.5)}.btn-dark:not(:disabled):not(.disabled).active,.btn-dark:not(:disabled):not(.disabled):active{color:#fff;background-color:#1d2124;border-color:#171a1d}.btn-dark:not(:disabled):not(.disabled).active:focus,.btn-dark:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(82,88,93,.5)}.btn-outline-primary{color:#007bff;border-color:#007bff}.btn-outline-primary:hover{color:#fff;background-color:#007bff;border-color:#007bff}.btn-outline-primary:focus{box-shadow:0 0 0 .2rem rgba(0,123,255,.5)}.btn-outline-primary.disabled,.btn-outline-primary:disabled{color:#007bff;background-color:transparent}.btn-outline-primary:not(:disabled):not(.disabled).active,.btn-outline-primary:not(:disabled):not(.disabled):active{color:#fff;background-color:#007bff;border-color:#007bff}.btn-outline-primary:not(:disabled):not(.disabled).active:focus,.btn-outline-primary:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(0,123,255,.5)}.btn-outline-secondary:not(:disabled):not(.disabled).active,.btn-outline-secondary:not(:disabled):not(.disabled):active{color:#fff;background-color:#6c757d;border-color:#6c757d}.btn-outline-secondary:not(:disabled):not(.disabled).active:focus,.btn-outline-secondary:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(108,117,125,.5)}.btn-outline-success{color:#28a745;border-color:#28a745}.btn-outline-success:hover{color:#fff;background-color:#28a745;border-color:#28a745}.btn-outline-success:focus{box-shadow:0 0 0 .2rem rgba(40,167,69,.5)}.btn-outline-success.disabled,.btn-outline-success:disabled{color:#28a745;background-color:transparent}.btn-outline-success:not(:disabled):not(.disabled).active,.btn-outline-success:not(:disabled):not(.disabled):active{color:#fff;background-color:#28a745;border-color:#28a745}.btn-outline-success:not(:disabled):not(.disabled).active:focus,.btn-outline-success:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(40,167,69,.5)}.btn-outline-info:not(:disabled):not(.disabled).active,.btn-outline-info:not(:disabled):not(.disabled):active{color:#fff;background-color:#17a2b8;border-color:#17a2b8}.btn-outline-info:not(:disabled):not(.disabled).active:focus,.btn-outline-info:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(23,162,184,.5)}.btn-outline-warning:not(:disabled):not(.disabled).active,.btn-outline-warning:not(:disabled):not(.disabled):active{color:#212529;background-color:#ffc107;border-color:#ffc107}.btn-outline-warning:not(:disabled):not(.disabled).active:focus,.btn-outline-warning:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(255,193,7,.5)}.btn-outline-danger:not(:disabled):not(.disabled).active,.btn-outline-danger:not(:disabled):not(.disabled):active{color:#fff;background-color:#dc3545;border-color:#dc3545}.btn-outline-danger:not(:disabled):not(.disabled).active:focus,.btn-outline-danger:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(220,53,69,.5)}.btn-outline-light:not(:disabled):not(.disabled).active,.btn-outline-light:not(:disabled):not(.disabled):active{color:#212529;background-color:#f8f9fa;border-color:#f8f9fa}.btn-outline-light:not(:disabled):not(.disabled).active:focus,.btn-outline-light:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(248,249,250,.5)}.btn-outline-dark:not(:disabled):not(.disabled).active,.btn-outline-dark:not(:disabled):not(.disabled):active{color:#fff;background-color:#343a40;border-color:#343a40}.btn-outline-dark:not(:disabled):not(.disabled).active:focus,.btn-outline-dark:not(:disabled):not(.disabled):active:focus{box-shadow:0 0 0 .2rem rgba(52,58,64,.5)}.fade{transition:opacity .15s linear}@media (prefers-reduced-motion:reduce){.fade{transition:none}}.collapse:not(.show){display:none}.custom-control-input:focus:not(:checked)~.custom-control-label::before{border-color:#80bdff}.custom-control-input:not(:disabled):active~.custom-control-label::before{color:#fff;background-color:#b3d7ff;border-color:#b3d7ff}.nav-link{display:block;padding:.5rem 1rem}.nav-link:focus,.nav-link:hover{text-decoration:none}.nav-link.disabled{color:#6c757d;pointer-events:none;cursor:default}.navbar{position:relative;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;-ms-flex-align:center;align-items:center;-ms-flex-pack:justify;justify-content:space-between;padding:.5rem 1rem}.navbar-brand{display:inline-block;padding-top:.3125rem;padding-bottom:.3125rem;margin-right:1rem;font-size:1.25rem;line-height:inherit;white-space:nowrap}.navbar-brand:focus,.navbar-brand:hover{text-decoration:none}.navbar-nav{display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;padding-left:0;margin-bottom:0;list-style:none}.navbar-nav .nav-link{padding-right:0;padding-left:0}.navbar-collapse{-ms-flex-preferred-size:100%;flex-basis:100%;-ms-flex-positive:1;flex-grow:1;-ms-flex-align:center;align-items:center}@media (min-width:400px){.navbar-expand-lg{-ms-flex-flow:row nowrap;flex-flow:row nowrap;-ms-flex-pack:start;justify-content:flex-start}.navbar-expand-lg .navbar-nav{-ms-flex-direction:row;flex-direction:row}.navbar-expand-lg .navbar-nav .nav-link{padding-right:.5rem;padding-left:.5rem}.navbar-expand-lg .navbar-collapse{display:-ms-flexbox!important;display:flex!important;-ms-flex-preferred-size:auto;flex-basis:auto}}.navbar-light .navbar-brand{color:rgba(0,0,0,.9)}.navbar-light .navbar-brand:focus,.navbar-light .navbar-brand:hover{color:rgba(0,0,0,.9)}.navbar-light .navbar-nav .nav-link{color:rgba(0,0,0,.5)}.navbar-light .navbar-nav .nav-link:focus,.navbar-light .navbar-nav .nav-link:hover{color:rgba(0,0,0,.7)}.navbar-light .navbar-nav .nav-link.disabled{color:rgba(0,0,0,.3)}.card{position:relative;display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;min-width:0;word-wrap:break-word;background-color:#fff;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}.card-header{padding:.75rem 1.25rem;margin-bottom:0;background-color:rgba(0,0,0,.03);border-bottom:1px solid rgba(0,0,0,.125)}.card-header:first-child{border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0}.close{float:right;font-size:1.5rem;font-weight:700;line-height:1;color:#000;text-shadow:0 1px 0 #fff;opacity:.5}.close:hover{color:#000;text-decoration:none}.close:not(:disabled):not(.disabled):focus,.close:not(:disabled):not(.disabled):hover{opacity:.75}button.close{padding:0;background-color:transparent;border:0;-webkit-appearance:none;-moz-appearance:none;appearance:none}.modal-dialog{position:relative;width:auto;margin:.5rem;pointer-events:none}.modal-content{position:relative;display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;width:100%;pointer-events:auto;background-color:#fff;background-clip:padding-box;border:1px solid rgba(0,0,0,.2);border-radius:.3rem;outline:0}.modal-header{display:-ms-flexbox;display:flex;-ms-flex-align:start;align-items:flex-start;-ms-flex-pack:justify;justify-content:space-between;padding:1rem 1rem;border-bottom:1px solid #dee2e6;border-top-left-radius:.3rem;border-top-right-radius:.3rem}.modal-header .close{padding:1rem 1rem;margin:-1rem -1rem -1rem auto}.modal-title{margin-bottom:0;line-height:1.5}.modal-body{position:relative;-ms-flex:1 1 auto;flex:1 1 auto;padding:1rem}@media (min-width:576px){.modal-dialog{max-width:500px;margin:1.75rem auto}}.bg-light{background-color:#f8f9fa!important}.d-flex{display:-ms-flexbox!important;display:flex!important}.justify-content-between{-ms-flex-pack:justify!important;justify-content:space-between!important}.align-items-center{-ms-flex-align:center!important;align-items:center!important}@supports ((position:-webkit-sticky) or (position:sticky)){}.my-2{margin-top:.5rem!important}.my-2{margin-bottom:.5rem!important}.mr-auto{margin-right:auto!important}@media (min-width:576px){.my-sm-0{margin-top:0!important}.my-sm-0{margin-bottom:0!important}}@media (min-width:992px){.my-lg-0{margin-top:0!important}.my-lg-0{margin-bottom:0!important}}@media print{*,::after,::before{text-shadow:none!important;box-shadow:none!important}a:not(.btn){text-decoration:underline}thead{display:table-header-group}tr{page-break-inside:avoid}p{orphans:3;widows:3}@page{size:a3}body{min-width:992px!important}.container{min-width:992px!important}.navbar{display:none}.table{border-collapse:collapse!important}.table td,.table th{background-color:#fff!important}.table-bordered td,.table-bordered th{border:1px solid #dee2e6!important}}
+</style>
+<title>EDC Cold Start Fix</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">EdcColdStartFix</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <form class="form-inline my-2 my-lg-0">
+      <button id="btnReset" class="btn btn-outline-success my-2 my-sm-0 disabled">&#x274c; Reset changes</button>&nbsp;
+      <button id="btnDiff" class="btn btn-outline-success my-2 my-sm-0 disabled">&#x1F50D; Show diff</button>&nbsp;
+      <button id="btnDownload" class="btn btn-outline-primary my-2 my-sm-0 disabled">&#x2b07; Download</button>&nbsp;
+    </form>
+    <div class="navbar-nav mr-auto">
+    </div>
+    <div>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">&copy; 2023 by valky.eu, ver. 1.0</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="modal" class="show fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">File upload</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div
+          id="drop_zone"
+          ondrop="dropHandler(event);"
+          ondragover="dragOverHandler(event);">
+          <p>Drop EDC memory dump here</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div id="contents"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+#drop_zone {  
+  height:300px;
+  border: 5px dashed #ddd;
+  border-radius: 40px;
+}
+#drop_zone p {
+  text-align:center;
+  padding-top:120px;
+}
+</style>
+
+<script>
+var globalData;
+var globalReference;
+var globalName;
+var globalRanges;
+var globalPatched = [];
+var btnReset = document.querySelector("#btnReset");
+var btnDiff = document.querySelector("#btnDiff");
+var btnDownload = document.querySelector("#btnDownload");
+
+function dropHandler(ev) {
+  ev.preventDefault();
+  if (ev.dataTransfer.items) {
+    [...ev.dataTransfer.items].forEach((item, i) => {
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        globalName = file.name;
+        file.arrayBuffer().then(src => {
+          globalReference = src;
+          var dst = new ArrayBuffer(globalReference.byteLength);
+          globalData = new Uint8Array(dst)
+          globalData.set(new Uint8Array(globalReference));
+          processFile(globalData);
+        });
+      }
+    });
+  }
+}
+function dragOverHandler(ev) 
+{
+  ev.preventDefault();
+}
+function processFile(data)
+{
+  globalData = data;
+  var out = "<br><br>";
+  out += `<canvas id="filemap" width="800" height="32" style="width:100%; height:32px; border:2px solid #ddd; border-radius:16px;"></canvas><br><br>`
+  var outindex = 0;
+  globalRanges = [];
+
+  var base = 0;
+  var cols = 0;
+  var get = (x, y) => data[base+(y*cols+x)*2]*256 + data[base+(y*cols+x)*2+1]
+  for (var i=0; i<data.length-128; i+=2)
+  {
+    for (var j=7; j<11; j++)
+    {
+      cols = j;
+      base = i;
+      var good = true;
+      var mat4x4 = [];
+      for (var k=0; k<4 && good; k++)
+        for (var l=0; l<4 && good; l++)
+        {
+          var v = get(l, k);
+          if (v < 1500 || v > 5000)
+            good = false;
+          mat4x4.push(v);
+        }
+      for (var k=0; k<4 && good; k++)
+      {
+        if (mat4x4[0+k*4] <= mat4x4[1+k*4] || 
+            mat4x4[1+k*4] <= mat4x4[2+k*4] ||
+            mat4x4[2+k*4] <= mat4x4[3+k*4])
+          good = false;
+        if (mat4x4[k+0*4] != mat4x4[k+1*4] ||
+            mat4x4[k+1*4] < mat4x4[k+2*4] ||
+            mat4x4[k+2*4] < mat4x4[k+3*4])
+          good = false;
+      }
+      if (good)
+      {
+        var rows = 0;
+        for (var k=4; k<15; k++)
+        {
+          var good2 = true;
+          var bad2 = false;
+          for (var l=0; l<cols && good2 && !bad2; l++)
+          {
+            good2 &= get(l, k) == 0;
+            bad2 |= get(l, k) > get(l, k-1)*1.5;
+          }
+          if (bad2)
+            break;
+          if (good2 && !bad2)
+          {
+            rows = k;
+            break;
+          }
+        }
+        if (rows)
+        {
+          var table = new Array(rows).fill(1).map(x=>new Array(cols).fill(-1));
+          var hasZero = false;
+          for (var y=0; y<rows; y++)
+            for (var x=0; x<cols; x++)
+            {
+              table[y][x] = get(x, y);
+              hasZero |= table[y][x] == 0;
+            }
+          console.log(base.toString(16), cols, rows)
+          console.table(table);
+          var ncols = null, nrows = 0;
+          if ((cols == 9 || cols == 10) && (rows == 8 || rows == 9))
+          {
+            ncols = ["-24", "-18", "-10", "0", "20", "40", "60", "80", "100", "&gt;100"]
+            nrows = ["0", "150", "170", "190", "450", "600", "900", "1550", "1600"]
+          }
+          var title = `Start IQ map ${++outindex}`;
+          var subtitle = `IQ(coolant temp / engine rpm) @ 0x${base}`
+          var hasZero = table.find(y=>y.find(x=>x===0)===0) !== undefined;
+          var btn = hasZero ? `<button onClick="fillZero(${base}, ${cols}, ${rows})" type="button" class="btn btn-md btn-primary">Fill zero values</button>` : ``;
+          out += buildTableTitle(title, subtitle, btn) //base, cols, rows, btn);
+          out += buildTable(table, ncols, nrows);
+          var clr = 1;
+          if (hasZero)
+            clr = 2;
+          if (globalPatched.includes(base))
+            clr = 3;
+          globalRanges.push([base, base+cols*rows*2, clr]);
+          i += 6*cols*2-2;
+        }
+      }
+    }
+  }
+  document.querySelector("#modal").style.display = "none";
+  document.querySelector("#contents").innerHTML = out;
+  showCanvas(document.querySelector("#filemap"), globalRanges);
+}
+
+function showCanvas(e, ranges)
+{
+  var inside = (l1, r1, l2, r2) => !(l2 > r1 || r2 < l1)
+  var ctx = e.getContext("2d");
+  ctx.width = 800;
+  ctx.height = 32;
+  ctx.lineWidth = 1
+  var ofs = 0;
+  var cmap = new Array(ctx.width).fill(0);
+  console.log(ranges);
+  for (var f of [1, 2, 3])
+    for (var r of ranges.filter(rng => rng[2] == f))
+    {
+      var ll = Math.floor(r[0] * ctx.width / globalData.length);
+      var rr = Math.floor(r[1] * ctx.width / globalData.length);
+      for (var i=ll-3; i<rr+3; i++)
+        cmap[i] = r[2];
+    }
+
+  for (var i=0; i<ctx.width; i++)
+  {
+    var sum = 0, cnt = 0;
+    var beginofs = ofs;
+    while (ofs < globalData.length*i/ctx.width)
+    {
+      sum += globalData[ofs++];
+      cnt++;
+    }
+    var y = Math.floor(sum/cnt);
+    switch (cmap[i])
+    {
+      case 0: ctx.strokeStyle = `rgb(${y}, ${y}, ${y})`; break;
+      case 1: ctx.strokeStyle = `rgb(0, ${y/2}, 255)`; break;
+      case 2: ctx.strokeStyle = `rgb(255, 0, 0)`; break;
+      case 3: ctx.strokeStyle = `rgb(0, ${128+y/2}, 0)`; break;
+    }
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 32);
+    ctx.stroke();
+  }
+}
+
+function buildTableTitle(title, subtitle, button)
+{
+  return `<div style="width:auto; padding-bottom:0px;" class="card">
+<h5 class="card-header d-flex justify-content-between align-items-center">
+  <span>${title} <span style="color:#ccc;">${subtitle}</span></span>
+  ${button}
+</h5>`
+}
+
+function gradient(v, vmin, vmax, cmin, cmax)
+{
+  var cmin = {a:(cmin>>24)&255, r:(cmin>>16)&255, g:(cmin>>8)&255, b:cmin&255};
+  var cmax = {a:(cmax>>24)&255, r:(cmax>>16)&255, g:(cmax>>8)&255, b:cmax&255};
+  var k = (v-vmin)/(vmax-vmin);
+  k = Math.max(0, Math.min(k, 1));
+  return {
+    a:Math.floor(cmin.a + (cmax.a-cmin.a)*k)/255,
+    r:Math.floor(cmin.r + (cmax.r-cmin.r)*k),
+    g:Math.floor(cmin.g + (cmax.g-cmin.g)*k),
+    b:Math.floor(cmin.b + (cmax.b-cmin.b)*k)};
+}
+
+function buildTable(table, ncols, nrows)
+{
+  var html = `<table style="width: auto; margin-bottom: 0px;" class="table table-bordered">`
+  if (ncols)
+  {
+    html += `<thead><tr>`;
+    if (nrows)
+      html += `<th scope="col"></th>`;
+     
+    for (var i=0; i<Math.min(table[0].length, ncols.length); i++)
+    {
+      html += `<th scope="col">${ncols[i]} &degC</th>`;
+    }
+    html += `</tr></thead>`;
+  }
+  html += `<tbody>`;
+  for (var i=0; i<table.length; i++)
+  {
+    html += `<tr>`;
+    if (nrows)
+      html += `<th scope="row">${nrows[i]} min<sup>-1</sup></th>`;
+    for (var val of table[i])
+    {
+      var clr = val == 0 ? {r:255, g:255, b:255, a:0} : gradient(val, 400, 4000, 0x40ff0000, 0xb000ff00);
+      html += `<td style="background:rgba(${clr.r}, ${clr.g}, ${clr.b}, ${clr.a})">${val}</td>`
+    }
+    html += `</tr>`;
+  }
+  html += `</tbody>`;
+  html += `</table>`;
+  return html+"</div><br>";
+}
+
+function fillZero(base, cols, rows)
+{
+  var get = (x, y) => globalData[base+(y*cols+x)*2]*256 + globalData[base+(y*cols+x)*2+1]
+  var set = (x, y, v) => { globalData[base+(y*cols+x)*2] = v >> 8; globalData[base+(y*cols+x)*2+1] = v & 255; }
+//  globalRanges.find(gr => gr[0] == base)[2] = 2;
+  globalPatched.push(base);
+  for (var y=0; y<rows; y++)
+    for (var x=0; x<cols; x++)
+    {
+      var v = get(x, y);
+      if (v==0)
+      {
+        for (var yy=y+1; yy<rows && !v; yy++)
+          v = get(x, yy);
+        if (!v)
+          throw "cannot find base value"
+        set(x, y, v);
+      }
+    }
+  processFile(globalData);
+  setEdited(true);
+}
+
+function setEdited(e)
+{
+  if (e)
+  {
+    btnReset.classList.remove("disabled");
+    btnDownload.classList.remove("disabled");
+    btnDiff.classList.remove("disabled");
+  } else {
+    btnReset.classList.add("disabled");
+    btnDownload.classList.add("disabled");
+    btnDiff.classList.add("disabled");
+  }
+}
+
+btnReset.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (!globalReference)
+    return;
+  globalPatched = [];
+  setEdited(false);
+  var dst = new ArrayBuffer(globalReference.byteLength);
+  globalData = new Uint8Array(dst)
+  globalData.set(new Uint8Array(globalReference));
+  globalRanges.forEach(gr=>gr[2] = 1);
+  processFile(globalData);
+});
+
+btnDownload.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (!globalReference)
+    return;
+  var newName = globalName;
+  newName = newName.split(".")
+  newName[Math.max(0, newName.length-2)] += "_coldstartfix";
+  newName = newName.join(".");
+
+  const blob = new Blob([globalData.buffer], {type: 'application/octet-stream'});
+  const elem = window.document.createElement('a');
+  elem.href = window.URL.createObjectURL(blob);
+  elem.download = newName;
+  document.body.appendChild(elem);
+  elem.click();        
+  document.body.removeChild(elem);
+});
+
+btnDiff.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (!globalReference)
+    return;
+  var title = "Difference / Patch"
+  var out = `<br><br><div style="width:auto; padding-bottom:0px;" class="card">
+<h5 class="card-header d-flex justify-content-between align-items-center">${title}</h5>`;
+  var ref = new Uint8Array(globalReference);
+
+  out += `<table style="width: auto; margin-bottom: 0px;" class="table table-bordered">`
+  out += `<thead><tr><th scope="col">Offset</th><th scope="col">Old</th><th scope="col">New</th></tr></thead>`;
+  out += `<tbody>`
+  for (var i=0; i<ref.length; i++)
+    if (ref[i] != globalData[i])
+      out += `<tr><td>0x${i.toString(16)}</td><td>${("0"+ref[i].toString(16)).substr(-2)}</td><td>${("0"+globalData[i].toString(16)).substr(-2)}</td></tr>`;
+  out += `</tbody>`;
+  out += `</table>`;
+  document.querySelector("#contents").innerHTML = out;
+});
+
+</script>
+<!--
+/*https://uncss-online.com/*/
+Check with: https://www.edcmasterhp.com/index.php?menu=ecuanalyze
+
+<div style="width:auto; padding-bottom:0px;" class="card">
+<h5 class="card-header d-flex justify-content-between align-items-center">
+  <span>dummy <span style="color:#ccc;">bla</span></span>
+  <button onClick="" type="button" class="btn btn-md btn-primary">Fill zero values</button>
+</h5>
+<table style="width: auto; margin-bottom: 0px;" class="table table-bordered">
+<thead><tr>
+<th scope="col"></th>
+      <th scope="col">x</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">x<sup>-1</sup></th>
+<td style="background:rgba(1,2,3,1)">y</td>
+</tr>
+</tbody>
+</table>
+-->
+</div>
+</body>	
+</html>
