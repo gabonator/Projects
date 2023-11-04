@@ -4,9 +4,10 @@ class CAppColortest : public CApp
 
 public:               
   // launchpad supports 6 bits per color channel 
-  // (even for low/high brightness setting)
-  // lowest two bits are ignores as well 
+  // (independent from brightness setting)
+  // lowest two bits are ignored as well 
   // as the top 8 bits of the 32 bit integer
+
   virtual void loop() override
   {
     for (int y=0; y<8; y++)
@@ -24,7 +25,11 @@ public:
 
   virtual void onPress(int x, int y, int v) override
   {
-    if (x>=0&&x<8&&y>=1&&y<=4)
-      clr ^= 1<<((4-y)*8+7-x);
+    clr &= ~0xff;
+    if (v < 0) v = 0;
+    if (v > 255) v = 255;
+    clr |= v;
+//    if (x>=0&&x<8&&y>=1&&y<=4)
+//      clr ^= 1<<((4-y)*8+7-x);
   }
 };

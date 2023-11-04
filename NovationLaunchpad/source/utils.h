@@ -68,6 +68,11 @@ int strlen(const char *str)
   return (s - str);
 }
 
+void strcat(char *dest, const char *src)
+{
+  strcpy(dest + strlen(dest), src);
+}
+
 #if 1
 extern "C" char* itoa(int value, char* result, int base) 
 {

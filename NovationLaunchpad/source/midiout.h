@@ -169,7 +169,7 @@ public:
               arpspd -= 4;
             break;
           }
-          if (channel < 14)
+          if (channel < 15)
             channel++;
           showText("", channel+1);
           break;

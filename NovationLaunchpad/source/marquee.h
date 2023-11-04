@@ -6,6 +6,8 @@ class CAppMarquee : public CApp
   int x = 0;
   int maxx = 0;
   char message[128];
+  bool single{false};
+  int speed{45};
 
 public:
   virtual void enter() override
@@ -14,8 +16,19 @@ public:
     x = -10;
   }
 
+  void showSingle(CApp* ret, const char* msg)
+  {
+    speed = 80;
+    single = true;
+    retApp = ret;
+    strcpy(message, msg);
+    maxx = getTextWidth(message);
+  }
+
   void show(CApp* ret, const char* msg, int value)
   {
+    speed = 45;
+    single = false;
     retApp = ret;
     strcpy(message, msg);
     char* end = message + strlen(message);
@@ -25,14 +38,21 @@ public:
 
   virtual void loop() override
   {
-    if (ticks() - last < 45)
+    if (ticks() - last < speed)
       return;
     last = ticks();
 
     uint8_t buffer[9] = {0};
     renderText(buffer, -x, 0, message);
     if (x++ > maxx)
+    {
       x = -10;
+      if (single && retApp)
+      {
+        go(*retApp);
+        retApp = nullptr;
+      }
+    }
 
     for (int y=0; y<8; y++)
       for (int x=0; x<9; x++)   
