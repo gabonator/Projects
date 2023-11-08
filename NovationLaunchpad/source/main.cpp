@@ -19,6 +19,7 @@ CAppTransition appTransition;
 #include "tictactoe.h"
 #include "midiout.h"
 #include "temperature.h"
+#include "anim.h"
 CAppLightpen appLightpen;
 CAppSnake appSnake;
 CAppPaint appPaint;
@@ -30,6 +31,7 @@ CAppWater appWater;
 CAppTictactoe appTictactoe;
 CAppMidiout appMidiout;
 CAppTemperature appTemperature;
+CAppAnim appAnim;
 #include "menu.h"
 
 CAppMenu appMenu;

@@ -6,7 +6,7 @@ extern "C" {
 static const char* labels[] = {
   "Paint", "Color test", "Snake", "Light pen", 
   "Rain", "Flappy bird", "Tic tac toe", "Adventure", 
-  "Water", 
+  "Water", "Animation",
   // protected
   "midi out", "temperature"
 };
@@ -14,20 +14,20 @@ static const char* labels[] = {
 static const uint32_t colors[] = {
   0xff0000, 0x0020ff, 0x00ff00, 0xff0080, 
   0x00ff80, 0x80ff00, 0x80ff80, 0x00ff00,
-  0xff0000, 
+  0xff0000, 0xff8000,
   0x0040ff, 0x4000ff
 };
 
 CApp* apps[] = {
   &appPaint, &appColortest, &appSnake, &appLightpen, 
   &appDrops, &appFlappybird, &appTictactoe, &appAdventure,
-  &appWater, &appMidiout, &appTemperature};
+  &appWater, &appAnim, &appMidiout, &appTemperature};
 
 class CAppMenu : public CApp
 {
   int sx{0};
-  int sy{0*8};
-  int ty{0*8};
+  int sy{4*8};
+  int ty{4*8};
   int last;
   int wait;
   int dir;

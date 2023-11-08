@@ -6,7 +6,7 @@ class CAppMarquee : public CApp
   int x = 0;
   int maxx = 0;
   char message[128];
-  bool single{false};
+  int repeat{0};
   int speed{45};
 
 public:
@@ -19,7 +19,7 @@ public:
   void showSingle(CApp* ret, const char* msg)
   {
     speed = 80;
-    single = true;
+    repeat = 1;
     retApp = ret;
     strcpy(message, msg);
     maxx = getTextWidth(message);
@@ -28,7 +28,7 @@ public:
   void show(CApp* ret, const char* msg, int value)
   {
     speed = 45;
-    single = false;
+    repeat = 3;
     retApp = ret;
     strcpy(message, msg);
     char* end = message + strlen(message);
@@ -47,7 +47,7 @@ public:
     if (x++ > maxx)
     {
       x = -10;
-      if (single && retApp)
+      if (--repeat <= 0 && retApp)
       {
         go(*retApp);
         retApp = nullptr;

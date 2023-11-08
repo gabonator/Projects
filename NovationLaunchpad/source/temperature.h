@@ -11,7 +11,7 @@ public:
   {
     GpioSet();
     pinMode(CGpio::P1, CGpio::INPUT);
-    for (int y=1; y<9; y++)
+    for (int y=0; y<9; y++)
       for (int x=0; x<9; x++)
         pixel(x, y) = 0;
   }
@@ -47,16 +47,16 @@ public:
     return count;
   }
 
-  bool measure(int& deg10, int& hum10)
+  const char* measure(int& deg10, int& hum10)
   {
     waitHigh(); // 20-40 us
     int syncLow = waitLow(); // 7-8 -> 80 us
     if (syncLow < 6 || syncLow > 9)
-      return false;
+      return "Error: sync-low";
 
     int syncHigh = waitHigh(); // 7-8 -> 80 us
     if (syncHigh < 6 || syncHigh > 9)
-      return false;
+      return "Error: sync-high";
 
     uint8_t data[5] = {0};
     for (int j=0; j<5; j++)
@@ -65,18 +65,64 @@ public:
         int low = waitLow(); // 5-6 -> 50 us
         int high = waitHigh(); // 3 -> log 0: 20-30 us, log1: 70us
         if (low < 4 || low > 7)
-          return false;
+          return "Error: bit-low";
         data[j] <<= 1;
         if (high >= low)
           data[j] |= 1;
       }
 
     if (data[4] != (uint8_t)(data[0] + data[1] + data[2] + data[3]))
-      return false;
+      return "Error: crc";
 
     hum10 = (int16_t)((data[0]<<8) | data[1]);
     deg10 = (int16_t)((data[2]<<8) | data[3]);
-    return true;
+    return nullptr;
+  }
+
+  virtual void loop() override
+  {
+    // called every 300us
+    if (ticks() - last < 10)
+      return;
+    last = ticks();
+
+    if (tick == 0)
+    {
+      pinMode(CGpio::P1, CGpio::OUTPUT);
+      digitalWrite(CGpio::P1, CGpio::LOW);
+    }
+    else if (tick == 2) // 20 ms reset pulse
+    {
+      digitalWrite(CGpio::P1, CGpio::HIGH);
+      delayUs(20);
+      pinMode(CGpio::P1, CGpio::INPUT);
+      digitalWrite(CGpio::P1, CGpio::HIGH);
+      int hum10, deg10;
+      const char* status = measure(deg10, hum10);
+      if (status == nullptr)
+      {
+        char temp[20];
+        if (phase++ % 2 == 0)
+          format(temp, "Temperature ", deg10, " C");
+        else
+          format(temp, "Humidity ", hum10, "%");
+        appMarquee.showSingle(this, temp);
+      }
+      else
+        appMarquee.showSingle(this, status);
+      go(appMarquee);
+    }
+    else if (tick >= 100)
+    {
+      // retry in 1 second
+      tick = 0;
+      return;
+    }
+    tick++;
+  }
+
+  virtual void onPress(int x, int y, int v) override
+  {
   }
 
   void format(char* text, const char* prefix, int num, const char* suffix)
@@ -112,51 +158,6 @@ public:
     *p++ = '0' + num;
     *p = 0;
     strcat(text, suffix);
-  }
-
-  virtual void loop() override
-  {
-    // called per 300us
-    if (ticks() - last < 10)
-      return;
-    last = ticks();
-
-    if (tick == 0)
-    {
-      pinMode(CGpio::P1, CGpio::OUTPUT);
-      digitalWrite(CGpio::P1, CGpio::LOW);
-    }
-    else if (tick == 2) // 20 ms reset pulse
-    {
-      digitalWrite(CGpio::P1, CGpio::HIGH);
-      delayUs(10);
-      pinMode(CGpio::P1, CGpio::INPUT);
-      digitalWrite(CGpio::P1, CGpio::HIGH);
-      int hum10, deg10;
-      if (measure(deg10, hum10))
-      {
-        char temp[20];
-        if (phase++ % 2 == 0)
-          format(temp, "Temperature ", deg10, " C");
-        else
-          format(temp, "Humidity ", hum10, "%");
-        appMarquee.showSingle(this, temp);
-      }
-      else
-        appMarquee.showSingle(this, "Error!");
-      go(appMarquee);
-    }
-    else if (tick >= 100)
-    {
-      // retry in 1 second
-      tick = 0;
-      return;
-    }
-    tick++;
-  }
-
-  virtual void onPress(int x, int y, int v) override
-  {
   }
 
   void debugIntervals(int row, int num)
