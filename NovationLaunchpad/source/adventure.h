@@ -7,8 +7,8 @@ static const char* admap[] = {
   "                            k                              ",  
   "                            kk                             ",  
   "                            k                              ",  
-  "                            kk                        ddd  ",  
-  "                                                     ddddd ",  
+  "       ###                  kk                        ddd  ",  
+  "###                                                  ddddd ",  
   "             ###        ##############               ddddd ",
   "                                                     dd  d ",  
   "                                                     ddd d ",  
@@ -16,7 +16,7 @@ static const char* admap[] = {
   "                                                    #######",  
   "                                                           ",  
   "                                                           ",  
-  "             ##########%%%%%%%########                     ",
+  "                #######%%%%%%%########                     ",
   "                                                           ",
   "                                                           ",
   "                                             #####         ",
@@ -222,6 +222,26 @@ public:
       case 86: dx = 0; break;
       case 87: dy = 0; crawl = false; break;
       case 88: dx = 0; break;
+    }
+  }
+  uintptr_t api(EApiCall e, int x, int y) override
+  {
+    switch (e)
+    {
+      case EApiCall::Name: return (uintptr_t)"Adventure";
+      case EApiCall::Type: return (uintptr_t)EApiValue::TypeDynamic | (uintptr_t)EApiValue::TypeArrows;
+      case EApiCall::Width: return _strlen(admap[0]);
+      case EApiCall::Height: return sizeof(admap)/sizeof(admap[0]);
+      case EApiCall::GetPixel: {
+        int h0 = min(max(0, 20-y), 255);
+        int h = dither(x, y, h0);
+        uint32_t clear = h | (h<<8);
+        uint32_t background = 0x202020;
+        return color(getmap(x, y), background, clear);
+      }
+      case EApiCall::GetPosX: return this->x;
+      case EApiCall::GetPosY: return this->y;
+      default: return 0;
     }
   }
 };

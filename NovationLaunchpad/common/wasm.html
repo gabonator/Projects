@@ -1,14 +1,90 @@
-<div id="panel"></div>
+<style>
+body { background: #000000; color: #808080; font-size:20px; padding-left: 30px;}
+</style>
 <div id="help" style="padding-top:20px;">
-Use &#x2191; &#x2193; keys to switch between menu entries and &#x2192; to enter. Tap <b>U</b> to return back to menu. Some applications use arrow keys for movement (Snake, Adventure, Flappy bird) 
+Use arrow keys for navigation or tap on the panel
 </div>
+<br>
+<div id="panel"></div>
+<br>
 <script src="wasm.js"></script>
 <script>
+class Preview
+{
+  constructor(w, h)
+  {
+    this.scalex = 5;
+    this.scaley = 5;
+    this.width = w;
+    this.height = h;
+    this.container = document.createElement("div");
+    this.container.style = `display:inline-block; width:${w}; height:${h}`;
+    this.elemInfo = document.createElement("div");
+    this.container.appendChild(this.elemInfo);
+
+    var elemBack = document.createElement("canvas");
+    elemBack.style = "position: absolute";
+    elemBack.width = w;
+    elemBack.height = h;
+    this.container.appendChild(elemBack);
+    this.ctxBack = elemBack.getContext("2d");
+    var elemFront = document.createElement("canvas");
+    elemFront.style = "position: absolute";
+    elemFront.width = w;
+    elemFront.height = h;
+    this.container.appendChild(elemFront);
+    this.ctxFront = elemFront.getContext("2d");
+
+    document.body.appendChild(this.container);
+  }
+
+  pixel(x, y, c)
+  {
+    this.ctxBack.fillStyle = "#202020";
+    this.ctxBack.fillRect(x*this.scalex, y*this.scaley, this.scalex, this.scaley)
+    this.ctxBack.fillStyle = c;
+    this.ctxBack.fillRect(x*this.scalex, y*this.scaley, this.scalex-1, this.scaley-1)
+  }
+  bar(x, y, w, h)
+  {
+    this.ctxFront.clearRect(0, 0, this.width, this.height);
+    this.ctxFront.fillStyle = "#ffffff20";
+    this.ctxFront.fillRect(x*this.scalex, y*this.scaley, w*this.scalex, h*this.scaley)
+  }
+  rect(x, y, w, h)
+  {
+    x*=this.scalex;
+    y*=this.scaley;
+    w*=this.scalex;
+    h*=this.scaley;
+    this.ctxFront.strokeStyle="#ffffff"
+    this.ctxFront.beginPath();
+    this.ctxFront.moveTo(x, y);
+    this.ctxFront.lineTo(x+w, y);
+    this.ctxFront.lineTo(x+w, y+h);
+    this.ctxFront.lineTo(x, y+h);
+    this.ctxFront.lineTo(x, y);
+    this.ctxFront.stroke();
+  }
+  setup(w, h)
+  {
+    this.ctxBack.clearRect(0, 0, this.width, this.height);
+    this.ctxFront.clearRect(0, 0, this.width, this.height);
+    var s = (w > 0 && h > 0) ? Math.floor(Math.min(this.width / w, this.height / h)) : 5;
+    this.scalex = s;
+    this.scaley = s;
+  }
+  info(text)
+  {
+    this.elemInfo.innerHTML = text + "<br><br>";
+  }
+}
+
 class Interface
 {
   constructor()
   {
-    var html = "";
+    var html = `<span style="padding:4px; box-shadow: 0px 0px 10px #bbb; display:inline-block;">`;
     for (var y=0; y<9; y++)
     {
       for (var x=0; x<9; x++)
@@ -18,10 +94,11 @@ class Interface
           text = ["&#x2191;", "&#x2193;", "&#x2190;", "&#x2192;", "S", "D", "K", "U", ""][x];
         else if (x==8)
           text = "&gt;"
-        html += `<span id="pad${y}${x}" style="user-select: none; display:inline-block; width:32px; height:32px; color:#808080; line-height:30px; overflow:hidden; text-align:center;" onmousedown="launchpad.press(${x}, ${y})" onmouseup="launchpad.release(${x}, ${y})">${text}</span>`;
+        html += `<span id="pad${y}${x}" style="user-select: none; display:inline-block; width:32px; height:32px; color:#707070; line-height:30px; overflow:hidden; text-align:center;" onmousedown="launchpad.press(${x}, ${y})" onmouseup="launchpad.release(${x}, ${y})">${text}</span>`;
       }
       html += `<br>`;
     }
+    html += `</span>`;
     document.getElementById("panel").innerHTML = html;
   }
   update(colors)
@@ -46,6 +123,7 @@ class Launchpad
 {
   constructor(ui)
   {
+    this.curApp = {id: 0, name: "", type: 0, width: 0, height: 0};
     this.ui = ui;
     this.t0 = (new Date()).getTime();
     WebAssembly.instantiate(wasmBinary, {}).then(obj =>
@@ -70,6 +148,51 @@ class Launchpad
       this.exports._initialize();
       this.MODE[0] = 5;
       setInterval(()=>{ this.loop() }, 45);
+      setInterval(()=>{ 
+        var curAppId = this.exports.api_call(0);
+        var redraw = this.curApp.type & 2;
+        if (curAppId != this.curApp.id)
+        {
+          var name = "";
+          var buf = new Uint8Array(this.exports.memory.buffer, curAppId, 64);
+          for (var i=0; i<buf.length && buf[i] != 0; i++)
+            name += String.fromCharCode(buf[i]);
+          preview.info(name);
+
+          redraw = true;
+          this.curApp = curAppId ? {
+            id: this.exports.api_call(0),
+            name: name,
+            type: this.exports.api_call(1),
+            width: this.exports.api_call(2),
+            height: this.exports.api_call(3)
+          } : {id: 0, name: "", type: 0, width: 0, height: 0};
+
+          preview.setup(this.curApp.width, this.curApp.height);
+          this.releaseAll();
+        }
+        if (redraw)
+        {
+          var luma = i => Math.floor(Math.pow(i/255, 0.5)*255);
+          for (var y=0; y<this.curApp.height; y++)
+            for(var x=0; x<this.curApp.width; x++)
+            {
+              var c = this.exports.api_call(4, x, y);
+              var r = luma((c >> 16) & 0xfc);
+              var g = luma((c >> 8) & 0xfc);
+              var b = luma((c >> 0) & 0xfc);
+              preview.pixel(x, y, `rgb(${r}, ${g}, ${b})`)
+            }
+        }
+        if (this.curApp.id)
+        {
+          if (this.curApp.type & 0x10)
+            preview.bar(0, (this.exports.api_call(6) + 4)>>3<<3, this.curApp.width, 8);
+          else
+            preview.bar(0, 0, 0, 0);
+          preview.rect(this.exports.api_call(5), this.exports.api_call(6), 8, 8);
+        }
+      }, 100);
     });
   }
   loop()
@@ -85,44 +208,74 @@ class Launchpad
   press(x, y)
   {
     this.exports.new_onPress(x+1+y*10, 0);
+    document.getElementById(`pad${y}${x}`).style.boxShadow = "inset 0px 0px 4px 4px #ff0000";
   }
   release(x, y)
   {
     this.exports.new_onRelease(x+1+y*10);
+    document.getElementById(`pad${y}${x}`).style.boxShadow = "";
+  }
+  releaseAll()
+  {
+    for (var y=0; y<9; y++)
+      for (var x=0; x<9; x++)
+        document.getElementById(`pad${y}${x}`).style.boxShadow = "";
   }
 }  
 
 var ui = new Interface();
 var launchpad = new Launchpad(ui);
 var keysPressed = {};
+var preview = new Preview(500, 500);
 
 document.addEventListener("keydown", e => {
   var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
   var escKey = 27;
+  e.preventDefault();
   if (e.keyCode in keysPressed)
     return
   keysPressed[e.keyCode] = 1;
-  switch (e.keyCode)
-  {
-    case leftKey: launchpad.press(6, 8); break;
-    case rightKey: launchpad.press(8, 8); break;
-    case upKey: launchpad.press(7, 7); break;
-    case downKey: launchpad.press(7, 8); break;
-    case escKey: launchpad.press(5, 0); break;
-  }
+  if (launchpad.curApp.type & 0x40)
+    switch (e.keyCode)
+    {
+      case leftKey: launchpad.press(6, 8); break;
+      case rightKey: launchpad.press(8, 8); break;
+      case upKey: launchpad.press(7, 7); break;
+      case downKey: launchpad.press(7, 8); break;
+      case escKey: launchpad.press(7, 0); break;
+    }
+  else
+    switch (e.keyCode)
+    {
+      case leftKey: launchpad.press(2, 0); break;
+      case rightKey: launchpad.press(3, 0); break;
+      case upKey: launchpad.press(0, 0); break;
+      case downKey: launchpad.press(1, 0); break;
+      case escKey: launchpad.press(7, 0); break;
+    }
 });
 document.addEventListener("keyup", e => {
   var leftKey = 37, upKey = 38, rightKey = 39, downKey = 40, spaceKey = 32;
   var escKey = 27;
   delete keysPressed[e.keyCode];
-  switch (e.keyCode)
-  {
-    case leftKey: launchpad.release(6, 8); break;
-    case rightKey: launchpad.release(8, 8); break;
-    case upKey: launchpad.release(7, 7); break;
-    case downKey: launchpad.release(7, 8); break;
-    case escKey: launchpad.release(5, 0); break;
-  }
+  if (launchpad.curApp.type & 0x40)
+    switch (e.keyCode)
+    {
+      case leftKey: launchpad.release(6, 8); break;
+      case rightKey: launchpad.release(8, 8); break;
+      case upKey: launchpad.release(7, 7); break;
+      case downKey: launchpad.release(7, 8); break;
+      case escKey: launchpad.release(7, 0); break;
+    }
+  else
+    switch (e.keyCode)
+    {
+      case leftKey: launchpad.release(2, 0); break;
+      case rightKey: launchpad.release(3, 0); break;
+      case upKey: launchpad.release(0, 0); break;
+      case downKey: launchpad.release(1, 0); break;
+      case escKey: launchpad.release(7, 0); break;
+    }
 });
 
 </script>

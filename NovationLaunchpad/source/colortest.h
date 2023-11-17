@@ -25,11 +25,7 @@ public:
 
   virtual void onPress(int x, int y, int v) override
   {
-    clr &= ~0xff;
-    if (v < 0) v = 0;
-    if (v > 255) v = 255;
-    clr |= v;
-//    if (x>=0&&x<8&&y>=1&&y<=4)
-//      clr ^= 1<<((4-y)*8+7-x);
+    if (x>=0 && x<8 && y>=1 && y<=4)
+      clr ^= 1<<((4-y)*8+7-x);
   }
 };

@@ -85,6 +85,11 @@ void CApp::go(CApp& app)
   appLast = appCurrent;
 }
 
+uintptr_t CApp::api(CApp::EApiCall e, int x, int y)
+{
+  return (uintptr_t)nullptr;
+}
+
 void new_loop()
 {
   old_loop();
@@ -264,7 +269,7 @@ extern "C" {
   void old_updateScreen() {}
   int old_usbStatus() { return 1; }
   void old_startup() {}
-
+  uint32_t api_call(CApp::EApiCall e, int x, int y) { return appCurrent ? appCurrent->api(e, x, y) : 0; }
   uint8_t fontData[425] = { 
     0x00, 0x00, 0x00, 0x00, 0xfb, 0xe0, 0x00, 0xe0, 0x28, 0xfe, 0x28, 0xfe, 0x28, 0x24, 0x54, 0xfe, 
     0x54, 0x48, 0xc4, 0xc8, 0x10, 0x26, 0x46, 0x6c, 0x92, 0x92, 0x6c, 0x0a, 0x20, 0xc0, 0x7c, 0x82, 

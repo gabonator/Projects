@@ -27,7 +27,13 @@ public:
     auto grad = [&](int i){ return (i >= 0 && i < sizeof(gradient)) ? gradient[i] : 0;};
     auto rgb = [](int r, int g, int b) {return (r << 16) | (g<<8) | b; };
     if (phase ++ > 34)
+    {
+      for (int y=0; y<9; y++)
+        for (int x=0; x<9; x++)
+          pixel(x, y) = 0;
       go(*appChain);
+      return;
+    }
 
     for (int y=0; y<9; y++)
       for (int x=0; x<9; x++)

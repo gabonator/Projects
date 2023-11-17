@@ -191,46 +191,51 @@ public:
     }
     return true;
   }
+  virtual uint32_t getMapPixel(int x, int y)
+  {
+    point_t mappos(x, y);
+    mappos.x = min<int>(max<int>(0, mappos.x), 15);
+    mappos.y = min<int>(max<int>(0, mappos.y), 15);
+    uint32_t color = 0;
+    if (apple != point_t{0, 0})
+    {
+      int dist = (mappos.x-apple.x)*(mappos.x-apple.x)+(mappos.y-apple.y)*(mappos.y-apple.y);
+      dist = (60-(dist))*appleLevel/60;
+      if (dist < 0)
+        dist = 0;
+      color = dist;
+    }
+    switch (game[mappos.y*16+mappos.x])
+    {
+      case ' ': break;
+      case '#': color = 0x404040; break;
+      case '*': color = 0x0000b0; break;
+      case 'o': color = (color & 0xff00ff) | 0x008000; break;
+      case 'h':
+      {
+        int tim = (ticks()>>2)&511;
+        tim = tim <= 255 ? tim : 511-tim;
+        color = (color & 0xff00ff) | (tim << 8);
+      }
+      break;
+    }
+    if (tailLast == mappos && tailTime != 0)
+    {
+      int passed = ticks() - tailTime;
+      if (passed > 200)
+        tailTime = 0;
+      else
+        color = (color & 0xff00ff) | (((200-passed)*0x80/200) << 8);
+    }   
+    return color;
+  }
 
   void doDraw()
   {
     for (int y=0; y<9; y++)
       for (int x=0; x<9; x++)
       {
-        point_t mappos(pos.x+x-4, pos.y+y-4);
-        mappos.x = min<int>(max<int>(0, mappos.x), 15);
-        mappos.y = min<int>(max<int>(0, mappos.y), 15);
-        uint32_t color = 0;
-        if (apple != point_t{0, 0})
-        {
-          int dist = (mappos.x-apple.x)*(mappos.x-apple.x)+(mappos.y-apple.y)*(mappos.y-apple.y);
-          dist = (60-(dist))*appleLevel/60;
-          if (dist < 0)
-            dist = 0;
-          color = dist;
-        }
-        switch (game[mappos.y*16+mappos.x])
-        {
-          case ' ': break;
-          case '#': color = 0x404040; break;
-          case '*': color = 0x0000b0; break;
-          case 'o': color = (color & 0xff00ff) | 0x008000; break;
-          case 'h':
-          {
-            int tim = (ticks()>>2)&511;
-            tim = tim <= 255 ? tim : 511-tim;
-            color = (color & 0xff00ff) | (tim << 8);
-          }
-          break;
-        }
-        if (tailLast == mappos && tailTime != 0)
-        {
-          int passed = ticks() - tailTime;
-          if (passed > 200)
-            tailTime = 0;
-          else
-            color = (color & 0xff00ff) | (((200-passed)*0x80/200) << 8);
-        }   
+        uint32_t color = getMapPixel(pos.x+x-4, pos.y+y-4);
         if ((y == 7 && x == 7) || (y == 8 && x >= 6))
           color |= 0x8f8f00;
         pixel(x, y) = color;
@@ -251,6 +256,21 @@ public:
       case 86: if (safe(-1, 0)) {dir.dx = -1; dir.dy = 0;} break;
       case 87: if (safe(0, 1)) {dir.dx = 0; dir.dy = +1;} break;
       case 88: if (safe(1, 0)) {dir.dx = +1; dir.dy = 0;} break;
+    }
+  }
+
+  uintptr_t api(EApiCall e, int x, int y) override
+  {
+    switch (e)
+    {
+      case EApiCall::Name: return (uintptr_t)"Snake";
+      case EApiCall::Type: return (uintptr_t)EApiValue::TypeDynamic | (uintptr_t)EApiValue::TypeArrows;
+      case EApiCall::Width: return 16;
+      case EApiCall::Height: return 16;
+      case EApiCall::GetPixel: return getMapPixel(x, y);
+      case EApiCall::GetPosX: return pos.x-3;
+      case EApiCall::GetPosY: return pos.y-3;
+      default: return 0;
     }
   }
 };

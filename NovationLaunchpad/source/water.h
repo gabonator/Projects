@@ -1,5 +1,3 @@
-extern "C" void old_loop();
-
 class CAppWater : public CApp
 {
 public:

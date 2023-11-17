@@ -4,24 +4,25 @@ extern "C" {
 }
 
 static const char* labels[] = {
-  "Paint", "Color test", "Snake", "Light pen", 
+  "Paint", "Snake", "Light pen", 
   "Rain", "Flappy bird", "Tic tac toe", "Adventure", 
-  "Water", "Animation",
+  "Water", "Animation", "Color test",
   // protected
   "midi out", "temperature"
 };
 
 static const uint32_t colors[] = {
-  0xff0000, 0x0020ff, 0x00ff00, 0xff0080, 
+  0xff0000, 0x00ff00, 0xff0080, 
   0x00ff80, 0x80ff00, 0x80ff80, 0x00ff00,
-  0xff0000, 0xff8000,
+  0xff0000, 0xff8000, 0x0020ff,
   0x0040ff, 0x4000ff
 };
 
 CApp* apps[] = {
-  &appPaint, &appColortest, &appSnake, &appLightpen, 
+  &appPaint, &appSnake, &appLightpen, 
   &appDrops, &appFlappybird, &appTictactoe, &appAdventure,
-  &appWater, &appAnim, &appMidiout, &appTemperature};
+  &appWater, &appAnim, &appColortest, 
+  &appMidiout, &appTemperature};
 
 class CAppMenu : public CApp
 {
@@ -106,6 +107,24 @@ public:
       wait = 100;
       dir = 1;
       go(*apps[sy/8]);
+    }
+  }
+  uintptr_t api(EApiCall e, int x, int y) override
+  {
+    switch (e)
+    {
+      case EApiCall::Name: return (uintptr_t)"Menu";
+      case EApiCall::Type: return (uintptr_t)EApiValue::TypeStatic | (uintptr_t)EApiValue::TypeRowMenu | (uintptr_t)EApiValue::TypeNavigation;
+      case EApiCall::Width: return 50;
+      case EApiCall::Height: return sizeof(labels)/sizeof(labels[0])*8;
+      case EApiCall::GetPixel: {
+        uint8_t buffer[9] = {0};
+        renderText(buffer, -x, 0, labels[y/8]);
+        return (buffer[0] & (1<<(y&7))) ? colors[y/8] : 0x000000;
+      }
+      case EApiCall::GetPosX: return sx;
+      case EApiCall::GetPosY: return sy;
+      default: return 0;
     }
   }
 };

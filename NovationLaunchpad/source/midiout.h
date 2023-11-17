@@ -1,4 +1,4 @@
-    #include "gpio_midi.h"
+#include "gpio_midi.h"
 
 class CAppMidiout : public CApp, public CMidi
 {
