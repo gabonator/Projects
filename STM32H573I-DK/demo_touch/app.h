@@ -49,8 +49,9 @@ public:
       CTimedPoint transformed{Transform(mLine[i]), 0, true};
       if (prev.valid && transformed.valid)
       {
-        if (ClipLine(prev, transformed, inner))
-          lcd::DrawLine(prev, transformed, 0x00ff00);
+        CTimedPoint prevClip{prev}, transClip{transformed};
+        if (ClipLine(prevClip, transClip, inner))
+          lcd::DrawLine(prevClip, transClip, 0x00ff00);
         else
           transformed.valid = false;
       }
