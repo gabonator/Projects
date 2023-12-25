@@ -17,5 +17,8 @@ Following set of batch scripts can be used to build and flash simple blink demo 
 - win32/flash.bat - flashes the code using stm32 fork of openocd
 - openocd.zip - scripts required by OpenOcd
 
+## Advanced examples
+- demo_touch - C++ demo using LCD and touch screen
+
 ## Notes
 - when building larger code, you will need to erase the eeprom by altering `flash erase_address 0x08000000 0x00006000` command in flashing script. To erase whole eeprom you can use `flash erase_sector 0 0 last` but it takes about 3 seconds to finish
