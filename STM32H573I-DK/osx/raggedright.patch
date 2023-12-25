@@ -1,0 +1,27 @@
+diff --git a/doc/openocd.texi b/doc/openocd.texi
+index fce7c4b1c..1f04b6241 100644
+--- a/doc/openocd.texi
++++ b/doc/openocd.texi
+@@ -11869,11 +11869,9 @@ Cyg_Thread::thread_list, Cyg_Scheduler_Base::current_thread.
+ @item ThreadX symbols
+ _tx_thread_current_ptr, _tx_thread_created_ptr, _tx_thread_created_count.
+ @item FreeRTOS symbols
+-@raggedright
+ pxCurrentTCB, pxReadyTasksLists, xDelayedTaskList1, xDelayedTaskList2,
+ pxDelayedTaskList, pxOverflowDelayedTaskList, xPendingReadyList,
+ uxCurrentNumberOfTasks, uxTopUsedPriority.
+-@end raggedright
+ @item linux symbols
+ init_task.
+ @item ChibiOS symbols
+@@ -11888,10 +11886,8 @@ OSRunning, OSTCBCurPtr, OSTaskDbgListPtr, OSTaskQty.
+ @item nuttx symbols
+ g_readytorun, g_tasklisttable.
+ @item RIOT symbols
+-@raggedright
+ sched_threads, sched_num_threads, sched_active_pid, max_threads,
+ _tcb_name_offset.
+-@end raggedright
+ @item Zephyr symbols
+ _kernel, _kernel_openocd_offsets, _kernel_openocd_size_t_size
+ @end table

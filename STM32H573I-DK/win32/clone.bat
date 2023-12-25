@@ -34,4 +34,4 @@ copy STM32CubeH5\Drivers\BSP\STM32H573I-DK\stm32h573i_discovery_conf.h STM32
 copy STM32CubeH5\Drivers\BSP\STM32H573I-DK\stm32h573i_discovery_errno.h STM32
 copy STM32CubeH5\Projects\STM32H573I-DK\Examples\GPIO\GPIO_IOToggle\STM32CubeIDE\STM32H573IIKXQ_FLASH.ld .
 
-powershell -command "Expand-Archive openocd.zip ."
+powershell -command "Expand-Archive ..\openocd.zip ."
