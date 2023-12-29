@@ -1,0 +1,22 @@
+diff --git a/STM32/stm32h5xx_hal_conf.h b/STM32/stm32h5xx_hal_conf.h
+index f1f9923..771d730 100644
+--- a/STM32/stm32h5xx_hal_conf.h
++++ b/STM32/stm32h5xx_hal_conf.h
+@@ -59,7 +59,7 @@
+ /*#define HAL_HCD_MODULE_ENABLED */
+ /*#define HAL_IRDA_MODULE_ENABLED */
+ /*#define HAL_IWDG_MODULE_ENABLED */
+-/*#define HAL_I2C_MODULE_ENABLED */
++#define HAL_I2C_MODULE_ENABLED
+ /*#define HAL_I3C_MODULE_ENABLED */
+ /*#define HAL_I2S_MODULE_ENABLED */
+ /*#define HAL_LPTIM_MODULE_ENABLED */
+@@ -78,7 +78,7 @@
+ /*#define HAL_SMARTCARD_MODULE_ENABLED */
+ /*#define HAL_SMBUS_MODULE_ENABLED */
+ /*#define HAL_SPI_MODULE_ENABLED */
+-/*#define HAL_SRAM_MODULE_ENABLED */
++#define HAL_SRAM_MODULE_ENABLED
+ /*#define HAL_TIM_MODULE_ENABLED */
+ /*#define HAL_RAMCFG_MODULE_ENABLED */
+ /*#define HAL_UART_MODULE_ENABLED */
