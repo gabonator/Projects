@@ -16,13 +16,13 @@ namespace lcd
   constexpr int height = 240;
   int fontSize = 17;
 
-  void FillRect(class CRect& rc, uint32_t color)
+  void FillRect(const CRect& rc, uint32_t color)
   {
     if (rc.right > rc.left && rc.bottom > rc.top)
       UTIL_LCD_FillRect(rc.left, rc.top, rc.Width(), rc.Height(), color);
   }
 
-  void Rectangle(class CRect& rc, uint32_t color)
+  void Rectangle(const CRect& rc, uint32_t color)
   {
     UTIL_LCD_DrawRect(rc.left, rc.top, rc.Width(), rc.Height(), color);
   }
@@ -83,3 +83,19 @@ namespace lcd
   }
 }
 
+namespace gpio
+{
+  void digitalWrite(int i, bool b)
+  {
+    GPIO_PinState level = b ? GPIO_PIN_RESET : GPIO_PIN_SET;
+    switch (i)
+    {
+      case 1: HAL_GPIO_WritePin(LED1_GPIO_PORT, LED1_PIN, level); break;
+      case 2: HAL_GPIO_WritePin(LED2_GPIO_PORT, LED2_PIN, level); break;
+      case 3: HAL_GPIO_WritePin(LED3_GPIO_PORT, LED3_PIN, level); break;
+      case 4: HAL_GPIO_WritePin(LED4_GPIO_PORT, LED4_PIN, level); break;
+      default:
+        assert(0);
+    }
+  }
+}

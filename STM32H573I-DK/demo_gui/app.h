@@ -6,6 +6,7 @@ uint32_t buffer[240*64];
 class CRenderer
 {
   CRect mViewport;
+  CRect mClip;
   fonts::font_t mFont{fonts::arial28b};
 
 public:
@@ -31,6 +32,10 @@ public:
   {
     assert((size_t)rc.Width() * (size_t)rc.Height() * 4 < sizeof(buffer));
     mViewport = rc;
+  }
+  void SetClipRect(const CRect& clip)
+  {
+    mClip = clip;
   }
   const CRect& Viewport() const
   {
@@ -193,24 +198,28 @@ public:
     #define GetColorB(rgb) (((rgb) >> 16)&0xff)
     #define RGB565RGB(r, g, b) (((r)>>3)|(((g)>>2)<<5)|(((b)>>3)<<11))
     #define Convert565(rgb) RGB565RGB( GetColorR(rgb), GetColorG(rgb), GetColorB(rgb))
-    // TODO: clip
     uint16_t buf16[240];
+    if (pt.x >= mClip.right || pt.x+mViewport.Width() < mClip.left || 
+        pt.y >= mClip.bottom || pt.y+mViewport.Height() < mClip.top)
+      return;
     int w = mViewport.Width();
     int bx = pt.x;
-    if (bx >= lcd::width || bx+w < 0 || pt.y > lcd::height || pt.y+mViewport.Height() < 0)
-      return;
     int sx = 0;
-    int bw = w; //std::min(lcd::width, w);
-    if (bx < 0)
+    int bw = w;
+    if (bx + bw >= mClip.right)
     {
-      bw += bx;
-      sx -= bx;
-      bx = 0;
+      bw = mClip.right - bx;
     }
-
+    if (bx < mClip.left)
+    {
+      int d = mClip.left - bx;
+      bw -= d;
+      sx += d;
+      bx = mClip.left;
+    }
     for (int y=0; y<mViewport.Height(); y++)
     {
-      if (y+pt.y < 0 || y+pt.y >= lcd::height)
+      if (y+pt.y < mClip.top || y+pt.y >= mClip.bottom)
         continue;
       for (int x=0; x<w; x++)
       {
@@ -389,24 +398,30 @@ public:
   CWndCheckbox() = default;
   CWndCheckbox(const char* msg, bool checked, function_t f)
   {
-    this->operator()(msg, checked, f);
+    mChecked = checked;
+    this->operator()(msg, f);
   }
 
-  CWndCheckbox& operator()(const char* msg, bool checked, function_t f)
+  CWndCheckbox& operator()(const char* msg, function_t f)
   {
-    mChecked = checked;
     mMsg = msg;
     assert(strlen(mMsg)+4 < sizeof(mFormattedMsg));
-    sprintf(mFormattedMsg, "%c %s", mChecked ? 0x81 : 0x80, mMsg);
+    sprintf(mFormattedMsg, "%c %s", mChecked ? 0x80 : 0x81, mMsg);
     CWndButton::operator()((const char*)mFormattedMsg, CWndButton::Other, f);
     return *this;
   }
 
-  void Toggle()
+  bool Toggle()
   {
     mChecked = !mChecked;
-    sprintf(mFormattedMsg, "%c %s", mChecked ? 0x81 : 0x80, mMsg);
+    sprintf(mFormattedMsg, "%c %s", mChecked ? 0x80 : 0x81, mMsg);
     CWndButton::SetText((const char*)mFormattedMsg);
+    return mChecked;
+  }
+
+  bool Checked()
+  {
+    return mChecked;
   }
 };
 
@@ -431,21 +446,28 @@ class CLayout
 {
   CRenderer mRender;
   CRect mView;
+  CRect mClip;
   CPoint mPoint;
   int mMaxHeight{0};
 
 public:
   enum LayoutControl_t {
-    Nl = 1
+    Nl = 1,
+    Pad = 2
   };
 
 public:
-  CLayout(CRect view) : mView(view), mPoint{view.left, view.top}, mMaxHeight{0}
+  CLayout(CRect draw, CRect clip) : mView(draw), mClip(clip), mPoint{draw.left, draw.top}, mMaxHeight{0}
   {
+    mRender.SetClipRect(clip);
+    lcd::FillRect({clip.left, clip.top, clip.right, draw.top}, 0x202020);
   }
 
   CLayout& operator << (const CWnd& e)
   {
+    if (mPoint.y > mClip.bottom)
+      return *this;
+
     const CRect rc = e.GetExtent(mRender);
     if (rc.Height() == 0)
     {
@@ -455,9 +477,12 @@ public:
     {
       mRender.Viewport(rc);
       CRect screen{mPoint.x, mPoint.y, mPoint.x + rc.Width(), mPoint.y + rc.Height()};
-      e.SetScreenRect(screen);
-      e.Render(mRender);
-      mRender.Blit(mPoint);
+      if (screen.Intersects(mClip))
+      {
+        e.SetScreenRect(screen);
+        e.Render(mRender);
+        mRender.Blit(mPoint);
+      }
     }
     mPoint.x += rc.Width();
     mMaxHeight = std::max(mMaxHeight, rc.Height());
@@ -475,6 +500,10 @@ public:
       mPoint.x = mView.left;
       mPoint.y += mMaxHeight;
       mMaxHeight = 0;
+    }
+    if (c == Pad)
+    {
+      lcd::FillRect({mClip.left, mPoint.y, mClip.right, mClip.bottom}, 0x202020);
     }
     return *this;
   }
@@ -500,6 +529,8 @@ class CApp
   CWndButton mBtnCancel;
   CWndCheckbox mBtnCheck1;
   CWndCheckbox mBtnCheck2;
+  CWndCheckbox mBtnCheck3;
+  CWndCheckbox mBtnCheck4;
   CRenderer mRender;
 
 public:
@@ -513,14 +544,21 @@ public:
       mStatic("Pressed cancel");
       Redraw(pt);
     };
-    CLayout layout({pt.x, pt.y, lcd::width, lcd::height});
+    auto onLed = [&](int i, bool checked)
+    {
+      gpio::digitalWrite(i, checked);
+    };
+    CLayout layout({pt.x, pt.y, pt.x+lcd::width, pt.y+lcd::height}, {0, 0, lcd::width, lcd::height});
     layout << CWndTitle("Demo form") << CLayout::Nl
       << CWndStatic("Hello this is a static message,") << CLayout::Nl
       << CWndStatic("second line goes here!") << CLayout::Nl
       << mStatic << CLayout::Nl
       << mBtnOk("Ok", CWndButton::Primary, onOk) << CWndSpacer(20) << mBtnCancel("Cancel", CWndButton::Secondary, onCancel) << CLayout::Nl
-      << mBtnCheck1("Check1", false, [&](){ mBtnCheck1.Toggle(); Redraw(mBtnCheck1); }) << CLayout::Nl
-      << mBtnCheck2("Check2", true, [&](){ mBtnCheck2.Toggle(); Redraw(mBtnCheck2); }) << CLayout::Nl;
+      << mBtnCheck1("LED 1", [&](){ onLed(1, mBtnCheck1.Toggle()); Redraw(mBtnCheck1); }) << CWndSpacer(8)
+      << mBtnCheck2("LED 2", [&](){ onLed(2, mBtnCheck2.Toggle()); Redraw(mBtnCheck2); }) << CLayout::Nl
+      << mBtnCheck3("LED 3", [&](){ onLed(3, mBtnCheck3.Toggle()); Redraw(mBtnCheck3); }) << CWndSpacer(8)
+      << mBtnCheck4("LED 4", [&](){ onLed(4, mBtnCheck4.Toggle()); Redraw(mBtnCheck4); }) << CLayout::Nl
+      << CLayout::Pad;
   }
   void Redraw(const CWnd& w)
   {
@@ -538,6 +576,10 @@ public:
     mChildren.push(&mBtnCancel);
     mChildren.push(&mBtnCheck1);
     mChildren.push(&mBtnCheck2);
+    mChildren.push(&mBtnCheck3);
+    mChildren.push(&mBtnCheck4);
+    mRender.SetClipRect({0, 0, lcd::width, lcd::height});
+//    mRender.SetClipRect({20, 20, lcd::width-20, lcd::height-20});
     Redraw(pt);
   }
   virtual void Do()

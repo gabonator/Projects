@@ -96,4 +96,14 @@ struct CRect
   {
     return {left, top};
   }
+  bool Intersects(const CRect& r)
+  {
+    if (left > r.right ||
+        right < r.left ||
+        top > r.bottom ||
+        bottom < r.top)
+      return false;
+    else
+      return true;
+  }
 };
