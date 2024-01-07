@@ -7,7 +7,6 @@ class CRenderer
 {
 public:
   CRect mViewport;
-  CRect mClip;
   fonts::font_t mFont{fonts::arial28b};
 
 public:
@@ -34,10 +33,10 @@ public:
     assert((size_t)rc.Width() * (size_t)rc.Height() * 4 < sizeof(buffer));
     mViewport = rc;
   }
-  void SetClipRect(const CRect& clip)
-  {
-    mClip = clip;
-  }
+//  void SetClipRect(const CRect& clip)
+//  {
+//    mClip = clip;
+//  }
   const CRect& Viewport() const
   {
     return mViewport;
@@ -124,6 +123,11 @@ public:
   }
   int DrawText(const CPoint& point, uint32_t clr, uint32_t bkg, const char* text)
   {
+      return DrawText(point, clr, bkg, text, mViewport);
+  }
+  int DrawText(const CPoint& point, uint32_t clr, uint32_t bkg, const char* text, const CRect& clip)
+
+  {
     if (!text)
       return 0;
 
@@ -146,7 +150,7 @@ public:
     auto BufferWrite = [&](int a)
     {
       //Blend(buffer[(pt.y-mViewport.top)*mViewport.Width() + pt.x - mViewport.left], clr, a);
-        if (mClip.IsPointInside(pt))
+        if (clip.IsPointInside(pt))
             SetPixel(pt.x, pt.y, pal[a]);
       if (++pt.y >= rect.bottom)
       {
@@ -167,7 +171,7 @@ public:
         if (!buf)
         {
             CRect space{pt.x, y, pt.x+mFont.widths[' '] + mFont.widths[0], y+mFont.height};
-            if (space.ClipTo(mClip))
+            if (space.ClipTo(clip))
                 FillRect(space, bkg);
             x += mFont.widths[' '] + mFont.widths[0];
             continue;
@@ -191,7 +195,7 @@ public:
         if (*text)
         {
             CRect space{x, y, x+mFont.widths[0], y+mFont.height};
-            if (space.ClipTo(mClip))
+            if (space.ClipTo(clip))
                 FillRect(space, bkg);
         }
         x += mFont.widths[0];
@@ -199,7 +203,7 @@ public:
     return x - oldx;
   }
 
-  void Blit(const CPoint& pt)
+  void Blit(const CPoint& pt, const CRect& clipRect)
   {
     #define GetColorR(rgb) ((rgb) & 0xff)
     #define GetColorG(rgb) (((rgb) >> 8)&0xff)
@@ -207,30 +211,31 @@ public:
     #define RGB565RGB(r, g, b) (((r)>>3)|(((g)>>2)<<5)|(((b)>>3)<<11))
     #define Convert565(rgb) RGB565RGB( GetColorR(rgb), GetColorG(rgb), GetColorB(rgb))
     uint16_t buf16[240];
-    if (pt.x >= mClip.right || pt.x+mViewport.Width() < mClip.left || 
-        pt.y >= mClip.bottom || pt.y+mViewport.Height() < mClip.top)
+    if (pt.x >= clipRect.right || pt.x+mViewport.Width() < clipRect.left ||
+        pt.y >= clipRect.bottom || pt.y+mViewport.Height() < clipRect.top)
       return;
     int w = mViewport.Width();
     int bx = pt.x;
     int sx = 0;
     int bw = w;
-    if (bx + bw >= mClip.right)
+    if (bx + bw > clipRect.right)
     {
-      bw = mClip.right - bx;
+      bw = clipRect.right - bx;
     }
-    if (bx < mClip.left)
+    if (bx < clipRect.left)
     {
-      int d = mClip.left - bx;
+      int d = clipRect.left - bx;
       bw -= d;
       sx += d;
-      bx = mClip.left;
+      bx = clipRect.left;
     }
     for (int y=0; y<mViewport.Height(); y++)
     {
-      if (y+pt.y < mClip.top || y+pt.y >= mClip.bottom)
+      if (y+pt.y < clipRect.top || y+pt.y >= clipRect.bottom)
         continue;
       for (int x=0; x<w; x++)
       {
+          //uint32_t p = (((x>>1)+(y>>1)) & 1) ? 0x808080 : 0;
         uint32_t rgb32 = buffer[y*w+x];
         buf16[x] = Convert565(rgb32);
       }

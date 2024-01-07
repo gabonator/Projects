@@ -265,11 +265,9 @@ public:
         r.RoundRectangle(rcFull, 10, mColor);
         rcFull.Deflate(16, 16);
       }
-        rcFull.Deflate(40, 0);
-        CRect temp = r.mClip;
-        r.mClip = r.mViewport;
-        r.DrawText(CPoint{r.mClip.left+17, 0}, 0xd0d0d0, mColor, "\x85");
-        r.mClip.Deflate(11, 11);
+        CRect innerRect = r.mViewport; //{0, 0, r.mViewport.Width(), r.mViewport.Height()};
+        r.DrawText(CPoint{innerRect.left+17, 0}, 0xd0d0d0, mColor, "\x85");
+        innerRect.Deflate(11, 11);
         const int h = fonts::arial28.height+14;
 
         if (mCurrent == 0 && mOfs.y < 0)
@@ -288,12 +286,12 @@ public:
             mOfs.y -= h;
             mCurrent++;
         }
-      r.DrawText(CPoint{0, 0} - mOfs, 0xffffff, mColor, mItems[mCurrent]);
+        
+      r.DrawText(CPoint{0, 0} - mOfs, 0xffffff, mColor, mItems[mCurrent], innerRect);
         if (mCurrent < mItems.size -1)
-            r.DrawText(CPoint{0, h} - mOfs, 0xffffff, mColor, mItems[mCurrent+1]);
+            r.DrawText(CPoint{0, h} - mOfs, 0xffffff, mColor, mItems[mCurrent+1], innerRect);
         if (mCurrent > 0)
-            r.DrawText(CPoint{0, -h} - mOfs, 0xffffff, mColor, mItems[mCurrent-1]);
-        r.mClip = temp;
+            r.DrawText(CPoint{0, -h} - mOfs, 0xffffff, mColor, mItems[mCurrent-1], innerRect);
     }
     virtual void OnPress(const CPoint& p) override
     {
@@ -351,7 +349,6 @@ public:
 public:
   CLayout(CRect draw, CRect clip) : mView(draw), mClip(clip), mPoint{draw.left, draw.top}, mMaxHeight{0}
   {
-    mRender.SetClipRect(clip);
     lcd::FillRect({clip.left, clip.top, clip.right, draw.top}, 0x202020);
   }
 
@@ -372,11 +369,11 @@ public:
         {
           mRender.Viewport(rc);
           CRect screen{mPoint.x, mPoint.y, mPoint.x + rc.Width(), mPoint.y + rc.Height()};
-          if (screen.Intersects(mClip))
+          e.SetScreenRect(screen);
+          if (screen.ClipTo(mClip))
           {
-            e.SetScreenRect(screen);
             e.Render(mRender);
-            mRender.Blit(mPoint);
+            mRender.Blit(mPoint, screen);
           }
         }
     }
@@ -454,7 +451,8 @@ public:
           gpio::digitalWrite(i, checked);
         };
                 
-        visitor << CWndTitle("Demo form") << CLayout::Nl
+        visitor << CWndSpacer(0, 4) << CLayout::Nl
+          << CWndTitle("Demo form") << CLayout::Nl
           << CWndStatic("Hello this is a static message,") << CLayout::Nl
           << CWndStatic("second line goes here!") << CLayout::Nl
           << mStatic << CLayout::Nl
@@ -463,23 +461,29 @@ public:
           << mBtnCheck2("LED 2", [&](){ onLed(2, mBtnCheck2.Toggle()); Redraw(mBtnCheck2); }) << CLayout::Nl
           << mBtnCheck3("LED 3", [&](){ onLed(3, mBtnCheck3.Toggle()); Redraw(mBtnCheck3); })
           << mBtnCheck4("LED 4", [&](){ onLed(4, mBtnCheck4.Toggle()); Redraw(mBtnCheck4); }) << CLayout::Nl
+          << CWndStatic("Uart baudrate") << CLayout::Nl
           << mBtnRadio << CLayout::Nl
-          << CWndSpacer(20, 20) << CLayout::Nl
+          << CWndSpacer(0, 30) << CLayout::Nl
           << CLayout::Pad;
     }
     
     void Redraw()
     {
-        CLayout layout(CRect{0, 0, lcd::width, lcd::height} + mAnchor, {0, 0, lcd::width, lcd::height});
+        //lcd::FillRect({0, 0, lcd::width, lcd::height}, 0x800000);
+        CLayout layout(CRect{6, 20, lcd::width-6, lcd::height-3} + mAnchor, {6, 20, lcd::width-6, lcd::height-3});
         Layout(layout);
     }
     void Redraw(const CWnd& w)
     {
       const CRect rc = w.GetExtent(mRender);
       CRect screen = w.GetScreenRect();
-      mRender.Viewport(rc);
-      w.Render(mRender);
-      mRender.Blit({screen.left, screen.top});
+        CPoint anchor = {screen.left, screen.top};
+        if (screen.ClipTo({6, 20, lcd::width-6, lcd::height-3}))
+        {
+            mRender.Viewport(rc);
+            w.Render(mRender);
+            mRender.Blit(anchor, screen);
+        }
     }
     virtual void Create() override
     {
@@ -493,7 +497,6 @@ public:
       mChildren.push(&mBtnCheck3);
       mChildren.push(&mBtnCheck4);
         mChildren.push(&mBtnRadio);
-      mRender.SetClipRect({0, 0, lcd::width, lcd::height});
         
         static const char* radioValues[] = {"2400", "4800", "9600", "19600", "38400", "57600", "115200"};
         mBtnRadio({radioValues, std::size(radioValues), std::size(radioValues)}, 3, [](){});
@@ -501,6 +504,24 @@ public:
         CLayout layout(CRect{0, 0, 0, 1024}, {0, 0, 0, 1024});
         Layout(layout);
         mTotalHeight = layout.Height();
+        
+        //mRender.FillRect({0, 0, lcd::width, lcd::height}, 0xff00ff); // TODO: first line
+        mRender.FillRect({0, 0, lcd::width, lcd::height}, 0x000000);
+        mRender.Viewport({0, 0, lcd::width, 64});
+        mRender.RoundRectangle({0, 0, lcd::width, 64}, 4, 0x808080);
+        mRender.RoundRectangle({2, 19, lcd::width-2, 64-2}, 4, 0x101010);
+        mRender.SetFont(fonts::arial15b);
+        mRender.DrawText({6, 6}, 0xffffff, 0x808080, "Window title");
+        mRender.Blit({0, 0}, {0, 0, lcd::width, 24});
+        mRender.Blit({0, 2}, CRect{0, 24, lcd::width, 60});
+        mRender.Blit({0, 36+2}, CRect{0, 60, lcd::width, 60+36});
+        mRender.Blit({0, 36*2+2}, CRect{0, 60+36, lcd::width, 60+36+36});
+        mRender.Blit({0, 36*3+2}, CRect{0, 60+36*2, lcd::width, 60+36+36*2});
+        mRender.Blit({0, 36*4+2}, CRect{0, 60+36*3, lcd::width, 60+36+36*3});
+        mRender.Blit({0, 36*5-4}, CRect{0, 60+36*4, lcd::width, lcd::height});
+//        mRender.Blit({0, 82}, CRect{0, 22, lcd::width, 60} + CPoint{0, 82});
+//        mRender.Blit({0, 142}, {0, 22, lcd::width, 60});
+//        mRender.Blit({0, 202}, {0, 22, lcd::width, 60});
     }
     virtual void Loop() override
     {
@@ -586,45 +607,14 @@ public:
     }
   virtual void OnTouchBegin(const CPoint& point)
   {
-//      if (mWnd.GetCapture())
-//          mWnd.GetCapture()->OnPress(point);
-//      else
           mWnd.OnPress(point);
-      //mWnd.
-      /*
-    for (int i=0; i<mChildren.size; i++)
-      if (mChildren[i]->GetScreenRect().IsPointInside(point))
-      {
-        mCapture = mChildren[i];
-        mCapture->OnPress(point); 
-        Redraw(*mCapture);
-        break;
-      }
-    mTouchLast = point;
-       */
   }
   virtual void OnTouchMove(const CPoint& point)
   {
-//      if (mWnd.GetCapture())
-//          mWnd.GetCapture()->OnMove(point);
-//      else
           mWnd.OnMove(point);
-
-//      mWnd.OnMove(point);
-//    if (mCapture)
-//        mCapture->OnMove(point);
-//      else
-//      {
-//          pt.x += point.x - mTouchLast.x;
-//          pt.y += point.y - mTouchLast.y;
-//      }
-//    mTouchLast = point;
   }
   virtual void OnTouchEnd(const CPoint& point)
   {
-//      if (mWnd.GetCapture())
-//          mWnd.GetCapture()->OnRelease(point);
-//      else
           mWnd.OnRelease(point);
   }
 };
