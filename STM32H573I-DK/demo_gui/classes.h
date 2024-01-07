@@ -106,4 +106,12 @@ struct CRect
     else
       return true;
   }
+    bool ClipTo(const CRect& rc)
+    {
+        left = std::max(left, rc.left);
+        right = std::min(right, rc.right);
+        top = std::max(top, rc.top);
+        bottom = std::min(bottom, rc.bottom);
+        return right > left && bottom > top;
+    }
 };

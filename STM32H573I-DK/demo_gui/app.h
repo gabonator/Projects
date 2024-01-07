@@ -226,7 +226,8 @@ public:
         uint32_t rgb32 = buffer[y*w+x];
         buf16[x] = Convert565(rgb32);
       }
-      BSP_LCD_FillRGBRect(0, bx, pt.y+y, (uint8_t*)(buf16+sx), bw, 1);
+      lcd::Blit(bx, pt.y+y, bw, 1, buf16+sx);
+      //BSP_LCD_FillRGBRect(0, bx, pt.y+y, (uint8_t*)(buf16+sx), bw, 1);
     }
   }
 };
@@ -472,7 +473,8 @@ public:
     if (rc.Height() == 0)
     {
       CRect pad{mPoint.x, mPoint.y, mPoint.x + rc.Width(), mPoint.y + mMaxHeight};
-      lcd::FillRect(pad, 0x202020);
+        if (pad.ClipTo(mClip))
+            lcd::FillRect(pad, 0x202020);
     } else
     {
       mRender.Viewport(rc);
@@ -494,8 +496,10 @@ public:
     if (c == Nl)
     {
       CRect padRight{mPoint.x, mPoint.y, lcd::width, mPoint.y + mMaxHeight};
-      lcd::FillRect(padRight, 0x202020);
+        if (padRight.ClipTo(mClip))
+            lcd::FillRect(padRight, 0x202020);
       CRect padLeft{0, mPoint.y, mView.left, mPoint.y + mMaxHeight};
+        if (padLeft.ClipTo(mClip))
       lcd::FillRect(padLeft, 0x202020);
       mPoint.x = mView.left;
       mPoint.y += mMaxHeight;

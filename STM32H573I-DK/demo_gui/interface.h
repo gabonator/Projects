@@ -81,6 +81,10 @@ namespace lcd
     }
     return CRect{0, 0, 0, 0};
   }
+  void Blit(int x, int y, int w, int h, uint16_t* p)
+  {
+    BSP_LCD_FillRGBRect(0, x, y, (uint8_t*)p, w, h);
+  }
 }
 
 namespace gpio
