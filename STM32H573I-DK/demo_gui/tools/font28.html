@@ -1,14 +1,17 @@
 <html>
 <body>
-<canvas id="DemoCanvas" width="2400" height="500" style="border:1px solid #000"></canvas> 
+<canvas id="DemoCanvas" width="2600" height="500" style="border:1px solid #000"></canvas> 
 <script>
 var canvas = document.getElementById("DemoCanvas");
  var ctx = canvas.getContext('2d');
 // ctx.font = 'italic 32px sans-serif';
- var fid = "arial28";
+ var fid = "arial28b";
  ctx.font = 'bold 28px arial';
+
+ var fid = "arial28";
+ ctx.font = '28px arial';
 // ctx.font = '28px Helvetica';
- var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.:!?_\u2611\u2610+-/*";
+ var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.:!?_\u2611\u2610+-/*()<>[]\u2b05\u2b95\u2b0d\u2195";
    ctx.fillStyle = "#b0b0b0";
    ctx.fillRect(0, 0, canvas.width, canvas.height);
   var charw = 28, charh = 27;
@@ -28,8 +31,10 @@ var canvas = document.getElementById("DemoCanvas");
  var ascii = new Array(128).fill("nullptr");
  var widths = new Array(128).fill(0);
  var remap = {".": "dot", ":": "colon", ",": "comma", ";": "semicolon", "!": "exclamation", "?": "question",
-   "\u2611":"checkon", "\u2610":"checkoff", "+": "plus", "-": "minus", "/": "div", "*": "mul", "_": "underscore"}
- widths[32] = 15;
+   "\u2611":"checkon", "\u2610":"checkoff", "+": "plus", "-": "minus", "/": "div", "*": "mul", "_": "underscore",
+   "(":"lparen", ")":"rparen", "{":"lcurpar", "}":"rcurpar", "[":"lsqpar", "]":"rsqpar", 
+   "\u2b05":"larr", "\u2b95":"rarr", "<":"less", ">":"more", "\u2b0d": "vert1", "\u2195": "vert2"}
+ widths[32] = 12;
  widths[0] = 2;
  var extraCodes = 128;
  for (var i=0; i<str.length; i++)

@@ -1,3 +1,4 @@
+/*
 template <typename T, int N>
 class CArray 
 {
@@ -11,6 +12,60 @@ public:
     assert(i>=0 && i<size);
     return data[i];
   }
+    const T& operator [](int i) const
+    {
+      assert(i>=0 && i<size);
+      return data[i];
+    }
+  void push(const T& element)
+  {
+    assert(size < capacity);
+    data[size++] = element;
+  }
+  T shift()
+  {
+    assert(size > 0);
+    T temp = data[0];
+    for (int i=0; i<size-1; i++)
+      data[i] = data[i+1];
+    size--;
+    return temp;
+  }
+  const T& last()
+  {
+    assert(size > 0);
+    return data[size-1];
+  }
+};
+ */
+
+template <typename T>
+class CArray
+{
+public:
+    T* data{nullptr};
+    int capacity{0};
+  int size{0};
+    CArray() = default;
+    CArray(T* _data, int _capacity, int _size = 0) : data{_data}, capacity{_capacity}, size{_size}
+    {
+    }
+    void operator =(const CArray& o)
+    {
+        data = o.data;
+        capacity = o.capacity;
+        size = o.size;
+    }
+  T& operator [](int i)
+  {
+    assert(i>=0 && i<size);
+    return data[i];
+  }
+    const T& operator [](int i) const
+    {
+      assert(i>=0 && i<size);
+      return data[i];
+    }
   void push(const T& element)
   {
     assert(size < capacity);
@@ -47,6 +102,10 @@ struct CPoint
   {
     return CPoint{x + p.x, y + p.y};
   }
+    CPoint operator- (const CPoint& p) const
+    {
+      return CPoint{x - p.x, y - p.y};
+    }
 };
 
 struct CRect
@@ -113,5 +172,9 @@ struct CRect
         top = std::max(top, rc.top);
         bottom = std::min(bottom, rc.bottom);
         return right > left && bottom > top;
+    }
+    CRect operator +(const CPoint& p)
+    {
+        return {left + p.x, top + p.y, right + p.x, bottom + p.y};
     }
 };

@@ -156,9 +156,9 @@ namespace sys
   int32_t GetTick()
   {
       struct timespec ts;
-      unsigned theTick = 0U;
+      uint32_t theTick = 0U;
       clock_gettime( CLOCK_REALTIME, &ts );
-      theTick  = ts.tv_nsec / 1000000;
+      theTick = (uint32_t) ts.tv_nsec / 1000000;
       theTick += ts.tv_sec * 1000;
       return theTick;
   }
