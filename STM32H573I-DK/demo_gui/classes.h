@@ -30,6 +30,11 @@ public:
     assert(size < capacity);
     data[size++] = element;
   }
+  T pop()
+  {
+      assert(size >= 1);
+      return data[--size];
+  }
   T shift()
   {
     assert(size > 0);

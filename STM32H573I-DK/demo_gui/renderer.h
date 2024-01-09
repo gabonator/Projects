@@ -71,38 +71,36 @@ public:
   void RoundRectangle(const CRect& rc, int corner, uint32_t color)
   {
     CRect inner{rc};
-    inner.Deflate(corner+1, 1);
+    inner.Deflate(corner, 0);
     FillRect(inner, color);
-    inner = CRect{rc.left+1, rc.top + corner+1, rc.left + corner+1, rc.bottom - corner-1};
+    inner = CRect{rc.left, rc.top + corner, rc.left + corner, rc.bottom - corner};
     FillRect(inner, color);
-    inner = CRect{rc.right - corner-1, rc.top + corner+1, rc.right-1, rc.bottom - corner-1};
+    inner = CRect{rc.right - corner, rc.top + corner, rc.right, rc.bottom - corner};
     FillRect(inner, color);
 
     int radiusSquared = corner * corner;
-    for (int ii = 0; ii <= corner; ii++) 
-      for (int jj = 0; jj <= corner; jj++) 
+    for (int i = 0; i <= corner; i++)
+      for (int j = 0; j <= corner; j++)
       {
-        int i = ii;
-        int j = jj;
-        
         int distanceSquared = i*i + j*j;
         if (distanceSquared <= radiusSquared) 
         {
-          int intensity = 255 - ((distanceSquared - (radiusSquared - corner)) * 255) / (2 * corner);
-          if (intensity > 0 && intensity <= 255)
-          {
-            uint32_t ncolor = color;
-            ncolor = (ncolor & 0xffffff) | (((ncolor >> 24)*intensity/256)<<24);
-            BlendPixel(rc.left + corner - i, rc.top + corner - j, ncolor);
-            BlendPixel(rc.right - 1 - corner + i, rc.top + corner - j, ncolor);
-            BlendPixel(rc.left + corner - i, rc.bottom - 1 - corner + j, ncolor);
-            BlendPixel(rc.right - 1 - corner + i, rc.bottom - 1 - corner + j, ncolor);
-          } else {
-            SetPixel(rc.left + corner - i, rc.top + corner - j, color);
-            SetPixel(rc.right - 1 - corner + i, rc.top + corner - j, color);
-            SetPixel(rc.left + corner - i, rc.bottom - 1 - corner + j, color);
-            SetPixel(rc.right - 1 - corner + i, rc.bottom - 1 - corner + j, color);
-          }
+            int intensity = 255 - ((distanceSquared - (radiusSquared - corner)) * 255) / (corner*3/2);
+            if (intensity >= 240)
+            {
+                SetPixel(rc.left + corner - i, rc.top + corner - j, color);
+                SetPixel(rc.right - 1 - corner + i, rc.top + corner - j, color);
+                SetPixel(rc.left + corner - i, rc.bottom - 1 - corner + j, color);
+                SetPixel(rc.right - 1 - corner + i, rc.bottom - 1 - corner + j, color);
+            } else if (intensity > 10)
+            {
+                uint32_t ncolor = color;
+                ncolor = (ncolor & 0xffffff) | (intensity<<24);
+                BlendPixel(rc.left + corner - i, rc.top + corner - j, ncolor);
+                BlendPixel(rc.right - 1 - corner + i, rc.top + corner - j, ncolor);
+                BlendPixel(rc.left + corner - i, rc.bottom - 1 - corner + j, ncolor);
+                BlendPixel(rc.right - 1 - corner + i, rc.bottom - 1 - corner + j, ncolor);
+            }
         }
       }
   
