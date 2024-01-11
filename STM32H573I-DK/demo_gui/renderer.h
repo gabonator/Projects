@@ -2,7 +2,7 @@
 #include <functional>
 #include <cstdio>
 
-uint32_t buffer[240*72];
+uint32_t buffer[240*92];
 class CRenderer
 {
 public:
@@ -241,4 +241,16 @@ public:
       //BSP_LCD_FillRGBRect(0, bx, pt.y+y, (uint8_t*)(buf16+sx), bw, 1);
     }
   }
+    void DrawFixedChar(int bx, int by, char c, uint32_t front, uint32_t back)
+    {
+        const uint8_t* pat = fonts::ega8x14 + c*14;
+        for (int y=0; y<14; y++)
+        {
+            for (int x=0; x<8; x++)
+            {
+                SetPixel(bx+x, by+y, *pat & (128>>x) ? front : back);
+            }
+            pat++;
+        }
+    }
 };

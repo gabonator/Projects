@@ -129,6 +129,40 @@ public:
 
 typedef std::function<void(void)> function_t;
 
+class CTextArea : public CWnd
+{
+    char* mText;
+    int mRows{0};
+    int mCols{0};
+    
+public:
+    CTextArea() = default;
+    CTextArea(char* text, int cols, int rows)
+  {
+        mText = text;
+        mRows = rows;
+        mCols = cols;
+  }
+  virtual CRect GetExtent(CRenderer& r) const override
+  {
+      return {0, 0, mCols*8, mRows*14};
+  }
+
+  virtual void Render(CRenderer& r) const override
+  {
+    r.Clear(0x202020);
+      char *c = mText;
+      for (int y=0; y<mRows; y++)
+          for (int x=0; x<mCols; x++)
+              r.DrawFixedChar(x*8, y*14, *c++, 0xb0b0b0, 0x202020);
+  }
+
+  virtual void OnPress(const CPoint& p) override
+  {
+      SetCapture(nullptr);
+  }
+};
+
 class CWndButton : public CWnd
 {
 public:
@@ -463,8 +497,6 @@ public:
         return mPoint.y;
     }
 };
-
-CRenderer render;
 
 class CForm : public CWnd
 {

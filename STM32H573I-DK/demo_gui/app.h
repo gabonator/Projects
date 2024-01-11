@@ -81,12 +81,21 @@ public:
             mPresenter->Push(&mFormModal);
         };
 
+        char* textarea =
+          "1234567890123456789012345678"
+          "abcdefghijklmnopqrstuvwzyz!?"
+          "Hello this is a textarea    "
+          "with dimensions 28x6        "
+          "characters with EGA fixed   "
+          "font                        ";
+        
         visitor << CWndSpacer(0, 4) << CLayout::Nl
           << CWndTitle("Demo form") << CLayout::Nl
           << CWndStatic("Hello this is a static message,") << CLayout::Nl
           << CWndStatic("second line goes here!") << CLayout::Nl
           << mStatic << CLayout::Nl
         << mBtnOk("Open modal", CWndButton::Primary, onModal) << CLayout::Nl
+        << CTextArea(textarea, 28, 6) << CLayout::Nl
           //<< mBtnOk("Ok", CWndButton::Primary, onOk) << CWndSpacer(20) << mBtnCancel("Cancel", CWndButton::Secondary, onCancel) << CLayout::Nl
         << mBtnCheck1("LED 1", [&](){ onLed(1, mBtnCheck1.Toggle()); CForm::Redraw(mBtnCheck1); })
           << mBtnCheck2("LED 2", [&](){ onLed(2, mBtnCheck2.Toggle()); CForm::Redraw(mBtnCheck2); }) << CLayout::Nl
