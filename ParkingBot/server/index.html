@@ -1,0 +1,171 @@
+<html>
+<meta name="viewport" content="width=800, initial-scale=0.45">
+<style>
+  body {background:#eee; user-select: none;}
+  a {display:inline-block; width:200px; height:200px; background:#d0d0d0; font-size:80px; margin:10px; text-align:center; width:100%}
+  .pblock {transform: skewY(-15deg); display:inline-block; width:800px; height:200px; border:10px #fff solid; overflow:hidden;}
+  .pbutton {display:inline-block; width:33%; height:100%; border-right:4px #ddd solid; color: #ffffff; font-weight:bold; background:#ccc}
+  .blank {background:#eee; font-size:80px; text-align:center; line-height:200px; color: #ffffff;}
+  .ours {font-size:58px; text-align:center; line-height:200px;}
+  .small {font-size:55px;}
+  .wide {width:75%;}
+  .short {width:24%;}
+  .blue {background:#3050d0; }
+  .red {background:#808080; }
+  .owner {position: absolute; font-size:50px; width:75%; line-height:320px; color:#ddd}
+  .multiline {}
+  .status { position:fixed; color:#888; padding-left:20px; padding-top:20px; left:0px; top:0px; width:100%; height:60px; border:0px solid #ddd; font-size:40px; z-index:50; background:#eee8}
+</style>
+<body>
+  <div id="info" class="status">&#x1F7E2; checking status...</div>
+  <div id="place8" class="pblock blank">
+    8
+  </div>
+  <div id="place7" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      7 Lock
+    </div>
+  </div>
+  <div id="place6" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      6 Lock
+    </div>
+  </div>
+  <div id="place5" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      5 Lock
+    </div>
+  </div>
+  <div id="place4" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      4 Lock
+    </div>
+  </div>
+  <div id="place3" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      3 Lock
+    </div>
+  </div>
+  <div id="place2" class="pblock ours">
+    <div class="pbutton short">
+      Unlock
+    </div><div class="pbutton wide red">
+      2 Lock
+    </div>
+  </div>
+  <div id="place1" class="pblock blank">
+    <a style="text-decoration:none; color:#fff;" href="/logout">1</a>
+  </div>
+</body>
+<script>
+   function redraw(st)
+   {
+     for(var s of st)
+     {
+       var divs = document.querySelectorAll(s.id + " > div");
+       if (s.state == "locked")
+       {
+         divs[0].innerHTML = s.id.split("#place")[1] + " Unlock";
+         divs[1].innerHTML = "Lock"
+         divs[0].className = "pbutton wide blue";
+         divs[1].className = "pbutton short";
+       }
+       else if (s.state == "unlocked")
+       {
+         divs[0].innerHTML = "Unlock";
+         divs[1].innerHTML = `<div class="owner">${s.user}</div> ${s.id.split("#place")[1]} Lock`
+         divs[0].className = "pbutton short";
+         divs[1].className = "pbutton wide red";
+       }
+       else if (s.state == "reserved")
+       {
+         var timeout = Math.floor((s.ts - new Date().getTime())/1000);
+         if (timeout <= 0)
+           s.state = "unlocked";
+         timeout = ("0"+Math.floor(timeout/60)).substr(-2) + ":" + ("0" + (timeout%60)).substr(-2)
+         divs[0].innerHTML = "Unlock";
+         divs[1].innerHTML = "Locked"
+         divs[0].className = "pbutton short";
+         divs[1].className = "pbutton short";
+       }
+       else
+         throw "error"
+     }
+   }
+   document.querySelectorAll('.pbutton').forEach(el=>
+     el.addEventListener('click', e => {
+       var parent = e.currentTarget.parentElement;
+       var siblings = Array.prototype.slice.call(e.currentTarget.parentElement.children)
+       var button = siblings.indexOf(e.currentTarget);
+       var num = parent.id.substr(-1);
+       var req = "";
+       if (button == 0)
+         req = "unlock"+num
+       if (button == 1)
+         req = "lock"+num
+       fetch(req).then(resp => resp.json()).then(json=>redraw(json))
+     }));
+
+  function fetchStatus()
+  {
+    return fetch("status")
+      .then(resp => resp.json())
+      .then(resp => {
+        redraw(resp.state);
+        //&#x1F7E2; api  &#x1F7E2; arduino &#x1F4E1; ping 47ms &#x27F3; sync 
+        var api = false;
+        var arduino = false;
+        var ping = 0;
+        var sync = "";
+        if (resp.status != "good")
+        {
+          api = false;
+          arduino = false;
+        }
+        else if (!resp.lastUpdate)
+        {
+          api = true;
+          arduino = false;
+        } else
+        {
+          api = true;
+          arduino = true;
+          ping = resp.payload.time;
+        }
+        var last = new Date().getTime() - resp.lastUpdate;
+
+        if (last < 1500)
+          sync = "sync ok"
+        else if (last < 30000)
+          sync = "slow connection!"
+        else
+        {
+          if (resp.lastUpdate == 0)
+            sync = "never synced"
+          else
+            sync = "last on " + new Date(resp.lastUpdate).toLocaleDateString()
+        }
+        var good = "&#x1F7E2;"
+        var bad = "&#x1F534;"
+        document.querySelector("#info").innerHTML = `${api ? good : bad} api&nbsp;&nbsp;${arduino ? good : bad} arduino &nbsp;&nbsp;&#x1F4E1; ping ${ping} ms &nbsp;&nbsp;&#x21bb; ${sync}`
+      })
+      .catch(err => {
+        document.querySelector("#info").innerHTML = "&#x1F7534; api"
+      })
+  }
+  setInterval(()=>{
+    fetchStatus();
+  }, 1000);
+  fetchStatus();
+</script>
+</html>
