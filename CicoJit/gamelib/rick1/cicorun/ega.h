@@ -187,6 +187,9 @@ public:
     uint32_t full_enable_set_reset;
     uint32_t full_not_enable_set_reset;
 
+    uint32_t egadefaultpal[16] = {
+        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
+        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
     uint32_t palette[128] = {
         0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
         0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
@@ -238,22 +241,10 @@ public:
             for (int i=0; i<16; i++)
             {
                 int rgb = ctx->memory8(ctx->_es, ctx->d.r16+i); // 1040:9709+15
-                int r = ((rgb & 4) ? 2 : 0) + ((rgb & 32) ? 1 : 0);
-                int g = ((rgb & 2) ? 2 : 0) + ((rgb & 16) ? 1 : 0);
-                int b = ((rgb & 1) ? 2 : 0) + ((rgb & 8) ? 1 : 0);
-                r = r * 255 / 2;
-                g = g * 255 / 3;
-                b = b * 255 / 2;
-                if (r>255) r = 255;
-                if (g>255) g = 255;
-                if (b>255) b = 255;
-                printf("pal[%d] = 0x%02x, %d,%d,%d\n", i, rgb, r, g, b);
-//                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
-                palette[i] = b | (g << 8) | (r << 16);
+                // CGA emulation! http://www.techhelpmanual.com/137-int_10h_1000h__set_one_palette_register.html
+                palette[i] = egadefaultpal[(rgb&7) + ((rgb&16)>>1)];
             }
-            // set palette BX first, CX count, ES:DX rgb ptr
-            //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
-            // << " data " << (int)_es << ":" << (int)_dx << endl;
+
             return true;
         }
         if (ctx->a.r16 == 0x1012)

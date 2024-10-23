@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <regex>
+#include <assert.h>
 
 bool verbose_asm = false;
 bool segofs_in_comment = false;
@@ -36,7 +37,7 @@ std::string format(const char* fmt, ...)
     char buf[256];
     va_list args;
     va_start(args, fmt);
-    vsprintf(buf, fmt, args);
+    vsnprintf(buf, 256, fmt, args);
     va_end(args);
     return std::string(buf);
 }
@@ -89,23 +90,23 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 {
                     char newfmt[64] = "";
                     if (strcmp(fmt+4, "++;") == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d + 1;", index, index);
+                        snprintf(newfmt, 64, "$wr%d = $rd%d + 1;", index, index);
                     else if (strcmp(fmt+4, "--;") == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d - 1;", index, index);
+                        snprintf(newfmt, 64, "$wr%d = $rd%d - 1;", index, index);
                     else if (strncmp(fmt+4, " |= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d | %s;", index, index, enclose(fmt+8).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d | %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " &= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d & %s;", index, index, enclose(fmt+8).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d & %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " += ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d + %s;", index, index, enclose(fmt+8).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d + %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " -= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d - %s;", index, index, enclose(fmt+8).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d - %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " ^= ", 4) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d ^ %s;", index, index, enclose(fmt+8).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d ^ %s;", index, index, enclose(fmt+8).c_str());
                     else if (strncmp(fmt+4, " >>= ", 5) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d >> %s;", index, index, enclose(fmt+9).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d >> %s;", index, index, enclose(fmt+9).c_str());
                     else if (strncmp(fmt+4, " <<= ", 5) == 0)
-                        sprintf(newfmt, "$wr%d = $rd%d << %s;", index, index, enclose(fmt+9).c_str());
+                        snprintf(newfmt, 64, "$wr%d = $rd%d << %s;", index, index, enclose(fmt+9).c_str());
                     else
                         assert(0);
                     strcpy(fmt, newfmt);
@@ -118,13 +119,13 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 
                 std::string rvalue_formatted = vassign(x86, rvalue, args);
                 
-                char segment[32], offset[32], tmp[64];
+                char segment[32], offset[32], tmp[128];
                 GetOpAddress(op, segment, offset);
-                sprintf(tmp, "memoryASet%s(%s, %s, %s);",
+                snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);",
                         x86.operands[0].size == 2 ? "16" : "", segment, offset, rvalue_formatted.c_str());
                 return tmp;
             } else {
-                char tmp[64];
+                char tmp[128];
                 strcpy(tmp, ToCString(op).c_str());
                 strcat(tmp, fmt+4);
                 strcpy(fmt, tmp);
@@ -161,22 +162,22 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
         if (strcmp(tok, "immd0") == 0)
         {
             assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
-            sprintf(replace, "%d", (int)x86.operands[0].imm);
+            snprintf(replace, 64, "%d", (int)x86.operands[0].imm);
         }
         if (strcmp(tok, "immx0") == 0)
         {
             assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
-            sprintf(replace, "0x%x", (int)x86.operands[0].imm);
+            snprintf(replace, 64, "0x%x", (int)x86.operands[0].imm);
         }
         if (strcmp(tok, "immd1") == 0)
         {
             assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
-            sprintf(replace, "%d", (int)x86.operands[1].imm);
+            snprintf(replace, 64, "%d", (int)x86.operands[1].imm);
         }
         if (strcmp(tok, "immx1") == 0)
         {
             assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
-            sprintf(replace, "0x%x", (int)x86.operands[1].imm);
+            snprintf(replace, 64, "0x%x", (int)x86.operands[1].imm);
         }
         if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0)
         {
@@ -192,13 +193,13 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                     switch (x86.operands[0].size)
                     {
                         case 1:
-                            sprintf(replace, "memoryAGet(%s, %s)", segment, offset);
+                            snprintf(replace, 64, "memoryAGet(%s, %s)", segment, offset);
                             break;
                         case 2:
-                            sprintf(replace, "memoryAGet16(%s, %s)", segment, offset);
+                            snprintf(replace, 64, "memoryAGet16(%s, %s)", segment, offset);
                             break;
                         case 4: // carefull!
-                            sprintf(replace, "memoryAGet16(%s, %s + 2), memoryAGet16(%s, %s)", segment, offset, segment, offset);
+                            snprintf(replace, 64, "memoryAGet16(%s, %s + 2), memoryAGet16(%s, %s)", segment, offset, segment, offset);
                             break;
                         default:
                             assert(0);
@@ -215,7 +216,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 assert(x86.operands[0].size == 4);
                 char segment[32], offset[32];
                 GetOpAddress(x86.operands[0], segment, offset);
-                sprintf(replace, "memoryAGet16(%s, %s + 2)", segment, offset);
+                snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
             } else
                 assert(0);
         }
@@ -227,7 +228,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
             {
                 char segment[32], offset[32];
                 GetOpAddress(x86.operands[1], segment, offset);
-                sprintf(replace, "memoryAGet%s(%s, %s + 2)",
+                snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
                         x86.operands[0].size == 2 ? "16" : "", segment, offset);
             } else
                 assert(0);
@@ -244,7 +245,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 {
                     char segment[32], offset[32];
                     GetOpAddress(x86.operands[1], segment, offset);
-                    sprintf(replace, "memoryAGet%s(%s, %s)",
+                    snprintf(replace, 64, "memoryAGet%s(%s, %s)",
                             x86.operands[0].size == 2 ? "16" : "", segment, offset);
                 } else
                     strcpy(replace, ToCString(x86.operands[1]).c_str());
@@ -288,7 +289,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
     }
     
     char buf[256];
-    vsprintf(buf, fmt, args);
+    vsnprintf(buf, 256, fmt, args);
     return std::string(buf);
 }
 
@@ -461,6 +462,19 @@ struct cmp_function_t {
     }
 };
 
+std::string replaceStr(const std::string& s, const std::string& from, const std::string to)
+{
+    std::string str(s);
+    if(from.empty())
+        return str;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+    return str;
+}
+
 class CapInstr : public std::enable_shared_from_this<CapInstr>
 {
 public: // remove!
@@ -534,7 +548,7 @@ public:
                     {
                         mNextInstr = fromRelative(x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
                         //mNextInstr = {0x1000, (int)x86->operands[0].imm};
-                        sprintf(mOperands, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
+                        snprintf(mOperands, 64, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
                     } else {
                         mNextInstr = {};
                     }
@@ -551,7 +565,7 @@ public:
                 //print_insn_detail(_handle, CS_MODE_16, p);
                 if (x86->op_count == 0)
                 {
-                    sprintf(mOperands, "PROBLEM-11A");
+                    snprintf(mOperands, 64, "PROBLEM-11A");
                     break;
                 }
                 assert(x86->op_count == 1 &&
@@ -559,7 +573,7 @@ public:
                        x86->operands[0].size == 2);
                 mBranchInstr = fromRelative( x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
                 //1723:003b: 1723:003b      je    0x726f   ->1726f
-                sprintf(mOperands, "loc_%x", mBranchInstr.linearOffset());
+                snprintf(mOperands, 64, "loc_%x", mBranchInstr.linearOffset());
                 break;
             case X86_INS_RET:
             case X86_INS_RETF:
@@ -1303,25 +1317,25 @@ void GetOpAddress(const cs_x86_op& op, char* segment, char* offset)
     strcpy(offset, "");
     
     if (op.mem.base == X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
-        sprintf(offset, "0x%04x", (int)op.mem.disp & 0xffff);
+        snprintf(offset, 32, "0x%04x", (int)op.mem.disp & 0xffff);
     else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID && op.mem.disp == 0)
-        sprintf(offset, "%s", cs_reg_name(_handle, op.mem.base));
+        snprintf(offset, 32, "%s", cs_reg_name(_handle, op.mem.base));
     else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
     {
         if (op.mem.base != X86_REG_BP)
-            sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
+            snprintf(offset, 32, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
         else
         {
             if ((op.mem.disp & 0xffff) < 60000)
-                sprintf(offset, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
+                snprintf(offset, 32, "%s + %d", cs_reg_name(_handle, op.mem.base), (int)op.mem.disp & 0xffff);
             else
-                sprintf(offset, "%s - %d", cs_reg_name(_handle, op.mem.base), 0x10000-abs((int)op.mem.disp & 0xffff));
+                snprintf(offset, 32, "%s - %d", cs_reg_name(_handle, op.mem.base), 0x10000-abs((int)op.mem.disp & 0xffff));
         }
     }
     else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp == 0)
-        sprintf(offset, "%s + %s", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index));
+        snprintf(offset, 32, "%s + %s", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index));
     else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp != 0)
-        sprintf(offset, "%s + %s + %d", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index), (int)op.mem.disp & 0xffff);
+        snprintf(offset, 32, "%s + %s + %d", cs_reg_name(_handle, op.mem.base), cs_reg_name(_handle, op.mem.index), (int)op.mem.disp & 0xffff);
     else
         assert(0);
     
@@ -1359,20 +1373,20 @@ std::string ToCString(const cs_x86_op& op)
     if (op.type == X86_OP_IMM && op.size == 1)
     {
         char tmp[32];
-        sprintf(tmp, "0x%02llx", op.imm);
+        snprintf(tmp, 32, "0x%02llx", op.imm);
         return tmp;
     }
     if (op.type == X86_OP_IMM && op.size == 2)
     {
         char tmp[32];
-        sprintf(tmp, "0x%04llx", op.imm & 0xffff);
+        snprintf(tmp, 32, "0x%04llx", op.imm & 0xffff);
         return tmp;
     }
     if (op.type == X86_OP_MEM)
     {
         char segment[32], offset[32], tmp[64];
         GetOpAddress(op, segment, offset);
-        sprintf(tmp, "memory%s(%s, %s)", op.size == 2 ? "16" : "", segment, offset);
+        snprintf(tmp, 32, "memory%s(%s, %s)", op.size == 2 ? "16" : "", segment, offset);
         return tmp;
     }
 
@@ -1400,26 +1414,40 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
     const cs_x86& x86 = inst->mDetail;
     if ((int)inst->mInject & (int)inject_t::discard)
     {
-        switch (op)
+        // TODO: only AND RX, RX
+        if (inst->mId == X86_INS_AND && x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
+            x86.operands[0].reg == x86.operands[1].reg)
         {
-            case X86_INS_JE:
-                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                return assign(x86, "$tmp0 == 0");
-            case X86_INS_JNE:
-                //inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                //return assign(x86, "$tmp0 != 0");
-                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::zero);
-                return assign(x86, "!flags.zero");
-            case X86_INS_JAE:
-                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                return assign(x86, "$tmp0 >= $rd1");
-            case X86_INS_JNS:
-                inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                return assign(x86, "($sig0)$tmp0 >= 0");
-            case X86_INS_JB:
-                return "stop(/*jb*/)";
-            default:
-                assert(0);
+            switch (op)
+            {
+                case X86_INS_JE:
+                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                    return assign(x86, "$tmp0 == 0");
+                case X86_INS_JNE:
+                    //inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                    //return assign(x86, "$tmp0 != 0");
+                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::zero);
+                    return assign(x86, "!flags.zero");
+                case X86_INS_JAE:
+                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                    return assign(x86, "$tmp0 >= $rd1");
+                case X86_INS_JNS:
+                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+                    return assign(x86, "($sig0)$tmp0 >= 0");
+                case X86_INS_JB:
+                    return "stop(/*jb*/)";
+                default:
+                    assert(0);
+            }
+        } else {
+            inject_t prev = inst->mInject;
+            inst->mInject = inject_t::none;
+            std::string cond = MakeCCondition(noticeCurrentMethod, inst, op);
+            inst->mInject = inject_t((int)prev | (int)inject_t::temp);
+            std::string rd0 = assign(x86, "$rd0");
+            std::string tmp0 = assign(x86, "$tmp0");
+            cond = replaceStr(cond, rd0, tmp0);
+            return assign(x86, "stop(%s /*check inject*/)", cond.c_str());
         }
         assert(0);
     }
@@ -1671,7 +1699,16 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     //assert(0);
             }
             break;
-            
+        case X86_INS_CMPSB:
+            switch (op)
+            {
+                case X86_INS_JE:
+                    return assign(x86, "flags.zero");
+                case X86_INS_JNE:
+                    return assign(x86, "!flags.zero");
+                default:
+                    return "stop(/*70-1*/)";
+            }
         default:
             return "stop(/*70*/)";
             //assert(0);
@@ -1819,19 +1856,6 @@ bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> nex
     return false;
 }
 
-std::string replaceStr(const std::string& s, const std::string& from, const std::string to)
-{
-    std::string str(s);
-    if(from.empty())
-        return str;
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-    }
-    return str;
-}
-
 bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps, bool lines = false)
 {
     assert(!code.empty());
@@ -1920,7 +1944,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             code.back()->mDetail.op_count == 1 &&
             code.back()->mDetail.operands[0].type == X86_OP_IMM)
         {
-            ofs = code.back()->mDetail.operands[0].imm;
+            ofs = (int)code.back()->mDetail.operands[0].imm;
 //            char temp[32];
 //            sprintf(temp, "%d", code.back()->mDetail.operands[0].imm);
 //            ext = temp;
@@ -2022,7 +2046,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             text.push_back(format("L(0x%x);", instr->mAddress.linearOffset()));
             
         char current[128];
-        sprintf(current, "%s %s", instr->mMnemonic, instr->mOperands);
+        snprintf(current, 128, "%s %s", instr->mMnemonic, instr->mOperands);
         
         if (instr->mInject != inject_t::none)
         {
@@ -2585,8 +2609,6 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     else
                         text.push_back(format("if (%s)", MakeCFlagCondition(instr->mId).c_str()));
                     
-                    //address_t target = {instr->mAddress.segment, (int)x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000};
-
                     text.push_back(format("goto loc_%x;", fromRelative(instr, x86.operands[0].imm).linearOffset()));
                     keepLastCompare = true;
                     if (injectPrev != (lastCompare ? lastCompare->mInject : inject_t::none))
@@ -2890,6 +2912,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     strcmp(instr->mOperands, "byte ptr [si], byte ptr es:[di]") == 0)
                 {
                     text.push_back("cmpsb<MemData, MemData, DirAuto>();");
+                    lastCompare = instr;
+                    keepLastCompare = true;
                     break;
                 }
                 if (strcmp(instr->mMnemonic, "repe cmpsb") == 0 &&

@@ -1,8 +1,30 @@
-diff --git a/./rick1.cpp b/cicorun/rick1.cpp
-index 21bcfd0..1e9ec7f 100644
---- a/./rick1.cpp
-+++ b/cicorun/rick1.cpp
-@@ -251,6 +251,7 @@ loc_342f3:
+diff --git a/./rick1.clean b/./rick1.cpp
+index 5c1640a..53b1f0c 100644
+--- a/./rick1.clean
++++ b/./rick1.cpp
+@@ -1,8 +1,11 @@
+ #include "cicoemu.h"
+ using namespace CicoContext;
+ 
++bool infiniteLives = true;
++bool infiniteDynamite = false;
++bool infiniteAmmo = true;
++
+ void sub_341b0();
+-void fixReloc(uint16_t seg);
+ 
+ void start()
+ {
+@@ -233,7 +236,7 @@ loc_342da:
+     if (al == 0)
+         goto loc_342f3;
+     al = memoryAGet(ds, 0x7e46);
+-    al--;
++    if (!infiniteLives) al--;
+     memoryASet(ds, 0x7e46, al);
+     if (al != 0)
+         goto loc_342f1;
+@@ -252,6 +255,7 @@ loc_342f3:
  loc_3430a:
      goto loc_34296;
  loc_3430c:
@@ -10,7 +32,7 @@ index 21bcfd0..1e9ec7f 100644
      sub_34986();
      sub_343b0();
      sub_36ce2();
-@@ -429,7 +430,6 @@ loc_34442:
+@@ -430,7 +434,6 @@ loc_34442:
      flags.carry = false;
  loc_34452:
      al = memoryAGet(ds, di);
@@ -18,7 +40,7 @@ index 21bcfd0..1e9ec7f 100644
      al += memoryAGet(ds, si) + flags.carry;
      if (al < 0x3a)
          goto loc_34460;
-@@ -443,7 +443,6 @@ loc_34460:
+@@ -444,7 +447,6 @@ loc_34460:
      if (--cx)
          goto loc_34452;
      al = memoryAGet(ds, di);
@@ -26,7 +48,7 @@ index 21bcfd0..1e9ec7f 100644
      al += flags.carry;
      memoryASet(ds, di, al);
      ds = pop();
-@@ -568,6 +567,7 @@ void sub_344e7()
+@@ -569,6 +571,7 @@ void sub_344e7()
  }
  void sub_345e3()
  {
@@ -34,25 +56,24 @@ index 21bcfd0..1e9ec7f 100644
      al = memoryAGet(ds, 0x7e44);
      al &= 0x10;
      if (al == 0)
-@@ -1785,7 +1785,7 @@ void sub_350da()
- loc_350f0:
-     bx++;
-     cmpsb<MemData, MemData, DirAuto>();
--    if (stop(/*1*/))
-+    if (!flags.zero)
-         goto loc_350fb;
- loc_350f7:
-     cx--;
-@@ -1944,7 +1944,7 @@ void sub_3520a()
- loc_35220:
-     bx--;
-     cmpsb<MemData, MemData, DirAuto>();
--    if (stop(/*1*/))
-+    if (!flags.zero)
-         goto loc_3522c;
- loc_35227:
-     cx--;
-@@ -2322,7 +2322,7 @@ void sub_3545e()
+@@ -1259,7 +1262,7 @@ void sub_34d08()
+     al = memoryAGet(ds, bx);
+     tl = al;
+     al = bl;
+-    if (stop(!(tl & 0x08) /*check inject*/))
++    if (!(tl & 0x08))
+         goto loc_34d25;
+     ax = memoryAGet16(ds, 0x7e3c);
+     ax++;
+@@ -1858,6 +1861,7 @@ loc_35151:
+     cx = 0x0010;
+     rep_movsw<MemAuto, MemAuto, DirAuto>();
+     sub_34e4c();
++    sync(); // vertical map move - move to loc_34e70 before return
+     sub_36ce2();
+     ax = 0x1040;
+     ds = ax;
+@@ -2323,7 +2327,7 @@ void sub_3545e()
  {
      if (memoryAGet(ds, 0x7d75) == 0x00)
          goto loc_35469;
@@ -61,7 +82,34 @@ index 21bcfd0..1e9ec7f 100644
      return;
  loc_35469:
      di = 0x7e7e;
-@@ -3591,9 +3591,10 @@ loc_36105:
+@@ -2773,7 +2777,7 @@ loc_35926:
+         goto loc_35931;
+     return;
+ loc_35931:
+-    al--;
++    if (!infiniteAmmo) al--;
+     memoryASet(ds, 0x7e45, al);
+     memoryASet16(ds, 0x7eae, 0x0002);
+     ax = memoryAGet16(ds, si + 4);
+@@ -2809,7 +2813,7 @@ loc_35991:
+         goto loc_3599c;
+     return;
+ loc_3599c:
+-    al--;
++    if (!infiniteDynamite) al--;
+     memoryASet(ds, 0x7e47, al);
+     memoryASet(ds, 0x7ede, 0x03);
+     memoryASet(ds, 0x7d81, 0x2d);
+@@ -2914,7 +2918,7 @@ loc_35aa1:
+ loc_35aac:
+     tl = al;
+     al = memoryAGet(ds, si + 2);
+-    if (stop(tl == 0x01 /*check inject*/))
++    if (tl == 0x01)
+         goto loc_35ac0;
+     flags.carry = (al + 0xfe) >= 0x100;
+     al += 0xfe;
+@@ -3592,9 +3596,10 @@ loc_36105:
      memoryASet(ds, 0x48f6, memoryAGet(ds, 0x48f6) + 1);
  loc_36121:
      es = pop();
@@ -75,7 +123,7 @@ index 21bcfd0..1e9ec7f 100644
  }
  void sub_3612b()
  {
-@@ -4176,7 +4177,7 @@ loc_36426:
+@@ -4177,7 +4182,7 @@ loc_36426:
  loc_36431:
      ah = 0;
      ax += ax;
@@ -84,7 +132,7 @@ index 21bcfd0..1e9ec7f 100644
      di = ax;
      switch (di)
      {
-@@ -4604,11 +4605,14 @@ loc_365c0:
+@@ -4605,11 +4610,14 @@ loc_365c0:
  loc_365e5:
      al = memoryAGet(ds, si + 38);
      if (al != 0)
@@ -95,12 +143,12 @@ index 21bcfd0..1e9ec7f 100644
      return;
      //   gap of 7 bytes
  loc_365f7:
--    if (stop(/*1*/))
+-    if (stop(/*1 - jns loc_36607*/))
 +    if (!(tl & 0x80)) // gabo! todo!
          goto loc_36607;
      flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
      al += memoryAGet(ds, si + 2);
-@@ -4965,6 +4969,7 @@ loc_36ac0:
+@@ -4966,6 +4974,7 @@ loc_36ac0:
      al &= 0xfe;
      bx = memoryAGet16(ds, si + 4);
      bl &= 0xfe;
@@ -108,16 +156,16 @@ index 21bcfd0..1e9ec7f 100644
      if (ax != bx)
          goto loc_36b18;
  loc_36ad5:
-@@ -5001,7 +5006,7 @@ loc_36b15:
+@@ -5002,7 +5011,7 @@ loc_36b15:
      goto loc_36b76;
  loc_36b18:
      ax = 0xfffe;
--    if (stop(/*1*/))
+-    if (stop(/*1 - jb loc_36b23*/))
 +    if (flags.carry)
          goto loc_36b23;
      ax = 0x0002;
  loc_36b23:
-@@ -5143,12 +5148,13 @@ loc_36c5c:
+@@ -5144,12 +5153,13 @@ loc_36c5c:
      al += memoryAGet(ds, si + 32);
      memoryASet(ds, si + 8, al);
      al = memoryAGet(ds, si + 40);
@@ -127,17 +175,8 @@ index 21bcfd0..1e9ec7f 100644
      memoryASet(ds, si + 40, 0x02);
      al = 0x02;
  loc_36c85:
--    if (stop(/*1*/))
+-    if (stop(/*1 - jns loc_36c95*/))
 +    if (!(tl & 0x80))
          goto loc_36c95;
      flags.carry = (al + memoryAGet(ds, si + 2)) >= 0x100;
      al += memoryAGet(ds, si + 2);
-@@ -5185,7 +5191,7 @@ loc_36cce:
- loc_36cd2:
-     al = memoryAGet(ds, si + 40);
-     al = -al;
--    if (stop(/*1*/))
-+    if (al != 0)
-         goto loc_36cde;
-     al = 0x02;
- loc_36cde:
