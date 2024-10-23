@@ -7,6 +7,7 @@ void fixReloc(uint16_t seg);
 void start()
 {
     headerSize = 0x0200;
+    loadAddress = 0x1000;
     cs = 0x1040;
     ds = 0x1030;
     es = 0x1030;
@@ -299,7 +300,7 @@ void callIndirect(int seg, int ofs)
     assert(0);
 }
 // INJECT: Error: cannot inject carry flag in sub_16222()!
-// INJECT: Error: cannot inject flag in sub_16222() because of being label!
+// INJECT: Error: cannot inject flag in sub_16222() because of `being label!
 void sub_10524()
 {
     ah = 0x0f;
@@ -413,7 +414,6 @@ void sub_105cc()
 }
 void sub_105f7()
 {
-    push(0x7777);
     push(ds);
     push(es);
     bp = cx;
@@ -471,7 +471,6 @@ void sub_105f7()
     dx = pop();
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_10661()
 {
@@ -704,7 +703,6 @@ loc_10887:
 }
 void sub_1088d()
 {
-    push(0x7777);
     push(ds);
     push(es);
     es = memoryAGet16(ds, 0x0056);
@@ -747,7 +745,6 @@ loc_108aa:
     di += 0x00e0;
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_108dd()
 {
@@ -766,9 +763,8 @@ loc_108ef:
 }
 void sub_108f7()
 {
-    push(0x7777);
     if (!ax)
-        goto loc_1091a;
+        return;
     push(ds);
     push(es);
     dx = ax;
@@ -785,8 +781,6 @@ loc_1090f:
         goto loc_1090f;
     es = pop();
     ds = pop();
-loc_1091a:
-    assert(pop() == 0x7777);
 }
 void sub_1091b()
 {
@@ -952,10 +946,8 @@ loc_10a5a:
 }
 void sub_10a67()
 {
-    push(0x7777);
     if (memoryAGet16(ds, 0x9173) != 0x0000)
         goto loc_10a6f;
-    assert(pop() == 0x7777);
     return;
 loc_10a6f:
     bx = memoryAGet16(ds, 0x9175);
@@ -1017,11 +1009,9 @@ loc_10adc:
         goto loc_10a76;
 loc_10ae2:
     memoryASet16(ds, 0x9175, bx);
-    assert(pop() == 0x7777);
 }
 void sub_10ae7()
 {
-    push(0x7777);
     push(ds);
     push(es);
     bx = 0x573c;
@@ -1142,7 +1132,6 @@ loc_10ba0:
 loc_10bae:
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_10bb1()
 {
@@ -1236,7 +1225,6 @@ loc_10c7f:
 }
 void sub_10c98()
 {
-    push(0x7777);
     push(ds);
     push(es);
     bx = 0x0144;
@@ -1264,11 +1252,9 @@ loc_10cad:
         goto loc_10cad;
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_10ccd()
 {
-    push(0x7777);
     push(ds);
     push(es);
     bx = 0x0146;
@@ -1296,7 +1282,6 @@ loc_10ce3:
         goto loc_10ce3;
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_10d03()
 {
@@ -1512,7 +1497,6 @@ loc_10e4f:
 }
 void sub_10e7f()
 {
-    push(0x7777);
     push(ds);
     push(es);
     es = memoryAGet16(ds, 0x005a);
@@ -1534,7 +1518,6 @@ loc_10e91:
         goto loc_10e91;
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_10ea6()
 {
@@ -1665,7 +1648,6 @@ loc_111d8:
 }
 void sub_111f1()
 {
-    push(0x7777);
     bp = 0;
     ax = memoryAGet16(ds, si + 4);
     ax -= 0x0038;
@@ -1681,7 +1663,7 @@ void sub_111f1()
     cx += 0x0015;
     if ((short)cx > 0)
         goto loc_11218;
-    goto loc_112d5;
+    return;
 loc_11218:
     ax <<= 1;
     ax <<= 1;
@@ -1700,7 +1682,7 @@ loc_1122c:
     cx += 0x0015;
     if ((short)cx > 0)
         goto loc_1123e;
-    goto loc_112d5;
+    return;
 loc_1123e:
     goto loc_11244;
 loc_11241:
@@ -1778,12 +1760,9 @@ loc_112c9:
     cx--;
     if (cx != 0)
         goto loc_1128d;
-loc_112d5:
-    assert(pop() == 0x7777);
 }
 void sub_112d6()
 {
-    push(0x7777);
     push(ds);
     push(es);
     ds = memoryAGet16(ds, 0x0062);
@@ -1871,7 +1850,6 @@ loc_11335:
 loc_11373:
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
 }
 void sub_11376()
 {
@@ -2322,10 +2300,9 @@ loc_1621c:
     sub_1691d();
 }
 // INJECT: Error: cannot inject carry flag in sub_16222()!
-// INJECT: Error: cannot inject flag in sub_16222() because of being label!
+// INJECT: Error: cannot inject flag in sub_16222() because of `being label!
 void sub_16222()
 {
-    push(0x7777);
     push(memoryAGet16(ds, 0x54f4));
     push(dx);
     memoryASet16(ds, 0x54f4, pop());
@@ -2339,7 +2316,6 @@ void sub_16222()
     if (al != 0)
         goto loc_1623e;
     flags.carry = false; //gabo
-    assert(pop() == 0x7777);
     return;
 loc_1623e:
     si += 0x0004;
@@ -2422,7 +2398,6 @@ loc_162c3:
     memoryASet(ds, si + 3, memoryAGet(ds, si + 3) | 0x80);
 loc_162cb:
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_162cd:
     flags.carry = al & 1;
@@ -2602,15 +2577,13 @@ loc_163f5:
     }
     goto loc_1623e;
 loc_16406:
-    assert(pop() == 0x7777);
+    return;
 }
 void sub_16407()
 {
-    push(0x7777);
     if (memoryAGet16(ds, 0x7e16) != 0x0001)
         goto loc_16410;
     flags.carry = false;
-    assert(pop() == 0x7777);
     return;
 loc_16410:
     bp = memoryAGet16(ds, 0x0b1e);
@@ -2662,15 +2635,12 @@ loc_16454:
         goto loc_1646c;
 loc_1646a:
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_1646c:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_1646e()
 {
-    push(0x7777);
     bp = memoryAGet16(ds, 0x7ece);
     cx = 0;
     cl = dh;
@@ -2697,15 +2667,12 @@ void sub_1646e()
     if ((short)cx < (short)bp)
         goto loc_1649e;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_1649e:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_164a0()
 {
-    push(0x7777);
     if (memoryAGet16(ds, 0x0b00) != 0x0001)
         goto loc_164df;
     bp = memoryAGet16(cs, 0x0b02);
@@ -2736,15 +2703,12 @@ void sub_164a0()
     if ((short)cx < (short)bp)
         goto loc_164df;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_164df:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_164e1()
 {
-    push(0x7777);
     bp = memoryAGet16(ds, 0x0b3a);
     bp += 0x000c;
     cx = 0;
@@ -2773,15 +2737,12 @@ void sub_164e1()
     if ((short)cx < (short)bp)
         goto loc_16517;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_16517:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_16519()
 {
-    push(0x7777);
     bp = memoryAGet16(ds, si + 2);
     bp += 0x0014;
     cx = 0;
@@ -2812,15 +2773,12 @@ void sub_16519()
     if ((short)cx <= (short)bp)
         goto loc_16553;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_16553:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_16555()
 {
-    push(0x7777);
     bp = memoryAGet16(ds, si + 2);
     bp += memoryAGet16(ds, si + 30);
     cx = 0;
@@ -2851,11 +2809,9 @@ void sub_16555()
     if ((short)cx <= (short)bp)
         goto loc_1658f;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_1658f:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_16591()
 {
@@ -4543,7 +4499,6 @@ loc_1721a:
 }
 void sub_17222()
 {
-    push(0x7777);
     goto loc_17222;
 loc_168a8:
     ax = 0x000b;
@@ -4565,7 +4520,6 @@ loc_168d1:
         goto loc_168e3;
     memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
 loc_168e3:
-    assert(pop() == 0x7777);
     return;
     //   gap of 2366 bytes
 loc_17222:
@@ -4961,7 +4915,6 @@ loc_1762a:
     si = pop();
     goto loc_17674;
 loc_17643:
-    assert(pop() == 0x7777);
     return;
 loc_17644:
     ax = memoryAGet16(ds, si + 4);
@@ -4993,11 +4946,9 @@ loc_17674:
     if ((short)ax < (short)0x0080)
         goto loc_1769a;
     memoryASet16(ds, si + 16, 0xfffe);
-    assert(pop() == 0x7777);
     return;
 loc_1769a:
     memoryASet16(ds, si + 16, 0x0002);
-    assert(pop() == 0x7777);
     return;
 loc_176a0:
     dx = memoryAGet16(ds, si + 8);
@@ -5021,7 +4972,6 @@ loc_176b5:
     if ((short)ax <= (short)0x0110)
         goto loc_176ca;
     sub_16174();
-    assert(pop() == 0x7777);
     return;
 loc_176ca:
     memoryASet16(ds, si + 4, ax);
@@ -5033,7 +4983,6 @@ loc_176ca:
     ax = memoryAGet16(ds, si + 16);
     ax += memoryAGet16(ds, si + 2);
     memoryASet16(ds, si + 2, ax);
-    assert(pop() == 0x7777);
 }
 void sub_17674()
 {
@@ -5078,12 +5027,10 @@ loc_17700:
 }
 void sub_17702()
 {
-    push(0x7777);
     if (memoryAGet16(ds, 0x6e20) != 0x0001)
         goto loc_1770e;
     flags.carry = false;
     bp = 0x0000;
-    assert(pop() == 0x7777);
     return;
 loc_1770e:
     if ((short)ax < (short)bp)
@@ -5092,17 +5039,14 @@ loc_1770e:
         goto loc_1771e;
     bp = 0xfffe;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_17719:
     bp = 0x0002;
     flags.carry = false;
-    assert(pop() == 0x7777);
     return;
 loc_1771e:
     bp = 0x0000;
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_17723()
 {
@@ -5630,7 +5574,6 @@ loc_17d5b:
 }
 void sub_17d70()
 {
-    push(0x7777);
     push(si);
     push(ax);
     push(bx);
@@ -5853,11 +5796,9 @@ loc_17fb9:
     bx = pop();
     ax = pop();
     si = pop();
-    assert(pop() == 0x7777);
 }
 void sub_17dfb()
 {
-    push(0x7777);
     push(si);
     push(ax);
     push(bx);
@@ -6044,11 +5985,9 @@ loc_17fb9:
     bx = pop();
     ax = pop();
     si = pop();
-    assert(pop() == 0x7777);
 }
 void sub_17fbf()
 {
-    push(0x7777);
     ax = 0;
     al = ch;
     si = ax;
@@ -6074,15 +6013,12 @@ void sub_17fbf()
     if ((short)ax <= (short)bp)
         goto loc_17ff1;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_17ff1:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_17ff3()
 {
-    push(0x7777);
     si = 0x563c;
     dx = memoryAGet16(ds, 0x795f);
     dx &= 0xfff8;
@@ -6096,11 +6032,9 @@ void sub_17ff3()
     bp >>= 1;
     bp >>= 1;
     si += bp;
-    assert(pop() == 0x7777);
 }
 void sub_18014()
 {
-    push(0x7777);
     push(ax);
     push(dx);
     bp = 0;
@@ -6113,11 +6047,9 @@ void sub_18014()
     sub_181c6();
     dx = pop();
     ax = pop();
-    assert(pop() == 0x7777);
 }
 void sub_1802d()
 {
-    push(0x7777);
     push(ax);
     push(bx);
     push(cx);
@@ -6281,11 +6213,9 @@ loc_1819f:
     cx = pop();
     bx = pop();
     ax = pop();
-    assert(pop() == 0x7777);
 }
 void sub_181a4()
 {
-    push(0x7777);
     al = ch;
     ah = 0;
     ch = 0;
@@ -6302,20 +6232,17 @@ void sub_181a4()
     if ((short)bp > (short)di)
         goto loc_181c4;
     flags.carry = true;
-    assert(pop() == 0x7777);
     return;
 loc_181c4:
     flags.carry = false;
-    assert(pop() == 0x7777);
 }
 void sub_181c6()
 {
-    push(0x7777);
     si = 0x0c28;
 loc_181c9:
     ax = memoryAGet16(ds, si);
     if (ax == 0xffff)
-        goto loc_181fd;
+        return;
     if (!al)
         goto loc_181f8;
     if (!(al & 0x80))
@@ -6335,12 +6262,9 @@ loc_181c9:
 loc_181f8:
     si += 0x0034;
     goto loc_181c9;
-loc_181fd:
-    assert(pop() == 0x7777);
 }
 void sub_18351()
 {
-    push(0x7777);
     goto loc_18351;
 loc_168a8:
     ax = 0x000b;
@@ -6362,7 +6286,6 @@ loc_168d1:
         goto loc_168e3;
     memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
 loc_168e3:
-    assert(pop() == 0x7777);
     return;
     //   gap of 6765 bytes
 loc_18351:
@@ -6992,7 +6915,6 @@ loc_18a8f:
     ax = memoryAGet16(ds, 0x0b20);
     ax -= memoryAGet16(ds, 0x7dfe);
     memoryASet16(ds, 0x6c43, ax);
-    assert(pop() == 0x7777);
     return;
     //   gap of 105 bytes
 loc_18b03:
@@ -7133,7 +7055,6 @@ loc_18fb1:
     if ((short)ax <= (short)0x0110)
         goto loc_18fca;
     memoryASet16(ds, 0x7e18, 0x0001);
-    assert(pop() == 0x7777);
     return;
 loc_18fca:
     memoryASet16(ds, 0x0b20, ax);
@@ -7147,7 +7068,6 @@ loc_18fca:
     ax = memoryAGet16(ds, 0x7e1c);
     ax += memoryAGet16(ds, 0x0b1e);
     memoryASet16(ds, 0x0b1e, ax);
-    assert(pop() == 0x7777);
 }
 void sub_18a9a()
 {
@@ -7267,11 +7187,9 @@ loc_18d21:
 }
 void sub_18d28()
 {
-    push(0x7777);
     memoryASet16(ds, 0x7e1e, 0x0000);
     if ((short)memoryAGet16(ds, 0x0b38) >= (short)0x0001)
         goto loc_18d39;
-    assert(pop() == 0x7777);
     return;
 loc_18d39:
     if ((short)memoryAGet16(ds, 0x0b38) <= (short)0x0001)
@@ -7490,7 +7408,6 @@ loc_18f2c:
     memoryASet(ds, 0x0b3f, cl);
     if (ch & 0x20)
         goto loc_18f3a;
-    assert(pop() == 0x7777);
     return;
 loc_18f3a:
     memoryASet16(ds, 0x0b38, 0x0002);
@@ -7525,11 +7442,9 @@ loc_18f77:
 loc_18f8c:
     sub_1718e();
     if (!flags.carry)
-        goto loc_18f97;
+        return;
 loc_18f91:
     memoryASet16(ds, 0x0b38, 0x0000);
-loc_18f97:
-    assert(pop() == 0x7777);
 }
 void sub_19214()
 {
@@ -7575,7 +7490,6 @@ loc_1925c:
 }
 void sub_1926d()
 {
-    push(0x7777);
     push(di);
     push(dx);
     ax <<= 1;
@@ -7616,11 +7530,9 @@ loc_1928c:
     cl = 0x05;
     dx <<= cl;
     di += dx;
-    assert(pop() == 0x7777);
 }
 void sub_192ae()
 {
-    push(0x7777);
     cx = 0x0008;
 loc_192b1:
     bp = cx;
@@ -7644,7 +7556,6 @@ loc_192c4:
     if (--cx)
         goto loc_192b1;
     di += 0x0060;
-    assert(pop() == 0x7777);
 }
 void sub_192da()
 {
@@ -8130,7 +8041,6 @@ loc_19584:
 }
 void sub_19593()
 {
-    push(0x7777);
     push(ds);
     push(es);
     push(di);
@@ -8143,7 +8053,6 @@ void sub_19593()
     di = pop();
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
     return;
 loc_195a5:
     dx = 0;
@@ -8182,7 +8091,6 @@ loc_195e0:
     di = pop();
     es = pop();
     ds = pop();
-    assert(pop() == 0x7777);
     return;
 loc_195e5:
     si += 0x0008;
@@ -8428,9 +8336,9 @@ void sub_19b40()
     push(dx);
     ax = memoryAGet16(ds, 0x973c);
     dx = memoryAGet16(ds, 0x973e);
-    tx = ax;
-    ax = dx;
-    dx = tx;
+    tx = dx;
+    dx = ax;
+    ax = tx;
     dx = rol(dx, 0x0001);
     dx = rol(dx, 0x0001);
     dx = rol(dx, 0x0001);
@@ -9491,7 +9399,7 @@ void sub_1adb0()
 {
     in(al, 0x61);
     al &= 0xfd;
-    out(0x0061, al);
+    out(0x61, al);
 }
 void sub_1adcb()
 {
@@ -9515,9 +9423,9 @@ void sub_1adcb()
     dx = 0xaa28;
     interrupt(0x21);
     ax = 0x4000;
-    out(0x0040, al);
+    out(0x40, al);
     al = ah;
-    out(0x0040, al);
+    out(0x40, al);
     es = pop();
     ds = pop();
 }
@@ -9526,9 +9434,9 @@ void sub_1ae03()
     push(ds);
     push(ax);
     ax = 0x0000;
-    out(0x0040, al);
+    out(0x40, al);
     al = ah;
-    out(0x0040, al);
+    out(0x40, al);
     ax = 0x1040;
     ds = ax;
     dx = memoryAGet16(ds, 0xb890);
@@ -10068,7 +9976,7 @@ void sub_1bfa0()
     push(dx);
     flags.interrupts = false;
     al = 0x00;
-    out(0x0043, al);
+    out(0x43, al);
     in(al, 0x40);
     ah = al;
     in(al, 0x40);
@@ -10089,7 +9997,7 @@ loc_1bfb9:
     goto loc_1bff7;
 loc_1bfc9:
     al = 0x00;
-    out(0x0043, al);
+    out(0x43, al);
     in(al, 0x40);
     ah = al;
     in(al, 0x40);

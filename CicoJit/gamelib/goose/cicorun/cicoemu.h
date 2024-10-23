@@ -21,17 +21,23 @@ public:
       };
     } a, b, c, d, temp;
 
-    int _si, _di, _bp;
-    int _cs, _ds, _ss, _es, _sp;
+    uint16_t _si, _di, _bp;
+    uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
+    int _loadAddress;
     bool interrupts, direction, carry, zero /*, sign*/;
 
     virtual void memoryASet8(int seg, int ofs, uint8_t v);
     virtual void memoryASet16(int seg, int ofs, uint16_t v);
     virtual uint8_t memoryAGet8(int seg, int ofs);
     virtual uint16_t memoryAGet16(int seg, int ofs);
-    
+
+    virtual void memoryBiosSet8(int seg, int ofs, uint8_t v);
+    virtual void memoryBiosSet16(int seg, int ofs, uint16_t v);
+    virtual uint8_t memoryBiosGet8(int seg, int ofs);
+    virtual uint16_t memoryBiosGet16(int seg, int ofs);
+
     virtual uint8_t& memory8(int seg, int ofs);
     virtual uint16_t& memory16(int seg, int ofs);
     virtual uint8_t memoryVideoGet8(int seg, int ofs);
@@ -47,17 +53,17 @@ public:
     virtual void push(const int& r);
     //virtual uint16_t pop();
     virtual bool stop(const char* msg = nullptr);
-    virtual void callIndirect(int a);
+    virtual void callIndirect(int seg, int ofs);
     //virtual void call(const char* n);
     virtual void cbw();
     virtual void div(uint8_t r);
     virtual void div(uint16_t r);
-    //virtual void idiv(uint8_t r);
-    //virtual void idiv(uint16_t r);
+    virtual void idiv(uint8_t r);
+    virtual void idiv(uint16_t r);
     virtual void mul(uint8_t r);
     virtual void mul(uint16_t r);
-    //virtual void imul(uint8_t r);
-    //virtual void imul(uint16_t r);
+    virtual void imul(uint8_t r);
+    virtual void imul(uint16_t r);
     virtual uint8_t rcl(uint8_t r, int n);
     virtual uint16_t rcl(uint16_t r, int n);
     virtual uint8_t rcr(uint8_t r, int n);
@@ -73,6 +79,9 @@ public:
     //virtual void onLine(int a);
     virtual void cmc();
     virtual void aaa();
+    virtual void das();
+    virtual void daa();
+    virtual void load(const char* path, const char* file, int size);
 };
 
 #ifndef _HOST
@@ -100,6 +109,7 @@ public:
 #define tl ctx->temp.r8.l
 #define tx ctx->temp.r16
 #define headerSize ctx->_headerSize
+#define loadAddress ctx->_loadAddress
 
 #define memory ctx->memory8
 #define memory16 ctx->memory16
@@ -114,6 +124,11 @@ public:
 #define memoryAGet ctx->memoryAGet8
 #define memoryAGet16 ctx->memoryAGet16
 
+#define memoryBiosSet ctx->memoryBiosSet8
+#define memoryBiosSet16 ctx->memoryBiosSet16
+#define memoryBiosGet ctx->memoryBiosGet8
+#define memoryBiosGet16 ctx->memoryBiosGet16
+
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push
@@ -121,6 +136,7 @@ public:
 #define interrupt ctx->_int
 #define stop ctx->stop
 #define callIndirect ctx->callIndirect
+#define load ctx->load
 
 
 #define cbw ctx->cbw
@@ -136,7 +152,10 @@ public:
 #define sync ctx->sync
 #define cmc ctx->cmc
 #define aaa ctx->aaa
-cicocontext_t* ctx;
+#define das ctx->das
+#define daa ctx->daa
+
+extern cicocontext_t* ctx;
 
 struct MemAuto
 {
@@ -162,6 +181,14 @@ struct MemVideo
     static void Set16(int seg, int nAddr, uint16_t nData) { memoryVideoSet16(seg, nAddr, nData); }
 };
 
+struct MemBios
+{
+    static uint8_t Get8(int seg, int nAddr) { return memoryBiosGet(seg, nAddr); }
+    static void Set8(int seg, int nAddr, uint8_t nData) { memoryBiosSet(seg, nAddr, nData); }
+    static uint16_t Get16(int seg, int nAddr) { return memoryBiosGet16(seg, nAddr); }
+    static void Set16(int seg, int nAddr, uint16_t nData) { memoryBiosSet16(seg, nAddr, nData); }
+};
+
 struct DirAuto
 {
     static void Assert()
@@ -177,13 +204,26 @@ struct DirAuto
     }
 };
 
-template <typename SRC, typename DST, typename DIR> void movsw()
+struct DirForward
+{
+    static void Assert()
+    {
+    }
+    template<class T>
+    static T Move(T& i)
+    {
+        assert(!flags.direction);
+        return i++;
+    }
+};
+
+template <typename DST, typename SRC, typename DIR> void movsw()
 {
     DIR::Assert();
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
 }
-template <typename SRC, typename DST, typename DIR> void movsb ()
+template <typename DST, typename SRC, typename DIR> void movsb ()
 {
     DIR::Assert();
     DST::Set8(es, DIR::Move(di), SRC::Get8(ds, DIR::Move(si)));
@@ -220,7 +260,7 @@ template <typename DST, typename DIR> void rep_stosb()
         cx = 0;
     }
 }
-template <typename SRC, typename DST, typename DIR> void rep_movsw()
+template <typename DST, typename SRC, typename DIR> void rep_movsw()
 {
     if (!cx)
         return;
@@ -228,8 +268,9 @@ template <typename SRC, typename DST, typename DIR> void rep_movsw()
         movsw<DST, SRC, DIR>();
     cx = 0;
 }
-template <typename SRC, typename DST, typename DIR> void rep_movsb()
+template <typename DST, typename SRC, typename DIR> void rep_movsb()
 {
+    if (cx == 0) return;
     assert(cx);
     while (cx--)
         movsb<DST, SRC, DIR>();
@@ -247,6 +288,22 @@ template <typename SRC, typename DIR> void lodsb()
     DIR::Assert();
     al = SRC::Get8(ds, DIR::Move(si));
 }
+template <typename SRC, typename DIR> void rep_lodsb()
+{
+    assert(0);
+}
+
+template <typename SRC, typename DIR> void lodsb_es()
+{
+    DIR::Assert();
+    al = SRC::Get8(es, DIR::Move(si));
+}
+
+template <typename SRC, typename DIR> void lodsb_ss()
+{
+    DIR::Assert();
+    al = SRC::Get8(ss, DIR::Move(si));
+}
 
 template <class DST, class SRC, class DIR> void cmpsb()
 {
@@ -255,13 +312,85 @@ template <class DST, class SRC, class DIR> void cmpsb()
     flags.zero = a==b ? 1 : 0;
 }
 
+template <class DST, class SRC, class DIR> void cmpsw()
+{
+    int a = SRC::Get16(ds, DIR::Move(si));
+    DIR::Move(si);
+    int b = SRC::Get16(es, DIR::Move(di));
+    DIR::Move(di);
+    flags.carry = b < a;
+    flags.zero = a==b ? 1 : 0;
+}
+
+template <class DST, class SRC, class DIR> void repe_cmpsw()
+{
+    flags.zero = 1;
+    while (cx)
+    {
+        cmpsw<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
+}
+
+template <class DST, class SRC, class DIR> void repe_cmpsb()
+{
+    flags.zero = 1; // ds:si = ILBM   es:di = BODY
+    while (cx)
+    {
+        cmpsb<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
+}
+
+template <class DST, class SRC, class DIR> void repne_cmpsb()
+{
+    flags.zero = 0;
+    while (cx)
+    {
+        cmpsb<DST, SRC, DIR>();
+        cx--;
+        if (flags.zero)
+            break;
+    }
+}
+
 template <class SRC, class DIR> void repne_scasb(uint8_t value)
 {
     assert(flags.direction == 0);
     flags.zero = 0;
-    while (cx-- && flags.zero == 0 )
-        flags.zero = value - SRC::Get8(es, DIR::Move(di)) == 0;
+    while (cx != 0 && flags.zero == 0 )
+    {
+        flags.zero = value - SRC::Get8(es, di) == 0;
+        DIR::Move(di);
+        cx--;
+    }
 }
+
+template <typename DST, typename SRC, typename DIR> void repne_movsw()
+{
+    rep_movsw<DST, SRC, DIR>();
+    //assert(0);
+}
+
+template <typename DST, typename SRC, typename DIR> void repne_movsb()
+{
+    rep_movsb<DST, SRC, DIR>();
+//    assert(0);
+}
+
+template <typename DST, typename DIR> void repne_stosb()
+{
+    assert(0);
+}
+template <typename DST, typename DIR> void repne_stosw()
+{
+    assert(0);
+}
+
 
 #else
 extern cicocontext_t* ctx;

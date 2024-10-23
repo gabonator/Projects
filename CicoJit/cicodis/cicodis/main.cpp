@@ -310,9 +310,11 @@ struct address_t {
     address_t() {}
     address_t(long s, long o) : segment{(int)s}, offset{(int)o}
     {
+        assert(o>=0);
     }
     address_t(int s, int o) : segment{s}, offset{o}
     {
+        assert(o>=0);
     }
     bool isValid() const
     {
@@ -546,8 +548,7 @@ public:
                            x86->operands[0].size == 2);
                     if (x86->operands[0].type == X86_OP_IMM)
                     {
-                        mNextInstr = fromRelative(x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
-                        //mNextInstr = {0x1000, (int)x86->operands[0].imm};
+                        mNextInstr = fromRelative(x86->operands[0].imm);
                         snprintf(mOperands, 64, "loc_%x", mNextInstr.segment*0x10+mNextInstr.offset);
                     } else {
                         mNextInstr = {};
@@ -640,12 +641,14 @@ address_t fromRelative(int segment, uint64_t offset)
 
 address_t fromRelative(const std::shared_ptr<CapInstr>& instr, uint64_t offset)
 {
-    return fromRelative(instr->mAddress.segment, offset);
+    // TODO: capstone 5 with gcc returns 0xffff.... on rick2
+    return fromRelative(instr->mAddress.segment, offset & 0xffff);
 }
 
 address_t CapInstr::fromRelative(uint64_t offset)
 {
-    return ::fromRelative(mAddress.segment, offset);
+    // TODO: capstone 5 with gcc returns 0xffff.... on rick2
+    return ::fromRelative(mAddress.segment, offset & 0xffff);
 }
 
 class Capstone
@@ -906,6 +909,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
+                //printf("ofs %x\n", pc.offset);
                 assert(pc.offset >= 0 && pc.offset < 0xffff);
                 trace.push_back(pc);
                 /*
@@ -1067,8 +1071,12 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
 //            }
             else if ((prev11 && prev11->mId == X86_INS_PUSH) || (prev22 && prev22->mId == X86_INS_PUSH))
             {
-                // override stack
-                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::overrideStack);
+                // just pushing args before calling a method
+                if (prev11->mId != X86_INS_CALL)
+                {
+                    // override stack
+                    instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::overrideStack);
+                }
             }
             else if ((prev11 && prev11->mId == X86_INS_PUSH) || (prev22 && prev22->mId == X86_INS_PUSH))
             {
@@ -1955,14 +1963,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case Near:
                 if (_stackGuard)
                     text.push_back(format("CStackGuard sg(%d, %s);", ofs, usesStack ? "true" : "false"));
-                if (usesStack)
+                if (!_simpleStack && usesStack)
                     text.push_back("push(0x7777);");
                 break;
             case Far:
                 if (_stackGuard)
                     text.push_back(format("CStackGuardFar sg(%d, %s);", ofs, usesStack ? "true" : "false"));
                 //text.push_back("push(0x8888);");
-                if (usesStack)
+                if (!_simpleStack && usesStack)
                     text.push_back("push(0x7777);");
                 break;
             default:
@@ -1975,11 +1983,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         switch (_currentCall)
         {
             case Near:
-                if (usesStack)
+                if (!_simpleStack && usesStack)
                     text.push_back("assert(pop() == 0x7777);");
                 break;
             case Far:
-                if (usesStack)
+                if (!_simpleStack && usesStack)
                     text.push_back("assert(pop() == 0x7777);");
                 text.push_back("cs = pop();");
                 break;
@@ -3329,6 +3337,8 @@ int main(int argc, const char * argv[]) {
             }
             else if (strcmp(arg, "-terminator") == 0)
                 _terminator = address_t::fromString(argv[++i]).linearOffset();
+            else if (strcmp(arg, "-simplestack") == 0)
+                _simpleStack = true;
             else
                 assert(0);
 
@@ -3456,7 +3466,8 @@ public:
         else
             fprintf(fout, "void sub_%x();\n", (_loadBase+header->cs)*16+header->ip);
 
-        fprintf(fout, "void fixReloc(uint16_t seg);\n");
+        if (_dumpReloc)
+            fprintf(fout, "void fixReloc(uint16_t seg);\n");
 
         fprintf(fout, R"(
 void start()
