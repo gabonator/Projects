@@ -1,6 +1,6 @@
-arch -arm64 g++ -std=c++17 ../../cicodis/cicodis/main.cpp -I/opt/homebrew/Cellar/capstone/4.0.2/include/ -L/opt/homebrew/Cellar/capstone/4.0.2/lib -lcapstone.4 -lc++ -o cicodis
+arch -arm64 g++ -std=c++17 ../../cicodis/cicodis/main.cpp -I/opt/homebrew/Cellar/capstone/5.0.1/include/ -L/opt/homebrew/Cellar/capstone/5.0.1/lib -lcapstone.5 -o cicodis
 
-./cicodis $PWD/dos/HISTORIK.EXE -load 01ed -recursive -ctx -segofscomment -stackguard -reloc start,1ed:14a,01ed:0151,01ed:0119,0ee7:010b,0ba1:0019,0a34:075a,0a34:0268,0ba1:0019 \
+./cicodis $PWD/dos/HISTORIK.EXE -load 01ed -recursive -ctx -segofscomment -stackguard -reloc start,1ed:14a,01ed:0151,01ed:0119,0ee7:010b,0ba1:0019,0a34:075a,0a34:0268,0ba1:0019,01ed:0328,01ed:0426,12f9:009c,12f9:0009 \
   -jumptable 19e4:02f6 19e4:02fb 39 jumpwords bx \
   -jumptable 19e4:06c3 19e4:06c8 38 jumpwords bx \
   -jumptable 1bf1:003e 1bf1:0043 38 jumpwords bx \

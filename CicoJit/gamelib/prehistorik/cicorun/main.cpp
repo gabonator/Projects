@@ -1049,7 +1049,7 @@ void cicocontext_t::div(uint8_t r)
     uint16_t result = ctx->a.r16 / r;
     uint16_t remain = ctx->a.r16 % r;
     ctx->a.r8.l = result;
-    ctx->d.r8.h = remain;
+    ctx->a.r8.h = remain;
 }
 }
 
@@ -1244,8 +1244,9 @@ void sub_43f0();
 void sub_201a();
 void sub_2021();
 
-void CicoContext::cicocontext_t::callIndirect(int a)
+void CicoContext::cicocontext_t::callIndirect(int s, int o)
 {
+    int a = s*16+o;
 #if 1
     printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16, a, a);
 /// 2956:21d8 int 33

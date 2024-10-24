@@ -1,7 +1,7 @@
-diff --git a/./historik.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
-index 1f7a507..4d44a85 100644
---- a/./historik.cpp
-+++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
+diff --git a/./historik.clean b/./historik.cpp
+index 5c3e759..d7c3c11 100644
+--- a/./historik.clean
++++ b/./historik.cpp
 @@ -1,5 +1,6 @@
  #include "cicoemu.h"
  using namespace CicoContext;
@@ -9,8 +9,8 @@ index 1f7a507..4d44a85 100644
  
  class CStackGuard
  {
-@@ -2433,8 +2434,8 @@ void sub_1f809();
- // INJECT: Error: cannot inject flag in sub_2286() because of being label!
+@@ -2435,8 +2436,8 @@ void sub_1f809();
+ // INJECT: Error: cannot inject flag in sub_2286() because of `being label!
  void sub_1ed0() // 01ed:0000
  {
 -    CStackGuardFar sg(0, true);
@@ -20,7 +20,7 @@ index 1f7a507..4d44a85 100644
      flags.interrupts = true;
      dx = 0x1f86;
      memoryASet16(cs, 0x0172, dx);
-@@ -2930,7 +2931,7 @@ void sub_2022() // 01ed:0152
+@@ -2932,7 +2933,7 @@ void sub_2022() // 01ed:0152
  }
  void sub_2044() // 01ed:0174
  {
@@ -29,7 +29,7 @@ index 1f7a507..4d44a85 100644
      push(0x7777);
      cl = 0x03;
      goto loc_2052;
-@@ -3023,7 +3024,7 @@ loc_20c9: // 01ed:01f9
+@@ -3025,7 +3026,7 @@ loc_20c9: // 01ed:01f9
  }
  void sub_204c() // 01ed:017c
  {
@@ -38,7 +38,7 @@ index 1f7a507..4d44a85 100644
      push(0x7777);
      cl = 0x01;
      goto loc_2052;
-@@ -3116,7 +3117,7 @@ loc_20c9: // 01ed:01f9
+@@ -3118,7 +3119,7 @@ loc_20c9: // 01ed:01f9
  }
  void sub_2050() // 01ed:0180
  {
@@ -47,7 +47,7 @@ index 1f7a507..4d44a85 100644
      push(0x7777);
      cx = 0;
      push(bp);
-@@ -3382,7 +3383,7 @@ void sub_219f() // 01ed:02cf
+@@ -3383,7 +3384,7 @@ void sub_219f() // 01ed:02cf
  }
  void sub_21c4() // 01ed:02f4
  {
@@ -56,46 +56,40 @@ index 1f7a507..4d44a85 100644
      push(0x7777);
      push(bp);
      bp = sp;
-@@ -3421,9 +3422,10 @@ loc_21e7: // 01ed:0317
+@@ -3422,7 +3423,7 @@ loc_21e7: // 01ed:0317
  }
  void sub_21f8() // 01ed:0328
  {
--    stop(/*unk call conv*/);
 -    stop(/*override stack*/);
--    memoryASet16(cs, 0x0320, pop());
 +    push(0x7777);
-+//    stop(/*unk call conv*/);
-+//    stop(/*override stack*/);
-+    memoryASet16(cs, 0x0320, pop()); // checkpoint ok
+     memoryASet16(cs, 0x0320, pop());
      memoryASet16(cs, 0x0322, pop());
      memoryASet16(cs, 0x0324, ds);
-     flags.direction = false;
-@@ -3488,7 +3490,7 @@ loc_226a: // 01ed:039a
+@@ -3488,7 +3489,7 @@ loc_226a: // 01ed:039a
      if (!flags.zero && !flags.carry)
          goto loc_2276;
  loc_226f: // 01ed:039f
--    if (stop(/*1*/))
+-    if (stop(/*1 - jb loc_22b3*/))
 +    if (flags.carry)
          goto loc_22b3;
-     sub_2286();
+     sub_2286(); // 01ed:03b6
      if (!flags.zero && !flags.carry)
-@@ -3533,13 +3535,13 @@ loc_22e1: // 01ed:0411
+@@ -3533,13 +3534,12 @@ loc_22e1: // 01ed:0411
      lodsb_ss<MemAuto, DirAuto>();
      if (--cx && al)
          goto loc_22e1;
--    if (stop(/*1*/))
-+    if (false)
+-    if (!al)
++    if (!al) // gabo check
          goto loc_22d6;
  loc_22e9: // 01ed:0419
      ax = 0;
      memoryASet16(ss, bp, ax);
      memoryASet16(ss, bp + 2, ax);
 -    stop(); // ljmp cs:[0x320]
-+//    stop(); // ljmp cs:[0x320]
  }
- // INJECT: Error: cannot inject flag in sub_2286() because of being label!
+ // INJECT: Error: cannot inject flag in sub_2286() because of `being label!
  void sub_2286() // 01ed:03b6
-@@ -3559,34 +3561,48 @@ loc_2291: // 01ed:03c1
+@@ -3559,22 +3559,36 @@ loc_2291: // 01ed:03c1
      al = 0;
      flags.carry = true;
      if (cx == 0)
@@ -133,21 +127,7 @@ index 1f7a507..4d44a85 100644
  }
  void sub_22f6() // 01ed:0426
  {
-     CStackGuardFar sg(0, true);
-     push(0x7777);
--    es = memoryAGet16(ds, 0x006b);
-+    es = memoryAGet16(ds, 0x006b); // checkpoint OK
-     di = 0;
-     push(es);
-     push(memoryAGet16(ds, 0x006d));
-     push(cs);
-     cs = 0x1f23;
--    sub_1f231();
-+    sub_1f231(); // checkpoint crash
-     assert(cs == 0x01ed);
-     sp += 0x0002;
-     bx = ax;
-@@ -12447,7 +12463,7 @@ void sub_7bd0() // 06c1:0fc0
+@@ -12450,7 +12464,7 @@ void sub_7bd0() // 06c1:0fc0
      memoryASet16(ss, bp - 8, ax);
      if (false)
          goto loc_7c0e;
@@ -156,15 +136,15 @@ index 1f7a507..4d44a85 100644
          goto loc_7c09;
      if (ax <= 0xfa00)
          goto loc_7c0e;
-@@ -14515,6 +14531,7 @@ loc_8d13: // 06c1:2103
+@@ -14518,6 +14532,7 @@ loc_8d13: // 06c1:2103
      push(ax);
      push(si);
      push(cs);
 +    sync();
-     sub_88fc();
+     sub_88fc(); // 06c1:1cec
      sp += 0x000a;
      push(si);
-@@ -16914,12 +16931,14 @@ loc_a1ff: // 06c1:35ef
+@@ -16917,12 +16932,14 @@ loc_a1ff: // 06c1:35ef
      ax = memoryAGet16(ss, bp - 4);
      flags.carry = ax < memoryAGet16(ss, bp - 8);
      ax -= memoryAGet16(ss, bp - 8);
@@ -181,22 +161,21 @@ index 1f7a507..4d44a85 100644
          goto loc_a21c;
      if (ax >= 0x4e20)
          goto loc_a225;
-@@ -17505,10 +17524,12 @@ loc_a9d5: // 0a34:0695
+@@ -17507,10 +17524,11 @@ loc_a9d5: // 0a34:0695
      if (al)
          goto loc_a9d5;
  loc_a9dd: // 0a34:069d
 +    sync();
      push(cs);
-     sub_a78f();
+     sub_a78f(); // 0a34:044f
 -    if (!al)
 -        goto loc_a9dd;
-+    // todo: gabo skip loop
-+//    if (!al)
-+//        goto loc_a9dd;
++    //if (!al) // todo: skip loop
++    //    goto loc_a9dd;
  loc_a9e5: // 0a34:06a5
      push(cs);
-     sub_a78f();
-@@ -19435,9 +19456,10 @@ void sub_b9cf() // 0a34:168f
+     sub_a78f(); // 0a34:044f
+@@ -19436,9 +19454,10 @@ void sub_b9cf() // 0a34:168f
          goto loc_b9dd;
      si--;
  loc_b9dd: // 0a34:169d
@@ -210,7 +189,7 @@ index 1f7a507..4d44a85 100644
      memoryASet16(ds, 0x8dd8, 0x0000);
      bp = pop();
      si = pop();
-@@ -19457,6 +19479,7 @@ void sub_b9ed() // 0a34:16ad
+@@ -19458,6 +19477,7 @@ void sub_b9ed() // 0a34:16ad
          goto loc_b9fb;
      si--;
  loc_b9fb: // 0a34:16bb
@@ -218,7 +197,7 @@ index 1f7a507..4d44a85 100644
      ax = memoryAGet16(ds, 0x8dd8);
      if (ax >= si)
          goto loc_ba0b;
-@@ -25559,6 +25582,7 @@ void sub_f223() // 0ee7:03b3
+@@ -25546,6 +25566,7 @@ void sub_f223() // 0ee7:03b3
  }
  void sub_f23f() // 0ee7:03cf
  {
@@ -226,40 +205,31 @@ index 1f7a507..4d44a85 100644
      CStackGuardFar sg(0, true);
      push(0x7777);
      push(memoryAGet16(ds, 0x8de0));
-@@ -25850,8 +25874,11 @@ loc_f423: // 0ee7:05b3
-     push(ax);
-     push(cs);
-     cs = 0x11cd;
--    sub_11cd0();
-+    sub_11cd0(); // joystick
+@@ -25841,6 +25862,7 @@ loc_f423: // 0ee7:05b3
      assert(cs == 0x0ee7);
-+    // gabo fake
-+    ax = 1;
-+//    assert(ax == 1);
      sp++;
      sp++;
++    ax = 1; // gabo fake joystick
      if (!ax)
-@@ -25870,6 +25897,8 @@ loc_f443: // 0ee7:05d3
-     push(ax);
-     push(cs);
-     sub_f25d();
-+    //gabo fake
-+    ax = 1;
+         goto loc_f443;
+     memoryASet(ds, 0x881e, 0x01);
+@@ -25859,6 +25881,7 @@ loc_f443: // 0ee7:05d3
+     sub_f25d(); // 0ee7:03ed
      sp++;
      sp++;
++    ax = 1; // gabo fake
      if (!ax)
-@@ -28033,7 +28062,9 @@ void sub_1061f() // 0ee7:17af
-     assert(cs == 0x0ee7);
+         goto loc_f464;
+ loc_f45f: // 0ee7:05ef
+@@ -28021,6 +28044,7 @@ void sub_1061f() // 0ee7:17af
      memoryASet16(ds, 0x8de4, ax);
      push(cs);
--    sub_f38a();
-+    sub_f38a(); // joystick
-+    ax = 1; //gabo fake
-+    assert(ax==1);
+     sub_f38a(); // 0ee7:051a
++    ax = 1; // gabo fake joystick
      memoryASet(ds, 0x8812, 0x00);
      if (memoryAGet(ds, 0x881b) != 0x00)
          goto loc_10654;
-@@ -31340,14 +31371,17 @@ loc_1269a: // 11cd:09ca
+@@ -31327,14 +31351,17 @@ loc_1269a: // 11cd:09ca
      assert(pop() == 0x7777);
      cs = pop();
  }
@@ -284,7 +254,7 @@ index 1f7a507..4d44a85 100644
      cs = pop();
  }
  void sub_126a8() // 126a:0008
-@@ -32011,7 +32045,7 @@ loc_12f53: // 129d:0583
+@@ -31998,7 +32025,7 @@ loc_12f53: // 129d:0583
      flags.carry = ax < bx;
      ax -= bx;
      cx -= flags.carry;
@@ -293,7 +263,7 @@ index 1f7a507..4d44a85 100644
          goto loc_12f53;
      if (ax != 0)
          goto loc_12f53;
-@@ -33316,7 +33350,7 @@ loc_13ae2: // 12f9:0b52
+@@ -33396,7 +33423,7 @@ loc_13ae2: // 12f9:0b52
      assert(cs == 0x12f9);
      memoryASet16(ds, 0x8b8e, dx);
      memoryASet16(ds, 0x8b8c, ax);
@@ -302,15 +272,7 @@ index 1f7a507..4d44a85 100644
          goto loc_13b42;
      if (false)
          goto loc_13b36;
-@@ -53265,7 +53299,6 @@ loc_1e0fd: // 1dc4:04bd
- }
- void sub_1e0fe() // 1dc4:04be
- {
--    stop(/*unk call conv*/);
-     push(cs);
-     sub_1e0c4();
- loc_1e102: // 1dc4:04c2
-@@ -53758,6 +53791,7 @@ void sub_1e3e9() // 1dc4:07a9
+@@ -53837,6 +53864,7 @@ void sub_1e3e9() // 1dc4:07a9
      si = 0x0002;
      goto loc_1e456;
  loc_1e422: // 1dc4:07e2
@@ -318,7 +280,7 @@ index 1f7a507..4d44a85 100644
      ax = 0;
      push(ax);
      push(si);
-@@ -54044,6 +54078,7 @@ void sub_1e59e() // 1dc4:095e
+@@ -54123,6 +54151,7 @@ void sub_1e59e() // 1dc4:095e
      si = 0x0026;
      goto loc_1e64c;
  loc_1e612: // 1dc4:09d2
@@ -326,7 +288,7 @@ index 1f7a507..4d44a85 100644
      ax = 0x00cb;
      push(ax);
      ax = si;
-@@ -54123,6 +54158,8 @@ loc_1e64c: // 1dc4:0a0c
+@@ -54202,6 +54231,8 @@ loc_1e64c: // 1dc4:0a0c
  }
  void sub_1e69a() // 1e69:000a
  {
@@ -335,7 +297,7 @@ index 1f7a507..4d44a85 100644
      CStackGuardFar sg(0, true);
      push(0x7777);
      push(bp);
-@@ -54208,7 +54245,7 @@ loc_1e712: // 1e6d:0042
+@@ -54287,7 +54318,7 @@ loc_1e712: // 1e6d:0042
      ax = sar(ax, 1);
      ax = sar(ax, 1);
      ax = sar(ax, 1);
@@ -344,13 +306,13 @@ index 1f7a507..4d44a85 100644
          goto loc_1e727;
      ax = 0;
      goto loc_1e72f;
-@@ -55511,10 +55548,33 @@ loc_1f144: // 1f0d:0074
+@@ -55589,10 +55620,33 @@ loc_1f144: // 1f0d:0074
      si = memoryAGet16(ds, si + 8);
      ds = pop();
      es = pop();
 -    push(cs);
 -    cs = memoryAGet16(ss, bp - 14 + 2);
--    callIndirect(memoryAGet16(ss, bp - 14 + 2)*16 + memoryAGet16(ss, bp - 14));
+-    callIndirect(memoryAGet16(ss, bp - 14 + 2), memoryAGet16(ss, bp - 14));
 -    assert(cs == 0x1f0d);
 +//    push(cs);
 +//    cs = memoryAGet16(ss, bp - 14 + 2);
@@ -382,16 +344,25 @@ index 1f7a507..4d44a85 100644
      tx = flags.carry | (flags.zero << 1);
      push(tx);
      tx = flags.carry | (flags.zero << 1);
-@@ -56307,7 +56367,7 @@ loc_1f670: // 1f66:0010
+@@ -55622,7 +55676,7 @@ loc_1f144: // 1f0d:0074
+     push(ax);
+     push(cs);
+     cs = 0x1f1c;
+-    sub_1f1cd(); // 1f1c:000d
++    sub_1f1cd();
+     assert(cs == 0x1f0d);
+     ax = pop();
+ loc_1f19c: // 1f0d:00cc
+@@ -56384,7 +56438,7 @@ loc_1f670: // 1f66:0010
      if (!al)
          goto loc_1f696;
      flags.zero = memoryAGet(es, di++) == al;
--    if (stop(/*1*/))
+-    if (stop(/*1 - je loc_1f670*/))
 +    if (flags.zero)
          goto loc_1f670;
      if (al < 0x61)
          goto loc_1f685;
-@@ -56534,3 +56594,4 @@ loc_1f851: // 1f80:0051
+@@ -56611,3 +56665,4 @@ loc_1f851: // 1f80:0051
      assert(pop() == 0x7777);
      cs = pop();
  }
