@@ -1,5 +1,4 @@
 #include "cicoemu.h"
-#include <stdio.h>
 using namespace CicoContext;
 
 bool infiniteLives = true;
@@ -433,9 +432,7 @@ loc_34442:
     di = 0x4913;
     cx = 0x0005;
     flags.carry = false;
-loc_34452: // score increment
-//    printf("increment %04x:%04x + %04x:%04x + %d .. %02x %02x -> ",
-//          ds, di, ds, si, flags.carry, memory(ds, di), memory(ds, si));
+loc_34452:
     al = memory(ds, di);
     al += memory(ds, si) + flags.carry;
     flags.carry = al < 0x3a; // CICO!
@@ -446,7 +443,6 @@ loc_34452: // score increment
 loc_34460:
     flags.carry = !flags.carry;
     memory(ds, di) = al;
-//    printf("%02x\n", al);
     di--;
     si--;
     if (--cx)

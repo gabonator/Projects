@@ -949,7 +949,7 @@ void cicocontext_t::div(uint8_t r)
     uint16_t result = ctx->a.r16 / r;
     uint16_t remain = ctx->a.r16 % r;
     ctx->a.r8.l = result;
-    ctx->d.r8.h = remain;
+    ctx->a.r8.h = remain;
 }
 }
 
