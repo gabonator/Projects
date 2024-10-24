@@ -1,8 +1,8 @@
-diff --git a/./fox.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
-index 17eaa7b..054bc49 100644
---- a/./fox.cpp
-+++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
-@@ -51,7 +51,7 @@ void sub_10901();
+diff --git a/./fox.clean b/./fox.cpp
+index 5d322fc..b1687e6 100644
+--- a/./fox.clean
++++ b/./fox.cpp
+@@ -43,7 +43,7 @@ void sub_10901();
  void sub_109b0();
  void sub_10a05();
  void sub_10b7b();
@@ -11,7 +11,7 @@ index 17eaa7b..054bc49 100644
  void sub_10e1e();
  void sub_10e30();
  void sub_10eeb();
-@@ -982,6 +982,8 @@ loc_105f7:
+@@ -974,6 +974,8 @@ loc_105f7:
      sub_10a05();
      al = memoryAGet(ds, 0x047e);
      al |= memoryAGet(ds, 0x042b);
@@ -20,7 +20,7 @@ index 17eaa7b..054bc49 100644
      if (!al)
          goto loc_105f7;
  loc_10603:
-@@ -1763,7 +1765,8 @@ loc_10c08:
+@@ -1755,7 +1757,8 @@ loc_10c08:
      di = 0;
  loc_10c17:
      bx = 0;
@@ -30,7 +30,7 @@ index 17eaa7b..054bc49 100644
      if (!bh)
          goto loc_10c66;
      if (bl < 0x02)
-@@ -1931,7 +1934,7 @@ loc_10e02:
+@@ -1923,7 +1926,7 @@ loc_10e02:
      ds = ax;
      ax = memoryAGet16(cs, 0x0af4);
  }
@@ -39,7 +39,7 @@ index 17eaa7b..054bc49 100644
  {
      goto loc_10cbe;
  loc_10afd:
-@@ -2000,9 +2003,10 @@ loc_10cc8:
+@@ -1992,9 +1995,10 @@ loc_10cc8:
      if (!(bh & 0x80))
          goto loc_10cbe;
      bh &= 0x7f;
@@ -52,7 +52,7 @@ index 17eaa7b..054bc49 100644
      memoryASet(cs, 0x6bb3, 0x01);
      bx = memoryAGet16(cs, 0x0af2);
      ah = 0x3e;
-@@ -2011,6 +2015,7 @@ loc_10cd3:
+@@ -2003,6 +2007,7 @@ loc_10cd3:
      ax = 0x168f;
      ds = ax;
      ax = memoryAGet16(cs, 0x0af4);
@@ -60,7 +60,7 @@ index 17eaa7b..054bc49 100644
  }
  void sub_10e1e()
  {
-@@ -2200,18 +2205,6 @@ void sub_112d3()
+@@ -2192,18 +2197,6 @@ void sub_112d3()
      ax = 0x168f;
      ds = ax;
      memoryASet(ds, 0x651a, 0x00);
@@ -79,7 +79,7 @@ index 17eaa7b..054bc49 100644
      memoryASet(ds, 0x651a, memoryAGet(ds, 0x651a) + 1);
  loc_112f7:
      ax = memoryAGet16(cs, 0x16e0);
-@@ -2584,13 +2577,7 @@ loc_1185e:
+@@ -2576,13 +2569,7 @@ loc_1185e:
  }
  void sub_119eb()
  {
@@ -94,18 +94,7 @@ index 17eaa7b..054bc49 100644
  }
  void sub_119fe()
  {
-@@ -3255,8 +3242,9 @@ loc_11f60:
-     ax += cx;
-     memoryASet16(cs, 0x1c5a, ax);
-     ax = memoryAGet16(ds, 0x5278);
-+    flags.carry = (short)ax <= (short)0x00c0;
-     ax -= 0x00c0;
--    if (stop(/*71*/))
-+    if (flags.carry)
-         goto loc_11f8f;
-     memoryASet(cs, 0x1c52, memoryAGet(cs, 0x1c52) - al);
-     mul(dl);
-@@ -7135,7 +7123,7 @@ loc_13f5a:
+@@ -7127,7 +7114,7 @@ loc_13f5a:
  loc_13f6b:
      ax = memoryAGet16(ds, si + 14);
      ax = sar(ax, cl);
@@ -114,25 +103,7 @@ index 17eaa7b..054bc49 100644
          goto loc_13f77;
      memoryASet(ds, 0x6511, 0x04);
  loc_13f77:
-@@ -7143,7 +7131,7 @@ loc_13f77:
-     if ((char)al >= (char)dl)
-         goto loc_13f87;
-     memoryASet16(ds, si + 14, memoryAGet16(ds, si + 14) + 0x0010);
--    if (stop(/*71*/))
-+    if ((short)memory16(ds, si + 14) <= (short)0)
-         goto loc_13f87;
-     memoryASet16(ds, si + 12, memoryAGet16(ds, si + 12) + 1);
- loc_13f87:
-@@ -7496,7 +7484,7 @@ loc_14270:
-         goto loc_1429c;
-     goto loc_1428a;
- loc_1427e:
--    if (stop(/*72*/))
-+    if ((short)memory16(ds, 21122) < 0 /*CHECK*/)
-         goto loc_14297;
-     if ((short)dx < (short)0x000d)
-         goto loc_142d7;
-@@ -7994,9 +7982,9 @@ loc_146d9:
+@@ -7986,9 +7973,9 @@ loc_146d9:
          goto loc_14739;
      flags.carry = (al + 0x08) >= 0x100;
      al += 0x08;
@@ -144,18 +115,7 @@ index 17eaa7b..054bc49 100644
      bx += flags.carry;
      if (bx == bp)
          goto loc_14706;
-@@ -8035,8 +8023,9 @@ loc_14752:
-     bx -= 0x0100;
-     if (flags.carry)
-         goto loc_1475d;
-+    flags.carry = dh > 0x10;
-     dh -= 0x10;
--    if (stop(/*ja*/))
-+    if (flags.carry)
-         goto loc_1474f;
- loc_1475d:
-     dx = pop();
-@@ -9195,13 +9184,17 @@ loc_1502e:
+@@ -9188,13 +9175,17 @@ loc_1502e:
      al &= 0x0f;
      if (al == 0x01)
          goto loc_14ffd;
@@ -174,7 +134,7 @@ index 17eaa7b..054bc49 100644
      if (al != 0x05)
          goto loc_1505c;
      sub_14ff9();
-@@ -9217,10 +9210,16 @@ loc_1505c:
+@@ -9210,10 +9201,16 @@ loc_1505c:
      if (ah == 0x06)
          goto loc_1507e;
      if (al == 0x00)
@@ -191,7 +151,7 @@ index 17eaa7b..054bc49 100644
  loc_1507e:
      sub_14ef6();
      memoryASet(ds, 0x650d, 0x01);
-@@ -9572,12 +9571,13 @@ void sub_15333()
+@@ -9565,12 +9562,13 @@ void sub_15333()
      if (bl < 0x65)
          goto loc_15349;
      bx = 0;
@@ -206,7 +166,7 @@ index 17eaa7b..054bc49 100644
      assert(pop() == 0x7777);
      sp += 2;
  }
-@@ -9646,6 +9646,7 @@ loc_153c3:
+@@ -9639,6 +9637,7 @@ loc_153c3:
  }
  void sub_153c6()
  {
@@ -214,7 +174,7 @@ index 17eaa7b..054bc49 100644
      ax = 0x168f;
      ds = ax;
      sub_15538();
-@@ -9661,6 +9662,7 @@ loc_153d9:
+@@ -9654,6 +9653,7 @@ loc_153d9:
      sub_155c8();
      goto loc_153d4;
  loc_153f1:
@@ -222,7 +182,7 @@ index 17eaa7b..054bc49 100644
      sub_10a05();
      if (memoryAGet(ds, 0x042d) == 0x00)
          goto loc_1540b;
-@@ -9693,6 +9695,7 @@ loc_1543a:
+@@ -9686,6 +9686,7 @@ loc_1543a:
      memoryASet(ds, 0x87d4, 0x00);
      goto loc_153d9;
  loc_15444:
@@ -230,7 +190,7 @@ index 17eaa7b..054bc49 100644
      sub_10a05();
      if (memoryAGet(ds, 0x042b) != 0x00)
          goto loc_15444;
-@@ -10170,12 +10173,12 @@ loc_1571f:
+@@ -10163,12 +10164,12 @@ loc_1571f:
      ah = 0;
      cl = 0x08;
  loc_15723:
@@ -244,7 +204,16 @@ index 17eaa7b..054bc49 100644
      ah = rcl(ah, 0x01);
      cl--;
      if (cl != 0)
-@@ -10629,7 +10632,7 @@ loc_15ad0:
+@@ -10524,7 +10525,7 @@ loc_15a0a:
+     bh &= 0x1f;
+     tl = memoryAGet(ds, bx + 28441);
+     bx = ax;
+-    if (stop("check inject: test byte ptr [bx + 0x6f19], 0x10") && tl & 0x10)
++    if (tl & 0x10)
+         goto loc_15a20;
+     sub_15295();
+     if (flags.carry)
+@@ -10622,7 +10623,7 @@ loc_15ad0:
          goto loc_15b0a;
  loc_15af0:
      ax = memoryAGet16(ds, si + 14);
@@ -253,7 +222,7 @@ index 17eaa7b..054bc49 100644
          goto loc_15b11;
      ax = sar(ax, cl);
      memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + ax);
-@@ -10792,7 +10795,7 @@ loc_15c40:
+@@ -10785,7 +10786,7 @@ loc_15c40:
      cx = pop();
      bx = pop();
      ax = pop();
@@ -262,7 +231,7 @@ index 17eaa7b..054bc49 100644
          return;
      bp = memoryAGet16(ds, si + 12);
      if (!bp)
-@@ -12762,7 +12765,7 @@ void sub_16782()
+@@ -12755,7 +12756,7 @@ void sub_16782()
      push(es);
      push(ds);
      bx = ax;
@@ -271,7 +240,7 @@ index 17eaa7b..054bc49 100644
      es = ax;
      ax = 0x168f;
      ds = ax;
-@@ -12773,8 +12776,9 @@ void sub_16782()
+@@ -12766,8 +12767,9 @@ void sub_16782()
      ah -= memoryAGet(es, bx + 61442);
      ax = ror(ax, cl);
      cx = 0x0008;

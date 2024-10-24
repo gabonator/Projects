@@ -2,7 +2,6 @@
 using namespace CicoContext;
 
 void sub_1c276();
-void fixReloc(uint16_t seg);
 
 void start()
 {
@@ -1660,8 +1659,9 @@ void sub_111f1()
     cx -= ax;
     ax = cx;
     cx = -cx;
+    tx = cx;
     cx += 0x0015;
-    if ((short)cx > 0)
+    if ((short)tx + (short)0x0015 > 0)
         goto loc_11218;
     return;
 loc_11218:
@@ -1679,8 +1679,9 @@ loc_1122c:
         goto loc_11241;
     cx = 0x00b3;
     cx -= ax;
+    tx = cx;
     cx += 0x0015;
-    if ((short)cx > 0)
+    if ((short)tx + (short)0x0015 > 0)
         goto loc_1123e;
     return;
 loc_1123e:

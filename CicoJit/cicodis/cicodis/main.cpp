@@ -240,15 +240,26 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 strcpy(replace, "PROBLEM-11f");
             else
             {
-                assert(x86.op_count >= 2);
-                if (getset && x86.operands[1].type == X86_OP_MEM)
+                if(x86.op_count >= 2)
                 {
-                    char segment[32], offset[32];
-                    GetOpAddress(x86.operands[1], segment, offset);
-                    snprintf(replace, 64, "memoryAGet%s(%s, %s)",
-                            x86.operands[0].size == 2 ? "16" : "", segment, offset);
-                } else
-                    strcpy(replace, ToCString(x86.operands[1]).c_str());
+                    if (getset && x86.operands[1].type == X86_OP_MEM)
+                    {
+                        char segment[32], offset[32];
+                        GetOpAddress(x86.operands[1], segment, offset);
+                        snprintf(replace, 64, "memoryAGet%s(%s, %s)",
+                                 x86.operands[0].size == 2 ? "16" : "", segment, offset);
+                    } else
+                        strcpy(replace, ToCString(x86.operands[1]).c_str());
+                } else {
+                    // capstone 5
+                    if (x86.opcode[0] == 0xd0 || x86.opcode[0] == 0xd1) // RCL
+                        strcpy(replace, "1");
+                    else
+                    {
+                        printf("single arg opcode: %02x %02x %02x %02x", x86.opcode[0], x86.opcode[1], x86.opcode[2], x86.opcode[3]);
+                        assert(!"two args expected");
+                    }
+                }
             }
         }
         if (strcmp(tok, "sig0") == 0)
@@ -1455,10 +1466,13 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
             std::string rd0 = assign(x86, "$rd0");
             std::string tmp0 = assign(x86, "$tmp0");
             cond = replaceStr(cond, rd0, tmp0);
-            return assign(x86, "stop(%s /*check inject*/)", cond.c_str());
+            return assign(x86, "stop(\"check inject: %s %s\") && %s", inst->mMnemonic, inst->mOperands, cond.c_str());
         }
         assert(0);
     }
+    
+    const char* tempCond = nullptr;
+    
     switch(inst->mId)
     {
         case X86_INS_CMP:
@@ -1516,8 +1530,84 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     //assert(0);
             }
             break;
+            
+        case X86_INS_SHR:
+        case X86_INS_SHL:
+        case X86_INS_INC:
+        case X86_INS_DEC:
+        case X86_INS_ADC:
         case X86_INS_ADD:
         case X86_INS_SUB:
+        case X86_INS_ROL:
+        case X86_INS_ROR:
+        case X86_INS_RCR:
+        case X86_INS_RCL:
+            if (inst->mId == X86_INS_ADD && op == X86_INS_JG)
+                tempCond = "($sig0)$tmp0 + ($sig0)$rd1 > 0";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JG)
+                tempCond = "($sig0)$tmp0 - ($sig0)$rd1 > 0";
+            if (inst->mId == X86_INS_ADD && op == X86_INS_JGE)
+                tempCond = "($sig0)$tmp0 + ($sig0)$rd1 >= 0";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JGE)
+                tempCond = "($sig0)$tmp0 - ($sig0)$rd1 >= 0";
+            if (inst->mId == X86_INS_ADD && op == X86_INS_JL)
+                tempCond = "($sig0)$tmp0 + ($sig0)$rd1 < 0";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JL)
+                tempCond = "($sig0)$tmp0 - ($sig0)$rd1 < 0";
+            if (inst->mId == X86_INS_ADD && op == X86_INS_JLE)
+                tempCond = "($sig0)$tmp0 + ($sig0)$rd1 <= 0";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JLE)
+                tempCond = "($sig0)$tmp0 - ($sig0)$rd1 <= 0";
+            if (op == X86_INS_JA)
+                tempCond = "$tmp0 > $rd1";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JB)
+                tempCond = "$tmp0 < $rd1";
+
+            if (tempCond)
+            {
+                if (inst->mInject != inject_t::temp)
+                {
+                    inst->mInject = inject_t::temp;
+                    return "stop(/*inject_t::temp*/)";
+                } else
+                    return assign(x86, tempCond); // do calc in larger data type
+            }
+
+            switch (op)
+            {
+                case X86_INS_JE:
+                case X86_INS_JNE:
+                case X86_INS_JNS:
+                case X86_INS_JS:
+                    // fallback to general rule
+                    break;
+                case X86_INS_JAE:
+                    if (inst->mInject != inject_t::carry)
+                    {
+                        inst->mInject = inject_t::carry;
+                        return "stop(/*inject_t::carry*/)";
+                    } else {
+                        return "!flags.carry";
+                    }
+                case X86_INS_JB:
+                    if (inst->mInject != inject_t::carry)
+                    {
+                        inst->mInject = inject_t::carry;
+                        return "stop(/*inject_t::carry*/);";
+                    } else {
+                        return "flags.carry";
+                    }
+                    
+                default:
+                    return format("stop(/*82 - %s %s*/)", inst->mMnemonic, inst->mOperands);
+            }
+
+#if 0
+
+        case X86_INS_ADC:
+        case X86_INS_ADD:
+        case X86_INS_SUB:
+            //TODO: inc, dec
             assert(x86.op_count >= 1);
             switch (op)
             {
@@ -1530,7 +1620,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                      1020:3d51       jl      loc_13f55
                      */
                     return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js? // not good, check! CF OF!!
-                case X86_INS_JA:
+                case X86_INS_JA: // TODO: inconsistent
                     if (inst->mInject != inject_t::tl_above)
                     {
                         inst->mInject = inject_t::tl_above;
@@ -1548,46 +1638,46 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     ;
                     // fall through
             }
-
-        case X86_INS_NEG:
-        case X86_INS_AND:
         case X86_INS_DEC:
-        case X86_INS_ROL:
-        case X86_INS_ROR:
-        case X86_INS_RCR:
-        case X86_INS_RCL:
-        case X86_INS_SHR:
-        case X86_INS_SHL:
-        case X86_INS_INC:
-        case X86_INS_ADC:
             assert(x86.op_count >= 1);
-            //assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
             switch (op)
             {
                 case X86_INS_JE:
-                    return assign(x86, "$rd0 == 0");
                 case X86_INS_JNE:
-                    return assign(x86, "$rd0 != 0");
                 case X86_INS_JNS:
-                    return assign(x86, "($sig0)$rd0 >= 0");
                 case X86_INS_JS:
-                    return assign(x86, "($sig0)$rd0 < 0");
+                    // use non-DEC algorithm
+                    break;
+
                 case X86_INS_JLE:
-                    return assign(x86, "($sig0)$rd0 <= 0"); // TODO: not sure!
-                case X86_INS_JL:
-                    //
-                    if (inst->mInject != inject_t::carry)
+                    if (inst->mInject != inject_t::temp)
                     {
-                        inst->mInject = inject_t::carry;
-                        return "stop(/*5*/)";
-                    } else {
-                        return "flags.carry && stop(/*check JL*/)";
-                    }
-//                    return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js?
+                        inst->mInject = inject_t::temp;
+                        return "stop(/*51*/)";
+                    } else
+                        return assign(x86, "$tmp0 <= $rd1");
+                case X86_INS_JL:
+                    if (inst->mInject != inject_t::temp)
+                    {
+                        inst->mInject = inject_t::temp;
+                        return "stop(/*52*/)";
+                    } else
+                        return assign(x86, "$tmp0 < $rd1");
                 case X86_INS_JA:
-                    return "stop(/*ja*/)";
+                    if (inst->mInject != inject_t::temp)
+                    {
+                        inst->mInject = inject_t::temp;
+                        return "stop(/*53*/)";
+                    } else
+                        return assign(x86, "$tmp0 > $rd1");
                 case X86_INS_JG:
-                    return assign(x86, "($sig0)$rd0 > 0");
+                    if (inst->mInject != inject_t::temp)
+                    {
+                        inst->mInject = inject_t::temp;
+                        return "stop(/*54*/)";
+                    } else
+                        return assign(x86, "($sig0)$tmp0 > ($sig0)$rd1");
+                    //return assign(x86, "($sig0)$rd0 > 0");
                 case X86_INS_JAE:
                     if (inst->mInject != inject_t::carry)
                     {
@@ -1605,6 +1695,40 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                         return "flags.carry";
                     }
 
+                default:
+                    return "stop(/*71*/)";
+                    //assert(0);
+            }
+            // fall through
+        case X86_INS_INC:
+            // TODO!
+#endif
+        case X86_INS_NEG:
+        case X86_INS_AND:
+            assert(x86.op_count >= 1);
+            //assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
+            switch (op)
+            {
+                case X86_INS_JE:
+                    return assign(x86, "$rd0 == 0");
+                case X86_INS_JNE:
+                    return assign(x86, "$rd0 != 0");
+                case X86_INS_JNS:
+                    return assign(x86, "($sig0)$rd0 >= 0");
+                case X86_INS_JS:
+                    return assign(x86, "($sig0)$rd0 < 0");
+                case X86_INS_JLE:
+                    return "stop(/*jle*/)";
+                case X86_INS_JL:
+                    return "stop(/*jl*/)";
+                case X86_INS_JA:
+                    return "stop(/*ja*/)";
+                case X86_INS_JG:
+                    return "stop(/*jg*/)";
+                case X86_INS_JAE:
+                    return "stop(/*jae*/)";
+                case X86_INS_JB:
+                    return "stop(/*jb*/)";
                 default:
                     return "stop(/*71*/)";
                     //assert(0);
@@ -2027,6 +2151,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         const cs_x86& x86 = instr->mDetail;
         keepLastCompare = false;
         
+        //printf("trace: %s %s - %d\n", instr->mMnemonic, instr->mOperands, instr->mDetail.op_count);
         if (instr->mMark)
         {
             if (instr->mComment.substr(0, 6) == "gap of")
