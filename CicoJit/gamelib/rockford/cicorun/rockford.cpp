@@ -13,7 +13,7 @@ void start()
     es = 0x2ceb;
     ss = 0x2cdb;
     sp = 0x0200;
-    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rockford/dos", "R.EXE", 143040);
+    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rockford/dos", "ROCKFORD.EXE", 143040);
     fixReloc(cs);
     sub_2d2a5();
 }
@@ -212,8 +212,100 @@ void sub_32be3();
 void sub_32bfc();
 void sub_32c19();
 void sub_32e02();
+
+#ifdef callIndirect
+#undef callIndirect
+#endif
+
+void callIndirect(int seg, int ofs)
+{
+    assert(seg == 0x2cfb);
+    switch (ofs)
+    {
+        case 0x5237: sub_321e7(); return;
+        case 0x53e9: sub_32399(); return;
+        case 0x5310: sub_322c0(); return;
+        case 0x53e4: sub_32394(); return;
+        case 0x5190: sub_32140(); return;
+        case 0x59e0: sub_32990(); return;
+        case 0x5210: sub_321c0(); return;
+        case 0x594c: sub_328fc(); return;
+        case 0x59bd: sub_3296d(); return;
+        case 0x5782: sub_32732(); return;
+        case 0x5486: sub_32436(); return;
+        case 0x59c0: sub_32970(); return;
+        case 0x5218: sub_321c8(); return;
+        case 0x5954: sub_32904(); return;
+        case 0x2ff5: sub_2ffa5(); return;
+        case 0x541a: sub_323ca(); return;
+        case 0x3032: sub_2ffe2(); return;
+        case 0x57b0: sub_32760(); return;
+        case 0x51b8: sub_32168(); return;
+        case 0x58f4: sub_328a4(); return;
+        case 0x577e: sub_3272e(); return;
+        case 0x58f0: sub_328a0(); return;
+        case 0x5a11: sub_329c1(); return;
+        case 0x5214: sub_321c4(); return;
+        case 0x5950: sub_32900(); return;
+        default:
+            break;
+    }
+    assert(seg == 0x2cfb);
+    switch (ofs)
+    {
+        case 0x59e0: sub_32990(); return;
+        case 0x5657: sub_32607(); return;
+        case 0x5786: sub_32736(); return;
+        case 0x53ee: sub_3239e(); return;
+        case 0x59bd: sub_3296d(); return;
+        case 0x5467: sub_32417(); return;
+        case 0x5973: sub_32923(); return;
+        case 0x59b8: sub_32968(); return;
+        case 0x546c: sub_3241c(); return;
+        case 0x5471: sub_32421(); return;
+        case 0x5663: sub_32613(); return;
+        case 0x59e1: sub_32991(); return;
+        case 0x59f9: sub_329a9(); return;
+        case 0x568f: sub_3263f(); return;
+        case 0x57b4: sub_32764(); return;
+        case 0x5642: sub_325f2(); return;
+        case 0x5476: sub_32426(); return;
+        case 0x547b: sub_3242b(); return;
+        case 0x5481: sub_32431(); return;
+        case 0x548b: sub_3243b(); return;
+        case 0x563d: sub_325ed(); return;
+        case 0x5564: sub_32514(); return;
+        case 0x5638: sub_325e8(); return;
+        case 0x5237: sub_321e7(); return;
+        case 0x53e9: sub_32399(); return;
+        case 0x5310: sub_322c0(); return;
+        case 0x53e4: sub_32394(); return;
+        case 0x5190: sub_32140(); return;
+        case 0x5210: sub_321c0(); return;
+        case 0x594c: sub_328fc(); return;
+        case 0x5782: sub_32732(); return;
+        case 0x5486: sub_32436(); return;
+        case 0x59c0: sub_32970(); return;
+        case 0x5218: sub_321c8(); return;
+        case 0x5954: sub_32904(); return;
+        case 0x2ff5: sub_2ffa5(); return;
+        case 0x541a: sub_323ca(); return;
+        case 0x3032: sub_2ffe2(); return;
+        case 0x57b0: sub_32760(); return;
+        case 0x51b8: sub_32168(); return;
+        case 0x58f4: sub_328a4(); return;
+        case 0x577e: sub_3272e(); return;
+        case 0x58f0: sub_328a0(); return;
+        case 0x5a11: sub_329c1(); return;
+        case 0x5214: sub_321c4(); return;
+        case 0x5950: sub_32900(); return;
+        default:
+            break;
+    }
+    assert(0);
+}
 // INJECT: Error: cannot inject carry flag in sub_2edc5()!
-// INJECT: Error: cannot inject flag in sub_3001f() because of `being label!
+// INJECT: Error: cannot inject flag in sub_3001f() because of being label!
 void sub_2d277()
 {
     push(cx);
@@ -416,7 +508,7 @@ loc_2d4a1:
     memoryASet(ds, 0x4166, 0x00);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     sub_32bab();
     ax = 0x0002;
     interrupt(0x10);
@@ -2869,7 +2961,7 @@ loc_2d4a1:
     memoryASet(ds, 0x4166, 0x00);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     sub_32bab();
     ax = 0x0002;
     interrupt(0x10);
@@ -3212,7 +3304,7 @@ void sub_2edc5()
     memoryASet(ds, 0x4166, 0x00);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     sub_311a5();
     si = 0x3a48;
     memoryASet16(ds, 0x4154, 0x000e);
@@ -3517,7 +3609,7 @@ loc_2d4a1:
     memoryASet(ds, 0x4166, 0x00);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     sub_32bab();
     ax = 0x0002;
     interrupt(0x10);
@@ -5244,7 +5336,7 @@ void sub_2ffe2()
     return;
     //   gap of 2 bytes
 }
-// INJECT: Error: cannot inject flag in sub_3001f() because of `being label!
+// INJECT: Error: cannot inject flag in sub_3001f() because of being label!
 void sub_3001f()
 {
     if (al != 0x00)
@@ -5420,7 +5512,7 @@ loc_301b9:
         goto loc_301d0;
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
 loc_301d0:
     sub_308d1();
     if (!(al & 0x03))
@@ -7422,10 +7514,10 @@ void sub_31177()
     memoryASet16(cs, 0x0012, 0x0000);
     flags.interrupts = false;
     al = 0x36;
-    out(0x0043, al);
+    out(0x43, al);
     al = 0;
-    out(0x0040, al);
-    out(0x0040, al);
+    out(0x40, al);
+    out(0x40, al);
     flags.interrupts = true;
 }
 void sub_311a5()
@@ -7732,11 +7824,11 @@ loc_313cc:
     ds = pop();
     flags.interrupts = false;
     al = 0x36;
-    out(0x0043, al);
+    out(0x43, al);
     ax = 0x4dae;
-    out(0x0040, al);
+    out(0x40, al);
     al = ah;
-    out(0x0040, al);
+    out(0x40, al);
     flags.interrupts = true;
 }
 void sub_313dd()
@@ -8218,7 +8310,7 @@ loc_317bb:
     memoryASet(ds, 0x4166, 0x00);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     sub_311a5();
     si = 0x3ad0;
     memoryASet16(ds, 0x4154, 0x000a);
@@ -9164,267 +9256,7 @@ loc_323ed:
     ah = 0;
     di = ax;
     di <<= 1;
-    switch (di)
-    {
-        case 0: sub_32990(); break;
-        case 2: sub_32990(); break;
-        case 4: sub_32990(); break;
-        case 6: sub_32990(); break;
-        case 8: sub_32990(); break;
-        case 10: sub_32990(); break;
-        case 12: sub_32990(); break;
-        case 14: sub_32607(); break;
-        case 16: sub_32736(); break;
-        case 18: sub_32736(); break;
-        case 20: sub_32736(); break;
-        case 22: sub_32736(); break;
-        case 24: sub_3239e(); break;
-        case 26: sub_3239e(); break;
-        case 28: sub_3239e(); break;
-        case 30: sub_3239e(); break;
-        case 32: sub_32990(); break;
-        case 34: sub_3296d(); break;
-        case 36: sub_3296d(); break;
-        case 38: sub_3296d(); break;
-        case 40: sub_32417(); break;
-        case 42: sub_32923(); break;
-        case 44: sub_32968(); break;
-        case 46: sub_3296d(); break;
-        case 48: sub_3296d(); break;
-        case 50: sub_3296d(); break;
-        case 52: sub_3241c(); break;
-        case 54: sub_3296d(); break;
-        case 56: sub_3296d(); break;
-        case 58: sub_3296d(); break;
-        case 60: sub_32421(); break;
-        case 62: sub_3296d(); break;
-        case 64: sub_3296d(); break;
-        case 66: sub_3296d(); break;
-        case 68: sub_3296d(); break;
-        case 70: sub_32613(); break;
-        case 72: sub_32991(); break;
-        case 74: sub_329a9(); break;
-        case 76: sub_32990(); break;
-        case 78: sub_32990(); break;
-        case 80: sub_3296d(); break;
-        case 82: sub_3296d(); break;
-        case 84: sub_3296d(); break;
-        case 86: sub_3263f(); break;
-        case 88: sub_3296d(); break;
-        case 90: sub_3296d(); break;
-        case 92: sub_3296d(); break;
-        case 94: sub_32764(); break;
-        case 96: sub_325f2(); break;
-        case 98: sub_325f2(); break;
-        case 100: sub_325f2(); break;
-        case 102: sub_325f2(); break;
-        case 104: sub_3296d(); break;
-        case 106: sub_3296d(); break;
-        case 108: sub_3296d(); break;
-        case 110: sub_32426(); break;
-        case 112: sub_3296d(); break;
-        case 114: sub_3296d(); break;
-        case 116: sub_3296d(); break;
-        case 118: sub_3242b(); break;
-        case 120: sub_3296d(); break;
-        case 122: sub_3296d(); break;
-        case 124: sub_3296d(); break;
-        case 126: sub_32431(); break;
-        case 128: sub_3243b(); break;
-        case 130: sub_325ed(); break;
-        case 132: sub_32514(); break;
-        case 134: sub_325e8(); break;
-        case 136: sub_321e7(); break;
-        case 138: sub_32399(); break;
-        case 140: sub_322c0(); break;
-        case 142: sub_32394(); break;
-        case 144: sub_32140(); break;
-        case 146: sub_32140(); break;
-        case 148: sub_32140(); break;
-        case 150: sub_32140(); break;
-        case 152: sub_32990(); break;
-        case 154: sub_32990(); break;
-        case 156: sub_32990(); break;
-        case 158: sub_321c0(); break;
-        case 160: sub_32990(); break;
-        case 162: sub_32990(); break;
-        case 164: sub_32990(); break;
-        case 166: sub_32990(); break;
-        case 168: sub_32990(); break;
-        case 170: sub_32990(); break;
-        case 172: sub_32990(); break;
-        case 174: sub_32990(); break;
-        case 176: sub_32990(); break;
-        case 178: sub_32990(); break;
-        case 180: sub_32990(); break;
-        case 182: sub_32990(); break;
-        case 184: sub_32990(); break;
-        case 186: sub_32990(); break;
-        case 188: sub_32990(); break;
-        case 190: sub_328fc(); break;
-        case 192: sub_32990(); break;
-        case 194: sub_32990(); break;
-        case 196: sub_32990(); break;
-        case 198: sub_32990(); break;
-        case 200: sub_32990(); break;
-        case 202: sub_32990(); break;
-        case 204: sub_32990(); break;
-        case 206: sub_32990(); break;
-        case 208: sub_32990(); break;
-        case 210: sub_32990(); break;
-        case 212: sub_32990(); break;
-        case 214: sub_32990(); break;
-        case 216: sub_3296d(); break;
-        case 218: sub_3296d(); break;
-        case 220: sub_3296d(); break;
-        case 222: sub_32732(); break;
-        case 224: sub_3296d(); break;
-        case 226: sub_3296d(); break;
-        case 228: sub_3296d(); break;
-        case 230: sub_32436(); break;
-        case 232: sub_32970(); break;
-        case 234: sub_32970(); break;
-        case 236: sub_32970(); break;
-        case 238: sub_32970(); break;
-        case 240: sub_321c8(); break;
-        case 242: sub_321c8(); break;
-        case 244: sub_321c8(); break;
-        case 246: sub_321c8(); break;
-        case 248: sub_32904(); break;
-        case 250: sub_32904(); break;
-        case 252: sub_32904(); break;
-        case 254: sub_32904(); break;
-        case 256: sub_32990(); break;
-        case 258: sub_32990(); break;
-        case 260: sub_32990(); break;
-        case 262: sub_32990(); break;
-        case 264: sub_32990(); break;
-        case 266: sub_32990(); break;
-        case 268: sub_32990(); break;
-        case 270: sub_32990(); break;
-        case 272: sub_32990(); break;
-        case 274: sub_32990(); break;
-        case 276: sub_32990(); break;
-        case 278: sub_32990(); break;
-        case 280: sub_2ffa5(); break;
-        case 282: sub_323ca(); break;
-        case 284: sub_32990(); break;
-        case 286: sub_32990(); break;
-        case 288: sub_2ffe2(); break;
-        case 290: sub_32760(); break;
-        case 292: sub_32990(); break;
-        case 294: sub_32990(); break;
-        case 296: sub_32990(); break;
-        case 298: sub_32990(); break;
-        case 300: sub_32990(); break;
-        case 302: sub_32990(); break;
-        case 304: sub_32990(); break;
-        case 306: sub_32990(); break;
-        case 308: sub_32990(); break;
-        case 310: sub_32990(); break;
-        case 312: sub_32990(); break;
-        case 314: sub_32990(); break;
-        case 316: sub_32990(); break;
-        case 318: sub_32990(); break;
-        case 320: sub_32168(); break;
-        case 322: sub_32168(); break;
-        case 324: sub_32168(); break;
-        case 326: sub_32168(); break;
-        case 328: sub_32168(); break;
-        case 330: sub_32168(); break;
-        case 332: sub_32168(); break;
-        case 334: sub_32168(); break;
-        case 336: sub_32990(); break;
-        case 338: sub_32990(); break;
-        case 340: sub_32990(); break;
-        case 342: sub_32990(); break;
-        case 344: sub_32990(); break;
-        case 346: sub_32990(); break;
-        case 348: sub_32990(); break;
-        case 350: sub_32990(); break;
-        case 352: sub_328a4(); break;
-        case 354: sub_328a4(); break;
-        case 356: sub_328a4(); break;
-        case 358: sub_328a4(); break;
-        case 360: sub_328a4(); break;
-        case 362: sub_328a4(); break;
-        case 364: sub_328a4(); break;
-        case 366: sub_328a4(); break;
-        case 368: sub_32990(); break;
-        case 370: sub_32990(); break;
-        case 372: sub_32990(); break;
-        case 374: sub_32990(); break;
-        case 376: sub_32990(); break;
-        case 378: sub_32990(); break;
-        case 380: sub_32990(); break;
-        case 382: sub_32990(); break;
-        case 384: sub_32990(); break;
-        case 386: sub_32990(); break;
-        case 388: sub_32990(); break;
-        case 390: sub_32990(); break;
-        case 392: sub_32990(); break;
-        case 394: sub_32990(); break;
-        case 396: sub_32990(); break;
-        case 398: sub_32990(); break;
-        case 400: sub_32990(); break;
-        case 402: sub_32990(); break;
-        case 404: sub_32990(); break;
-        case 406: sub_32990(); break;
-        case 408: sub_32990(); break;
-        case 410: sub_32990(); break;
-        case 412: sub_32990(); break;
-        case 414: sub_32990(); break;
-        case 416: sub_32990(); break;
-        case 418: sub_32990(); break;
-        case 420: sub_32990(); break;
-        case 422: sub_32990(); break;
-        case 424: sub_32990(); break;
-        case 426: sub_32990(); break;
-        case 428: sub_32990(); break;
-        case 430: sub_32990(); break;
-        case 432: sub_32990(); break;
-        case 434: sub_32990(); break;
-        case 436: sub_32990(); break;
-        case 438: sub_32990(); break;
-        case 440: sub_32990(); break;
-        case 442: sub_32990(); break;
-        case 444: sub_32990(); break;
-        case 446: sub_32990(); break;
-        case 448: sub_32990(); break;
-        case 450: sub_32990(); break;
-        case 452: sub_32990(); break;
-        case 454: sub_32990(); break;
-        case 456: sub_32990(); break;
-        case 458: sub_32990(); break;
-        case 460: sub_32990(); break;
-        case 462: sub_32990(); break;
-        case 464: sub_32990(); break;
-        case 466: sub_32990(); break;
-        case 468: sub_32990(); break;
-        case 470: sub_32990(); break;
-        case 472: sub_32990(); break;
-        case 474: sub_32990(); break;
-        case 476: sub_32990(); break;
-        case 478: sub_32990(); break;
-        case 480: sub_3272e(); break;
-        case 482: sub_328a0(); break;
-        case 484: sub_329c1(); break;
-        case 486: sub_321c4(); break;
-        case 488: sub_32900(); break;
-        case 490: sub_32990(); break;
-        case 492: sub_32990(); break;
-        case 494: sub_32990(); break;
-        case 496: sub_32990(); break;
-        case 498: sub_32990(); break;
-        case 500: sub_32990(); break;
-        case 502: sub_32990(); break;
-        case 504: sub_32990(); break;
-        case 506: sub_32990(); break;
-        case 508: sub_32990(); break;
-        case 510: sub_32990(); break;
-        default:
-        assert(0);
-    }
+    callIndirect(cs, memoryAGet16(cs, di + 20368));
 loc_323f8:
     si += 0x0002;
     if (--cx)
@@ -10333,7 +10165,7 @@ void sub_32be3()
 {
     push(ax);
     al = 0xb6;
-    out(0x0043, al);
+    out(0x43, al);
     if (memoryAGet16(ds, 0x35f4) != 0x0002)
         goto loc_32bfa;
     dx = 0x0061;
@@ -10349,7 +10181,7 @@ void sub_32bfc()
     push(ax);
     in(al, 0x61);
     al &= 0xfc;
-    out(0x0061, al);
+    out(0x61, al);
     ax = pop();
 }
 void sub_32c19()
@@ -10379,7 +10211,7 @@ loc_32c40:
     if (--cx)
         goto loc_32c40;
     al = 0xff;
-    out(0x00c0, al);
+    out(0xc0, al);
 loc_32c4f:
     sub_32b96();
 }
