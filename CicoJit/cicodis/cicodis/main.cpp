@@ -806,51 +806,19 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         address_t pc = trace.front();
         trace.pop_front();
         assert(pc.offset >= 0 && pc.offset < 0xffff);
-//        if (trace.size() == 0) // skip indirect jumps
-//        {
-//            // start processing indirect jumps when everything is finished
-//            //assert(indirectJumps.size() <= 1);
-//            for (int i=0; i<indirectJumps.size(); i++)
-//            {
-//                switch_t& sw = indirectJumps[i];
-//                if (instructions.find(sw.origin) == instructions.end())
-//                    continue;
-//
-//                // already processed all entries?
-//                if (sw.elements != -1)
-//                    continue;
-//
-//                for (int i=0; i<200; i++)
-//                {
-//                    address_t source = sw.GetAddressAt(i);
-//                    if (instructions.find(source) != instructions.end())
-//                    {
-//                        // case (offset in table) is already part of code, we've gone too far
-//                        sw.elements = i;
-//                        break;
-//                    }
-//                    address_t target{_cs, sw.GetTarget(i).offset};
-//                    if (target.offset == 0)
-//                    {
-//                        sw.elements = i-1;
-//                        break;
-//                    }
-//                    auto match = instructions.find(target);
-//                    if (match == instructions.end())
-//                    {
-//                        // try one more label and trace the code again
-//                        assert(target.offset <= 0xffff);
-//                        trace.push_back(target);
-//                        break;
-//                    } else
-//                        match->second->mLabel = true;
-//                }
-//            }
-//        }
         if (instructions.find(pc) != instructions.end())
             continue;
-        
+        if (pc.linearOffset() == _terminator)
+            continue;
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
+        if (false)
+        {
+            if (instr)
+                printf("trace %02x:%02x %s %s\n", instr->mAddress.segment, instr->mAddress.offset, instr->mMnemonic, instr->mOperands);
+            else
+                printf("trace %02x:%02x FAILED\n", pc.segment, pc.offset);
+        }
+        
         if (!instr)
         {
             printf("Cannot disassemble %04x:%04x in sub_%x()\n", pc.segment, pc.offset, address.linearOffset());
@@ -1182,7 +1150,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                 } else
                 {
                     instr->mInject = inject_t::stop;
-                    printf("// INJECT: Error: cannot inject flag in sub_%x() because of `being label!\n",
+                    printf("// INJECT: Error: cannot inject flag in sub_%x() because of being label!\n",
                            address.linearOffset());
                 }
             }
@@ -1562,7 +1530,9 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 tempCond = "$tmp0 > $rd1";
             if (inst->mId == X86_INS_SUB && op == X86_INS_JB)
                 tempCond = "$tmp0 < $rd1";
-
+            if (inst->mId == X86_INS_DEC && op == X86_INS_JL)
+                tempCond = "($sig0)$tmp0 < 1";
+            
             if (tempCond)
             {
                 if (inst->mInject != inject_t::temp)
@@ -1599,110 +1569,9 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     }
                     
                 default:
-                    return format("stop(/*82 - %s %s*/)", inst->mMnemonic, inst->mOperands);
+                    return format("stop(/*82 - %s -> %s*/)", inst->mMnemonic, cs_insn_name(_handle, op));
             }
 
-#if 0
-
-        case X86_INS_ADC:
-        case X86_INS_ADD:
-        case X86_INS_SUB:
-            //TODO: inc, dec
-            assert(x86.op_count >= 1);
-            switch (op)
-            {
-                case X86_INS_JL:
-                    // titus the fox, bounce ball
-                    /*
-                     1020:3d4c       neg     ax
-
-                     1020:3d4e       add     ax, 0x30
-                     1020:3d51       jl      loc_13f55
-                     */
-                    return assign(x86, "($sig0)$rd0 < 0"); // TODO: same as js? // not good, check! CF OF!!
-                case X86_INS_JA: // TODO: inconsistent
-                    if (inst->mInject != inject_t::tl_above)
-                    {
-                        inst->mInject = inject_t::tl_above;
-                        return "stop(/*82*/)";
-                    }
-                    return assign(x86, "tl");
-                case X86_INS_JBE:
-                    if (inst->mInject != inject_t::tl_belowequal)
-                    {
-                        inst->mInject = inject_t::tl_belowequal;
-                        return "stop(/*83*/)";
-                    }
-                    return assign(x86, "tl");
-                default:
-                    ;
-                    // fall through
-            }
-        case X86_INS_DEC:
-            assert(x86.op_count >= 1);
-            switch (op)
-            {
-                case X86_INS_JE:
-                case X86_INS_JNE:
-                case X86_INS_JNS:
-                case X86_INS_JS:
-                    // use non-DEC algorithm
-                    break;
-
-                case X86_INS_JLE:
-                    if (inst->mInject != inject_t::temp)
-                    {
-                        inst->mInject = inject_t::temp;
-                        return "stop(/*51*/)";
-                    } else
-                        return assign(x86, "$tmp0 <= $rd1");
-                case X86_INS_JL:
-                    if (inst->mInject != inject_t::temp)
-                    {
-                        inst->mInject = inject_t::temp;
-                        return "stop(/*52*/)";
-                    } else
-                        return assign(x86, "$tmp0 < $rd1");
-                case X86_INS_JA:
-                    if (inst->mInject != inject_t::temp)
-                    {
-                        inst->mInject = inject_t::temp;
-                        return "stop(/*53*/)";
-                    } else
-                        return assign(x86, "$tmp0 > $rd1");
-                case X86_INS_JG:
-                    if (inst->mInject != inject_t::temp)
-                    {
-                        inst->mInject = inject_t::temp;
-                        return "stop(/*54*/)";
-                    } else
-                        return assign(x86, "($sig0)$tmp0 > ($sig0)$rd1");
-                    //return assign(x86, "($sig0)$rd0 > 0");
-                case X86_INS_JAE:
-                    if (inst->mInject != inject_t::carry)
-                    {
-                        inst->mInject = inject_t::carry;
-                        return "stop(/*5*/)";
-                    } else {
-                        return "!flags.carry";
-                    }
-                case X86_INS_JB:
-                    if (inst->mInject != inject_t::carry)
-                    {
-                        inst->mInject = inject_t::carry;
-                        return "stop(/*6*/);";
-                    } else {
-                        return "flags.carry";
-                    }
-
-                default:
-                    return "stop(/*71*/)";
-                    //assert(0);
-            }
-            // fall through
-        case X86_INS_INC:
-            // TODO!
-#endif
         case X86_INS_NEG:
         case X86_INS_AND:
             assert(x86.op_count >= 1);
@@ -1885,13 +1754,22 @@ void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<add
         if (instr->mId == X86_INS_LCALL)
         {
             const cs_x86& x86 = instr->mDetail;
-            if (x86.op_count == 2 &&
+            if (x86.op_count == 1)
+            {
+                // indirect
+            }
+            else if (x86.op_count == 2 &&
                 x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2 &&
-                x86.operands[1].type == X86_OP_IMM && x86.operands[1].size == 2)
+                x86.operands[1].type == X86_OP_IMM && x86.operands[1].size >= 2)
             {
                 address_t newAddr = address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm};
                 if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
                     toProcess.push_back(newAddr);
+            } else {
+//                printf("X86_INS_LCALL: %s %s args %d type %d/%d size %d/%d imm %d/%d\n",
+//                       instr->mMnemonic, instr->mOperands,
+//                       x86.op_count, x86.operands[0].type, x86.operands[1].type, x86.operands[0].size, x86.operands[1].size, x86.operands[0].imm,x86.operands[1].imm );
+                assert(!"LCALL bad ops");
             }
         }
 
@@ -2850,7 +2728,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
                 {
                     //int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
-                    text.push_back(format("sub_%x();", /*address_t{instr->mAddress.segment, newOfs}*/fromRelative(instr, x86.operands[0].imm).linearOffset()));
+                    text.push_back(format("sub_%x();", fromRelative(instr, x86.operands[0].imm).linearOffset()));
                     lastCompare = instr;
                     keepLastCompare = true;
                 } else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2)
