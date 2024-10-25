@@ -1,47 +1,48 @@
-diff --git a/etetris.cpp b/etetris.cpp
-index b107ff3..0ba7822 100644
---- a/etetris.cpp
-+++ b/etetris.cpp
-@@ -893,11 +893,10 @@ loc_18b6e:
+diff --git a/./etetris.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
+index 9c956e9..aa14df3 100644
+--- a/./etetris.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
+@@ -887,7 +886,7 @@ loc_18b6e:
  void sub_18b77()
  {
-   dx = memoryAGet16(ds, 0x4289);
--  stop(/*8*/); // inject carry failed
-+  flags.carry = 0;
-   dx += 0x8249 + flags.carry;
-   cx = memoryAGet16(ds, 0x4289);
-   cx &= 0x000f;
--  flags.carry = 0;
-   dx = rcr(dx, cl);
- loc_18b89:
-   cx = memoryAGet16(ds, 0x4289);
-@@ -1554,8 +1553,8 @@ loc_19175:
- }
- void sub_1918b()
- {
--  if (memoryAGet(ds, 0x5d11) != 0x01)
--    goto loc_19193;
-+//  if (memoryAGet(ds, 0x5d11) != 0x01)
-+//    goto loc_19193;
-   return;
- loc_19193:
-   push(bp);
-@@ -2767,6 +2766,7 @@ loc_19e29:
-     goto loc_19e3f;
-   di -= 0x5ccc;
-   di <<= 1;
-+    if (di==14) di = 8; // replace up with rotate
-   switch (di)
-   {
-     case 0: goto loc_19e42;
-@@ -4154,9 +4154,8 @@ void sub_1ab24()
+     dx = memoryAGet16(ds, 0x4289);
+-    stop(/*8*/); // inject carry failed
++    flags.carry = false;
+     dx += 0x8249 + flags.carry;
+     cx = memoryAGet16(ds, 0x4289);
+     cx &= 0x000f;
+@@ -1360,6 +1359,7 @@ loc_18ff0:
+     memoryASet16(ds, 0x42e4, 0x0041);
+     memoryASet16(ds, 0x44de, 0x0058);
+ loc_19007:
++    sync();
+     sub_190c8();
+     al = memoryAGet(ds, 0x428f);
+     memoryASet(ds, 0x4287, al);
+@@ -1722,6 +1722,7 @@ loc_193ef:
+     if (memoryAGet(ds, 0x42e6) != 0)
+         goto loc_193ef;
+ loc_1940f:
++    sync();
+     push(ds);
+     push(es);
+     sub_19c06();
+@@ -4036,6 +4037,7 @@ loc_1aac3:
+         goto loc_1aac3;
+     push(bp);
+     push(dx);
++    sync();
+     sub_19c06();
+     sub_19bca();
+     if (memoryAGet(ds, 0x00cf) == 0x00)
+@@ -4095,9 +4097,8 @@ void sub_1ab24()
  void sub_1ab3e()
  {
-   dx = memoryAGet16(ds, 0x4289);
--  tl = flags.carry;
-+  tl = 0;
-   flags.carry = (dx + 0x9428 + tl) >= 0x10000;
--  stop(/*8*/); // inject carry failed
-   dx += 0x9428 + tl;
-   cl = 0x03;
-   dx = rcr(dx, cl);
+     dx = memoryAGet16(ds, 0x4289);
+-    tl = flags.carry;
++    tl = 0;
+     flags.carry = (dx + 0x9428 + tl) >= 0x10000;
+-    stop(/*8*/); // inject carry failed
+     dx += 0x9428 + tl;
+     cl = 0x03;
+     dx = rcr(dx, cl);

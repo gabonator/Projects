@@ -14,4 +14,5 @@ unzip -d dos -j Tetris_DOS_Files_EN.zip \
   "Tetris_DOS_Files_EN/Game Files/SLC" \
   "Tetris_DOS_Files_EN/Game Files/TBKGR0" \
   "Tetris_DOS_Files_EN/Game Files/TETRIS.TTL" 
+unzip tetris.zip -d dos
 rm Tetris_DOS_Files_EN.zip 
