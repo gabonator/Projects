@@ -16,6 +16,7 @@
 #include <string>
 #include <regex>
 #include <assert.h>
+#include <set>
 
 bool verbose_asm = false;
 bool segofs_in_comment = false;
@@ -28,7 +29,8 @@ bool _stackGuard = false;
 bool _dumpReloc = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 bool gNeedToRerun = false;
-int _terminator = -1;
+//int _terminator = -1;
+std::set<int> _terminators;
 //int _entryFunction;
 //static void print_insn_detail(csh ud, cs_mode mode, cs_insn *ins);
 
@@ -696,6 +698,11 @@ public:
         mBase = base;
     }
     
+    bool InRange(address_t addr, int size = 0)
+    {
+        return addr.linearOffset() - mBase > 0 && addr.linearOffset() - mBase + size < mSize;
+    }
+    
     const uint8_t* GetBufferAt(address_t addr)
     {
         int64_t address = addr.segment*16 + addr.offset;
@@ -808,8 +815,22 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         assert(pc.offset >= 0 && pc.offset < 0xffff);
         if (instructions.find(pc) != instructions.end())
             continue;
-        if (pc.linearOffset() == _terminator)
+        if (_terminators.find(pc.linearOffset()) != _terminators.end())
+        {
+            printf("// %04x:%04x Terminator reached\n", pc.segment, pc.offset);
+            std::shared_ptr<CapInstr> outOfRange = std::shared_ptr<CapInstr>(new CapInstr(pc, 0, "Terminator reached"));
+            instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, outOfRange));
             continue;
+        }
+        if (!cap.InRange(pc, 2))
+        {
+            printf("// %04x:%04x Out of file range\n", pc.segment, pc.offset);
+            std::shared_ptr<CapInstr> outOfRange = std::shared_ptr<CapInstr>(new CapInstr(pc, 0, "Out of range"));
+            instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, outOfRange));
+            assert(0);
+            continue;
+        }
+
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
         if (false)
         {
@@ -821,12 +842,10 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         
         if (!instr)
         {
-            printf("Cannot disassemble %04x:%04x in sub_%x()\n", pc.segment, pc.offset, address.linearOffset());
+            printf("%04x:%04x Cannot disassemble in sub_%x()\n", pc.segment, pc.offset, address.linearOffset());
             assert(0);
         }
         instructions.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(pc, instr));
-        if (instr->mAddress.linearOffset() == _terminator)
-            continue;
         
         if (instr->mId == X86_INS_INT && instr->mDetail.operands[0].imm == 0x21)
         {
@@ -2016,6 +2035,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
 
     auto GetPrev = [&](const std::shared_ptr<CapInstr>& p)->std::shared_ptr<CapInstr>
     {
+        if (code.size() && code[0]->mAddress == p->mAddress)
+            return {};
         for (int i=0; i<code.size(); i++)
             if (code[i]->mAddress == p->mAddress)
                 return code[i-1];
@@ -3339,7 +3360,7 @@ int main(int argc, const char * argv[]) {
                 }
             }
             else if (strcmp(arg, "-terminator") == 0)
-                _terminator = address_t::fromString(argv[++i]).linearOffset();
+                _terminators.insert(address_t::fromString(argv[++i]).linearOffset());
             else if (strcmp(arg, "-simplestack") == 0)
                 _simpleStack = true;
             else
