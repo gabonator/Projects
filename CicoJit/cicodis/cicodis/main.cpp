@@ -420,7 +420,8 @@ struct switch_t {
     enum switch_e {
         None,
         CallWords,
-        JumpWords
+        JumpWords,
+        JumpFix
     } type{None};
     x86_reg selector{X86_REG_INVALID};
     const uint8_t* baseptr{nullptr};
@@ -440,6 +441,8 @@ struct switch_t {
     }
     address_t GetTarget(int i) const //(const uint8_t* data)
     {
+        if (type == JumpFix)
+            return GetBaseAddress();
         uint16_t* parts = (uint16_t*)baseptr;
         return address_t{origin.segment, parts[i]};
     }
@@ -451,6 +454,8 @@ struct switch_t {
                 return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
             case JumpWords:
                 return format("case %d: goto loc_%x;", i*2, /*GetTarget(i).linearOffset()-0x10000+_cs*0x10*/ GetTarget(i).linearOffset());
+            case JumpFix:
+                return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());
             default:
                 assert(0);
                 return "stop(/*3*/);";
@@ -607,7 +612,7 @@ public:
     
     bool IsIndirectJump()
     {
-        return IsInstruction() && mId == X86_INS_JMP && mDetail.operands[0].type == X86_OP_MEM;
+        return IsInstruction() && mId == X86_INS_JMP && (mDetail.operands[0].type == X86_OP_MEM || mDetail.operands[0].type == X86_OP_REG);
     }
     
     address_t Next()
@@ -1388,6 +1393,12 @@ std::string ToCString(const cs_x86_op& op)
         snprintf(tmp, 32, "0x%04llx", op.imm & 0xffff);
         return tmp;
     }
+    if (op.type == X86_OP_IMM && op.size == 4)
+    {
+        char tmp[32];
+        snprintf(tmp, 32, "0x%04llx", op.imm & 0xffffffff);
+        return tmp;
+    }
     if (op.type == X86_OP_MEM)
     {
         char segment[32], offset[32], tmp[64];
@@ -1420,6 +1431,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
     const cs_x86& x86 = inst->mDetail;
     if ((int)inst->mInject & (int)inject_t::discard)
     {
+        // TODO: remove?
         // TODO: only AND RX, RX
         if (inst->mId == X86_INS_AND && x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
             x86.operands[0].reg == x86.operands[1].reg)
@@ -1446,10 +1458,14 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                     assert(0);
             }
         } else {
+            //gabo sub_e55b, sub_206f
             inject_t prev = inst->mInject;
             inst->mInject = inject_t::none;
             std::string cond = MakeCCondition(noticeCurrentMethod, inst, op);
-            inst->mInject = inject_t((int)prev | (int)inject_t::temp);
+            // rerun for temp
+            if (inst->mInject == inject_t::temp)
+                cond = MakeCCondition(noticeCurrentMethod, inst, op);
+            inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::temp);
             std::string rd0 = assign(x86, "$rd0");
             std::string tmp0 = assign(x86, "$tmp0");
             cond = replaceStr(cond, rd0, tmp0);
@@ -1549,9 +1565,17 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 tempCond = "$tmp0 > $rd1";
             if (inst->mId == X86_INS_SUB && op == X86_INS_JB)
                 tempCond = "$tmp0 < $rd1";
+            if (inst->mId == X86_INS_SUB && op == X86_INS_JBE)
+                tempCond = "$tmp0 <= $rd1";
             if (inst->mId == X86_INS_DEC && op == X86_INS_JL)
                 tempCond = "($sig0)$tmp0 < 1";
-            
+            if (inst->mId == X86_INS_DEC && op == X86_INS_JG)
+                tempCond = "($sig0)$tmp0 > 1"; // check unbalanced
+            if (inst->mId == X86_INS_DEC && op == X86_INS_JE)
+                tempCond = "$tmp0 == 1";
+            if (inst->mId == X86_INS_DEC && op == X86_INS_JNE)
+                tempCond = "$tmp0 != 1";
+
             if (tempCond)
             {
                 if (inst->mInject != inject_t::temp)
@@ -1925,6 +1949,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             // only clears zero flag
         } else
         {
+//            if (strstr(ins->mOperands, "bp") || strstr(ins->mOperands, "sp"))
+//                usesStack = true;
+            
             if (ins->mDetail.op_count >= 1)
             {
                 std::string arg0 = assign(ins->mDetail, "$rd0");
@@ -2026,7 +2053,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                           code[0]->mAddress.segment, code[0]->mAddress.offset));
     else
         text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
-                       
+
+//    printf("trace: void sub_%x()\n", code[0]->mAddress.linearOffset());
+
     text.push_back(format("{"));
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
@@ -2050,7 +2079,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         const cs_x86& x86 = instr->mDetail;
         keepLastCompare = false;
         
-        //printf("trace: %s %s - %d\n", instr->mMnemonic, instr->mOperands, instr->mDetail.op_count);
+//        printf("trace: %s %s\n", instr->mMnemonic, instr->mOperands);
         if (instr->mMark)
         {
             if (instr->mComment.substr(0, 6) == "gap of")
@@ -2677,13 +2706,17 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 }
                 else
                 {
-                    const auto sw = std::find_if(jumps.begin(), jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
+                    auto sw = std::find_if(jumps.begin(), jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
                     if (sw != jumps.end() && !sw->elements.empty())
                     {
                         text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
                         text.push_back("{");
-                        for (int i : sw->elements)
-                            text.push_back(sw->GetCase(i));
+                        while(sw != jumps.end())
+                        {
+                            for (int i : sw->elements)
+                                text.push_back(sw->GetCase(i));
+                            sw = std::find_if (++sw, jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
+                        }
                         text.push_back("default:");
                         text.push_back("assert(0);");
                         text.push_back("}");
@@ -3265,9 +3298,57 @@ struct MZRelocation
     uint16_t segment;
 };
 
+std::list<address_t> parseMethods(MZHeader* header, const char* methods)
+{
+    std::list<address_t> list;
+    if (!methods)
+        return list;
+    
+    std::istringstream is(methods);
+    std::string token;
+    std::regex functionHex("^([0-9a-fA-f]+)$");
+    std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
+    std::regex functionName("^sub_([0-9a-fA-f]+)$");
+    // tokenize by comma
+    while (getline(is, token, ','))
+    {
+        std::smatch matches;
+        
+        if (token == "start")
+            list.push_back({header->cs+_loadBase, header->ip});
+        else if (std::regex_search(token, matches, functionHex))
+        {
+            std::string strAddr = matches.str(1);
+            int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
+            int addrSeg = _cs;
+            int addrOfs = addr - addrSeg*16;
+            assert(addrOfs >= 0 && addrOfs < 0xffff);
+            list.push_back({addrSeg, addrOfs});
+        } else if (std::regex_search(token, matches, functionSegofs))
+        {
+            std::string strSeg = matches.str(1);
+            std::string strOfs = matches.str(2);
+            int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
+            int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
+            list.push_back({addrSeg, addrOfs});
+        } else if (std::regex_search(token, matches, functionName))
+        {
+            std::string strAddr = matches.str(1);
+            int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
+            int addrSeg = _cs;
+            int addrOfs = addr - addrSeg*16;
+            assert(addrOfs >= 0 && addrOfs < 0xffff);
+            list.push_back({addrSeg, addrOfs});
+        } else
+            assert(0);
+    }
+    return list;
+}
+
 int main(int argc, const char * argv[]) {
     const char* executable = nullptr;
     const char* methods = nullptr;
+    const char* indirects = nullptr;
     const char* output = nullptr;
     bool outputFolder = false;
     int outputLimit = 0;
@@ -3277,7 +3358,9 @@ int main(int argc, const char * argv[]) {
     bool printctx = false;
     const char* extraLabelsStr = nullptr;
     std::vector<switch_t> jumpTables;
-
+    address_t dumpRawAddress;
+    int dumpRawEntries = 0;
+    
     for (int i=1; i<argc; i++)
     {
         const char* arg = argv[i];
@@ -3342,6 +3425,8 @@ int main(int argc, const char * argv[]) {
                     tableType = switch_t::switch_e::JumpWords;
                 if (strcmp(jumpTableEntryType, "callwords") == 0)
                     tableType = switch_t::switch_e::CallWords;
+                if (strcmp(jumpTableEntryType, "jumpfix") == 0)
+                    tableType = switch_t::switch_e::JumpFix;
                 assert(tableType != switch_t::switch_e::None);
                 
                 const char* jumpSelector = argv[++i];
@@ -3351,6 +3436,10 @@ int main(int argc, const char * argv[]) {
                     index = X86_REG_BX;
                 if (strcmp(jumpSelector, "di") == 0)
                     index = X86_REG_DI;
+                if (strcmp(jumpSelector, "bp") == 0)
+                    index = X86_REG_BP;
+                if (strcmp(jumpSelector, "ax") == 0)
+                    index = X86_REG_AX;
                 if (strcmp(jumpSelector, "indirect") == 0)
                 {
                     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
@@ -3359,18 +3448,25 @@ int main(int argc, const char * argv[]) {
                     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
                 }
             }
+            else if (strcmp(arg, "-raw") == 0)
+            {
+                const char* rawType = argv[++i];
+                assert(strcmp(rawType, "words") == 0);
+                
+                address_t rawAddress = address_t::fromString(argv[++i]);
+                int rawEntries = atoi(argv[++i]);
+                
+                dumpRawAddress = rawAddress;
+                dumpRawEntries = rawEntries;
+            }
             else if (strcmp(arg, "-terminator") == 0)
                 _terminators.insert(address_t::fromString(argv[++i]).linearOffset());
             else if (strcmp(arg, "-simplestack") == 0)
                 _simpleStack = true;
+            else if (strcmp(arg, "-indirect") == 0)
+                indirects = argv[++i];
             else
                 assert(0);
-
-            
-           //cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfile.cpp
-            //cicodis rd1.exe start,0x12345,0x12345,1000:0123 -recursive -o mojfolder/
-           //cicodis rd1.exe 1000:0232 -resume /games/rd1/cicocode/ -asm?
-
         } else {
             if (!executable)
                 executable = arg;
@@ -3404,6 +3500,7 @@ int main(int argc, const char * argv[]) {
 
     MZHeader* header = (MZHeader*)&buffer[0];
     assert(header->id[0] == 'M' && header->id[1] == 'Z');
+    
     FILE* fout = stdout;
     if (outputLimit)
         fout = fopen(format("%s%s", output, ".h").c_str(), "w");
@@ -3586,18 +3683,34 @@ void start()
         printf("}\n");
     }
     
-
+    Capstone cap;
+    cap.Set(buffer, 16*_loadBase - header->headerSize16*0x10);
+    
+    if (dumpRawAddress.isValid())
+    {
+        printf("Dumping %d words starting %04x:%04x\n", dumpRawEntries, dumpRawAddress.segment, dumpRawAddress.offset);
+        const uint16_t* buf = (const uint16_t*)cap.GetBufferAt(dumpRawAddress);
+        if (!buf)
+        {
+            printf("Wrong address");
+            return 1;
+        }
+        for (int i=0; i<dumpRawEntries; i++)
+            printf("%2d. %04x:%04x = %04x\n", i, dumpRawAddress.segment, dumpRawAddress.offset+i*2, buf[i]);
+        return 0;
+    }
     if (!methods)
     {
         printf("Nothing to do\n");
         return 0;
     }
-    Capstone cap;
-    cap.Set(buffer, 16*_loadBase - header->headerSize16*0x10);
-    
+
     std::map<address_t, function_t, cmp_adress_t> processed;
     std::vector<address_t> failed;
-    std::list<address_t> toProcess;
+    std::list<address_t> toProcess = parseMethods(header, methods);
+    std::list<address_t> toIndirects = parseMethods(header, indirects);
+
+    toProcess.merge(std::list{toIndirects});
     std::vector<switch_t> switches;
     std::vector<switch_t> jumps;
     for (switch_t& s : jumpTables)
@@ -3606,48 +3719,6 @@ void start()
         jumps.push_back(s);
     }
     
-    if (methods)
-    {
-        std::istringstream is(methods);
-        std::string token;
-        std::regex functionHex("^([0-9a-fA-f]+)$");
-        std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
-        std::regex functionName("^sub_([0-9a-fA-f]+)$");
-        // tokenize by comma
-        while (getline(is, token, ','))
-        {
-            std::smatch matches;
-            
-            if (token == "start")
-                toProcess.push_back({header->cs+_loadBase, header->ip});
-            else if (std::regex_search(token, matches, functionHex))
-            {
-                std::string strAddr = matches.str(1);
-                int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
-                int addrSeg = _cs;
-                int addrOfs = addr - addrSeg*16;
-                assert(addrOfs >= 0 && addrOfs < 0xffff);
-                toProcess.push_back({addrSeg, addrOfs});
-            } else if (std::regex_search(token, matches, functionSegofs))
-            {
-                std::string strSeg = matches.str(1);
-                std::string strOfs = matches.str(2);
-                int addrSeg = (int)strtol(strSeg.c_str(), nullptr, 16);
-                int addrOfs = (int)strtol(strOfs.c_str(), nullptr, 16);
-                toProcess.push_back({addrSeg, addrOfs});
-            } else if (std::regex_search(token, matches, functionName))
-            {
-                std::string strAddr = matches.str(1);
-                int addr = (int)strtol(strAddr.c_str(), nullptr, 16);
-                int addrSeg = _cs;
-                int addrOfs = addr - addrSeg*16;
-                assert(addrOfs >= 0 && addrOfs < 0xffff);
-                toProcess.push_back({addrSeg, addrOfs});
-            } else
-                assert(0);
-        }
-    }
-
     for (const switch_t& table : jumpTables)
     {
         if (table.type == switch_t::switch_e::CallWords && table.origin.offset == (uint16_t)-1)
@@ -3753,7 +3824,7 @@ void start()
                 fprintf(fout, "{\n");
                 anyIndirectTable = true;
             }
-            fprintf(fout, "    assert(seg == 0x%04x);\n", table.origin.segment);
+            fprintf(fout, "    if(seg == 0x%04x)\n", table.origin.segment);
             fprintf(fout, "    switch (ofs)\n");
             fprintf(fout, "    {\n");
             std::map<int, int> used;
@@ -3769,6 +3840,37 @@ void start()
             fprintf(fout, "            break;\n");
             fprintf(fout, "    }\n");
         }
+    }
+    if (toIndirects.size())
+    {
+        if (!anyIndirectTable)
+        {
+            fprintf(fout, "\n");
+            fprintf(fout, "#ifdef callIndirect\n");
+            fprintf(fout, "#undef callIndirect\n");
+            fprintf(fout, "#endif\n");
+            fprintf(fout, "\n");
+            fprintf(fout, "void callIndirect(int seg, int ofs)\n");
+            fprintf(fout, "{\n");
+            anyIndirectTable = true;
+        }
+        fprintf(fout, "    switch (seg*0x10000+ofs)\n");
+        fprintf(fout, "    {\n");
+        toIndirects.sort([](const address_t& a, const address_t& b) {
+                return a.linearOffset() < b.linearOffset();
+        });
+        address_t last;
+        for (address_t i : toIndirects)
+        {
+            if (i.linearOffset() == last.linearOffset())
+                continue;
+            last = i;
+            fprintf(fout, "        case 0x%x: sub_%x(); return;\n", i.segment*0x10000+i.offset, i.linearOffset());
+        }
+        fprintf(fout, "        default:\n");
+        fprintf(fout, "            break;\n");
+        fprintf(fout, "    }\n");
+
     }
     if (anyIndirectTable)
     {
@@ -3792,7 +3894,8 @@ void start()
             for (const auto& instr : code)
                 instr->Dump();
         }
-
+//        printf("trace: %02x:%02x sub_%x()\n", decl.first.segment, decl.first.offset,
+//               decl.first.segment*16+decl.first.offset);.
         DumpCodeAsC(code, text, switches, jumps);
     }
 
