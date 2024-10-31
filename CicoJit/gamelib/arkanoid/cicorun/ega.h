@@ -758,7 +758,7 @@ public:
         static int q = 0;
         if (q++ > 5000)
         {
-            _sync();
+//            _sync();
             q= 0;
         }
     }

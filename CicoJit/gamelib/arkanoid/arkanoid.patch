@@ -1,5 +1,5 @@
 diff --git a/./arkanoid.clean b/cicorun/arkanoid.cpp
-index a3cd30d..c998335 100644
+index f069192..dc11c41 100644
 --- a/./arkanoid.clean
 +++ b/cicorun/arkanoid.cpp
 @@ -1,7 +1,8 @@
@@ -19,7 +19,7 @@ index a3cd30d..c998335 100644
 -    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/arkanoid/dos", "REVOFDOH.DAT", 86544);
 -    sub_1b0c0();
 +    overlay("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/arkanoid/dos", "REVOFDOH.DAT", 86544, 0x1b0c, -0xa390+headerSize*0);
-+    overlay("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/arkanoid/dos", "MEMDUMP.BIN", 16384, 0x4dd, 0x0000);
++    overlay("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/arkanoid/dos", "MEMDUMP.BIN", 0x100, 0x4dd, 0x0000);
 +   sub_1b0c0(false);
  }
  void sub_1a1d7();
@@ -53,86 +53,7 @@ index a3cd30d..c998335 100644
  void sub_1f4b3();
  void sub_1f571();
  void sub_1f5da();
-@@ -389,31 +391,54 @@ void sub_2127e();
- 
- void callIndirect(int seg, int ofs)
- {
--    assert(seg == 0x1b0c);
--    switch (ofs)
-+    if(seg == 0x1b0c)
-     {
--        case 0x4d7b: sub_1fe3b(); return;
--        case 0x4aa0: sub_1fb60(); return;
--        case 0x4ae3: sub_1fba3(); return;
--        case 0x4b5c: sub_1fc1c(); return;
--        case 0x4c62: sub_1fd22(); return;
--        case 0x4c8b: sub_1fd4b(); return;
--        case 0x4cfe: sub_1fdbe(); return;
--        case 0x4ce3: sub_1fda3(); return;
--        case 0x4d7c: sub_1fe3c(); return;
--        case 0x4dec: sub_1feac(); return;
--        case 0x4dde: sub_1fe9e(); return;
--        case 0x4e91: sub_1ff51(); return;
--        case 0x4fb0: sub_20070(); return;
--        case 0x4fd3: sub_20093(); return;
--        case 0x4b2b: sub_1fbeb(); return;
--        case 0x4b3e: sub_1fbfe(); return;
--        case 0x5053: sub_20113(); return;
--        case 0x4b7e: sub_1fc3e(); return;
--        case 0x4bce: sub_1fc8e(); return;
--        case 0x50b3: sub_20173(); return;
--        default:
--            break;
-+        switch (ofs)
-+        {
-+            case 0x4d7b: sub_1fe3b(); return;
-+            case 0x4aa0: sub_1fb60(); return;
-+            case 0x4ae3: sub_1fba3(); return;
-+            case 0x4b5c: sub_1fc1c(); return;
-+            case 0x4c62: sub_1fd22(); return;
-+            case 0x4c8b: sub_1fd4b(); return;
-+            case 0x4cfe: sub_1fdbe(); return;
-+            case 0x4ce3: sub_1fda3(); return;
-+            case 0x4d7c: sub_1fe3c(); return;
-+            case 0x4dec: sub_1feac(); return;
-+            case 0x4dde: sub_1fe9e(); return;
-+            case 0x4e91: sub_1ff51(); return;
-+            case 0x4fb0: sub_20070(); return;
-+            case 0x4fd3: sub_20093(); return;
-+            case 0x4b2b: sub_1fbeb(); return;
-+            case 0x4b3e: sub_1fbfe(); return;
-+            case 0x5053: sub_20113(); return;
-+            case 0x4b7e: sub_1fc3e(); return;
-+            case 0x4bce: sub_1fc8e(); return;
-+            case 0x50b3: sub_20173(); return;
-+            default:
-+                break;
-+        }
-+        switch (ofs)
-+        {
-+            case 0x1135: sub_1c1f5(); return;
-+            case 0x4069: sub_1f129(); return;
-+            case 0x4efb: sub_1ffbb(); return;
-+            case 0x4f2c: sub_1ffec(); return;
-+            case 0x43f3: sub_1f4b3(); return;
-+            case 0x4221: sub_1f2e1(); return;
-+        }
-+
-+    }
-+    if (seg == 0x19ee)
-+    {
-+        switch (ofs)
-+        {
-+            case 0x0b84: sub_1aa64(); return;
-+            case 0x0c92: sub_1ab72(); return;
-+            case 0x02f7: sub_1a1d7(); return;
-+            case 0x0a09: sub_1a8e9(); return;
-+            case 0x095d: sub_1a83d(); return; // 19ee:095d
-+        }
-     }
-     assert(seg == 0x1b0c);
-     switch (ofs)
-@@ -461,7 +486,6 @@ void callIndirect(int seg, int ofs)
+@@ -461,7 +463,6 @@ void callIndirect(int seg, int ofs)
          case 0x1a5d: sub_1cb1d(); return;
          case 0x1ac3: sub_1cb83(); return;
          case 0x2b2f: sub_1dbef(); return;
@@ -140,7 +61,16 @@ index a3cd30d..c998335 100644
          default:
              break;
      }
-@@ -601,6 +625,7 @@ loc_1a855: // 19ee:0975
+@@ -495,7 +496,7 @@ void callIndirect(int seg, int ofs)
+         case 0x1a5d: sub_1cb1d(); return;
+         case 0x1ac3: sub_1cb83(); return;
+         case 0x2b2f: sub_1dbef(); return;
+-        case 0x0: sub_1b0c0(); return;
++        case 0x0: assert(0); /*sub_1b0c0(false);*/ return;
+         default:
+             break;
+     }
+@@ -655,6 +656,7 @@ loc_1a855: // 19ee:0975
      cx = pop();
      bx = pop();
      cs = pop();
@@ -148,55 +78,19 @@ index a3cd30d..c998335 100644
  }
  void sub_1a861() // 19ee:0981
  {
-@@ -839,26 +864,41 @@ void sub_1b060() // 19ee:1180
- }
- void sub_1b06b() // 19ee:118b
- {
--    stop(); // ljmp 0x19ee:0xa09
-+    cs = 0x19ee;
-+    callIndirect(0x19ee, 0x0a09);
- }
- void sub_1b07f() // 19ee:119f
- {
--    stop(); // ljmp 0x19ee:0x2f7
-+    cs = 0x19ee;
-+    callIndirect(0x19ee, 0x2f7);
- }
- void sub_1b08e() // 19ee:11ae
- {
--    stop(); // ljmp 0x19ee:0x95d
-+    cs = 0x19ee;
-+    callIndirect(0x19ee, 0x95d);
-+    //stop(); // ljmp 0x19ee:0x95d
- }
- void sub_1b0b1() // 19ee:11d1
- {
--    stop(); // ljmp 0x19ee:0x418
-+    cs = 0x19ee;
-+    callIndirect(0x19ee, 0x418);
-+
-+//    stop(); // ljmp 0x19ee:0x418
- }
- void sub_1b0b6() // 19ee:11d6
- {
--    stop(); // ljmp 0x19ee:0x450
-+    cs = 0x19ee;
-+    callIndirect(0x19ee, 0x450);
-+
-+//    stop(); // ljmp 0x19ee:0x450
+@@ -916,8 +918,10 @@ void sub_1b0b6() // 19ee:11d6
+     cs = 0x19ee;
+     callIndirect(0x19ee, 0x0450);
  }
 -void sub_1b0c0() // 1b0c:0000
-+void sub_1b0c0(bool resume) // 1b0c:0000 @ a390
++void sub_1b0c0(bool resume) // 1b0c:0000
  {
 +    if (resume)
 +        goto resumelabel;
-+//    for (int i=0; i<32; i++)
-+//        printf("%02x, ", memoryAGet(0x1b0c, i));
-+//    assert(memoryAGet(0x1b0c, 0x0000) == 0xb8);
      ax = 0x1118;
      ds = ax;
      sub_1b994();
-@@ -867,7 +907,8 @@ void sub_1b0c0() // 1b0c:0000
+@@ -926,7 +930,8 @@ void sub_1b0c0() // 1b0c:0000
      sub_1c178();
      sub_1f87a();
      sub_1f158();
@@ -206,7 +100,7 @@ index a3cd30d..c998335 100644
      sub_1f072();
  loc_1b0dd: // 1b0c:001d
      sub_1ba4f();
-@@ -1692,7 +1733,9 @@ void sub_1b994() // 1b0c:08d4
+@@ -1752,7 +1757,9 @@ void sub_1b994() // 1b0c:08d4
  {
      push(es);
      push(ds);
@@ -217,7 +111,7 @@ index a3cd30d..c998335 100644
      es = ax;
      al = memoryAGet(es, si);
      memoryASet(ds, 0x00c7, al);
-@@ -3252,9 +3295,10 @@ loc_1b11c: // 1b0c:005c
+@@ -3320,9 +3327,10 @@ loc_1b11c: // 1b0c:005c
  loc_1c750: // 1b0c:1690
      ch = 0;
  loc_1c752: // 1b0c:1692
@@ -230,16 +124,7 @@ index a3cd30d..c998335 100644
      if (dh <= 0x08)
          goto loc_1c762;
      dh = 0x08;
-@@ -3270,7 +3314,7 @@ loc_1c775: // 1b0c:16b5
-     push(cx);
-     bl = memoryAGet(ds, si);
-     bh = 0;
--    callIndirect(cs, memoryAGet16(ds, bx + 18827));
-+    callIndirect(cs, memoryAGet16(ds, bx + 18827)); // 1118:498b, 22 ents
-     si += 0x000b;
-     cx = pop();
-     if (--cx)
-@@ -6769,11 +6813,12 @@ loc_1ddca: // 1b0c:2d0a
+@@ -6855,11 +6863,12 @@ loc_1ddca: // 1b0c:2d0a
      sub_1ccfc();
      sub_1f961();
      sub_1c46f();
@@ -257,35 +142,7 @@ index a3cd30d..c998335 100644
      memoryASet(ds, 0x48cf, 0x03);
      sub_1ccfc();
  }
-@@ -7493,7 +7538,7 @@ loc_1f09e: // 1b0c:3fde
-     memoryASet(cs, 0x325c, bh);
-     al = bh;
-     bh = 0;
--    stop(/*2*/); // 1b0c:401c jmp word ptr cs:[0x3265] - jump Indirect memoryAGet16(cs, 0x3265)
-+    callIndirect(cs, memoryAGet16(cs, 0x3265));
- }
- void sub_1f0d2() // 1b0c:4012
- {
-@@ -7501,7 +7546,7 @@ void sub_1f0d2() // 1b0c:4012
-     memoryASet(cs, 0x325c, bh);
-     al = bh;
-     bh = 0;
--    stop(/*2*/); // 1b0c:401c jmp word ptr cs:[0x3265] - jump Indirect memoryAGet16(cs, 0x3265)
-+    callIndirect(cs, memoryAGet16(cs, 0x3265));
- }
- void sub_1f129() // 1b0c:4069
- {
-@@ -7606,7 +7651,8 @@ loc_1f2d4: // 1b0c:4214
- }
- void sub_1f2dc() // 1b0c:421c
- {
--    stop(/*2*/); // 1b0c:421c jmp word ptr cs:[0x3263] - jump Indirect memoryAGet16(cs, 0x3263)
-+    callIndirect(cs, memoryAGet16(cs, 0x3263));
-+//    stop(/*2*/); // 1b0c:421c jmp word ptr cs:[0x3263] - jump Indirect memoryAGet16(cs, 0x3263)
- }
- void sub_1f2e1() // 1b0c:4221
- {
-@@ -7623,8 +7669,10 @@ void sub_1f311() // 1b0c:4251
+@@ -7709,8 +7718,10 @@ void sub_1f311() // 1b0c:4251
      sub_1b07f();
      assert(cs == 0x1b0c);
  }
@@ -297,7 +154,7 @@ index a3cd30d..c998335 100644
      goto loc_1f320;
  loc_1c4d9: // 1b0c:1419
      return;
-@@ -7680,8 +7728,9 @@ loc_1dc19: // 1b0c:2b59
+@@ -7766,8 +7777,9 @@ loc_1dc19: // 1b0c:2b59
  loc_1f320: // 1b0c:4260
      sub_1f6d9();
      sub_1f6b1();
@@ -309,7 +166,7 @@ index a3cd30d..c998335 100644
          goto loc_1f341;
      sub_1f66a();
      sub_1f6be();
-@@ -7693,6 +7742,11 @@ loc_1f331: // 1b0c:4271
+@@ -7779,6 +7791,11 @@ loc_1f331: // 1b0c:4271
      if (--cx && !cl)
          goto loc_1f331;
      sub_1f83b();
@@ -321,7 +178,7 @@ index a3cd30d..c998335 100644
      return;
  loc_1f341: // 1b0c:4281
      ax = 0x5d95;
-@@ -7714,16 +7768,20 @@ void sub_1f34a() // 1b0c:428a
+@@ -7800,16 +7817,20 @@ void sub_1f34a() // 1b0c:428a
  // INJECT: Error: cannot inject flag in sub_1f35f() because of being label!
  void sub_1f35f() // 1b0c:429f
  {
@@ -344,7 +201,7 @@ index a3cd30d..c998335 100644
      push(cx);
      push(dx);
      sub_1f404();
-@@ -7731,18 +7789,18 @@ void sub_1f35f() // 1b0c:429f
+@@ -7817,18 +7838,18 @@ void sub_1f35f() // 1b0c:429f
      cx = pop();
      flags.carry = false;
  loc_1f377: // 1b0c:42b7
@@ -367,7 +224,7 @@ index a3cd30d..c998335 100644
      push(cx);
      push(dx);
      sub_1f404();
-@@ -7750,7 +7808,7 @@ void sub_1f364() // 1b0c:42a4
+@@ -7836,7 +7857,7 @@ void sub_1f364() // 1b0c:42a4
      cx = pop();
      flags.carry = false;
  }
@@ -376,7 +233,7 @@ index a3cd30d..c998335 100644
  {
      push(cx);
      push(dx);
-@@ -7758,9 +7816,13 @@ void sub_1f36f() // 1b0c:42af
+@@ -7844,9 +7865,13 @@ void sub_1f36f() // 1b0c:42af
      dx = pop();
      cx = pop();
      flags.carry = false;
@@ -391,7 +248,7 @@ index a3cd30d..c998335 100644
  {
      push(0x7777);
      sub_1f404();
-@@ -7812,6 +7874,11 @@ loc_1f388: // 1b0c:42c8
+@@ -7898,6 +7923,11 @@ loc_1f388: // 1b0c:42c8
      flags.interrupts = true;
      flags.carry = false;
      assert(pop() == 0x7777);
@@ -403,7 +260,7 @@ index a3cd30d..c998335 100644
  }
  void sub_1f404() // 1b0c:4344
  {
-@@ -7819,15 +7886,16 @@ void sub_1f404() // 1b0c:4344
+@@ -7905,15 +7935,16 @@ void sub_1f404() // 1b0c:4344
          goto loc_1f41d;
      ah = 0x3e;
      bx = memoryAGet16(cs, 0x42ba);
@@ -423,7 +280,7 @@ index a3cd30d..c998335 100644
      memoryASet16(cs, 0x455e, ax);
      memoryASet16(cs, 0x4560, bx);
      memoryASet16(cs, 0x43ae, cx);
-@@ -7861,11 +7929,18 @@ void sub_1f41f() // 1b0c:435f
+@@ -7947,11 +7978,18 @@ void sub_1f41f() // 1b0c:435f
      cx = pop();
      bx = pop();
      ax = pop();
@@ -447,15 +304,7 @@ index a3cd30d..c998335 100644
      push(ax);
      push(bx);
      push(cx);
-@@ -7877,6 +7952,7 @@ void sub_1f472() // 1b0c:43b2
-     memoryASet16(cs, 0x43ef, ss);
-     memoryASet16(cs, 0x43f1, sp);
-     flags.interrupts = false;
-+    printf("stack override\n");
-     ss = memoryAGet16(cs, 0x43aa);
-     sp = memoryAGet16(cs, 0x43ac);
-     flags.interrupts = true;
-@@ -7893,14 +7969,18 @@ void sub_1f472() // 1b0c:43b2
+@@ -7979,14 +8017,18 @@ void sub_1f472() // 1b0c:43b2
      cx = memoryAGet16(cs, 0x43ae);
      dx = memoryAGet16(cs, 0x43b0);
      flags.carry = (cx + memoryAGet16(cs, 0x4562)) >= 0x10000;
@@ -476,7 +325,7 @@ index a3cd30d..c998335 100644
  {
      ah = 0x3f;
      bx = memoryAGet16(cs, 0x42ba);
-@@ -7912,7 +7992,7 @@ loc_1f4c2: // 1b0c:4402
+@@ -7998,7 +8040,7 @@ loc_1f4c2: // 1b0c:4402
      if (ax != 0x0101)
          goto loc_1f4ce;
      flags.carry = false;
@@ -485,7 +334,7 @@ index a3cd30d..c998335 100644
  loc_1f4ce: // 1b0c:440e
      if (ax != 0x0100)
          goto loc_1f4ed;
-@@ -8057,7 +8137,7 @@ loc_1f605: // 1b0c:4545
+@@ -8143,7 +8185,7 @@ loc_1f605: // 1b0c:4545
      if (memoryAGet16(cs, 0x4564) != 0)
          return;
      flags.carry = false;
@@ -494,25 +343,7 @@ index a3cd30d..c998335 100644
  }
  void sub_1f626() // 1b0c:4566
  {
-@@ -8088,7 +8168,7 @@ void sub_1f64d() // 1b0c:458d
-     ax = memoryAGet16(ds, 0x5e39);
-     bx = 0x0000;
-     dx = 0x5dac;
--    sub_1f35f();
-+    sub_1f35f(); //seq2
- }
- void sub_1f66a() // 1b0c:45aa
- {
-@@ -8122,7 +8202,7 @@ loc_1f6a1: // 1b0c:45e1
-     memoryASet16(ds, 0x5e3d, dx);
-     es = pop();
- }
--void sub_1f6b1() // 1b0c:45f1
-+void sub_1f6b1() // 1b0c:45f1 - chk1 l847124
- {
-     ah = 0;
-     interrupt(0x1a);
-@@ -8161,6 +8241,7 @@ void sub_1f6d9() // 1b0c:4619
+@@ -8247,6 +8289,7 @@ void sub_1f6d9() // 1b0c:4619
      ds = pop();
      sub_1fb2b();
      es = pop();
@@ -520,219 +351,7 @@ index a3cd30d..c998335 100644
  }
  void sub_1f6fc() // 1b0c:463c
  {
-@@ -8241,7 +8322,7 @@ loc_1f78b: // 1b0c:46cb
-         goto loc_1f770;
-     cx = pop();
-     al = bh;
--    stosb<MemAuto, DirAuto>();
-+    stosb<MemAuto, DirAuto>(); // draw first splash
-     if (--cx)
-         goto loc_1f76a;
-     bl <<= 1;
-@@ -8566,48 +8647,52 @@ loc_1f99a: // 1b0c:48da
- }
- void sub_1fb27() // 1b0c:4a67
- {
--    stop(/*2*/); // 1b0c:4a67 jmp word ptr [0x63ef] - jump Indirect memoryAGet16(ds, 0x63ef)
-+    callIndirect(cs, memoryAGet16(ds, 0x63ef));
- }
- void sub_1fb2b() // 1b0c:4a6b
- {
--    stop(/*2*/); // 1b0c:4a6b jmp word ptr [0x6407] - jump Indirect memoryAGet16(ds, 0x6407)
-+    callIndirect(cs, memoryAGet16(ds, 0x6407));
- }
- void sub_1fb2f() // 1b0c:4a6f
- {
--    stop(/*2*/); // 1b0c:4a6f jmp word ptr [0x6409] - jump Indirect memoryAGet16(ds, 0x6409)
-+    callIndirect(cs, memoryAGet16(ds, 0x6409));
- }
- void sub_1fb33() // 1b0c:4a73
- {
--    stop(/*2*/); // 1b0c:4a73 jmp word ptr [0x63f1] - jump Indirect memoryAGet16(ds, 0x63f1)
-+    callIndirect(cs, memoryAGet16(ds, 0x63f1));
- }
- void sub_1fb37() // 1b0c:4a77
- {
--    stop(/*2*/); // 1b0c:4a77 jmp word ptr [0x640b] - jump Indirect memoryAGet16(ds, 0x640b)
-+    callIndirect(cs, memoryAGet16(ds, 0x640b));
-+
-+//    stop(/*2*/); // 1b0c:4a77 jmp word ptr [0x640b] - jump Indirect memoryAGet16(ds, 0x640b)
- }
- void sub_1fb3b() // 1b0c:4a7b
- {
-     push(bx);
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4a7e jmp word ptr [0x63f7] - jump Indirect memoryAGet16(ds, 0x63f7)
-+    callIndirect(cs, memoryAGet16(ds, 0x63f7));
- }
- void sub_1fb42() // 1b0c:4a82
- {
--    stop(/*2*/); // 1b0c:4a82 jmp word ptr [0x63fb] - jump Indirect memoryAGet16(ds, 0x63fb)
-+    callIndirect(cs, memoryAGet16(ds, 0x63fb));
-+//    stop(/*2*/); // 1b0c:4a82 jmp word ptr [0x63fb] - jump Indirect memoryAGet16(ds, 0x63fb)
- }
- void sub_1fb46() // 1b0c:4a86
- {
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4a88 jmp word ptr [0x63ff] - jump Indirect memoryAGet16(ds, 0x63ff)
-+    callIndirect(cs, memoryAGet16(ds, 0x63ff));
-+//    stop(/*2*/); // 1b0c:4a88 jmp word ptr [0x63ff] - jump Indirect memoryAGet16(ds, 0x63ff)
- }
- void sub_1fb4c() // 1b0c:4a8c
- {
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4a8e jmp word ptr [0x63fd] - jump Indirect memoryAGet16(ds, 0x63fd)
-+    callIndirect(cs, memoryAGet16(ds, 0x63fd));
- }
- void sub_1fb52() // 1b0c:4a92
- {
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4a94 jmp word ptr [0x6401] - jump Indirect memoryAGet16(ds, 0x6401)
-+    callIndirect(cs, memoryAGet16(ds, 0x6401));
- }
- void sub_1fb58() // 1b0c:4a98
- {
-@@ -8615,7 +8700,8 @@ void sub_1fb58() // 1b0c:4a98
-     push(bx);
-     push(cx);
-     push(ds);
--    stop(/*2*/); // 1b0c:4a9c jmp word ptr [0x6417] - jump Indirect memoryAGet16(ds, 0x6417)
-+    callIndirect(cs, memoryAGet16(ds, 0x6417));
-+//    stop(/*2*/); // 1b0c:4a9c jmp word ptr [0x6417] - jump Indirect memoryAGet16(ds, 0x6417)
- }
- void sub_1fb60() // 1b0c:4aa0
- {
-@@ -8631,7 +8717,8 @@ void sub_1fb65() // 1b0c:4aa5
-     push(bx);
-     push(cx);
-     push(ds);
--    stop(/*2*/); // 1b0c:4aa9 jmp word ptr [0x6419] - jump Indirect memoryAGet16(ds, 0x6419)
-+    callIndirect(cs, memoryAGet16(ds, 0x6419));
-+//    stop(/*2*/); // 1b0c:4aa9 jmp word ptr [0x6419] - jump Indirect memoryAGet16(ds, 0x6419)
- }
- void sub_1fb6d() // 1b0c:4aad
- {
-@@ -8639,51 +8726,69 @@ void sub_1fb6d() // 1b0c:4aad
-     push(bx);
-     push(cx);
-     push(ds);
--    stop(/*2*/); // 1b0c:4ab1 jmp word ptr [0x641b] - jump Indirect memoryAGet16(ds, 0x641b)
-+    callIndirect(cs, memoryAGet16(ds, 0x641b));
-+
-+//    stop(/*2*/); // 1b0c:4ab1 jmp word ptr [0x641b] - jump Indirect memoryAGet16(ds, 0x641b)
- }
- void sub_1fb75() // 1b0c:4ab5
- {
--    stop(/*2*/); // 1b0c:4ab5 jmp word ptr [0x6403] - jump Indirect memoryAGet16(ds, 0x6403)
-+//    stop(/*2*/);  1b0c:4ab5 jmp word ptr [0x6403] - jump Indirect memoryAGet16(ds, 0x6403)
-+    callIndirect(cs, memoryAGet16(ds, 0x6403));
-+
- }
- void sub_1fb79() // 1b0c:4ab9
- {
--    stop(/*2*/); // 1b0c:4ab9 jmp word ptr [0x6405] - jump Indirect memoryAGet16(ds, 0x6405)
-+//    stop(/*2*/); // 1b0c:4ab9 jmp word ptr [0x6405] - jump Indirect memoryAGet16(ds, 0x6405)
-+    callIndirect(cs, memoryAGet16(ds, 0x6405));
- }
- void sub_1fb7d() // 1b0c:4abd
- {
--    stop(/*2*/); // 1b0c:4abd jmp word ptr [0x640d] - jump Indirect memoryAGet16(ds, 0x640d)
-+//    stop(/*2*/); // 1b0c:4abd jmp word ptr [0x640d] - jump Indirect memoryAGet16(ds, 0x640d)
-+    callIndirect(cs, memoryAGet16(ds, 0x640d));
-+
- }
- void sub_1fb81() // 1b0c:4ac1
- {
--    stop(/*2*/); // 1b0c:4ac1 jmp word ptr [0x63f3] - jump Indirect memoryAGet16(ds, 0x63f3)
-+//    stop(/*2*/); // 1b0c:4ac1 jmp word ptr [0x63f3] - jump Indirect memoryAGet16(ds, 0x63f3)
-+    callIndirect(cs, memoryAGet16(ds, 0x63f3));
-+
- }
- void sub_1fb85() // 1b0c:4ac5
- {
--    stop(/*2*/); // 1b0c:4ac5 jmp word ptr [0x63f5] - jump Indirect memoryAGet16(ds, 0x63f5)
-+//    stop(/*2*/); // 1b0c:4ac5 jmp word ptr [0x63f5] - jump Indirect memoryAGet16(ds, 0x63f5)
-+    callIndirect(cs, memoryAGet16(ds, 0x63f5));
- }
- void sub_1fb89() // 1b0c:4ac9
- {
-     push(bx);
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4acc jmp word ptr [0x63f9] - jump Indirect memoryAGet16(ds, 0x63f9)
-+//    stop(/*2*/); // 1b0c:4acc jmp word ptr [0x63f9] - jump Indirect memoryAGet16(ds, 0x63f9)
-+    callIndirect(cs, memoryAGet16(ds, 0x63f9));
-+
- }
- void sub_1fb90() // 1b0c:4ad0
- {
--    stop(/*2*/); // 1b0c:4ad0 jmp word ptr [0x6411] - jump Indirect memoryAGet16(ds, 0x6411)
-+//    stop(/*2*/); // 1b0c:4ad0 jmp word ptr [0x6411] - jump Indirect memoryAGet16(ds, 0x6411)
-+    callIndirect(cs, memoryAGet16(ds, 0x6411));
- }
- void sub_1fb94() // 1b0c:4ad4
- {
-     push(bx);
-     bx <<= 1;
--    stop(/*2*/); // 1b0c:4ad7 jmp word ptr [0x640f] - jump Indirect memoryAGet16(ds, 0x640f)
-+//    stop(/*2*/); // 1b0c:4ad7 jmp word ptr [0x640f] - jump Indirect memoryAGet16(ds, 0x640f)
-+    callIndirect(cs, memoryAGet16(ds, 0x640f));
-+
- }
- void sub_1fb9b() // 1b0c:4adb
- {
--    stop(/*2*/); // 1b0c:4adb jmp word ptr [0x6413] - jump Indirect memoryAGet16(ds, 0x6413)
-+//    stop(/*2*/); // 1b0c:4adb jmp word ptr [0x6413] - jump Indirect memoryAGet16(ds, 0x6413)
-+    callIndirect(cs, memoryAGet16(ds, 0x6413));
- }
- void sub_1fb9f() // 1b0c:4adf
- {
--    stop(/*2*/); // 1b0c:4adf jmp word ptr [0x6415] - jump Indirect memoryAGet16(ds, 0x6415)
-+//    stop(/*2*/); // 1b0c:4adf jmp word ptr [0x6415] - jump Indirect memoryAGet16(ds, 0x6415)
-+    callIndirect(cs, memoryAGet16(ds, 0x6415));
-+
- }
- void sub_1fba3() // 1b0c:4ae3
- {
-@@ -8754,7 +8859,9 @@ loc_1fc30: // 1b0c:4b70
-     es = dx;
-     ax = 0;
-     di = ax;
--    rep_stosw<MemAuto, DirAuto>();
-+    // draw pixel
-+        di += cx*2;
-+//    rep_stosw<MemAuto, DirAuto>();
-     es = pop();
- }
- void sub_1fc33() // 1b0c:4b73
-@@ -9175,6 +9282,7 @@ loc_1ff2b: // 1b0c:4e6b
-     ah = memoryAGet(es, bp);
-     ah &= memoryAGet(ds, di);
-     ah |= memoryAGet(ds, si);
-+    //draw pixel post second splash//    ah =0xff;
-     memoryASet(es, bp, ah);
-     bp++;
-     si++;
-@@ -9298,14 +9406,17 @@ loc_1ff92: // 1b0c:4ed2
-     al = 0x04;
-     ah = bh;
-     out(dx, ax);
--    push(cx);
-+    push(cx); // gabo draw pixel?
-     push(di);
- loc_1ff9f: // 1b0c:4edf
-     push(cx);
-     push(di);
-     ch = 0;
-     cl = bl;
--    rep_movsb<MemAuto, MemAuto, DirAuto>();
-+    assert(cx);
-+    // DRAW SECOND SPLASH!
-+//    printf("setpix %04x:%04x <= %04x:%04x = (%02d, cnt=%d)\n", es, di, ds, si, memoryAGet(ds, si), cx);
-+    rep_movsb<MemAuto, MemAuto, DirAuto>(); // draw pixel ? 1b0c:4ee5
-     di = pop();
-     cx = pop();
-     di += 0x0028;
-@@ -9323,7 +9434,8 @@ void sub_1ffbb() // 1b0c:4efb
+@@ -9409,7 +9452,8 @@ void sub_1ffbb() // 1b0c:4efb
  {
      goto loc_1ffbb;
  loc_1fb60: // 1b0c:4aa0
@@ -742,7 +361,7 @@ index a3cd30d..c998335 100644
      ds = pop();
      cx = pop();
      bx = pop();
-@@ -9361,7 +9473,7 @@ void sub_1ffec() // 1b0c:4f2c
+@@ -9447,7 +9491,7 @@ void sub_1ffec() // 1b0c:4f2c
  {
      goto loc_1ffec;
  loc_1fb60: // 1b0c:4aa0

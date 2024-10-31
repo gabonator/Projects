@@ -2769,9 +2769,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back("assert(0);");
                         text.push_back("}");
                     } else {
-//                        text.push_back(assign(x86, "stop(/*2*/); // (%s %s) jump Indirect $rd0",
-//                                       instr->mMnemonic, instr->mOperands));
-                        text.push_back(assign(x86, "stop(/*2*/); // %04x:%04x %s %s - jump Indirect $rd0",
+                        if (x86.operands[0].type == X86_OP_MEM)
+                            text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
+                        else
+                            text.push_back(assign(x86, "stop(/*2*/); // %04x:%04x %s %s - jump Indirect $rd0",
                                        instr->mAddress.segment, instr->mAddress.offset, instr->mMnemonic, instr->mOperands));
                     }
                 }
@@ -3185,6 +3186,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(assign(x86, "ds = $rn1;"));
                 }
                 break;
+            case X86_INS_LJMP:
+                assert(x86.op_count == 2);
+                assert(x86.operands[0].type == X86_OP_IMM);
+                assert(x86.operands[0].size == 2 && x86.operands[0].imm <= 0xffff);
+                assert(x86.operands[1].type == X86_OP_IMM && x86.operands[1].size == 4 && x86.operands[1].imm <= 0xffff);
+                text.push_back(format("cs = 0x%04x;", x86.operands[0].imm));
+                text.push_back(format("callIndirect(0x%04x, 0x%04x);", x86.operands[0].imm, x86.operands[1].imm));
+                break;
 //            case X86_INS_LCALL:
             case X86_INS_DAS:
             case X86_INS_DAA:
@@ -3192,7 +3201,6 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 
             case X86_INS_FLD:
             case X86_INS_FMUL:
-            case X86_INS_LJMP:
             case X86_INS_FIDIV:
             case X86_INS_BOUND:
             case X86_INS_ENTER:

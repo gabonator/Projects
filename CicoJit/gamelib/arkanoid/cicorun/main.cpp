@@ -177,6 +177,11 @@ namespace CicoContext
 
 uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
 {
+    if (seg*16+ofs >= 0x04dd0 && seg*16+ofs < 0x04dd0+4096)
+    {
+        printf("OVERLAY read8 %04x:%04x\n", seg, ofs);
+    }
+
     if (seg == 0xf000)
     {
         int f= 9 ;
@@ -224,6 +229,11 @@ void cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t val)
 
 uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 {
+    if (seg*16+ofs >= 0x04dd0 && seg*16+ofs < 0x04dd0+4096)
+    {
+        printf("OVERLAY read16 %04x:%04x\n", seg, ofs);
+    }
+
 //    assert(seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
@@ -240,6 +250,11 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
+    if (seg*16+ofs >= 0x04dd0 && seg*16+ofs < 0x04dd0+4096)
+    {
+        printf("OVERLAY write8 %04x:%04x\n", seg, ofs);
+    }
+
 //    assert (seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
@@ -255,6 +270,11 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
+    if (seg*16+ofs >= 0x04dd0 && seg*16+ofs < 0x04dd0+4096)
+    {
+        printf("OVERLAY write16 %04x:%04x\n", seg, ofs);
+    }
+
 //    assert(seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0x0000 && ofs <= 0xffff);
 
@@ -275,10 +295,6 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 }
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
-    if (seg*16+ofs == 0x10390+0x4e91)
-    {
-        int f = 9;//(0x1ed, 0x387+0x1)
-    }
     if (seg*16+ofs == 0x10000+0x112 ||seg*16+ofs == 0x10000+0x113 )
     {
         int f = 9;
