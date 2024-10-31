@@ -33,7 +33,9 @@
   border:2px #ff000080 solid;
   border-radius:4px;
 }
-
+.usageds {
+  border:2px #b0b0ff solid;
+}
 .part0 {
 }
 .part1 {
@@ -83,13 +85,105 @@
   color:#000000;
 }
 </style>
-<script src="bumpy.covjson"></script>
+<script src="coverage.cov"></script>
 <div id="out"></div>
 <script>
+var ofs = -1;
+var cov = [];
+var info = {};
+while ((ofs = cicoText.indexOf("// coverage: ", ofs+1)) > -1)
+{
+  var line = cicoText.substr(ofs, cicoText.indexOf("\n", ofs)-ofs);
+  cov.push(line)
+}
+ofs = -1;
+while ((ofs = cicoText.indexOf("// info: ", ofs+1)) > -1)
+{
+  var line = cicoText.substr(ofs+9, cicoText.indexOf("\n", ofs+9)-ofs-9);
+  var tokens = line.split(" ");
+  var key = tokens.shift();
+  var value = tokens.join(" ");
+  if (value.substr(0, 2) == "0x")
+    value = parseInt(value)
+  info[key] = value;
+}
+console.log(info)
+var blocks = []
+function blockSize()
+{
+  return 128;
+}
+function toBlock(ofs)
+{
+  return Math.floor(ofs / blockSize());
+}
+function blockBegin(bid)
+{
+  return bid*blockSize();
+}
+function blockEnd(bid)
+{
+  return bid*blockSize()+blockSize();
+}
+for (var c of cov)
+{
+  var tokens = c.split(" ");
+  tokens.shift();
+  tokens.shift();
+  var range = tokens[0].split("-").map(x=>parseInt(x))
+  var type = tokens[1];
+  var opt = tokens[2];
+  var begin = toBlock(range[0]);
+  var end = toBlock(range[1]);
+//  if (type == "reloc") continue;
+  for (var i=begin; i<=end; i++)
+  {
+    var ofsBegin = blockBegin(i);
+    var ofsEnd = blockEnd(i);
+
+    var binfo = 0;
+    if (i==begin)
+      binfo |= 1;
+    if (i==end)
+      binfo |= 2;
+    if (!blocks[i])
+      blocks[i] = [];
+    if (opt)
+      blocks[i].push([binfo, Math.max(ofsBegin, range[0]), Math.min(ofsEnd, range[1]), type, opt]);  
+    else
+      blocks[i].push([binfo, Math.max(ofsBegin, range[0]), Math.min(ofsEnd, range[1]), type]);  
+  }
+}
+
+var contentsData = "";
+var pos = 0;
+for (var pos=0; pos<cicoData.length; pos+=blockSize())
+{
+  var maxval = 0;
+  var minval = 255;
+  for (var i=pos; i<pos+blockSize(); i++)
+  {
+    maxval = Math.max(maxval, cicoData[i]);
+    minval = Math.min(minval, cicoData[i]);
+  }
+  if (maxval == 0)
+    contentsData += "0";
+  else if (maxval-minval < 128)
+    contentsData += "1";
+  else if (maxval-minval < 255)
+    contentsData += "2";
+  else
+    contentsData += "3";
+}
+
+coverageData = blocks;
+
+//
 function blockHtml(index)
 {
   var html = "";
-  var cov = coverageData[index];
+  var cov = coverageData[index] || [];
+   
   if (cov)
   {
     var len = cov.length;
@@ -109,6 +203,8 @@ function blockHtml(index)
       usage = "2";
     else 
       usage = "3";
+    if (index*128 >= addrToFileOffset(0x13a5, 0x0000))
+      usage = "ds";
     
     html += `<div class="cont${contentsData[index]} covblock usage${usage}" onClick="showRange(${index*128},${index*128+128})">`;
     for (var j of cov)
@@ -127,7 +223,7 @@ function blockHtml(index)
 function resetView()
 {
   var html = ""
-  for (var i=0; i<contentsData.length; i++)
+  for (var i=0; i</*contentsData.length*/cicoData.length/128; i++)
     html += blockHtml(i);
 
   document.querySelector("#out").innerHTML = html;
@@ -179,7 +275,7 @@ function showRange(begin, end, high)
       }
     }
     html += spacer;
-    html += ("0"+fileData[i].toString(16)).substr(-2);
+    html += ("0"+cicoData[i].toString(16)).substr(-2);
     if (i%32 == 31)
       html += "<br>";
     if (i%128==127)
@@ -189,23 +285,23 @@ function showRange(begin, end, high)
 
   if (high)
   {
-    var i = cicoData.indexOf(high + " PROC")
-    var j = cicoData.indexOf(high + " ENDP")
+    var i = cicoText.indexOf(high + " PROC")
+    var j = cicoText.indexOf(high + " ENDP")
     if (i != -1 && j > i)
     {
   console.log(i, j);
-      html += `<pre>${cicoData.substr(i, j+high.length+5-i)}</pre>`
+      html += `<pre>${cicoText.substr(i, j+high.length+5-i)}</pre>`
     }
   }
 
   if (high)
   {
-    var i = cicoData.indexOf("void " + high + "()\n")
-    var j = cicoData.indexOf("\n}\n", i)
+    var i = cicoText.indexOf("void " + high + "()\n")
+    var j = cicoText.indexOf("\n}\n", i)
     if (i != -1 && j > i)
     {
   console.log(i, j);
-      html += `<pre>${cicoData.substr(i, j+2-i)}</pre>`
+      html += `<pre>${cicoText.substr(i, j+2-i)}</pre>`
     }
   }
   if (high)
@@ -223,7 +319,7 @@ function showRange(begin, end, high)
         var isInRange = !!ranges.find(range=>r+b >= range[1] && r+b < range[2])
         if (isInRange && !wasInRange)
           html += "<b>"
-        html += `${("0"+fileData[r+b].toString(16)).substr(-2)} `;
+        html += `${("0"+cicoData[r+b].toString(16)).substr(-2)} `;
         if (!isInRange && wasInRange)
           html += "</b>"
         wasInRange = isInRange;
@@ -239,6 +335,9 @@ function showRange(begin, end, high)
 
   document.querySelector("#out").innerHTML = html;
 }
-
+function addrToFileOffset(seg, ofs)
+{
+  return seg*16+ofs-info.linearToFile;
+}
 resetView();
 </script>       	                                	

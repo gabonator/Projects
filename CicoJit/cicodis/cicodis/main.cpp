@@ -24,6 +24,7 @@ csh _handle;
 int _cs;
 int _ds = 0;
 int _loadBase = 0x1000;
+bool _trace = false;
 bool _simpleStack = false;
 bool _stackGuard = false;
 bool _dumpReloc = false;
@@ -469,6 +470,8 @@ struct switch_t {
     }
     std::string GetSelector() const
     {
+        if (selector == X86_REG_INVALID)
+            return "";
         return cs_reg_name(_handle, selector);
     }
 };
@@ -843,7 +846,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
 
         std::shared_ptr<CapInstr> instr = cap.Disasm(pc);
-        if (false)
+        if (_trace)
         {
             if (instr)
                 printf("trace %02x:%02x %s %s\n", instr->mAddress.segment, instr->mAddress.offset, instr->mMnemonic, instr->mOperands);
@@ -2091,7 +2094,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
 
 
-//    printf("trace: void sub_%x()\n", code[0]->mAddress.linearOffset());
+    if (_trace)
+        printf("trace: void sub_%x()\n", code[0]->mAddress.linearOffset());
 
     text.push_back(format("{"));
     if (_coverage)
@@ -2122,7 +2126,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         const cs_x86& x86 = instr->mDetail;
         keepLastCompare = false;
         
-//        printf("trace: %s %s\n", instr->mMnemonic, instr->mOperands);
+        if (_trace)
+            printf("trace: %s %s\n", instr->mMnemonic, instr->mOperands);
         if (instr->mMark)
         {
             if (instr->mComment.substr(0, 6) == "gap of")
@@ -2836,12 +2841,41 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     keepLastCompare = true;
                 } else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2)
                 {
-                    const auto sw = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
+                    switch_t* sw = nullptr;
+                    const auto sw1 = std::find_if(switches.begin(), switches.end(), [&](const switch_t& sw){
                         return sw.origin == instr->mAddress;
                     });
-                    if (sw != switches.end() && !sw->elements.empty())
+                    if (sw1 != switches.end())
+                        sw = &*sw1;
+                    else {
+                        const auto sw2 = std::find_if(jumps.begin(), jumps.end(), [&](const switch_t& sw){
+                            return sw.origin == instr->mAddress;
+                        });
+                        if (sw2 != jumps.end())
+                            sw = &*sw2;
+                    }
+
+                    if (sw)
                     {
-                        text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
+                        std::string selector = sw->GetSelector().c_str(); // indirect
+                        if (selector.empty())
+                        {
+                            if (x86.operands[0].type == X86_OP_MEM &&
+                                x86.operands[0].mem.index == X86_REG_INVALID &&
+                                x86.operands[0].mem.base != X86_REG_INVALID &&
+                                x86.operands[0].mem.scale == 1)
+                            {
+                                text.push_back(format("assert(%s == 0x%04x);", cs_reg_name(_handle, x86.operands[0].mem.segment), sw->GetBaseAddress().segment));
+                                selector = cs_reg_name(_handle, x86.operands[0].mem.base);
+                                assert(sw->GetBaseAddress().offset == x86.operands[0].mem.disp);
+                            }
+                        }
+                        if (selector.empty())
+                        {
+                            selector = "stop(\"$rd0\")";
+                        }
+                        assert(!sw->elements.empty());
+                        text.push_back(format("switch (%s)", selector.c_str()));
                         text.push_back("{");
                         for (int i : sw->elements)
                             text.push_back(sw->GetCase(i));
@@ -2856,7 +2890,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         {
                             // ds:imm?
                         }
-                        text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
+                        text.push_back(assign(x86, "callIndirect(cs, $rd0);", instr->mAddress.segment, instr->mAddress.offset));
                     }
                 } else
                     text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
@@ -3569,6 +3603,8 @@ int main(int argc, const char * argv[]) {
     int methodCounter = 0;
     int fileCounter = 0;
     
+    _linearToFileOffset = 16*_loadBase - header->headerSize16*0x10;
+
     auto startWriting = [&](const std::string& id){
         if (outputLimit && id != "start.cpp")
         {
@@ -3648,6 +3684,16 @@ public:
         if (_dumpReloc)
             fprintf(fout, "void fixReloc(uint16_t seg);\n");
 
+        if (_coverage)
+        {
+            fprintf(fout, "\n// info: executable %s/%s\n", execPath.c_str(), execName.c_str());
+            fprintf(fout, "// info: arguments");
+            for (int i=1; i<argc; i++)
+                fprintf(fout, " %s", argv[i]);
+            fprintf(fout, "\n");
+            fprintf(fout, "// info: linearToFile 0x%x", _linearToFileOffset);
+        }
+        
         fprintf(fout, R"(
 void start()
 {
@@ -3747,7 +3793,6 @@ void start()
     }
     
     Capstone cap;
-    _linearToFileOffset = 16*_loadBase - header->headerSize16*0x10;
     cap.Set(buffer, _linearToFileOffset);
     
     if (dumpRawAddress.isValid())
@@ -3785,7 +3830,7 @@ void start()
     
     for (const switch_t& table : jumpTables)
     {
-        if (table.type == switch_t::switch_e::CallWords && table.origin.offset == (uint16_t)-1)
+        if (table.type == switch_t::switch_e::CallWords /*&& table.origin.offset == (uint16_t)-1*/)
         {
             for (int i : table.elements)
                 toProcess.push_back(table.GetTarget(i));
@@ -3937,9 +3982,9 @@ void start()
         std::vector<std::shared_ptr<CapInstr>> code;
         if (!ExtractMethod(cap, decl.first, code, jumps, inject_t::none, extraLabels))
             assert(0);
-
-//        printf("trace: %02x:%02x sub_%x()\n", decl.first.segment, decl.first.offset,
-//               decl.first.segment*16+decl.first.offset);.
+        if (_trace)
+            printf("trace: %02x:%02x sub_%x()\n", decl.first.segment, decl.first.offset,
+               decl.first.segment*16+decl.first.offset);
         DumpCodeAsC(code, text, switches, jumps);
     }
 
@@ -4017,10 +4062,10 @@ void start()
         {
             fprintf(fout, "/* Assembly listing of %04x:%04x sub_%x()\n", decl.first.segment, decl.first.offset,
                    decl.first.segment*16+decl.first.offset);
-            fprintf(fout, "             sub_%x PROC\n", decl.first.linearOffset());
+            fprintf(fout, "                sub_%x PROC\n", decl.first.linearOffset());
             for (const auto& instr : code)
                 instr->Dump();
-            fprintf(fout, "             sub_%x ENDP\n", decl.first.linearOffset());
+            fprintf(fout, "                sub_%x ENDP\n", decl.first.linearOffset());
             fprintf(fout, "*/\n");
         }
 

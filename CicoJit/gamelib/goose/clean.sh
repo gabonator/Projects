@@ -1,1 +1,1 @@
-rm -rf dos goose goose.cpp
+rm -rf dos goose goose.cpp goose.cov coverage.html

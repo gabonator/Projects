@@ -210,53 +210,6 @@ void sub_13840();
 void sub_13914();
 void sub_139a3();
 void sub_139b8();
-
-#ifdef callIndirect
-#undef callIndirect
-#endif
-
-void callIndirect(int seg, int ofs)
-{
-    assert(seg == 0x1000);
-    switch (ofs)
-    {
-        case 0x1108: sub_11108(); return;
-        case 0x176c: sub_1176c(); return;
-        case 0x1783: sub_11783(); return;
-        case 0x10c6: sub_110c6(); return;
-        case 0x17ac: sub_117ac(); return;
-        case 0x17d6: sub_117d6(); return;
-        case 0x18a9: sub_118a9(); return;
-        case 0x1a9e: sub_11a9e(); return;
-        case 0x1993: sub_11993(); return;
-        case 0x19c2: sub_119c2(); return;
-        case 0x2e02: sub_12e02(); return;
-        case 0x2fe8: sub_12fe8(); return;
-        case 0x300a: sub_1300a(); return;
-        case 0x16fe: sub_116fe(); return;
-        case 0x12cb: sub_112cb(); return;
-        case 0x12eb: sub_112eb(); return;
-        case 0x15fc: sub_115fc(); return;
-        case 0x16df: sub_116df(); return;
-        case 0x16d6: sub_116d6(); return;
-        case 0x1740: sub_11740(); return;
-        case 0x1384: sub_11384(); return;
-        case 0x13a8: sub_113a8(); return;
-        case 0x14f0: sub_114f0(); return;
-        case 0x10f3: sub_110f3(); return;
-        case 0x18c7: sub_118c7(); return;
-        case 0x1429: sub_11429(); return;
-        case 0x17f4: sub_117f4(); return;
-        case 0x171f: sub_1171f(); return;
-        case 0x1b09: sub_11b09(); return;
-        case 0x1b4a: sub_11b4a(); return;
-        case 0x2f50: sub_12f50(); return;
-        case 0x12a7: sub_112a7(); return;
-        default:
-            break;
-    }
-    assert(0);
-}
 void sub_10010()
 {
     ax = 0x13a5;
@@ -1854,8 +1807,9 @@ loc_10d6d:
     cx = pop();
     bx = pop();
     ax = pop();
+    tx = bx;
     bx--;
-    if (bx != 0)
+    if (tx != 1)
         goto loc_10d13;
     ds = pop();
     ax = 0xff08;
@@ -2140,7 +2094,47 @@ loc_11036:
     bh = 0x00;
     bx--;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(cs, bx + 4186));
+    assert(cs == 0x1000);
+    switch (bx)
+    {
+        case 0: sub_11108(); break;
+        case 2: sub_1176c(); break;
+        case 4: sub_11783(); break;
+        case 6: sub_110c6(); break;
+        case 8: sub_117ac(); break;
+        case 10: sub_117d6(); break;
+        case 12: sub_118a9(); break;
+        case 14: sub_11a9e(); break;
+        case 16: sub_110c6(); break;
+        case 18: sub_11993(); break;
+        case 20: sub_119c2(); break;
+        case 22: sub_12e02(); break;
+        case 24: sub_110c6(); break;
+        case 26: sub_12fe8(); break;
+        case 28: sub_1300a(); break;
+        case 30: sub_116fe(); break;
+        case 32: sub_112cb(); break;
+        case 34: sub_110c6(); break;
+        case 36: sub_112eb(); break;
+        case 38: sub_115fc(); break;
+        case 40: sub_116df(); break;
+        case 42: sub_116d6(); break;
+        case 44: sub_11740(); break;
+        case 46: sub_11384(); break;
+        case 48: sub_113a8(); break;
+        case 50: sub_114f0(); break;
+        case 52: sub_110f3(); break;
+        case 54: sub_118c7(); break;
+        case 56: sub_11429(); break;
+        case 58: sub_117f4(); break;
+        case 60: sub_1171f(); break;
+        case 62: sub_11b09(); break;
+        case 64: sub_11b4a(); break;
+        case 66: sub_12f50(); break;
+        case 68: sub_112a7(); break;
+        default:
+        assert(0);
+    }
 loc_11053:
     si = pop();
 loc_11054:
@@ -5959,8 +5953,9 @@ loc_12d76:
     cx = pop();
     bx = pop();
     ax = pop();
+    tx = bx;
     bx--;
-    if (bx != 0)
+    if (tx != 1)
         goto loc_12d19;
     ds = pop();
     ax = 0xff08;
@@ -5999,8 +5994,9 @@ loc_12db8:
     rep_stosb<MemAuto, DirAuto>();
     di = pop();
     di += 0x0028;
+    tx = bx;
     bx--;
-    if (bx != 0)
+    if (tx != 1)
         goto loc_12db8;
     ax = 0x0000;
     out(dx, ax);
