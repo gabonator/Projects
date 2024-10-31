@@ -27,8 +27,10 @@ int _loadBase = 0x1000;
 bool _simpleStack = false;
 bool _stackGuard = false;
 bool _dumpReloc = false;
+bool _coverage = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 bool gNeedToRerun = false;
+int _linearToFileOffset = 0;
 //int _terminator = -1;
 std::set<int> _terminators;
 //int _entryFunction;
@@ -336,6 +338,10 @@ struct address_t {
     int linearOffset() const
     {
         return segment*0x10+offset;
+    }
+    int fileOffset() const 
+    {
+        return linearOffset() - _linearToFileOffset;
     }
     static address_t fromString(const std::string& s)
     {
@@ -1909,6 +1915,36 @@ bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> nex
     return false;
 }
 
+std::vector<std::pair<int, int>> getRanges(const std::vector<std::shared_ptr<CapInstr>>& code)
+{
+    std::vector<std::pair<int, int>> ranges;
+    int first = -1, last = -1;
+    
+    for (const std::shared_ptr<CapInstr>& inst : code)
+    {
+        if (inst->mSize == 0)
+            continue;
+        if (!inst->mComment.empty())
+            continue;
+        int instbegin = inst->mAddress.fileOffset();
+        int instend = instbegin + inst->mSize;
+        if (first == -1 || instbegin != last)
+        {
+            if (first != -1)
+                ranges.push_back({first, last});
+            first = instbegin;
+            last = instend;
+        } else
+        {
+            assert (instbegin == last);
+            last = instend;
+        }
+    }
+    if (first != -1)
+        ranges.push_back({first, last});
+    return ranges;
+}
+
 bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector<std::string>& text, std::vector<switch_t>& switches, std::vector<switch_t> jumps, bool lines = false)
 {
     assert(!code.empty());
@@ -2054,9 +2090,16 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
     else
         text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
 
+
 //    printf("trace: void sub_%x()\n", code[0]->mAddress.linearOffset());
 
     text.push_back(format("{"));
+    if (_coverage)
+    {
+        std::vector<std::pair<int, int>> ranges = getRanges(code);
+        for (const auto& range : ranges)
+            text.push_back(format("// coverage: 0x%x-0x%x method sub_%x", range.first, range.second, code[0]->mAddress.linearOffset()));
+    }
     std::shared_ptr<CapInstr> lastCompare;
     bool keepLastCompare{false};
     
@@ -2713,6 +2756,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         text.push_back("{");
                         while(sw != jumps.end())
                         {
+                            if (_coverage)
+                            {
+                                text.push_back(format("// coverage: 0x%x-0x%x switch", sw->GetBaseAddress().fileOffset(), sw->GetBaseAddress().fileOffset() + sw->elements.back() * sw->GetSize()));
+                            }
+
                             for (int i : sw->elements)
                                 text.push_back(sw->GetCase(i));
                             sw = std::find_if (++sw, jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
@@ -3465,6 +3513,8 @@ int main(int argc, const char * argv[]) {
                 _simpleStack = true;
             else if (strcmp(arg, "-indirect") == 0)
                 indirects = argv[++i];
+            else if (strcmp(arg, "-coverage") == 0)
+                _coverage = true;
             else
                 assert(0);
         } else {
@@ -3666,6 +3716,11 @@ void start()
     {
         printf("void fixReloc(uint16_t seg)\n{\n");
     }
+    if (_coverage)
+    {
+        printf("%s// coverage: 0x%x-0x%x header\n", _dumpReloc ? "    " : "", 0, (int)sizeof(MZHeader));
+        printf("%s// coverage: 0x%x-0x%x reloc\n", _dumpReloc ? "    " : "", header->relocationOffset, header->relocationOffset + header->relocations*4);
+    }
     for (int i=0; i<header->relocations; i++)
     {
         MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
@@ -3684,7 +3739,8 @@ void start()
     }
     
     Capstone cap;
-    cap.Set(buffer, 16*_loadBase - header->headerSize16*0x10);
+    _linearToFileOffset = 16*_loadBase - header->headerSize16*0x10;
+    cap.Set(buffer, _linearToFileOffset);
     
     if (dumpRawAddress.isValid())
     {
@@ -3785,24 +3841,6 @@ void start()
         gNeedToRerun = false;
         TraceFunctions();
     }
-//    for (auto& sw : switches)
-//    {
-//        sw.baseptr = cap.GetBufferAt(sw.GetBaseAddress());
-//        
-//        for (int i=0; i<2000; i++)
-//        {
-//            address_t addr = sw.GetAddressAt(i);
-//            int size = sw.GetSize();
-//            if (CheckOverlap(addr, size))
-//            {
-//                sw.elements = i;
-//                break;
-//            }
-//            toProcess.push_back(sw.GetTarget(i));
-//            TraceFunctions();
-//        }
-//        assert(sw.elements != -1);
-//    }
         
     if (!outputFolder)
         for (const auto& decl : processed)
@@ -3828,6 +3866,11 @@ void start()
             fprintf(fout, "    switch (ofs)\n");
             fprintf(fout, "    {\n");
             std::map<int, int> used;
+            if (_coverage)
+            {
+                fprintf(fout, "        // coverage: 0x%x-0x%x switch\n", table.GetBaseAddress().fileOffset(), table.GetBaseAddress().fileOffset() + table.elements.back() * table.GetSize());
+            }
+
             for (int i : table.elements)
             {
                 int v = table.GetTarget(i).offset;
@@ -3887,13 +3930,6 @@ void start()
         if (!ExtractMethod(cap, decl.first, code, jumps, inject_t::none, extraLabels))
             assert(0);
 
-        if (verbose_asm)
-        {
-            printf("\nAssembly listing of %04x:%04x sub_%x()\n", decl.first.segment, decl.first.offset,
-                   decl.first.segment*16+decl.first.offset);
-            for (const auto& instr : code)
-                instr->Dump();
-        }
 //        printf("trace: %02x:%02x sub_%x()\n", decl.first.segment, decl.first.offset,
 //               decl.first.segment*16+decl.first.offset);.
         DumpCodeAsC(code, text, switches, jumps);
@@ -3969,6 +4005,17 @@ void start()
                 fprintf(fout, "\n");
             }
         }
+        if (verbose_asm)
+        {
+            fprintf(fout, "/* Assembly listing of %04x:%04x sub_%x()\n", decl.first.segment, decl.first.offset,
+                   decl.first.segment*16+decl.first.offset);
+            fprintf(fout, "             sub_%x PROC\n", decl.first.linearOffset());
+            for (const auto& instr : code)
+                instr->Dump();
+            fprintf(fout, "             sub_%x ENDP\n", decl.first.linearOffset());
+            fprintf(fout, "*/\n");
+        }
+
         PrintFormatted(fout, text);
         finishWriting();
     }
