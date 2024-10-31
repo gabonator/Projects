@@ -1,2 +1,2 @@
 rm -rf dos
-rm bumpy bumpy.cpp
+rm bumpy bumpy.cpp bumpy.orig

@@ -219,6 +219,11 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
+    if (seg*16+ofs == 0x3f433)
+    {
+        int f = 9;
+    }
+
 //    assert (seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
@@ -850,10 +855,15 @@ void cicocontext_t::div(uint8_t r)
     uint16_t result = ctx->a.r16 / r;
     uint16_t remain = ctx->a.r16 % r;
     ctx->a.r8.l = result;
-    ctx->d.r8.h = remain;
+    ctx->a.r8.h = remain;
 }
 }
 
+void CicoContext::cicocontext_t::callIndirect(int s, int o)
+{
+    assert(0);
+}
+#if 0
 void sub_bb32();
 void sub_c91e();
 void sub_df4f();
@@ -977,7 +987,7 @@ void sub_3e0e();
         memoryAGet(ds, 1994+6), memoryAGet(ds, 1994+7));
 
  */
-void CicoContext::cicocontext_t::callIndirect(int a)
+void CicoContext::cicocontext_t::callIndirect(int s, int o)
 {
     //01ed:1e90,01ed:64c1,01ed:1e5e,01ed:4344,01ed:5025
 //    Skipping indirect=01ed:1e90
@@ -989,7 +999,7 @@ void CicoContext::cicocontext_t::callIndirect(int a)
     //Skipping indirect=01ed:5025
     //Skipping indirect=01ed:1e90
     //=01ed:2810
-    switch (a)
+    switch (s*16+o)
     {
         case 0x8518: sub_8518(); return; // 01ed:6648
         case 0x8fe1: sub_8fe1(); return; // 01ed:7111
@@ -1052,7 +1062,7 @@ void CicoContext::cicocontext_t::callIndirect(int a)
     //if (a != 0x12245 && a != 0xfbb9)
     //if (a != 0xd500 && a != 0xd530 && a != 0xd810 && a != 0xd840)
     //    printf("indi %x\n", a);
-    switch (a)
+    switch (s*16+o)
     {
         case 0xbb32: sub_bb32(); return;
         case 0xc91e: sub_c91e(); return;
@@ -1100,11 +1110,11 @@ void CicoContext::cicocontext_t::callIndirect(int a)
         case 0x6d14: sub_6d14(); return;
         case 0x46e0: sub_46e0(); return;
         default:
-            printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16, a, a);
+            printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, s, o, s*16+o);
             //assert(0);
     }
 }
-
+#endif
 void CicoContext::cicocontext_t::cmc()
 {
     ctx->carry = !ctx->carry;
