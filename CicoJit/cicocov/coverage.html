@@ -1,0 +1,244 @@
+<style>
+.covblock {
+  display: inline-block;
+  width:80px;
+  height:80px;
+  border:2px #00000020 solid;
+  padding:2px;
+  border-radius:4px;
+  margin-right:4px;
+  margin-bottom:4px;
+  overflow:hidden;
+}
+.covrec {
+  border:1px #00000020 solid;
+  padding-left:2px;
+  padding-right:2px;
+}
+
+.usage0 {
+}
+
+.usage1 {
+  border:2px #00000080 dotted;
+  border-radius:4px;
+}
+
+.usage2 {
+  border:2px #00000080 solid;
+  border-radius:4px;
+}
+
+.usage3 {
+  border:2px #ff000080 solid;
+  border-radius:4px;
+}
+
+.part0 {
+}
+.part1 {
+  border-radius: 8px 0px 0px 8px;
+}
+.part2 {
+  border-radius: 0px 8px 8px 0px;
+}
+.part3 {
+  border-radius: 8px 8px 8px 8px;
+}
+.typeheader { background: #d0e0f0; }
+.typereloc { background: #d0e0f0; }
+.typemethod { background: #d0f0e0; }
+.typeswitch { background: #f0e0e0; }
+.cont0 {border: none; width:84px; height:84px; background: #e0e0e0;}
+.cont1 {background: inherit;}
+.cont2 {background: inherit;}
+.cont3 {background: inherit;}
+
+.code {
+  background: #d0d0ff80;
+  box-decoration-break: clone;
+  border:2px #00000080 solid;
+  padding:2px;
+  border-radius:4px;
+/*  margin-right:5px;*/
+  margin-right:2px;
+}
+.highlight {
+  font-weight: bold;
+}
+.hex {
+  white-space: normal;
+/*
+  line-height:34px;
+  font-size:20px;
+*/
+  line-height:27px;
+  font-size:16px;
+  margin:0;
+}
+.hexrange0 {
+  color:#909090;
+}
+.hexrange1 {
+  color:#000000;
+}
+</style>
+<script src="bumpy.covjson"></script>
+<div id="out"></div>
+<script>
+function blockHtml(index)
+{
+  var html = "";
+  var cov = coverageData[index];
+  if (cov)
+  {
+    var len = cov.length;
+    var bytes = cov.map(c => c[2]-c[1]).reduce((a,b)=>a+b, 0);
+    if (len > 4)
+    {
+      cov = [...cov]
+      cov.length = 3;
+    }
+    //html += bytes
+    var usage;
+    if (bytes == 0)
+      usage = "0";
+    else if (bytes < 128)
+      usage = "1";
+    else if (bytes == 128)
+      usage = "2";
+    else 
+      usage = "3";
+    
+    html += `<div class="cont${contentsData[index]} covblock usage${usage}" onClick="showRange(${index*128},${index*128+128})">`;
+    for (var j of cov)
+    {
+      html += `<div class="covrec type${j[3]} part${j[0]}" title="${j[4] ? j[4] : j[3]} range:${j[1]}-${j[2]}">${j[4] ? j[4] : j[3]}</div>`;
+    }
+    if (len>4)
+      html += `+${len-3} more`
+  } else {
+    html += `<div class="cont${contentsData[index]} covblock usage0" onClick="showRange(${index*128},${index*128+128})">`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function resetView()
+{
+  var html = ""
+  for (var i=0; i<contentsData.length; i++)
+    html += blockHtml(i);
+
+  document.querySelector("#out").innerHTML = html;
+}
+
+function subToColor(s)
+{
+  if (s.substr(0, 4) == "sub_")
+  {
+    var l = parseInt("0x"+s.substr(4))
+    var cols = ["d0d0ff", "ffd0d0", "d0ffd0", "ffffd0", "ffd0ff", "d0ffff",
+     "8080ff", "ff8080", "80ff80", "ffff80", "ff80ff", "80ffff"];
+    return cols[l%cols.length];
+  }
+  return "d0d0ff"
+}
+function showRange(begin, end, high)
+{
+  var html = "";
+  html += `<div style="display:block-inline; width:120px; float:left" onClick="resetView()">`
+  if (begin/128-1 >= 0)
+    html += blockHtml(begin/128-1)+"<br><br>";
+  html += blockHtml(begin/128)+"<br><br>";
+  html += blockHtml(begin/128+1)+"<br><br>";
+  html += `</div>`
+  html += `<pre class="hex">` //style='white-space: normal;'>";
+  var block;
+  for (var i=Math.max(0, begin-128); i<end+128; i++)
+  {
+    var spacer = " ";
+    if (i%128==0)
+    {
+       block = coverageData[i/128] || [];
+       html += `<span class="hexrange${i==begin ? 1 : 0}">`;
+       spacer = "";
+    }
+    for (var b of block)
+    {
+      if (i==b[1])
+      {                      
+        clr = subToColor(b[4] || b[3])
+        var highclass = b[4] == high ? "highlight" : "";
+        html += `<span onClick="showRange(${begin}, ${end}, '${b[4] || ""}')" class="code ${highclass}" style="background:#${clr}80">`
+      }
+      if (i==b[2])
+      {
+        html += `</span>`
+        spacer = "";
+      }
+    }
+    html += spacer;
+    html += ("0"+fileData[i].toString(16)).substr(-2);
+    if (i%32 == 31)
+      html += "<br>";
+    if (i%128==127)
+       html += `</span>`;
+  }
+  html += "</pre>"
+
+  if (high)
+  {
+    var i = cicoData.indexOf(high + " PROC")
+    var j = cicoData.indexOf(high + " ENDP")
+    if (i != -1 && j > i)
+    {
+  console.log(i, j);
+      html += `<pre>${cicoData.substr(i, j+high.length+5-i)}</pre>`
+    }
+  }
+
+  if (high)
+  {
+    var i = cicoData.indexOf("void " + high + "()\n")
+    var j = cicoData.indexOf("\n}\n", i)
+    if (i != -1 && j > i)
+    {
+  console.log(i, j);
+      html += `<pre>${cicoData.substr(i, j+2-i)}</pre>`
+    }
+  }
+  if (high)
+  {
+    var ranges = coverageData.flat(1).filter(x=>x && x[4] == high);
+    var rbegin = ranges[0][1] & ~15
+    var rend = (ranges[ranges.length-1][2] + 15) & ~15;
+    html += "<pre>"
+    for (var r=rbegin; r<rend; r+=16)
+    {
+      html += `${("        "+r.toString(16)).substr(-8)}: `;
+      var wasInRange = false;
+      for (var b=0; b<16; b++)
+      {
+        var isInRange = !!ranges.find(range=>r+b >= range[1] && r+b < range[2])
+        if (isInRange && !wasInRange)
+          html += "<b>"
+        html += `${("0"+fileData[r+b].toString(16)).substr(-2)} `;
+        if (!isInRange && wasInRange)
+          html += "</b>"
+        wasInRange = isInRange;
+      }
+      if (isInRange)
+        html += "</b>"
+      html += "\n";
+    }
+    html += "</pre>"
+  }
+  //block = coverageData[begin/128];
+  //console.log(block);
+
+  document.querySelector("#out").innerHTML = html;
+}
+
+resetView();
+</script>       	                                	
