@@ -428,7 +428,9 @@ struct switch_t {
         None,
         CallWords,
         JumpWords,
-        JumpFix
+        JumpFix,
+        Call,
+        CallWordsByOfs
     } type{None};
     x86_reg selector{X86_REG_INVALID};
     const uint8_t* baseptr{nullptr};
@@ -448,7 +450,7 @@ struct switch_t {
     }
     address_t GetTarget(int i) const //(const uint8_t* data)
     {
-        if (type == JumpFix)
+        if (type == JumpFix || type == Call)
             return GetBaseAddress();
         uint16_t* parts = (uint16_t*)baseptr;
         return address_t{origin.segment, parts[i]};
@@ -463,6 +465,9 @@ struct switch_t {
                 return format("case %d: goto loc_%x;", i*2, /*GetTarget(i).linearOffset()-0x10000+_cs*0x10*/ GetTarget(i).linearOffset());
             case JumpFix:
                 return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());
+            case Call:
+            case CallWordsByOfs:
+                return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
             default:
                 assert(0);
                 return "stop(/*3*/);";
@@ -2757,7 +2762,27 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     auto sw = std::find_if(jumps.begin(), jumps.end(), [&](const switch_t& sw){ return sw.origin == instr->mAddress; });
                     if (sw != jumps.end() && !sw->elements.empty())
                     {
-                        text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
+                        // duplicate
+                        std::string selector = sw->GetSelector().c_str(); // indirect
+                        if (selector.empty())
+                        {
+                            if (x86.operands[0].type == X86_OP_MEM &&
+                                x86.operands[0].mem.index == X86_REG_INVALID &&
+                                x86.operands[0].mem.base != X86_REG_INVALID &&
+                                x86.operands[0].mem.scale == 1)
+                            {
+                                if (x86.operands[0].mem.segment != X86_REG_INVALID)
+                                    text.push_back(format("assert(%s == 0x%04x);", cs_reg_name(_handle, x86.operands[0].mem.segment), sw->GetBaseAddress().segment));
+                                selector = cs_reg_name(_handle, x86.operands[0].mem.base);
+                                assert((uint16_t)sw->GetBaseAddress().offset == (uint16_t)x86.operands[0].mem.disp);
+                            }
+                        }
+                        if (selector.empty())
+                        {
+                            selector = "stop(\"$rd0\")";
+                        }
+
+                        text.push_back(format("switch (%s)", selector.c_str()));
                         text.push_back("{");
                         while(sw != jumps.end())
                         {
@@ -2858,6 +2883,25 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     if (sw)
                     {
                         std::string selector = sw->GetSelector().c_str(); // indirect
+                        if (sw->type == switch_t::Call)
+                        {
+                            assert (x86.operands[0].type == X86_OP_MEM &&
+                                x86.operands[0].mem.index == X86_REG_INVALID &&
+                                x86.operands[0].mem.base != X86_REG_INVALID &&
+                                x86.operands[0].mem.scale == 1);
+                            text.push_back(format("assert(cs == 0x%04x);", sw->GetBaseAddress().segment));
+                            selector = assign(x86, "$rd0");
+                        }
+                        if (sw->type == switch_t::CallWordsByOfs)
+                        {
+                            assert (x86.operands[0].type == X86_OP_MEM &&
+                                x86.operands[0].mem.index == X86_REG_INVALID &&
+                                x86.operands[0].mem.base != X86_REG_INVALID &&
+                                x86.operands[0].mem.scale == 1);
+                            text.push_back(format("assert(cs == 0x%04x);", sw->origin.segment));
+                            selector = assign(x86, "$rd0");
+                        }
+
                         if (selector.empty())
                         {
                             if (x86.operands[0].type == X86_OP_MEM &&
@@ -2890,10 +2934,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         {
                             // ds:imm?
                         }
-                        text.push_back(assign(x86, "callIndirect(cs, $rd0);", instr->mAddress.segment, instr->mAddress.offset));
+                        text.push_back(assign(x86, "callIndirect(cs, $rd0); // %04x:%04x", instr->mAddress.segment, instr->mAddress.offset));
                     }
                 } else
-                    text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
+                    text.push_back(assign(x86, "callIndirect(cs, $rd0); // %04x:%04x", instr->mAddress.segment, instr->mAddress.offset));
                     //assert(0);
                 break;
             case X86_INS_LCALL:
@@ -3192,8 +3236,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(assign(x86, "$wr0 = bx + 0x%x;", x86.operands[1].mem.disp));
                 else if (x86.operands[1].mem.base == X86_REG_BX && x86.operands[1].mem.disp < 0)
                     text.push_back(assign(x86, "$wr0 = bx - 0x%x;", x86.operands[1].mem.disp));
+                else if (x86.operands[1].mem.base == X86_REG_BX && x86.operands[1].mem.disp == 0)
+                    text.push_back(assign(x86, "$wr0 = bx;", x86.operands[1].mem.disp));
                 else
+                {
                     assert(0);
+                }
             }
                 break;
             case X86_INS_LES:
@@ -3221,13 +3269,15 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 }
                 break;
             case X86_INS_LJMP:
-                assert(x86.op_count == 2);
-                assert(x86.operands[0].type == X86_OP_IMM);
-                assert(x86.operands[0].size == 2 && x86.operands[0].imm <= 0xffff);
-                assert(x86.operands[1].type == X86_OP_IMM && x86.operands[1].size == 4 && x86.operands[1].imm <= 0xffff);
-                text.push_back(format("cs = 0x%04x;", x86.operands[0].imm));
-                text.push_back(format("callIndirect(0x%04x, 0x%04x);", x86.operands[0].imm, x86.operands[1].imm));
-                break;
+                if(x86.op_count == 2)
+                {
+                    assert(x86.operands[0].type == X86_OP_IMM);
+                    assert(x86.operands[0].size == 2 && x86.operands[0].imm <= 0xffff);
+                    assert(x86.operands[1].type == X86_OP_IMM && (x86.operands[1].size == 4 || x86.operands[1].size == 2) && x86.operands[1].imm <= 0xffff);
+                    text.push_back(format("cs = 0x%04x;", x86.operands[0].imm));
+                    text.push_back(format("callIndirect(0x%04x, 0x%04x);", x86.operands[0].imm, x86.operands[1].imm));
+                    break;
+                }
 //            case X86_INS_LCALL:
             case X86_INS_DAS:
             case X86_INS_DAA:
@@ -3517,6 +3567,10 @@ int main(int argc, const char * argv[]) {
                     tableType = switch_t::switch_e::CallWords;
                 if (strcmp(jumpTableEntryType, "jumpfix") == 0)
                     tableType = switch_t::switch_e::JumpFix;
+                if (strcmp(jumpTableEntryType, "call") == 0)
+                    tableType = switch_t::switch_e::Call;
+                if (strcmp(jumpTableEntryType, "callwordsbyofs") == 0)
+                    tableType = switch_t::switch_e::CallWordsByOfs;
                 assert(tableType != switch_t::switch_e::None);
                 
                 const char* jumpSelector = argv[++i];
@@ -3557,6 +3611,8 @@ int main(int argc, const char * argv[]) {
                 indirects = argv[++i];
             else if (strcmp(arg, "-coverage") == 0)
                 _coverage = true;
+            else if (strcmp(arg, "-trace") == 0)
+                _trace = true;
             else
                 assert(0);
         } else {
@@ -3830,7 +3886,7 @@ void start()
     
     for (const switch_t& table : jumpTables)
     {
-        if (table.type == switch_t::switch_e::CallWords /*&& table.origin.offset == (uint16_t)-1*/)
+        if (table.type == switch_t::switch_e::CallWords || table.type == switch_t::switch_e::Call || table.type == switch_t::switch_e::CallWordsByOfs)
         {
             for (int i : table.elements)
                 toProcess.push_back(table.GetTarget(i));
