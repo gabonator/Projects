@@ -5,12 +5,29 @@ class CVideoAdapter
 public:
     virtual bool PortWrite16(int port, int data) = 0;
     virtual bool PortWrite8(int port, int data) = 0;
-    virtual uint8_t PortRead8(int port) { assert(0); return 0; }
+    virtual bool PortRead8(int port, uint8_t& data) { assert(0); return false; }
     virtual bool Interrupt(CicoContext::cicocontext_t* ctx) = 0;
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) = 0;
     virtual uint8_t Read(uint32_t dwAddr) = 0;
     virtual uint32_t GetPixel(int x, int y) = 0;
     virtual void SetPixel(int x, int y, int c) = 0;
+};
+class CText : public CVideoAdapter
+{
+public:
+    virtual bool PortWrite16(int port, int data) { return false; }
+    virtual bool PortWrite8(int port, int data) { return false; }
+    virtual bool PortRead8(int port, uint8_t& data) { assert(0); return false; }
+    virtual bool Interrupt(CicoContext::cicocontext_t* ctx) { return false; }
+    virtual void Write(uint32_t dwAddr, uint8_t bWrite)
+    {
+        if (bWrite && (dwAddr & 1) == 0)
+            printf("%c", bWrite);
+        
+    }
+    virtual uint8_t Read(uint32_t dwAddr) { return 0; }
+    virtual uint32_t GetPixel(int x, int y){ return 0; };
+    virtual void SetPixel(int x, int y, int c) { return; };
 };
 
 class CCga : public CVideoAdapter
@@ -40,7 +57,36 @@ public:
     }
     virtual void SetPixel(int x, int y, int c) override
     {
-        assert(0);
+        bool _xor = c & 0x80;
+        c &= 0x7f;
+        
+        if ((y&1) == 0)
+        {
+            y /= 2;
+            uint8_t& pix4 = memory[y*80+x/4];
+            int bit = 6-((x&3)*2);
+            int mask = 3 << bit;
+            if (_xor)
+                pix4 = pix4 ^ (c << bit);
+            else
+                pix4 = (pix4 & ~mask) | (c << bit);
+        } else
+        {
+            y /= 2;
+            uint8_t& pix4 = memory[0x2000+y*80+x/4];
+            int bit = 6-((x&3)*2);
+            int mask = 3 << bit;
+            if (_xor)
+                pix4 = pix4 ^ (c << bit);
+            else
+                pix4 = (pix4 & ~mask) | (c << bit);
+        }
+        static int q=0;
+        if (q++ > 100)
+        {
+            q = 0;
+            _sync();
+        }
     }
 
     virtual bool PortWrite8(int port, int data) override
@@ -57,6 +103,8 @@ public:
     {
         //if ( CTextMode::Interrupt( ah, al, bh, bl ) )
 //            return true;
+        if (ctx->a.r8.h == 0x02)
+            return true;
 
         if ( ctx->a.r8.h == 0x0b )
         {
@@ -85,6 +133,12 @@ public:
                 }
             }
         }
+        if (ctx->a.r8.h == 0x0c)
+        {
+            SetPixel(ctx->c.r16, ctx->c.r16, ctx->a.r8.l);
+            return true;
+        }
+
         return false;
     }
 
@@ -93,12 +147,13 @@ public:
         assert(dwAddr >= 0xb800*16);
         dwAddr -= 0xb800 * 16;
         assert(dwAddr < MemSize);
+        assert(dwAddr < 17000);
+//        dwAddr %= 16000;
         memory[dwAddr] = bWrite;
         
         static int t=0;
-        if (t++ > 800){
-//            t = 0; _sync();
-            
+        if (t++ > 8000){
+            t = 0; _sync();
         }
     }
 
@@ -133,7 +188,7 @@ public:
 class CEga : public CVideoAdapter
 {
     enum {
-        MemSize = 0x10000*2
+        MemSize = 0x10000*10
     };
 
 public:
@@ -169,7 +224,12 @@ public:
     uint32_t full_enable_and_set_reset;
     uint32_t full_enable_set_reset;
     uint32_t full_not_enable_set_reset;
+    
+    int vgareadcolorindex;
 
+    uint32_t egadefaultpal[16] = {
+        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
+        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
     uint32_t palette[128] = {
         0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
         0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
@@ -217,18 +277,32 @@ public:
     {
         if (ctx->a.r16 == 0x1002)
         {
+            auto tohex =[](int n)
+            {
+                static char temp[16];
+                sprintf(temp, "%d%d%d%d%d%d%d%d",
+                        (n & 128) ? 1 : 0,
+                        (n & 64) ? 1 : 0,
+                        (n & 32) ? 1 : 0,
+                        (n & 16) ? 1 : 0,
+                        (n & 8) ? 1 : 0,
+                        (n & 4) ? 1 : 0,
+                        (n & 2) ? 1 : 0,
+                        (n & 1) ? 1 : 0
+                        );
+                return temp;
+            };
             // es:DX!!!! 17 uint8_ts (documentation says es:bx)
             for (int i=0; i<16; i++)
             {
-                int rgb = ctx->memory8(ctx->_es, ctx->d.r16+i);
-                int r = ((rgb & 4) ? 3 : 0) + ((rgb & 32) ? 1 : 0);
-                int g = ((rgb & 2) ? 3 : 0) + ((rgb & 16) ? 1 : 0);
-                int b = ((rgb & 1) ? 3 : 0) + ((rgb & 8) ? 1 : 0);
-                r = r * 255 / 3;
-                g = g * 255 / 3;
-                b = b * 255 / 3;
-//                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
-                palette[i] = b | (g << 8) | (r << 16);
+                int rgb = ctx->memory8(ctx->_es, ctx->d.r16+i); // 1040:9709+15
+                int r = ((rgb & 4) ? 1 : 0);
+                int g = ((rgb & 2) ? 1 : 0);
+                int b = ((rgb & 1) ? 1 : 0);
+                // CGA emulation! http://www.techhelpmanual.com/137-int_10h_1000h__set_one_palette_register.html
+                printf("pal[%2d] = 0x%02x, '%s' %d,%d,%d\n", i,
+                       rgb, tohex(ctx->memory8(ctx->_es, ctx->d.r16+i)), r, g, b);
+                palette[i] = egadefaultpal[(rgb&7) + ((rgb&16)>>1)];
             }
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
@@ -297,6 +371,27 @@ public:
             // set cursor
             return true;
         }
+        if (ctx->a.r16 == 0x1015)
+        {
+            if (ctx->b.r16 >= 16)
+            {
+                printf("read dac color outside range %d\n", ctx->b.r16);
+                return true;
+            }
+            assert(ctx->b.r16 >= 0 && ctx->b.r16 < 16);
+            // read palette DAC
+            ctx->d.r8.h = (palette[ctx->b.r16] & 0xff)/4;
+            ctx->c.r8.h = ((palette[ctx->b.r16] >> 8) & 0xff)/4;
+            ctx->c.r8.l = ((palette[ctx->b.r16] >> 16) & 0xff)/4;
+            return true;
+        }
+        if (ctx->a.r8.h == 0x05)
+        {
+            printf("skip: select active display page %d\n", ctx->a.r8.h);
+//            cfgAddr = ctx->a.r8.h*0x2000;
+            //INT 10,5 - Select Active Display Page
+            return true;
+        }
 
         printf("not implemented!\n");
         assert(0);
@@ -338,7 +433,7 @@ public:
             if ( (data & 0x00ff) == 0x0c )
             {
                 SetAddrHi( data >>8 );
-//                _sync();
+                _sync();
                 return true;
             }
             if ( (data & 0x00ff) == 0x0d )
@@ -457,25 +552,54 @@ public:
         {
             int base = colorindex/3;
             int ch = colorindex%3;
-            ((uint8_t*)palette)[base*4+2-ch] = data*4;
+            if (data == 255) // wtf?
+//            {
+//                for (int i=base; i<16; i++)
+//                    palette[base] = 0xffffff;
+                return true;
+//            }
+
+            data &= 63;
+            assert(data >= 0 && data < 64);
+            printf("set pal %d %d = %d\n", base, 2-ch, data);
+            ((uint8_t*)palette)[base*4+2-ch] = data * 4;
             colorindex++;
+            
+//            ((uint8_t*)palette)[base*4+2-ch] = data;
+//            colorindex++;
             return true;
         }
+        if (port == 0x3c7)
+        {
+            //std::cout << "Set read color " << (int)data << "\n";
 
+            vgareadcolorindex = data*3/2;
+            return true;
+        }
         return false;
     }
 
-    virtual uint8_t PortRead8(int port)
+    virtual bool PortRead8(int port, uint8_t& data) override
     {
         //        3d4h index 0Ch (W):  CRTC: Start Address High Register
         //        bit 0-7  Upper 8 bits of the start address of the display buffer
 
-        if (crtReg == 0x0c)
+        if (port == 0x3c9)
         {
-            return cfgAddr>>8;
+            int cindex = vgareadcolorindex/3;
+            int cch = vgareadcolorindex%3;
+            data = ((uint8_t*)palette)[cindex*4+2-cch]/4;
+            printf("get pal %d %d %d = %d\n", vgareadcolorindex, cindex, 2-cch, data);
+            vgareadcolorindex++;
+            return true;
         }
-        assert(0);
-        return 0;
+        if (port == 0x3d4 && crtReg == 0x0c)
+        {
+            data = cfgAddr>>8;
+            return true;
+        }
+        
+        return false;
     }
     
     virtual uint32_t GetPixel(int x, int y) override
@@ -626,9 +750,9 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 50000)
+        if (q++ > 5000)
         {
-            _sync();
+//            _sync();
             q= 0;
         }
     }
@@ -746,7 +870,7 @@ public:
     {
         return false;
     }
-    virtual bool PortRead8(uint16_t port, uint8_t& data) //override
+    virtual bool PortRead8(int port, uint8_t& data) override
     {
         if (port == 0x3c9)
         {

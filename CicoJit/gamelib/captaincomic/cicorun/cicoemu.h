@@ -25,6 +25,7 @@ public:
     uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
+    int _loadAddress;
     bool interrupts, direction, carry, zero /*, sign*/;
 
     virtual void memoryASet8(int seg, int ofs, uint8_t v);
@@ -52,7 +53,7 @@ public:
     virtual void push(const int& r);
     //virtual uint16_t pop();
     virtual bool stop(const char* msg = nullptr);
-    virtual void callIndirect(int a);
+    virtual void callIndirect(int seg, int ofs);
     //virtual void call(const char* n);
     virtual void cbw();
     virtual void div(uint8_t r);
@@ -78,6 +79,8 @@ public:
     //virtual void onLine(int a);
     virtual void cmc();
     virtual void aaa();
+    virtual void das();
+    virtual void daa();
     virtual void load(const char* path, const char* file, int size);
 };
 
@@ -106,6 +109,7 @@ public:
 #define tl ctx->temp.r8.l
 #define tx ctx->temp.r16
 #define headerSize ctx->_headerSize
+#define loadAddress ctx->_loadAddress
 
 #define memory ctx->memory8
 #define memory16 ctx->memory16
@@ -148,6 +152,8 @@ public:
 #define sync ctx->sync
 #define cmc ctx->cmc
 #define aaa ctx->aaa
+#define das ctx->das
+#define daa ctx->daa
 
 extern cicocontext_t* ctx;
 
@@ -319,8 +325,37 @@ template <class DST, class SRC, class DIR> void cmpsw()
 template <class DST, class SRC, class DIR> void repe_cmpsw()
 {
     flags.zero = 1;
-    while (cx-- && flags.zero == 1 )
+    while (cx)
+    {
         cmpsw<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
+}
+
+template <class DST, class SRC, class DIR> void repe_cmpsb()
+{
+    flags.zero = 1; // ds:si = ILBM   es:di = BODY
+    while (cx)
+    {
+        cmpsb<DST, SRC, DIR>();
+        cx--;
+        if (!flags.zero)
+            break;
+    }
+}
+
+template <class DST, class SRC, class DIR> void repne_cmpsb()
+{
+    flags.zero = 0;
+    while (cx)
+    {
+        cmpsb<DST, SRC, DIR>();
+        cx--;
+        if (flags.zero)
+            break;
+    }
 }
 
 template <class SRC, class DIR> void repne_scasb(uint8_t value)
@@ -334,6 +369,28 @@ template <class SRC, class DIR> void repne_scasb(uint8_t value)
         cx--;
     }
 }
+
+template <typename DST, typename SRC, typename DIR> void repne_movsw()
+{
+    rep_movsw<DST, SRC, DIR>();
+    //assert(0);
+}
+
+template <typename DST, typename SRC, typename DIR> void repne_movsb()
+{
+    rep_movsb<DST, SRC, DIR>();
+//    assert(0);
+}
+
+template <typename DST, typename DIR> void repne_stosb()
+{
+    assert(0);
+}
+template <typename DST, typename DIR> void repne_stosw()
+{
+    assert(0);
+}
+
 
 #else
 extern cicocontext_t* ctx;
