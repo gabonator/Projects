@@ -1,5 +1,5 @@
 diff --git a/./arkanoid.clean b/cicorun/arkanoid.cpp
-index f069192..dc11c41 100644
+index 769fef1..229c16a 100644
 --- a/./arkanoid.clean
 +++ b/cicorun/arkanoid.cpp
 @@ -1,7 +1,8 @@
@@ -33,7 +33,7 @@ index f069192..dc11c41 100644
  void sub_1b130();
  void sub_1b14b();
  void sub_1b14f();
-@@ -282,15 +284,15 @@ void sub_1f2bc();
+@@ -286,15 +288,15 @@ void sub_1f2bc();
  void sub_1f2dc();
  void sub_1f2e1();
  void sub_1f311();
@@ -53,7 +53,7 @@ index f069192..dc11c41 100644
  void sub_1f4b3();
  void sub_1f571();
  void sub_1f5da();
-@@ -461,7 +463,6 @@ void callIndirect(int seg, int ofs)
+@@ -466,7 +468,6 @@ void callIndirect(int seg, int ofs)
          case 0x1a5d: sub_1cb1d(); return;
          case 0x1ac3: sub_1cb83(); return;
          case 0x2b2f: sub_1dbef(); return;
@@ -61,7 +61,7 @@ index f069192..dc11c41 100644
          default:
              break;
      }
-@@ -495,7 +496,7 @@ void callIndirect(int seg, int ofs)
+@@ -500,7 +501,7 @@ void callIndirect(int seg, int ofs)
          case 0x1a5d: sub_1cb1d(); return;
          case 0x1ac3: sub_1cb83(); return;
          case 0x2b2f: sub_1dbef(); return;
@@ -70,7 +70,7 @@ index f069192..dc11c41 100644
          default:
              break;
      }
-@@ -655,6 +656,7 @@ loc_1a855: // 19ee:0975
+@@ -661,6 +662,7 @@ loc_1a855: // 19ee:0975
      cx = pop();
      bx = pop();
      cs = pop();
@@ -78,7 +78,7 @@ index f069192..dc11c41 100644
  }
  void sub_1a861() // 19ee:0981
  {
-@@ -916,8 +918,10 @@ void sub_1b0b6() // 19ee:11d6
+@@ -922,8 +924,10 @@ void sub_1b0b6() // 19ee:11d6
      cs = 0x19ee;
      callIndirect(0x19ee, 0x0450);
  }
@@ -90,7 +90,7 @@ index f069192..dc11c41 100644
      ax = 0x1118;
      ds = ax;
      sub_1b994();
-@@ -926,7 +930,8 @@ void sub_1b0c0() // 1b0c:0000
+@@ -932,7 +936,8 @@ void sub_1b0c0() // 1b0c:0000
      sub_1c178();
      sub_1f87a();
      sub_1f158();
@@ -100,7 +100,24 @@ index f069192..dc11c41 100644
      sub_1f072();
  loc_1b0dd: // 1b0c:001d
      sub_1ba4f();
-@@ -1752,7 +1757,9 @@ void sub_1b994() // 1b0c:08d4
+@@ -976,7 +981,6 @@ void sub_1b130() // 1b0c:0070
+     ah = tl;
+     tl = flags.carry;
+     flags.carry = (al + al + tl) >= 0x100;
+-    stop(/*8*/); // inject carry failed
+     al += al + tl;
+     daa();
+     tl = al;
+@@ -1116,7 +1120,7 @@ loc_1b1c9: // 1b0c:0109
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    stop(/*e2*/);
++//    stop(/*e2*/);
+     goto loc_1b1c9;
+     flags.carry = false;
+     return;
+@@ -1768,7 +1772,9 @@ void sub_1b994() // 1b0c:08d4
  {
      push(es);
      push(ds);
@@ -111,20 +128,27 @@ index f069192..dc11c41 100644
      es = ax;
      al = memoryAGet(es, si);
      memoryASet(ds, 0x00c7, al);
-@@ -3320,9 +3327,10 @@ loc_1b11c: // 1b0c:005c
- loc_1c750: // 1b0c:1690
-     ch = 0;
+@@ -3365,7 +3371,10 @@ loc_1c750: // 1b0c:1690
  loc_1c752: // 1b0c:1692
-+    sync();
      dh = memoryAGet(cs, 0x325a);
--    if (!dh)
--        goto loc_1c752;
-+//    if (!dh)
-+//        goto loc_1c752;
+     if (!dh)
++    {
++        sync();
+         goto loc_1c752;
++    }
      if (dh <= 0x08)
          goto loc_1c762;
      dh = 0x08;
-@@ -6855,11 +6863,12 @@ loc_1ddca: // 1b0c:2d0a
+@@ -3961,7 +3970,7 @@ loc_1ca49: // 1b0c:1989
+ loc_1e10f: // 1b0c:304f
+     ax = pop();
+     cx = pop();
+-    si = pop();
++    si = pop(); assert(si); // problem!
+     sub_1c78d();
+     sub_1d7c8();
+     sub_1e12b();
+@@ -7292,11 +7301,11 @@ loc_1ddca: // 1b0c:2d0a
      sub_1ccfc();
      sub_1f961();
      sub_1c46f();
@@ -133,7 +157,6 @@ index f069192..dc11c41 100644
 -    al = memoryAGet(ds, 0x5870);
 -    if (memoryAGet(ds, 0x48d7) > al)
 -        goto loc_1ddca;
-+    sync();
 +//    if (memoryAGet(ds, 0x48d4) != 0x02)
 +//        goto loc_1ddca;
 +//    al = memoryAGet(ds, 0x5870);
@@ -142,7 +165,7 @@ index f069192..dc11c41 100644
      memoryASet(ds, 0x48cf, 0x03);
      sub_1ccfc();
  }
-@@ -7709,8 +7718,10 @@ void sub_1f311() // 1b0c:4251
+@@ -8175,8 +8184,10 @@ void sub_1f311() // 1b0c:4251
      sub_1b07f();
      assert(cs == 0x1b0c);
  }
@@ -154,19 +177,15 @@ index f069192..dc11c41 100644
      goto loc_1f320;
  loc_1c4d9: // 1b0c:1419
      return;
-@@ -7766,8 +7777,9 @@ loc_1dc19: // 1b0c:2b59
- loc_1f320: // 1b0c:4260
+@@ -8233,6 +8244,7 @@ loc_1f320: // 1b0c:4260
      sub_1f6d9();
      sub_1f6b1();
--    sub_1f64d();
--    if (flags.carry)
-+    sub_1f64d(); //seq1
+     sub_1f64d();
 +resume_1b0c_4269:
-+    if (flags.carry) // resume seq10 1b0c:4269
+     if (flags.carry)
          goto loc_1f341;
      sub_1f66a();
-     sub_1f6be();
-@@ -7779,6 +7791,11 @@ loc_1f331: // 1b0c:4271
+@@ -8245,6 +8257,11 @@ loc_1f331: // 1b0c:4271
      if (--cx && !cl)
          goto loc_1f331;
      sub_1f83b();
@@ -178,18 +197,12 @@ index f069192..dc11c41 100644
      return;
  loc_1f341: // 1b0c:4281
      ax = 0x5d95;
-@@ -7800,16 +7817,20 @@ void sub_1f34a() // 1b0c:428a
- // INJECT: Error: cannot inject flag in sub_1f35f() because of being label!
- void sub_1f35f() // 1b0c:429f
+@@ -8268,14 +8285,14 @@ void sub_1f35f() // 1b0c:429f
  {
-+//    assert(0);
-+//    printf("skip ctx switch\n");
-+//    flags.carry = true;
-+//    return;
      push(ax);
      push(bx);
 -    sub_1f37c();
-+    sub_1f37c_ctxswitch1(); // seq3
++    sub_1f37c_ctxswitch1();
      bx = pop();
      ax = pop();
      if (flags.carry)
@@ -201,7 +214,7 @@ index f069192..dc11c41 100644
      push(cx);
      push(dx);
      sub_1f404();
-@@ -7817,18 +7838,18 @@ void sub_1f35f() // 1b0c:429f
+@@ -8283,18 +8300,18 @@ void sub_1f35f() // 1b0c:429f
      cx = pop();
      flags.carry = false;
  loc_1f377: // 1b0c:42b7
@@ -220,20 +233,11 @@ index f069192..dc11c41 100644
      cx = 0;
      dx = 0;
 -    sub_1f41f();
-+    sub_1f41f_ctxswitch2(); // seq5
++    sub_1f41f_ctxswitch2();
      push(cx);
      push(dx);
      sub_1f404();
-@@ -7836,7 +7857,7 @@ void sub_1f364() // 1b0c:42a4
-     cx = pop();
-     flags.carry = false;
- }
--void sub_1f36f() // 1b0c:42af
-+void sub_1f36f() // 1b0c:42af   ---seq5 resume!
- {
-     push(cx);
-     push(dx);
-@@ -7844,9 +7865,13 @@ void sub_1f36f() // 1b0c:42af
+@@ -8310,9 +8327,13 @@ void sub_1f36f() // 1b0c:42af
      dx = pop();
      cx = pop();
      flags.carry = false;
@@ -248,19 +252,17 @@ index f069192..dc11c41 100644
  {
      push(0x7777);
      sub_1f404();
-@@ -7898,6 +7923,11 @@ loc_1f388: // 1b0c:42c8
+@@ -8364,6 +8385,9 @@ loc_1f388: // 1b0c:42c8
      flags.interrupts = true;
      flags.carry = false;
      assert(pop() == 0x7777);
-+    //assert(0);
 +    // continues 1b0c:42a4
-+    //ggggggg
-+    sub_1f364(); // seq4 todo check from stack
++    sub_1f364();
 +    assert(0);
  }
  void sub_1f404() // 1b0c:4344
  {
-@@ -7905,15 +7935,16 @@ void sub_1f404() // 1b0c:4344
+@@ -8371,15 +8395,14 @@ void sub_1f404() // 1b0c:4344
          goto loc_1f41d;
      ah = 0x3e;
      bx = memoryAGet16(cs, 0x42ba);
@@ -272,69 +274,47 @@ index f069192..dc11c41 100644
      flags.carry = false;
  }
 -void sub_1f41f() // 1b0c:435f
-+void sub_1f41f_ctxswitch2() // 1b0c:435f ctx switch - seq5
++void sub_1f41f_ctxswitch2() // 1b0c:435f
  {
 -    push(0x7777);
-+//    assert(0);
-+//    push(0x7777);
      memoryASet16(cs, 0x455e, ax);
      memoryASet16(cs, 0x4560, bx);
      memoryASet16(cs, 0x43ae, cx);
-@@ -7947,11 +7978,18 @@ void sub_1f41f() // 1b0c:435f
+@@ -8413,11 +8436,11 @@ void sub_1f41f() // 1b0c:435f
      cx = pop();
      bx = pop();
      ax = pop();
 -    assert(pop() == 0x7777);
--}
--void sub_1f472() // 1b0c:43b2
--{
--    push(0x7777);
-+//    assert(pop() == 0x7777);
 +    // TODO: stack override
-+    printf("stack override!!!\n");
-+  //  callIndirect(cs, pop()); // 1b0c:43f3
-+    //assert(0);
-+    // ctx switch back 1b0c:43f3
-+    sub_1f4b3(); // seq6
-+}
-+void sub_1f472_ctxswitch3() // 1b0c:43b2 ctx switch seq7
-+{
-+ //   assert(0);
-+//    push(0x7777);
++    sub_1f4b3();
+ }
+-void sub_1f472() // 1b0c:43b2
++void sub_1f472_ctxswitch3() // 1b0c:43b2
+ {
+-    push(0x7777);
      push(ax);
      push(bx);
      push(cx);
-@@ -7979,14 +8017,18 @@ void sub_1f472() // 1b0c:43b2
-     cx = memoryAGet16(cs, 0x43ae);
-     dx = memoryAGet16(cs, 0x43b0);
-     flags.carry = (cx + memoryAGet16(cs, 0x4562)) >= 0x10000;
-+    assert(memoryAGet16(cs, 0x4562) == 0x556e);
-     cx += memoryAGet16(cs, 0x4562);
-     dx += memoryAGet16(cs, 0x4564) + flags.carry;
+@@ -8450,7 +8473,8 @@ void sub_1f472() // 1b0c:43b2
      tx = pop();
      flags.carry = tx & 1;
      flags.zero = (tx << 1) & 1;
 -    assert(pop() == 0x7777);
-+//    assert(pop() == 0x7777);
-+    // ctx continues 1b0c:42af gggg seq8
-+    //assert(0);
-+    sub_1f36f(); // seq8
++    // ctx continues 1b0c:42af
++    sub_1f36f();
  }
--void sub_1f4b3() // 1b0c:43f3
-+void sub_1f4b3() // 1b0c:43f3 - seq6 noexit???
+ void sub_1f4b3() // 1b0c:43f3
  {
-     ah = 0x3f;
-     bx = memoryAGet16(cs, 0x42ba);
-@@ -7998,7 +8040,7 @@ loc_1f4c2: // 1b0c:4402
+@@ -8464,7 +8488,7 @@ loc_1f4c2: // 1b0c:4402
      if (ax != 0x0101)
          goto loc_1f4ce;
      flags.carry = false;
 -    sub_1f472();
-+    sub_1f472_ctxswitch3(); // <-- seq7 ctx switch
++    sub_1f472_ctxswitch3();
  loc_1f4ce: // 1b0c:440e
      if (ax != 0x0100)
          goto loc_1f4ed;
-@@ -8143,7 +8185,7 @@ loc_1f605: // 1b0c:4545
+@@ -8609,7 +8633,7 @@ loc_1f605: // 1b0c:4545
      if (memoryAGet16(cs, 0x4564) != 0)
          return;
      flags.carry = false;
@@ -343,7 +323,7 @@ index f069192..dc11c41 100644
  }
  void sub_1f626() // 1b0c:4566
  {
-@@ -8247,6 +8289,7 @@ void sub_1f6d9() // 1b0c:4619
+@@ -8713,6 +8737,7 @@ void sub_1f6d9() // 1b0c:4619
      ds = pop();
      sub_1fb2b();
      es = pop();
@@ -351,22 +331,28 @@ index f069192..dc11c41 100644
  }
  void sub_1f6fc() // 1b0c:463c
  {
-@@ -9409,7 +9452,8 @@ void sub_1ffbb() // 1b0c:4efb
+@@ -9875,7 +9900,6 @@ void sub_1ffbb() // 1b0c:4efb
  {
      goto loc_1ffbb;
  loc_1fb60: // 1b0c:4aa0
 -    stop(/*override stack*/);
-+//    printf("Check stack!!\n");
-+   // stop(/*override stack*/);
      ds = pop();
      cx = pop();
      bx = pop();
-@@ -9447,7 +9491,7 @@ void sub_1ffec() // 1b0c:4f2c
+@@ -9913,7 +9937,7 @@ void sub_1ffec() // 1b0c:4f2c
  {
      goto loc_1ffec;
  loc_1fb60: // 1b0c:4aa0
 -    stop(/*override stack*/);
 +//    stop(/*override stack*/);
+     ds = pop();
+     cx = pop();
+     bx = pop();
+@@ -9939,7 +9963,6 @@ void sub_20003() // 1b0c:4f43
+ {
+     goto loc_20003;
+ loc_1fb60: // 1b0c:4aa0
+-    stop(/*override stack*/);
      ds = pop();
      cx = pop();
      bx = pop();

@@ -85,7 +85,7 @@ public:
         if (q++ > 100)
         {
             q = 0;
-            _sync();
+            //_sync();
         }
     }
 
@@ -153,7 +153,7 @@ public:
         
         static int t=0;
         if (t++ > 8000){
-            t = 0; _sync();
+//            t = 0; _sync();
         }
     }
 
@@ -438,8 +438,8 @@ public:
         {
             if ( (data & 0x00ff) == 0x0c )
             {
-                SetAddrHi( data >>8 );
                 _sync();
+                SetAddrHi( data >>8 );
                 return true;
             }
             if ( (data & 0x00ff) == 0x0d )
@@ -756,7 +756,7 @@ public:
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
         static int q = 0;
-        if (q++ > 5000)
+        if (q++ > 500)
         {
 //            _sync();
             q= 0;
@@ -901,7 +901,7 @@ public:
         }
         if (port == 0x3c8)
         {
-            //_sync();
+//            _sync();
             //std::cout << "Set write color " << (int)data << "\n";
             colorindex = data*3;
             return true;
@@ -930,7 +930,7 @@ public:
         static int q = 0;
         if (q++ > 5000)
         {
-            _sync();
+//            _sync();
             q= 0;
         }
     }

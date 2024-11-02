@@ -11,6 +11,7 @@
 #include <list>
 //#include "game/game.h"
 #include "controls.h"
+void sub_1f16c();
 
 bool tracenow = false;
 namespace CicoContext{
@@ -38,6 +39,31 @@ int newkey = -1;
 
 void _sync()
 {
+//    static int tick = 0;
+//    if (tick++ > 4)
+//    {
+//        sub_1f16c();
+//        tick = 0;
+//    }
+    /*
+    memoryASet(ds, 0x3259, memoryAGet(ds, 0x3259) + 1);
+    memoryASet16(ds, 0x325d, memoryAGet16(ds, 0x325d) + 1);
+    memoryASet(ds, 0x325a, memoryAGet(ds, 0x325a) + 1);
+    if (memoryAGet(ds, 0x325a) == 0)
+     memoryASet16(ds, 0x325f, memoryAGet16(ds, 0x325f) + 1);
+     */
+    
+    static int tick = 0;
+    if (tick++%3==0)
+    {
+        CicoContext::ctx->memory8(0x1b0c, 0x3259)++;
+        CicoContext::ctx->memory16(0x1b0c, 0x325d)++;
+        CicoContext::ctx->memory8(0x1b0c, 0x325a)++;
+        if (CicoContext::ctx->memory8(0x1b0c, 0x325a)==0)
+            CicoContext::ctx->memory8(0x1b0c, 0x325f)++;
+    }
+
+    
     for (int y=0; y<200; y++)
       for (int x=0; x<320; x++)
         mSdl.SetPixel(x, y, mVideo->GetPixel(x, y));
@@ -254,6 +280,10 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
     {
         printf("OVERLAY write8 %04x:%04x\n", seg, ofs);
     }
+    if (seg*16+ofs == 0x11180 + 96)
+    {
+        printf("xxxx\n");
+    }
 
 //    assert (seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
@@ -273,6 +303,10 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
     if (seg*16+ofs >= 0x04dd0 && seg*16+ofs < 0x04dd0+4096)
     {
         printf("OVERLAY write16 %04x:%04x\n", seg, ofs);
+    }
+    if (seg*16+ofs == 0x11180 + 96)
+    {
+        printf("xxxx\n");
     }
 
 //    assert(seg >= 0x01ed && seg < 0xa000);
@@ -295,7 +329,7 @@ void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 }
 
 uint8_t& cicocontext_t::memory8(int seg, int ofs){
-    if (seg*16+ofs == 0x10000+0x112 ||seg*16+ofs == 0x10000+0x113 )
+    if (seg*16+ofs == 0x1b0c0+0x325a)
     {
         int f = 9;
     }
@@ -833,7 +867,7 @@ void cicocontext_t::out(int port, uint16_t val)
     {
         return;
     }
-    printf("skip write %x, %x\n", port, val);
+//    printf("skip write %x, %x\n", port, val);
 }
 void cicocontext_t::out(int port, uint8_t val)
 {
@@ -850,7 +884,7 @@ void cicocontext_t::out(int port, uint8_t val)
     // titus uses for checking vga support
 //    if (mVga.PortWrite8(port, val))
 //        return;
-    printf("skip write %x, %x\n", port, val);
+//    printf("skip write %x, %x\n", port, val);
     
 //    if (port == 0x201 || port == 0x388 || port == 0x389)
 //        return;
@@ -1145,7 +1179,19 @@ void CicoContext::cicocontext_t::das()
 void CicoContext::cicocontext_t::daa()
 {
     // TODO: set carry before!
-
+    int oldcf = ctx->carry;
+    if ((ctx->a.r8.l & 0xf) > 9)
+    {
+        ctx->a.r8.l += 6;
+        ctx->carry = ctx->a.r8.l < 6;
+    }
+    if ((ctx->a.r8.l > 0x99) || oldcf)
+    {
+        ctx->a.r8.l += 0x60;
+        ctx->carry = true;
+    } else {
+        ctx->carry = false;
+    }
 }
 namespace CicoContext {
 void cicocontext_t::mul(uint8_t r)
@@ -1267,13 +1313,15 @@ uint16_t cicocontext_t::ror(uint16_t r, int l)
 }
 void cicocontext_t::sync(void)
 {
+//    assert(0);
 //    memory16(0x1f86, 0x8dd8)++;
 //    memory16(0x1000, 0x35e2)++;
+//    sub_1f16c();
     _sync();
 }
 void cicocontext_t::load(const char* path, const char* file, int size)
 {   
-    assert(0);
+//    assert(0);
     char fpath[1024];
     sprintf(root, path);
     sprintf(fpath, "%s/%s", path, file);
