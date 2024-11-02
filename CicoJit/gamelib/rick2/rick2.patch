@@ -1,8 +1,8 @@
-diff --git a/./rick2.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
-index e088429..54c1494 100644
---- a/./rick2.cpp
-+++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicorun/cicorun/./game.cpp
-@@ -2315,7 +2315,7 @@ void sub_16222()
+diff --git a/./rick2.cpp.orig b/./rick2.cpp
+index 173819b..0fa70cc 100644
+--- a/./rick2.cpp.orig
++++ b/./rick2.cpp
+@@ -2329,7 +2329,7 @@ void sub_16222()
      al &= 0x03;
      if (al != 0)
          goto loc_1623e;
@@ -11,14 +11,13 @@ index e088429..54c1494 100644
      return;
  loc_1623e:
      si += 0x0004;
-@@ -2571,10 +2571,13 @@ loc_163f5:
+@@ -2585,11 +2585,12 @@ loc_163f5:
      ax = pop();
+     tl = al;
      al--;
-     if (al == 0)
-+    {
-+        flags.carry = false;
++    flags.carry = tl == 0;
+     if (tl == 1)
          goto loc_16406;
-+    }
      goto loc_1623e;
  loc_16406:
 -    stop(/*inject ret*/);
@@ -26,7 +25,7 @@ index e088429..54c1494 100644
  }
  void sub_16407()
  {
-@@ -3833,6 +3836,7 @@ loc_16d3a:
+@@ -3848,6 +3849,7 @@ loc_16d3a:
      memoryASet(ds, 0x97da, 0x01);
      cx = 0x01e0;
  loc_16d57:
@@ -34,7 +33,7 @@ index e088429..54c1494 100644
      push(cx);
      sub_19b1c();
      sub_19bdc();
-@@ -8200,6 +8204,7 @@ loc_19a10:
+@@ -8218,6 +8220,7 @@ loc_19a10:
  loc_19a45:
      memoryASet(ds, 0x97da, 0x01);
  loc_19a4b:
@@ -42,7 +41,7 @@ index e088429..54c1494 100644
      sub_19bdc();
      if (!(al & 0x10))
          goto loc_19a55;
-@@ -8431,6 +8436,10 @@ loc_19c43:
+@@ -8450,6 +8453,10 @@ loc_19c43:
  }
  void sub_19e18()
  {
@@ -53,7 +52,7 @@ index e088429..54c1494 100644
      memoryASet16(ds, 0x9a16, 0x0000);
      callIndirect(cs, memoryAGet16(ds, 0x0026));
  loc_19e22:
-@@ -9963,6 +9972,7 @@ loc_1bf8f:
+@@ -9983,6 +9990,7 @@ loc_1bf8f:
  }
  void sub_1bfa0()
  {
@@ -61,7 +60,7 @@ index e088429..54c1494 100644
      push(dx);
      flags.interrupts = false;
      al = 0x00;
-@@ -10131,6 +10141,9 @@ loc_1c175:
+@@ -10151,6 +10159,9 @@ loc_1c175:
  }
  void sub_1c1a2()
  {
@@ -71,7 +70,7 @@ index e088429..54c1494 100644
      ax = 0x1040;
      ds = ax;
      sub_1bf7c();
-@@ -10234,7 +10247,7 @@ loc_1c2d3:
+@@ -10254,7 +10265,7 @@ loc_1c2d3:
      goto loc_1c2e2;
      //   gap of 7 bytes
  loc_1c2e2:
@@ -80,7 +79,7 @@ index e088429..54c1494 100644
  loc_1c2e5:
      callIndirect(cs, memoryAGet16(ds, 0x0002));
      si = 0xbdf6;
-@@ -10265,7 +10278,7 @@ loc_1c312:
+@@ -10285,7 +10296,7 @@ loc_1c312:
      memoryASet16(ds, 0xab2b, 0x0001);
  loc_1c31f:
      sub_196dd();
@@ -89,7 +88,7 @@ index e088429..54c1494 100644
      memoryASet(ds, 0xa860, 0x01);
      sub_1c4e1();
      callIndirect(cs, memoryAGet16(ds, 0x002a));
-@@ -10290,9 +10303,9 @@ loc_1c34b:
+@@ -10310,9 +10321,9 @@ loc_1c34b:
      ax = memoryAGet16(ds, 0xbdf2);
      sub_1aecd();
      callIndirect(cs, memoryAGet16(ds, 0x0028));

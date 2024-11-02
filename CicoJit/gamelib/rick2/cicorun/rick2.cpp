@@ -231,7 +231,7 @@ void sub_1c4e2();
 
 void callIndirect(int seg, int ofs)
 {
-    assert(seg == 0x1040);
+    if(seg == 0x1040)
     switch (ofs)
     {
         case 0x124: sub_10524(); return;
@@ -275,7 +275,7 @@ void callIndirect(int seg, int ofs)
         default:
             break;
     }
-    assert(seg == 0x1040);
+    if(seg == 0x1040)
     switch (ofs)
     {
         case 0x9d20: sub_1a120(); return;
@@ -299,7 +299,7 @@ void callIndirect(int seg, int ofs)
     assert(0);
 }
 // INJECT: Error: cannot inject carry flag in sub_16222()!
-// INJECT: Error: cannot inject flag in sub_16222() because of `being label!
+// INJECT: Error: cannot inject flag in sub_16222() because of being label!
 void sub_10524()
 {
     ah = 0x0f;
@@ -775,8 +775,9 @@ loc_1090f:
     cx = bp;
     rep_movsb<MemAuto, MemAuto, DirAuto>();
     di += bx;
+    tx = dx;
     dx--;
-    if (dx != 0)
+    if (tx != 1)
         goto loc_1090f;
     es = pop();
     ds = pop();
@@ -1047,8 +1048,9 @@ loc_10b1e:
     di = pop();
     si = pop();
     di++;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10b0d;
     dx++;
     dx <<= 1;
@@ -1092,8 +1094,9 @@ loc_10b46:
     di = pop();
     si = pop();
     di++;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10b46;
     di += 0x0120;
 loc_10b80:
@@ -1125,8 +1128,9 @@ loc_10ba0:
     di = pop();
     si = pop();
     di++;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10b8f;
 loc_10bae:
     es = pop();
@@ -1246,8 +1250,9 @@ loc_10cad:
     bx += 0x000a;
     si += 0x0026;
     di += 0x0008;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10cad;
     es = pop();
     ds = pop();
@@ -1276,8 +1281,9 @@ loc_10ce3:
     bx += 0x000a;
     si += 0x0026;
     di += 0x0008;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10ce3;
     es = pop();
     ds = pop();
@@ -1480,16 +1486,18 @@ loc_10e4f:
     di = pop();
     si = pop();
     di++;
+    tl = cl;
     cl--;
-    if (cl != 0)
+    if (tl != 1)
         goto loc_10e4f;
     di = pop();
     di += 0x0140;
     si = pop();
     si += 0x0020;
     cx = pop();
+    tl = ch;
     ch--;
-    if (ch != 0)
+    if (tl != 1)
         goto loc_10e4c;
     es = pop();
     ds = pop();
@@ -1512,8 +1520,9 @@ loc_10e91:
     si = pop();
     si += 0x0028;
     di += 0x0028;
+    tx = bp;
     bp--;
-    if (bp != 0)
+    if (tx != 1)
         goto loc_10e91;
     es = pop();
     ds = pop();
@@ -1758,8 +1767,9 @@ loc_112c9:
         goto loc_11291;
     di += bp;
     cx = pop();
+    tx = cx;
     cx--;
-    if (cx != 0)
+    if (tx != 1)
         goto loc_1128d;
 }
 void sub_112d6()
@@ -1844,8 +1854,9 @@ loc_11335:
     si += 0x0014;
     di += 0x0014;
     cx = pop();
+    tx = cx;
     cx--;
-    if (cx == 0)
+    if (tx == 1)
         goto loc_11373;
     goto loc_112e6;
 loc_11373:
@@ -1944,8 +1955,9 @@ loc_15f80:
         goto loc_15f68;
 loc_15f87:
     bx += 0x0004;
+    tl = al;
     al--;
-    if (al != 0)
+    if (tl != 1)
         goto loc_15f87;
     goto loc_15f68;
 loc_15f90:
@@ -2031,8 +2043,9 @@ loc_15ff8:
         goto loc_15ff1;
 loc_16013:
     bx += 0x0004;
+    tl = al;
     al--;
-    if (al != 0)
+    if (tl != 1)
         goto loc_16013;
     goto loc_15ff1;
 loc_1601c:
@@ -2301,7 +2314,7 @@ loc_1621c:
     sub_1691d();
 }
 // INJECT: Error: cannot inject carry flag in sub_16222()!
-// INJECT: Error: cannot inject flag in sub_16222() because of `being label!
+// INJECT: Error: cannot inject flag in sub_16222() because of being label!
 void sub_16222()
 {
     push(memoryAGet16(ds, 0x54f4));
@@ -2570,12 +2583,11 @@ loc_163f5:
     push(ax);
     memoryASet16(ds, 0x54f8, pop());
     ax = pop();
+    tl = al;
     al--;
-    if (al == 0)
-    {
-        flags.carry = false;
+    flags.carry = tl == 0;
+    if (tl == 1)
         goto loc_16406;
-    }
     goto loc_1623e;
 loc_16406:
     return;
@@ -5565,8 +5577,9 @@ loc_17d4c:
 }
 void sub_17d53()
 {
+    tx = memoryAGet16(ds, 0x7629);
     memoryASet16(ds, 0x7629, memoryAGet16(ds, 0x7629) - 1);
-    if (memoryAGet16(ds, 0x7629) == 0)
+    if (tx == 1)
         goto loc_17d5b;
     flags.carry = false;
     return;
@@ -7514,8 +7527,9 @@ loc_1928c:
     cx = 0x0004;
     rep_movsb<MemAuto, MemAuto, DirAuto>();
     di += 0x001c;
+    tx = dx;
     dx--;
-    if (dx != 0)
+    if (tx != 1)
         goto loc_1928c;
     dx = pop();
     di = bp;
@@ -7549,8 +7563,9 @@ loc_192c4:
     cx = 0x0004;
     rep_movsb<MemAuto, MemAuto, DirAuto>();
     di += 0x001c;
+    tx = dx;
     dx--;
-    if (dx != 0)
+    if (tx != 1)
         goto loc_192c4;
     di += 0xff84;
     cx = bp;
@@ -8300,8 +8315,9 @@ loc_19b10:
     if (al == 0)
         goto loc_19b10;
     ax = pop();
+    tx = ax;
     ax--;
-    if (ax != 0)
+    if (tx != 1)
         goto loc_19afb;
     ax = pop();
     dx = pop();
@@ -9752,8 +9768,9 @@ loc_1ba58:
         goto loc_1bac7;
     if (al != 0xff)
         goto loc_1ba72;
+    tx = memoryAGet16(ds, di + 10);
     memoryASet16(ds, di + 10, memoryAGet16(ds, di + 10) - 1);
-    if (memoryAGet16(ds, di + 10) != 0)
+    if (tx != 1)
         goto loc_1ba6a;
     goto loc_1bb3f;
 loc_1ba6a:

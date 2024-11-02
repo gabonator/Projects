@@ -339,6 +339,11 @@ public:
             //INT 10,5 - Select Active Display Page
             return true;
         }
+        if (ctx->a.r16 == 0x1001)
+        {
+            // set border
+            return true;
+        }
 
         printf("not implemented!\n");
         assert(0);
@@ -524,6 +529,11 @@ public:
         if (crtReg == 0x0c)
         {
             return cfgAddr>>8;
+        }
+        if (port == 0x3d5)
+        {
+            printf("skip read 3d5\n");
+            return 0;
         }
         assert(0);
         return 0;

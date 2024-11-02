@@ -1253,6 +1253,10 @@ uint16_t cicocontext_t::ror(uint16_t r, int l)
 }
 void cicocontext_t::sync(void)
 {
+    memory16(0x2ec1, 0x2b5e)++;
+    memory16(0x2ec1, 0x2b60)++;
+    memory16(0x2ec1, 0x2b60)%=0x20;
+
 //    memory16(0x1f86, 0x8dd8)++;
     _sync();
 }
