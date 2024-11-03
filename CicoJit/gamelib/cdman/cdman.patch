@@ -1,0 +1,60 @@
+diff --git a/./cdman.clean b/cicorun/cdman.cpp
+index d319877..cac6d21 100644
+--- a/./cdman.clean
++++ b/cicorun/cdman.cpp
+@@ -543,6 +543,7 @@ loc_1413e:
+     sub_158f3();
+ loc_14147:
+     sub_14587();
++    sync();
+     if (memoryAGet(ds, 0x0063) == 0x01)
+         goto loc_141d0;
+     sub_16202();
+@@ -6749,6 +6750,7 @@ loc_17211:
+     si = pop();
+     si += 0x0004;
+     cx = pop();
++    sync();
+     if (--cx)
+         goto loc_17211;
+     cx = 0x0005;
+@@ -6757,6 +6759,7 @@ loc_17231:
+     sub_15ecc();
+     memoryASet16(ds, 0x111e, 0x0064);
+     sub_1778e();
++    sync();
+     cx = pop();
+     if (al == 0x1b)
+         return;
+@@ -7457,6 +7460,7 @@ loc_1783d:
+ loc_17841:
+     if (--cx)
+         goto loc_17841;
++    sync();
+     if (memoryAGet(ds, 0x1449) == 0x00)
+         goto loc_17853;
+     ah = 0x01;
+@@ -7529,6 +7533,7 @@ loc_178ff:
+     sub_17a24();
+     sub_17c31();
+     sub_180e0();
++    sync();
+     if (ax != 0xffff)
+         goto loc_1791f;
+     if (memoryAGet(ds, 0x144a) != 0x01)
+@@ -8141,6 +8146,7 @@ loc_17dad:
+     cx = pop();
+     if (--cx)
+         goto loc_17d77;
++    sync();
+     cx = pop();
+     if (--cx)
+         goto loc_17d5f;
+@@ -8701,6 +8707,7 @@ loc_1819b:
+ void sub_181a3()
+ {
+ loc_181a3:
++    sync();
+     sub_180e0();
+     if (ax != 0xffff)
+         goto loc_181b0;

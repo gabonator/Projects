@@ -257,7 +257,7 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                         strcpy(replace, ToCString(x86.operands[1]).c_str());
                 } else {
                     // capstone 5
-                    if (x86.opcode[0] == 0xd0 || x86.opcode[0] == 0xd1) // RCL
+                    if (x86.opcode[0] == 0xd0 || x86.opcode[0] == 0xd1 || x86.opcode[0] == 0xfe) // RCL, INC
                         strcpy(replace, "1");
                     else
                     {
@@ -1589,6 +1589,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 tempCond = "$tmp0 == 1";
             if (inst->mId == X86_INS_DEC && op == X86_INS_JNE)
                 tempCond = "$tmp0 != 1";
+            if (inst->mId == X86_INS_DEC && op == X86_INS_JGE)
+                tempCond = "($sig0)$tmp0 + ($sig0)$rd1 >= 0";
 
             if (tempCond)
             {
