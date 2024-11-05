@@ -1,0 +1,1 @@
+pascal, 640x480 4bpp, egavga bgi

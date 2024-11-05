@@ -267,6 +267,11 @@ std::string vassign(const cs_x86& x86, const char* fmt_, va_list args)
                 }
             }
         }
+        if (strcmp(tok, "rd2") == 0)
+        {
+            assert(x86.op_count >= 3);
+            strcpy(replace, ToCString(x86.operands[2]).c_str());
+        }
         if (strcmp(tok, "sig0") == 0)
         {
             assert(x86.op_count >= 1);
@@ -2288,17 +2293,28 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         switch (instr->mId)
         {
             case X86_INS_DIV:
+                assert(x86.op_count == 1);
                 text.push_back(assign(x86, "div($reg0);"));
                 break;
             case X86_INS_IDIV:
+                assert(x86.op_count == 1);
                 assert(x86.operands[0].size == 1 || x86.operands[0].size == 2);
                 text.push_back(assign(x86, "idiv($rd0);"));
                 break;
             case X86_INS_IMUL:
                 //assert(x86.operands[0].size == 1);
-                text.push_back(assign(x86, "imul($rd0);"));
+                if (x86.op_count == 1)
+                    text.push_back(assign(x86, "imul($rd0);"));
+                else if (x86.op_count == 2)
+                    text.push_back(assign(x86, "imul($rd0, $rd1);"));
+                else if (x86.op_count == 3)
+                    text.push_back(assign(x86, "imul($rd0, $rd1, $rd2);"));
+                else
+                    assert(0);
                 break;
             case X86_INS_MUL:
+                //assert(x86.operands[0].size == 1);
+                assert(x86.op_count == 1);
                 text.push_back(assign(x86, "mul($rd0);"));
                 break;
             case X86_INS_CWDE:
@@ -3279,8 +3295,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 }
                 text.push_back("daa();");
                 break;
+            case X86_INS_LEAVE:
+                assert(x86.op_count == 0);
+                text.push_back("sp = bp;");
+                text.push_back("bp = pop();");
+                break;
 
-                //            case X86_INS_LCALL:
             case X86_INS_DAS:
             case X86_INS_SCASW:
                 
@@ -3289,7 +3309,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_FIDIV:
             case X86_INS_BOUND:
             case X86_INS_ENTER:
-            case X86_INS_LEAVE:
+
             case X86_INS_FCOMP:
             case X86_INS_CMPSW:
             case X86_INS_FSTP:
