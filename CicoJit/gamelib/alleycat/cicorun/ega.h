@@ -1,5 +1,5 @@
 void _sync();
-
+extern int cgaWrites;
 class CVideoAdapter
 {
 public:
@@ -150,6 +150,12 @@ public:
         assert(dwAddr < 17000);
 //        dwAddr %= 16000;
         memory[dwAddr] = bWrite;
+        if (cgaWrites++ > 5000)
+        {
+            int f = 9;
+            _sync();
+            cgaWrites = 0;
+        }
         
         static int t=0;
         if (t++ > 8000){
