@@ -521,6 +521,7 @@ public: // remove!
     int mSize;
     char mMnemonic[64];
     char mOperands[64];
+    uint8_t mBytes[24];
     address_t mAddress;
     address_t mNextInstr;
     address_t mBranchInstr;
@@ -564,6 +565,8 @@ public:
         //mAddress = p->address;
         strcpy(mMnemonic, p->mnemonic);
         strcpy(mOperands, p->op_str);
+        memset(mBytes, 0, sizeof(mBytes));
+        memcpy(mBytes, p->bytes, mSize);
         mNextInstr = {addr.segment, addr.offset + p->size};
         
         cs_x86 *x86 = &(p->detail->x86);
@@ -660,9 +663,15 @@ public:
     void Dump() const
     {
         if (mLabel)
-            printf("            loc_%x:\n", mAddress.segment*0x10+mAddress.offset);
-        printf("%04x:%04x   %s %s\n",
+            printf("                            loc_%x:\n", mAddress.segment*0x10+mAddress.offset);
+        char strBytes[128];
+        char *pBytes = strBytes;
+        for (int i=0; i<mSize; i++)
+            pBytes += snprintf(pBytes, strBytes+sizeof(strBytes)-pBytes, "%02x ", mBytes[i]);
+        
+        printf("%04x:%04x  %-16s %s %s\n",
                mAddress.segment, mAddress.offset,
+               strBytes,
                //mDetail.opcode[0], mDetail.opcode[1], mDetail.opcode[2], mDetail.opcode[3],
                mMnemonic, mOperands);
     }
@@ -1602,7 +1611,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 if (inst->mInject != inject_t::temp)
                 {
                     inst->mInject = inject_t::temp;
-                    return format("stop(/*inject_t::temp - %s %*/)", inst->mMnemonic, inst->mOperands);
+                    return format("stop(/*inject_t::temp - %s %s*/)", inst->mMnemonic, inst->mOperands);
                 } else
                     return assign(x86, tempCond); // do calc in larger data type
             }
@@ -2240,7 +2249,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
 //                        text.push_back(assign(x86, "flags.zero = $rd0 == 0;"));
                         break;
                     default:
-                        assert(0);
+                        text.push_back(assign(x86, "flags.zero = stop(\"43\");"));
                         break;
                 }
                 any = true;
@@ -2795,7 +2804,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     } else {
                         if (x86.operands[0].type == X86_OP_MEM)
                         {
-                            text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
+                            if (segofs_in_comment)
+                                text.push_back(assign(x86, "callIndirect(cs, $rd0); // %04x:%04x", instr->mAddress.segment, instr->mAddress.offset));
+                            else
+                                text.push_back(assign(x86, "callIndirect(cs, $rd0);"));
                             text.push_back(assign(x86, "return;"));
                         }
                         else
@@ -3023,11 +3035,19 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 keepLastCompare = true;
                 break;
             case X86_INS_LAHF:
+                if (!lastCompare)
+                {
+                    text.push_back("stop(\"check carry and zero\");");
+                } else {
+                    lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::zero | (int)inject_t::carry);
+                }
                 text.push_back("ah = flags.carry | (flags.zero << 1);");
                 break;
             case X86_INS_SAHF:
                 text.push_back("flags.carry = ah & 1;");
                 text.push_back("flags.zero = (ah >> 1) & 1;");
+                lastCompare = instr;
+                keepLastCompare = true;
                 break;
             case X86_INS_RCR:
                 // TODO: prev carry!
@@ -3035,7 +3055,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 //lastCompare->mInject = inject_t((int)lastCompare->mInject | (int)inject_t::carry);
                 if (!lastCompare || (lastCompare->mId != X86_INS_RCR &&
                                      lastCompare->mId != X86_INS_STC &&
-                                     lastCompare->mId != X86_INS_CLC))
+                                     lastCompare->mId != X86_INS_CLC &&
+                                     lastCompare->mId != X86_INS_SAHF))
                 {
                     if (lastCompare && lastCompare->mId == X86_INS_AND)
                     {
@@ -3606,6 +3627,8 @@ int main(int argc, const char * argv[]) {
                     index = X86_REG_BP;
                 if (strcmp(jumpSelector, "ax") == 0)
                     index = X86_REG_AX;
+                if (strcmp(jumpSelector, "si") == 0)
+                    index = X86_REG_SI;
                 if (strcmp(jumpSelector, "indirect") == 0)
                 {
                     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});

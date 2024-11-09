@@ -10,6 +10,7 @@
 #include "cicoemu.h"
 #include "ega.h"
 #include <list>
+#include "controls.h"
 //#include "game/game.h"
 
 namespace CicoContext{
@@ -38,55 +39,34 @@ void _sync()
     mSdl.Loop();
 }
 
-void onKey(int k, int p)
+void CicoContext::cicocontext_t::daa()
 {
-    if (k == SDL_SCANCODE_ESCAPE) exit(1);
-      if (p)
-          switch (k)
-          {
-              case SDL_SCANCODE_ESCAPE: keyBuffer.push_back(27); break;
-              case SDL_SCANCODE_RETURN: keyBuffer.push_back(13); break;
-
-  //            case SDL_SCANCODE_SPACE: lastKey = 57; break;
-              case SDL_SCANCODE_LEFT:
-                 //a57:9c8 = 2|0xfffe, a57:9ca = 0/2
-                  keyBuffer.push_back(0);
-                  keyBuffer.push_back('M'); break;
-              case SDL_SCANCODE_RIGHT:
-                  keyBuffer.push_back(0);
-                  keyBuffer.push_back('K'); break;
-              case SDL_SCANCODE_UP:
-                  keyBuffer.push_back(0);
-                  keyBuffer.push_back('H'); break;
-              case SDL_SCANCODE_DOWN:
-                  keyBuffer.push_back(0);
-                  keyBuffer.push_back('P'); break;
-                  
-//              case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3c) = p; break;
-//              case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3d) = p; break;
-//              case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3e) = p; break;
-//              case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3f) = p; break;
-//              case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x40) = p; break;
-//              case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x41) = p; break;
-//              case SDL_SCANCODE_SPACE: CicoContext::ctx->memory8(0x1228, 0x8244) = p; break;
-          }
-
-    switch (k)
+    // TODO: set carry before!
+}
+void CicoContext::cicocontext_t::das()
+{
+    // TODO: set carry before!
+    //https://www.felixcloutier.com/x86/das
+    int oldal = ctx->a.r8.l;
+    int oldcf = ctx->carry;
+    int af = 0;
+    if ((ctx->a.r8.l & 0x0f) > 9 || af == 1)
     {
-        case SDL_SCANCODE_LEFT:
-            CicoContext::ctx->memory16(0xa57, 0x9c8) = p ? -2 : 0;
-            break;
-        case SDL_SCANCODE_RIGHT:
-            CicoContext::ctx->memory16(0xa57, 0x9c8) = p ? 2 : 0;
-            break;
-        case SDL_SCANCODE_UP:
-            CicoContext::ctx->memory16(0xa57, 0x9c8+4) = p ? 1 : 0;
-            break;
+        ctx->a.r8.l -= 6;
+        ctx->carry = false;
+    } else
+        af = 0;
+    
+    if (oldal > 0x99 || oldcf)
+    {
+        ctx->a.r8.l -= 0x60;
+        ctx->carry = true;
     }
 }
+
 namespace CicoContext
 {
-uint8_t memoryBiosGet8(int seg, int ofs)
+uint8_t _memoryBiosGet8(int seg, int ofs)
 {
     if (seg == 0xffff && ofs == 0x000e)
         return 0xfc;
@@ -120,7 +100,7 @@ uint8_t memoryBiosGet8(int seg, int ofs)
     assert(0);
     return 0;
 }
-uint8_t memoryPsp(int seg, int ofs)
+uint8_t _memoryPsp(int seg, int ofs)
 {
     if (seg == 0x1d3)
     {
@@ -154,10 +134,10 @@ uint8_t memoryPsp(int seg, int ofs)
      */
     assert(0);
 }
-uint16_t memoryPsp16(int seg, int ofs)
+uint16_t _memoryPsp16(int seg, int ofs)
 {
     if (seg==0x1d3)
-        return memoryPsp(seg, ofs) | (memoryPsp(seg, ofs+1)<<8);
+        return _memoryPsp(seg, ofs) | (_memoryPsp(seg, ofs+1)<<8);
     
     assert(seg == 0x1dd);
     // https://en.wikipedia.org/wiki/Program_Segment_Prefix
@@ -175,11 +155,39 @@ uint16_t memoryPsp16(int seg, int ofs)
     }
 }
 
+
+uint8_t CicoContext::cicocontext_t::memoryBiosGet8(int seg, int ofs)
+{
+    if ((seg == 0x01dd || seg == _loadAddress || seg == 0x01d3) && ofs < 256)
+        return _memoryPsp(seg, ofs);
+    return _memoryBiosGet8(seg, ofs);
+}
+void CicoContext::cicocontext_t::memoryBiosSet8(int seg, int ofs, uint8_t val)
+{
+    //    assert(0);
+}
+uint16_t _memoryBiosGet16(int seg, int ofs);
+uint16_t CicoContext::cicocontext_t::memoryBiosGet16(int seg, int ofs)
+{
+    if ((seg == 0x01dd || seg == _loadAddress || seg == 0x01d3) && ofs < 256)
+        return _memoryPsp16(seg, ofs);
+    return _memoryBiosGet16(seg, ofs);
+}
+void _memoryBiosSet16(int seg, int ofs, uint16_t);
+
+void CicoContext::cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t val)
+{
+    if ((seg == 0x01dd || seg == _loadAddress) && ofs < 256)
+        assert(0); // ???
+    else
+        _memoryBiosSet16(seg, ofs, val);
+}
+
 uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
 {
     ofs &= 0xffff;
     if ((seg == 0x01ed || seg == 0x01dd || seg == 0x01d3) && ofs < 256)
-        return memoryPsp(seg, ofs);
+        return _memoryPsp(seg, ofs);
     else
     if (seg >= 0x01ed && seg < 0xa000)
         return memory8(seg, ofs);
@@ -188,16 +196,16 @@ uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
     else
         return memoryBiosGet8(seg, ofs); // bios
 }
-void memoryBiosSet8(int seg, int ofs, uint8_t v)
+void _memoryBiosSet8(int seg, int ofs, uint8_t v)
 {
     printf("skip bios write %x:%x = %x\n", seg, ofs, v);
 }
-void memoryBiosSet16(int seg, int ofs, uint16_t v)
+void _memoryBiosSet16(int seg, int ofs, uint16_t v)
 {
     printf("skip bios write %x:%x = %x\n", seg, ofs, v);
 }
 
-uint16_t memoryBiosGet16(int seg, int ofs)
+uint16_t _memoryBiosGet16(int seg, int ofs)
 {
     if (seg == 0x0040 && ofs == 0x006c) // timer
         return 0;
@@ -220,7 +228,7 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
     }
     ofs &= 0xffff;
     if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
-        return memoryPsp16(seg, ofs);
+        return _memoryPsp16(seg, ofs);
     else if (seg >= 0x01ed && seg < 0xa000)
         return memory16(seg, ofs);
     else if (seg >= 0xa000 && seg < 0xe000)
@@ -942,8 +950,9 @@ void sub_9014();
 void sub_473c();
 void sub_8fa9();
 void sub_43f0();
-void CicoContext::cicocontext_t::callIndirect(int a)
+void CicoContext::cicocontext_t::callIndirect(int seg, int ofs)
 {
+    int a = seg*16+ofs;
 //    sync();
     switch (a)
     {
@@ -1020,7 +1029,7 @@ void CicoContext::cicocontext_t::aaa()
 namespace CicoContext {
 void cicocontext_t::mul(uint8_t r)
 {
-    int v = r * ctx->a.r16;
+    int v = r * ctx->a.r8.l;
     ctx->a.r16 = v & 0xffff;
 }
 void cicocontext_t::mul(uint16_t r)

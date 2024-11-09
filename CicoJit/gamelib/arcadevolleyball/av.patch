@@ -1,101 +1,94 @@
-diff --git a/./av.cpp b/./cicorun/av.cpp
-index f5b08fc..cf8783e 100644
---- a/./av.cpp
-+++ b/./cicorun/av.cpp
-@@ -70,7 +70,7 @@ void sub_418f();
- void sub_41a0();
+diff --git a/./av.clean b/cicorun/av.cpp
+index 99111d0..da8c48f 100644
+--- a/./av.clean
++++ b/cicorun/av.cpp
+@@ -71,6 +71,7 @@ void sub_41a0();
  void sub_421e();
  void sub_42b2();
--void sub_43e0();
+ void sub_43e0();
 +void sub_43e0_jump();
+ void sub_43f0();
+ void sub_43f5();
  void sub_4430();
- void sub_444c();
- void sub_4452();
-@@ -4018,10 +4018,15 @@ loc_432b:
+@@ -340,13 +341,17 @@ void callIndirect(int seg, int ofs)
+     {
+         case 0x1ed017d: sub_204d(); return;
+         case 0x43e0000: sub_43e0(); return;
+-        case 0x43e0072: sub_4452(); return;
+         case 0x43e0482: sub_4862(); return;
+         case 0x43e0538: sub_4918(); return;
+         case 0x43e0548: sub_4928(); return;
+         case 0x43e07f1: sub_4bd1(); return;
+         case 0x1ed3e92: sub_5d62(); return;
+         case 0x8e60000: sub_8e60(); return;
++        case 0x0a57ff9a:
++            ctx->_cs = pop(); // retf
++            ctx->a.r16 = 0xffff;
++            ctx->b.r16 = 3;
++            return; //0A57:0000FF9A int 33
+         default:
+             break;
+     }
+@@ -471,6 +476,7 @@ loc_1f98: // 01ed:00c8
+     interrupt(0x21);
+     di = pop();
+     di <<= cl;
++    di &= 0xffff;
+     ss = dx;
+     sp = di;
+     sub_68c6();
+@@ -1581,6 +1587,7 @@ void sub_250f() // 01ed:063f
+     push(si);
+     push(di);
+ loc_2511: // 01ed:0641
++    sync();
+     sub_61fb();
+     if (!ax)
+         goto loc_251b;
+@@ -4705,6 +4712,7 @@ loc_4085: // 01ed:21b5
+     sub_2abe();
+     si = 0;
+ loc_40ab: // 01ed:21db
++    sync();
+     if (memoryAGet16(ds, 0x09d4) == 0x0000)
+         goto loc_40b5;
+     goto loc_4168;
+@@ -4793,6 +4801,7 @@ loc_4129: // 01ed:2259
+     di = 0x0001;
+     goto loc_4154;
+ loc_4145: // 01ed:2275
++    sync();
+     if (!di)
+         goto loc_4154;
+     sub_2ff1();
+@@ -5069,9 +5078,15 @@ loc_432b: // 01ed:245b
      si = pop();
      assert(pop() == 0x7777);
  }
 -void sub_43e0() // 043e:0000
 +void sub_43e0()
  {
--    CStackGuardFar sg(0, true);
-     push(0x7777);
+-    CStackGuardFar sg(0, false);
++    push(0x7777);
 +    sub_43e0_jump();
 +}
 +
-+void sub_43e0_jump() // 043e:0000
++void sub_43e0_jump()
 +{
 +    cs = 0x43e;
      push(ds);
      push(cs);
      ds = pop();
-@@ -4030,7 +4035,8 @@ void sub_43e0() // 043e:0000
-     callIndirect(cs*16+memoryAGet16(ds, si + 22));
+@@ -5113,6 +5128,8 @@ void sub_43e0() // 043e:0000
+     }
      bp = pop();
      ds = pop();
--    assert(pop() == 0x7777);
 +    int check = pop();
 +    assert(check== 0x7777 || check == 0xbcde);
      cs = pop();
  }
- void sub_4430() // 043e:0050
-@@ -4226,6 +4232,7 @@ loc_4830:
-     memoryASet(ds, 0x03f2, al);
-     ah = 0x0a;
-     mul(ah);
-+    ax &= 0xff; // wtf!
-     bx = ax;
-     bx += 0x0404;
-     ax = memoryAGet16(ds, bx);
-@@ -4424,7 +4431,7 @@ loc_4ac6:
-     bx++;
- loc_4ad0:
-     memoryASet16(ds, 0x03f6, rol(memoryAGet16(ds, 0x03f6), 0x0001));
--    if (stop(/*1*/))
-+    if (!flags.carry)
-         goto loc_4ae0;
-     cl = memoryAGet(es, bx);
-     cl &= ch;
-@@ -4460,7 +4467,7 @@ loc_4b04:
- loc_4b06:
-     callIndirect(cs*16+memoryAGet16(ds, 0x051e));
-     memoryASet16(ds, 0x03f6, rol(memoryAGet16(ds, 0x03f6), 0x0001));
--    if (stop(/*1*/))
-+    if (!flags.carry)
-         goto loc_4b1a;
-     cl = memoryAGet(es, bx);
-     cl &= ch;
-@@ -4536,9 +4543,9 @@ void sub_46f2() // 043e:0312
- loc_46f6:
-     dl = rol(dl, 0x01);
-     dl = rol(dl, 0x01);
--    stop(/*carry2*/);
-+    flags.carry = !!(dl & 0x80);
-     al = rcl(al, 0x01);
--    if (stop(/*1*/))
-+    if (!flags.carry)
-         goto loc_4700;
-     dl |= bh;
- loc_4700:
-@@ -4685,7 +4692,7 @@ loc_4a71:
-     bp = memoryAGet16(ss, bp - 10);
-     bp++;
-     memoryASet16(ds, 0x03f6, rol(memoryAGet16(ds, 0x03f6), 0x0001));
--    if (stop(/*1*/))
-+    if (!flags.carry)
-         goto loc_4a8b;
-     cl = memoryAGet(es, bx);
-     cl &= ch;
-@@ -6249,7 +6256,7 @@ void sub_61c2() // 01ed:42f2
-     push(bp);
-     bp = sp;
-     si = memoryAGet16(ss, bp + 6);
--    if (stop(/*condition!*/))
-+    if (false) // or si si jl
-         goto loc_61e1;
-     if (si <= 0x0058)
-         goto loc_61d5;
-@@ -6748,7 +6755,7 @@ loc_6536:
+ void sub_43f0() // 043e:0010
+@@ -8826,7 +8843,7 @@ loc_6536: // 01ed:4666
  }
  void sub_653c() // 01ed:466c
  {
@@ -104,7 +97,7 @@ index f5b08fc..cf8783e 100644
      push(0x7777);
      push(bp);
      bp = sp;
-@@ -7232,7 +7239,7 @@ void sub_68ab() // 01ed:49db
+@@ -9310,7 +9327,7 @@ void sub_68ab() // 01ed:49db
  }
  void sub_68c6() // 01ed:49f6
  {
@@ -112,136 +105,136 @@ index f5b08fc..cf8783e 100644
 +    CStackGuard sg(-20, true);
      push(0x7777);
      goto loc_68c6;
- loc_205d:
-@@ -7425,7 +7432,7 @@ loc_68c6:
-     es = memoryAGet16(ds, 0x0084);
-     si = 0x0080;
-     ax = 0;
--    lodsb<MemAuto, DirAuto>(es);
-+    lodsb_es<MemAuto, DirAuto>();
-     ax++;
-     bp = es;
-     tx = si;
-@@ -7480,10 +7487,10 @@ loc_6904:
-     bx++;
- loc_6933:
-     sub_694f();
--    if (stop(/*call - strange cond*/))
-+    if (flags.zero == 0 && flags.carry == 0)
+ loc_205d: // 01ed:018d
+@@ -9561,7 +9578,7 @@ loc_6933: // 01ed:4a63
+     if (!flags.zero && !flags.carry)
          goto loc_693f;
- loc_6938:
--    if (stop(/*1*/))
+ loc_6938: // 01ed:4a68
+-    if (stop(/*1 - jb loc_697a*/))
 +    if (flags.carry)
          goto loc_697a;
      sub_694f();
-     if (stop(/*call - strange cond*/))
-@@ -7522,15 +7529,14 @@ loc_6997:
-     memoryASet16(ss, bp, si);
-     bp += 0x0002;
- loc_699f:
--    lodsb<MemAuto, DirAuto>(ss);
-+    lodsb<MemAuto, DirAuto>();
-     if (--cx && al)
-         goto loc_699f;
--    if (stop(/*1*/))
-+    if (false)
-         goto loc_6997;
- loc_69a7:
+     if (!flags.zero && !flags.carry)
+@@ -9608,7 +9625,7 @@ loc_699f: // 01ed:4acf
+ loc_69a7: // 01ed:4ad7
      ax = 0;
      memoryASet16(ss, bp, ax);
--    stop(/*2*/); // (jmp word ptr cs:[0x49f0]) jump Indirect memoryAGet16(cs, 0x49f0)
+-    callIndirect(cs, memoryAGet16(cs, 0x49f0)); // 01ed:4adc
++//    callIndirect(cs, memoryAGet16(cs, 0x49f0)); // 01ed:4adc - GABO CICO
  }
+ // INJECT: Error: cannot inject flag in sub_694f() because of being label!
  void sub_694f() // 01ed:4a7f
- {
-@@ -7563,6 +7569,7 @@ loc_695a:
+@@ -9633,17 +9650,28 @@ loc_695a: // 01ed:4a8a
+     cx--;
+     al -= 0x22;
+     if (al == 0)
++    {
++        flags.zero = true;
+         goto loc_6976;
++    }
+     al += 0x22;
+     if (al != 0x5c)
++    {
++        flags.zero = false;
+         goto loc_6974;
++    }
+     if (memoryAGet(ds, si) != 0x22)
++    {
++        flags.zero = false;
+         goto loc_6974;
++    }
      lodsb<MemAuto, DirAuto>();
      cx--;
- loc_6974:
++    flags.zero = cx == 0;
+ loc_6974: // 01ed:4aa4
++    flags.carry = false;
+ loc_6976: // 01ed:4aa6
+-    stop(/*inject ret*/);
 +    return;
  }
  void sub_69b1() // 01ed:4ae1
  {
-@@ -8351,7 +8358,8 @@ loc_736b:
+@@ -10435,7 +10463,7 @@ loc_736b: // 01ed:549b
      es = memoryAGet16(ss, bp - 6 + 2);
      ax = memoryAGet16(es, bx + 2);
      memoryASet16(ss, bp - 2, ax);
 -    if (stop(/*condition!*/))
-+    flags.carry = false;
-+    if (flags.carry)
++    if (memoryAGet(es, bx + 6) < 0x01)
          goto loc_73ac;
      if (ax <= 0x0005)
          goto loc_739b;
-@@ -8547,8 +8555,7 @@ void sub_753d() // 01ed:566d
+@@ -10630,8 +10658,12 @@ void sub_753d() // 01ed:566d
          goto loc_75b8;
      bx = ax;
      bx <<= 1;
--    stop(/*2*/); // (jmp word ptr cs:[bx + 0x5690]) jump Indirect memoryAGet16(cs, bx + 22160)
--    //   gap of 20 bytes
-+    assert(bx == 0);
- loc_7574:
-     bx = memoryAGet16(ss, bp + 14);
-     es = memoryAGet16(ss, bp + 14 + 2);
-@@ -9253,9 +9260,9 @@ void sub_7c68() // 01ed:5d98
-     bp = sp;
-     di = memoryAGet16(ss, bp + 14);
-     si = memoryAGet16(ss, bp + 12);
--    if (stop(/*condition!*/))
-+    if (false) // jl after or si, si
-         goto loc_7ca1;
--    if (stop(/*condition!*/))
-+    if (false) // jl after or di, di
-         goto loc_7ca1;
-     ax = memoryAGet16(ss, bp + 16);
-     if (ax > memoryAGet16(ds, 0x0b2b))
-@@ -9684,11 +9691,11 @@ void sub_830d() // 01ed:643d
-     bp = sp;
-     di = memoryAGet16(ss, bp + 14);
-     si = memoryAGet16(ss, bp + 12);
--    if (stop(/*condition!*/))
-+    if (false)
-         goto loc_8330;
-     if ((short)si > (short)0x0002)
-         goto loc_8330;
--    if (stop(/*condition!*/))
-+    if (false)
-         goto loc_8330;
-     if ((short)di <= (short)0x0002)
-         goto loc_8338;
-@@ -9725,7 +9732,7 @@ void sub_834d() // 01ed:647d
-     si = memoryAGet16(ss, bp + 12);
-     if ((short)si > (short)0x000a)
-         goto loc_837c;
--    if (stop(/*condition!*/))
-+    if (false) // jl
-         goto loc_837c;
-     if (!si)
-         goto loc_8385;
-@@ -9974,9 +9981,10 @@ loc_8579:
+-    callIndirect(cs, memoryAGet16(cs, bx + 22160)); // 01ed:568b
+-    return;
++    assert(bx == 0); // gabo??
++loc_7574:
++    bx = memoryAGet16(ss, bp + 14);
++    es = memoryAGet16(ss, bp + 14 + 2);
++    memoryASet16(es, bx, 0x0004);
++    goto loc_75c8;
+     //   gap of 88 bytes
+ loc_75b8: // 01ed:56e8
+     bx = memoryAGet16(ss, bp + 10);
+@@ -10644,6 +10676,13 @@ loc_75b8: // 01ed:56e8
+     ds = pop();
+     assert(pop() == 0x7777);
+     cs = pop();
++    return;
++loc_75c8:
++    bp = pop();
++    ds = pop();
++    assert(pop() == 0x7777);
++    cs = pop();
++
+ }
+ void sub_75cb() // 01ed:56fb
+ {
+@@ -12046,9 +12085,12 @@ loc_8579: // 01ed:66a9
  }
  void sub_858c() // 01ed:66bc
  {
 -    CStackGuardFar sg(0, false);
 -    push(es);
 -    push(bx);
-+    assert(bx == 0x0072);
++    assert(es == 0x043e && bx == 0x0072);
++//    push(es);
++//    push(bx);
 +    push(cs);
 +    cs = es;
 +    sub_4452();
      cs = pop();
  }
  void sub_858f() // 01ed:66bf
-@@ -10953,15 +10961,28 @@ loc_8e3d:
+@@ -13023,10 +13065,12 @@ loc_8e3d: // 01ed:6f6d
  }
  void sub_8e60() // 08e6:0000
  {
--    stop(/*unk call conv*/);
 +    push(0xbcde);
      push(ds);
      push(cs);
      ds = pop();
      push(si);
 +    int oldsp = sp;
-     callIndirect(cs*16+memoryAGet16(ds, si + 15));
+     switch (si)
+     {
+         case 0: sub_9032(); break;
+@@ -13038,7 +13082,8 @@ void sub_8e60() // 08e6:0000
+         case 12: sub_8f86(); break;
+         case 14: sub_8eda(); break;
+         case 16: sub_8f7d(); break;
+-        case 18: sub_8fa0(); break;
++        case 18: 
++            sub_8fa0(); break;
+         case 20: sub_8fa9(); break;
+         case 22: sub_8ed9(); break;
+         case 24: sub_8ed9(); break;
+@@ -13061,10 +13106,22 @@ void sub_8e60() // 08e6:0000
+         default:
+         assert(0);
+     }
 +    if (sp - oldsp != 0)
 +    {
 +        assert(sp - oldsp == 4);
@@ -249,9 +242,11 @@ index f5b08fc..cf8783e 100644
 +        cs = pop();
 +        return;
 +    }
++
      si = pop();
      ds = pop();
--    stop(); // ljmp cs:[0x49]
+-    stop(/*inject carry*/);
+-    daa();
 +    switch (memoryAGet16(cs, 0x49+2)*16+memoryAGet16(cs, 0x49))
 +    {
 +        case 0x43e0: sub_43e0_jump(); break;
@@ -261,51 +256,102 @@ index f5b08fc..cf8783e 100644
  }
  void sub_8ed9() // 08e6:0079
  {
-@@ -11050,13 +11071,12 @@ void sub_8f74() // 08e6:0114
+@@ -13231,14 +13288,12 @@ void sub_8f7d() // 08e6:011d
  }
  void sub_8f86() // 08e6:0126
  {
 -    CStackGuardFar sg(0, false);
-+    push(0xddaa);
++    push(0x7788);
      goto loc_8f86;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
-+    si = pop(); assert(si == 0xddaa);
++    si = pop(); assert(si == 0x7788);
      si = pop();
      ds = pop();
 -    cs = pop();
      return;
      //   gap of 173 bytes
- loc_8f86:
-@@ -11093,10 +11113,10 @@ loc_8fa0:
+ loc_8f86: // 08e6:0126
+@@ -13256,14 +13311,13 @@ void sub_8f8f() // 08e6:012f
+ }
+ void sub_8fa0() // 08e6:0140
+ {
+-    stop(/*unk call conv*/);
++    CStackGuard sg(0, false);
+     goto loc_8fa0;
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
+-    si = pop();
++    assert(0);
++    si = pop(); assert(pop() == 0x7788);
+     si = pop();
+     ds = pop();
+-    stop(/*unk call conv*/);
+     return;
+     //   gap of 152 bytes
+ loc_8f71: // 08e6:0111
+@@ -13274,22 +13328,19 @@ loc_8fa0: // 08e6:0140
+     sub_9f62();
+     if (!flags.carry)
+         goto loc_8f71;
+-    stop(/*unk call conv*/);
+ }
+ void sub_8fa9() // 08e6:0149
+ {
+-    stop(/*unk call conv*/);
++    push(0x7788);
+     goto loc_8fa9;
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
+-    si = pop();
++    si = pop(); assert(pop() == 0x7788);
+     si = pop();
+     ds = pop();
+-    stop(/*unk call conv*/);
+     return;
+     //   gap of 198 bytes
+ loc_8f9f: // 08e6:013f
+-    stop(/*unk call conv*/);
++    assert(pop() == 0x7788);
+     return;
+     //   gap of 9 bytes
+ loc_8fa9: // 08e6:0149
+@@ -13302,14 +13353,12 @@ loc_8fa9: // 08e6:0149
  }
  void sub_8fb6() // 08e6:0156
  {
--    CStackGuard sg(0, false);
+-    stop(/*unk call conv*/);
 +    push(0xaacc);
      goto loc_8fb6;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
 +    si = pop(); assert(si == 0xaacc);
      si = pop();
      ds = pop();
+-    stop(/*unk call conv*/);
      return;
-@@ -11131,6 +11151,7 @@ loc_a179:
+     //   gap of 221 bytes
+ loc_8fb6: // 08e6:0156
+@@ -13342,7 +13391,7 @@ loc_a179: // 08e6:1319
      memoryASet16(ds, 0x12f7, bx);
      memoryASet16(ds, 0x12f9, cx);
      memoryASet16(ds, 0x12fb, dx);
+-    stop(/*unk call conv*/);
 +    assert(pop() == 0xaacc);
  }
  void sub_9005() // 08e6:01a5
  {
-@@ -11143,13 +11164,12 @@ void sub_9005() // 08e6:01a5
+@@ -13355,14 +13404,12 @@ void sub_9005() // 08e6:01a5
  }
  void sub_9014() // 08e6:01b4
  {
 -    CStackGuardFar sg(0, false);
 +    push(0xddbb);
      goto loc_9014;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
 +    si = pop(); assert(si == 0xddbb);
      si = pop();
@@ -313,31 +359,34 @@ index f5b08fc..cf8783e 100644
 -    cs = pop();
      return;
      //   gap of 315 bytes
- loc_9014:
-@@ -11158,13 +11178,12 @@ loc_9014:
+ loc_9014: // 08e6:01b4
+@@ -13391,14 +13438,13 @@ loc_9027: // 08e6:01c7
  }
  void sub_9028() // 08e6:01c8
  {
 -    CStackGuardFar sg(0, false);
 +    push(0xaaee);
      goto loc_9028;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
 +    si = pop(); assert(si == 0xaaee);
      si = pop();
      ds = pop();
 -    cs = pop();
++//    cs = pop();
      return;
      //   gap of 335 bytes
- loc_9028:
-@@ -11174,13 +11193,12 @@ loc_9028:
+ loc_9028: // 08e6:01c8
+@@ -13408,14 +13454,12 @@ loc_9028: // 08e6:01c8
  }
  void sub_9032() // 08e6:01d2
  {
 -    stop(/*unk call conv*/);
 +    push(0xaabb);
      goto loc_9032;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
 +    si = pop(); assert(si == 0xaabb);
      si = pop();
@@ -345,31 +394,42 @@ index f5b08fc..cf8783e 100644
 -    stop(/*unk call conv*/);
      return;
      //   gap of 345 bytes
- loc_9032:
-@@ -11225,13 +11243,12 @@ loc_9037:
+ loc_9032: // 08e6:01d2
+@@ -13460,14 +13504,13 @@ loc_9037: // 08e6:01d7
  }
  void sub_9082() // 08e6:0222
  {
 -    CStackGuardFar sg(0, false);
 +    push(0xaacc);
      goto loc_9082;
- loc_8ed5:
+ loc_8ed5: // 08e6:0075
+-    stop(/*override stack*/);
 -    si = pop();
 +    si = pop(); assert(si == 0xaacc);
      si = pop();
      ds = pop();
 -    cs = pop();
++//    cs = pop();
      return;
      //   gap of 425 bytes
- loc_9082:
-@@ -11436,9 +11453,8 @@ void sub_9dbc() // 08e6:0f5c
+ loc_9082: // 08e6:0222
+@@ -13672,9 +13715,8 @@ void sub_9dbc() // 08e6:0f5c
      tx = dx;
      dx = bx;
      bx = tx;
--    if (stop(/*1*/))
+-    if (stop(/*1 - jae loc_9dd2*/))
 +    if (!flags.carry)
          goto loc_9dd2;
 -    stop(/*inject ret*/);
      return;
- loc_9dd2:
+ loc_9dd2: // 08e6:0f72
      memoryASet16(ds, 0x0f54, ax);
+@@ -13921,7 +13963,7 @@ loc_9f7c: // 08e6:111c
+     ax = tx;
+     flags.carry = true;
+ loc_9f9f: // 08e6:113f
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_9fa0() // 08e6:1140
+ {
