@@ -7966,7 +7966,7 @@ loc_17c04:
     bx = rol(bx, 0x0001);
     tl = ah;
     ah--;
-    if ((char)tl + (char)1 >= 0)
+    if ((char)tl >= 1)
         goto loc_17c04;
     memoryASet(ds, 0x04c7, bl);
     cx = pop();
