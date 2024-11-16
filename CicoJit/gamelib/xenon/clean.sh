@@ -1,2 +1,2 @@
 rm -rf dos
-rm xenon.cpp xenon2
+rm xenon.clean xenon.cpp xenon2
