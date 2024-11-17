@@ -1807,9 +1807,8 @@ loc_10d6d:
     cx = pop();
     bx = pop();
     ax = pop();
-    tx = bx;
     bx--;
-    if (tx != 1)
+    if (bx != 0)
         goto loc_10d13;
     ds = pop();
     ax = 0xff08;
@@ -5953,9 +5952,8 @@ loc_12d76:
     cx = pop();
     bx = pop();
     ax = pop();
-    tx = bx;
     bx--;
-    if (tx != 1)
+    if (bx != 0)
         goto loc_12d19;
     ds = pop();
     ax = 0xff08;
@@ -5994,9 +5992,8 @@ loc_12db8:
     rep_stosb<MemAuto, DirAuto>();
     di = pop();
     di += 0x0028;
-    tx = bx;
     bx--;
-    if (tx != 1)
+    if (bx != 0)
         goto loc_12db8;
     ax = 0x0000;
     out(dx, ax);
