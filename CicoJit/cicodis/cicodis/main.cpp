@@ -604,8 +604,9 @@ public:
                     } else {
                         mNextInstr = {};
                     }
-                } else {
-                    int f = 9;
+                } else
+                {
+                    assert(0);
                 }
                 break;
                 
@@ -614,17 +615,10 @@ public:
             case X86_INS_LOOPNE:
             case X86_INS_JAE ... X86_INS_JL:
             case X86_INS_JNE ... X86_INS_JS:
-                //print_insn_detail(_handle, CS_MODE_16, p);
-                if (x86->op_count == 0)
-                {
-                    snprintf(mOperands, 64, "PROBLEM-11A");
-                    break;
-                }
                 assert(x86->op_count == 1 &&
                        x86->operands[0].type == X86_OP_IMM &&
                        x86->operands[0].size == 2);
                 mBranchInstr = fromRelative( x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
-                //1723:003b: 1723:003b      je    0x726f   ->1726f
                 snprintf(mOperands, 64, "loc_%x", mBranchInstr.linearOffset());
                 break;
             case X86_INS_RET:
@@ -659,6 +653,11 @@ public:
     address_t NextFollowing()
     {
         return mAddress + mSize;
+    }
+    address_t CallTarget()
+    {
+        assert(mId == X86_INS_CALL);
+        return fromRelative(mDetail.operands[0].imm);
     }
     /*
     address_t Next()
@@ -698,6 +697,13 @@ public:
         int a = mAddress.linearOffset();
         int b = a + mSize;
         return p >= a && p < b;
+    }
+    bool AddInject(inject_t inject)
+    {
+        if ((int)mInject & (int)inject)
+            return false;
+        mInject = (inject_t)((int)mInject | (int)inject);
+        return true;
     }
 };
 
@@ -780,15 +786,20 @@ public:
     }
 };
 
+bool ModifiesZeroFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    return instr->mId == X86_INS_TEST;
+}
+
 bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
 {
-    if (strcmp(instr->mMnemonic, "sub") == 0 &&
-        strcmp(instr->mOperands, "al, al") == 0)
+    if ((instr->mId == X86_INS_XOR || instr->mId == X86_INS_SUB) &&
+        instr->mDetail.op_count == 2 &&
+        instr->mDetail.operands[0].type == X86_OP_REG &&
+        instr->mDetail.operands[1].type == X86_OP_REG &&
+        instr->mDetail.operands[0].reg == instr->mDetail.operands[1].reg)
         return true;
     if (strcmp(instr->mMnemonic, "jne") == 0)
-        return true;
-    if (strcmp(instr->mMnemonic, "xor") == 0 &&
-        strcmp(instr->mOperands, "ax, ax") == 0)
         return true;
     return false;
 }
@@ -796,6 +807,8 @@ bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
 bool ClearsZeroFlag(const std::shared_ptr<CapInstr>& instr1, const std::shared_ptr<CapInstr>& instr2)
 {
     if (!instr1)
+        return false;
+    if (!instr2)
         return false;
     if (strcmp(instr1->mMnemonic, "sub") == 0 &&
         strcmp(instr1->mOperands, "al, al") == 0 &&
@@ -850,13 +863,89 @@ bool all(std::vector<std::shared_ptr<CapInstr>>& arr, std::function<bool(std::sh
     return aux;
 }
 
+class CTracer {
+    const std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t>& mInstructions;
+    
+public:
+    CTracer(const std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t>& instructions) :
+        mInstructions(instructions)
+    {
+    }
+    
+    std::vector<std::shared_ptr<CapInstr>> allPathsTo(std::shared_ptr<CapInstr>& instr)
+    {
+        std::vector<std::shared_ptr<CapInstr>> targets;
+        std::shared_ptr<CapInstr> prev3;
+        for( auto i = mInstructions.begin(); i != mInstructions.end(); i++ )
+        {
+            // instruction before branch
+            if (i->second->NextBranch() == instr->mAddress) // cond
+                targets.push_back(prev3);
+            if (i->second->NextFollowing() != i->second->Next() && i->second->Next() == instr->mAddress) // jmp
+                targets.push_back(prev3);
+            if (i->second->NextFollowing() == instr->mAddress) // right before
+                targets.push_back(i->second);
+            prev3 = i->second;
+        }
+        return targets;
+    }
+    std::vector<std::shared_ptr<CapInstr>> allPathsToSkipInert(std::shared_ptr<CapInstr>& instr)
+    {
+        std::vector<std::shared_ptr<CapInstr>> targets = allPathsTo(instr);
+        bool changed = true;
+        while (changed)
+        {
+            changed = false;
+            std::vector<std::shared_ptr<CapInstr>> newtargets;
+            for (auto j : targets)
+            {
+                if (j->mId == X86_INS_POP)
+                {
+                    changed = true;
+                    std::vector<std::shared_ptr<CapInstr>> targets2 = allPathsTo(j);
+                    newtargets.insert(newtargets.end(), targets2.begin(), targets2.end());
+                } else
+                    newtargets.push_back(j);
+            }
+            targets = newtargets;
+        }
+        assert(targets.size());
+        return targets;
+    }
+    std::shared_ptr<CapInstr> previousInstructionTo(std::shared_ptr<CapInstr>& instr)
+    {
+        std::vector<std::shared_ptr<CapInstr>> prev = allPathsTo(instr);
+        if (prev.size() == 1)
+            return prev[0];
+        return {};
+    }
+    static bool functionInjectsAdd(address_t method, inject_t inject)
+    {
+        auto injectptr = functionInjects.find(method);
+        if (injectptr != functionInjects.end())
+        {
+            if (!((int)injectptr->second & (int)inject))
+            {
+                injectptr->second = (inject_t)((int)injectptr->second | (int)inject);
+                // inserted, need to rerun
+                return true;
+            }
+        }
+        // not inserted
+        return false;
+    }
+};
+
+
 bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr<CapInstr>>& code, std::vector<switch_t>& indirectJumps, inject_t injectReturn, const std::vector<std::pair<address_t, address_t>>& extraLabels, const std::list<address_t>& dynamics)
 {
     std::list<address_t> trace;
     trace.push_back(address);
     std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> instructions;
+    // testing: force return flag
 //    injectReturn = (inject_t)((int)inject_t::returnCarry | (int)inject_t::returnZero);
 //    injectReturn = inject_t::returnZero;
+//    injectReturn = inject_t::returnCarry;
     for (const std::pair<address_t, address_t>& pair : extraLabels)
         if (pair.first.linearOffset() == address.linearOffset())
             trace.push_back(pair.second);
@@ -1108,6 +1197,14 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
     {
         address_t addr = iter->first;
         std::shared_ptr<CapInstr> instr = iter->second;
+        if (instr->mLabel)
+        {
+            prev1 = nullptr;
+            prev2 = nullptr;
+            prev11 = nullptr;
+            prev22 = nullptr;
+        }
+
         if (nextAddr.segment != -1)
         {
             if (addr != nextAddr)
@@ -1169,25 +1266,19 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
         if (injectReturn != inject_t::none && (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF))
         {
-            if (!prev1 || !prev2)
-            {
-                printf("// INJECT: Error: cannot inject zero flag in sub_%x() because no traceback!\n",
-                       address.linearOffset());
-                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
-            }
-            else if (instr->mLabel)
+            if (instr->mLabel)
             {
                 std::vector<std::shared_ptr<CapInstr>> targets;
                 std::shared_ptr<CapInstr> prev3;
                 for( auto i = instructions.begin(); i != instructions.end(); i++ )
                 {
-                    if (i->second->NextBranch() == instr->mAddress)
+                    if (i->second->NextBranch() == instr->mAddress || i->second->NextFollowing() == instr->mAddress)
                     {
                         targets.push_back(prev3);
                     }
                     prev3 = i->second;
                 }
-                targets.push_back(prev1);
+                //targets.push_back(prev1);
                 
                 targets.erase(std::remove_if(targets.begin(), targets.end(),
                     [injectReturn](auto& instr) {
@@ -1240,129 +1331,50 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                            address.linearOffset());
                 }
             }
+//            else if (!prev1 || !prev2)
+//            {
+//                printf("// INJECT: Error: cannot inject flag in sub_%x() because no traceback!\n",
+//                       address.linearOffset());
+//                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
+//            }
             else if (injectReturn == inject_t::returnZero)
             {
-                if (prev1->mId == X86_INS_CALL)
+                CTracer tracer(instructions);
+                std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
+
+                if (all(targets, [&](auto& instr){ return SetsZeroFlag(instr) || ClearsZeroFlag(instr, tracer.previousInstructionTo(instr)) || instr->mId == X86_INS_CALL || ModifiesZeroFlag(instr); } ))
                 {
-                    assert(prev1->mDetail.op_count == 1);
-                    assert(prev1->mDetail.operands[0].type == X86_OP_IMM);
-                    
-                    address_t targetAddr = fromRelative(instr, prev1->mDetail.operands[0].imm);
-                    
-                    //addInject(targetAddr, inject_t::zero);
-                    auto injectptr = functionInjects.find(targetAddr);
-                    if (injectptr != functionInjects.end())
+                    for (const auto& t : targets)
                     {
-                        if (!((int)injectptr->second & (int)injectReturn))
-                        {
-                            gNeedToRerun = true;
-                            injectptr->second = (inject_t)((int)injectptr->second | (int)injectReturn);
-                        }
+                        if (t->mId == X86_INS_CALL)
+                            gNeedToRerun |= tracer.functionInjectsAdd(instr->CallTarget(), injectReturn);
+                        else if (ModifiesZeroFlag(t))
+                            t->AddInject(inject_t::zero);
+                        else if (SetsZeroFlag(t))
+                            t->AddInject(inject_t::setZeroFlag);
+                        else if (ClearsZeroFlag(t, tracer.previousInstructionTo(instr)))
+                            t->AddInject(inject_t::clearZeroFlag);
                     }
-                    else
-                    {
-                        gNeedToRerun = true;
-                        functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
-                    }
-                }
-                else if (prev1->mId == X86_INS_CMP || prev1->mId == X86_INS_AND)
-                {
-                    prev1->mInject = inject_t((int)prev1->mInject | (int)inject_t::zero);
-                } else if (prev1 && prev2 && prev1->mId == X86_INS_JAE && prev2->mId == X86_INS_CMP)
-                {
-                    if (!((int)prev2->mInject & (int)inject_t::zero))
-                    {
-                        prev2->mInject = (inject_t)((int)prev2->mInject | (int)inject_t::zero);
-                    }
-                } else if (prev1 && prev1->mId == X86_INS_TEST)
-                {
-                    prev1->mInject = (inject_t)((int)prev1->mInject | (int)inject_t::zero);
-                }
-                else if (SetsZeroFlag(prev1))
-                {
-                    assert(instr->mInject == inject_t::none);
-                    instr->mInject = inject_t::setZeroFlag;
-                }
-                else if (ClearsZeroFlag(prev2, prev1) || ClearsZeroFlag(prev22, prev11))
-                {
-                    assert(instr->mInject == inject_t::none);
-                    instr->mInject = inject_t::clearZeroFlag;
-                } else
-                {
+                } else {
                     instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
                     printf("// INJECT: Error: cannot inject zero flag in sub_%x()!\n",
                            address.linearOffset());
                 }
+
             } else
             if (injectReturn == inject_t::returnCarry)
             {
-                // TOTO: check if there is function call before, mark function, run again!
-                if (!prev1)
+                CTracer tracer(instructions);
+                std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
+
+                if (all(targets, [](auto& instr){ return SetsCarryFlag(instr) || ClearsCarryFlag(instr) || instr->mId == X86_INS_CALL; } ))
                 {
-                    instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
-                    printf("// INJECT: Error: cannot inject carry flag in sub_%x() no prev instruction!\n",
-                           address.linearOffset());
-                }
-                else if (prev1->mId == X86_INS_CALL)
-                {
-                    assert(prev1->mDetail.op_count == 1);
-                    assert(prev1->mDetail.operands[0].type == X86_OP_IMM);
-                    
-                    address_t targetAddr = fromRelative(instr, prev1->mDetail.operands[0].imm);
-                    
-                    //addInject(targetAddr, inject_t::zero);
-                    auto injectptr = functionInjects.find(targetAddr);
-                    if (injectptr != functionInjects.end())
+                    for (const auto& t : targets)
                     {
-                        if (!((int)injectptr->second & (int)injectReturn))
-                        {
-                            gNeedToRerun = true;
-                            injectptr->second = (inject_t)((int)injectptr->second | (int)injectReturn);
-                        }
+                        if (instr->mId == X86_INS_CALL)
+                            gNeedToRerun |= tracer.functionInjectsAdd(instr->CallTarget(), injectReturn);
                     }
-                    else
-                    {
-                        gNeedToRerun = true;
-                        functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
-                    }
-                }
-                else if (SetsCarryFlag(prev1))
-                {
-                    assert(instr->mInject == inject_t::none);
-                }
-                else if (ClearsCarryFlag(prev1))
-                {
-                    assert(instr->mInject == inject_t::none);
-                } else if (prev1 && prev2 && prev1->mId == X86_INS_JB && prev2->mId== X86_INS_CMP)
-                {
-                    if (!((int)prev2->mInject & (int)inject_t::carry))
-                    {
-                        prev2->mInject = (inject_t)((int)prev2->mInject | (int)inject_t::carry);
-                    }
-                } else if (prev1 && prev2 && prev1->mId == X86_INS_JAE && prev2->mId== X86_INS_CALL)
-                {
-                    assert(prev1->mDetail.op_count == 1);
-                    assert(prev1->mDetail.operands[0].type == X86_OP_IMM);
-                    
-                    address_t targetAddr = fromRelative(instr, prev1->mDetail.operands[0].imm);
-                    
-                    //addInject(targetAddr, inject_t::zero);
-                    auto injectptr = functionInjects.find(targetAddr);
-                    if (injectptr != functionInjects.end())
-                    {
-                        if (!((int)injectptr->second & (int)injectReturn))
-                        {
-                            gNeedToRerun = true;
-                            injectptr->second = (inject_t)((int)injectptr->second | (int)injectReturn);
-                        }
-                    }
-                    else
-                    {
-                        gNeedToRerun = true;
-                        functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
-                    }
-                } else
-                {
+                } else {
                     instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
                     printf("// INJECT: Error: cannot inject carry flag in sub_%x()!\n",
                            address.linearOffset());
@@ -2250,6 +2262,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             }
             if ((int)instr->mInject & (int)inject_t::zero)
             {
+//                if (instr->mLabel)
+//                    text.push_back("stop(\"inject check all paths\")");
+                    
                 switch (instr->mId)
                 {
                     case X86_INS_CMP:
@@ -3615,9 +3630,23 @@ std::list<address_t> parseMethods(MZHeader* header, const char* methods)
     std::regex functionHex("^([0-9a-fA-f]+)$");
     std::regex functionSegofs("^([0-9a-fA-f]+):([0-9a-fA-f]+)$");
     std::regex functionName("^sub_([0-9a-fA-f]+)$");
+    // functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
+
     // tokenize by comma
     while (getline(is, token, ','))
     {
+        inject_t inject = inject_t::none;
+        if (token.find("+carry") != std::string::npos)
+        {
+            token = replaceStr(token, "+carry", "");
+            inject = inject_t((int)inject | (int)inject_t::returnCarry);
+        }
+        if (token.find("+zero") != std::string::npos)
+        {
+            token = replaceStr(token, "+zero", "");
+            inject = inject_t((int)inject | (int)inject_t::returnZero);
+        }
+//            functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
         std::smatch matches;
         
         if (token == "start")
@@ -3650,6 +3679,12 @@ std::list<address_t> parseMethods(MZHeader* header, const char* methods)
             list.push_back({addrSeg, addrOfs});
         } else
             assert(0);
+        
+        if (inject != inject_t::none)
+        {
+            assert(functionInjects.find(list.back()) == functionInjects.end());
+            functionInjects.insert(std::pair<address_t, inject_t>(list.back(), inject));
+        }
     }
     return list;
 }
@@ -3760,6 +3795,8 @@ int main(int argc, const char * argv[]) {
                 else if (strcmp(jumpSelector, "si") == 0)
                     index = X86_REG_SI;
                 else if (strcmp(jumpSelector, "none") == 0)
+                    index = X86_REG_INVALID;
+                else if (strcmp(jumpSelector, "indirect") == 0)
                     index = X86_REG_INVALID;
                 else
                     assert(0);

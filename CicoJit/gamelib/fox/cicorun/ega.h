@@ -732,7 +732,7 @@ public:
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
         dwAddr -= 0xa000 * 16;
-        if (bWrite){
+        if (bWrite == 0xff ){
             int f = 9;
         }
         if (nWriteMode != 1)
@@ -752,7 +752,7 @@ public:
         static int q = 0;
         if (q++ > 5000)
         {
-//            _sync();
+            //_sync();
             q= 0;
         }
     }

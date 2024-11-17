@@ -1,8 +1,24 @@
-diff --git a/./fox.clean b/./fox.cpp
-index 5d322fc..b1687e6 100644
+diff --git a/./fox.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/fox/cicorun/./fox.cpp
+index 8273ef2..c49cec0 100644
 --- a/./fox.clean
-+++ b/./fox.cpp
-@@ -43,7 +43,7 @@ void sub_10901();
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/fox/cicorun/./fox.cpp
+@@ -1,5 +1,7 @@
+ #include "cicoemu.h"
+ using namespace CicoContext;
++const bool infiniteEnergy = true;
++int startupLevel = 0;
+ 
+ void sub_10205();
+ 
+@@ -13,6 +15,7 @@ void start()
+     ss = 0x1000;
+     sp = 0x0200;
+     load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/fox/dos", "game.exe", 84992);
++    memoryASet(0x168f, 0x5250, startupLevel);
+     sub_10205();
+ }
+ void sub_10200();
+@@ -43,7 +46,7 @@ void sub_10901();
  void sub_109b0();
  void sub_10a05();
  void sub_10b7b();
@@ -11,16 +27,22 @@ index 5d322fc..b1687e6 100644
  void sub_10e1e();
  void sub_10e30();
  void sub_10eeb();
-@@ -974,6 +974,8 @@ loc_105f7:
+@@ -874,12 +877,14 @@ void sub_105f2()
+     ds = ax;
+ loc_105f7:
      sub_10a05();
++    sync();
      al = memoryAGet(ds, 0x047e);
      al |= memoryAGet(ds, 0x042b);
-+    sync();
-+    al = 1;
      if (!al)
          goto loc_105f7;
  loc_10603:
-@@ -1755,7 +1757,8 @@ loc_10c08:
+     sub_10a05();
++    sync();
+     al = memoryAGet(ds, 0x042b);
+     al |= memoryAGet(ds, 0x047e);
+     if (al)
+@@ -1657,7 +1662,8 @@ loc_10c08:
      di = 0;
  loc_10c17:
      bx = 0;
@@ -30,7 +52,7 @@ index 5d322fc..b1687e6 100644
      if (!bh)
          goto loc_10c66;
      if (bl < 0x02)
-@@ -1923,7 +1926,7 @@ loc_10e02:
+@@ -1825,7 +1831,7 @@ loc_10e02:
      ds = ax;
      ax = memoryAGet16(cs, 0x0af4);
  }
@@ -39,7 +61,7 @@ index 5d322fc..b1687e6 100644
  {
      goto loc_10cbe;
  loc_10afd:
-@@ -1992,9 +1995,10 @@ loc_10cc8:
+@@ -1894,9 +1900,10 @@ loc_10cc8:
      if (!(bh & 0x80))
          goto loc_10cbe;
      bh &= 0x7f;
@@ -52,7 +74,7 @@ index 5d322fc..b1687e6 100644
      memoryASet(cs, 0x6bb3, 0x01);
      bx = memoryAGet16(cs, 0x0af2);
      ah = 0x3e;
-@@ -2003,6 +2007,7 @@ loc_10cd3:
+@@ -1905,6 +1912,7 @@ loc_10cd3:
      ax = 0x168f;
      ds = ax;
      ax = memoryAGet16(cs, 0x0af4);
@@ -60,7 +82,7 @@ index 5d322fc..b1687e6 100644
  }
  void sub_10e1e()
  {
-@@ -2192,18 +2197,6 @@ void sub_112d3()
+@@ -2094,18 +2102,6 @@ void sub_112d3()
      ax = 0x168f;
      ds = ax;
      memoryASet(ds, 0x651a, 0x00);
@@ -79,7 +101,7 @@ index 5d322fc..b1687e6 100644
      memoryASet(ds, 0x651a, memoryAGet(ds, 0x651a) + 1);
  loc_112f7:
      ax = memoryAGet16(cs, 0x16e0);
-@@ -2576,13 +2569,7 @@ loc_1185e:
+@@ -2478,13 +2474,7 @@ loc_1185e:
  }
  void sub_119eb()
  {
@@ -94,7 +116,7 @@ index 5d322fc..b1687e6 100644
  }
  void sub_119fe()
  {
-@@ -7127,7 +7114,7 @@ loc_13f5a:
+@@ -7032,7 +7022,7 @@ loc_13f5a:
  loc_13f6b:
      ax = memoryAGet16(ds, si + 14);
      ax = sar(ax, cl);
@@ -103,7 +125,7 @@ index 5d322fc..b1687e6 100644
          goto loc_13f77;
      memoryASet(ds, 0x6511, 0x04);
  loc_13f77:
-@@ -7986,9 +7973,9 @@ loc_146d9:
+@@ -7928,9 +7918,9 @@ loc_146d9:
          goto loc_14739;
      flags.carry = (al + 0x08) >= 0x100;
      al += 0x08;
@@ -115,7 +137,7 @@ index 5d322fc..b1687e6 100644
      bx += flags.carry;
      if (bx == bp)
          goto loc_14706;
-@@ -9188,13 +9175,17 @@ loc_1502e:
+@@ -9267,13 +9257,17 @@ loc_1502e:
      al &= 0x0f;
      if (al == 0x01)
          goto loc_14ffd;
@@ -134,7 +156,7 @@ index 5d322fc..b1687e6 100644
      if (al != 0x05)
          goto loc_1505c;
      sub_14ff9();
-@@ -9210,10 +9201,16 @@ loc_1505c:
+@@ -9289,10 +9283,16 @@ loc_1505c:
      if (ah == 0x06)
          goto loc_1507e;
      if (al == 0x00)
@@ -151,22 +173,7 @@ index 5d322fc..b1687e6 100644
  loc_1507e:
      sub_14ef6();
      memoryASet(ds, 0x650d, 0x01);
-@@ -9565,12 +9562,13 @@ void sub_15333()
-     if (bl < 0x65)
-         goto loc_15349;
-     bx = 0;
-+    flags.zero = true;
-     goto loc_1534e;
- loc_15349:
-+    flags.zero = !(memory(ds, bx + 0x6f19) & 2);
- loc_1534e:
-     bp = pop();
-     bx = pop();
--    stop(/*inject ret*/);
-     assert(pop() == 0x7777);
-     sp += 2;
- }
-@@ -9639,6 +9637,7 @@ loc_153c3:
+@@ -9718,6 +9718,7 @@ loc_153c3:
  }
  void sub_153c6()
  {
@@ -174,7 +181,7 @@ index 5d322fc..b1687e6 100644
      ax = 0x168f;
      ds = ax;
      sub_15538();
-@@ -9654,6 +9653,7 @@ loc_153d9:
+@@ -9733,6 +9734,7 @@ loc_153d9:
      sub_155c8();
      goto loc_153d4;
  loc_153f1:
@@ -182,7 +189,7 @@ index 5d322fc..b1687e6 100644
      sub_10a05();
      if (memoryAGet(ds, 0x042d) == 0x00)
          goto loc_1540b;
-@@ -9686,6 +9686,7 @@ loc_1543a:
+@@ -9765,6 +9767,7 @@ loc_1543a:
      memoryASet(ds, 0x87d4, 0x00);
      goto loc_153d9;
  loc_15444:
@@ -190,7 +197,7 @@ index 5d322fc..b1687e6 100644
      sub_10a05();
      if (memoryAGet(ds, 0x042b) != 0x00)
          goto loc_15444;
-@@ -10163,12 +10164,12 @@ loc_1571f:
+@@ -10242,12 +10245,12 @@ loc_1571f:
      ah = 0;
      cl = 0x08;
  loc_15723:
@@ -204,7 +211,7 @@ index 5d322fc..b1687e6 100644
      ah = rcl(ah, 0x01);
      cl--;
      if (cl != 0)
-@@ -10524,7 +10525,7 @@ loc_15a0a:
+@@ -10626,7 +10629,7 @@ loc_15a0a:
      bh &= 0x1f;
      tl = memoryAGet(ds, bx + 28441);
      bx = ax;
@@ -213,7 +220,7 @@ index 5d322fc..b1687e6 100644
          goto loc_15a20;
      sub_15295();
      if (flags.carry)
-@@ -10622,7 +10623,7 @@ loc_15ad0:
+@@ -10724,7 +10727,7 @@ loc_15ad0:
          goto loc_15b0a;
  loc_15af0:
      ax = memoryAGet16(ds, si + 14);
@@ -222,7 +229,17 @@ index 5d322fc..b1687e6 100644
          goto loc_15b11;
      ax = sar(ax, cl);
      memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + ax);
-@@ -10785,7 +10786,7 @@ loc_15c40:
+@@ -10867,7 +10870,8 @@ void sub_15bcc()
+     memoryASet(ds, 0x6506, 0x32);
+     if (memoryAGet(ds, 0x6516) != 0x00)
+         return;
+-    memoryASet(ds, 0x0419, memoryAGet(ds, 0x0419) - 1);
++    if (!infiniteEnergy)
++        memoryASet(ds, 0x0419, memoryAGet(ds, 0x0419) - 1);
+     if ((char)memoryAGet(ds, 0x0419) >= 0)
+         return;
+     memoryASet(ds, 0x0419, 0x00);
+@@ -10929,7 +10933,7 @@ loc_15c40:
      cx = pop();
      bx = pop();
      ax = pop();
@@ -231,7 +248,7 @@ index 5d322fc..b1687e6 100644
          return;
      bp = memoryAGet16(ds, si + 12);
      if (!bp)
-@@ -12755,7 +12756,7 @@ void sub_16782()
+@@ -12899,7 +12903,7 @@ void sub_16782()
      push(es);
      push(ds);
      bx = ax;
@@ -240,7 +257,7 @@ index 5d322fc..b1687e6 100644
      es = ax;
      ax = 0x168f;
      ds = ax;
-@@ -12766,8 +12767,9 @@ void sub_16782()
+@@ -12910,8 +12914,9 @@ void sub_16782()
      ah -= memoryAGet(es, bx + 61442);
      ax = ror(ax, cl);
      cx = 0x0008;

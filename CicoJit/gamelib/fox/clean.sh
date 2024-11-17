@@ -1,1 +1,1 @@
-rm -rf dos fox fox.cpp
+rm -rf dos fox fox.cpp fox.clean

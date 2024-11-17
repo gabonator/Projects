@@ -1,5 +1,7 @@
 #include "cicoemu.h"
 using namespace CicoContext;
+const bool infiniteEnergy = true;
+int startupLevel = 0;
 
 void sub_10205();
 
@@ -13,6 +15,7 @@ void start()
     ss = 0x1000;
     sp = 0x0200;
     load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/fox/dos", "game.exe", 84992);
+    memoryASet(0x168f, 0x5250, startupLevel);
     sub_10205();
 }
 void sub_10200();
@@ -223,104 +226,6 @@ void sub_1675c();
 void sub_16767();
 void sub_16782();
 void sub_167be();
-
-#ifdef callIndirect
-#undef callIndirect
-#endif
-
-void callIndirect(int seg, int ofs)
-{
-    assert(seg == 0x1020);
-    switch (ofs)
-    {
-        case 0x476c: sub_1496c(); return;
-        case 0x47fa: sub_149fa(); return;
-        case 0x4748: sub_14948(); return;
-        case 0x47d3: sub_149d3(); return;
-        case 0x0: sub_10200(); return;
-        case 0x47b7: sub_149b7(); return;
-        case 0x4833: sub_14a33(); return;
-        case 0x495b: sub_14b5b(); return;
-        case 0x48d6: sub_14ad6(); return;
-        case 0x4807: sub_14a07(); return;
-        case 0x4814: sub_14a14(); return;
-        case 0x4826: sub_14a26(); return;
-        case 0x48cc: sub_14acc(); return;
-        case 0x4821: sub_14a21(); return;
-        default:
-            break;
-    }
-    assert(seg == 0x1020);
-    switch (ofs)
-    {
-        case 0x4df9: sub_14ff9(); return;
-        case 0x4dfd: sub_14ffd(); return;
-        case 0x4e13: sub_15013(); return;
-        case 0x4e1c: sub_1501c(); return;
-        case 0x4e25: sub_15025(); return;
-        case 0x4e01: sub_15001(); return;
-        case 0x4e2e: sub_1502e(); return;
-        case 0x4d10: sub_14f10(); return;
-        case 0x4dc0: sub_14fc0(); return;
-        case 0x4db1: sub_14fb1(); return;
-        case 0x4dc9: sub_14fc9(); return;
-        case 0x4d9a: sub_14f9a(); return;
-        case 0x4e87: sub_15087(); return;
-        case 0x4e88: sub_15088(); return;
-        case 0x4f03: sub_15103(); return;
-        default:
-            break;
-    }
-    assert(seg == 0x1020);
-    switch (ofs)
-    {
-        case 0x4d0b: sub_14f0b(); return;
-        case 0x4d0c: sub_14f0c(); return;
-        case 0x4d10: sub_14f10(); return;
-        case 0x4dc0: sub_14fc0(); return;
-        case 0x4db1: sub_14fb1(); return;
-        case 0x4dc9: sub_14fc9(); return;
-        case 0x4d9a: sub_14f9a(); return;
-        case 0x4df9: sub_14ff9(); return;
-        case 0x4dfd: sub_14ffd(); return;
-        case 0x4e13: sub_15013(); return;
-        case 0x4e1c: sub_1501c(); return;
-        case 0x4e25: sub_15025(); return;
-        case 0x4e01: sub_15001(); return;
-        case 0x4e2e: sub_1502e(); return;
-        case 0x4e87: sub_15087(); return;
-        case 0x4e88: sub_15088(); return;
-        case 0x4f03: sub_15103(); return;
-        default:
-            break;
-    }
-    assert(seg == 0x1020);
-    switch (ofs)
-    {
-        case 0x63bf: sub_165bf(); return;
-        case 0x63f1: sub_165f1(); return;
-        case 0x62c9: sub_164c9(); return;
-        case 0x622e: sub_1642e(); return;
-        case 0x60e0: sub_162e0(); return;
-        case 0x600f: sub_1620f(); return;
-        case 0x5ef2: sub_160f2(); return;
-        case 0x5dce: sub_15fce(); return;
-        case 0x5cca: sub_15eca(); return;
-        case 0x5c60: sub_15e60(); return;
-        case 0x5bbb: sub_15dbb(); return;
-        case 0x6009: sub_16209(); return;
-        case 0x5ff9: sub_161f9(); return;
-        case 0x5ffe: sub_161fe(); return;
-        case 0x5b4e: sub_15d4e(); return;
-        case 0x5ab8: sub_15cb8(); return;
-        case 0x5a04: sub_15c04(); return;
-        case 0x5a03: sub_15c03(); return;
-        default:
-            break;
-    }
-    assert(0);
-}
-// INJECT: Error: cannot inject zero flag in sub_15333()!
 void sub_10200()
 {
     di += di;
@@ -972,14 +877,14 @@ void sub_105f2()
     ds = ax;
 loc_105f7:
     sub_10a05();
+    sync();
     al = memoryAGet(ds, 0x047e);
     al |= memoryAGet(ds, 0x042b);
-    sync();
-    al = 1;
     if (!al)
         goto loc_105f7;
 loc_10603:
     sub_10a05();
+    sync();
     al = memoryAGet(ds, 0x042b);
     al |= memoryAGet(ds, 0x047e);
     if (al)
@@ -7605,6 +7510,7 @@ loc_14371:
         goto loc_14387;
     memoryASet(ds, 0x6517, 0x01);
 loc_1437d:
+    sync();
     if (memoryAGet(ds, 0x047c) == 0x00)
         goto loc_1437d;
     goto loc_1467a;
@@ -7616,6 +7522,7 @@ loc_14393:
     if (memoryAGet(ds, 0x047e) == 0x00)
         goto loc_143ad;
 loc_1439a:
+    sync();
     if (memoryAGet(ds, 0x047e) != 0x00)
         goto loc_1439a;
     sub_129df();
@@ -7746,7 +7653,41 @@ loc_144e1:
     cbw();
     bx = ax;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 28411));
+    switch (bx)
+    {
+        case 0: sub_1496c(); break;
+        case 2: sub_149fa(); break;
+        case 4: sub_14948(); break;
+        case 6: sub_149d3(); break;
+        case 8: sub_10200(); break;
+        case 10: sub_149b7(); break;
+        case 12: sub_14a33(); break;
+        case 14: sub_14b5b(); break;
+        case 16: sub_14ad6(); break;
+        case 18: sub_1496c(); break;
+        case 20: sub_14a07(); break;
+        case 22: sub_14a14(); break;
+        case 24: sub_14a26(); break;
+        case 26: sub_14a26(); break;
+        case 28: sub_10200(); break;
+        case 30: sub_10200(); break;
+        case 32: sub_1496c(); break;
+        case 34: sub_149fa(); break;
+        case 36: sub_14948(); break;
+        case 38: sub_149fa(); break;
+        case 40: sub_10200(); break;
+        case 42: sub_14acc(); break;
+        case 44: sub_14a33(); break;
+        case 46: sub_14b5b(); break;
+        case 48: sub_14ad6(); break;
+        case 50: sub_10200(); break;
+        case 52: sub_10200(); break;
+        case 54: sub_14a21(); break;
+        case 56: sub_14a26(); break;
+        case 58: sub_14a26(); break;
+        default:
+        assert(0);
+    }
     ax = memoryAGet16(ds, si + 6);
     cl = 0x04;
     ax = sar(ax, cl);
@@ -8053,7 +7994,30 @@ loc_14785:
     ah = 0;
     bx = ax;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 29309));
+    switch (bx)
+    {
+        case 0: sub_14ff9(); break;
+        case 2: sub_14ffd(); break;
+        case 4: sub_15013(); break;
+        case 6: sub_1501c(); break;
+        case 8: sub_15025(); break;
+        case 10: sub_15001(); break;
+        case 12: sub_1502e(); break;
+        case 14: sub_14f10(); break;
+        case 16: sub_14fc0(); break;
+        case 18: sub_14fc0(); break;
+        case 20: sub_14fc0(); break;
+        case 22: sub_14fb1(); break;
+        case 24: sub_14fc9(); break;
+        case 26: sub_14f9a(); break;
+        case 28: sub_15087(); break;
+        case 30: sub_15088(); break;
+        case 32: sub_15103(); break;
+        case 34: sub_14fc9(); break;
+        case 36: sub_14fc0(); break;
+        default:
+        assert(0);
+    }
     bx = pop();
 loc_147a5:
     tx = bx;
@@ -8077,7 +8041,70 @@ loc_147a5:
     bh = 0;
     bx <<= 1;
     push(ax);
-    callIndirect(cs, memoryAGet16(ds, bx + 29337));
+    switch (bx)
+    {
+        case 0: sub_15087(); break;
+        case 2: sub_15088(); break;
+        case 4: sub_15103(); break;
+        case 6: sub_14fc9(); break;
+        case 8: sub_14fc0(); break;
+        case 10: sub_10200(); break;
+        case 12: sub_10200(); break;
+        case 14: sub_10200(); break;
+        case 16: sub_10200(); break;
+        case 18: sub_10200(); break;
+        case 20: sub_10200(); break;
+        case 22: sub_10200(); break;
+        case 24: sub_10200(); break;
+        case 26: sub_10200(); break;
+        case 28: sub_10200(); break;
+        case 30: sub_10200(); break;
+        case 32: sub_10200(); break;
+        case 34: sub_10200(); break;
+        case 36: sub_10200(); break;
+        case 38: sub_10200(); break;
+        case 40: sub_10200(); break;
+        case 42: sub_10200(); break;
+        case 44: sub_10200(); break;
+        case 46: sub_10200(); break;
+        case 48: sub_10200(); break;
+        case 50: sub_10200(); break;
+        case 52: sub_10200(); break;
+        case 54: sub_10200(); break;
+        case 56: sub_10200(); break;
+        case 58: sub_10200(); break;
+        case 60: sub_10200(); break;
+        case 62: sub_10200(); break;
+        case 64: sub_10200(); break;
+        case 66: sub_10200(); break;
+        case 68: sub_10200(); break;
+        case 70: sub_10200(); break;
+        case 72: sub_10200(); break;
+        case 74: sub_10200(); break;
+        case 76: sub_10200(); break;
+        case 78: sub_10200(); break;
+        case 80: sub_10200(); break;
+        case 82: sub_10200(); break;
+        case 84: sub_10200(); break;
+        case 86: sub_10200(); break;
+        case 88: sub_10200(); break;
+        case 90: sub_10200(); break;
+        case 92: sub_10200(); break;
+        case 94: sub_10200(); break;
+        case 96: sub_10200(); break;
+        case 98: sub_10200(); break;
+        case 100: sub_10200(); break;
+        case 102: sub_10200(); break;
+        case 104: sub_10200(); break;
+        case 106: sub_10200(); break;
+        case 108: sub_10200(); break;
+        case 110: sub_10200(); break;
+        case 112: sub_10200(); break;
+        case 114: sub_10200(); break;
+        case 116: sub_10200(); break;
+        default:
+        assert(0);
+    }
     ax = pop();
     ah &= 0x01;
     if (ah == 0)
@@ -8125,7 +8152,25 @@ void sub_14817()
     ah = 0;
     bx = ax;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 29295));
+    switch (bx)
+    {
+        case 0: sub_14f0b(); break;
+        case 2: sub_14f0c(); break;
+        case 4: sub_14f10(); break;
+        case 6: sub_14fc0(); break;
+        case 8: sub_14fb1(); break;
+        case 10: sub_14fc9(); break;
+        case 12: sub_14f9a(); break;
+        case 14: sub_14ff9(); break;
+        case 16: sub_14ffd(); break;
+        case 18: sub_15013(); break;
+        case 20: sub_1501c(); break;
+        case 22: sub_15025(); break;
+        case 24: sub_15001(); break;
+        case 26: sub_1502e(); break;
+        default:
+        assert(0);
+    }
     di = pop();
     dx = pop();
     bx = pop();
@@ -8147,7 +8192,37 @@ loc_14845:
     ah = 0;
     bx = ax;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 29295));
+    switch (bx)
+    {
+        case 0: sub_14f0b(); break;
+        case 2: sub_14f0c(); break;
+        case 4: sub_14f10(); break;
+        case 6: sub_14fc0(); break;
+        case 8: sub_14fb1(); break;
+        case 10: sub_14fc9(); break;
+        case 12: sub_14f9a(); break;
+        case 14: sub_14ff9(); break;
+        case 16: sub_14ffd(); break;
+        case 18: sub_15013(); break;
+        case 20: sub_1501c(); break;
+        case 22: sub_15025(); break;
+        case 24: sub_15001(); break;
+        case 26: sub_1502e(); break;
+        case 28: sub_14f10(); break;
+        case 30: sub_14fc0(); break;
+        case 32: sub_14fc0(); break;
+        case 34: sub_14fc0(); break;
+        case 36: sub_14fb1(); break;
+        case 38: sub_14fc9(); break;
+        case 40: sub_14f9a(); break;
+        case 42: sub_15087(); break;
+        case 44: sub_15088(); break;
+        case 46: sub_15103(); break;
+        case 48: sub_14fc9(); break;
+        case 50: sub_14fc0(); break;
+        default:
+        assert(0);
+    }
 loc_1484f:
     di = pop();
     dx = pop();
@@ -8749,6 +8824,7 @@ void sub_14d49()
     if (memoryAGet(ds, 0x0459) == 0x00)
         return;
 loc_14d50:
+    sync();
     if (memoryAGet(ds, 0x0459) != 0x00)
         goto loc_14d50;
     sub_12e87();
@@ -8758,9 +8834,11 @@ loc_14d50:
     sub_13471();
     memoryASet16(ds, 0x5280, pop());
 loc_14d6e:
+    sync();
     if (memoryAGet(ds, 0x0459) == 0x00)
         goto loc_14d6e;
 loc_14d75:
+    sync();
     if (memoryAGet(ds, 0x0459) != 0x00)
         goto loc_14d75;
 }
@@ -9553,7 +9631,6 @@ void sub_15322()
 loc_15330:
     ax += dx;
 }
-// INJECT: Error: cannot inject zero flag in sub_15333()!
 void sub_15333()
 {
     push(0x7777);
@@ -9565,11 +9642,11 @@ void sub_15333()
     bh &= 0x1f;
     if (bl < 0x65)
         goto loc_15349;
-    bx = 0;
     flags.zero = true;
+    bx = 0;
     goto loc_1534e;
 loc_15349:
-    flags.zero = !(memory(ds, bx + 0x6f19) & 2);
+    flags.zero = !(memoryAGet(ds, bx + 28441) & 0x02);
 loc_1534e:
     bp = pop();
     bx = pop();
@@ -10508,7 +10585,30 @@ loc_159dc:
     bx = memoryAGet16(ds, si + 6);
     bh &= 0x1f;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 36571));
+    switch (bx)
+    {
+        case 0: sub_15c04(); break;
+        case 2: sub_15c04(); break;
+        case 4: sub_15c04(); break;
+        case 6: sub_15c04(); break;
+        case 8: sub_15c04(); break;
+        case 10: sub_15c04(); break;
+        case 12: sub_15c04(); break;
+        case 14: sub_15c04(); break;
+        case 16: sub_15c04(); break;
+        case 18: sub_15c04(); break;
+        case 20: sub_15c04(); break;
+        case 22: sub_15c04(); break;
+        case 24: sub_15c04(); break;
+        case 26: sub_15c04(); break;
+        case 28: sub_15c04(); break;
+        case 30: sub_15c03(); break;
+        case 32: sub_15c03(); break;
+        case 34: sub_15c03(); break;
+        case 36: sub_15c04(); break;
+        default:
+        assert(0);
+    }
 loc_159e8:
     if (memoryAGet(ds, 0x6511) == 0x00)
         goto loc_15a25;
@@ -10688,7 +10788,49 @@ loc_15b53:
     bx = memoryAGet16(ds, si + 6);
     bh &= 0x1f;
     bx <<= 1;
-    callIndirect(cs, memoryAGet16(ds, bx + 36533));
+    switch (bx)
+    {
+        case 0: sub_165bf(); break;
+        case 2: sub_165bf(); break;
+        case 4: sub_165f1(); break;
+        case 6: sub_164c9(); break;
+        case 8: sub_164c9(); break;
+        case 10: sub_1642e(); break;
+        case 12: sub_1642e(); break;
+        case 14: sub_162e0(); break;
+        case 16: sub_1620f(); break;
+        case 18: sub_160f2(); break;
+        case 20: sub_15fce(); break;
+        case 22: sub_15eca(); break;
+        case 24: sub_15e60(); break;
+        case 26: sub_15dbb(); break;
+        case 28: sub_16209(); break;
+        case 30: sub_161f9(); break;
+        case 32: sub_161fe(); break;
+        case 34: sub_15d4e(); break;
+        case 36: sub_15cb8(); break;
+        case 38: sub_15c04(); break;
+        case 40: sub_15c04(); break;
+        case 42: sub_15c04(); break;
+        case 44: sub_15c04(); break;
+        case 46: sub_15c04(); break;
+        case 48: sub_15c04(); break;
+        case 50: sub_15c04(); break;
+        case 52: sub_15c04(); break;
+        case 54: sub_15c04(); break;
+        case 56: sub_15c04(); break;
+        case 58: sub_15c04(); break;
+        case 60: sub_15c04(); break;
+        case 62: sub_15c04(); break;
+        case 64: sub_15c04(); break;
+        case 66: sub_15c04(); break;
+        case 68: sub_15c03(); break;
+        case 70: sub_15c03(); break;
+        case 72: sub_15c03(); break;
+        case 74: sub_15c04(); break;
+        default:
+        assert(0);
+    }
 loc_15b65:
     si += 0x001a;
     memoryASet16(ds, 0x8eb3, memoryAGet16(ds, 0x8eb3) - 1);
@@ -10728,7 +10870,8 @@ void sub_15bcc()
     memoryASet(ds, 0x6506, 0x32);
     if (memoryAGet(ds, 0x6516) != 0x00)
         return;
-    memoryASet(ds, 0x0419, memoryAGet(ds, 0x0419) - 1);
+    if (!infiniteEnergy)
+        memoryASet(ds, 0x0419, memoryAGet(ds, 0x0419) - 1);
     if ((char)memoryAGet(ds, 0x0419) >= 0)
         return;
     memoryASet(ds, 0x0419, 0x00);
