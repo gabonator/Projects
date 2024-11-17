@@ -388,6 +388,7 @@ enum class inject_t {
     setCarryFlag = 0x40,
     clearCarryFlag = 0x80,
     dynamic = 0x40000,
+    tempPost = 0x80000,
 };
 
 address_t operator +(const address_t a, int b)
@@ -788,7 +789,7 @@ public:
 
 bool ModifiesZeroFlag(const std::shared_ptr<CapInstr>& instr)
 {
-    return instr->mId == X86_INS_TEST;
+    return instr->mId == X86_INS_TEST || instr->mId == X86_INS_AND || instr->mId == X86_INS_CMP;
 }
 
 bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
@@ -850,6 +851,12 @@ bool ClearsCarryFlag(const std::shared_ptr<CapInstr>& instr)
     return false;
 }
 
+bool ModifiesCarryFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    return instr->mId == X86_INS_CMP;
+}
+
+
 // TODO: cleanup
 //std::map<address_t, std::string, cmp_adress_t> notices;
 std::map<address_t, inject_t> functionInjects;
@@ -899,7 +906,7 @@ public:
             std::vector<std::shared_ptr<CapInstr>> newtargets;
             for (auto j : targets)
             {
-                if (j->mId == X86_INS_POP)
+                if (j->mId == X86_INS_POP || j->mId == X86_INS_MOV)
                 {
                     changed = true;
                     std::vector<std::shared_ptr<CapInstr>> targets2 = allPathsTo(j);
@@ -1266,6 +1273,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
         if (injectReturn != inject_t::none && (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF))
         {
+            /*
             if (instr->mLabel)
             {
                 std::vector<std::shared_ptr<CapInstr>> targets;
@@ -1337,7 +1345,8 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
 //                       address.linearOffset());
 //                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
 //            }
-            else if (injectReturn == inject_t::returnZero)
+            else*/
+            if ((int)injectReturn & (int)inject_t::returnZero)
             {
                 CTracer tracer(instructions);
                 std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
@@ -1347,7 +1356,7 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                     for (const auto& t : targets)
                     {
                         if (t->mId == X86_INS_CALL)
-                            gNeedToRerun |= tracer.functionInjectsAdd(instr->CallTarget(), injectReturn);
+                            gNeedToRerun |= tracer.functionInjectsAdd(t->CallTarget(), injectReturn);
                         else if (ModifiesZeroFlag(t))
                             t->AddInject(inject_t::zero);
                         else if (SetsZeroFlag(t))
@@ -1361,18 +1370,20 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                            address.linearOffset());
                 }
 
-            } else
-            if (injectReturn == inject_t::returnCarry)
+            }
+            if ((int)injectReturn & (int)inject_t::returnCarry)
             {
                 CTracer tracer(instructions);
                 std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
 
-                if (all(targets, [](auto& instr){ return SetsCarryFlag(instr) || ClearsCarryFlag(instr) || instr->mId == X86_INS_CALL; } ))
+                if (all(targets, [](auto& instr){ return SetsCarryFlag(instr) || ClearsCarryFlag(instr) || ModifiesCarryFlag(instr) || instr->mId == X86_INS_CALL; } ))
                 {
                     for (const auto& t : targets)
                     {
-                        if (instr->mId == X86_INS_CALL)
-                            gNeedToRerun |= tracer.functionInjectsAdd(instr->CallTarget(), injectReturn);
+                        if (ModifiesCarryFlag(t))
+                            t->AddInject(inject_t::carry);
+                        if (t->mId == X86_INS_CALL)
+                            gNeedToRerun |= tracer.functionInjectsAdd(t->CallTarget(), injectReturn);
                     }
                 } else {
                     instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
@@ -1508,47 +1519,58 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
     const cs_x86& x86 = inst->mDetail;
     if ((int)inst->mInject & (int)inject_t::discard)
     {
-        // TODO: remove?
-        // TODO: only AND RX, RX
-        if (inst->mId == X86_INS_AND && x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
-            x86.operands[0].reg == x86.operands[1].reg)
-        {
-            switch (op)
-            {
-                case X86_INS_JE:
-                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                    return assign(x86, "$tmp0 == 0");
-                case X86_INS_JNE:
-                    //inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                    //return assign(x86, "$tmp0 != 0");
-                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::zero);
-                    return assign(x86, "!flags.zero");
-                case X86_INS_JAE:
-                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                    return assign(x86, "$tmp0 >= $rd1");
-                case X86_INS_JNS:
-                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-                    return assign(x86, "($sig0)$tmp0 >= 0");
-                case X86_INS_JB:
-                    return "stop(/*jb*/)";
-                default:
-                    assert(0);
-            }
-        } else {
+//        assert(0);
+//        // TODO: remove?
+//        // TODO: only AND RX, RX
+//        if (inst->mId == X86_INS_AND && x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
+//            x86.operands[0].reg == x86.operands[1].reg)
+//        {
+//            
+//            switch (op)
+//            {
+//                case X86_INS_JE:
+//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+//                    return assign(x86, "$tmp0 == 0");
+//                case X86_INS_JNE:
+//                    //inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+//                    //return assign(x86, "$tmp0 != 0");
+//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::zero);
+//                    return assign(x86, "!flags.zero");
+//                case X86_INS_JAE:
+//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+//                    return assign(x86, "$tmp0 >= $rd1");
+//                case X86_INS_JNS:
+//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
+//                    return assign(x86, "($sig0)$tmp0 >= 0");
+//                case X86_INS_JB:
+//                    return "stop(/*jb*/)";
+//                default:
+//                    assert(0);
+//            }
+//        } else {
+            /*
+             0e15:040b  fe 0e 16 4e      dec byte ptr [0x4e16]
+             0e15:040f  8e dd            mov ds, bp
+             0e15:0411  75 c4            jne loc_e527
+             0e15:0413  eb 2b            jmp loc_e590
+             */
             //gabo sub_e55b, sub_206f
             inject_t prev = inst->mInject;
             inst->mInject = inject_t::none;
             std::string cond = MakeCCondition(noticeCurrentMethod, inst, op);
             // rerun for temp
-            if (inst->mInject == inject_t::temp)
+            if (inst->mInject == inject_t::temp || inst->mInject == inject_t::tempPost)
                 cond = MakeCCondition(noticeCurrentMethod, inst, op);
-            inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::temp);
+            if (op == X86_INS_JNE || op == X86_INS_JE || op == X86_INS_JS || op == X86_INS_JNS)
+                inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::tempPost);
+            else
+                inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::temp);
             std::string rd0 = assign(x86, "$rd0");
             std::string tmp0 = assign(x86, "$tmp0");
             cond = replaceStr(cond, rd0, tmp0);
             return assign(x86, "stop(\"check inject: %s %s\") && %s", inst->mMnemonic, inst->mOperands, cond.c_str());
-        }
-        assert(0);
+//        }
+//        assert(0);
     }
     
     const char* tempCond = nullptr;
@@ -1654,7 +1676,7 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 tempCond = "$tmp0 < $rd1";
             if (inst->mId == X86_INS_SUB && op == X86_INS_JBE)
                 tempCond = "$tmp0 <= $rd1";
-            if (inst->mId == X86_INS_DEC && op == X86_INS_JL)
+            if (inst->mId == X86_INS_DEC && op  == X86_INS_JL)
                 tempCond = "($sig0)$tmp0 < 1";
             if (inst->mId == X86_INS_DEC && op == X86_INS_JG)
                 tempCond = "($sig0)$tmp0 > 1"; // check unbalanced
@@ -2295,6 +2317,9 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             {
                 assert(instr->mInject == inject_t::temp);
                 text.push_back(assign(x86, "$tmp0 = $rd0;"));
+            }
+            else if ((int)instr->mInject & (int)inject_t::tempPost)
+            {
             }
             else if ((int)instr->mInject & (int)inject_t::setZeroFlag)
             {
@@ -3482,6 +3507,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             default:
                 text.push_back(format("stop(); // %s %s PROBLEM-11", instr->mMnemonic, instr->mOperands));
 //                assert(0);
+        }
+
+        if ((int)instr->mInject & (int)inject_t::tempPost)
+        {
+            assert(instr->mInject == inject_t::tempPost);
+            text.push_back(assign(x86, "$tmp0 = $rd0;"));
         }
 
         if (injectLater != inject_t::none)
