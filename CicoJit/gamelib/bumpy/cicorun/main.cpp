@@ -9,7 +9,7 @@
 #include "cicoemu.h"
 #include "ega.h"
 #include <list>
-//#include "game/game.h"
+#include "controls.h"
 
 namespace CicoContext{
     cicocontext_t* ctx;
@@ -44,24 +44,6 @@ void syncKeyb()
     mSdl.Loop(true);
 }
 
-void onKey(int k, int p)
-{
-    if (k == SDL_SCANCODE_ESCAPE) exit(1);
-      switch (k)
-      {
-          case SDL_SCANCODE_2: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3c) = p; break;
-          case SDL_SCANCODE_3: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3d) = p; break;
-          case SDL_SCANCODE_4: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3e) = p; break;
-          case SDL_SCANCODE_5: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x3f) = p; break;
-          case SDL_SCANCODE_6: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x40) = p; break;
-          case SDL_SCANCODE_7: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x41) = p; break;
-          case SDL_SCANCODE_UP: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'H') = p; break;
-          case SDL_SCANCODE_RIGHT: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'M') = p; break;
-          case SDL_SCANCODE_DOWN: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'P') = p; break;
-          case SDL_SCANCODE_LEFT: CicoContext::ctx->memory8(0x1228, 0x4d44 + 'K') = p; break;
-          case SDL_SCANCODE_SPACE: CicoContext::ctx->memory8(0x1228, 0x4d44 + 0x1c) = p; break;
-          }
-}
 uint8_t memoryBiosGet8(int seg, int ofs)
 {
     if (seg == 0xffff && ofs == 0x000e)
@@ -1135,7 +1117,7 @@ void CicoContext::cicocontext_t::aaa()
 namespace CicoContext {
 void cicocontext_t::mul(uint8_t r)
 {
-    int v = r * ctx->a.r16;
+    int v = r * ctx->a.r8.l;
     ctx->a.r16 = v & 0xffff;
 }
 void cicocontext_t::mul(uint16_t r)

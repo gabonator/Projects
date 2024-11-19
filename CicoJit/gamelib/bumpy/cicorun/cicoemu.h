@@ -337,6 +337,24 @@ template <class SRC, class DIR> void repne_scasb(uint8_t value)
     }
 }
 
+void memoryAAnd16(int seg, int ofs, int val)
+{
+    memoryASet(seg, ofs, memoryAGet(seg, ofs) & (val & 0xff));
+    memoryASet(seg, ofs+1, memoryAGet(seg, ofs+1) & (val >> 8));
+}
+
+void memoryAOr16(int seg, int ofs, int val)
+{
+    memoryASet(seg, ofs, memoryAGet(seg, ofs) | (val & 0xff));
+    memoryASet(seg, ofs+1, memoryAGet(seg, ofs+1) | (val >> 8));
+}
+
+void memoryAXor16(int seg, int ofs, int val)
+{
+    memoryASet(seg, ofs, memoryAGet(seg, ofs) ^ (val & 0xff));
+    memoryASet(seg, ofs+1, memoryAGet(seg, ofs+1) ^ (val >> 8));
+}
+
 #else
 extern cicocontext_t* ctx;
 #endif

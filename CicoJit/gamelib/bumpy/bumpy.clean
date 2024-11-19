@@ -1,10 +1,6 @@
 #include "cicoemu.h"
 using namespace CicoContext;
 
-int bumpyStartupLevel = 3;
-int bumpyQuickPlay = 0;
-const char* bumpyScene = "";
-
 void sub_1ed0();
 void fixReloc(uint16_t seg);
 
@@ -1541,7 +1537,7 @@ void sub_d59c();
 void sub_d65d();
 void sub_d665();
 void sub_d66d();
-void sub_d69e(uint8_t opcode);
+void sub_d69e();
 void sub_d6df();
 void sub_d6e0();
 void sub_d6e6();
@@ -2269,7 +2265,6 @@ void sub_2042()
 }
 void sub_206f()
 {
-    push(0x7777);
 loc_206f:
     ah = 0xff;
     dx = di;
@@ -2288,10 +2283,7 @@ loc_2088:
     goto loc_2075;
 loc_208d:
     if (dx == di)
-    {
-        assert(pop() == 0x7777);
         return;
-    }
     bx = dx;
     push(ds);
     es = pop();
@@ -2299,7 +2291,7 @@ loc_208d:
     tl = memoryAGet(ds, bx);
     memoryASet(ds, bx, 0xff);
     ds = memoryAGet16(cs, 0x01ff);
-    if (tl == 0x00)
+    if (stop("check inject: cmp byte ptr [bx], 0") && tl == 0x00)
         goto loc_20aa;
     push(cs);
     cs = memoryAGet16(es, bx + 2 + 2);
@@ -2369,7 +2361,7 @@ void sub_2128()
         goto loc_2134;
     sub_ca53();
 loc_2134:
-    memoryASet(ds, 0x79b2, bumpyStartupLevel);
+    memoryASet(ds, 0x79b2, 0x01);
     sub_722e();
     sub_8cb3();
 loc_213f:
@@ -2759,8 +2751,6 @@ loc_2445:
 }
 void sub_24b7()
 {
-    sync();
-    return;
     push(0x7777);
     push(bp);
     bp = sp;
@@ -2942,7 +2932,7 @@ loc_2731:
 loc_2776:
     al = memoryAGet(ss, bp + 8);
     memoryASet(ss, bp + 8, memoryAGet(ss, bp + 8) - 1);
-    if (al)
+    if (stop(/*condition!*/))
         goto loc_2731;
     push(memoryAGet16(ss, bp + 12));
     push(memoryAGet16(ss, bp + 10));
@@ -3317,7 +3307,7 @@ loc_2ad5:
     assert(pop() == 0x7777);
 }
 void sub_2ae8()
-{ // gameplay!
+{
     push(0x7777);
     push(bp);
     bp = sp;
@@ -3346,17 +3336,13 @@ loc_2b18:
 loc_2b23:
     sub_2e4a();
 loc_2b26:
-    if (!bumpyQuickPlay)
-        sub_5475(); // menu
+    sub_5475();
     memoryASet(ss, bp - 1, al);
     if (al)
         goto loc_2b18;
     goto loc_2c5a;
 loc_2b33:
-    if (!bumpyQuickPlay)
-        sub_5722(); // room selector
-    else
-        memoryASet(ds, 0x854e, bumpyQuickPlay);
+    sub_5722();
     if (memoryAGet(ds, 0x928d) != 0xff)
         goto loc_2b42;
     sub_30bb();
@@ -3407,7 +3393,6 @@ loc_2b42:
     sub_6a1e();
     goto loc_2c19;
 loc_2baa:
-    bumpyScene = "game"; // level
     sub_b281();
     memoryASet(ds, 0x79b3, al);
     sub_325c();
@@ -3452,11 +3437,11 @@ loc_2baa:
     sub_68a7();
 loc_2c19:
     if (memoryAGet(ds, 0x928d) != 0x00)
-        goto loc_2c31; // lost lives, game over
+        goto loc_2c31;
     if (memoryAGet(ds, 0x856d) != 0x00)
-        goto loc_2c31; // dies/exit
+        goto loc_2c31;
     if (memoryAGet(ds, 0x9d30) != 0x00)
-        goto loc_2c31; // wins
+        goto loc_2c31;
     goto loc_2baa;
 loc_2c31:
     if (memoryAGet(ds, 0x928d) != 0xff)
@@ -3675,7 +3660,6 @@ loc_2e1c:
     if (memoryAGet(ss, bp - 12) < 0x06)
         goto loc_2de2;
 loc_2e22:
-    sync();
     al = 0x00;
     push(ax);
     sub_9472();
@@ -6015,8 +5999,7 @@ loc_41e7:
     memoryASet(ds, 0x928d, al);
     goto loc_4207;
 loc_4200:
-    if (!bumpyQuickPlay)
-        memoryASet(ds, 0x791a, memoryAGet(ds, 0x791a) - 1);
+    memoryASet(ds, 0x791a, memoryAGet(ds, 0x791a) - 1);
     al = memoryAGet(ds, 0x791a);
 loc_4207:
     si = pop();
@@ -7285,7 +7268,7 @@ loc_4bf4:
     ah = 0x00;
     if (ax)
         goto loc_4c0b;
-    //sub_5ee5(); // ask for platform number
+    sub_5ee5();
 loc_4c0b:
     if (memoryAGet(ds, 0x119a) != 0xff)
         goto loc_4c17;
@@ -7471,8 +7454,7 @@ loc_4dd8:
     push(ax);
     sub_91d7();
     sp += 0x0004;
-    if (!bumpyQuickPlay)
-        sub_4e7c();
+    sub_4e7c();
     ax = 0x0004;
     push(ax);
     ax = 0;
@@ -7753,8 +7735,6 @@ loc_508d:
     memoryASet(ds, 0x8244, 0x00);
     goto loc_50a0;
 loc_5094:
-    bumpyScene = "splash";
-    sync();
     sub_3cae();
     ax = memoryAGet16(ds, 0x119c);
     ax += 0x0007;
@@ -7824,7 +7804,6 @@ loc_50ba:
 }
 void sub_515f()
 {
-    sync();
     push(0x7777);
     push(bp);
     bp = sp;
@@ -7835,7 +7814,6 @@ loc_516b:
     memoryASet(ds, 0x8244, 0x00);
     goto loc_5175;
 loc_5172:
-    sync();
     sub_3cae();
 loc_5175:
     al = memoryAGet(ds, 0x8244);
@@ -8249,7 +8227,6 @@ loc_552d:
     sp++;
     goto loc_56d9;
 loc_55cf:
-    bumpyScene = "menu";
     al = memoryAGet(ds, 0x79b5);
     ah = 0x00;
     ax <<= 1;
@@ -8350,11 +8327,7 @@ loc_56cd:
     sp++;
     sp++;
     if (al)
-    {
-        sync();
-        // wait while pressed
         goto loc_56cd;
-    }
 loc_56d9:
     if (memoryAGet(ss, bp - 6) != 0xff)
         goto loc_56e2;
@@ -8552,8 +8525,6 @@ loc_580c:
     sub_5958();
     goto loc_5944;
 loc_58ec:
-    bumpyScene = "levels";
-    sync();
     sub_3cae();
     if (!(memoryAGet(ds, 0x8244) & 0x01))
         goto loc_58fb;
@@ -9368,7 +9339,7 @@ loc_5fe3:
     si = ax;
     if ((short)ax < (short)0x0002)
         goto loc_5fe3;
-    al = memoryAGet(ss, bp + si - 54);
+    al = memoryAGet(ss, bp + si + 65482);
     memoryASet(ss, bp - 4, al);
     al = 0x00;
     memoryASet(ss, bp - 3, al);
@@ -10769,7 +10740,6 @@ void sub_6a96()
     sub_ca53();
 loc_6aa5:
     al = memoryAGet(ss, bp + 4);
-    if (al) {
     memoryASet(ds, 0x8562, al);
     ah = 0x00;
     ax <<= 1;
@@ -10789,7 +10759,6 @@ loc_6aa5:
     dx = memoryAGet16(es, bx + 2);
     memoryASet16(ds, 0xa0ba, dx);
     memoryASet16(ds, 0xa0bc, ax);
-    }
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
@@ -12214,7 +12183,6 @@ loc_78b2:
     sp += 0x0008;
     goto loc_7b30;
 loc_791a:
-    bumpyScene = "highscores";
     if (!(memoryAGet(ss, bp - 1) & 0x01))
         goto loc_7984;
     if ((short)memoryAGet16(ss, bp - 6) <= (short)0x01ac)
@@ -12933,7 +12901,7 @@ loc_7f59:
 loc_7f9e:
     al = memoryAGet(ss, bp + 8);
     memoryASet(ss, bp + 8, memoryAGet(ss, bp + 8) - 1);
-    if (al)
+    if (stop(/*condition!*/))
         goto loc_7f59;
     bx = memoryAGet16(ds, 0x8884);
     es = memoryAGet16(ds, 0x8884 + 2);
@@ -14600,15 +14568,14 @@ loc_8bb3:
 loc_8bd3:
     if (memoryAGet(ds, 0x79b8) != 0x2f)
         goto loc_8be2;
-    flags.carry = (memoryAGet16(ds, 0xa0d4) + 0x2616) > 0x10000;
     memoryASet16(ds, 0xa0d4, memoryAGet16(ds, 0xa0d4) + 0x2616);
     goto loc_8bef;
 loc_8be2:
     if (memoryAGet(ds, 0x79b8) != 0x30)
         goto loc_8bf4;
-    flags.carry = (memoryAGet16(ds, 0xa0d4) + 0xc256) > 0x10000;
     memoryASet16(ds, 0xa0d4, memoryAGet16(ds, 0xa0d4) + 0xc256);
 loc_8bef:
+    stop(/*8*/); // inject carry failed
     memoryASet16(ds, 0xa0d6, memoryAGet16(ds, 0xa0d6) + flags.carry);
 loc_8bf4:
     bp = pop();
@@ -16083,7 +16050,6 @@ void sub_998b()
     di = pop();
     bx = pop();
     ds = pop();
-    flags.zero = ax == 0;
 }
 void sub_99d1()
 {
@@ -19174,7 +19140,7 @@ loc_bc2c:
     memoryASet16(es, bx + 14, ax);
     if (di == 0x0002)
         goto loc_bcb0;
-    if (!si)
+    if (stop(/*condition!*/))
         goto loc_bcb0;
     memoryASet16(ds, 0x6984, 0x9f25);
     ax = memoryAGet16(ss, bp + 8);
@@ -20290,6 +20256,7 @@ loc_c662:
 void sub_c7be()
 {
     push(0x7777);
+    stop(/*override stack*/);
     cx = pop();
     push(cs);
     push(cx);
@@ -20340,8 +20307,8 @@ loc_c81f:
     flags.carry = !!(ax & 0x8000);
     ax <<= 1;
     dx = rcl(dx, 0x0001);
-    si = rcl((uint16_t)si, 0x0001);
-    di = rcl((uint16_t)di, 0x0001);
+    si = rcl(si, 0x0001);
+    di = rcl(di, 0x0001);
     if (di < bp)
         goto loc_c836;
     if (di > bp)
@@ -20390,7 +20357,7 @@ loc_c861:
 }
 void sub_c865()
 {
-    push(0x7777);
+    stop(/*override stack*/);
     es = pop();
     push(cs);
     push(es);
@@ -20418,8 +20385,7 @@ loc_c880:
     dx += ax;
     al = ch;
     ax &= 0x000f;
-//    cs = pop();
-    es = 0x99b0; pop(); pop(); // wtf?
+    cs = pop();
     return;
     //   gap of 19 bytes
 loc_c8a7:
@@ -20439,11 +20405,12 @@ loc_c8af:
     dx += ax;
     al = ch;
     ax &= 0x000f;
-//    cs = pop();
+    cs = pop();
 }
 void sub_c8c5()
 {
     push(0x7777);
+    stop(/*override stack*/);
     es = pop();
     push(cs);
     push(es);
@@ -20467,7 +20434,7 @@ void sub_c8c5()
     si = pop();
     bp = pop();
     assert(pop() == 0x7777);
-//    cs = pop();
+    cs = pop();
     sp += 8;
 }
 void sub_c8e4()
@@ -20488,7 +20455,7 @@ loc_c8ed:
     tx = cx;
     cx = ax;
     ax = tx;
-    mul((uint16_t)si);
+    mul(si);
     ax += cx;
 loc_c8f4:
     tx = si;
@@ -20643,7 +20610,7 @@ loc_c991:
     if (!flags.zero && !flags.carry)
         goto loc_c99d;
 loc_c996:
-    if (flags.carry)
+    if (stop(/*1 - jb loc_c9d8*/))
         goto loc_c9d8;
     sub_c9ad();
     if (!flags.zero && !flags.carry)
@@ -20705,7 +20672,7 @@ loc_ca0e:
     memoryASet16(ds, 0x006d, ax);
     ax = memoryAGet16(ds, 0x6bac);
     memoryASet16(ds, 0x006b, ax);
-//    jumpIndirect(cs, memoryAGet16(ds, 0x6bb0));
+    jumpIndirect(cs, memoryAGet16(ds, 0x6bb0));
 }
 // INJECT: Error: cannot inject zero flag in sub_c9ad()!
 // INJECT: Error: cannot inject carry flag in sub_c9ad()!
@@ -20725,36 +20692,22 @@ loc_c9b8:
     al = 0;
     flags.carry = true;
     if (cx == 0)
-    {
-        flags.zero = true;
         goto loc_c9d4;
-    }
     lodsb<MemAuto, DirAuto>();
     cx--;
     al -= 0x22;
     if (al == 0)
-    {
-        flags.zero = true;
         goto loc_c9d4;
-    }
     al += 0x22;
     if (al != 0x5c)
-    {
-        flags.zero = false;
         goto loc_c9d2;
-    }
     if (memoryAGet(ds, si) != 0x22)
-    {
-        flags.zero = false;
         goto loc_c9d2;
-    }
     lodsb<MemAuto, DirAuto>();
     cx--;
-    flags.zero = cx == 0;
 loc_c9d2:
-    flags.carry = false;
 loc_c9d4:
-    return;
+    stop(/*inject ret*/);
 }
 void sub_ca53()
 {
@@ -21361,8 +21314,6 @@ loc_cd70:
     if (--cx)
         goto loc_cd5d;
 loc_cd76:
-    bumpyScene = "startup";
-    sync();
     al = 0x3c;
     push(cs);
     cs = 0x01ed;
@@ -22432,6 +22383,10 @@ loc_d5d2:
 }
 void sub_d65d()
 {
+    memoryASet(cs, 0x0c63, 0x21);
+    goto loc_d673;
+    //   gap of 14 bytes
+loc_d673:
     dx = 0x03ce;
     al = 0x04;
     out(dx, al);
@@ -22451,7 +22406,7 @@ loc_d683:
     tl = al;
     al = ah;
     ah = tl;
-    sub_d69e(0x21);
+    sub_d69e();
     al++;
     ah <<= 1;
     if ((char)al > (char)0x03)
@@ -22462,6 +22417,10 @@ loc_d683:
 }
 void sub_d665()
 {
+    memoryASet(cs, 0x0c63, 0x09);
+    goto loc_d673;
+    //   gap of 6 bytes
+loc_d673:
     dx = 0x03ce;
     al = 0x04;
     out(dx, al);
@@ -22481,7 +22440,7 @@ loc_d683:
     tl = al;
     al = ah;
     ah = tl;
-    sub_d69e(0x09);
+    sub_d69e();
     al++;
     ah <<= 1;
     if ((char)al > (char)0x03)
@@ -22492,6 +22451,7 @@ loc_d683:
 }
 void sub_d66d()
 {
+    memoryASet(cs, 0x0c63, 0x31);
     dx = 0x03ce;
     al = 0x04;
     out(dx, al);
@@ -22511,7 +22471,7 @@ loc_d683:
     tl = al;
     al = ah;
     ah = tl;
-    sub_d69e(0x31);
+    sub_d69e();
     al++;
     ah <<= 1;
     if ((char)al > (char)0x03)
@@ -22520,7 +22480,7 @@ loc_d683:
     goto loc_d683;
     //   gap of 64 bytes
 }
-void sub_d69e(uint8_t opcode)
+void sub_d69e()
 {
     push(ax);
     push(si);
@@ -22542,15 +22502,7 @@ loc_d6b8:
     cx >>= 1;
 loc_d6c0:
     ax = memoryAGet16(ds, si);
-    switch (opcode)
-    {
-        // 26 21 05    and word ptr es:[di], ax
-        case 0x21: memoryAAnd16(es, di, ax); break;
-        // 26 09 05    or word ptr es:[di], ax
-        case 0x09: memoryAOr16(es, di, ax); break;
-        // 26 31 05    xor word ptr es:[di], ax
-        case 0x31: memoryAXor16(es, di, ax); break;
-    }
+    memoryASet16(es, di, memoryAGet16(es, di) & ax);
     si += 0x0002;
     di += 0x0002;
     if (--cx)
@@ -22599,7 +22551,6 @@ void sub_d7d7()
     memoryASet(ds, 0x5420, 0x01);
     bx = memoryAGet16(ds, 0x541d);
     bx <<= 1;
-    assert(bx == 4);
     callIndirect(cs, memoryAGet16(ds, bx + 21854));
 loc_d802:
     es = pop();
@@ -22713,7 +22664,6 @@ void sub_da88()
     memoryASet(ds, 0x5420, 0x00);
     bx = memoryAGet16(ds, 0x541d);
     bx <<= 1;
-    assert(bx==4);
     callIndirect(cs, memoryAGet16(ds, bx + 22168));
 loc_dab2:
     es = pop();
@@ -23846,7 +23796,7 @@ loc_e55b:
     memoryASet(ds, 0x4e16, memoryAGet(ds, 0x4e16) - 1);
     tl = memoryAGet(ds, 0x4e16);
     ds = bp;
-    if (tl != 0)
+    if (stop("check inject: dec byte ptr [0x4e16]") && tl != 0)
         goto loc_e527;
     goto loc_e590;
 loc_e565:
@@ -25819,7 +25769,6 @@ loc_10ec9:
     //   gap of 1183 bytes
 loc_11371:
     ax = 0x0000;
-    ax = memoryAGet16(cs, 0x25e2);
     switch (ax)
     {
         case 0x2004: goto loc_10d94;
@@ -25866,7 +25815,6 @@ void sub_11aa5()
     di = memoryAGet16(ds, 0x541d);
     di += di;
     ax = memoryAGet16(cs, bx + di);
-    assert(di == 4);
     callIndirect(cs, ax);
     es = pop();
     ds = pop();
@@ -26500,7 +26448,6 @@ loc_121d2:
     if (--cx)
         goto loc_121bf;
 loc_121d8:
-    sync();
     al = 0x3f;
     push(cs);
     cs = 0x01ed;
@@ -26560,7 +26507,6 @@ void sub_12230()
     push(es);
     bx = memoryAGet16(ds, 0x541d);
     bx <<= 1;
-    assert(bx == 4);
     callIndirect(cs, memoryAGet16(ds, bx + 26998));
     es = pop();
     ds = pop();
@@ -26571,7 +26517,6 @@ void sub_12230()
 }
 void sub_12245()
 {
-    sync();
     dx = 0x03da;
 loc_12248:
     in(al, dx);

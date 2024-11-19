@@ -792,6 +792,11 @@ bool ModifiesZeroFlag(const std::shared_ptr<CapInstr>& instr)
     return instr->mId == X86_INS_TEST || instr->mId == X86_INS_AND || instr->mId == X86_INS_CMP;
 }
 
+bool FiltersZeroFlag(const std::shared_ptr<CapInstr>& instr)
+{
+    return instr->mId == X86_INS_JE || instr->mId == X86_INS_JNE;
+}
+
 bool SetsZeroFlag(const std::shared_ptr<CapInstr>& instr)
 {
     if ((instr->mId == X86_INS_XOR || instr->mId == X86_INS_SUB) &&
@@ -879,7 +884,7 @@ public:
     {
     }
     
-    std::vector<std::shared_ptr<CapInstr>> allPathsTo(std::shared_ptr<CapInstr>& instr)
+    std::vector<std::shared_ptr<CapInstr>> allPathsTo(const std::shared_ptr<CapInstr>& instr)
     {
         std::vector<std::shared_ptr<CapInstr>> targets;
         std::shared_ptr<CapInstr> prev3;
@@ -919,7 +924,7 @@ public:
         assert(targets.size());
         return targets;
     }
-    std::shared_ptr<CapInstr> previousInstructionTo(std::shared_ptr<CapInstr>& instr)
+    std::shared_ptr<CapInstr> previousInstructionTo(const std::shared_ptr<CapInstr>& instr)
     {
         std::vector<std::shared_ptr<CapInstr>> prev = allPathsTo(instr);
         if (prev.size() == 1)
@@ -1041,31 +1046,6 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
             }
         }
         
-//        if (0 && instr->IsIndirectJump())
-//        {
-//            assert(instr->mDetail.op_count == 1);
-//            const auto& op = instr->mDetail.operands[0];
-//            if (op.mem.base == X86_REG_INVALID &&
-//                op.mem.segment == X86_REG_INVALID &&
-//                op.mem.index == X86_REG_INVALID &&
-//                op.mem.scale == 1 &&
-//                op.mem.disp != 0)
-//            {
-//                
-//            }
-//            else if (op.mem.segment == X86_REG_INVALID)
-//            {
-//                assert(op.mem.segment == X86_REG_INVALID); // ds?
-//                assert(op.mem.base == X86_REG_DI || op.mem.base == X86_REG_SI);
-//                assert(_ds);
-//                address_t table{_ds, (int)instr->mDetail.operands[0].mem.disp}; // TODO: was cs!
-//                const uint8_t* ptr = cap.GetBufferAt(table);
-//                indirectJumps.push_back({instr->mAddress, address_t{_cs, 0}, -1, switch_t::JumpWords, op.mem.base, ptr});
-//            } else {
-//                printf("// skipping indirect jump\n");
-//            }
-//        }
-            
         if ((pc = instr->Next()).isValid())
             if (instructions.find(pc) == instructions.end())
             {
@@ -1273,85 +1253,12 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
         }
         if (injectReturn != inject_t::none && (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF))
         {
-            /*
-            if (instr->mLabel)
-            {
-                std::vector<std::shared_ptr<CapInstr>> targets;
-                std::shared_ptr<CapInstr> prev3;
-                for( auto i = instructions.begin(); i != instructions.end(); i++ )
-                {
-                    if (i->second->NextBranch() == instr->mAddress || i->second->NextFollowing() == instr->mAddress)
-                    {
-                        targets.push_back(prev3);
-                    }
-                    prev3 = i->second;
-                }
-                //targets.push_back(prev1);
-                
-                targets.erase(std::remove_if(targets.begin(), targets.end(),
-                    [injectReturn](auto& instr) {
-                        if (injectReturn == inject_t::returnCarry)
-                        {
-                            if (instr->mId == X86_INS_STC || instr->mId == X86_INS_CLC || instr->mId == X86_INS_JAE) // jae = jnc
-                                return true;
-                        }
-                        return false;
-                    }), targets.end());
-                
-                if (all(targets, [](auto& instr){ return instr->mId == X86_INS_CALL; } ))
-                {
-                    all(targets, [injectReturn](auto& instr){
-                        assert(instr->mDetail.op_count == 1);
-                        assert(instr->mDetail.operands[0].type == X86_OP_IMM);
-                        
-                        address_t targetAddr = fromRelative(instr, instr->mDetail.operands[0].imm);
-                        
-                        auto injectptr = functionInjects.find(targetAddr);
-                        if (injectptr != functionInjects.end())
-                        {
-                            if (!((int)injectptr->second & (int)injectReturn))
-                            {
-                                gNeedToRerun = true;
-                                injectptr->second = (inject_t)((int)injectptr->second | (int)injectReturn);
-                            }
-                        }
-                        else
-                        {
-                            gNeedToRerun = true;
-                            functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
-                        }
-                        return true;
-                    } );
-                }
-                else if (all(targets, [](auto& instr){ return instr->mId == X86_INS_CMP; } ))
-                {
-                    inject_t injectVal = inject_t::none;
-                    if ((int)injectReturn & (int)inject_t::returnCarry)
-                        injectVal = (inject_t)((int)injectVal | (int)inject_t::carry);
-                    if ((int)injectReturn & (int)inject_t::returnZero)
-                        injectVal = (inject_t)((int)injectVal | (int)inject_t::zero);
-                    assert((int)injectVal);
-                    all(targets, [injectVal](auto& instr){ instr->mInject = inject_t((int)instr->mInject | (int)injectVal); return true; } );
-                } else
-                {
-                    instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
-                    printf("// INJECT: Error: cannot inject flag in sub_%x() because of being label!\n",
-                           address.linearOffset());
-                }
-            }
-//            else if (!prev1 || !prev2)
-//            {
-//                printf("// INJECT: Error: cannot inject flag in sub_%x() because no traceback!\n",
-//                       address.linearOffset());
-//                instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
-//            }
-            else*/
             if ((int)injectReturn & (int)inject_t::returnZero)
             {
                 CTracer tracer(instructions);
                 std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
 
-                if (all(targets, [&](auto& instr){ return SetsZeroFlag(instr) || ClearsZeroFlag(instr, tracer.previousInstructionTo(instr)) || instr->mId == X86_INS_CALL || ModifiesZeroFlag(instr); } ))
+                if (all(targets, [&](auto& instr){ return SetsZeroFlag(instr) || ClearsZeroFlag(tracer.previousInstructionTo(instr), instr) || instr->mId == X86_INS_CALL || ModifiesZeroFlag(instr) || FiltersZeroFlag(instr); } ))
                 {
                     for (const auto& t : targets)
                     {
@@ -1361,8 +1268,10 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                             t->AddInject(inject_t::zero);
                         else if (SetsZeroFlag(t))
                             t->AddInject(inject_t::setZeroFlag);
-                        else if (ClearsZeroFlag(t, tracer.previousInstructionTo(instr)))
+                        else if (ClearsZeroFlag(tracer.previousInstructionTo(t), t))
                             t->AddInject(inject_t::clearZeroFlag);
+                        else if (FiltersZeroFlag(t))
+                            t->AddInject(inject_t::zero);
                     }
                 } else {
                     instr->mInject = (inject_t)((int)instr->mInject | (int)inject_t::stop);
@@ -1519,58 +1428,20 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
     const cs_x86& x86 = inst->mDetail;
     if ((int)inst->mInject & (int)inject_t::discard)
     {
-//        assert(0);
-//        // TODO: remove?
-//        // TODO: only AND RX, RX
-//        if (inst->mId == X86_INS_AND && x86.operands[0].type == X86_OP_REG && x86.operands[1].type == X86_OP_REG &&
-//            x86.operands[0].reg == x86.operands[1].reg)
-//        {
-//            
-//            switch (op)
-//            {
-//                case X86_INS_JE:
-//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-//                    return assign(x86, "$tmp0 == 0");
-//                case X86_INS_JNE:
-//                    //inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-//                    //return assign(x86, "$tmp0 != 0");
-//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::zero);
-//                    return assign(x86, "!flags.zero");
-//                case X86_INS_JAE:
-//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-//                    return assign(x86, "$tmp0 >= $rd1");
-//                case X86_INS_JNS:
-//                    inst->mInject = inject_t((int)inst->mInject | (int)inject_t::temp);
-//                    return assign(x86, "($sig0)$tmp0 >= 0");
-//                case X86_INS_JB:
-//                    return "stop(/*jb*/)";
-//                default:
-//                    assert(0);
-//            }
-//        } else {
-            /*
-             0e15:040b  fe 0e 16 4e      dec byte ptr [0x4e16]
-             0e15:040f  8e dd            mov ds, bp
-             0e15:0411  75 c4            jne loc_e527
-             0e15:0413  eb 2b            jmp loc_e590
-             */
-            //gabo sub_e55b, sub_206f
-            inject_t prev = inst->mInject;
-            inst->mInject = inject_t::none;
-            std::string cond = MakeCCondition(noticeCurrentMethod, inst, op);
-            // rerun for temp
-            if (inst->mInject == inject_t::temp || inst->mInject == inject_t::tempPost)
-                cond = MakeCCondition(noticeCurrentMethod, inst, op);
-            if (op == X86_INS_JNE || op == X86_INS_JE || op == X86_INS_JS || op == X86_INS_JNS)
-                inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::tempPost);
-            else
-                inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::temp);
-            std::string rd0 = assign(x86, "$rd0");
-            std::string tmp0 = assign(x86, "$tmp0");
-            cond = replaceStr(cond, rd0, tmp0);
-            return assign(x86, "stop(\"check inject: %s %s\") && %s", inst->mMnemonic, inst->mOperands, cond.c_str());
-//        }
-//        assert(0);
+        inject_t prev = inst->mInject;
+        inst->mInject = inject_t::none;
+        std::string cond = MakeCCondition(noticeCurrentMethod, inst, op);
+        // rerun for temp
+        if (inst->mInject == inject_t::temp || inst->mInject == inject_t::tempPost)
+            cond = MakeCCondition(noticeCurrentMethod, inst, op);
+        if (op == X86_INS_JNE || op == X86_INS_JE || op == X86_INS_JS || op == X86_INS_JNS)
+            inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::tempPost);
+        else
+            inst->mInject = inject_t((int)prev /*& ~(int)inject_t::discard */| (int)inject_t::temp);
+        std::string rd0 = assign(x86, "$rd0");
+        std::string tmp0 = assign(x86, "$tmp0");
+        cond = replaceStr(cond, rd0, tmp0);
+        return assign(x86, "stop(\"check inject: %s %s\") && %s", inst->mMnemonic, inst->mOperands, cond.c_str());
     }
     
     const char* tempCond = nullptr;
@@ -2303,6 +2174,13 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         injectLater = inject_t::zero;
 //                        text.push_back(assign(x86, "flags.zero = $rd0 == 0;"));
                         break;
+                    case X86_INS_JE:
+                    case X86_INS_JNE:
+                        if (lastCompare)
+                            modified |= lastCompare->AddInject(inject_t::zero);
+//                        injectLater = inject_t::zero;
+                        // processed later
+                        break;
                     default:
                         text.push_back(assign(x86, "flags.zero = stop(\"43\");"));
                         break;
@@ -2323,11 +2201,13 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             }
             else if ((int)instr->mInject & (int)inject_t::setZeroFlag)
             {
-                text.push_back(assign(x86, "flags.zero = true;"));
+                // post
+//                text.push_back(assign(x86, "flags.zero = true;"));
             }
             else if ((int)instr->mInject & (int)inject_t::clearZeroFlag)
             {
-                text.push_back(assign(x86, "flags.zero = false;"));
+                // post
+//                text.push_back(assign(x86, "flags.zero = false;"));
             }
             else if ((int)instr->mInject & (int)inject_t::setCarryFlag)
             {
@@ -2608,24 +2488,6 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 lastCompare = instr;
                 keepLastCompare = true;
                 break;
-                /*
-                 mov    ax, [si+4]
-                 mov    cl, [si+6]
-                                   carry = (cl+dl)>>8                <-- inject
-                 add    cl, dl     cl += dl
-                 adc    al, dh     al += dh + carry
-                 adc    ah, ch     ah += ch + carry
-                 ---------
-
-                 mov    ax, [si+4]
-                 mov    cl, [si+6]
-                                   carry = (cl+dl)>>8                <-- inject
-                 add    cl, dl     cl += dl
-                                   tl = carry; carry=(al+dh+tl)>>8   <-- inject
-                 adc    al, dh     al += dh + tl
-                 adc    ah, ch     ah += ch + carry
-
-                 */
             case X86_INS_ADC:
                 assert(x86.op_count == 2 && x86.operands[0].size == x86.operands[1].size);
                 if (lastCompare)
@@ -3513,6 +3375,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         {
             assert(instr->mInject == inject_t::tempPost);
             text.push_back(assign(x86, "$tmp0 = $rd0;"));
+        }
+        else if ((int)instr->mInject & (int)inject_t::setZeroFlag)
+        {
+            text.push_back(assign(x86, "flags.zero = true;"));
+        }
+        else if ((int)instr->mInject & (int)inject_t::clearZeroFlag)
+        {
+            text.push_back(assign(x86, "flags.zero = false;"));
         }
 
         if (injectLater != inject_t::none)

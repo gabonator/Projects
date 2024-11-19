@@ -1,12 +1,10 @@
 arch -arm64 g++ -std=c++17 ../../cicodis/cicodis/main.cpp -I/opt/homebrew/Cellar/capstone/5.0.1/include/ -L/opt/homebrew/Cellar/capstone/5.0.1/lib -lcapstone.5 -o cicodis
-# -asm -coverage
-#./cicodis $PWD/dos/B.EXE -load 01ed -raw words 1228:43c0 1200
 
 ./cicodis $PWD/dos/B.EXE -load 01ed -ctx -reloc -recursive \
   -jumptable 01ed:46dc 01ed:4725 4 jumpwords bx \
   -jumptable 01ed:37db 01ed:384a 4 jumpwords bx \
   -jumptable 01ed:6e7e 01ed:70e7 20 jumpwords bx \
-  start  \
+  start \
   -jumptable 01ed:ffff 1228:43c0 1085 callwords indirect \
   -jumptable 01ed:ffff 1227:0002 1 callwords indirect \
   -jumptable 01ed:ffff 1227:0008 1 callwords indirect \

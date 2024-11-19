@@ -387,7 +387,7 @@ uint16_t cicocontext_t::pop(void)
 
 void cicocontext_t::mul(uint8_t r)
 {
-    int v = r * ctx.a.r16;
+    int v = r * ctx.a.r8.l;
     ctx.a.r16 = v & 0xffff;
 }
 void cicocontext_t::mul(uint16_t r)
