@@ -1,2 +1,0 @@
-Target dependency graph (1 target)
-Target 'CicoProject' in project 'CicoProject' (no dependencies)
