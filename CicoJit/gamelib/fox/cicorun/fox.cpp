@@ -9642,8 +9642,8 @@ void sub_15333()
     bh &= 0x1f;
     if (bl < 0x65)
         goto loc_15349;
-    flags.zero = true;
     bx = 0;
+    flags.zero = true;
     goto loc_1534e;
 loc_15349:
     flags.zero = !(memoryAGet(ds, bx + 28441) & 0x02);

@@ -1,2 +1,2 @@
 rm -rf dos
-rm bumpy bumpy.cpp bumpy.orig
+rm bumpy bumpy.cpp bumpy.orig bumpy.clean

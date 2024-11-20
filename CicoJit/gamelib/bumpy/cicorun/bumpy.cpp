@@ -1,8 +1,7 @@
 #include "cicoemu.h"
 using namespace CicoContext;
 
-int bumpyStartupLevel = 3;
-int bumpyQuickPlay = 0;
+int bumpyStartupLevel = 4;
 const char* bumpyScene = "";
 
 void sub_1ed0();
@@ -3317,7 +3316,7 @@ loc_2ad5:
     assert(pop() == 0x7777);
 }
 void sub_2ae8()
-{ // gameplay!
+{
     push(0x7777);
     push(bp);
     bp = sp;
@@ -3346,17 +3345,13 @@ loc_2b18:
 loc_2b23:
     sub_2e4a();
 loc_2b26:
-    if (!bumpyQuickPlay)
-        sub_5475(); // menu
+    sub_5475();
     memoryASet(ss, bp - 1, al);
     if (al)
         goto loc_2b18;
     goto loc_2c5a;
 loc_2b33:
-    if (!bumpyQuickPlay)
-        sub_5722(); // room selector
-    else
-        memoryASet(ds, 0x854e, bumpyQuickPlay);
+    sub_5722();
     if (memoryAGet(ds, 0x928d) != 0xff)
         goto loc_2b42;
     sub_30bb();
@@ -3407,7 +3402,7 @@ loc_2b42:
     sub_6a1e();
     goto loc_2c19;
 loc_2baa:
-    bumpyScene = "game"; // level
+    bumpyScene = "game";
     sub_b281();
     memoryASet(ds, 0x79b3, al);
     sub_325c();
@@ -3452,11 +3447,11 @@ loc_2baa:
     sub_68a7();
 loc_2c19:
     if (memoryAGet(ds, 0x928d) != 0x00)
-        goto loc_2c31; // lost lives, game over
+        goto loc_2c31;
     if (memoryAGet(ds, 0x856d) != 0x00)
-        goto loc_2c31; // dies/exit
+        goto loc_2c31;
     if (memoryAGet(ds, 0x9d30) != 0x00)
-        goto loc_2c31; // wins
+        goto loc_2c31;
     goto loc_2baa;
 loc_2c31:
     if (memoryAGet(ds, 0x928d) != 0xff)
@@ -6015,8 +6010,7 @@ loc_41e7:
     memoryASet(ds, 0x928d, al);
     goto loc_4207;
 loc_4200:
-    if (!bumpyQuickPlay)
-        memoryASet(ds, 0x791a, memoryAGet(ds, 0x791a) - 1);
+    memoryASet(ds, 0x791a, memoryAGet(ds, 0x791a) - 1);
     al = memoryAGet(ds, 0x791a);
 loc_4207:
     si = pop();
@@ -7471,8 +7465,7 @@ loc_4dd8:
     push(ax);
     sub_91d7();
     sp += 0x0004;
-    if (!bumpyQuickPlay)
-        sub_4e7c();
+    sub_4e7c();
     ax = 0x0004;
     push(ax);
     ax = 0;

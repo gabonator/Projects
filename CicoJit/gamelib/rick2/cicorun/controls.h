@@ -11,7 +11,10 @@ void onKey(int k, int p)
         case SDL_SCANCODE_RSHIFT:
         case SDL_SCANCODE_LSHIFT:
         case SDL_SCANCODE_Z:
-        case SDL_SCANCODE_SPACE: keys = p ? keys | 16 : keys & ~16; break;
+        case SDL_SCANCODE_SPACE:
+            CicoContext::ctx->memory8(0x1040, 0xa85e) = p ? 0 : 0xff;
+            
+            keys = p ? keys | 16 : keys & ~16; break;
         //case SDL_SCANCODE_LCTRL:
         //case SDL_SCANCODE_RCTRL: slowdown = p;
     }

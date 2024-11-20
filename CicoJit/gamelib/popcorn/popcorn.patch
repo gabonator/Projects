@@ -1,7 +1,7 @@
-diff --git a/./popcorn.cpp.orig b/cicorun/popcorn.cpp
-index 22837b7..d78301d 100644
---- a/./popcorn.cpp.orig
-+++ b/cicorun/popcorn.cpp
+diff --git a/./popcorn.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/popcorn/cicorun/./popcorn.cpp
+index 77208af..fb2768e 100644
+--- a/./popcorn.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/popcorn/cicorun/./popcorn.cpp
 @@ -1,6 +1,6 @@
  #include "cicoemu.h"
  using namespace CicoContext;
@@ -10,7 +10,7 @@ index 22837b7..d78301d 100644
  void sub_2ad33();
  
  void start()
-@@ -357,10 +357,11 @@ void sub_2ad33()
+@@ -353,10 +353,11 @@ void sub_2ad33()
      ds = ax;
      sub_302a0();
      ah = 0x19;
@@ -25,8 +25,8 @@ index 22837b7..d78301d 100644
 +    goto loc_2adaa;
      ch = 0;
      cl = memoryAGet(ds, 0x13a0);
-     tl = cl;
-@@ -580,7 +581,7 @@ loc_2af6f:
+     cl--;
+@@ -574,7 +575,7 @@ loc_2af6f:
      tx = pop();
      flags.carry = tx & 1;
      flags.zero = (tx << 1) & 1;
@@ -35,7 +35,7 @@ index 22837b7..d78301d 100644
          goto loc_2af96;
      sub_2b355();
      if (memoryAGet(ds, 0x3f1b) == 0x01)
-@@ -1108,10 +1109,10 @@ loc_2b3c0:
+@@ -1093,10 +1094,10 @@ loc_2b3c0:
      cx = 0x0031;
      push(di);
      al = 0x55;
@@ -48,7 +48,7 @@ index 22837b7..d78301d 100644
      flags.carry = true;
      ah = rcl(ah, 0x01);
      al &= ah;
-@@ -1146,10 +1147,10 @@ loc_2b3f5:
+@@ -1131,10 +1132,10 @@ loc_2b3f5:
          goto loc_2b43b;
      di = 0x213f;
      al = 0x55;
@@ -61,7 +61,7 @@ index 22837b7..d78301d 100644
      flags.carry = false;
      dl = rcl(dl, 0x01);
      al &= dl;
-@@ -1231,12 +1232,12 @@ loc_2b47f:
+@@ -1214,12 +1215,12 @@ loc_2b47f:
          goto loc_2b48d;
      ah = rcl(ah, 0x01);
      al <<= 1;
@@ -76,7 +76,7 @@ index 22837b7..d78301d 100644
      ah = rcl(ah, 0x01);
      flags.carry = !!(al & 0x80);
      al <<= 1;
-@@ -2096,7 +2097,7 @@ loc_2af6f:
+@@ -2066,7 +2067,7 @@ loc_2af6f:
      tx = pop();
      flags.carry = tx & 1;
      flags.zero = (tx << 1) & 1;
@@ -85,7 +85,7 @@ index 22837b7..d78301d 100644
          goto loc_2af96;
      sub_2b355();
      if (memoryAGet(ds, 0x3f1b) == 0x01)
-@@ -2627,6 +2628,7 @@ loc_2bd52:
+@@ -2588,6 +2589,7 @@ loc_2bd52:
  loc_2bd56:
      di += 0x0016;
      sub_2bfd8();
@@ -93,36 +93,34 @@ index 22837b7..d78301d 100644
      if (!flags.carry)
          goto loc_2bd86;
      di = pop();
-@@ -4625,6 +4627,7 @@ loc_2cad3:
-     if (tl != 1)
+@@ -4546,6 +4548,7 @@ loc_2cad3:
+     if (cl != 0)
          goto loc_2caba;
      es = pop();
 +    sync();
  }
  void sub_2cad9()
  {
-@@ -5867,7 +5870,8 @@ loc_2d4ce:
+@@ -5775,6 +5778,7 @@ loc_2d4ce:
      if (--cx)
          goto loc_2d4ce;
      es = dx;
--    stop(/*inject ret*/);
-+    // TODO: stop(/*inject ret*/);
 +    flags.carry = false;
      return;
  loc_2d4e1:
      di += 0x2000;
-@@ -5875,7 +5879,9 @@ loc_2d4e1:
+@@ -5782,7 +5786,10 @@ loc_2d4e1:
          goto loc_2d4ce;
      es = dx;
      flags.interrupts = true;
--    stop(/*inject ret*/);
-+    //TODO: stop(/*inject ret*/);
 +    flags.carry = false;
 +    sync();
  }
++
  void sub_2d4eb()
  {
-@@ -8401,7 +8407,7 @@ void sub_2e817()
+     memoryASet16(ds, 0x1415, 0x0000);
+@@ -8314,7 +8321,7 @@ void sub_2e817()
          assert(0);
      }
      bx = bp;
@@ -131,7 +129,7 @@ index 22837b7..d78301d 100644
          goto loc_2e84e;
  loc_2e835:
      push(ax);
-@@ -8542,7 +8548,6 @@ void sub_2e913()
+@@ -8455,7 +8462,6 @@ void sub_2e913()
  {
      goto loc_2e913;
  loc_2e8cb:
@@ -139,7 +137,7 @@ index 22837b7..d78301d 100644
      ax = pop();
      cx = pop();
      flags.carry = true;
-@@ -9097,7 +9102,6 @@ loc_2ed69:
+@@ -9004,7 +9010,6 @@ loc_2ed69:
          goto loc_2ed73;
      flags.carry = true;
  loc_2ed73:
@@ -147,7 +145,7 @@ index 22837b7..d78301d 100644
      al += memoryAGet(ds, di) + flags.carry;
      bl = al;
      bl &= 0xf0;
-@@ -10304,7 +10308,7 @@ loc_2f99c:
+@@ -10186,7 +10191,7 @@ loc_2f99c:
  void sub_2f9b6()
  {
      al = memoryAGet(ds, 0x141b);
@@ -156,7 +154,7 @@ index 22837b7..d78301d 100644
      if (!flags.carry)
          goto loc_2f9bf;
  loc_2f9be:
-@@ -10828,12 +10832,12 @@ loc_2fd65:
+@@ -10700,12 +10705,12 @@ loc_2fd65:
      cl = 0x02;
  loc_2fd67:
      push(di);
@@ -170,4 +168,4 @@ index 22837b7..d78301d 100644
 +    //TODO: stop(/*carry2*/); - scrolling text
      memoryASet(es, di, rcl(memoryAGet(es, di), 1));
      di--;
-     tl = bl;
+     bl--;

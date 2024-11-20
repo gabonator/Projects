@@ -1,0 +1,46 @@
+{
+  "buildCommand" : {
+    "command" : "prepareForIndexing",
+    "enableIndexBuildArena" : false,
+    "targets" : null
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "f72dd6ff4457ce0fe01226a4c342813e227e24de0bb20d48ac7a4f74b478ad1a"
+    }
+  ],
+  "containerPath" : "/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tuneller/dos/cicorun/CicoProject.xcodeproj",
+  "continueBuildingAfterErrors" : true,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "",
+      "buildProductsPath" : "",
+      "derivedDataPath" : "/Users/gabrielvalky/Library/Developer/Xcode/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/gabrielvalky/Library/Developer/Xcode/DerivedData/CicoProject-gxcbgdgxaxevugazapozxygcztmj/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/gabrielvalky/Library/Developer/Xcode/DerivedData/CicoProject-gxcbgdgxaxevugazapozxygcztmj/Index.noindex/PrecompiledHeaders",
+      "pchPath" : ""
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "synthesized" : {
+        "table" : {
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "NO",
+          "ONLY_ACTIVE_ARCH" : "YES"
+        }
+      }
+    }
+  },
+  "qos" : "default",
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : true,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

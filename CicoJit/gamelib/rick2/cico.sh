@@ -12,6 +12,7 @@ cat ../../cicocov/coverage.html >> coverage.html
 ./cicodis $PWD/dos/MAIN.EXE -ctx -recursive start \
   -jumptable 1040:ffff 1040:0000 38 callwords indirect \
   -jumptable 1040:ffff 1040:9bb8 15 callwords indirect \
-  > rick2.cpp
+  > rick2.clean
+cp rick2.clean rick2.cpp
 patch rick2.cpp rick2.patch
 rm cicodis
