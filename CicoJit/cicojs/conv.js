@@ -69,9 +69,9 @@ function convert(l)
 //  while (r = l.match(new RegExp("_(si|di|ds|es|bp|sp|cs|flags)")))
 //    l = l.replace(r[0], r[1]);
 
-  if (r = l.match(new RegExp("memory\\((.*?), (.*?)\\)")))
+  while (r = l.match(new RegExp("memory\\((.*?), (.*?)\\)")))
   {
-    var repl = "memory[" + r[1] + "*16+" + r[2] + "]";
+    var repl = "memory[" + r[1] + "*16 + " + r[2] + "]";
     l = l.replace(r[0], repl);
     //console.log(l);
   }
@@ -85,23 +85,23 @@ function convert(l)
 
   if (r = l.match(new RegExp("memory16\\((.*), (.*)\\) = (.*);")))
   {
-    var repl = "memory16set(" + r[1] + "*16+" + r[2] + ", " + r[3] + ");";
+    var repl = "memory16set(" + r[1] + ", " + r[2] + ", " + r[3] + ");";
     l = l.replace(r[0], repl);
   }
   if (r = l.match(new RegExp("memory16\\((.*), (.*)\\) -= (.*);")))
   {
-    var repl = "memory16set(" + r[1] + "*16+" + r[2] + ", memory16get(" + r[1] + "*16+" + r[2] + ") - " + r[3] + ");";
+    var repl = "memory16set(" + r[1] + ", " + r[2] + ", memory16get(" + r[1] + ", " + r[2] + ") - " + r[3] + ");";
     l = l.replace(r[0], repl);
   }
   if (r = l.match(new RegExp("memory16\\((.*), (.*)\\) += (.*);")))
   {
-    var repl = "memory16set(" + r[1] + "*16+" + r[2] + ", memory16get(" + r[1] + "*16+" + r[2] + ") + " + r[3] + ");";
+    var repl = "memory16set(" + r[1] + ", " + r[2] + ", memory16get(" + r[1] + ", " + r[2] + ") + " + r[3] + ");";
     l = l.replace(r[0], repl);
   }
 
-  if (r = l.match(new RegExp("memory16\\((.*?), (.*?)\\)")))
+  while (r = l.match(new RegExp("memory16\\((.*?), (.*?)\\)")))
   {
-    var repl = "memory16get(" + r[1] + "*16+" + r[2] + ")";
+    var repl = "memory16get(" + r[1] + ", " + r[2] + ")";
     l = l.replace(r[0], repl);
   }
 
@@ -178,9 +178,13 @@ function convert(l)
 //!!! signed16bp
 
 
-  if (r = l.match(new RegExp("(rcl|mul)\\(\\(uint16_t\\)si")))
+  if (r = l.match(new RegExp("(rcl|mul|rcr)\\(\\(uint16_t\\)si")))
     l = l.replace(r[0], `${r[1]}16(si`);
-  if (r = l.match(new RegExp("(rcl|mul)\\(\\(uint16_t\\)di")))
+  if (r = l.match(new RegExp("(rcl|mul|rcr)\\(si")))
+    l = l.replace(r[0], `${r[1]}16(si`);
+  if (r = l.match(new RegExp("(rcl|mul|rcr)\\(\\(uint16_t\\)di")))
+    l = l.replace(r[0], `${r[1]}16(di`);
+  if (r = l.match(new RegExp("(rcl|mul|rcr)\\(di")))
     l = l.replace(r[0], `${r[1]}16(di`);
 
   if (r = l.match(new RegExp("(rcr|rcl|sar|rol|ror)\\((r8\\[.*\\]), (.*)\\)")))
@@ -193,6 +197,10 @@ function convert(l)
     l = l.replace(r[0], `${r[1]}16(${r[2]})`);
   if (r = l.match(new RegExp("(idiv|div|imul|mul)\\((memory\\w*16\\(.*)\\)")))
     l = l.replace(r[0], `${r[1]}16(${r[2]})`);
+  if (r = l.match(new RegExp("(idiv|div|imul|mul)\\((memory\\w*16get\\(.*)\\)")))
+    l = l.replace(r[0], `${r[1]}16(${r[2]})`);
+  if (r = l.match(new RegExp("(idiv|div|imul|mul)\\((memoryBiosGet\\(.*)\\)")))
+    l = l.replace(r[0], `${r[1]}8(${r[2]})`);
 
 /*
   if (r = l.match(new RegExp("rcr\\(r16\\[(.*)\\], (.*)\\)")))
