@@ -1,0 +1,269 @@
+<div style="width:510px; height:320px; overflow:hidden; position:absolute; background:red; transform:translate(220px, 120px) scale(1.3)">
+<img id="img0" style="position: absolute;">
+<img id="img1" style="position: absolute;">
+</div>
+<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; transform:translate(320px, 175px) scale(2);"></canvas>
+
+<script src="app_inline.js"></script>
+<script src="resources.js"></script>
+<script>
+
+var Module = typeof Module !== 'undefined' ? Module : {};
+
+  function ___assert_fail(condition, filename, line, func) {
+      abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
+    }
+  function _emscripten_memcpy_big(dest, src, num) {
+      HEAPU8.copyWithin(dest, src, src + num);
+    }
+
+  var HEAPU8;
+  var HEAPU32;
+  var refreshInterval = 300;
+
+function Main() 
+{
+  var WASM_PAGE_SIZE = 65536;
+  var TOTAL_MEMORY = 65536;
+  var DYNAMICTOP_PTR = 11856;
+
+  var abort = (what) => { throw 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.'};
+  var env =
+     { "abort": () => {console.log("abort1"); abort()}, 
+       "_abort": () => {console.log("abort2"); abort()},
+       "__assert_fail": ___assert_fail, 
+       "__setErrNo": () => {console.log("abort3"); abort()}, 
+       "emscripten_get_heap_size": () => {console.log("abort4"); abort()}, 
+       "emscripten_memcpy_big": (dest, src, num) => {
+         HEAPU8.copyWithin(dest, src, src + num);
+       }, 
+       "emscripten_resize_heap": () => {console.log("abort6"); abort()},
+       "abortOnCannotGrowMemory": () => {console.log("abort7"); abort()}, 
+       "DYNAMICTOP_PTR": DYNAMICTOP_PTR,
+       memory:new WebAssembly.Memory({ 'initial': TOTAL_MEMORY / WASM_PAGE_SIZE, 'maximum': TOTAL_MEMORY / WASM_PAGE_SIZE }),
+       table:new WebAssembly.Table({'initial': 84,'maximum': 84,'element': 'anyfunc'}),
+       '__memory_base': 1024, 
+       '__table_base': 0
+  };
+
+  var imports = Module["imports"];
+  for (var i in imports)
+    env[i] = imports[i];
+
+  return WebAssembly.instantiate(new Uint8Array(Module['wasmBinary']), {env:env,wasi_snapshot_preview1: env})
+  .then( output => 
+   {
+    HEAPU8 = new Uint8Array(output.instance.exports.memory.buffer);
+    HEAP32 = new Int32Array(output.instance.exports.memory.buffer);
+    var exports = output.instance.exports;
+    Module['asm'] = exports;
+    if (Module["asm"]["__wasm_call_ctors"]) Module["asm"]["__wasm_call_ctors"]();
+//    Module["memory"] = new Uint8Array(env.memory.buffer);
+
+    var _exports = Module['exports'];
+    for (var i in _exports)
+      Module[i] = _exports[i] = Module["asm"][i];
+
+    Module["memory"] = new Uint8Array(exports.memory.buffer);
+    return output;
+  });
+};
+
+var rewinding = false;
+var startup = 0;
+var videoBuffer;
+var memoryBuffer;
+
+  Module['imports'] = {
+    apiPrint: (ptr) => { 
+      var msg = Module['imports'].string(ptr);
+      console.log(msg);
+    },
+    string: (ptr) => {
+      var text = "";
+      for (var i=0; i<50 && Module['memory'][ptr+i] != 0; i++)
+        text += String.fromCharCode(Module['memory'][ptr+i]);
+      return text;
+    },
+    apiRead: (ptrName, readOfs, readLen, ptrData) =>
+    {
+      var name = Module['imports'].string(ptrName);
+      console.log("Read ", name, readOfs, readLen);
+      var b = Module[name];
+      var willRead = Math.min(b.length-readOfs, readLen);
+      var memory = Module['memory'];
+      for (var i=0; i<readLen; i++)
+        memory[i+ptrData] = b[i+readOfs];
+      return willRead;
+    },
+    // https://gov.near.org/t/discussion-synchronous-contracts/11869/8
+    emscripten_sleep: () => {
+        if (!rewinding)
+        {
+          var ptr = Module.asm.asyncifyBuffer.value;
+          HEAP32[((ptr)>>2)] = ptr+12;
+          HEAP32[(((ptr)+(4))>>2)] = ptr+12 + 1024;
+          HEAP32[(((ptr)+(8))>>2)] = 0;
+          Module.asm.asyncify_start_unwind(ptr);
+          setTimeout( ()=> {
+            rewinding = true;
+
+            Module.asm.asyncify_start_rewind(ptr);
+            Module.asm.appLoop();
+            Module.asm.asyncify_stop_unwind();
+
+          }, refreshInterval);
+
+        } else {
+          Module.asm.asyncify_stop_rewind();
+          sync();
+          rewinding = false;
+          return 0;
+        }
+    },
+    fd_close: () => {
+      console.log("close");
+      throw "close"
+    },
+    fd_write: (handle, x, y, ptr) => {
+     console.log("write");
+
+      var msg = Module['imports'].string(ptr);
+      console.log(msg);
+
+      throw "write"
+    },
+    fd_seek: () => {
+     console.log("seek");
+
+      throw "seek"
+    },
+    __assert_fail: () => {
+     console.log("assert");
+       throw "assert";
+    }
+  }
+  Module['exports'] = {
+    appFinish: null,
+    appInit: null,
+    appLoop: null,
+    appVideo: null
+  };
+Module['run'] = Main;
+
+Main().then( (m)=>
+{
+  videoBuffer = new Uint8ClampedArray(Module.asm.memory.buffer, HEAP32[Module.asm.appVideo.value>>2], 320 * 200 * 4);
+  memoryBuffer = new Uint8ClampedArray(Module.asm.memory.buffer, HEAP32[Module.asm.appMemory.value>>2], 0x10000*14);
+  Module.appLoop();
+  Module.asm.asyncify_stop_unwind();
+});
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var imageData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+/*
+    int code = 0;
+    switch (k)
+    {
+        case SDL_SCANCODE_UP: code = 1; break;
+        case SDL_SCANCODE_DOWN: code = 2; break;
+        case SDL_SCANCODE_LEFT: code = 4; break;
+        case SDL_SCANCODE_RIGHT: code = 8; break;
+        case SDL_SCANCODE_SPACE: code = 0x80;
+            if (p && !(CicoContext::ctx->memory8(0x2853, 0x8f59) & 0x80))
+                CicoContext::ctx->memory8(0x2853, 0x8F5B) = 0xff;
+            break;
+        case SDL_SCANCODE_A: CicoContext::ctx->memoryASet16(0x2853, 0x9190, CicoContext::ctx->memoryAGet16(0x2853, 0x9190) - 0x100); break;
+        case SDL_SCANCODE_B: code = 0x20; break;
+        case SDL_SCANCODE_C: code = 0x40; break;
+            
+        case SDL_SCANCODE_RETURN: code = 0x80;
+            CicoContext::ctx->memory8(0x2853, 0x8f5b) = 0xff; break;
+    }
+    if (p)
+        CicoContext::ctx->memory8(0x2853, 0x8f59) |= code;
+    else
+        CicoContext::ctx->memory8(0x2853, 0x8f59) &= ~code;    
+
+*/
+    document.onkeydown = function(evt) {
+        evt = evt || window.event;
+        var code = 0;
+        switch (evt.keyCode)
+        {
+          case 38: code = 1; break; // up
+          case 39: code = 8; break; // right
+          case 40: code = 2; break; // down
+          case 37: code = 4; break; // left
+          case 32: if (!(memoryBuffer[0x2853*16+ 0x8f59] & 0x80))
+                     memoryBuffer[0x2853*16 + 0x8F5B] = 0xff;
+                   break; // space -> enter
+        }
+        memoryBuffer[0x2853*16+0x8f59] |= code;
+    }
+    document.onkeyup = function(evt) {
+        evt = evt || window.event;
+        var code = 0;
+        switch (evt.keyCode)
+        {
+          case 38: code = 1; break; // up
+          case 39: code = 8; break; // right
+          case 40: code = 2; break; // down
+          case 37: code = 4; break; // left
+        }
+        memoryBuffer[0x2853*16+0x8f59] &= ~code;
+    }
+
+function sync()
+{
+  var memory = Module["memory"];
+  var ptr = Module.asm.appBlit();
+  if (ptr)
+  {
+    const img = new ImageData(videoBuffer, 320, 200);
+    this.ctx.putImageData(img, 0, 0);
+  }
+  refreshInterval = 10;
+}
+</script>
+
+
+
+<script>
+var c1 = 0;
+var c2 = 0;
+var ofs0 = 0;
+var ofs1 = 320;
+var frame = 0;
+var all = 150; //153;
+if (1)
+setInterval(()=>{
+  frame++;
+  var fr1 = Math.floor(all/2+frame*0.4)%(all*2);
+  if (fr1 >= all)
+    fr1 = all*2-1-fr1;
+
+  var fr2 = Math.floor(frame*0.4)%(all*2);
+  if (fr2 >= all)
+    fr2 = all*2-1-fr2;
+
+  var img0 = document.getElementById("img0");
+  var img1 = document.getElementById("img1");
+  img0.src = "../floatcat/top"+ ("00"+(fr1+1)).substr(-3) + ".png";
+  img1.src = "../floatcat/btm"+ ("00"+(fr2+1)).substr(-3) + ".png";
+  img0.style.top = ofs0 + "px";
+  img1.style.top = ofs1 + "px";
+  var dir = memoryBuffer[0x2853*16+0x9198] == 1 ? 1 : -1;
+  ofs0 += dir;
+  ofs1 += dir;
+  if (ofs0 < -320) {ofs0 += 640; c1 = 0;}
+  if (ofs1 < -320) {ofs1 += 640; c2 = 0;}
+  if (ofs0 >= 320) {ofs0 -= 640; c1 = 0;}
+  if (ofs1 >= 320) {ofs1 -= 640; c2 = 0;}
+  c1 += 0.2;
+  c2 += 0.2;
+
+}, 50)
+</script>

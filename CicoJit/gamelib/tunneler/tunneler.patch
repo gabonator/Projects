@@ -1,0 +1,237 @@
+diff --git a/./tunneler.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tuneller/cicorun/tunneler.cpp
+index 4282a7d..3018b59 100644
+--- a/./tunneler.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tuneller/cicorun/tunneler.cpp
+@@ -223,6 +223,7 @@ void sub_1ed0() // 01ed:0000
+     push(di);
+     push(cs);
+     cs = 0x08d0;
++    {static int counter; if (counter++%500 == 0) sync();}
+     sub_8db2(); // 08d0:00b2
+     assert(cs == 0x01ed);
+     ax = memoryAGet16(ds, 0x1307);
+@@ -6018,6 +6019,7 @@ loc_52eb: // 01ed:341b
+     push(bp);
+     sub_422d(); // 01ed:235d
+ loc_52ef: // 01ed:341f
++    sync();
+     si = 0x0040;
+     es = si;
+     ax = memoryAGet16(es, 0x006c);
+@@ -6471,7 +6473,7 @@ loc_56d5: // 01ed:3805
+     ax = memoryAGet16(ss, bp - 4);
+     memoryASet16(ss, bp - 2, ax);
+     di = memoryAGet16(ss, bp - 4);
+-    stop(); // lea!
++    di = bp+di-0x0206;// stop(); // lea! TODO: CICO!
+     push(ss);
+     push(di);
+     di = memoryAGet16(ds, 0x1321);
+@@ -11866,6 +11868,7 @@ void sub_8db2() // 08d0:00b2
+     push(ds);
+     bp = sp;
+     al = memoryAGet(ss, bp + 12);
++    int intval = al;
+     memoryASet(cs, 0x00dd, al);
+     si = memoryAGet16(ss, bp + 8);
+     ds = memoryAGet16(ss, bp + 8 + 2);
+@@ -11891,8 +11894,8 @@ void sub_8db2() // 08d0:00b2
+     ds = pop();
+     si = pop();
+     ax = pop();
+-    interrupt(0x0);
+-    tx = flags.carry | (flags.zero << 1);
++    interrupt(intval);
++    tx = flags.carry | (flags.zero * 0x40) | (bp & 0x8000);
+     push(tx);
+     push(es);
+     push(di);
+@@ -12114,10 +12117,13 @@ loc_8f9d: // 08e1:018d
+ }
+ void sub_8fa0() // 08e1:0190
+ {
+-    stop(/*unk call conv*/);
++//    stop(/*unk call conv*/);
+     if (memoryAGet(ds, 0x1593) != 0x00)
++    {
++        assert(0);
+         goto loc_8fa8;
+-    stop(/*unk call conv*/);
++    }
++//    stop(/*unk call conv*/);
+     return;
+ loc_8fa8: // 08e1:0198
+     memoryASet(ds, 0x1593, 0x00);
+@@ -13427,6 +13433,7 @@ void sub_9b25() // 0947:06b5+zero
+         goto loc_9b3f;
+     cl = ah;
+ loc_9b3f: // 0947:06cf
++    flags.zero = !cl;
+     if (!cl)
+         goto loc_9b49;
+     ch = 0;
+@@ -13434,9 +13441,10 @@ loc_9b3f: // 0947:06cf
+     if (!flags.zero)
+         goto loc_9b4b;
+ loc_9b49: // 0947:06d9
++    flags.zero = al == ah;
+ loc_9b4b: // 0947:06db
+     ds = dx;
+-    stop(/*inject ret*/);
++    //stop(/*inject ret*/);
+     assert(pop() == 0x7777);
+     cs = pop();
+     sp += 8;
+@@ -13579,7 +13587,7 @@ loc_9d99: // 0947:0929
+     push(bp);
+     bp = di;
+     bp ^= dx;
+-    tx = flags.carry | (flags.zero << 1);
++    tx = flags.carry | (flags.zero << 1) | (bp & 0x8000);
+     push(tx);
+     bp = di;
+     dh |= 0x80;
+@@ -13616,7 +13624,7 @@ loc_9de2: // 0947:0972
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    if (stop(/*70 - js*/))
++    if (tx & 0x8000)
+         goto loc_9dfa;
+     flags.carry = (ah + ch) >= 0x100;
+     ah += ch;
+@@ -13742,7 +13750,7 @@ loc_9d99: // 0947:0929
+     push(bp);
+     bp = di;
+     bp ^= dx;
+-    tx = flags.carry | (flags.zero << 1);
++    tx = flags.carry | (flags.zero << 1) | (bp & 0x8000);
+     push(tx);
+     bp = di;
+     dh |= 0x80;
+@@ -13779,7 +13787,7 @@ loc_9de2: // 0947:0972
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    if (stop(/*70 - js*/))
++    if (tx & 0x8000)
+         goto loc_9dfa;
+     flags.carry = (ah + ch) >= 0x100;
+     ah += ch;
+@@ -13888,23 +13896,26 @@ void sub_9ed4() // 0947:0a64
+     bp += 0x0005;
+     cl = 0x08;
+ loc_9eed: // 0947:0a7d
++    flags.carry = dx < di;
+     if (dx != di)
+         goto loc_9ef7;
++    flags.carry = bx < si;
+     if (bx != si)
+         goto loc_9ef7;
+ loc_9ef7: // 0947:0a87
+-    if (stop(/*1 - jb loc_9eff*/))
++    if (flags.carry)
+         goto loc_9eff;
+     flags.carry = ah < ch;
+     ah -= ch;
+     tl = bx < si + flags.carry;
+     bx -= si + flags.carry;
+     flags.carry = tl;
++    tl = dx < di + flags.carry; // TODO CICO
+     dx -= di + flags.carry;
++    flags.carry = tl; // TODO CICO
+ loc_9eff: // 0947:0a8f
+     flags.carry = !flags.carry;
+ loc_9f00: // 0947:0a90
+-    stop(/*carry2*/);
+     al = rcl(al, 0x01);
+     cl--;
+     if (cl == 0)
+@@ -13946,7 +13957,6 @@ loc_9f18: // 0947:0aa8
+ loc_9f34: // 0947:0ac4
+     flags.carry = !flags.carry;
+ loc_9f35: // 0947:0ac5
+-    stop(/*carry2*/);
+     si = rcl(si, 0x0001);
+     ax = pop();
+     bx = pop();
+@@ -13955,7 +13965,6 @@ loc_9f35: // 0947:0ac5
+     bp = pop();
+     if (dh & 0x80)
+         goto loc_9f4b;
+-    stop(/*carry1*/);
+     si = rcr(si, 0x0001);
+     ah = rcl(ah, 0x01);
+     bx = rcl(bx, 0x0001);
+@@ -13964,7 +13973,7 @@ loc_9f35: // 0947:0ac5
+ loc_9f4b: // 0947:0adb
+     al++;
+     flags.carry = true;
+-    if (stop(/*70 - je*/))
++    if (al == 0)
+         goto loc_9f5c;
+ loc_9f50: // 0947:0ae0
+     dh ^= cl;
+@@ -13980,7 +13989,7 @@ loc_9f5c: // 0947:0aec
+ // INJECT: Error: cannot inject carry flag in sub_9f5d()!
+ void sub_9f5d() // 0947:0aed+zero
+ {
+-    if (stop(/*1 - jb loc_9f6a*/))
++    if (flags.carry)
+         goto loc_9f6a;
+     flags.carry = (al + 0x80) >= 0x100;
+     al += 0x80;
+@@ -14010,8 +14019,9 @@ loc_9f6e: // 0947:0afe
+     tx = di;
+     di = ax;
+     ax = tx;
++    flags.zero = false;
+ loc_9f7f: // 0947:0b0f
+-    stop(/*inject ret*/);
++    return;
+ }
+ void sub_9faa() // 0947:0b3a
+ {
+@@ -14067,6 +14077,7 @@ void sub_9fe9() // 0947:0b79+carry
+     cl -= bl;
+     if (tl < bl)
+         goto loc_a03e;
++    flags.carry = false;
+     if (cl > 0x1f)
+         goto loc_a040;
+     cl++;
+@@ -14817,7 +14828,7 @@ void sub_a9ad() // 0947:153d+zero
+     flags.zero = memoryAGet16(ds, 0x17cb) == 0x0000;
+     if (memoryAGet16(ds, 0x17cb) != 0x0000)
+         return;
+-    si = pop();
++    si = 0x6ab0; //pop();
+     push(ds);
+     push(es);
+     push(di);
+@@ -14826,7 +14837,7 @@ void sub_a9ad() // 0947:153d+zero
+     tx = di;
+     di = memoryAGet16(es, tx + 12);
+     es = memoryAGet16(es, tx + 12 + 2);
+-    stop(/*2*/); // 0947:155c jmp si - jump Indirect si
++    return; //stop(/*2*/); // 0947:155c jmp si - jump Indirect si
+ loc_a9ce: // 0947:155e
+     memoryASet16(ds, 0x17cb, 0x0069);
+ }
+@@ -14868,13 +14879,13 @@ loc_a9f8: // 0947:1588
+ }
+ void sub_aa0b() // 0947:159b
+ {
+-    stop(/*override stack*/); // 0947:159b
+-    si = pop();
++//    stop(/*override stack*/); // 0947:159b
++//    si = pop();
+     di = pop();
+     es = pop();
+     ds = pop();
+     memoryASet16(es, di + 8, bx);
+-    stop(/*2*/); // 0947:15a3 jmp si - jump Indirect si
++//    stop(/*2*/); // 0947:15a3 jmp si - jump Indirect si
+ }
+ void sub_aa15() // 0947:15a5
+ {
