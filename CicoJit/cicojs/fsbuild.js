@@ -1,23 +1,32 @@
+if (process.argv.length != 4)
+  throw "no arguments";
+
 const fs = require("fs");
 
 function addFile(filename, id)
 {
+  console.log(filename);
   var prefix = `Module['`+id+`'] = (() => { var code="`;
   var suffix = `"; return Uint8Array.from(atob(code), c => c.charCodeAt(0));})();
 `;
-  fs.appendFileSync("resources.js", prefix + fs.readFileSync(filename).toString("base64") + suffix);
+  fs.appendFileSync(process.argv[3], prefix + fs.readFileSync(filename).toString("base64") + suffix);
 }
 
-fs.writeFileSync("resources.js", `Module = typeof(Module) != "undefined" ? Module : {}; 
+fs.writeFileSync(process.argv[3], `Module = typeof(Module) != "undefined" ? Module : {}; 
 `);
 
 
-var path = "/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/dos/"
-fs.readdirSync(path).forEach(file => {
-  console.log(file);
-  addFile(path+"/"+file, file);
-});
-
+function add(path, group)
+{
+  fs.readdirSync(path).forEach(file => {
+    if (fs.lstatSync(path+"/"+file).isDirectory())
+      add(path+"/"+file, group+file+"/")
+    else
+      addFile(path+"/"+file, group+file);
+  });
+}
+//var path = process.argv[2]
+add(process.argv[2], "");
 //return;
 //addFile("../InputRick2/rick2.data", "rick2.data");
 /*

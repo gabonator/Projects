@@ -124,21 +124,15 @@ return false;
     }
     virtual void Write(uint32_t dwAddr, uint8_t bWrite)
     {
-        if (bWrite == 0xb0)
-        {
-            int f = 9;
-        }
         int ofs = dwAddr - 0xb0000;
         assert(ofs >= 0 && ofs < sizeof(screen));
         screen[ofs] = bWrite;
         static int nWrites = 0;
         if (nWrites++ > 200)
         {
-            _sync();
+//            _sync();
             nWrites = 0;
         }
-        //if ((ofs & 1) == 0)
-            //printf("%x %d %d %c\n", dwAddr, (ofs/2)%80, (ofs/2)/80, bWrite);
     }
     virtual uint8_t Read(uint32_t dwAddr) { return 0; }
     virtual uint32_t GetPixel(int x, int y){
@@ -316,7 +310,7 @@ public:
         
         static int t=0;
         if (t++ > 8000){
-            t = 0; _sync();
+//            t = 0; _sync();
         }
     }
 

@@ -1,135 +1,3 @@
-/*
-class CText : public CVideoAdapter
-{
-    uint8_t screen[25*80*32];
-    uint32_t dacRegisters[64];
-    uint32_t palette[16] = {
-        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
-        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
-public:
-    int posx{0}, posy{0};
-public:
-    CText() : CVideoAdapter()
-    {
-        for (int i=0; i<80*25; i++)
-        {
-            screen[i*2] = 0*' '+255;
-            screen[i*2+1] = 0x07;
-        }
-    }
-    virtual bool PortWrite16(int port, int data) { return false; }
-    virtual bool PortWrite8(int port, int data) { 
-        static int lastPort = 0, lastData = 0;
-        if (port == 0x3c8)
-        {
-            return true;
-        }
-        if (port == 0x3c9)
-        {
-            return true;
-        }
-        if ( port == 0x3c0 )
-        {
-            static int index = -1;
-            if (index == -1)
-            {
-                if (data <= 0x10)
-                    index = data;
-            }
-            else
-            {
-                SetPaletteIndex(index, data);
-                index = -1;
-            }
-            return true;
-        }
-        return false; 
-    }
-    virtual bool PortRead8(int port, uint8_t& data) { assert(0); return false; }
-    virtual bool Interrupt(CicoContext::cicocontext_t* ctx) {
-        if (ctx->a.r16 == 0x0103)
-            return true;
-        if (ctx->a.r16 == 0x1003)
-            return true;
-        if (ctx->a.r16 == 0x1110)
-            return false;
-        if (ctx->a.r16 == 0x1201)
-            return true;
-        if (ctx->a.r16 == 0x1103)
-            return true;
-        if (ctx->a.r16 == 0x1130)
-        {
-            //get current character generator information
-            ctx->d.r8.l = 25;
-            return true;
-        }
-        if (ctx->a.r16 == 0x0800)
-        {
-            // read char
-            ctx->a.r8.l = screen[(posy*80+posx)*2];
-            ctx->a.r8.h = screen[(posy*80+posx)*2+1];
-            return true;
-        }
-        if (ctx->a.r8.h == 0x02)
-        {
-            posx = ctx->d.r8.l;
-            posy = ctx->d.r8.h;
-            return true;
-        }
-        if (ctx->a.r16 == 0x1112)
-        {
-            // chargen!
-            return true;
-        }
-        if (ctx->a.r16 == 0x1010)
-        {
-            //http://www.techhelpmanual.com/144-int_10h_1010h__set_one_dac_color_register.html
-            printf("palette [%d]=%d,%d,%d\n", ctx->b.r16, ctx->c.r8.h, ctx->c.r8.l, ctx->d.r8.h);
-//            assert(ctx->b.r16 < 16);
-            int r = ctx->d.r8.h * 4;
-            int g = ctx->c.r8.h * 4;
-            int b = ctx->c.r8.l * 4;
-            dacRegisters[ctx->b.r16] = b | (g << 8) | (r << 16);
-            int index = ctx->b.r16;
-            if (index == 20) index=6;
-            if (index >= 56) index=index-56+8;
-            palette[index] = b | (g << 8) | (r << 16);
-            return true;
-        }
-        return false;
-    }
-    virtual void Write(uint32_t dwAddr, uint8_t bWrite)
-    {
-        int ofs = dwAddr - 0xb0000;
-        assert(ofs >= 0 && ofs < sizeof(screen));
-        screen[ofs] = bWrite;
-    }
-    virtual uint8_t Read(uint32_t dwAddr) { return 0; }
-    virtual uint32_t GetPixel(int x, int y){
-        if (y < 40 || y>=480-40)
-            return 0;
-        y -= 40;
-        int row = y/3;
-        int col = x/8;
-        int subx = x%8;
-        int suby = y%14;
-        if (suby > 13)
-            suby = 13;
-        int ofs = 0x8000; // B000 - text, B800 - graphicss
-        assert(ofs+(row*80+col)*2+1 < sizeof(screen));
-        uint8_t symbol = screen[ofs+(row*80+col)*2]; // 219;//
-        uint8_t attr = screen[ofs+(row*80+col)*2+1];
-        if (y > 220)
-        {
-            if (symbol == 0xdd)
-                symbol = ' ';
-        }
-        return (egafont14x8[symbol*14+suby] & (128>>subx)) ? palette[attr & 0xf]  : palette[attr >> 4];
-    };
-    virtual void SetPixel(int x, int y, int c) { return; };
-};
-*/
-
 var EGA = {
   palette :
     [0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
@@ -191,18 +59,12 @@ var EGA = {
         if (suby > 13)
             suby = 13;
         var ofs = 0x8000; 
-        var symbol = this.memory[ofs+(row*80+col)*2]; // 219;//
+        var symbol = this.memory[ofs+(row*80+col)*2];
         var attr = this.memory[ofs+(row*80+col)*2+1];
-        if (y > 220)
-        {
-            if (symbol == 0xdd)
-                symbol = ' ';
-        }
         return (egafont14x8[symbol*14+suby] & (128>>subx)) ? this.palette[attr & 0xf] : this.palette[attr >> 4];
   },
   write : function(addr, val)
   {
-//console.log(val);
         this.memory[addr - 0xb0000] = val;
         this.access = true;
   },

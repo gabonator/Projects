@@ -19,10 +19,12 @@ void onKey(int k, int p)
         case SDL_SCANCODE_SPACE: key = 0x3920; break;
         case SDL_SCANCODE_RETURN: key = 0x1c0d; break;
 
+            
         case SDL_SCANCODE_W: key = 0x1100; break;
-        case SDL_SCANCODE_S: key = 0x1f00; break;
+        case SDL_SCANCODE_S: key = 0x2d00; break;
         case SDL_SCANCODE_A: key = 0x1e00; break;
         case SDL_SCANCODE_D: key = 0x2000; break;
+        case SDL_SCANCODE_LSHIFT: key = 0x1D00; break;
         case SDL_SCANCODE_0: key = 0x0100; break;
 
             //        case SDL_SCANCODE_5:

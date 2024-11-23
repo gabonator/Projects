@@ -1,4 +1,6 @@
-// problem:   memory16set(ds*16+0x2, memory16get(ds*16+0x2) - 0x0000 + flags.carry);
+if (process.argv.length != 4)
+  throw "no arguments";
+
 String.prototype.trim = function() { return this.toString().replace(/^\s+|\s+$/g, ''); };
 String.prototype.countOf = function(c) { var cnt = 0; for(var i=0;i<this.length;i++)if(this[i]==c)cnt++; return cnt; };
 String.prototype.replacem = function(c, n) { return this.substr(0, c.index) + n + this.substr(c.index + c[1].length) };
@@ -515,5 +517,4 @@ input = findGlobals(input, (type, name, val) => {
 }));
 
 input = format(input);
-fs.writeFileSync("bumpy.js", input.join("\n"));
-//console.log(input.join("\n"));
+fs.writeFileSync(process.argv[3], input.join("\n"));

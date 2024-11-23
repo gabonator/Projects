@@ -95,6 +95,11 @@ function videoSet(seg, ofs, v)
 {
   EGA.write(seg*16 + ofs, v);
 }
+function videoSet16(seg, ofs, v)
+{
+  EGA.write(seg*16 + ofs, v & 0xff);
+  EGA.write(seg*16 + ofs+1, v >> 8);
+}
 function videoGet(seg, ofs)
 {
   return EGA.read(seg*16 + ofs);
@@ -429,9 +434,17 @@ function memoryBiosGet(seg, ofs)
         return (new Date().getTime())/1000/54; // number of ticks since midnight 54ms
     if (seg == 0x0000 && ofs == 0x0000)
         return 0x1a;
-    assert(0);
+    //assert(0);
     return 0;
 }
+function memoryBiosSet(seg, ofs, v)
+{
+}
+function memoryPsp16get(seg, ofs)
+{
+    return 0;
+}
+
 // dos
 function interrupt(i)
 {

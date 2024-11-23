@@ -7,7 +7,7 @@ function* start() {
     es = 0x01dd;
     ss = 0x0c41;
     sp = 0x364c;
-    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tuneller/dos", "TUNNELER.EXE", 39552);
+    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tunneler/dos", "TUNNELER.EXE", 39552);
     yield* sub_79ed();
 }
 function* callIndirect(seg, ofs) {
@@ -269,7 +269,7 @@ function* sub_229e() {
     r16[ax] += memory16get(ss, bp + 10);
     di = r16[ax];
     es = pop();
-    memory16set(es, di, r16[bx]);
+    videoSet16(es, di, r16[bx]);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
@@ -1640,12 +1640,12 @@ function* sub_2b96() {
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
-        r16[ax] += memory16get(ss, di - 65536 + 55635);
+        r16[ax] += memory16get(ss, di - 9901);
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, r16[dx]);
+        memory16set(ss, di - 10413, r16[dx]);
         if (memory16get(ss, bp - 8) != 0x0004) {
             pc = 0x2baa;
             break;
@@ -1666,22 +1666,22 @@ function* sub_2b96() {
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
-        r16[ax] += memory16get(ss, di - 65536 + 55635);
+        r16[ax] += memory16get(ss, di - 9901);
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x0028);
+        memory16set(ss, di - 10413, 0x0028);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
-        r16[ax] += memory16get(ss, di - 65536 + 55635);
+        r16[ax] += memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x002d);
+        memory16set(ss, di - 10413, 0x002d);
         if (memory16get(ss, bp - 8) != 0x0003) {
             pc = 0x2be9;
             break;
@@ -1694,13 +1694,13 @@ function* sub_2b96() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x1388);
+        memory16set(ss, di - 10413, 0x1388);
         pc = 0x2d74;
         break;
     case 0x2c50:
@@ -1709,13 +1709,13 @@ function* sub_2b96() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x0028);
+        memory16set(ss, di - 10413, 0x0028);
         pc = 0x2d74;
         break;
     case 0x2c70:
@@ -1751,12 +1751,12 @@ function* sub_2b96() {
         r8[al] = memory[ss*16 + bp - 3];
         r8[ah] = 0;
         di = memory16get(ss, bp + 4);
-        r16[ax] += memory16get(ss, di - 65536 + 55635);
+        r16[ax] += memory16get(ss, di - 9901);
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, r16[dx]);
+        memory16set(ss, di - 10413, r16[dx]);
         r16[ax] = memory16get(ss, bp - 2);
         memory16set(ss, bp - 4, memory16get(ss, bp - 4) + r16[ax]);
         if (memory16get(ss, bp - 6) != 0x0007) {
@@ -1768,13 +1768,13 @@ function* sub_2b96() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x03e8);
+        memory16set(ss, di - 10413, 0x03e8);
         pc = 0x2d74;
         break;
     case 0x2cef:
@@ -1814,12 +1814,12 @@ function* sub_2b96() {
         r8[al] = memory[ss*16 + bp - 3];
         r8[ah] = 0;
         di = memory16get(ss, bp + 4);
-        r16[ax] += memory16get(ss, di - 65536 + 55635);
+        r16[ax] += memory16get(ss, di - 9901);
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, r16[dx]);
+        memory16set(ss, di - 10413, r16[dx]);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += memory16get(ss, bp - 2);
         memory16set(ss, bp - 4, r16[ax]);
@@ -1832,13 +1832,13 @@ function* sub_2b96() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55123, 0x03e8);
+        memory16set(ss, di - 10413, 0x03e8);
     case 0x2d74:
         sp = bp;
         bp = pop();
@@ -1855,38 +1855,38 @@ function* sub_2d7a() {
         push(bp);
         bp = sp;
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55123, r16[ax]);
+        memory16set(ss, di - 10413, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax]++;
         r8[ah] = 0;
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55635, r16[ax]);
+        memory16set(ss, di - 9901, r16[ax]);
         di = memory16get(ss, bp + 4);
-        if (memory[ss*16 + di - 65536 + 55074] == 0x00) {
+        if (memory[ss*16 + di - 10462] == 0x00) {
             pc = 0x2de8;
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        if (memory16get(ss, di - 65536 + 55123) == 0x0000) {
+        if (memory16get(ss, di - 10413) == 0x0000) {
             pc = 0x2de3;
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        push(memory16get(ss, di - 65536 + 55123));
+        push(memory16get(ss, di - 10413));
         push(cs);
         cs = 0x08e1;
         yield* sub_9121();
@@ -1923,7 +1923,7 @@ function* sub_2dee() {
         di = r16[ax];
         r8[al] = memory[ds*16 + di + 163];
         di = memory16get(ss, bp + 4);
-        if (r8s[al] <= memorys[ss*16 + di - 65536 + 65534]) {
+        if (r8s[al] <= memorys[ss*16 + di - 2]) {
             pc = 0x2e26;
             break;
         }
@@ -1932,7 +1932,7 @@ function* sub_2dee() {
         di = r16[ax];
         r8[al] = memory[ds*16 + di + 163];
         di = memory16get(ss, bp + 4);
-        memory[ss*16 + di - 65536 + 65534] = r8[al];
+        memory[ss*16 + di - 2] = r8[al];
     case 0x2e26:
         sp = bp;
         bp = pop();
@@ -2025,10 +2025,10 @@ function* sub_2ea5() {
         mul16(r16[dx]);
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[dl] = memory[ss*16 + di - 65536 + 55397];
+        r8[dl] = memory[ss*16 + di - 10139];
         r16[ax] = memory16get(ss, bp - 2);
         di = memory16get(ss, bp + 4);
-        if (r16s[ax] <= memory16gets(ss, di - 65536 + 65534)) {
+        if (r16s[ax] <= memory16gets(ss, di - 2)) {
             pc = 0x2ed2;
             break;
         }
@@ -2049,17 +2049,17 @@ function* sub_2ea5() {
     case 0x2edf:
         r16[ax] = memory16get(ss, bp - 2);
         di = memory16get(ss, bp + 4);
-        if (r16s[ax] < memory16gets(ss, di - 65536 + 65534)) {
+        if (r16s[ax] < memory16gets(ss, di - 2)) {
             pc = 0x2efc;
             break;
         }
         di = memory16get(ss, bp + 4);
-        if (memory16gets(ss, di - 65536 + 65534) >= signed16(0x001e)) {
+        if (memory16gets(ss, di - 2) >= signed16(0x001e)) {
             pc = 0x2efc;
             break;
         }
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 65534, memory16get(ss, di - 65536 + 65534) + 1);
+        memory16set(ss, di - 2, memory16get(ss, di - 2) + 1);
     case 0x2efc:
         if (memory16gets(ss, bp - 2) <= signed16(0x001e)) {
             pc = 0x2f05;
@@ -2196,7 +2196,7 @@ function* sub_2fec() {
         push(bp);
         bp = sp;
         di = memory16get(ss, bp + 4);
-        if (memory16gets(ss, di - 65536 + 55077) < signed16(0x0000)) {
+        if (memory16gets(ss, di - 10459) < signed16(0x0000)) {
             pc = 0x2ffd;
             break;
         }
@@ -2207,21 +2207,21 @@ function* sub_2fec() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        push(memory16get(ss, di - 65536 + 55710));
+        push(memory16get(ss, di - 9826));
         r16[ax] = memory16get(ss, bp + 10);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        push(memory16get(ss, di - 65536 + 55714));
+        push(memory16get(ss, di - 9822));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55091);
+        r16[ax] = memory16get(ss, di - 10445);
         r16[ax] += 0x0002;
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp + 10);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[al] = memory[ss*16 + di - 65536 + 55718];
+        r8[al] = memory[ss*16 + di - 9818];
         push(r16[ax]);
         yield* sub_24c9();
         r8[al] = 0x03;
@@ -2261,7 +2261,7 @@ function* sub_2fec() {
         push(memory16get(ss, bp + 4));
         yield* sub_2ea5();
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55077, 0x0019);
+        memory16set(ss, di - 10459, 0x0019);
         di = memory16get(ss, bp + 10);
         memory[ds*16 + di + 4729] = 0x00;
     case 0x30a5:
@@ -2435,11 +2435,11 @@ function* sub_3195() {
         break;
     case 0x31a9:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0002;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0002;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x31ea;
@@ -2453,7 +2453,7 @@ function* sub_3195() {
     case 0x31cf:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0003;
         push(r16[ax]);
         push(bp);
@@ -2465,11 +2465,11 @@ function* sub_3195() {
         }
     case 0x31ea:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0003;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0003;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x322b;
@@ -2483,7 +2483,7 @@ function* sub_3195() {
     case 0x3210:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0002;
         push(r16[ax]);
         push(bp);
@@ -2495,11 +2495,11 @@ function* sub_3195() {
         }
     case 0x322b:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]++;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]--;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x3266;
@@ -2513,7 +2513,7 @@ function* sub_3195() {
     case 0x324d:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]--;
         push(r16[ax]);
         push(bp);
@@ -2534,11 +2534,11 @@ function* sub_3195() {
         break;
     case 0x3274:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0002;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0002;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x32b5;
@@ -2552,7 +2552,7 @@ function* sub_3195() {
     case 0x329a:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0003;
         push(r16[ax]);
         push(bp);
@@ -2564,11 +2564,11 @@ function* sub_3195() {
         }
     case 0x32b5:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0003;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0003;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x32f6;
@@ -2582,7 +2582,7 @@ function* sub_3195() {
     case 0x32db:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0002;
         push(r16[ax]);
         push(bp);
@@ -2594,11 +2594,11 @@ function* sub_3195() {
         }
     case 0x32f6:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]++;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]--;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x3331;
@@ -2612,7 +2612,7 @@ function* sub_3195() {
     case 0x3318:
         push(memory16get(ss, bp - 2));
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]++;
         push(r16[ax]);
         push(bp);
@@ -2633,11 +2633,11 @@ function* sub_3195() {
         break;
     case 0x333f:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0002;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0002;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x3380;
@@ -2650,7 +2650,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x3365:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0003;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2663,11 +2663,11 @@ function* sub_3195() {
         }
     case 0x3380:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0003;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0003;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x33c1;
@@ -2680,7 +2680,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x33a6:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] += 0x0002;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2693,11 +2693,11 @@ function* sub_3195() {
         }
     case 0x33c1:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]++;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]--;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x33fc;
@@ -2710,7 +2710,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x33e3:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]++;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2732,11 +2732,11 @@ function* sub_3195() {
         break;
     case 0x340a:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0002;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0002;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x344b;
@@ -2749,7 +2749,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x3430:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0003;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2762,11 +2762,11 @@ function* sub_3195() {
         }
     case 0x344b:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] += 0x0003;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax] -= 0x0003;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x348c;
@@ -2779,7 +2779,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x3471:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax] -= 0x0002;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2792,11 +2792,11 @@ function* sub_3195() {
         }
     case 0x348c:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]++;
         memory16set(ss, bp - 4, r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55087);
+        r16[ax] = memory16get(ss, di - 10449);
         r16[ax]--;
         if (r16s[ax] > memory16gets(ss, bp - 4)) {
             pc = 0x34c7;
@@ -2809,7 +2809,7 @@ function* sub_3195() {
         memory16set(ss, bp - 2, memory16get(ss, bp - 2) + 1);
     case 0x34ae:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55085);
+        r16[ax] = memory16get(ss, di - 10451);
         r16[ax]--;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -2857,7 +2857,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        if (memory16get(ss, di - 65536 + 55635) != 0xffff) {
+        if (memory16get(ss, di - 9901) != 0xffff) {
             pc = 0x3508;
             break;
         }
@@ -2873,7 +2873,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        push(memory16get(ss, di - 65536 + 55635));
+        push(memory16get(ss, di - 9901));
         r16[ax] = memory16get(ss, bp - 2);
         r16[ax] <<= 1;
         r16[cx] = r16[ax];
@@ -2883,7 +2883,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        push(memory16get(ss, di - 65536 + 55659));
+        push(memory16get(ss, di - 9877));
         r8[al] = 0x00;
         push(r16[ax]);
         yield* sub_235c();
@@ -2897,7 +2897,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -2911,7 +2911,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax] -= r16[bx];
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 2);
@@ -2924,7 +2924,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -2938,7 +2938,7 @@ function* sub_34cd() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55659);
+        r16[ax] = memory16get(ss, di - 9877);
         r16[ax] -= r16[bx];
         push(r16[ax]);
         r8[al] = 0x00;
@@ -2979,7 +2979,7 @@ function* sub_35ea() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        if (memory16gets(ss, di - 65536 + 55115) <= signed16(0x0000)) {
+        if (memory16gets(ss, di - 10421) <= signed16(0x0000)) {
             pc = 0x3618;
             break;
         }
@@ -2988,7 +2988,7 @@ function* sub_35ea() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55115, memory16get(ss, di - 65536 + 55115) - 1);
+        memory16set(ss, di - 10421, memory16get(ss, di - 10421) - 1);
         pc = 0x372e;
         break;
     case 0x3618:
@@ -3020,7 +3020,7 @@ function* sub_35ea() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        if (memory16get(ss, di - 65536 + 55635) != 0xffff) {
+        if (memory16get(ss, di - 9901) != 0xffff) {
             pc = 0x365c;
             break;
         }
@@ -3055,7 +3055,7 @@ function* sub_35ea() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[bx] = memory16get(ss, di - 65536 + 55710);
+        r16[bx] = memory16get(ss, di - 9826);
         r16[ax] = memory16get(ss, bp - 2);
         r16[ax] <<= 1;
         r16[cx] = r16[ax];
@@ -3066,13 +3066,13 @@ function* sub_35ea() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        memory16set(ss, di - 65536 + 55635, r16[bx]);
+        memory16set(ss, di - 9901, r16[bx]);
         r8[al] = memory[ss*16 + bp + 6];
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[bx] = memory16get(ss, di - 65536 + 55714);
+        r16[bx] = memory16get(ss, di - 9822);
         r16[ax] = memory16get(ss, bp - 2);
         r16[ax] <<= 1;
         r16[cx] = r16[ax];
@@ -3083,13 +3083,13 @@ function* sub_35ea() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        memory16set(ss, di - 65536 + 55659, r16[bx]);
+        memory16set(ss, di - 9877, r16[bx]);
         r8[al] = memory[ss*16 + bp + 6];
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[cl] = memory[ss*16 + di - 65536 + 55718];
+        r8[cl] = memory[ss*16 + di - 9818];
         r16[ax] = memory16get(ss, bp - 2);
         r16[dx] = r16[ax];
         r8[al] = memory[ss*16 + bp + 6];
@@ -3101,20 +3101,20 @@ function* sub_35ea() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        memory[ss*16 + di - 65536 + 55630] = r8[cl];
+        memory[ss*16 + di - 9906] = r8[cl];
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55081);
+        r16[ax] = memory16get(ss, di - 10455);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55107, memory16get(ss, di - 65536 + 55107) - 0x003c);
+        memory16set(ss, di - 10429, memory16get(ss, di - 10429) - 0x003c);
     case 0x371b:
         r8[al] = memory[ss*16 + bp + 6];
         r8[ah] = 0;
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55115, 0x0001);
+        memory16set(ss, di - 10421, 0x0001);
     case 0x372e:
         sp = bp;
         bp = pop();
@@ -3152,7 +3152,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        if (memory16get(ss, di - 65536 + 55635) != 0xffff) {
+        if (memory16get(ss, di - 9901) != 0xffff) {
             pc = 0x376f;
             break;
         }
@@ -3168,7 +3168,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        push(memory16get(ss, di - 65536 + 55635));
+        push(memory16get(ss, di - 9901));
         r16[ax] = memory16get(ss, bp - 2);
         r16[ax] <<= 1;
         r16[cx] = r16[ax];
@@ -3178,7 +3178,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        push(memory16get(ss, di - 65536 + 55659));
+        push(memory16get(ss, di - 9877));
         r8[al] = 0x0c;
         push(r16[ax]);
         yield* sub_235c();
@@ -3192,7 +3192,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -3206,7 +3206,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         r16[ax] -= r16[bx];
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 2);
@@ -3219,7 +3219,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -3233,7 +3233,7 @@ function* sub_3734() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55659);
+        r16[ax] = memory16get(ss, di - 9877);
         r16[ax] -= r16[bx];
         push(r16[ax]);
         r8[al] = 0x04;
@@ -3290,7 +3290,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        if (memory16get(ss, di - 65536 + 55635) != 0xffff) {
+        if (memory16get(ss, di - 9901) != 0xffff) {
             pc = 0x388c;
             break;
         }
@@ -3307,7 +3307,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -3323,7 +3323,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[dx];
-        r8[al] = memory[ss*16 + di - 65536 + 55630];
+        r8[al] = memory[ss*16 + di - 9906];
         r8[ah] = 0;
         di = r16[ax];
         di <<= 1;
@@ -3339,7 +3339,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55635);
+        r16[ax] = memory16get(ss, di - 9901);
         memory16set(ss, bp - 10, r16[ax]);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
@@ -3350,7 +3350,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        r16[ax] = memory16get(ss, di - 65536 + 55659);
+        r16[ax] = memory16get(ss, di - 9877);
         memory16set(ss, bp - 8, r16[ax]);
     case 0x391f:
         r16[ax] = memory16get(ss, bp - 10);
@@ -3396,7 +3396,7 @@ function* sub_3851() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55710);
+        r16[dx] = memory16get(ss, di - 9826);
         r16[ax] = memory16get(ss, bp - 10);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
@@ -3410,7 +3410,7 @@ function* sub_3851() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55714);
+        r16[dx] = memory16get(ss, di - 9822);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
@@ -3434,7 +3434,7 @@ function* sub_3851() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55710);
+        r16[dx] = memory16get(ss, di - 9826);
         r16[ax] = memory16get(ss, bp - 10);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
@@ -3449,7 +3449,7 @@ function* sub_3851() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55714);
+        r16[dx] = memory16get(ss, di - 9822);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
@@ -3476,15 +3476,15 @@ function* sub_3851() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55099, memory16get(ss, di - 65536 + 55099) - 0x0700);
+        memory16set(ss, di - 10437, memory16get(ss, di - 10437) - 0x0700);
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55079, 0x0002);
+        memory16set(ss, di - 10457, 0x0002);
         r16[ax] = 0x0003;
         r16[ax] -= memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        if (memory16gets(ss, di - 65536 + 55099) <= signed16(0x0000)) {
+        if (memory16gets(ss, di - 10437) <= signed16(0x0000)) {
             pc = 0x3a51;
             break;
         }
@@ -3583,7 +3583,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        memory16set(ss, di - 65536 + 55635, r16[bx]);
+        memory16set(ss, di - 9901, r16[bx]);
         r16[bx] = memory16get(ss, bp - 8);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
@@ -3594,7 +3594,7 @@ function* sub_3851() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        memory16set(ss, di - 65536 + 55659, r16[bx]);
+        memory16set(ss, di - 9877, r16[bx]);
     case 0x3b00:
         if (memory16get(ss, bp - 4) == 0x0006) {
             pc = 0x3b09;
@@ -4081,7 +4081,7 @@ function* sub_3e6c() {
         bp = sp;
         sp -= 0x000e;
         di = memory16get(ss, bp + 4);
-        if (memory16gets(ss, di - 65536 + 65534) > signed16(0x0000)) {
+        if (memory16gets(ss, di - 2) > signed16(0x0000)) {
             pc = 0x3e7f;
             break;
         }
@@ -4089,7 +4089,7 @@ function* sub_3e6c() {
         break;
     case 0x3e7f:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 65534);
+        r16[ax] = memory16get(ss, di - 2);
         memory16set(ss, bp - 8, r16[ax]);
         r16[ax] = 0x0001;
         if (r16s[ax] <= memory16gets(ss, bp - 8)) {
@@ -4188,18 +4188,18 @@ function* sub_3e6c() {
         memory[es*16 + di] = 0x00;
         r16[ax] = memory16get(ss, bp - 4);
         di = memory16get(ss, bp + 4);
-        if (r16[ax] != memory16get(ss, di - 65536 + 65534)) {
+        if (r16[ax] != memory16get(ss, di - 2)) {
             pc = 0x3f83;
             break;
         }
     case 0x3f43:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 65534);
+        r16[ax] = memory16get(ss, di - 2);
         r16[dx] = 0x0147;
         mul16(r16[dx]);
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        if (memory[ss*16 + di - 65536 + 55397] == 0x00) {
+        if (memory[ss*16 + di - 10139] == 0x00) {
             pc = 0x3f60;
             break;
         }
@@ -4211,7 +4211,7 @@ function* sub_3e6c() {
     case 0x3f62:
         r8[dl] = r8[al];
         di = memory16get(ss, bp + 4);
-        if (memory16gets(ss, di - 65536 + 65534) > signed16(0x0000)) {
+        if (memory16gets(ss, di - 2) > signed16(0x0000)) {
             pc = 0x3f72;
             break;
         }
@@ -4227,7 +4227,7 @@ function* sub_3e6c() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 65534, memory16get(ss, di - 65536 + 65534) - 1);
+        memory16set(ss, di - 2, memory16get(ss, di - 2) - 1);
         pc = 0x3f43;
         break;
     case 0x3f83:
@@ -4443,26 +4443,26 @@ function* sub_40c4() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[al] = memory[ss*16 + di - 65536 + 55108];
+        r8[al] = memory[ss*16 + di - 10428];
         r8[ah] = 0;
         memory16set(ss, bp - 12, r16[ax]);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[al] = memory[ss*16 + di - 65536 + 55112];
+        r8[al] = memory[ss*16 + di - 10424];
         r8[ah] = 0;
         memory16set(ss, bp - 10, r16[ax]);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55107);
+        r16[dx] = memory16get(ss, di - 10429);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55111, r16[dx]);
+        memory16set(ss, di - 10425, r16[dx]);
         memory16set(ss, bp - 6, 0x004f);
         memory[ss*16 + bp - 13] = 0x0e;
         pc = 0x4182;
@@ -4472,26 +4472,26 @@ function* sub_40c4() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[al] = memory[ss*16 + di - 65536 + 55100];
+        r8[al] = memory[ss*16 + di - 10436];
         r8[ah] = 0;
         memory16set(ss, bp - 12, r16[ax]);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r8[al] = memory[ss*16 + di - 65536 + 55104];
+        r8[al] = memory[ss*16 + di - 10432];
         r8[ah] = 0;
         memory16set(ss, bp - 10, r16[ax]);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55099);
+        r16[dx] = memory16get(ss, di - 10437);
         r16[ax] = memory16get(ss, bp + 8);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55103, r16[dx]);
+        memory16set(ss, di - 10433, r16[dx]);
         memory16set(ss, bp - 6, 0x005a);
         memory[ss*16 + bp - 13] = 0x0b;
     case 0x4182:
@@ -4611,25 +4611,25 @@ function* sub_422d() {
         push(bp);
         bp = sp;
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55079, memory16get(ss, di - 65536 + 55079) + 1);
+        memory16set(ss, di - 10457, memory16get(ss, di - 10457) + 1);
         di = memory16get(ss, bp + 4);
-        if (memory16gets(ss, di - 65536 + 55079) <= signed16(0x0002)) {
+        if (memory16gets(ss, di - 10457) <= signed16(0x0002)) {
             pc = 0x424d;
             break;
         }
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55079, 0x0001);
+        memory16set(ss, di - 10457, 0x0001);
     case 0x424d:
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55079);
+        r16[ax] = memory16get(ss, di - 10457);
         if (r16[ax] != 0x0001) {
             pc = 0x427c;
             break;
         }
         di = memory16get(ss, bp + 4);
-        r8[al] = memory[ss*16 + di - 65536 + 55110];
+        r8[al] = memory[ss*16 + di - 10426];
         di = memory16get(ss, bp + 4);
-        if (r8[al] == memory[ss*16 + di - 65536 + 55114]) {
+        if (r8[al] == memory[ss*16 + di - 10422]) {
             pc = 0x427a;
             break;
         }
@@ -4648,9 +4648,9 @@ function* sub_422d() {
             break;
         }
         di = memory16get(ss, bp + 4);
-        r8[al] = memory[ss*16 + di - 65536 + 55112];
+        r8[al] = memory[ss*16 + di - 10424];
         di = memory16get(ss, bp + 4);
-        if (r8[al] == memory[ss*16 + di - 65536 + 55116]) {
+        if (r8[al] == memory[ss*16 + di - 10420]) {
             pc = 0x42a1;
             break;
         }
@@ -4726,7 +4726,7 @@ function* sub_42a7() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55695, r16[dx]);
+        memory16set(ss, di - 9841, r16[dx]);
         r16[ax] = 0x00c0;
         push(r16[ax]);
         push(cs);
@@ -4739,15 +4739,15 @@ function* sub_42a7() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55699, r16[dx]);
+        memory16set(ss, di - 9837, r16[dx]);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x4301;
             break;
         }
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55697);
+        r16[ax] = memory16get(ss, di - 9839);
         di = memory16get(ss, bp + 4);
-        r16[ax] -= memory16get(ss, di - 65536 + 55699);
+        r16[ax] -= memory16get(ss, di - 9837);
         if (!(r16[ax] & 0x8000)) {
             pc = 0x435a;
             break;
@@ -4756,9 +4756,9 @@ function* sub_42a7() {
     case 0x435a:
         push(r16[ax]);
         di = memory16get(ss, bp + 4);
-        r16[ax] = memory16get(ss, di - 65536 + 55701);
+        r16[ax] = memory16get(ss, di - 9835);
         di = memory16get(ss, bp + 4);
-        r16[ax] -= memory16get(ss, di - 65536 + 55703);
+        r16[ax] -= memory16get(ss, di - 9833);
         if (!(r16[ax] & 0x8000)) {
             pc = 0x4371;
             break;
@@ -4792,7 +4792,7 @@ function* sub_4386() {
         sp -= 0x0004;
         di = memory16get(ss, bp + 4);
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 65534, r16[ax]);
+        memory16set(ss, di - 2, r16[ax]);
         memory16set(ss, bp - 4, 0x0001);
         pc = 0x439f;
         break;
@@ -4804,7 +4804,7 @@ function* sub_4386() {
         mul16(r16[dx]);
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory[ss*16 + di - 65536 + 55397] = 0x00;
+        memory[ss*16 + di - 10139] = 0x00;
         if (memory16get(ss, bp - 4) != 0x001e) {
             pc = 0x439c;
             break;
@@ -4823,11 +4823,11 @@ function* sub_4386() {
         assert(cs == 0x01ed);
         di = memory16get(ss, bp + 4);
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55635, r16[ax]);
+        memory16set(ss, di - 9901, r16[ax]);
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55720, 0x0002);
+        memory16set(ss, di - 9816, 0x0002);
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55722, 0x0006);
+        memory16set(ss, di - 9814, 0x0006);
         memory16set(ss, bp - 4, 0x0001);
         pc = 0x43f5;
         break;
@@ -4838,33 +4838,33 @@ function* sub_4386() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55695);
+        r16[dx] = memory16get(ss, di - 9841);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55710, r16[dx]);
+        memory16set(ss, di - 9826, r16[dx]);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[dx] = memory16get(ss, di - 65536 + 55699);
+        r16[dx] = memory16get(ss, di - 9837);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55714, r16[dx]);
+        memory16set(ss, di - 9822, r16[dx]);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55703, 0xffff);
+        memory16set(ss, di - 9833, 0xffff);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55095, r16[ax]);
+        memory16set(ss, di - 10441, r16[ax]);
         di = memory16get(ss, bp - 4);
         memory[ds*16 + di + 4729] = 0x01;
         r16[ax] = memory16get(ss, bp - 4);
@@ -4872,7 +4872,7 @@ function* sub_4386() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55115, r16[ax]);
+        memory16set(ss, di - 10421, r16[ax]);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x4476;
         break;
@@ -4888,7 +4888,7 @@ function* sub_4386() {
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         di += r16[cx];
-        memory16set(ss, di - 65536 + 55635, 0xffff);
+        memory16set(ss, di - 9901, 0xffff);
         if (memory16get(ss, bp - 2) != 0x0006) {
             pc = 0x4473;
             break;
@@ -4896,29 +4896,29 @@ function* sub_4386() {
         r16[ax] = memory16get(ss, bp - 4);
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory[ss*16 + di - 65536 + 55709] = 0x00;
+        memory[ss*16 + di - 9827] = 0x00;
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        memory16set(ss, di - 65536 + 55107, 0x2c88);
-        r16[ax] = memory16get(ss, bp - 4);
-        r16[ax] <<= 1;
-        di = memory16get(ss, bp + 4);
-        di += r16[ax];
-        r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55111, r16[ax]);
-        r16[ax] = memory16get(ss, bp - 4);
-        r16[ax] <<= 1;
-        di = memory16get(ss, bp + 4);
-        di += r16[ax];
-        memory16set(ss, di - 65536 + 55099, 0x2c88);
+        memory16set(ss, di - 10429, 0x2c88);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
         r16[ax] = 0;
-        memory16set(ss, di - 65536 + 55103, r16[ax]);
+        memory16set(ss, di - 10425, r16[ax]);
+        r16[ax] = memory16get(ss, bp - 4);
+        r16[ax] <<= 1;
+        di = memory16get(ss, bp + 4);
+        di += r16[ax];
+        memory16set(ss, di - 10437, 0x2c88);
+        r16[ax] = memory16get(ss, bp - 4);
+        r16[ax] <<= 1;
+        di = memory16get(ss, bp + 4);
+        di += r16[ax];
+        r16[ax] = 0;
+        memory16set(ss, di - 10433, r16[ax]);
         if (memory16get(ss, bp - 4) == 0x0002) {
             pc = 0x44f4;
             break;
@@ -4927,7 +4927,7 @@ function* sub_4386() {
         break;
     case 0x44f4:
         di = memory16get(ss, bp + 4);
-        memory16set(ss, di - 65536 + 55077, 0xffff);
+        memory16set(ss, di - 10459, 0xffff);
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
@@ -4953,14 +4953,14 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] += 0x0010;
         memory16set(ss, bp - 8, r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] -= 0x0010;
         if (r16s[ax] > memory16gets(ss, bp - 8)) {
             pc = 0x4598;
@@ -4976,14 +4976,14 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0010;
         memory16set(ss, bp - 10, r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] -= 0x0010;
         if (r16s[ax] > memory16gets(ss, bp - 10)) {
             pc = 0x4590;
@@ -5016,14 +5016,14 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] -= 0x0004;
         memory16set(ss, bp - 8, r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] -= 0x0011;
         if (r16s[ax] > memory16gets(ss, bp - 8)) {
             pc = 0x4614;
@@ -5040,7 +5040,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] -= 0x0011;
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
@@ -5052,7 +5052,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0011;
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
@@ -5069,14 +5069,14 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] += 0x0004;
         memory16set(ss, bp - 8, r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] += 0x0011;
         if (r16s[ax] < memory16gets(ss, bp - 8)) {
             pc = 0x4690;
@@ -5093,7 +5093,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] -= 0x0011;
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
@@ -5105,7 +5105,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0011;
         push(r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
@@ -5122,14 +5122,14 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0010;
         memory16set(ss, bp - 8, r16[ax]);
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] -= 0x0010;
         if (r16s[ax] > memory16gets(ss, bp - 8)) {
             pc = 0x470c;
@@ -5145,7 +5145,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] -= 0x0011;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -5157,7 +5157,7 @@ function* sub_4504() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] += 0x0011;
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
@@ -5522,7 +5522,7 @@ function* sub_4732() {
         r16[ax] += 0x0547;
         di = r16[ax];
         es = pop();
-        memory[es*16 + di] = r8[dl];
+        videoSet(es, di, r8[dl]);
         if (memory16get(ss, bp - 2) != 0x0006) {
             pc = 0x48f3;
             break;
@@ -5687,7 +5687,7 @@ function* sub_4936() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55695);
+        r16[ax] = memory16get(ss, di - 9841);
         r16[ax] += 0x0003;
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
         r16[cx] = 0x0007;
@@ -5698,7 +5698,7 @@ function* sub_4936() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0003;
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
         r16[cx] = 0x0007;
@@ -5710,7 +5710,7 @@ function* sub_4936() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0003;
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
         r16[cx] = 0x0007;
@@ -5759,7 +5759,7 @@ function* sub_4936() {
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
         di += r16[ax];
-        r16[ax] = memory16get(ss, di - 65536 + 55699);
+        r16[ax] = memory16get(ss, di - 9837);
         r16[ax] += 0x0003;
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
         r16[cx] = 0x0007;
@@ -5937,14 +5937,14 @@ function* sub_4bdb() {
         cs = 0x08c0;
         yield* sub_8c00();
         assert(cs == 0x01ed);
-        memory[ss*16 + bp - 65536 + 55076] = 0x00;
-        memory16set(ss, bp - 65536 + 55121, 0x00a0);
-        memory[ss*16 + bp - 65536 + 55074] = 0x01;
+        memory[ss*16 + bp - 10460] = 0x00;
+        memory16set(ss, bp - 10415, 0x00a0);
+        memory[ss*16 + bp - 10462] = 0x01;
     case 0x4bfb:
-        memory[ss*16 + bp - 65536 + 55075] = 0x00;
+        memory[ss*16 + bp - 10461] = 0x00;
         push(bp);
         yield* sub_4386();
-        memory16set(ss, bp - 65536 + 55079, 0x0002);
+        memory16set(ss, bp - 10457, 0x0002);
         push(bp);
         yield* sub_4732();
         push(cs);
@@ -5960,32 +5960,32 @@ function* sub_4bdb() {
             pc = 0x4c2c;
             break;
         }
-        memory[ss*16 + bp - 65536 + 55075] = 0x01;
-        memory[ss*16 + bp - 65536 + 55076] = 0x01;
+        memory[ss*16 + bp - 10461] = 0x01;
+        memory[ss*16 + bp - 10460] = 0x01;
     case 0x4c2c:
         if (memory[ds*16 + 0x152b] == 0x00) {
             pc = 0x4c38;
             break;
         }
-        memory[ss*16 + bp - 65536 + 55074] = 0x01;
+        memory[ss*16 + bp - 10462] = 0x01;
     case 0x4c38:
         if (memory[ds*16 + 0x152c] == 0x00) {
             pc = 0x4c49;
             break;
         }
-        memory[ss*16 + bp - 65536 + 55074] = 0x00;
+        memory[ss*16 + bp - 10462] = 0x00;
         push(cs);
         cs = 0x08e1;
         yield* sub_914e();
         assert(cs == 0x01ed);
     case 0x4c49:
-        memory16set(ss, bp - 65536 + 55081, 0x0001);
+        memory16set(ss, bp - 10455, 0x0001);
         pc = 0x4c55;
         break;
     case 0x4c51:
-        memory16set(ss, bp - 65536 + 55081, memory16get(ss, bp - 65536 + 55081) + 1);
+        memory16set(ss, bp - 10455, memory16get(ss, bp - 10455) + 1);
     case 0x4c55:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         if (memory[ds*16 + di + 4729] != 0x00) {
             pc = 0x4c63;
             break;
@@ -5993,12 +5993,12 @@ function* sub_4bdb() {
         pc = 0x50ee;
         break;
     case 0x4c63:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, memory16get(ss, bp + di - 65536 + 55107) - 0x0002);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) - 0x0002);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55099) > signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 10437) > signed16(0x0000)) {
             pc = 0x4c7f;
             break;
         }
@@ -6009,9 +6009,9 @@ function* sub_4bdb() {
         r8[al] = 0x01;
     case 0x4c81:
         r8[dl] = r8[al];
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) > signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 10429) > signed16(0x0000)) {
             pc = 0x4c94;
             break;
         }
@@ -6029,201 +6029,201 @@ function* sub_4bdb() {
         pc = 0x50c7;
         break;
     case 0x4c9f:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55710);
-        memory16set(ss, bp - 65536 + 55085, r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[ax] = memory16get(ss, bp + di - 9826);
+        memory16set(ss, bp - 10451, r16[ax]);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55714);
-        memory16set(ss, bp - 65536 + 55087, r16[ax]);
+        r16[ax] = memory16get(ss, bp + di - 9822);
+        memory16set(ss, bp - 10449, r16[ax]);
         r16[ax] = 0;
-        memory16set(ss, bp - 65536 + 55083, r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp - 10453, r16[ax]);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 141);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4cdd;
             break;
         }
-        r8[al] = memory[ss*16 + bp - 65536 + 55081];
+        r8[al] = memory[ss*16 + bp - 10455];
         push(r16[ax]);
         push(bp);
         yield* sub_35ea();
         pc = 0x4ce9;
         break;
     case 0x4cdd:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         r16[ax] = 0;
-        memory16set(ss, bp + di - 65536 + 55115, r16[ax]);
+        memory16set(ss, bp + di - 10421, r16[ax]);
     case 0x4ce9:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 145);
         r8[al] = memory[ds*16 + di + 5360];
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 149);
         if (r8[al] == memory[ds*16 + di + 5360]) {
             pc = 0x4d3c;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 145);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4d22;
             break;
         }
-        memory16set(ss, bp - 65536 + 55083, memory16get(ss, bp - 65536 + 55083) + 1);
-        memory16set(ss, bp - 65536 + 55087, memory16get(ss, bp - 65536 + 55087) - 1);
+        memory16set(ss, bp - 10453, memory16get(ss, bp - 10453) + 1);
+        memory16set(ss, bp - 10449, memory16get(ss, bp - 10449) - 1);
         pc = 0x4d3c;
         break;
     case 0x4d22:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 149);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4d3c;
             break;
         }
-        memory16set(ss, bp - 65536 + 55083, memory16get(ss, bp - 65536 + 55083) + 0x0004);
-        memory16set(ss, bp - 65536 + 55087, memory16get(ss, bp - 65536 + 55087) + 1);
+        memory16set(ss, bp - 10453, memory16get(ss, bp - 10453) + 0x0004);
+        memory16set(ss, bp - 10449, memory16get(ss, bp - 10449) + 1);
     case 0x4d3c:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 153);
         r8[al] = memory[ds*16 + di + 5360];
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 157);
         if (r8[al] == memory[ds*16 + di + 5360]) {
             pc = 0x4d90;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 153);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4d76;
             break;
         }
-        memory16set(ss, bp - 65536 + 55083, memory16get(ss, bp - 65536 + 55083) + 0x0002);
-        memory16set(ss, bp - 65536 + 55085, memory16get(ss, bp - 65536 + 55085) + 1);
+        memory16set(ss, bp - 10453, memory16get(ss, bp - 10453) + 0x0002);
+        memory16set(ss, bp - 10451, memory16get(ss, bp - 10451) + 1);
         pc = 0x4d90;
         break;
     case 0x4d76:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 157);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4d90;
             break;
         }
-        memory16set(ss, bp - 65536 + 55083, memory16get(ss, bp - 65536 + 55083) + 0x0008);
-        memory16set(ss, bp - 65536 + 55085, memory16get(ss, bp - 65536 + 55085) - 1);
+        memory16set(ss, bp - 10453, memory16get(ss, bp - 10453) + 0x0008);
+        memory16set(ss, bp - 10451, memory16get(ss, bp - 10451) - 1);
     case 0x4d90:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55718);
-        memory16set(ss, bp - 65536 + 55089, r16[ax]);
-        if (memory16get(ss, bp - 65536 + 55083) != 0x0000) {
+        r16[ax] = memory16get(ss, bp + di - 9818);
+        memory16set(ss, bp - 10447, r16[ax]);
+        if (memory16get(ss, bp - 10453) != 0x0000) {
             pc = 0x4da8;
             break;
         }
         pc = 0x4fc1;
         break;
     case 0x4da8:
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0001;
         if (r16[ax] != 0x0001) {
             pc = 0x4de4;
             break;
         }
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0002;
         if (r16[ax] != 0x0002) {
             pc = 0x4dc8;
             break;
         }
-        memory16set(ss, bp - 65536 + 55089, 0x0001);
+        memory16set(ss, bp - 10447, 0x0001);
         pc = 0x4de2;
         break;
     case 0x4dc8:
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0008;
         if (r16[ax] != 0x0008) {
             pc = 0x4ddc;
             break;
         }
-        memory16set(ss, bp - 65536 + 55089, 0x0007);
+        memory16set(ss, bp - 10447, 0x0007);
         pc = 0x4de2;
         break;
     case 0x4ddc:
         r16[ax] = 0;
-        memory16set(ss, bp - 65536 + 55089, r16[ax]);
+        memory16set(ss, bp - 10447, r16[ax]);
     case 0x4de2:
         pc = 0x4e3a;
         break;
     case 0x4de4:
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0004;
         if (r16[ax] != 0x0004) {
             pc = 0x4e20;
             break;
         }
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0002;
         if (r16[ax] != 0x0002) {
             pc = 0x4e04;
             break;
         }
-        memory16set(ss, bp - 65536 + 55089, 0x0003);
+        memory16set(ss, bp - 10447, 0x0003);
         pc = 0x4e1e;
         break;
     case 0x4e04:
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0008;
         if (r16[ax] != 0x0008) {
             pc = 0x4e18;
             break;
         }
-        memory16set(ss, bp - 65536 + 55089, 0x0005);
+        memory16set(ss, bp - 10447, 0x0005);
         pc = 0x4e1e;
         break;
     case 0x4e18:
-        memory16set(ss, bp - 65536 + 55089, 0x0004);
+        memory16set(ss, bp - 10447, 0x0004);
     case 0x4e1e:
         pc = 0x4e3a;
         break;
     case 0x4e20:
-        r16[ax] = memory16get(ss, bp - 65536 + 55083);
+        r16[ax] = memory16get(ss, bp - 10453);
         r16[ax] &= 0x0002;
         if (r16[ax] != 0x0002) {
             pc = 0x4e34;
             break;
         }
-        memory16set(ss, bp - 65536 + 55089, 0x0002);
+        memory16set(ss, bp - 10447, 0x0002);
         pc = 0x4e3a;
         break;
     case 0x4e34:
-        memory16set(ss, bp - 65536 + 55089, 0x0006);
+        memory16set(ss, bp - 10447, 0x0006);
     case 0x4e3a:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55718);
-        if (r16[ax] == memory16get(ss, bp - 65536 + 55089)) {
+        r16[ax] = memory16get(ss, bp + di - 9818);
+        if (r16[ax] == memory16get(ss, bp - 10447)) {
             pc = 0x4e79;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55081);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
-        r8[al] = memory[ss*16 + bp - 65536 + 55089];
+        push(memory16get(ss, bp + di - 9822));
+        r8[al] = memory[ss*16 + bp - 10447];
         push(r16[ax]);
         push(bp);
         yield* sub_2e2c();
@@ -6231,27 +6231,27 @@ function* sub_4bdb() {
             pc = 0x4e79;
             break;
         }
-        r16[ax] = memory16get(ss, bp - 65536 + 55089);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[ax] = memory16get(ss, bp - 10447);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55718, r16[ax]);
+        memory16set(ss, bp + di - 9818, r16[ax]);
     case 0x4e79:
-        di = memory16get(ss, bp - 65536 + 55081);
-        if (memory[ss*16 + bp + di - 65536 + 55709] != 0x00) {
+        di = memory16get(ss, bp - 10455);
+        if (memory[ss*16 + bp + di - 9827] != 0x00) {
             pc = 0x4e87;
             break;
         }
         pc = 0x4fb6;
         break;
     case 0x4e87:
-        push(memory16get(ss, bp - 65536 + 55085));
-        push(memory16get(ss, bp - 65536 + 55087));
-        r8[al] = memory[ss*16 + bp - 65536 + 55089];
+        push(memory16get(ss, bp - 10451));
+        push(memory16get(ss, bp - 10449));
+        r8[al] = memory[ss*16 + bp - 10447];
         push(r16[ax]);
         push(bp);
         yield* sub_2e2c();
-        memory[ss*16 + bp - 65536 + 55072] = r8[al];
-        if (memorys[ss*16 + bp - 65536 + 55072] <= signed8(0x02)) {
+        memory[ss*16 + bp - 10464] = r8[al];
+        if (memorys[ss*16 + bp - 10464] <= signed8(0x02)) {
             pc = 0x4ead;
             break;
         }
@@ -6263,11 +6263,11 @@ function* sub_4bdb() {
         break;
     case 0x4ead:
         r16[ax] = 0x0003;
-        r16[ax] -= memory16get(ss, bp - 65536 + 55081);
+        r16[ax] -= memory16get(ss, bp - 10455);
         di = r16[ax];
         di <<= 1;
-        r16[dx] = memory16get(ss, bp + di - 65536 + 55710);
-        r16[ax] = memory16get(ss, bp - 65536 + 55085);
+        r16[dx] = memory16get(ss, bp + di - 9826);
+        r16[ax] = memory16get(ss, bp - 10451);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
             pc = 0x4ec8;
@@ -6277,11 +6277,11 @@ function* sub_4bdb() {
     case 0x4ec8:
         push(r16[ax]);
         r16[ax] = 0x0003;
-        r16[ax] -= memory16get(ss, bp - 65536 + 55081);
+        r16[ax] -= memory16get(ss, bp - 10455);
         di = r16[ax];
         di <<= 1;
-        r16[dx] = memory16get(ss, bp + di - 65536 + 55714);
-        r16[ax] = memory16get(ss, bp - 65536 + 55087);
+        r16[dx] = memory16get(ss, bp + di - 9822);
+        r16[ax] = memory16get(ss, bp - 10449);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
             pc = 0x4ee4;
@@ -6299,7 +6299,7 @@ function* sub_4bdb() {
         pc = 0x4fb6;
         break;
     case 0x4ef1:
-        if (memory[ss*16 + bp - 65536 + 55072] != 0x01) {
+        if (memory[ss*16 + bp - 10464] != 0x01) {
             pc = 0x4f33;
             break;
         }
@@ -6307,84 +6307,84 @@ function* sub_4bdb() {
         push(r16[ax]);
         push(bp);
         yield* sub_2b96();
-        push(memory16get(ss, bp - 65536 + 55085));
-        push(memory16get(ss, bp - 65536 + 55087));
-        push(memory16get(ss, bp - 65536 + 55083));
+        push(memory16get(ss, bp - 10451));
+        push(memory16get(ss, bp - 10449));
+        push(memory16get(ss, bp - 10453));
         push(bp);
         yield* sub_3195();
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, memory16get(ss, bp + di - 65536 + 55107) - 0x0002);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) - 0x0002);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         memory16set(ds, di + 4720, memory16get(ds, di + 4720) + 1);
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55703, 0x0001);
+        memory16set(ss, bp + di - 9833, 0x0001);
         pc = 0x4fb6;
         break;
     case 0x4f33:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55703) <= signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 9833) <= signed16(0x0000)) {
             pc = 0x4f4c;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55703, memory16get(ss, bp + di - 65536 + 55703) - 1);
+        memory16set(ss, bp + di - 9833, memory16get(ss, bp + di - 9833) - 1);
         pc = 0x4fb6;
         break;
     case 0x4f4c:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         di = memory16get(ds, di + 141);
         if (memory[ds*16 + di + 5360] == 0x00) {
             pc = 0x4f77;
             break;
         }
-        push(memory16get(ss, bp - 65536 + 55085));
-        push(memory16get(ss, bp - 65536 + 55087));
-        push(memory16get(ss, bp - 65536 + 55083));
+        push(memory16get(ss, bp - 10451));
+        push(memory16get(ss, bp - 10449));
+        push(memory16get(ss, bp - 10453));
         push(bp);
         yield* sub_3195();
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         memory16set(ds, di + 4720, memory16get(ds, di + 4720) + 1);
     case 0x4f77:
-        r16[ax] = memory16get(ss, bp - 65536 + 55085);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[ax] = memory16get(ss, bp - 10451);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55710, r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55087);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 9826, r16[ax]);
+        r16[ax] = memory16get(ss, bp - 10449);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55714, r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55089);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 9822, r16[ax]);
+        r16[ax] = memory16get(ss, bp - 10447);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55718, r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 9818, r16[ax]);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, memory16get(ss, bp + di - 65536 + 55107) - 0x0002);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) - 0x0002);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
         memory16set(ds, di + 4724, memory16get(ds, di + 4724) + 1);
     case 0x4fb6:
-        di = memory16get(ss, bp - 65536 + 55081);
-        memory[ss*16 + bp + di - 65536 + 55709] = 0x01;
+        di = memory16get(ss, bp - 10455);
+        memory[ss*16 + bp + di - 9827] = 0x01;
         pc = 0x4fca;
         break;
     case 0x4fc1:
-        di = memory16get(ss, bp - 65536 + 55081);
-        memory[ss*16 + bp + di - 65536 + 55709] = 0x00;
+        di = memory16get(ss, bp - 10455);
+        memory[ss*16 + bp + di - 9827] = 0x00;
     case 0x4fca:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55710);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[ax] = memory16get(ss, bp + di - 9826);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] -= memory16get(ss, bp + di - 65536 + 55695);
+        r16[ax] -= memory16get(ss, bp + di - 9841);
         if (!(r16[ax] & 0x8000)) {
             pc = 0x4fe4;
             break;
@@ -6392,12 +6392,12 @@ function* sub_4bdb() {
         r16[ax] = -r16[ax];
     case 0x4fe4:
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55714);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[ax] = memory16get(ss, bp + di - 9822);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] -= memory16get(ss, bp + di - 65536 + 55699);
+        r16[ax] -= memory16get(ss, bp + di - 9837);
         if (!(r16[ax] & 0x8000)) {
             pc = 0x4fff;
             break;
@@ -6411,40 +6411,40 @@ function* sub_4bdb() {
             pc = 0x5053;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, memory16get(ss, bp + di - 65536 + 55107) + 0x0050);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) + 0x0050);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) <= signed16(0x2c88)) {
+        if (memory16gets(ss, bp + di - 10429) <= signed16(0x2c88)) {
             pc = 0x502e;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, 0x2c88);
+        memory16set(ss, bp + di - 10429, 0x2c88);
     case 0x502e:
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55099, memory16get(ss, bp + di - 65536 + 55099) + 0x0028);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10437, memory16get(ss, bp + di - 10437) + 0x0028);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55099) <= signed16(0x2c88)) {
+        if (memory16gets(ss, bp + di - 10437) <= signed16(0x2c88)) {
             pc = 0x5053;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55099, 0x2c88);
+        memory16set(ss, bp + di - 10437, 0x2c88);
     case 0x5053:
         r16[ax] = 0x0003;
-        r16[ax] -= memory16get(ss, bp - 65536 + 55081);
+        r16[ax] -= memory16get(ss, bp - 10455);
         di = r16[ax];
         di <<= 1;
-        r16[dx] = memory16get(ss, bp + di - 65536 + 55695);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[dx] = memory16get(ss, bp + di - 9841);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55710);
+        r16[ax] = memory16get(ss, bp + di - 9826);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
             pc = 0x5074;
@@ -6454,13 +6454,13 @@ function* sub_4bdb() {
     case 0x5074:
         push(r16[ax]);
         r16[ax] = 0x0003;
-        r16[ax] -= memory16get(ss, bp - 65536 + 55081);
+        r16[ax] -= memory16get(ss, bp - 10455);
         di = r16[ax];
         di <<= 1;
-        r16[dx] = memory16get(ss, bp + di - 65536 + 55699);
-        di = memory16get(ss, bp - 65536 + 55081);
+        r16[dx] = memory16get(ss, bp + di - 9837);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55714);
+        r16[ax] = memory16get(ss, bp + di - 9822);
         r16[ax] -= r16[dx];
         if (!(r16[ax] & 0x8000)) {
             pc = 0x5096;
@@ -6475,92 +6475,92 @@ function* sub_4bdb() {
             pc = 0x50c5;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, memory16get(ss, bp + di - 65536 + 55107) + 0x001e);
-        di = memory16get(ss, bp - 65536 + 55081);
+        memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) + 0x001e);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) <= signed16(0x2c88)) {
+        if (memory16gets(ss, bp + di - 10429) <= signed16(0x2c88)) {
             pc = 0x50c5;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55081);
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, 0x2c88);
+        memory16set(ss, bp + di - 10429, 0x2c88);
     case 0x50c5:
         pc = 0x50e3;
         break;
     case 0x50c7:
-        push(memory16get(ss, bp - 65536 + 55081));
-        di = memory16get(ss, bp - 65536 + 55081);
+        push(memory16get(ss, bp - 10455));
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55081);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10455);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
+        push(memory16get(ss, bp + di - 9822));
         push(bp);
         yield* sub_2fec();
     case 0x50e3:
-        if (memory16get(ss, bp - 65536 + 55081) != 0x0001) {
+        if (memory16get(ss, bp - 10455) != 0x0001) {
             pc = 0x50ee;
             break;
         }
         push(bp);
         yield* sub_2d7a();
     case 0x50ee:
-        if (memory16get(ss, bp - 65536 + 55081) == 0x0002) {
+        if (memory16get(ss, bp - 10455) == 0x0002) {
             pc = 0x50f8;
             break;
         }
         pc = 0x4c51;
         break;
     case 0x50f8:
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5104;
         break;
     case 0x5100:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5104:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) > signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 10429) > signed16(0x0000)) {
             pc = 0x511d;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55107, 0x0001);
+        memory16set(ss, bp + di - 10429, 0x0001);
     case 0x511d:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55099) > signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 10437) > signed16(0x0000)) {
             pc = 0x5136;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55099, 0x0001);
+        memory16set(ss, bp + di - 10437, 0x0001);
     case 0x5136:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         if (memory[ds*16 + di + 4729] == 0x00) {
             pc = 0x5168;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
-        r8[al] = memory[ss*16 + bp - 65536 + 55091];
+        push(memory16get(ss, bp + di - 9822));
+        r8[al] = memory[ss*16 + bp - 10445];
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r8[al] = memory[ss*16 + bp + di - 65536 + 55718];
+        r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
         yield* sub_24c9();
     case 0x5168:
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0002) {
+        if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5100;
             break;
         }
@@ -6568,29 +6568,29 @@ function* sub_4bdb() {
         yield* sub_3851();
         push(bp);
         yield* sub_3734();
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5183;
         break;
     case 0x517f:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5183:
         push(bp);
         yield* sub_2d7a();
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) >= signed16(0x0c80)) {
+        if (memory16gets(ss, bp + di - 10429) >= signed16(0x0c80)) {
             pc = 0x51f3;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55107) >= signed16(0x0578)) {
+        if (memory16gets(ss, bp + di - 10429) >= signed16(0x0578)) {
             pc = 0x51cc;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55107));
+        push(memory16get(ss, bp + di - 10429));
         push(cs);
         cs = 0x0947;
         yield* sub_a504();
@@ -6605,16 +6605,16 @@ function* sub_4bdb() {
         cs = 0x0947;
         yield* sub_a504();
         assert(cs == 0x01ed);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55095, r16[ax]);
+        memory16set(ss, bp + di - 10441, r16[ax]);
     case 0x51ca:
         pc = 0x51f3;
         break;
     case 0x51cc:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55107));
+        push(memory16get(ss, bp + di - 10429));
         push(cs);
         cs = 0x0947;
         yield* sub_a504();
@@ -6629,13 +6629,13 @@ function* sub_4bdb() {
         cs = 0x0947;
         yield* sub_a504();
         assert(cs == 0x01ed);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55095, r16[ax]);
+        memory16set(ss, bp + di - 10441, r16[ax]);
     case 0x51f3:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        if (memory16gets(ss, bp + di - 65536 + 55095) > signed16(0x0000)) {
+        if (memory16gets(ss, bp + di - 10441) > signed16(0x0000)) {
             pc = 0x5204;
             break;
         }
@@ -6645,85 +6645,85 @@ function* sub_4bdb() {
     case 0x5204:
         r8[al] = 0x01;
     case 0x5206:
-        memory[ss*16 + bp - 65536 + 55073] = r8[al];
-        if (memory[ss*16 + bp - 65536 + 55073] == 0x00) {
+        memory[ss*16 + bp - 10463] = r8[al];
+        if (memory[ss*16 + bp - 10463] == 0x00) {
             pc = 0x521b;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        memory16set(ss, bp + di - 65536 + 55095, memory16get(ss, bp + di - 65536 + 55095) - 1);
+        memory16set(ss, bp + di - 10441, memory16get(ss, bp + di - 10441) - 1);
     case 0x521b:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55710);
+        r16[ax] = memory16get(ss, bp + di - 9826);
         r16[ax] >>= 1;
         r16[ax] -= 0x0013;
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r16[ax] = memory16get(ss, bp + di - 65536 + 55714);
+        r16[ax] = memory16get(ss, bp + di - 9822);
         r16[ax] -= 0x0026;
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
         push(memory16get(ds, di + 137));
-        r8[al] = memory[ss*16 + bp - 65536 + 55073];
+        r8[al] = memory[ss*16 + bp - 10463];
         push(r16[ax]);
         yield* sub_22d4();
-        if (memory16get(ss, bp - 65536 + 55091) == 0x0002) {
+        if (memory16get(ss, bp - 10445) == 0x0002) {
             pc = 0x5255;
             break;
         }
         pc = 0x517f;
         break;
     case 0x5255:
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5261;
         break;
     case 0x525d:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5261:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
-        r16[ax] = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9822));
+        r16[ax] = memory16get(ss, bp - 10445);
         r16[ax] += 0x0002;
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r8[al] = memory[ss*16 + bp + di - 65536 + 55718];
+        r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
         yield* sub_24c9();
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0002) {
+        if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x525d;
             break;
         }
         push(bp);
         yield* sub_34cd();
-        if (memory16gets(ss, bp - 65536 + 55077) <= signed16(0x0000)) {
+        if (memory16gets(ss, bp - 10459) <= signed16(0x0000)) {
             pc = 0x52a1;
             break;
         }
-        memory16set(ss, bp - 65536 + 55077, memory16get(ss, bp - 65536 + 55077) - 1);
+        memory16set(ss, bp - 10459, memory16get(ss, bp - 10459) - 1);
     case 0x52a1:
-        if (memory16get(ss, bp - 65536 + 55077) != 0x0000) {
+        if (memory16get(ss, bp - 10459) != 0x0000) {
             pc = 0x52ad;
             break;
         }
-        memory[ss*16 + bp - 65536 + 55075] = 0x01;
+        memory[ss*16 + bp - 10461] = 0x01;
     case 0x52ad:
         push(bp);
         yield* sub_3e6c();
-        r8[al] = memory[ss*16 + bp - 65536 + 55102];
-        if (r8[al] == memory[ss*16 + bp - 65536 + 55106]) {
+        r8[al] = memory[ss*16 + bp - 10434];
+        if (r8[al] == memory[ss*16 + bp - 10430]) {
             pc = 0x52ce;
             break;
         }
-        if (memory16gets(ss, bp - 65536 + 55101) <= signed16(0x0000)) {
+        if (memory16gets(ss, bp - 10435) <= signed16(0x0000)) {
             pc = 0x52ce;
             break;
         }
@@ -6734,12 +6734,12 @@ function* sub_4bdb() {
         push(bp);
         yield* sub_40c4();
     case 0x52ce:
-        r8[al] = memory[ss*16 + bp - 65536 + 55104];
-        if (r8[al] == memory[ss*16 + bp - 65536 + 55108]) {
+        r8[al] = memory[ss*16 + bp - 10432];
+        if (r8[al] == memory[ss*16 + bp - 10428]) {
             pc = 0x52eb;
             break;
         }
-        if (memory16gets(ss, bp - 65536 + 55103) <= signed16(0x0000)) {
+        if (memory16gets(ss, bp - 10433) <= signed16(0x0000)) {
             pc = 0x52eb;
             break;
         }
@@ -6754,37 +6754,37 @@ function* sub_4bdb() {
         yield* sub_422d();
     case 0x52ef:
         yield* sync();
-        si = 0x0040;
-        es = si;
-        r16[ax] = memory16get(es, 0x006c);
-//        if (r16[ax] == memory16get(ss, bp - 65536 + 55070)) {
+//        si = 0x0040;
+//        es = si;
+//        r16[ax] = memoryBiosGet16(es, 0x006c);
+//        if (r16[ax] == memory16get(ss, bp - 10466)) {
 //            pc = 0x52ef;
 //            break;
 //        }
         si = 0x0040;
         es = si;
-        r16[ax] = memory16get(es, 0x006c);
-        memory16set(ss, bp - 65536 + 55070, r16[ax]);
+        r16[ax] = memoryBiosGet16(es, 0x006c);
+        memory16set(ss, bp - 10466, r16[ax]);
         if (memory[ds*16 + 0x14f3] == 0x00) {
             pc = 0x5322;
             break;
         }
         r16[ax] = 0xb800;
         push(r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55121);
+        r16[ax] = memory16get(ss, bp - 10415);
         r16[ax]++;
         di = r16[ax];
         es = pop();
         memory[es*16 + di] = 0x10;
     case 0x5322:
-        r16[ax] = memory16get(ss, bp - 65536 + 55121);
+        r16[ax] = memory16get(ss, bp - 10415);
         r16[ax] += 0x0002;
-        memory16set(ss, bp - 65536 + 55121, r16[ax]);
-        if (memory16gets(ss, bp - 65536 + 55121) < signed16(0x0140)) {
+        memory16set(ss, bp - 10415, r16[ax]);
+        if (memory16gets(ss, bp - 10415) < signed16(0x0140)) {
             pc = 0x533b;
             break;
         }
-        memory16set(ss, bp - 65536 + 55121, 0x00a0);
+        memory16set(ss, bp - 10415, 0x00a0);
     case 0x533b:
         if (memory[ds*16 + 0x14f3] == 0x00) {
             pc = 0x5352;
@@ -6792,13 +6792,13 @@ function* sub_4bdb() {
         }
         r16[ax] = 0xb800;
         push(r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55121);
+        r16[ax] = memory16get(ss, bp - 10415);
         r16[ax]++;
         di = r16[ax];
         es = pop();
         memory[es*16 + di] = 0xff;
     case 0x5352:
-        if (memory[ss*16 + bp - 65536 + 55075] != 0x00) {
+        if (memory[ss*16 + bp - 10461] != 0x00) {
             pc = 0x535c;
             break;
         }
@@ -6809,46 +6809,46 @@ function* sub_4bdb() {
         cs = 0x08e1;
         yield* sub_914e();
         assert(cs == 0x01ed);
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x536d;
         break;
     case 0x5369:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x536d:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         if (memory[ds*16 + di + 4729] == 0x00) {
             pc = 0x539f;
             break;
         }
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
-        r8[al] = memory[ss*16 + bp - 65536 + 55091];
+        push(memory16get(ss, bp + di - 9822));
+        r8[al] = memory[ss*16 + bp - 10445];
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r8[al] = memory[ss*16 + bp + di - 65536 + 55718];
+        r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
         yield* sub_24c9();
     case 0x539f:
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0002) {
+        if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5369;
             break;
         }
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x53b2;
         break;
     case 0x53ae:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x53b2:
-        r16[ax] = memory16get(ss, bp - 65536 + 55712);
+        r16[ax] = memory16get(ss, bp - 9824);
         r16[ax] >>= 1;
         r16[ax] -= 0x0013;
         push(r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55716);
+        r16[ax] = memory16get(ss, bp - 9820);
         r16[ax] -= 0x0026;
         push(r16[ax]);
         r16[ax] = 0x0143;
@@ -6865,11 +6865,11 @@ function* sub_4bdb() {
     case 0x53d5:
         push(r16[ax]);
         yield* sub_22d4();
-        r16[ax] = memory16get(ss, bp - 65536 + 55714);
+        r16[ax] = memory16get(ss, bp - 9822);
         r16[ax] >>= 1;
         r16[ax] -= 0x0013;
         push(r16[ax]);
-        r16[ax] = memory16get(ss, bp - 65536 + 55718);
+        r16[ax] = memory16get(ss, bp - 9818);
         r16[ax] -= 0x0026;
         push(r16[ax]);
         r16[ax] = 0x0193;
@@ -6886,7 +6886,7 @@ function* sub_4bdb() {
     case 0x53fc:
         push(r16[ax]);
         yield* sub_22d4();
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0014) {
+        if (memory16get(ss, bp - 10445) != 0x0014) {
             pc = 0x53ae;
             break;
         }
@@ -6904,41 +6904,41 @@ function* sub_4bdb() {
         cs = 0x08e1;
         yield* sub_901d();
         assert(cs == 0x01ed);
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5425;
         break;
     case 0x5421:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5425:
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55710));
-        di = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9826));
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        push(memory16get(ss, bp + di - 65536 + 55714));
-        r16[ax] = memory16get(ss, bp - 65536 + 55091);
+        push(memory16get(ss, bp + di - 9822));
+        r16[ax] = memory16get(ss, bp - 10445);
         r16[ax] += 0x0002;
         push(r16[ax]);
-        di = memory16get(ss, bp - 65536 + 55091);
+        di = memory16get(ss, bp - 10445);
         di <<= 1;
-        r8[al] = memory[ss*16 + bp + di - 65536 + 55718];
+        r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
         yield* sub_24c9();
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0002) {
+        if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5421;
             break;
         }
         push(bp);
         yield* sub_34cd();
-        memory16set(ss, bp - 65536 + 55091, 0x0001);
+        memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5466;
         break;
     case 0x5462:
-        memory16set(ss, bp - 65536 + 55091, memory16get(ss, bp - 65536 + 55091) + 1);
+        memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5466:
         push(bp);
         yield* sub_3e6c();
-        if (memory16get(ss, bp - 65536 + 55091) != 0x0014) {
+        if (memory16get(ss, bp - 10445) != 0x0014) {
             pc = 0x5462;
             break;
         }
@@ -6981,9 +6981,9 @@ function* sub_4bdb() {
             pc = 0x54b2;
             break;
         }
-        memory[ss*16 + bp - 65536 + 55076] = 0x01;
+        memory[ss*16 + bp - 10460] = 0x01;
     case 0x54b2:
-        if (memory[ss*16 + bp - 65536 + 55076] != 0x00) {
+        if (memory[ss*16 + bp - 10460] != 0x00) {
             pc = 0x54bc;
             break;
         }
@@ -6998,14 +6998,14 @@ function* sub_4bdb() {
         push(r16[ax]);
         di = 0x0017;
         es = pop();
-        r8[al] = memory[es*16 + di];
+        r8[al] = memoryBiosGet(es, di);
         r8[al] &= 0xf0;
         r8[dl] = r8[al];
         r16[ax] = 0x0040;
         push(r16[ax]);
         di = 0x0017;
         es = pop();
-        memory[es*16 + di] = r8[dl];
+        memoryBiosSet(es, di, r8[dl]);
         push(bp);
         yield* sub_4936();
         sp = bp;
@@ -7287,7 +7287,7 @@ function* sub_563e() {
         r16[dx] = pop();
         r16[ax] += r16[dx];
         di = memory16get(ds, 0x1321);
-        memory[ss*16 + bp + di - 65536 + 65018] = r8[al];
+        memory[ss*16 + bp + di - 518] = r8[al];
         if (memory16get(ds, 0x1321) != 0x01d7) {
             pc = 0x566e;
             break;
@@ -11014,7 +11014,7 @@ function* sub_79ed() {
         push(r16[ax]);
         di = 0x0017;
         es = pop();
-        r8[al] = memory[es*16 + di];
+        r8[al] = memoryBiosGet(es, di);
         r8[al] &= 0x0c;
         if (r8[al] == 0x0c) {
             pc = 0x7a50;
@@ -13332,9 +13332,14 @@ function* sub_8e3e() {
         r16[ax] = 0x0040;
         es = r16[ax];
         di = 0x006c;
-        r8[al] = memory[es*16 + di];
+        r8[al] = memoryBiosGet(es, di);
     case 0x8e7f:
-        r8[al] = memory[es*16 + di];
+        yield* sync();
+        if (r8[al] == memoryBiosGet(es, di)) {
+            pc = 0x8e7f;
+            break;
+        }
+        r8[al] = memoryBiosGet(es, di);
         r16[cx] = 0xffff;
         yield* sub_9119();
         r16[ax] = 0x0037;
@@ -13371,7 +13376,7 @@ function* sub_8ec9() {
     case 0:
         r16[dx] = 0x0040;
         es = r16[dx];
-        memory[es*16 + 0x0087] = memory[es*16 + 0x0087] & 0xfe;
+        memoryBiosSet(es, 0x0087, memoryBiosGet(es, 0x0087) & 0xfe);
         if (r8[al] == 0x07) {
             pc = 0x8ede;
             break;
@@ -13680,7 +13685,7 @@ function* sub_90f9() {
         }
         di = 0;
         es = di;
-        r8[al] = memory[es*16 + di];
+        r8[al] = memoryBiosGet(es, di);
         r16[bx] = memory16get(ds, 0x158d);
     case 0x910e:
         r16[cx] = r16[bx];
@@ -13701,8 +13706,9 @@ function* sub_9119() {
     var pc = 0;
     do switch (pc) {
     case 0:
+        return;
     case 0x9119:
-        if (r8[al] != memory[es*16 + di])
+        if (r8[al] != memoryBiosGet(es, di))
             return;
         if (--r16[cx]) {
             pc = 0x9119;
@@ -14105,7 +14111,7 @@ function* sub_935e() {
         push(ds);
         r16[ax] = 0x0040;
         ds = r16[ax];
-        r16[dx] = memory16get(ds, 0x0050);
+        r16[dx] = memoryBiosGet16(ds, 0x0050);
         ds = pop();
         r16[bx] = r16[dx];
         si = di;
@@ -14179,13 +14185,13 @@ function* sub_935e() {
         push(ds);
         r16[ax] = 0x0040;
         ds = r16[ax];
-        memory16set(ds, 0x0050, r16[dx]);
+        memoryBiosSet16(ds, 0x0050, r16[dx]);
         r8[al] = r8[dh];
-        mul8(memory[ds*16 + 0x004a]);
+        mul8(memoryBiosGet(ds, 0x004a));
         r8[dh] = 0;
         r16[ax] += r16[dx];
         r16[cx] = r16[ax];
-        r16[dx] = memory16get(ds, 0x0063);
+        r16[dx] = memoryBiosGet16(ds, 0x0063);
         r8[al] = 0x0e;
         out8(r16[dx], r8[al]);
         r8[al] = r8[ch];
@@ -14219,16 +14225,16 @@ function* sub_93fb() {
         r16[ax] = 0x0040;
         ds = r16[ax];
         r8[al] = r8[bh];
-        mul8(memory[ds*16 + 0x004a]);
+        mul8(memoryBiosGet(ds, 0x004a));
         r8[bh] = 0;
         r16[ax] += r16[bx];
         r16[ax] <<= 1;
         di = r16[ax];
         r16[bx] = r16[dx];
-        r16[dx] = memory16get(ds, 0x0063);
+        r16[dx] = memoryBiosGet16(ds, 0x0063);
         r16[dx] += 0x0006;
         r16[ax] = 0xb800;
-        if (memory[ds*16 + 0x0049] != 0x07) {
+        if (memoryBiosGet(ds, 0x0049) != 0x07) {
             pc = 0x9438;
             break;
         }
@@ -14309,7 +14315,7 @@ function* sub_9470() {
     r16[ax] += r16[dx];
     memory16set(ds, 0x1798, r16[ax]);
     memory16set(ds, 0x179c, r16[ax]);
-    r16[ax] = memory16get(es, 0x0002);
+    r16[ax] = memoryPsp16get(es, 0x0002);
     r16[ax] -= 0x1000;
     memory16set(ds, 0x17a0, r16[ax]);
     memory16set(ds, 0x17a4, 0x00dd);

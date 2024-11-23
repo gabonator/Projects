@@ -404,9 +404,10 @@ template <typename DST, typename DIR> void repne_stosw()
 {
     assert(0);
 }
-
-
 #else
 extern cicocontext_t* ctx;
 #endif
 }
+uint16_t memoryPsp16(int seg, int ofs);
+uint8_t memoryPsp(int seg, int ofs);
+

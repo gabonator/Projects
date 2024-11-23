@@ -1165,10 +1165,10 @@ void sub_3e0e();
      }
  }
  printf("%02x %02x %02x %02x  %02x %02x %02x %02x\n",
-        memoryAGet(ds, 1994), memoryAGet(ds, 1994+1),
-        memoryAGet(ds, 1994+2), memoryAGet(ds, 1994+3),
-        memoryAGet(ds, 1994+4), memoryAGet(ds, 1994+5),
-        memoryAGet(ds, 1994+6), memoryAGet(ds, 1994+7));
+        memory8(ds, 1994), memory8(ds, 1994+1),
+        memory8(ds, 1994+2), memory8(ds, 1994+3),
+        memory8(ds, 1994+4), memory8(ds, 1994+5),
+        memory8(ds, 1994+6), memory8(ds, 1994+7));
 
  */
 
