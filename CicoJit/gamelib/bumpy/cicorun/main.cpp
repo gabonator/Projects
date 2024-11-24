@@ -161,8 +161,8 @@ uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
 }
 uint8_t cicocontext_t::memoryBiosGet8(int seg, int ofs)
 {
-    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
-        return ::memoryPsp(seg, ofs);
+//    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
+//        return ::memoryPsp(seg, ofs);
     return ::memoryBiosGet8(seg, ofs);
 }
 void cicocontext_t::memoryBiosSet8(int seg, int ofs, uint8_t val)
@@ -171,10 +171,19 @@ void cicocontext_t::memoryBiosSet8(int seg, int ofs, uint8_t val)
 }
 uint16_t cicocontext_t::memoryBiosGet16(int seg, int ofs)
 {
-    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
-        return ::memoryPsp16(seg, ofs);
+//    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
+//        return ::memoryPsp16(seg, ofs);
     return ::memoryBiosGet16(seg, ofs);
 }
+uint8_t cicocontext_t::memoryPspGet8(int seg, int ofs)
+{
+    return ::memoryPsp(seg, ofs);
+}
+uint16_t cicocontext_t::memoryPspGet16(int seg, int ofs)
+{
+    return ::memoryPsp16(seg, ofs);
+}
+
 void cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t val)
 {
     if ((seg == 0x01dd || seg == 0x01ed) && ofs < 256)

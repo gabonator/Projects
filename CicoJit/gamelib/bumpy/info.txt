@@ -2,3 +2,5 @@ bumpy
 ega
 borland c++
 loriciel 1992
+
+notes: js not implemented memoryAAnd16 or xor...

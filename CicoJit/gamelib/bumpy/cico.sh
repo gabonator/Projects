@@ -1,6 +1,6 @@
 arch -arm64 g++ -std=c++17 ../../cicodis/cicodis/main.cpp -I/opt/homebrew/Cellar/capstone/5.0.1/include/ -L/opt/homebrew/Cellar/capstone/5.0.1/lib -lcapstone.5 -o cicodis
 
-./cicodis $PWD/dos/B.EXE -load 01ed -ctx -reloc -recursive \
+./cicodis $PWD/dos/B.EXE -load 01ed -ctx -reloc -recursive -negative 65500 \
   -jumptable 01ed:46dc 01ed:4725 4 jumpwords bx \
   -jumptable 01ed:37db 01ed:384a 4 jumpwords bx \
   -jumptable 01ed:6e7e 01ed:70e7 20 jumpwords bx \
@@ -38,11 +38,14 @@ cp bumpy.clean bumpy.cpp
 patch bumpy.cpp bumpy.patch
 
 #patch bumpy.cpp bumpy.patch
-#cp bumpy.cpp bumpyopt.cpp
-#patch bumpyopt.cpp bumpyopt.patch
-#sed -i -e 's/MemAuto/MemData/g' ./bumpyopt.cpp 
-#sed -i -e 's/DirAuto/DirForward/g' ./bumpyopt.cpp 
-#sed -i -e 's/memoryA/memory/g' ./bumpyopt.cpp 
-#rm bumpyopt.cpp-e 
-#rm bumpyopt.cpp.orig
+sed -E \
+    -e 's/memoryASet16\(([^,]+), ([^,]+), (.+)\);/memory16(\1, \2) = \3;/' \
+    -e 's/memoryAGet16\(([^,]+), ([^,]+)\)/memory16(\1, \2)/g' \
+    -e 's/memoryASet\(([^,]+), ([^,]+), (.+)\);/memory(\1, \2) = \3;/' \
+    -e 's/memoryAGet\(([^,]+), ([^,]+)\)/memory(\1, \2)/g' \
+    -e 's/MemAuto/MemData/g' \
+    -e 's/DirAuto/DirForward/g' \
+  bumpy.cpp > bumpyopt.cpp
+
+patch bumpyopt.cpp bumpyopt.patch
 rm cicodis
