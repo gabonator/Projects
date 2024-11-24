@@ -1,7 +1,6 @@
 var EGA = {
-  palette :
-    [0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
-	   0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff],
+  palette : [0x000000, 0x0000b4, 0x00a800, 0x00a8a8, 0xb80000, 0xb800b8, 0xc07830, 0x989898, 
+             0xb85804, 0x2c2cfc, 0x00fc00, 0x28f0f0, 0xfc3408, 0x646464, 0xf0e81c, 0xfcfcfc],
   memory : null,
   access : false,
   interrupt : (h, l) => {
@@ -48,6 +47,8 @@ var EGA = {
       r8[bh] = 0x00;
       return true;
     }
+    if (h == 0x10 && l == 0x10)
+      return true;
     console.log("ah = "+h.toString(16) + ", al="+l.toString(16))
   },
   getPixel : function(x, y)

@@ -28,6 +28,7 @@ bool _trace = false;
 bool _simpleStack = false;
 bool _stackGuard = false;
 bool _dumpReloc = false;
+bool _dumpTree = false;
 bool _coverage = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 bool gNeedToRerun = false;
@@ -390,6 +391,7 @@ enum class inject_t {
     clearCarryFlag = 0x80,
     dynamic = 0x40000,
     tempPost = 0x80000,
+    callsSync = 0x100000
 };
 
 address_t operator +(const address_t a, int b)
@@ -643,7 +645,26 @@ public:
     {
         return IsInstruction() && mId == X86_INS_JMP && (mDetail.operands[0].type == X86_OP_MEM || mDetail.operands[0].type == X86_OP_REG);
     }
-    
+    bool IsIndirectCall()
+    {
+        if (!IsInstruction())
+            return false;
+        
+        if (mId == X86_INS_CALL)
+        {
+            assert(mDetail.op_count == 1);
+            if (mDetail.operands[0].type != X86_OP_IMM)
+                return true;
+        }
+        if (mId == X86_INS_LCALL)
+        {
+            if (mDetail.op_count == 1)
+                return true;
+//            assert(mDetail.op_count == 2);
+            return mDetail.operands[0].type != X86_OP_IMM || mDetail.operands[1].type == X86_OP_IMM;
+        }
+        return false;
+    }
     address_t Next()
     {
         return mNextInstr;
@@ -1828,64 +1849,60 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
     }
 }
 
-void FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<address_t>& toProcess)
+bool FindCalls(const std::vector<std::shared_ptr<CapInstr>>& code, std::list<address_t>& toProcess, std::vector<switch_t>& indirectJumps)
 {
+    bool callsUncoveredIndirect = false;
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
+        if (instr->IsIndirectCall())
+        {
+            bool identified = false;
+            if (IsIndirectJump(indirectJumps, instr))
+            {
+                for (int i=0; i<indirectJumps.size(); i++)
+                {
+                    switch_t& sw = indirectJumps[i];
+                    if (sw.origin == instr->mAddress)
+                    {
+                        identified = true;
+                        for (int j : sw.elements)
+                        {
+                            address_t newAddr = sw.GetTarget(j);
+                            if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
+                                toProcess.push_back(newAddr);
+                        }
+                    }
+                }
+            }
+            // TODO: what if this indirect is not covered by jump tables?
+            callsUncoveredIndirect |= identified;
+        }
+
         if (instr->mId == X86_INS_CALL)
         {
             const cs_x86& x86 = instr->mDetail;
 
             if (x86.op_count == 1 && x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2)
             {
-                //int newOfs = x86.operands[0].imm - instr->mAddress.segment*16 + 0x10000;
                 address_t newAddr = fromRelative(instr, x86.operands[0].imm);
                 if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
                     toProcess.push_back(newAddr);
-                
-                //toProcess.push_back(address_t{/*instr->mAddress.segment*/ 0x1000, (int)x86.operands[0].imm});
-                //toProcess.push_back(address_t{instr->mAddress.segment, (int)x86.operands[0].imm});
-            } else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_MEM && x86.operands[0].size == 2)
-            {
-                if (x86.operands[0].mem.segment == X86_REG_INVALID &&
-                    x86.operands[0].mem.base == X86_REG_INVALID &&
-                    x86.operands[0].mem.index == X86_REG_INVALID)
-                {
-                    // ds:imm?
-                    //int f=9;
-                    //toProcess.push_back(address_t{0x1040, (int)x86.operands[0].mem.disp});
-                }
-
-                // indirect
-            }/* else if (x86.op_count == 1 && x86.operands[0].type == X86_OP_REG)
-            {
-                
-            } else
-                assert(0);*/
+            }
         }
         if (instr->mId == X86_INS_LCALL)
         {
             const cs_x86& x86 = instr->mDetail;
-            if (x86.op_count == 1)
-            {
-                // indirect
-            }
-            else if (x86.op_count == 2 &&
+            if (x86.op_count == 2 &&
                 x86.operands[0].type == X86_OP_IMM && x86.operands[0].size == 2 &&
                 x86.operands[1].type == X86_OP_IMM && x86.operands[1].size >= 2)
             {
                 address_t newAddr = address_t{(int)x86.operands[0].imm, (int)x86.operands[1].imm};
                 if (std::find(toProcess.begin(), toProcess.end(), newAddr) == toProcess.end())
                     toProcess.push_back(newAddr);
-            } else {
-//                printf("X86_INS_LCALL: %s %s args %d type %d/%d size %d/%d imm %d/%d\n",
-//                       instr->mMnemonic, instr->mOperands,
-//                       x86.op_count, x86.operands[0].type, x86.operands[1].type, x86.operands[0].size, x86.operands[1].size, x86.operands[0].imm,x86.operands[1].imm );
-                assert(!"LCALL bad ops");
             }
         }
-
     }
+    return callsUncoveredIndirect;
 }
 
 bool checkDiscards(const cs_x86_op& prev, const cs_x86_op& next)
@@ -1940,6 +1957,21 @@ bool checkDiscards(std::shared_ptr<CapInstr> prev, std::shared_ptr<CapInstr> nex
         return checkDiscards(prev->mDetail.operands[0], next) || checkDiscards(prev->mDetail.operands[1], next);
     assert(0);
     return false;
+}
+
+std::string functionAnnotation(address_t m)
+{
+    auto injectptr = functionInjects.find(m);
+    inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
+    std::string strInject = "";
+    if ((int)inject & (int)inject_t::returnZero)
+        strInject += "+zero";
+    else if ((int)inject & (int)inject_t::returnCarry)
+        strInject += "+carry";
+    else if ((int)inject & (int)inject_t::callsSync)
+        strInject += "+sync";
+
+    return format("%04x:%04x%s", m.segment, m.offset, strInject.c_str());
 }
 
 std::vector<std::pair<address_t, address_t>> getRanges(const std::vector<std::shared_ptr<CapInstr>>& code)
@@ -2113,16 +2145,19 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
     bool modified = false;
     if (segofs_in_comment)
     {
-        auto injectptr = functionInjects.find(code[0]->mAddress);
-        inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
-        std::string strInject = "";
-        if ((int)inject & (int)inject_t::returnZero)
-            strInject += "+zero";
-        else if ((int)inject & (int)inject_t::returnCarry)
-            strInject += "+carry";
+//        auto injectptr = functionInjects.find(code[0]->mAddress);
+//        inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
+//        std::string strInject = "";
+//        if ((int)inject & (int)inject_t::returnZero)
+//            strInject += "+zero";
+//        else if ((int)inject & (int)inject_t::returnCarry)
+//            strInject += "+carry";
+//        else if ((int)inject & (int)inject_t::callsSync)
+//            strInject += "+sync";
 
-        text.push_back(format("void sub_%x() // %04x:%04x%s", code[0]->mAddress.linearOffset(),
-                              code[0]->mAddress.segment, code[0]->mAddress.offset, strInject.c_str()));
+//        text.push_back(format("void sub_%x() // %04x:%04x%s", code[0]->mAddress.linearOffset(),
+//                              code[0]->mAddress.segment, code[0]->mAddress.offset, strInject.c_str()));
+            text.push_back(format("void sub_%x() // %s", code[0]->mAddress.linearOffset(), functionAnnotation(code[0]->mAddress).c_str()));
     }
     else
         text.push_back(format("void sub_%x()", code[0]->mAddress.linearOffset()));
@@ -3675,6 +3710,11 @@ std::list<address_t> parseMethods(MZHeader* header, const char* methods)
             token = replaceStr(token, "+zero", "");
             inject = inject_t((int)inject | (int)inject_t::returnZero);
         }
+        if (token.find("+sync") != std::string::npos)
+        {
+            token = replaceStr(token, "+sync", "");
+            inject = inject_t((int)inject | (int)inject_t::callsSync);
+        }
 //            functionInjects.insert(std::pair<address_t, inject_t>(targetAddr, injectReturn));
         std::smatch matches;
         
@@ -3884,6 +3924,8 @@ int main(int argc, const char * argv[]) {
                 dynamics = argv[++i];
             else if (strcmp(arg, "-negative") == 0)
                 negativeoffset = atoi(argv[++i]);
+            else if (strcmp(arg, "-tree") == 0)
+                _dumpTree = true;
             else
                 assert(0);
         } else {
@@ -4166,6 +4208,10 @@ void start()
     toProcess.merge(std::list{toIndirects});
     std::vector<switch_t> switches;
     std::vector<switch_t> jumps;
+    
+    std::map<address_t, std::set<address_t>> callTreeChildren;
+    std::map<address_t, std::set<address_t>> callTreeParent;
+
     for (switch_t& s : jumpTables)
     {
         s.baseptr = cap.GetBufferAt(s.begin);
@@ -4215,7 +4261,30 @@ void start()
 
             if (recursive)
             {
-                FindCalls(code, toProcess);
+                assert(method == code[0]->mAddress);
+                std::list<address_t> foundCalls;
+                FindCalls(code, foundCalls, jumps);
+                for (const address_t& found : foundCalls)
+                    if (std::find(toProcess.begin(), toProcess.end(), found) == toProcess.end())
+                        toProcess.push_back(found);
+                //toProcess.insert(toProcess.end(), foundCalls.begin(), foundCalls.end());
+                
+                for (const address_t& child : foundCalls)
+                {
+                    // Children which are called by method
+                    auto pSet = callTreeChildren.find(method);
+                    if (pSet == callTreeChildren.end())
+                        callTreeChildren.insert({method, {child}});
+                    else
+                        pSet->second.insert(child);
+
+                    // Parents calling this method
+                    pSet = callTreeParent.find(child);
+                    if (pSet == callTreeParent.end())
+                        callTreeParent.insert({child, {method}});
+                    else
+                        pSet->second.insert(method);
+                }
             }
         }
     };
@@ -4343,6 +4412,22 @@ void start()
         }
     }
 
+    // propagate sync flag to parent
+    bool retry = true;
+    while (retry)
+    {
+        retry = false;
+        for (const auto& tree : callTreeParent)
+        {
+            auto injectptr = functionInjects.find(tree.first);
+            inject_t inject = injectptr != functionInjects.end() ? injectptr->second : inject_t::none;
+            if ((int)inject & (int)inject_t::callsSync)
+            {
+                for (const auto& child : tree.second)
+                    retry |= CTracer::functionInjectsAdd(child, inject_t::callsSync);
+            }
+        }
+    }
 
     // dump
     for (const auto& decl : processed)
@@ -4366,7 +4451,7 @@ void start()
         {
             std::vector<switch_t> localswitches;
             std::list<address_t> imports;
-            FindCalls(code, imports);
+            FindCalls(code, imports, jumps);
 
             for (const switch_t& lsw : localswitches)
             {
@@ -4408,10 +4493,25 @@ void start()
         PrintFormatted(fout, text);
         finishWriting();
     }
-
+    
+    if (_dumpTree)
+    {
+        for (const auto& tree : callTreeChildren)
+        {
+            fprintf(fout, "// tree: children of sub_%x %s: ", tree.first.linearOffset(), functionAnnotation(tree.first).c_str());
+            for (const auto& child : tree.second)
+                fprintf(fout, "sub_%x %s, ", child.linearOffset(), functionAnnotation(child).c_str());
+            fprintf(fout, "\n");
+        }
+        for (const auto& tree : callTreeParent)
+        {
+            fprintf(fout, "// tree: parents of sub_%x %s: ", tree.first.linearOffset(),  functionAnnotation(tree.first).c_str());
+            for (const auto& child : tree.second)
+                fprintf(fout, "sub_%x %s, ", child.linearOffset(), functionAnnotation(child).c_str());
+            fprintf(fout, "\n");
+        }
+    }
     fclose(fout);
-//    for (const auto& decl : notices)
-//        printf("// Notice: sub_%x(): %s\n", decl.first.segment*0x10+decl.first.offset, decl.second.c_str());
 
     return 0;
 }

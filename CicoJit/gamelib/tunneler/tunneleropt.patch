@@ -1,7 +1,7 @@
-diff --git a/./tunneleropt.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tunneler/cicorun/./tunneler.cpp
-index 258bd67..697439c 100644
+diff --git a/./tunneleropt.clean b/./tunneleropt.cpp
+index 193e840..1a62a7a 100644
 --- a/./tunneleropt.clean
-+++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tunneler/cicorun/./tunneler.cpp
++++ b/./tunneleropt.cpp
 @@ -403,7 +403,7 @@ loc_2282: // 01ed:03b2
      dx = cx;
      cx = bx;
@@ -20,7 +20,7 @@ index 258bd67..697439c 100644
      sp = bp;
      bp = pop();
      assert(pop() == 0x7777);
-@@ -504,13 +504,13 @@ loc_2324: // 01ed:0454
+@@ -504,13 +504,14 @@ loc_2324: // 01ed:0454
      di = memory16(ds, 0x0440);
      push(ds);
      cx = memory16(ds, 0x0442);
@@ -32,11 +32,12 @@ index 258bd67..697439c 100644
      cx = 0x0026;
  loc_2343: // 01ed:0473
 -    movsb<MemData, MemData, DirForward>();
++    si &= 0xffff;
 +    movsb<MemVideo, MemData, DirForward>();
      di++;
      if (--cx)
          goto loc_2343;
-@@ -4988,7 +4988,7 @@ loc_48f6: // 01ed:2a26
+@@ -4988,7 +4989,7 @@ loc_48f6: // 01ed:2a26
      ax += 0x0547;
      di = ax;
      es = pop();
@@ -45,7 +46,7 @@ index 258bd67..697439c 100644
      if (memory16(ss, bp - 2) != 0x0006)
          goto loc_48f3;
      ax = 0x0028;
-@@ -6022,12 +6022,12 @@ loc_52ef: // 01ed:341f
+@@ -6022,12 +6023,12 @@ loc_52ef: // 01ed:341f
      sync();
      si = 0x0040;
      es = si;
@@ -60,7 +61,7 @@ index 258bd67..697439c 100644
      memory16(ss, bp - 10466) = ax;
      if (memory(ds, 0x14f3) == 0x00)
          goto loc_5322;
-@@ -6218,14 +6218,14 @@ loc_54bc: // 01ed:35ec
+@@ -6218,14 +6219,14 @@ loc_54bc: // 01ed:35ec
      push(ax);
      di = 0x0017;
      es = pop();
@@ -77,7 +78,7 @@ index 258bd67..697439c 100644
      push(bp);
      sub_4936(); // 01ed:2a66
      sp = bp;
-@@ -9939,7 +9939,7 @@ void sub_79ed() // 01ed:5b1d
+@@ -9939,7 +9940,7 @@ void sub_79ed() // 01ed:5b1d+sync
      push(ax);
      di = 0x0017;
      es = pop();
@@ -86,7 +87,7 @@ index 258bd67..697439c 100644
      al &= 0x0c;
      if (al == 0x0c)
          goto loc_7a50;
-@@ -10621,7 +10621,7 @@ loc_7e8b: // 07d7:011b
+@@ -10621,7 +10622,7 @@ loc_7e8b: // 07d7:011b
      push(ax);
      di = memory16(ss, bp - 2);
      es = pop();
@@ -95,7 +96,7 @@ index 258bd67..697439c 100644
      al &= 0x0f;
      al |= memory(ss, bp + 6);
      dl = al;
-@@ -10629,14 +10629,14 @@ loc_7e8b: // 07d7:011b
+@@ -10629,14 +10630,14 @@ loc_7e8b: // 07d7:011b
      push(ax);
      di = memory16(ss, bp - 2);
      es = pop();
@@ -112,7 +113,7 @@ index 258bd67..697439c 100644
      al &= 0xf0;
      al |= memory(ss, bp + 6);
      dl = al;
-@@ -10644,7 +10644,7 @@ loc_7ec0: // 07d7:0150
+@@ -10644,7 +10645,7 @@ loc_7ec0: // 07d7:0150
      push(ax);
      di = memory16(ss, bp - 2);
      es = pop();
@@ -121,7 +122,7 @@ index 258bd67..697439c 100644
  loc_7edd: // 07d7:016d
      sp = bp;
      bp = pop();
-@@ -11990,12 +11990,12 @@ loc_8e51: // 08e1:0041
+@@ -11990,12 +11991,12 @@ loc_8e51: // 08e1:0041
      ax = 0x0040;
      es = ax;
      di = 0x006c;
@@ -137,7 +138,7 @@ index 258bd67..697439c 100644
      cx = 0xffff;
      sub_9119(); // 08e1:0309
      ax = 0x0037;
-@@ -12028,7 +12028,7 @@ void sub_8ec9() // 08e1:00b9
+@@ -12028,7 +12029,7 @@ void sub_8ec9() // 08e1:00b9
  {
      dx = 0x0040;
      es = dx;
@@ -146,7 +147,7 @@ index 258bd67..697439c 100644
      if (al == 0x07)
          goto loc_8ede;
      if (al < 0x04)
-@@ -12272,7 +12272,7 @@ void sub_90f9() // 08e1:02e9
+@@ -12272,7 +12273,7 @@ void sub_90f9() // 08e1:02e9
          goto loc_9116;
      di = 0;
      es = di;
@@ -155,7 +156,7 @@ index 258bd67..697439c 100644
      bx = memory16(ds, 0x158d);
  loc_910e: // 08e1:02fe
      cx = bx;
-@@ -12287,8 +12287,9 @@ loc_9116: // 08e1:0306
+@@ -12287,8 +12288,9 @@ loc_9116: // 08e1:0306
  }
  void sub_9119() // 08e1:0309
  {
@@ -166,7 +167,7 @@ index 258bd67..697439c 100644
          return;
      if (--cx)
          goto loc_9119;
-@@ -12597,7 +12598,7 @@ void sub_935e() // 08e1:054e
+@@ -12597,7 +12599,7 @@ void sub_935e() // 08e1:054e
      push(ds);
      ax = 0x0040;
      ds = ax;
@@ -175,7 +176,7 @@ index 258bd67..697439c 100644
      ds = pop();
      bx = dx;
      si = di;
-@@ -12653,13 +12654,13 @@ loc_93c5: // 08e1:05b5
+@@ -12653,13 +12655,13 @@ loc_93c5: // 08e1:05b5
      push(ds);
      ax = 0x0040;
      ds = ax;
@@ -192,7 +193,7 @@ index 258bd67..697439c 100644
      al = 0x0e;
      out(dx, al);
      al = ch;
-@@ -12689,16 +12690,16 @@ void sub_93fb() // 08e1:05eb
+@@ -12689,16 +12691,16 @@ void sub_93fb() // 08e1:05eb
      ax = 0x0040;
      ds = ax;
      al = bh;
@@ -212,7 +213,7 @@ index 258bd67..697439c 100644
          goto loc_9438;
      ah = 0xb0;
  loc_9438: // 08e1:0628
-@@ -12730,7 +12731,7 @@ loc_9457: // 08e1:0647
+@@ -12730,7 +12732,7 @@ loc_9457: // 08e1:0647
      ah = bh;
  loc_9459: // 08e1:0649
      lodsb<MemData, DirForward>();
@@ -221,7 +222,7 @@ index 258bd67..697439c 100644
      if (--cx)
          goto loc_9459;
  loc_945d: // 08e1:064d
-@@ -12766,7 +12767,7 @@ void sub_9470() // 0947:0000
+@@ -12766,7 +12768,7 @@ void sub_9470() // 0947:0000
      ax += dx;
      memory16(ds, 0x1798) = ax;
      memory16(ds, 0x179c) = ax;
@@ -230,7 +231,7 @@ index 258bd67..697439c 100644
      ax -= 0x1000;
      memory16(ds, 0x17a0) = ax;
      memory16(ds, 0x17a4) = 0x00dd;
-@@ -15166,7 +15167,10 @@ void sub_ac0f() // 0947:179f
+@@ -15166,7 +15168,10 @@ void sub_ac0f() // 0947:179f
      cx = memory16(ss, bx + 6);
      al = memory(ss, bx + 4);
      flags.direction = false;

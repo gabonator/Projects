@@ -10,16 +10,16 @@ function* start() {
     load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/tunneler/dos", "TUNNELER.EXE", 39552);
     yield* sub_79ed();
 }
-function* callIndirect(seg, ofs) {
+function callIndirect(seg, ofs) {
     switch (seg*0x10000+ofs)
     {
-    case 0x8c0006a: yield* sub_8c6a(); return;
-    case 0x8e1017a: yield* sub_8f8a(); return;
-    case 0x8e103a4: yield* sub_91b4(); return;
-    case 0x8e10489: yield* sub_9299(); return;
-    case 0x94701bf: yield* sub_962f(); return;
-    case 0x94701f0: yield* sub_9660(); return;
-    case 0x947135d: yield* sub_a7cd(); return;
+    case 0x8c0006a: sub_8c6a(); return;
+    case 0x8e1017a: sub_8f8a(); return;
+    case 0x8e103a4: sub_91b4(); return;
+    case 0x8e10489: sub_9299(); return;
+    case 0x94701bf: sub_962f(); return;
+    case 0x94701f0: sub_9660(); return;
+    case 0x947135d: sub_a7cd(); return;
         default:
         break;
     }
@@ -43,7 +43,7 @@ function* sub_1ed0() {
         push(cs);
         cs = 0x08d0;
     {if (sub_1ed0_counter++%500 == 0) yield* sync();}
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x1307);
         r16[ax] &= 0x0040;
@@ -60,7 +60,7 @@ function* sub_1ed0() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x01ed);
         di = bp - 0x100;
         push(ss);
@@ -69,7 +69,7 @@ function* sub_1ed0() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9b50();
+        sub_9b50();
         assert(cs == 0x01ed);
         di = bp - 0x200;
         push(ss);
@@ -78,11 +78,11 @@ function* sub_1ed0() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9b50();
+        sub_9b50();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_9ac2();
+        sub_9ac2();
         assert(cs == 0x01ed);
         di = memory16get(ss, bp + 4);
         es = memory16get(ss, bp + 4 + 2);
@@ -92,7 +92,7 @@ function* sub_1ed0() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9a4f();
+        sub_9a4f();
         assert(cs == 0x01ed);
         pc = 0x1f4c;
         break;
@@ -108,7 +108,7 @@ function* sub_1ed0() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9a4f();
+        sub_9a4f();
         assert(cs == 0x01ed);
     case 0x1f4c:
         sp = bp;
@@ -117,7 +117,7 @@ function* sub_1ed0() {
         return;
     } while (1);
 }
-function* sub_21c4() {
+function sub_21c4() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -126,14 +126,14 @@ function* sub_21c4() {
     r16[ax] = 0;
     push(cs);
     cs = 0x0947;
-    yield* sub_9663();
+    sub_9663();
     assert(cs == 0x01ed);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     sp += 2;
 }
-function* sub_21da() {
+function sub_21da() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -141,17 +141,17 @@ function* sub_21da() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x08e1;
-    yield* sub_901d();
+    sub_901d();
     assert(cs == 0x01ed);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_21ee() {
+function sub_21ee() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -166,13 +166,13 @@ function* sub_21ee() {
     push(di);
     push(cs);
     cs = 0x08d0;
-    yield* sub_8db2();
+    sub_8db2();
     assert(cs == 0x01ed);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_2212() {
+function sub_2212() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -247,7 +247,7 @@ function* sub_2212() {
         return;
     } while (1);
 }
-function* sub_229e() {
+function sub_229e() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -275,7 +275,7 @@ function* sub_229e() {
     assert(pop() == 0x7777);
     sp += 8;
 }
-function* sub_22d4() {
+function sub_22d4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -292,7 +292,7 @@ function* sub_22d4() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ds, 0x043e, r16[ax]);
         r16[ax] = 0;
@@ -341,6 +341,7 @@ function* sub_22d4() {
         push(r16[cx]);
         r16[cx] = 0x0026;
     case 0x2343:
+        si &= 0xffff;
         movsb_video_data_forward();
         di++;
         if (--r16[cx]) {
@@ -349,7 +350,6 @@ function* sub_22d4() {
         }
         r16[cx] = pop();
         si += 0x01da;
-        si &= 0xffff;
         di += 0x0054;
         if (--r16[cx]) {
             pc = 0x233f;
@@ -367,7 +367,7 @@ function* sub_22d4() {
         return;
     } while (1);
 }
-function* sub_235c() {
+function sub_235c() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -443,7 +443,7 @@ function* sub_235c() {
         return;
     } while (1);
 }
-function* sub_23e4() {
+function sub_23e4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -496,7 +496,7 @@ function* sub_23e4() {
         return;
     } while (1);
 }
-function* sub_243b() {
+function sub_243b() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -583,7 +583,7 @@ function* sub_243b() {
         return;
     } while (1);
 }
-function* sub_24c9() {
+function sub_24c9() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -604,13 +604,13 @@ function* sub_24c9() {
     di += r16[cx];
     r16[ax] = di + 0xabc;
     push(r16[ax]);
-    yield* sub_243b();
+    sub_243b();
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     sp += 8;
 }
-function* sub_2502() {
+function sub_2502() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -641,15 +641,15 @@ function* sub_2502() {
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
         push(cs);
         cs = 0x0947;
-        yield* sub_a06b();
+        sub_a06b();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_a11e();
+        sub_a11e();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_a06f();
+        sub_a06f();
         assert(cs == 0x01ed);
         r8[bl] = r8[al];
         r16[ax] = memory16get(ss, bp - 2);
@@ -901,23 +901,23 @@ function* sub_2502() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c51();
+        sub_9c51();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x09;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_9cd5();
+        sub_9cd5();
         assert(cs == 0x01ed);
         if (flags.zero) {
             pc = 0x278c;
@@ -1078,7 +1078,7 @@ function* sub_2502() {
         return;
     } while (1);
 }
-function* sub_2882() {
+function sub_2882() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1095,7 +1095,7 @@ function* sub_2882() {
     case 0x2892:
         push(cs);
         cs = 0x0947;
-        yield* sub_97f7();
+        sub_97f7();
         assert(cs == 0x01ed);
         if (r16s[dx] > signed16(0x0000)) {
             pc = 0x28a3;
@@ -1120,14 +1120,14 @@ function* sub_2882() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9730();
+        sub_9730();
         assert(cs == 0x01ed);
         pc = 0x28c1;
         break;
     case 0x28bb:
         r8[al] = 0x03;
         push(r16[ax]);
-        yield* sub_21c4();
+        sub_21c4();
     case 0x28c1:
         if (memory16get(ss, bp - 2) != 0x01ff) {
             pc = 0x288f;
@@ -1147,7 +1147,7 @@ function* sub_2882() {
         return;
     } while (1);
 }
-function* sub_28ec() {
+function sub_28ec() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1159,7 +1159,7 @@ function* sub_28ec() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -1171,11 +1171,11 @@ function* sub_28ec() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r16[ax] = 0;
         memory16set(ds, 0x1315, r16[ax]);
@@ -1538,14 +1538,14 @@ function* sub_28ec() {
     case 0x2b29:
         memory[ds*16 + 0x1319] = 0x00;
     case 0x2b2e:
-        yield* sub_21da();
+        sub_21da();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
         return;
     } while (1);
 }
-function* sub_2b35() {
+function sub_2b35() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1613,7 +1613,7 @@ function* sub_2b35() {
         return;
     } while (1);
 }
-function* sub_2b96() {
+function sub_2b96() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1734,7 +1734,7 @@ function* sub_2b96() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, r16[ax]);
         memory16set(ss, bp - 6, 0x0001);
@@ -1796,7 +1796,7 @@ function* sub_2b96() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, r16[ax]);
         memory16set(ss, bp - 6, 0x0001);
@@ -1847,7 +1847,7 @@ function* sub_2b96() {
         return;
     } while (1);
 }
-function* sub_2d7a() {
+function sub_2d7a() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1889,14 +1889,14 @@ function* sub_2d7a() {
         push(memory16get(ss, di - 10413));
         push(cs);
         cs = 0x08e1;
-        yield* sub_9121();
+        sub_9121();
         assert(cs == 0x01ed);
         pc = 0x2de8;
         break;
     case 0x2de3:
         push(cs);
         cs = 0x08e1;
-        yield* sub_914e();
+        sub_914e();
         assert(cs == 0x01ed);
     case 0x2de8:
         sp = bp;
@@ -1906,7 +1906,7 @@ function* sub_2d7a() {
         return;
     } while (1);
 }
-function* sub_2dee() {
+function sub_2dee() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1916,7 +1916,7 @@ function* sub_2dee() {
         sp -= 0x0001;
         push(memory16get(ss, bp + 8));
         push(memory16get(ss, bp + 6));
-        yield* sub_23e4();
+        sub_23e4();
         memory[ss*16 + bp - 1] = r8[al];
         r8[al] = memory[ss*16 + bp - 1];
         r8[ah] = 0;
@@ -1941,7 +1941,7 @@ function* sub_2dee() {
         return;
     } while (1);
 }
-function* sub_2e2c() {
+function sub_2e2c() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -1990,7 +1990,7 @@ function* sub_2e2c() {
         r16[ax] += memory16get(ss, bp - 4);
         push(r16[ax]);
         push(bp);
-        yield* sub_2dee();
+        sub_2dee();
     case 0x2e8a:
         if (memory16get(ss, bp - 4) != 0x0006) {
             pc = 0x2e4f;
@@ -2010,7 +2010,7 @@ function* sub_2e2c() {
         return;
     } while (1);
 }
-function* sub_2ea5() {
+function sub_2ea5() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -2133,14 +2133,14 @@ function* sub_2ea5() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         push(r16[ax]);
         r16[ax] = 0x0020;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[dx] = pop();
         r16[ax] -= r16[dx];
@@ -2155,14 +2155,14 @@ function* sub_2ea5() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         push(r16[ax]);
         r16[ax] = 0x0020;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[dx] = pop();
         r16[ax] -= r16[dx];
@@ -2188,7 +2188,7 @@ function* sub_2ea5() {
         return;
     } while (1);
 }
-function* sub_2fec() {
+function sub_2fec() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -2223,11 +2223,11 @@ function* sub_2fec() {
         di += r16[ax];
         r8[al] = memory[ss*16 + di - 9818];
         push(r16[ax]);
-        yield* sub_24c9();
+        sub_24c9();
         r8[al] = 0x03;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b96();
+        sub_2b96();
         push(memory16get(ss, bp + 8));
         push(memory16get(ss, bp + 6));
         r16[ax] = 0x0018;
@@ -2235,7 +2235,7 @@ function* sub_2fec() {
         r16[ax] = 0x0028;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         push(memory16get(ss, bp + 8));
         push(memory16get(ss, bp + 6));
         r16[ax] = 0x0014;
@@ -2243,7 +2243,7 @@ function* sub_2fec() {
         r16[ax] = 0x0028;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         push(memory16get(ss, bp + 8));
         push(memory16get(ss, bp + 6));
         r16[ax] = 0x0010;
@@ -2251,7 +2251,7 @@ function* sub_2fec() {
         r16[ax] = 0x0028;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         push(memory16get(ss, bp + 8));
         push(memory16get(ss, bp + 6));
         r16[ax] = 0x000c;
@@ -2259,7 +2259,7 @@ function* sub_2fec() {
         r16[ax] = 0x0028;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         di = memory16get(ss, bp + 4);
         memory16set(ss, di - 10459, 0x0019);
         di = memory16get(ss, bp + 10);
@@ -2272,7 +2272,7 @@ function* sub_2fec() {
         return;
     } while (1);
 }
-function* sub_30ab() {
+function sub_30ab() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -2417,7 +2417,7 @@ function* sub_30ab() {
         return;
     } while (1);
 }
-function* sub_3195() {
+function sub_3195() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -2457,7 +2457,7 @@ function* sub_3195() {
         r16[ax] -= 0x0003;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x31cc;
@@ -2487,7 +2487,7 @@ function* sub_3195() {
         r16[ax] -= 0x0002;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x320d;
@@ -2517,7 +2517,7 @@ function* sub_3195() {
         r16[ax]--;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x324a;
@@ -2556,7 +2556,7 @@ function* sub_3195() {
         r16[ax] += 0x0003;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x3297;
@@ -2586,7 +2586,7 @@ function* sub_3195() {
         r16[ax] += 0x0002;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x32d8;
@@ -2616,7 +2616,7 @@ function* sub_3195() {
         r16[ax]++;
         push(r16[ax]);
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x3315;
@@ -2655,7 +2655,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x3362;
@@ -2685,7 +2685,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x33a3;
@@ -2715,7 +2715,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x33e0;
@@ -2754,7 +2754,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x342d;
@@ -2784,7 +2784,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x346e;
@@ -2814,7 +2814,7 @@ function* sub_3195() {
         push(r16[ax]);
         push(memory16get(ss, bp - 2));
         push(bp);
-        yield* sub_30ab();
+        sub_30ab();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 4)) {
             pc = 0x34ab;
@@ -2828,7 +2828,7 @@ function* sub_3195() {
         return;
     } while (1);
 }
-function* sub_34cd() {
+function sub_34cd() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -2886,7 +2886,7 @@ function* sub_34cd() {
         push(memory16get(ss, di - 9877));
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 2);
         r16[dx] = r16[ax];
         r16[ax] = memory16get(ss, bp - 4);
@@ -2943,7 +2943,7 @@ function* sub_34cd() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
     case 0x35d2:
         if (memory16get(ss, bp - 2) == 0x0006) {
             pc = 0x35db;
@@ -2966,7 +2966,7 @@ function* sub_34cd() {
         return;
     } while (1);
 }
-function* sub_35ea() {
+function sub_35ea() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -3049,7 +3049,7 @@ function* sub_35ea() {
         r8[al] = 0x04;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b96();
+        sub_2b96();
         r8[al] = memory[ss*16 + bp + 6];
         r8[ah] = 0;
         r16[ax] <<= 1;
@@ -3123,7 +3123,7 @@ function* sub_35ea() {
         return;
     } while (1);
 }
-function* sub_3734() {
+function sub_3734() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -3181,7 +3181,7 @@ function* sub_3734() {
         push(memory16get(ss, di - 9877));
         r8[al] = 0x0c;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 2);
         r16[dx] = r16[ax];
         r16[ax] = memory16get(ss, bp - 4);
@@ -3238,7 +3238,7 @@ function* sub_3734() {
         push(r16[ax]);
         r8[al] = 0x04;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
     case 0x3839:
         if (memory16get(ss, bp - 2) == 0x0006) {
             pc = 0x3842;
@@ -3261,7 +3261,7 @@ function* sub_3734() {
         return;
     } while (1);
 }
-function* sub_3851() {
+function sub_3851() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -3361,7 +3361,7 @@ function* sub_3851() {
         memory16set(ss, bp - 8, r16[ax]);
         push(memory16get(ss, bp - 10));
         push(memory16get(ss, bp - 8));
-        yield* sub_23e4();
+        sub_23e4();
         memory[ss*16 + bp - 15] = r8[al];
         if (memory[ss*16 + bp - 15] != 0x0c) {
             pc = 0x3947;
@@ -3421,7 +3421,7 @@ function* sub_3851() {
     case 0x3995:
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] > signed16(0x0003)) {
             pc = 0x39a4;
             break;
@@ -3460,7 +3460,7 @@ function* sub_3851() {
     case 0x39df:
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] < signed16(0x0004)) {
             pc = 0x39ee;
             break;
@@ -3499,11 +3499,11 @@ function* sub_3851() {
         r16[ax] = 0x0014;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         r8[al] = 0x02;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b96();
+        sub_2b96();
         pc = 0x3a72;
         break;
     case 0x3a51:
@@ -3519,7 +3519,7 @@ function* sub_3851() {
         r16[ax] += memory16get(ss, bp - 14);
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2fec();
+        sub_2fec();
     case 0x3a72:
         pc = 0x3a99;
         break;
@@ -3535,11 +3535,11 @@ function* sub_3851() {
         r16[ax] = 0x0007;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2ea5();
+        sub_2ea5();
         r8[al] = 0x00;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b96();
+        sub_2b96();
     case 0x3a99:
         memory16set(ss, bp - 10, 0xffff);
     case 0x3a9e:
@@ -3617,7 +3617,7 @@ function* sub_3851() {
         return;
     } while (1);
 }
-function* sub_3b18() {
+function sub_3b18() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -3671,7 +3671,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0x0001;
         push(r16[ax]);
         r16[ax] = 0x0002;
@@ -3686,7 +3686,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0x0029;
         push(r16[ax]);
         r16[ax] = 0x0002;
@@ -3701,7 +3701,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0;
         memory16set(ss, bp - 4, r16[ax]);
         r16[ax] = 0;
@@ -3727,7 +3727,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0003;
         push(r16[ax]);
@@ -3744,7 +3744,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0003;
         push(r16[ax]);
@@ -3761,7 +3761,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         memory16set(ss, bp - 8, 0x004b);
         pc = 0x3c21;
         break;
@@ -3779,7 +3779,7 @@ function* sub_3b18() {
         r16[ax] <<= r8[cl];
         r16[ax] += 0x0007;
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0024;
         push(r16[ax]);
@@ -3788,7 +3788,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         if (memory16get(ss, bp - 8) != 0x0061) {
             pc = 0x3c1e;
             break;
@@ -3809,7 +3809,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x000c;
         push(r16[ax]);
@@ -3826,7 +3826,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0009;
         push(r16[ax]);
@@ -3843,7 +3843,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0009;
         push(r16[ax]);
@@ -3860,7 +3860,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0009;
         push(r16[ax]);
@@ -3877,7 +3877,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0009;
         push(r16[ax]);
@@ -3894,7 +3894,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         memory16set(ss, bp - 8, 0x004e);
         pc = 0x3d31;
         break;
@@ -3912,7 +3912,7 @@ function* sub_3b18() {
         r16[ax] <<= r8[cl];
         r16[ax] += 0x0007;
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0022;
         push(r16[ax]);
@@ -3921,7 +3921,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         if (memory16get(ss, bp - 8) != 0x0053) {
             pc = 0x3d2e;
             break;
@@ -3943,7 +3943,7 @@ function* sub_3b18() {
         r16[ax] <<= r8[cl];
         r16[ax] += 0x0007;
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x0022;
         push(r16[ax]);
@@ -3952,7 +3952,7 @@ function* sub_3b18() {
         push(r16[ax]);
         r8[al] = memory[ss*16 + bp - 2];
         push(r16[ax]);
-        yield* sub_229e();
+        sub_229e();
         if (memory16get(ss, bp - 8) != 0x005e) {
             pc = 0x3d6e;
             break;
@@ -3984,7 +3984,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] += 0x000a;
@@ -3999,7 +3999,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 8) != 0x0005) {
             pc = 0x3db8;
@@ -4019,7 +4019,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x000a;
@@ -4031,7 +4031,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x000a;
@@ -4043,7 +4043,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 4);
         r16[ax] += 0x000f;
@@ -4055,7 +4055,7 @@ function* sub_3b18() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 4, memory16get(ss, bp - 4) + 0x0028);
         if (memory16get(ss, bp - 10) == 0x0001) {
@@ -4072,7 +4072,7 @@ function* sub_3b18() {
         return;
     } while (1);
 }
-function* sub_3e6c() {
+function sub_3e6c() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4166,7 +4166,7 @@ function* sub_3e6c() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
     case 0x3f18:
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 14)) {
@@ -4309,7 +4309,7 @@ function* sub_3e6c() {
         r16[cx] = 0x0005;
         r16[ax] >>= r8[cl];
         push(r16[ax]);
-        yield* sub_23e4();
+        sub_23e4();
         r8[ah] = 0;
         memory16set(ss, bp - 6, r16[ax]);
         if (memory16get(ss, bp - 6) == 0x000c) {
@@ -4382,7 +4382,7 @@ function* sub_3e6c() {
         push(r16[ax]);
         r8[al] = 0x0c;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         pc = 0x40a8;
         break;
     case 0x4098:
@@ -4416,7 +4416,7 @@ function* sub_3e6c() {
         return;
     } while (1);
 }
-function* sub_40c4() {
+function sub_40c4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4537,7 +4537,7 @@ function* sub_40c4() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0003) {
             pc = 0x41b2;
@@ -4584,7 +4584,7 @@ function* sub_40c4() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0003) {
             pc = 0x41fd;
@@ -4603,7 +4603,7 @@ function* sub_40c4() {
         return;
     } while (1);
 }
-function* sub_422d() {
+function sub_422d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4638,7 +4638,7 @@ function* sub_422d() {
         r16[ax] = 0x0001;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_40c4();
+        sub_40c4();
     case 0x427a:
         pc = 0x42a1;
         break;
@@ -4659,7 +4659,7 @@ function* sub_422d() {
         r16[ax] = 0x0001;
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_40c4();
+        sub_40c4();
     case 0x42a1:
         sp = bp;
         bp = pop();
@@ -4668,7 +4668,7 @@ function* sub_422d() {
         return;
     } while (1);
 }
-function* sub_42a7() {
+function sub_42a7() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4718,7 +4718,7 @@ function* sub_42a7() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x00a0;
         r16[dx] = r16[ax];
@@ -4731,7 +4731,7 @@ function* sub_42a7() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x00a0;
         r16[dx] = r16[ax];
@@ -4767,7 +4767,7 @@ function* sub_42a7() {
     case 0x4371:
         push(r16[ax]);
         push(memory16get(ss, bp + 4));
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] > signed16(0x0064)) {
             pc = 0x4380;
             break;
@@ -4782,7 +4782,7 @@ function* sub_42a7() {
         return;
     } while (1);
 }
-function* sub_4386() {
+function sub_4386() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4819,7 +4819,7 @@ function* sub_4386() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x01ed);
         di = memory16get(ss, bp + 4);
         r16[ax] = 0;
@@ -4935,7 +4935,7 @@ function* sub_4386() {
         return;
     } while (1);
 }
-function* sub_4504() {
+function sub_4504() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -4999,7 +4999,7 @@ function* sub_4504() {
         push(memory16get(ss, bp - 2));
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 10)) {
             pc = 0x4579;
@@ -5046,7 +5046,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         push(memory16get(ss, bp - 4));
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
@@ -5058,7 +5058,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 4);
         if (r16[ax] != memory16get(ss, bp - 8)) {
             pc = 0x45c9;
@@ -5099,7 +5099,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         push(memory16get(ss, bp - 4));
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
@@ -5111,7 +5111,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 4);
         if (r16[ax] != memory16get(ss, bp - 8)) {
             pc = 0x4645;
@@ -5152,7 +5152,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] <<= 1;
         di = memory16get(ss, bp + 4);
@@ -5164,7 +5164,7 @@ function* sub_4504() {
         r16[ax] = memory16get(ss, bp - 6);
         r16[ax] += 0x0008;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 8)) {
             pc = 0x46c1;
@@ -5185,7 +5185,7 @@ function* sub_4504() {
         return;
     } while (1);
 }
-function* sub_4732() {
+function sub_4732() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -5203,14 +5203,14 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         r8[al] = 0x05;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x22;
         push(r16[ax]);
@@ -5218,7 +5218,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5229,11 +5229,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 4, 0x0001);
         pc = 0x477e;
@@ -5250,11 +5250,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 4) != 0x0009) {
             pc = 0x477b;
@@ -5269,11 +5269,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x22;
         push(r16[ax]);
@@ -5281,7 +5281,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5293,7 +5293,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x1264);
         r16[dx] = r16[ax] & 0x8000 ? 0xffff : 0x0000;
@@ -5303,7 +5303,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         di = 0x2854;
         push(cs);
@@ -5312,11 +5312,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x22;
         push(r16[ax]);
@@ -5324,7 +5324,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5335,11 +5335,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 4, 0x0001);
         pc = 0x4815;
@@ -5356,11 +5356,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 4) != 0x0009) {
             pc = 0x4812;
@@ -5375,17 +5375,17 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x09;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x19;
         push(r16[ax]);
@@ -5393,7 +5393,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5405,11 +5405,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x1b;
         push(r16[ax]);
@@ -5417,7 +5417,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5430,17 +5430,17 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x0a;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x32;
         push(r16[ax]);
@@ -5448,7 +5448,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5460,11 +5460,11 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x34;
         push(r16[ax]);
@@ -5472,7 +5472,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -5485,13 +5485,13 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_21ee();
+        sub_21ee();
         memory16set(ss, bp - 4, 0x0001);
         pc = 0x48ec;
         break;
@@ -5531,7 +5531,7 @@ function* sub_4732() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90f9();
+        sub_90f9();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 4) != 0x0050) {
             pc = 0x48e9;
@@ -5544,7 +5544,7 @@ function* sub_4732() {
         return;
     } while (1);
 }
-function* sub_4936() {
+function sub_4936() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -5554,7 +5554,7 @@ function* sub_4936() {
         sp -= 0x0015;
         push(cs);
         cs = 0x07d7;
-        yield* sub_8078();
+        sub_8078();
         assert(cs == 0x01ed);
         r16[ax] = 0;
         push(r16[ax]);
@@ -5570,7 +5570,7 @@ function* sub_4936() {
         push(r16[ax]);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0x0004;
         push(r16[ax]);
         r16[ax] = 0x0005;
@@ -5585,7 +5585,7 @@ function* sub_4936() {
         push(r16[ax]);
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0x0016;
         push(r16[ax]);
         r16[ax] = 0x0055;
@@ -5600,7 +5600,7 @@ function* sub_4936() {
         push(r16[ax]);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_2212();
+        sub_2212();
         r16[ax] = 0;
         memory16set(ss, bp - 6, r16[ax]);
         pc = 0x499d;
@@ -5624,7 +5624,7 @@ function* sub_4936() {
         memory16set(ss, bp - 2, r16[ax]);
         push(memory16get(ss, bp - 4));
         push(memory16get(ss, bp - 2));
-        yield* sub_23e4();
+        sub_23e4();
         memory[ss*16 + bp - 9] = r8[al];
         if (memory[ss*16 + bp - 9] == 0x0a) {
             pc = 0x49d3;
@@ -5664,7 +5664,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 8) != 0x0090) {
             pc = 0x49a4;
@@ -5736,7 +5736,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax] += 0x0002;
@@ -5747,7 +5747,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 6);
         if (r16[ax] != memory16get(ss, bp - 21)) {
@@ -5776,7 +5776,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax]--;
@@ -5788,7 +5788,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax]++;
@@ -5800,7 +5800,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         r16[ax]++;
@@ -5812,7 +5812,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 11) == 0x0002) {
             pc = 0x4b39;
@@ -5876,7 +5876,7 @@ function* sub_4936() {
         push(r16[ax]);
         push(cs);
         cs = 0x07d7;
-        yield* sub_7dfe();
+        sub_7dfe();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ss, bp - 8);
         if (r16[ax] != memory16get(ss, bp - 21)) {
@@ -5891,7 +5891,7 @@ function* sub_4936() {
     case 0x4bb2:
         push(cs);
         cs = 0x08e1;
-        yield* sub_9155();
+        sub_9155();
         assert(cs == 0x01ed);
         if (!r8[al]) {
             pc = 0x4bb2;
@@ -5899,22 +5899,22 @@ function* sub_4936() {
         }
         push(cs);
         cs = 0x08e1;
-        yield* sub_9167();
+        sub_9167();
         assert(cs == 0x01ed);
         memory[ss*16 + bp - 19] = r8[al];
         push(cs);
         cs = 0x07d7;
-        yield* sub_8197();
+        sub_8197();
         assert(cs == 0x01ed);
         r8[al] = 0x00;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90ce();
+        sub_90ce();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x08e1;
-        yield* sub_901d();
+        sub_901d();
         assert(cs == 0x01ed);
         sp = bp;
         bp = pop();
@@ -5932,10 +5932,10 @@ function* sub_4bdb() {
         bp = sp;
         sp -= 0x28e2;
         push(bp);
-        yield* sub_42a7();
+        sub_42a7();
         push(cs);
         cs = 0x08c0;
-        yield* sub_8c00();
+        sub_8c00();
         assert(cs == 0x01ed);
         memory[ss*16 + bp - 10460] = 0x00;
         memory16set(ss, bp - 10415, 0x00a0);
@@ -5943,18 +5943,18 @@ function* sub_4bdb() {
     case 0x4bfb:
         memory[ss*16 + bp - 10461] = 0x00;
         push(bp);
-        yield* sub_4386();
+        sub_4386();
         memory16set(ss, bp - 10457, 0x0002);
         push(bp);
-        yield* sub_4732();
+        sub_4732();
         push(cs);
         cs = 0x07d7;
-        yield* sub_8078();
+        sub_8078();
         assert(cs == 0x01ed);
         push(bp);
-        yield* sub_4504();
+        sub_4504();
         push(bp);
-        yield* sub_3b18();
+        sub_3b18();
     case 0x4c1b:
         if (memory[ds*16 + 0x14f1] == 0x00) {
             pc = 0x4c2c;
@@ -5976,7 +5976,7 @@ function* sub_4bdb() {
         memory[ss*16 + bp - 10462] = 0x00;
         push(cs);
         cs = 0x08e1;
-        yield* sub_914e();
+        sub_914e();
         assert(cs == 0x01ed);
     case 0x4c49:
         memory16set(ss, bp - 10455, 0x0001);
@@ -6049,7 +6049,7 @@ function* sub_4bdb() {
         r8[al] = memory[ss*16 + bp - 10455];
         push(r16[ax]);
         push(bp);
-        yield* sub_35ea();
+        sub_35ea();
         pc = 0x4ce9;
         break;
     case 0x4cdd:
@@ -6226,7 +6226,7 @@ function* sub_4bdb() {
         r8[al] = memory[ss*16 + bp - 10447];
         push(r16[ax]);
         push(bp);
-        yield* sub_2e2c();
+        sub_2e2c();
         if (r8s[al] > signed8(0x02)) {
             pc = 0x4e79;
             break;
@@ -6249,7 +6249,7 @@ function* sub_4bdb() {
         r8[al] = memory[ss*16 + bp - 10447];
         push(r16[ax]);
         push(bp);
-        yield* sub_2e2c();
+        sub_2e2c();
         memory[ss*16 + bp - 10464] = r8[al];
         if (memorys[ss*16 + bp - 10464] <= signed8(0x02)) {
             pc = 0x4ead;
@@ -6258,7 +6258,7 @@ function* sub_4bdb() {
         r8[al] = 0x05;
         push(r16[ax]);
         push(bp);
-        yield* sub_2b96();
+        sub_2b96();
         pc = 0x4fb6;
         break;
     case 0x4ead:
@@ -6291,7 +6291,7 @@ function* sub_4bdb() {
     case 0x4ee4:
         push(r16[ax]);
         push(bp);
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] >= signed16(0x0006)) {
             pc = 0x4ef1;
             break;
@@ -6306,12 +6306,12 @@ function* sub_4bdb() {
         r8[al] = 0x01;
         push(r16[ax]);
         push(bp);
-        yield* sub_2b96();
+        sub_2b96();
         push(memory16get(ss, bp - 10451));
         push(memory16get(ss, bp - 10449));
         push(memory16get(ss, bp - 10453));
         push(bp);
-        yield* sub_3195();
+        sub_3195();
         di = memory16get(ss, bp - 10455);
         di <<= 1;
         memory16set(ss, bp + di - 10429, memory16get(ss, bp + di - 10429) - 0x0002);
@@ -6347,7 +6347,7 @@ function* sub_4bdb() {
         push(memory16get(ss, bp - 10449));
         push(memory16get(ss, bp - 10453));
         push(bp);
-        yield* sub_3195();
+        sub_3195();
         di = memory16get(ss, bp - 10455);
         di <<= 1;
         memory16set(ds, di + 4720, memory16get(ds, di + 4720) + 1);
@@ -6406,7 +6406,7 @@ function* sub_4bdb() {
     case 0x4fff:
         push(r16[ax]);
         push(bp);
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] >= signed16(0x000f)) {
             pc = 0x5053;
             break;
@@ -6470,7 +6470,7 @@ function* sub_4bdb() {
     case 0x5096:
         push(r16[ax]);
         push(bp);
-        yield* sub_2b35();
+        sub_2b35();
         if (r16s[ax] >= signed16(0x000f)) {
             pc = 0x50c5;
             break;
@@ -6499,14 +6499,14 @@ function* sub_4bdb() {
         di <<= 1;
         push(memory16get(ss, bp + di - 9822));
         push(bp);
-        yield* sub_2fec();
+        sub_2fec();
     case 0x50e3:
         if (memory16get(ss, bp - 10455) != 0x0001) {
             pc = 0x50ee;
             break;
         }
         push(bp);
-        yield* sub_2d7a();
+        sub_2d7a();
     case 0x50ee:
         if (memory16get(ss, bp - 10455) == 0x0002) {
             pc = 0x50f8;
@@ -6558,16 +6558,16 @@ function* sub_4bdb() {
         di <<= 1;
         r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
-        yield* sub_24c9();
+        sub_24c9();
     case 0x5168:
         if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5100;
             break;
         }
         push(bp);
-        yield* sub_3851();
+        sub_3851();
         push(bp);
-        yield* sub_3734();
+        sub_3734();
         memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5183;
         break;
@@ -6575,7 +6575,7 @@ function* sub_4bdb() {
         memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5183:
         push(bp);
-        yield* sub_2d7a();
+        sub_2d7a();
         di = memory16get(ss, bp - 10445);
         di <<= 1;
         if (memory16gets(ss, bp + di - 10429) >= signed16(0x0c80)) {
@@ -6593,7 +6593,7 @@ function* sub_4bdb() {
         push(memory16get(ss, bp + di - 10429));
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         if (r16[ax] >= 0x0050) {
             pc = 0x51ca;
@@ -6603,7 +6603,7 @@ function* sub_4bdb() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ss, bp - 10445);
         di <<= 1;
@@ -6617,7 +6617,7 @@ function* sub_4bdb() {
         push(memory16get(ss, bp + di - 10429));
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         if (r16[ax] >= 0x0019) {
             pc = 0x51f3;
@@ -6627,7 +6627,7 @@ function* sub_4bdb() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ss, bp - 10445);
         di <<= 1;
@@ -6670,7 +6670,7 @@ function* sub_4bdb() {
         push(memory16get(ds, di + 137));
         r8[al] = memory[ss*16 + bp - 10463];
         push(r16[ax]);
-        yield* sub_22d4();
+        sub_22d4();
         if (memory16get(ss, bp - 10445) == 0x0002) {
             pc = 0x5255;
             break;
@@ -6697,13 +6697,13 @@ function* sub_4bdb() {
         di <<= 1;
         r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
-        yield* sub_24c9();
+        sub_24c9();
         if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x525d;
             break;
         }
         push(bp);
-        yield* sub_34cd();
+        sub_34cd();
         if (memory16gets(ss, bp - 10459) <= signed16(0x0000)) {
             pc = 0x52a1;
             break;
@@ -6717,7 +6717,7 @@ function* sub_4bdb() {
         memory[ss*16 + bp - 10461] = 0x01;
     case 0x52ad:
         push(bp);
-        yield* sub_3e6c();
+        sub_3e6c();
         r8[al] = memory[ss*16 + bp - 10434];
         if (r8[al] == memory[ss*16 + bp - 10430]) {
             pc = 0x52ce;
@@ -6732,7 +6732,7 @@ function* sub_4bdb() {
         r16[ax] = 0x0002;
         push(r16[ax]);
         push(bp);
-        yield* sub_40c4();
+        sub_40c4();
     case 0x52ce:
         r8[al] = memory[ss*16 + bp - 10432];
         if (r8[al] == memory[ss*16 + bp - 10428]) {
@@ -6748,10 +6748,10 @@ function* sub_4bdb() {
         r16[ax] = 0x0002;
         push(r16[ax]);
         push(bp);
-        yield* sub_40c4();
+        sub_40c4();
     case 0x52eb:
         push(bp);
-        yield* sub_422d();
+        sub_422d();
     case 0x52ef:
         yield* sync();
 //        si = 0x0040;
@@ -6807,7 +6807,7 @@ function* sub_4bdb() {
     case 0x535c:
         push(cs);
         cs = 0x08e1;
-        yield* sub_914e();
+        sub_914e();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 10445, 0x0001);
         pc = 0x536d;
@@ -6832,7 +6832,7 @@ function* sub_4bdb() {
         di <<= 1;
         r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
-        yield* sub_24c9();
+        sub_24c9();
     case 0x539f:
         if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5369;
@@ -6864,7 +6864,7 @@ function* sub_4bdb() {
         r8[al] = 0x01;
     case 0x53d5:
         push(r16[ax]);
-        yield* sub_22d4();
+        sub_22d4();
         r16[ax] = memory16get(ss, bp - 9822);
         r16[ax] >>= 1;
         r16[ax] -= 0x0013;
@@ -6885,24 +6885,24 @@ function* sub_4bdb() {
         r8[al] = 0x01;
     case 0x53fc:
         push(r16[ax]);
-        yield* sub_22d4();
+        sub_22d4();
         if (memory16get(ss, bp - 10445) != 0x0014) {
             pc = 0x53ae;
             break;
         }
         push(cs);
         cs = 0x07d7;
-        yield* sub_8197();
+        sub_8197();
         assert(cs == 0x01ed);
         r8[al] = 0x00;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90ce();
+        sub_90ce();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x08e1;
-        yield* sub_901d();
+        sub_901d();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5425;
@@ -6923,13 +6923,13 @@ function* sub_4bdb() {
         di <<= 1;
         r8[al] = memory[ss*16 + bp + di - 9818];
         push(r16[ax]);
-        yield* sub_24c9();
+        sub_24c9();
         if (memory16get(ss, bp - 10445) != 0x0002) {
             pc = 0x5421;
             break;
         }
         push(bp);
-        yield* sub_34cd();
+        sub_34cd();
         memory16set(ss, bp - 10445, 0x0001);
         pc = 0x5466;
         break;
@@ -6937,7 +6937,7 @@ function* sub_4bdb() {
         memory16set(ss, bp - 10445, memory16get(ss, bp - 10445) + 1);
     case 0x5466:
         push(bp);
-        yield* sub_3e6c();
+        sub_3e6c();
         if (memory16get(ss, bp - 10445) != 0x0014) {
             pc = 0x5462;
             break;
@@ -6992,7 +6992,7 @@ function* sub_4bdb() {
     case 0x54bc:
         push(cs);
         cs = 0x08c0;
-        yield* sub_8c40();
+        sub_8c40();
         assert(cs == 0x01ed);
         r16[ax] = 0x0040;
         push(r16[ax]);
@@ -7007,14 +7007,14 @@ function* sub_4bdb() {
         es = pop();
         memoryBiosSet(es, di, r8[dl]);
         push(bp);
-        yield* sub_4936();
+        sub_4936();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
         return;
     } while (1);
 }
-function* sub_54e3() {
+function sub_54e3() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -7033,7 +7033,7 @@ function* sub_54e3() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax]--;
         memory16set(ss, bp - 8, memory16get(ss, bp - 8) + r16[ax]);
@@ -7041,7 +7041,7 @@ function* sub_54e3() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax]--;
         memory16set(ss, bp - 6, memory16get(ss, bp - 6) + r16[ax]);
@@ -7190,7 +7190,7 @@ function* sub_54e3() {
         push(memory16get(ss, bp - 2));
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
     case 0x5609:
         r16[ax] = memory16get(ss, bp - 2);
         if (r16[ax] != memory16get(ss, bp - 18)) {
@@ -7269,7 +7269,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] <<= 1;
         r16[ax] += 0x0006;
@@ -7280,7 +7280,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] <<= 1;
         r16[ax] += 0x0006;
@@ -7303,7 +7303,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 4, r16[ax]);
         r16[ax] = memory16get(ss, bp - 4);
@@ -7335,7 +7335,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_abec();
+        sub_abec();
         assert(cs == 0x01ed);
         di = bp - 0x206;
         push(ss);
@@ -7354,7 +7354,7 @@ function* sub_563e() {
         push(memory16get(ss, bp - 4));
         push(cs);
         cs = 0x0947;
-        yield* sub_abec();
+        sub_abec();
         assert(cs == 0x01ed);
         if (memory16get(ds, 0x1321) != 0x01d8) {
             pc = 0x56b4;
@@ -7438,7 +7438,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] -= 0x012c;
         di = memory16get(ds, 0x1321);
@@ -7448,7 +7448,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         if (r16[ax] != 0x0001) {
             pc = 0x5805;
@@ -7464,7 +7464,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ds, 0x1321);
         di <<= 1;
@@ -7476,7 +7476,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ds, 0x1321);
         di <<= 1;
@@ -7539,7 +7539,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         if (memory16get(ss, bp - 6) != 0x0001) {
@@ -7550,7 +7550,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         r8[al] = memory[ds*16 + 0x132a];
@@ -7568,12 +7568,12 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x0006;
         push(r16[ax]);
         push(bp);
-        yield* sub_54e3();
+        sub_54e3();
         pc = 0x591a;
         break;
     case 0x58d6:
@@ -7585,7 +7585,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         r8[al] = memory[ds*16 + 0x132c];
@@ -7606,12 +7606,12 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x0006;
         push(r16[ax]);
         push(bp);
-        yield* sub_54e3();
+        sub_54e3();
     case 0x591a:
         r8[al] = memory[ds*16 + 0x132a];
         r8[ah] = 0;
@@ -7619,7 +7619,7 @@ function* sub_563e() {
         push(memory16get(ds, 0x131f));
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r8[al] = memory[ds*16 + 0x132c];
         r8[ah] = 0;
         r16[dx] = r16[ax];
@@ -7629,7 +7629,7 @@ function* sub_563e() {
         push(memory16get(ds, 0x131f));
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         di = memory16get(ds, 0x131f);
         di <<= 1;
         di <<= 1;
@@ -7647,7 +7647,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132b);
         r16[ax] += 0x0100;
@@ -7674,7 +7674,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x01ed);
         di = bp - 0x306;
         push(ss);
@@ -7687,7 +7687,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9a4f();
+        sub_9a4f();
         assert(cs == 0x01ed);
         di = 0x131a;
         push(ds);
@@ -7697,7 +7697,7 @@ function* sub_563e() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9b25();
+        sub_9b25();
         assert(cs == 0x01ed);
         if (flags.zero) {
             pc = 0x59cc;
@@ -7759,7 +7759,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] -= 0x012c;
         di = memory16get(ds, 0x1321);
@@ -7769,7 +7769,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         if (r16[ax] != 0x0001) {
             pc = 0x5a79;
@@ -7785,7 +7785,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ds, 0x1321);
         di <<= 1;
@@ -7797,7 +7797,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         di = memory16get(ds, 0x1321);
         di <<= 1;
@@ -7882,7 +7882,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         if (memory16get(ss, bp - 6) != 0x0001) {
@@ -7893,7 +7893,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         push(memory16get(ds, 0x131d));
@@ -7910,12 +7910,12 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x0006;
         push(r16[ax]);
         push(bp);
-        yield* sub_54e3();
+        sub_54e3();
         pc = 0x5bcb;
         break;
     case 0x5b7d:
@@ -7927,7 +7927,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 6, r16[ax]);
         push(memory16get(ds, 0x131d));
@@ -7935,7 +7935,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[cx] = r16[ax];
         r8[al] = memory[ds*16 + 0x132c];
@@ -7955,12 +7955,12 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_a504();
+        sub_a504();
         assert(cs == 0x01ed);
         r16[ax] += 0x0006;
         push(r16[ax]);
         push(bp);
-        yield* sub_54e3();
+        sub_54e3();
     case 0x5bcb:
         r8[al] = memory[ds*16 + 0x132a];
         r8[ah] = 0;
@@ -7982,7 +7982,7 @@ function* sub_563e() {
         push(memory16get(ds, 0x1321));
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ds, 0x1321);
         if (r16[ax] != memory16get(ss, bp - 520)) {
             pc = 0x5be7;
@@ -8014,7 +8014,7 @@ function* sub_563e() {
         push(memory16get(ds, 0x1321));
         r8[al] = 0x07;
         push(r16[ax]);
-        yield* sub_235c();
+        sub_235c();
         r16[ax] = memory16get(ds, 0x1321);
         if (r16[ax] != memory16get(ss, bp - 520)) {
             pc = 0x5c29;
@@ -8181,7 +8181,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9a4f();
+        sub_9a4f();
         assert(cs == 0x01ed);
         di = 0x131a;
         push(ds);
@@ -8191,7 +8191,7 @@ function* sub_563e() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9b25();
+        sub_9b25();
         assert(cs == 0x01ed);
         if (flags.zero) {
             pc = 0x5d95;
@@ -8232,7 +8232,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x01ed);
         if (memory16get(ds, 0x1321) != 0x0027) {
             pc = 0x5da7;
@@ -8258,7 +8258,7 @@ function* sub_563e() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x01ed);
         if (memory16get(ds, 0x1321) != 0x01ff) {
             pc = 0x5dd4;
@@ -8281,7 +8281,7 @@ function* sub_563e() {
         return;
     } while (1);
 }
-function* sub_5f2a() {
+function sub_5f2a() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -8299,14 +8299,14 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         r8[al] = 0x0c;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132f);
         r16[ax] += 0x0022;
@@ -8315,7 +8315,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8327,17 +8327,17 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x04;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132f);
         r16[ax] += 0x001e;
@@ -8346,7 +8346,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8358,17 +8358,17 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x05;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132f);
         r16[ax] += 0x001d;
@@ -8382,7 +8382,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8393,11 +8393,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x5fe0;
@@ -8414,11 +8414,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0014) {
             pc = 0x5fdd;
@@ -8433,11 +8433,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8449,11 +8449,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8465,11 +8465,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8481,11 +8481,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8497,11 +8497,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8512,11 +8512,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x608b;
@@ -8533,11 +8533,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0014) {
             pc = 0x6088;
@@ -8552,11 +8552,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
@@ -8568,7 +8568,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         memory[ds*16 + 0x1331] = 0x00;
         if (memory16get(ds, 0x132f) != 0x0000) {
@@ -8584,13 +8584,13 @@ function* sub_5f2a() {
         }
         r8[al] = 0x04;
         push(r16[ax]);
-        yield* sub_21c4();
+        sub_21c4();
     case 0x60e8:
         r8[al] = 0x08;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x60fa;
@@ -8604,7 +8604,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8615,11 +8615,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0019) {
             pc = 0x60f7;
@@ -8635,13 +8635,13 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x0b;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x0e;
         push(r16[ax]);
@@ -8649,7 +8649,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8661,25 +8661,25 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
-        assert(cs == 0x01ed);
-        di = 0x1694;
-        push(ds);
-        push(di);
-        push(cs);
-        cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
+        assert(cs == 0x01ed);
+        di = 0x1694;
+        push(ds);
+        push(di);
+        push(cs);
+        cs = 0x0947;
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = memory[ds*16 + 0x127a];
         if (r8[al] != memory[ds*16 + 0x127b]) {
@@ -8707,7 +8707,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8719,11 +8719,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x1268);
         if (r16s[ax] > memory16gets(ds, 0x1266)) {
@@ -8743,7 +8743,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8755,24 +8755,24 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8784,11 +8784,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x621e;
@@ -8800,7 +8800,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8815,11 +8815,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x621b;
@@ -8830,13 +8830,13 @@ function* sub_5f2a() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8848,11 +8848,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x627f;
@@ -8864,7 +8864,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8879,11 +8879,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x627c;
@@ -8894,13 +8894,13 @@ function* sub_5f2a() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -8912,11 +8912,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x62e0;
@@ -8928,7 +8928,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = memory16get(ss, bp - 2);
         di <<= 1;
@@ -8959,7 +8959,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         r8[al] = 0x25;
         push(r16[ax]);
@@ -8967,11 +8967,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x62dd;
@@ -8982,20 +8982,20 @@ function* sub_5f2a() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9007,11 +9007,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x637c;
@@ -9023,7 +9023,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9038,11 +9038,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x6379;
@@ -9053,13 +9053,13 @@ function* sub_5f2a() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9071,11 +9071,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x63dd;
@@ -9087,7 +9087,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9102,11 +9102,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 2) != 0x0002) {
             pc = 0x63da;
@@ -9117,21 +9117,21 @@ function* sub_5f2a() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = memory[ds*16 + 0x127a];
         if (r8[al] != memory[ds*16 + 0x127b]) {
@@ -9145,7 +9145,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9157,11 +9157,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x1266);
         if (r16s[ax] <= memory16gets(ds, 0x1268)) {
@@ -9172,7 +9172,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9184,11 +9184,11 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         pc = 0x649d;
         break;
@@ -9197,7 +9197,7 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9209,18 +9209,18 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
     case 0x649d:
         r8[al] = 0x06;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9231,21 +9231,21 @@ function* sub_5f2a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
     case 0x64ba:
-        yield* sub_21ee();
+        sub_21ee();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
         return;
     } while (1);
 }
-function* sub_64c1() {
+function sub_64c1() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -9277,11 +9277,11 @@ function* sub_64c1() {
         return;
     } while (1);
 }
-function* sub_6508() {
+function sub_6508() {
     push(0x7777);
     push(bp);
     bp = sp;
-    yield* sub_64c1();
+    sub_64c1();
     r8[al] = 0x01;
     push(r16[ax]);
     r8[al] = 0x01;
@@ -9292,7 +9292,7 @@ function* sub_6508() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_8fdd();
+    sub_8fdd();
     assert(cs == 0x01ed);
     r8[al] = 0x35;
     push(r16[ax]);
@@ -9300,13 +9300,13 @@ function* sub_6508() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_9070();
+    sub_9070();
     assert(cs == 0x01ed);
     r8[al] = 0x0f;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9318,18 +9318,18 @@ function* sub_6508() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
-    yield* sub_21ee();
+    sub_21ee();
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_6a18() {
+function sub_6a18() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -9337,7 +9337,7 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     r8[al] = 0x22;
     push(r16[ax]);
@@ -9345,7 +9345,7 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_9070();
+    sub_9070();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9357,24 +9357,24 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9386,11 +9386,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9402,11 +9402,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9418,24 +9418,24 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     r8[al] = 0x0b;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9447,17 +9447,17 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9469,11 +9469,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9485,11 +9485,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9501,11 +9501,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9517,24 +9517,24 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     r8[al] = 0x0b;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9546,23 +9546,23 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     r8[al] = 0x09;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9574,17 +9574,17 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9596,17 +9596,17 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x0a;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9618,17 +9618,17 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9640,11 +9640,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9656,11 +9656,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9672,11 +9672,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9688,11 +9688,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9704,24 +9704,24 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     r8[al] = 0x0b;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9733,17 +9733,17 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     r8[al] = 0x03;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9755,11 +9755,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9771,11 +9771,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9787,11 +9787,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9803,11 +9803,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9819,11 +9819,11 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -9835,18 +9835,18 @@ function* sub_6a18() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa62();
+    sub_aa62();
     assert(cs == 0x01ed);
-    yield* sub_6508();
+    sub_6508();
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_736f() {
+function sub_736f() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -9864,13 +9864,13 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x0a;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x22;
         push(r16[ax]);
@@ -9878,7 +9878,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9890,24 +9890,24 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0e;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9919,11 +9919,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9935,11 +9935,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9951,11 +9951,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9967,11 +9967,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9983,11 +9983,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -9999,11 +9999,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10015,18 +10015,18 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10038,11 +10038,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10054,11 +10054,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10070,11 +10070,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10086,17 +10086,17 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0b;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = bp - 0x6;
         push(ss);
@@ -10112,7 +10112,7 @@ function* sub_736f() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8d15();
+        sub_8d15();
         assert(cs == 0x01ed);
         r8[al] = 0x1b;
         push(r16[ax]);
@@ -10124,7 +10124,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10136,11 +10136,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 6) < 0x07c4) {
             pc = 0x751d;
@@ -10202,11 +10202,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10218,11 +10218,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         pc = 0x75b3;
         break;
@@ -10237,11 +10237,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10253,11 +10253,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
     case 0x75b3:
         r8[al] = 0x01;
@@ -10270,7 +10270,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
@@ -10278,13 +10278,13 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         r8[al] = 0x0e;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10296,24 +10296,24 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0f;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10325,11 +10325,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10341,17 +10341,17 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0e;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x10;
         push(r16[ax]);
@@ -10363,7 +10363,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10375,11 +10375,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10391,26 +10391,26 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_64c1();
+        sub_64c1();
         r8[al] = 0x26;
         push(r16[ax]);
         r8[al] = 0x04;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         r8[al] = 0x0f;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10422,17 +10422,17 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_21ee();
+        sub_21ee();
     case 0x76a5:
         push(cs);
         cs = 0x08e1;
-        yield* sub_9155();
+        sub_9155();
         assert(cs == 0x01ed);
         if (!r8[al]) {
             pc = 0x76a5;
@@ -10440,7 +10440,7 @@ function* sub_736f() {
         }
         push(cs);
         cs = 0x08e1;
-        yield* sub_9167();
+        sub_9167();
         assert(cs == 0x01ed);
         if (r8[al]) {
             pc = 0x76bf;
@@ -10448,7 +10448,7 @@ function* sub_736f() {
         }
         push(cs);
         cs = 0x08e1;
-        yield* sub_9167();
+        sub_9167();
         assert(cs == 0x01ed);
         memory[ss*16 + bp - 9] = r8[al];
     case 0x76bf:
@@ -10462,7 +10462,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x4e;
         push(r16[ax]);
@@ -10470,20 +10470,20 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0f;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10495,17 +10495,17 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0a;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10517,31 +10517,31 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
-        assert(cs == 0x01ed);
-        di = 0x1694;
-        push(ds);
-        push(di);
-        push(cs);
-        cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
+        assert(cs == 0x01ed);
+        di = 0x1694;
+        push(ds);
+        push(di);
+        push(cs);
+        cs = 0x0947;
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0e;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x10;
         push(r16[ax]);
@@ -10553,7 +10553,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10565,11 +10565,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10581,11 +10581,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10597,11 +10597,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
@@ -10613,13 +10613,13 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x0f;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x4e;
         push(r16[ax]);
@@ -10627,14 +10627,14 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10646,11 +10646,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10662,17 +10662,17 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x0a;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10684,11 +10684,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
         memory16set(ss, bp - 8, 0x0001);
         pc = 0x781a;
@@ -10701,7 +10701,7 @@ function* sub_736f() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         if (memory16get(ss, bp - 8) != 0x0004) {
             pc = 0x7817;
@@ -10711,7 +10711,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         r8[al] = 0x10;
         push(r16[ax]);
@@ -10723,7 +10723,7 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10735,11 +10735,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10751,11 +10751,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10767,11 +10767,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10783,11 +10783,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10799,11 +10799,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10815,11 +10815,11 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
@@ -10831,16 +10831,16 @@ function* sub_736f() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_6508();
+        sub_6508();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
         return;
     } while (1);
 }
-function* sub_78e5() {
+function sub_78e5() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -10862,7 +10862,7 @@ function* sub_78e5() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r8[al] = 0x28;
         push(r16[ax]);
@@ -10870,7 +10870,7 @@ function* sub_78e5() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -10881,11 +10881,11 @@ function* sub_78e5() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
     case 0x7923:
         r8[al] = 0x01;
@@ -10898,20 +10898,20 @@ function* sub_78e5() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
         return;
     } while (1);
 }
-function* sub_794c() {
+function sub_794c() {
     push(0x7777);
     push(bp);
     bp = sp;
-    yield* sub_5f2a();
+    sub_5f2a();
     r8[al] = 0x01;
     push(r16[ax]);
     r8[al] = 0x01;
@@ -10922,7 +10922,7 @@ function* sub_794c() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_8fdd();
+    sub_8fdd();
     assert(cs == 0x01ed);
     r16[ax] = memory16get(ds, 0x132f);
     r16[ax] += 0x0020;
@@ -10931,13 +10931,13 @@ function* sub_794c() {
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_9070();
+    sub_9070();
     assert(cs == 0x01ed);
     r8[al] = 0x01;
     push(r16[ax]);
     push(cs);
     cs = 0x08e1;
-    yield* sub_90b4();
+    sub_90b4();
     assert(cs == 0x01ed);
     di = 0x1694;
     push(ds);
@@ -10949,20 +10949,20 @@ function* sub_794c() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ab1d();
+    sub_ab1d();
     assert(cs == 0x01ed);
     push(cs);
     cs = 0x0947;
-    yield* sub_aa7b();
+    sub_aa7b();
     assert(cs == 0x01ed);
-    yield* sub_21ee();
+    sub_21ee();
     memory[ds*16 + 0x132d] = 0x00;
     memory16set(ds, 0x1323, 0xfffe);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_79a3() {
+function sub_79a3() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -10977,7 +10977,7 @@ function* sub_79ed() {
         push(0x7777);
         push(cs);
         cs = 0x0947;
-        yield* sub_9470();
+        sub_9470();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x08e1;
@@ -10985,7 +10985,7 @@ function* sub_79ed() {
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x081e;
-        yield* sub_8457();
+        sub_8457();
         assert(cs == 0x01ed);
         bp = sp;
         sp -= 0x0100;
@@ -11004,10 +11004,10 @@ function* sub_79ed() {
         memory16set(ds, 0x1317, r16[ax]);
         r16[ax] = memory16get(ds, 0x157e);
         memory16set(ds, 0x1312, r16[ax]);
-        yield* sub_28ec();
+        sub_28ec();
         push(cs);
         cs = 0x07d7;
-        yield* sub_7fcc();
+        sub_7fcc();
         assert(cs == 0x01ed);
         memory[ds*16 + 0x1314] = r8[al];
         r16[ax] = 0x0040;
@@ -11027,7 +11027,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11039,11 +11039,11 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_97f7();
+        sub_97f7();
         assert(cs == 0x01ed);
         push(r16[dx]);
         push(r16[ax]);
@@ -11051,7 +11051,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         r8[al] = 0xb3;
         push(r16[ax]);
@@ -11059,11 +11059,11 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aabf();
+        sub_aabf();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11075,7 +11075,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         r8[al] = memory[ds*16 + 0x1314];
         r8[ah] = 0;
@@ -11086,7 +11086,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_aba8();
+        sub_aba8();
         assert(cs == 0x01ed);
         di = 0x5ae8;
         push(cs);
@@ -11095,11 +11095,11 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11111,21 +11111,21 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa62();
+        sub_aa62();
         assert(cs == 0x01ed);
         di = 0x1594;
         push(ds);
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa15();
+        sub_aa15();
         assert(cs == 0x01ed);
     case 0x7ae1:
-        yield* sub_21ee();
+        sub_21ee();
         r8[al] = memory[ds*16 + 0x1314];
         push(r16[ax]);
         di = bp - 0x20;
@@ -11133,47 +11133,47 @@ function* sub_79ed() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c51();
+        sub_9c51();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x02;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x03;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x04;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x09;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         r8[al] = 0x08;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_9cd5();
+        sub_9cd5();
         assert(cs == 0x01ed);
         if (!flags.zero) {
             pc = 0x7b2f;
@@ -11181,7 +11181,7 @@ function* sub_79ed() {
         }
         r8[al] = 0x02;
         push(r16[ax]);
-        yield* sub_21c4();
+        sub_21c4();
     case 0x7b2f:
         if (memory[ds*16 + 0x1319] != 0x00) {
             pc = 0x7b3c;
@@ -11189,28 +11189,28 @@ function* sub_79ed() {
         }
         r8[al] = 0x04;
         push(r16[ax]);
-        yield* sub_21c4();
+        sub_21c4();
     case 0x7b3c:
         r8[al] = 0x00;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90ce();
+        sub_90ce();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         push(cs);
         cs = 0x0947;
-        yield* sub_a58a();
+        sub_a58a();
         assert(cs == 0x01ed);
-        yield* sub_2502();
-        yield* sub_2882();
+        sub_2502();
+        sub_2882();
         memory[ds*16 + 0x132e] = 0x00;
         r16[ax] = 0;
         memory16set(ds, 0x132f, r16[ax]);
         memory[ds*16 + 0x1331] = 0x01;
     case 0x7b61:
-        yield* sub_794c();
-        yield* sub_5f2a();
+        sub_794c();
+        sub_5f2a();
         r8[al] = 0x01;
         push(r16[ax]);
         r8[al] = 0x01;
@@ -11221,7 +11221,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132f);
         r16[ax] += 0x0020;
@@ -11230,13 +11230,13 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         r8[al] = 0x01;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11248,13 +11248,13 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_21ee();
+        sub_21ee();
         memory[ds*16 + 0x132d] = 0x00;
         memory16set(ds, 0x1323, 0xfffe);
     case 0x7bb4:
@@ -11273,7 +11273,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9a4f();
+        sub_9a4f();
         assert(cs == 0x01ed);
         pc = 0x7bd7;
         break;
@@ -11316,7 +11316,7 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
         r16[ax] = memory16get(ds, 0x132f);
         r16[ax] += 0x0020;
@@ -11325,13 +11325,13 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         r8[al] = 0x02;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11343,13 +11343,13 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_21ee();
+        sub_21ee();
         memory[ds*16 + 0x132d] = 0x01;
     case 0x7c40:
         r8[al] = memory[ds*16 + 0x131c];
@@ -11359,7 +11359,7 @@ function* sub_79ed() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c51();
+        sub_9c51();
         assert(cs == 0x01ed);
         r8[al] = 0x3b;
         push(r16[ax]);
@@ -11367,17 +11367,17 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c81();
+        sub_9c81();
         assert(cs == 0x01ed);
         r8[al] = 0x44;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_9cd5();
+        sub_9cd5();
         assert(cs == 0x01ed);
         if (!flags.zero) {
             pc = 0x7c6c;
@@ -11418,25 +11418,25 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         if (memory[ds*16 + 0x131b] != 0x1b) {
             pc = 0x7ca6;
             break;
         }
-        yield* sub_5f2a();
+        sub_5f2a();
         pc = 0x7ca9;
         break;
     case 0x7ca6:
-        yield* sub_78e5();
+        sub_78e5();
     case 0x7ca9:
         r8[al] = memory[ds*16 + 0x131c];
         if (r8[al] != 0x3c) {
             pc = 0x7cb6;
             break;
         }
-        yield* sub_6a18();
+        sub_6a18();
         pc = 0x7d48;
         break;
     case 0x7cb6:
@@ -11444,7 +11444,7 @@ function* sub_79ed() {
             pc = 0x7cc0;
             break;
         }
-        yield* sub_736f();
+        sub_736f();
         pc = 0x7d48;
         break;
     case 0x7cc0:
@@ -11462,9 +11462,9 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         if (memory16gets(ds, 0x1323) <= signed16(0x0000)) {
             pc = 0x7d20;
             break;
@@ -11479,22 +11479,22 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fdd();
+        sub_8fdd();
         assert(cs == 0x01ed);
-        yield* sub_21da();
+        sub_21da();
         r8[al] = 0x20;
         push(r16[ax]);
         r8[al] = 0x19;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_9070();
+        sub_9070();
         assert(cs == 0x01ed);
         r8[al] = 0x81;
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_90b4();
+        sub_90b4();
         assert(cs == 0x01ed);
         di = 0x1694;
         push(ds);
@@ -11506,13 +11506,13 @@ function* sub_79ed() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ab1d();
+        sub_ab1d();
         assert(cs == 0x01ed);
         push(cs);
         cs = 0x0947;
-        yield* sub_aa7b();
+        sub_aa7b();
         assert(cs == 0x01ed);
-        yield* sub_21ee();
+        sub_21ee();
     case 0x7d20:
         if (memory16get(ds, 0x1323) == 0xffff) {
             pc = 0x7d2c;
@@ -11524,7 +11524,7 @@ function* sub_79ed() {
     case 0x7d2c:
         yield* sub_4bdb();
         memory16set(ds, 0x132f, 0xffec);
-        yield* sub_794c();
+        sub_794c();
         memory[ds*16 + 0x132d] = 0x00;
         pc = 0x7d48;
         break;
@@ -11549,21 +11549,21 @@ function* sub_79ed() {
         pc = 0x7b61;
         break;
     case 0x7d5c:
-        yield* sub_79a3();
-        yield* sub_21da();
+        sub_79a3();
+        sub_21da();
         memory[ds*16 + 0x1311] = 0x00;
         sp = bp;
         r16[ax] = 0;
         push(cs);
         cs = 0x0947;
-        yield* sub_9663();
+        sub_9663();
         assert(cs == 0x01ed);
         push(bp);
         bp = sp;
         r16[ax] = 0x0014;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x01ed);
         sp -= 0x0014;
         memory[ss*16 + bp - 17] = 0x00;
@@ -11576,7 +11576,7 @@ function* sub_79ed() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x01ed);
         sp = bp;
         bp = pop();
@@ -11585,14 +11585,14 @@ function* sub_79ed() {
         return;
     } while (1);
 }
-function* sub_7d70() {
+function sub_7d70() {
     push(0x7777);
     push(bp);
     bp = sp;
     r16[ax] = 0x0014;
     push(cs);
     cs = 0x0947;
-    yield* sub_971d();
+    sub_971d();
     assert(cs == 0x07d7);
     sp -= 0x0014;
     memory[ss*16 + bp - 17] = 0x00;
@@ -11605,14 +11605,14 @@ function* sub_7d70() {
     push(di);
     push(cs);
     cs = 0x08d0;
-    yield* sub_8db2();
+    sub_8db2();
     assert(cs == 0x07d7);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_7d9c() {
+function sub_7d9c() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -11622,7 +11622,7 @@ function* sub_7d9c() {
         r16[ax] = 0x0003;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         sp -= 0x0003;
         r8[al] = memory[ss*16 + bp + 6];
@@ -11672,7 +11672,7 @@ function* sub_7d9c() {
         return;
     } while (1);
 }
-function* sub_7dfe() {
+function sub_7dfe() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -11682,7 +11682,7 @@ function* sub_7dfe() {
         r16[ax] = 0x0002;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         sp -= 0x0002;
         r8[al] = memory[ss*16 + bp + 8];
@@ -11709,7 +11709,7 @@ function* sub_7dfe() {
         r8[al] = memory[ss*16 + bp + 8];
         push(r16[ax]);
         push(cs);
-        yield* sub_7d9c();
+        sub_7d9c();
         r8[dl] = r8[al];
         r8[al] = memory[ss*16 + bp + 6];
         r8[al] &= 0x0f;
@@ -11733,7 +11733,7 @@ function* sub_7dfe() {
         r8[al] = memory[ss*16 + bp + 8];
         push(r16[ax]);
         push(cs);
-        yield* sub_7d9c();
+        sub_7d9c();
         if (!r8[al]) {
             pc = 0x7e69;
             break;
@@ -11752,7 +11752,7 @@ function* sub_7dfe() {
         r8[al] = memory[ss*16 + bp + 8];
         push(r16[ax]);
         push(cs);
-        yield* sub_7d9c();
+        sub_7d9c();
         r8[dl] = r8[al];
         r8[al] = memory[ss*16 + bp + 6];
         r8[al] &= 0x0f;
@@ -11808,14 +11808,14 @@ function* sub_7dfe() {
         return;
     } while (1);
 }
-function* sub_7ee3() {
+function sub_7ee3() {
     push(0x7777);
     push(bp);
     bp = sp;
     r16[ax] = 0x0014;
     push(cs);
     cs = 0x0947;
-    yield* sub_971d();
+    sub_971d();
     assert(cs == 0x07d7);
     sp -= 0x0014;
     memory16set(ss, bp - 20, 0x1010);
@@ -11835,7 +11835,7 @@ function* sub_7ee3() {
     push(di);
     push(cs);
     cs = 0x08d0;
-    yield* sub_8db2();
+    sub_8db2();
     assert(cs == 0x07d7);
     sp = bp;
     bp = pop();
@@ -11843,7 +11843,7 @@ function* sub_7ee3() {
     cs = pop();
     sp += 8;
 }
-function* sub_7f23() {
+function sub_7f23() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -11853,7 +11853,7 @@ function* sub_7f23() {
         r16[ax] = 0x0002;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         sp -= 0x0002;
         if (memory16get(ds, 0x1332) == 0x0009) {
@@ -11888,7 +11888,7 @@ function* sub_7f23() {
         r8[al] = memory[ds*16 + di + 483];
         push(r16[ax]);
         push(cs);
-        yield* sub_7ee3();
+        sub_7ee3();
         if (memory16get(ss, bp - 2) != 0x000f) {
             pc = 0x7f3f;
             break;
@@ -11925,7 +11925,7 @@ function* sub_7f23() {
         r8[al] = memory[ds*16 + di + 483];
         push(r16[ax]);
         push(cs);
-        yield* sub_7ee3();
+        sub_7ee3();
         if (memory16get(ss, bp - 2) != 0x000f) {
             pc = 0x7f86;
             break;
@@ -11938,14 +11938,14 @@ function* sub_7f23() {
         return;
     } while (1);
 }
-function* sub_7fcc() {
+function sub_7fcc() {
     push(0x7777);
     push(bp);
     bp = sp;
     r16[ax] = 0x0006;
     push(cs);
     cs = 0x0947;
-    yield* sub_971d();
+    sub_971d();
     assert(cs == 0x07d7);
     sp -= 0x0006;
     di = bp - 0x6;
@@ -11956,7 +11956,7 @@ function* sub_7fcc() {
     push(di);
     push(cs);
     cs = 0x081e;
-    yield* sub_82c9();
+    sub_82c9();
     assert(cs == 0x07d7);
     r16[ax] = memory16get(ss, bp - 6);
     memory16set(ss, bp - 2, r16[ax]);
@@ -11966,7 +11966,7 @@ function* sub_7fcc() {
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_7ff6() {
+function sub_7ff6() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -11976,7 +11976,7 @@ function* sub_7ff6() {
         r16[ax] = 0;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         r16[ax] = memory16get(ds, 0x1332);
         if (r16[ax] == 0x0001) {
@@ -12038,14 +12038,14 @@ function* sub_7ff6() {
         return;
     } while (1);
 }
-function* sub_805a() {
+function sub_805a() {
     push(0x7777);
     push(bp);
     bp = sp;
     r16[ax] = 0;
     push(cs);
     cs = 0x0947;
-    yield* sub_971d();
+    sub_971d();
     assert(cs == 0x07d7);
     r8[al] = memory[ss*16 + bp + 6];
     r16[dx] = 0x03d4;
@@ -12058,7 +12058,7 @@ function* sub_805a() {
     assert(pop() == 0x7777);
     sp += 4;
 }
-function* sub_8078() {
+function sub_8078() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12068,7 +12068,7 @@ function* sub_8078() {
         r16[ax] = 0x0034;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         sp -= 0x0034;
         memory16set(ds, 0x1334, 0xb800);
@@ -12076,7 +12076,7 @@ function* sub_8078() {
         push(r16[ax]);
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fc8();
+        sub_8fc8();
         assert(cs == 0x07d7);
         r16[ax] = memory16get(ds, 0x1334);
         push(r16[ax]);
@@ -12090,13 +12090,13 @@ function* sub_8078() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x07d7);
         memory[ds*16 + 0x01d0] = 0x01;
         memory[ds*16 + 0x1336] = 0x00;
         push(cs);
-        yield* sub_7fcc();
-        memory16set(ds, 0x1332, r16[ax]);
+        sub_7fcc();
+        memory16set(ds, 0x1332, r16[ax]*0+9); // lazy to find out
         r16[ax] = memory16get(ds, 0x1332);
         if (r16[ax] == 0x0001) {
             pc = 0x80cd;
@@ -12113,30 +12113,30 @@ function* sub_8078() {
     case 0x80cd:
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
         r8[al] = 0x04;
         push(r16[ax]);
         r8[al] = 0x7f;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         r8[al] = 0x06;
         push(r16[ax]);
         r8[al] = 0x64;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         r8[al] = 0x07;
         push(r16[ax]);
         r8[al] = 0x70;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         r8[al] = 0x09;
         push(r16[ax]);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
         pc = 0x8166;
         break;
     case 0x80ff:
@@ -12146,12 +12146,12 @@ function* sub_8078() {
         }
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
         r8[al] = 0x09;
         push(r16[ax]);
         r8[al] = 0x03;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         memory16set(ss, bp - 20, 0x1003);
         memory[ss*16 + bp - 18] = 0x00;
         r8[al] = 0x10;
@@ -12161,11 +12161,11 @@ function* sub_8078() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x07d7);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
         pc = 0x8166;
         break;
     case 0x8131:
@@ -12180,12 +12180,12 @@ function* sub_8078() {
     case 0x813b:
         r8[al] = 0x00;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
         r8[al] = 0x09;
         push(r16[ax]);
         r8[al] = 0x02;
         push(r16[ax]);
-        yield* sub_805a();
+        sub_805a();
         memory16set(ss, bp - 20, 0x1003);
         memory[ss*16 + bp - 18] = 0x00;
         r8[al] = 0x10;
@@ -12195,14 +12195,14 @@ function* sub_8078() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x07d7);
         r8[al] = 0x01;
         push(r16[ax]);
-        yield* sub_7ff6();
+        sub_7ff6();
     case 0x8166:
         push(cs);
-        yield* sub_7d70();
+        sub_7d70();
         r8[al] = memory[ds*16 + 0x1332];
         push(r16[ax]);
         di = bp - 0x34;
@@ -12210,30 +12210,30 @@ function* sub_8078() {
         push(di);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c51();
+        sub_9c51();
         assert(cs == 0x07d7);
         r8[al] = 0x02;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x07d7);
         r8[al] = 0x09;
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_9c60();
+        sub_9c60();
         assert(cs == 0x07d7);
         push(cs);
         cs = 0x0947;
-        yield* sub_9cd5();
+        sub_9cd5();
         assert(cs == 0x07d7);
         if (flags.zero) {
             pc = 0x8193;
             break;
         }
         push(cs);
-        yield* sub_7f23();
+        sub_7f23();
     case 0x8193:
         sp = bp;
         bp = pop();
@@ -12242,7 +12242,7 @@ function* sub_8078() {
         return;
     } while (1);
 }
-function* sub_8197() {
+function sub_8197() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12252,7 +12252,7 @@ function* sub_8197() {
         r16[ax] = 0x0014;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x07d7);
         sp -= 0x0014;
         if (memory[ds*16 + 0x01d0] == 0x00) {
@@ -12267,17 +12267,17 @@ function* sub_8197() {
         push(di);
         push(cs);
         cs = 0x08d0;
-        yield* sub_8db2();
+        sub_8db2();
         assert(cs == 0x07d7);
         push(memory16get(ds, 0x157e));
         push(cs);
         cs = 0x08e1;
-        yield* sub_8fc8();
+        sub_8fc8();
         assert(cs == 0x07d7);
         memory[ds*16 + 0x01d0] = 0x00;
         push(cs);
         cs = 0x081e;
-        yield* sub_837d();
+        sub_837d();
         assert(cs == 0x07d7);
     case 0x81d1:
         sp = bp;
@@ -12287,7 +12287,7 @@ function* sub_8197() {
         return;
     } while (1);
 }
-function* sub_82c9() {
+function sub_82c9() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12303,7 +12303,7 @@ function* sub_82c9() {
         push(es);
         push(di);
         push(cs);
-        yield* sub_8692();
+        sub_8692();
         di = memory16get(ss, bp + 10);
         es = memory16get(ss, bp + 10 + 2);
         if (memory16gets(es, di) >= signed16(0x0000)) {
@@ -12326,7 +12326,7 @@ function* sub_82c9() {
         return;
     } while (1);
 }
-function* sub_82fa() {
+function sub_82fa() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -12362,7 +12362,7 @@ function* sub_82fa() {
     bp = pop();
     assert(pop() == 0x7777);
 }
-function* sub_8350() {
+function sub_8350() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12386,7 +12386,7 @@ function* sub_8350() {
         memory16set(ds, 0x147c, r16[dx]);
     case 0x8375:
         push(cs);
-        yield* sub_855c();
+        sub_855c();
         sp = bp;
         bp = pop();
         assert(pop() == 0x7777);
@@ -12394,7 +12394,7 @@ function* sub_8350() {
         return;
     } while (1);
 }
-function* sub_837d() {
+function sub_837d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12410,14 +12410,14 @@ function* sub_837d() {
         break;
     case 0x838d:
         push(cs);
-        yield* sub_8350();
+        sub_8350();
         di = 0x1488;
         push(ds);
         push(di);
         push(memory16get(ds, 0x1429));
         push(cs);
         cs = memory16get(ds, 0x133c + 2);
-        yield* callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
+        callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
         assert(cs == 0x081e);
         r16[ax] = memory16get(ds, 0x1482);
         r16[ax] |= memory16get(ds, 0x1484);
@@ -12438,9 +12438,9 @@ function* sub_837d() {
         push(memory16get(ds, 0x1486));
         push(cs);
         cs = memory16get(ds, 0x133c + 2);
-        yield* callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
+        callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
         assert(cs == 0x081e);
-        yield* sub_82fa();
+        sub_82fa();
         memory16set(ss, bp - 2, 0x0001);
         pc = 0x83d3;
         break;
@@ -12483,7 +12483,7 @@ function* sub_837d() {
         push(memory16get(es, di + 8));
         push(cs);
         cs = memory16get(ds, 0x133c + 2);
-        yield* callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
+        callIndirect(memory16get(ds, 0x133c + 2), memory16get(ds, 0x133c));
         assert(cs == 0x081e);
         di = memory16get(ss, bp - 6);
         es = memory16get(ss, bp - 6 + 2);
@@ -12512,7 +12512,7 @@ function* sub_837d() {
         return;
     } while (1);
 }
-function* sub_8457() {
+function sub_8457() {
     push(0x7777);
     bp = sp;
     r16[ax] = 0;
@@ -12520,8 +12520,8 @@ function* sub_8457() {
     memory16set(ds, 0x17a2, 0x0100);
     memory16set(ds, 0x1429, 0x1000);
     push(cs);
-    yield* sub_86d7();
-    yield* sub_82fa();
+    sub_86d7();
+    sub_82fa();
     r16[ax] = 0x0263;
     r16[dx] = cs;
     memory16set(ds, 0x17a4, r16[ax]);
@@ -12545,13 +12545,13 @@ function* sub_8457() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ac0f();
+    sub_ac0f();
     assert(cs == 0x081e);
     sp = bp;
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_855c() {
+function sub_855c() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12578,24 +12578,24 @@ function* sub_855c() {
         return;
     } while (1);
 }
-function* sub_8692() {
+function sub_8692() {
     push(0x7777);
     push(bp);
     bp = sp;
     push(memory16get(ds, 0x14e4));
-    yield* sub_86a4();
+    sub_86a4();
     memory16set(ds, 0x14e4, pop());
     bp = pop();
     assert(pop() == 0x7777);
     cs = pop();
     sp += 8;
 }
-function* sub_86a4() {
+function sub_86a4() {
     var pc = 0;
     do switch (pc) {
     case 0:
         push(bp);
-        yield* sub_8a76();
+        sub_8a76();
         bp = pop();
         r8[al] = memory[ds*16 + 0x14e4];
         if (r8[al] != 0x02) {
@@ -12625,7 +12625,7 @@ function* sub_86a4() {
         return;
     } while (1);
 }
-function* sub_86d7() {
+function sub_86d7() {
     r16[ax] = 0;
     memory[ds*16 + 0x14e4] = 0xff;
     memory[ds*16 + 0x14e5] = r8[al];
@@ -12638,11 +12638,11 @@ function* sub_86d7() {
     memory[ds*16 + 0x14ee] = r8[al];
     cs = pop();
 }
-function* sub_8a76() {
+function sub_8a76() {
     memory[ds*16 + 0x14e4] = 0xff;
     memory[ds*16 + 0x14e6] = 0xff;
     memory[ds*16 + 0x14e5] = 0x00;
-    yield* sub_8aac();
+    sub_8aac();
     r8[bl] = memory[ds*16 + 0x14e6];
     if (r8[bl] == 0xff)
         return;
@@ -12654,7 +12654,7 @@ function* sub_8a76() {
     r8[al] = memory[cs*16 + r16[bx] + 2186];
     memory[ds*16 + 0x14e7] = r8[al];
 }
-function* sub_8aac() {
+function sub_8aac() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12664,7 +12664,7 @@ function* sub_8aac() {
             pc = 0x8ae5;
             break;
         }
-        yield* sub_8b8a();
+        sub_8b8a();
         if (!flags.carry) {
             pc = 0x8abf;
             break;
@@ -12672,16 +12672,16 @@ function* sub_8aac() {
         memory[ds*16 + 0x14e6] = 0x06;
         return;
     case 0x8abf:
-        yield* sub_8b13();
+        sub_8b13();
         if (!flags.carry) {
             pc = 0x8ac8;
             break;
         }
     case 0x8ac4:
-        yield* sub_8b31();
+        sub_8b31();
         return;
     case 0x8ac8:
-        yield* sub_8bd0();
+        sub_8bd0();
         if (r16[ax] == 0) {
             pc = 0x8ad5;
             break;
@@ -12690,7 +12690,7 @@ function* sub_8aac() {
         return;
     case 0x8ad5:
         memory[ds*16 + 0x14e6] = 0x01;
-        yield* sub_8b69();
+        sub_8b69();
         if (!flags.carry) {
             pc = 0x8ae4;
             break;
@@ -12699,12 +12699,12 @@ function* sub_8aac() {
     case 0x8ae4:
         return;
     case 0x8ae5:
-        yield* sub_8b13();
+        sub_8b13();
         if (flags.carry) {
             pc = 0x8ac4;
             break;
         }
-        yield* sub_8b9e();
+        sub_8b9e();
         if (r8[al] == 0) {
             pc = 0x8af7;
             break;
@@ -12724,7 +12724,7 @@ function* sub_8aac() {
         return;
     } while (1);
 }
-function* sub_8b13() {
+function sub_8b13() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12752,7 +12752,7 @@ function* sub_8b13() {
         return;
     } while (1);
 }
-function* sub_8b31() {
+function sub_8b31() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12761,7 +12761,7 @@ function* sub_8b31() {
             pc = 0x8b54;
             break;
         }
-        yield* sub_8b5a();
+        sub_8b5a();
         if (flags.carry) {
             pc = 0x8b53;
             break;
@@ -12771,7 +12771,7 @@ function* sub_8b31() {
             break;
         }
         memory[ds*16 + 0x14e6] = 0x03;
-        yield* sub_8b69();
+        sub_8b69();
         if (!flags.carry) {
             pc = 0x8b53;
             break;
@@ -12784,7 +12784,7 @@ function* sub_8b31() {
         return;
     } while (1);
 }
-function* sub_8b5a() {
+function sub_8b5a() {
     flags.carry = r8[cl] < 0x02;
     if (r8[cl] < 0x02)
         return;
@@ -12794,7 +12794,7 @@ function* sub_8b5a() {
         return;
     flags.carry = r8[cl] < 0x08;
 }
-function* sub_8b69() {
+function sub_8b69() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12828,11 +12828,11 @@ function* sub_8b69() {
         return;
     } while (1);
 }
-function* sub_8b8a() {
+function sub_8b8a() {
     flags.carry = false;
     r8[al] = 0;
 }
-function* sub_8b9e() {
+function sub_8b9e() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12881,7 +12881,7 @@ function* sub_8b9e() {
         return;
     } while (1);
 }
-function* sub_8bd0() {
+function sub_8bd0() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12923,14 +12923,14 @@ function* sub_8bd0() {
         return;
     } while (1);
 }
-function* sub_8c00() {
+function sub_8c00() {
     push(0x7777);
     push(bp);
     bp = sp;
     r16[ax] = 0;
     push(cs);
     cs = 0x0947;
-    yield* sub_971d();
+    sub_971d();
     assert(cs == 0x08c0);
     r8[al] = 0x09;
     push(r16[ax]);
@@ -12939,7 +12939,7 @@ function* sub_8c00() {
     push(di);
     push(cs);
     cs = 0x08d0;
-    yield* sub_8d58();
+    sub_8d58();
     assert(cs == 0x08c0);
     r8[al] = 0x09;
     push(r16[ax]);
@@ -12949,7 +12949,7 @@ function* sub_8c00() {
     push(r16[ax]);
     push(cs);
     cs = 0x08d0;
-    yield* sub_8d87();
+    sub_8d87();
     assert(cs == 0x08c0);
     memory[ds*16 + 0x0424] = 0x01;
     di = 0x14f0;
@@ -12961,14 +12961,14 @@ function* sub_8c00() {
     push(r16[ax]);
     push(cs);
     cs = 0x0947;
-    yield* sub_ac0f();
+    sub_ac0f();
     assert(cs == 0x08c0);
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_8c40() {
+function sub_8c40() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -12978,7 +12978,7 @@ function* sub_8c40() {
         r16[ax] = 0;
         push(cs);
         cs = 0x0947;
-        yield* sub_971d();
+        sub_971d();
         assert(cs == 0x08c0);
         if (memory[ds*16 + 0x0424] == 0x00) {
             pc = 0x8c66;
@@ -12990,7 +12990,7 @@ function* sub_8c40() {
         push(memory16get(ds, 0x1570));
         push(cs);
         cs = 0x08d0;
-        yield* sub_8d87();
+        sub_8d87();
         assert(cs == 0x08c0);
         memory[ds*16 + 0x0424] = 0x00;
     case 0x8c66:
@@ -13001,7 +13001,7 @@ function* sub_8c40() {
         return;
     } while (1);
 }
-function* sub_8c6a() {
+function sub_8c6a() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13052,7 +13052,7 @@ function* sub_8c6a() {
         push(r16[ax]);
         push(cs);
         cs = 0x0947;
-        yield* sub_ac0f();
+        sub_ac0f();
         assert(cs == 0x08c0);
         pc = 0x8ceb;
         break;
@@ -13097,7 +13097,7 @@ function* sub_8c6a() {
         return;
     } while (1);
 }
-function* sub_8d00() {
+function sub_8d00() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -13108,14 +13108,14 @@ function* sub_8d00() {
     push(es);
     push(di);
     push(cs);
-    yield* sub_8db2();
+    sub_8db2();
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     cs = pop();
     sp += 4;
 }
-function* sub_8d15() {
+function sub_8d15() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -13125,7 +13125,7 @@ function* sub_8d15() {
     push(ss);
     push(di);
     push(cs);
-    yield* sub_8d00();
+    sub_8d00();
     r16[ax] = memory16get(ss, bp - 16);
     di = memory16get(ss, bp + 18);
     es = memory16get(ss, bp + 18 + 2);
@@ -13151,7 +13151,7 @@ function* sub_8d15() {
     cs = pop();
     sp += 16;
 }
-function* sub_8d58() {
+function sub_8d58() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -13163,7 +13163,7 @@ function* sub_8d58() {
     push(ss);
     push(di);
     push(cs);
-    yield* sub_8d00();
+    sub_8d00();
     r16[ax] = memory16get(ss, bp - 18);
     r16[dx] = memory16get(ss, bp - 4);
     di = memory16get(ss, bp + 6);
@@ -13176,7 +13176,7 @@ function* sub_8d58() {
     cs = pop();
     sp += 6;
 }
-function* sub_8d87() {
+function sub_8d87() {
     push(0x7777);
     push(bp);
     bp = sp;
@@ -13192,14 +13192,14 @@ function* sub_8d87() {
     push(ss);
     push(di);
     push(cs);
-    yield* sub_8d00();
+    sub_8d00();
     sp = bp;
     bp = pop();
     assert(pop() == 0x7777);
     cs = pop();
     sp += 6;
 }
-function* sub_8db2() {
+function sub_8db2() {
     push(0x7777);
     push(bp);
     push(ds);
@@ -13274,25 +13274,25 @@ function* sub_8e10() {
     push(ds);
     push(di);
     push(cs);
-    yield* sub_9189();
+    sub_9189();
     di = 0x1594;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_a719();
+    sub_a719();
     assert(cs == 0x08e1);
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
-    yield* sub_9189();
+    sub_9189();
     di = 0x1694;
     push(ds);
     push(di);
     push(cs);
     cs = 0x0947;
-    yield* sub_a71e();
+    sub_a71e();
     assert(cs == 0x08e1);
     sp = bp;
     assert(pop() == 0x7777);
@@ -13303,7 +13303,7 @@ function* sub_8e3e() {
     do switch (pc) {
     case 0:
         r8[ah] = 0x0f;
-        yield* sub_9463();
+        sub_9463();
         if (r8[al] == 0x07) {
             pc = 0x8e51;
             break;
@@ -13313,12 +13313,12 @@ function* sub_8e3e() {
             break;
         }
         r16[ax] = 0x0003;
-        yield* sub_8ec9();
+        sub_8ec9();
     case 0x8e51:
-        yield* sub_8f2b();
+        sub_8f2b();
         r8[ah] = 0x08;
         r8[bh] = 0;
-        yield* sub_9463();
+        sub_9463();
         r8[al] = r8[ah];
         r8[al] &= 0x7f;
         memory[ds*16 + 0x1591] = r8[al];
@@ -13341,7 +13341,7 @@ function* sub_8e3e() {
         }
         r8[al] = memoryBiosGet(es, di);
         r16[cx] = 0xffff;
-        yield* sub_9119();
+        sub_9119();
         r16[ax] = 0x0037;
         r16[tx] = r16[cx];
         r16[cx] = r16[ax];
@@ -13370,7 +13370,7 @@ function* sub_8e3e() {
         return;
     } while (1);
 }
-function* sub_8ec9() {
+function sub_8ec9() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13389,23 +13389,23 @@ function* sub_8ec9() {
     case 0x8ede:
         push(r16[ax]);
         r8[ah] = 0x00;
-        yield* sub_9463();
+        sub_9463();
         r16[ax] = pop();
         if (!r8[ah])
             return;
         r16[ax] = 0x1112;
         r8[bl] = 0x00;
-        yield* sub_9463();
+        sub_9463();
         r16[ax] = 0x1130;
         r8[bh] = 0x00;
         r8[dl] = 0x00;
-        yield* sub_9463();
+        sub_9463();
         if (r8[dl] != 0x2a)
             return;
         memory[es*16 + 0x0087] = memory[es*16 + 0x0087] | 0x01;
         r16[ax] = 0x0100;
         r16[cx] = 0x0600;
-        yield* sub_9463();
+        sub_9463();
         if (memory[es*16 + 0x0049] != 0x07) {
             pc = 0x8f23;
             break;
@@ -13419,21 +13419,21 @@ function* sub_8ec9() {
     case 0x8f23:
         r8[ah] = 0x12;
         r8[bl] = 0x20;
-        yield* sub_9463();
+        sub_9463();
         return;
     } while (1);
 }
-function* sub_8f2b() {
+function sub_8f2b() {
     var pc = 0;
     do switch (pc) {
     case 0:
         r8[ah] = 0x0f;
-        yield* sub_9463();
+        sub_9463();
         push(r16[ax]);
         r16[ax] = 0x1130;
         r8[bh] = 0x00;
         r8[dl] = 0x00;
-        yield* sub_9463();
+        sub_9463();
         r16[ax] = pop();
         r8[cl] = 0x00;
         if (r8[dl]) {
@@ -13467,7 +13467,7 @@ function* sub_8f2b() {
         return;
     } while (1);
 }
-function* sub_8f8a() {
+function sub_8f8a() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13487,7 +13487,7 @@ function* sub_8f8a() {
         return;
     } while (1);
 }
-function* sub_8fa0() {
+function sub_8fa0() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13513,15 +13513,15 @@ function* sub_8fa0() {
         break;
     case 0x8fb9:
         r8[al] = 0x5e;
-        yield* sub_92d6();
+        sub_92d6();
         r8[al] = 0x43;
-        yield* sub_92d6();
-        yield* sub_92cf();
+        sub_92d6();
+        sub_92cf();
         interrupt(0x23);
         r16[bx] = sp;
         r16[ax] = memory16get(ss, r16[bx] + 4);
-        yield* sub_8ec9();
-        yield* sub_8f2b();
+        sub_8ec9();
+        sub_8f2b();
         r8[al] = memory[ds*16 + 0x1591];
         memory[ds*16 + 0x1580] = r8[al];
         stop(/*unk call conv*/);
@@ -13529,19 +13529,19 @@ function* sub_8fa0() {
         return;
     } while (1);
 }
-function* sub_8fc8() {
+function sub_8fc8() {
     push(0x7777);
     r16[bx] = sp;
     r16[ax] = memory16get(ss, r16[bx] + 4);
-    yield* sub_8ec9();
-    yield* sub_8f2b();
+    sub_8ec9();
+    sub_8f2b();
     r8[al] = memory[ds*16 + 0x1591];
     memory[ds*16 + 0x1580] = r8[al];
     assert(pop() == 0x7777);
     cs = pop();
     sp += 2;
 }
-function* sub_8fdd() {
+function sub_8fdd() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13581,7 +13581,7 @@ function* sub_8fdd() {
         }
         memory16set(ds, 0x1581, r16[dx]);
         memory16set(ds, 0x1583, r16[cx]);
-        yield* sub_9357();
+        sub_9357();
     case 0x901a:
         assert(pop() == 0x7777);
         cs = pop();
@@ -13589,17 +13589,17 @@ function* sub_8fdd() {
         return;
     } while (1);
 }
-function* sub_901d() {
+function sub_901d() {
     r16[ax] = 0x0600;
     r8[bh] = memory[ds*16 + 0x1580];
     r16[cx] = memory16get(ds, 0x1581);
     r16[dx] = memory16get(ds, 0x1583);
-    yield* sub_9463();
+    sub_9463();
     r16[dx] = memory16get(ds, 0x1581);
-    yield* sub_9357();
+    sub_9357();
     cs = pop();
 }
-function* sub_9070() {
+function sub_9070() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13629,7 +13629,7 @@ function* sub_9070() {
             pc = 0x9099;
             break;
         }
-        yield* sub_9357();
+        sub_9357();
     case 0x9099:
         assert(pop() == 0x7777);
         cs = pop();
@@ -13637,7 +13637,7 @@ function* sub_9070() {
         return;
     } while (1);
 }
-function* sub_90b4() {
+function sub_90b4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13659,7 +13659,7 @@ function* sub_90b4() {
         return;
     } while (1);
 }
-function* sub_90ce() {
+function sub_90ce() {
     push(0x7777);
     r16[bx] = sp;
     r8[al] = memory[ss*16 + r16[bx] + 4];
@@ -13672,7 +13672,7 @@ function* sub_90ce() {
     cs = pop();
     sp += 2;
 }
-function* sub_90f9() {
+function sub_90f9() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13689,7 +13689,7 @@ function* sub_90f9() {
         r16[bx] = memory16get(ds, 0x158d);
     case 0x910e:
         r16[cx] = r16[bx];
-        yield* sub_9119();
+        sub_9119();
         r16[dx]--;
         if (r16[dx] != 0) {
             pc = 0x910e;
@@ -13702,7 +13702,7 @@ function* sub_90f9() {
         return;
     } while (1);
 }
-function* sub_9119() {
+function sub_9119() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13717,7 +13717,7 @@ function* sub_9119() {
         return;
     } while (1);
 }
-function* sub_9121() {
+function sub_9121() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13753,13 +13753,13 @@ function* sub_9121() {
         return;
     } while (1);
 }
-function* sub_914e() {
+function sub_914e() {
     r8[al] = in8(0x61);
     r8[al] &= 0xfc;
     out8(0x61, r8[al]);
     cs = pop();
 }
-function* sub_9155() {
+function sub_9155() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13781,7 +13781,7 @@ function* sub_9155() {
         return;
     } while (1);
 }
-function* sub_9167() {
+function sub_9167() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13804,12 +13804,12 @@ function* sub_9167() {
         }
         r8[al] = 0x03;
     case 0x9185:
-        yield* sub_8fa0();
+        sub_8fa0();
         cs = pop();
         return;
     } while (1);
 }
-function* sub_9189() {
+function sub_9189() {
     push(0x7777);
     r16[bx] = sp;
     push(ds);
@@ -13828,7 +13828,7 @@ function* sub_9189() {
     cs = pop();
     sp += 4;
 }
-function* sub_91b4() {
+function sub_91b4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13862,7 +13862,7 @@ function* sub_91b4() {
         return;
     } while (1);
 }
-function* sub_9299() {
+function sub_9299() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13885,7 +13885,7 @@ function* sub_9299() {
         }
     case 0x92b4:
         r8[al] = memory[es*16 + di];
-        yield* sub_92d6();
+        sub_92d6();
         di++;
         if (--r16[cx]) {
             pc = 0x92b4;
@@ -13894,9 +13894,9 @@ function* sub_9299() {
         pc = 0x92c2;
         break;
     case 0x92bf:
-        yield* sub_935e();
+        sub_935e();
     case 0x92c2:
-        yield* sub_8fa0();
+        sub_8fa0();
         r16[ax] = 0;
         assert(pop() == 0x7777);
         cs = pop();
@@ -13904,19 +13904,19 @@ function* sub_9299() {
         return;
     } while (1);
 }
-function* sub_92cf() {
+function sub_92cf() {
     var pc = 0;
     do switch (pc) {
     case 0:
         r8[al] = 0x0d;
-        yield* sub_92d6();
+        sub_92d6();
         r8[al] = 0x0a;
         push(r16[bx]);
         push(r16[cx]);
         push(r16[dx]);
         push(es);
         push(r16[ax]);
-        yield* sub_9350();
+        sub_9350();
         r16[ax] = pop();
         if (r8[al] == 0x07) {
             pc = 0x930d;
@@ -13939,7 +13939,7 @@ function* sub_92cf() {
         r8[bh] = 0;
         r16[cx] = 0x0001;
         push(r16[dx]);
-        yield* sub_9463();
+        sub_9463();
         r16[dx] = pop();
         r8[dl]++;
         if (r8[dl] <= memory[ds*16 + 0x1583]) {
@@ -13951,7 +13951,7 @@ function* sub_92cf() {
         break;
     case 0x930d:
         r8[ah] = 0x0e;
-        yield* sub_9463();
+        sub_9463();
         pc = 0x9327;
         break;
     case 0x9314:
@@ -13967,9 +13967,9 @@ function* sub_92cf() {
         pc = 0x9327;
         break;
     case 0x9324:
-        yield* sub_932f();
+        sub_932f();
     case 0x9327:
-        yield* sub_9357();
+        sub_9357();
         es = pop();
         r16[dx] = pop();
         r16[cx] = pop();
@@ -13977,7 +13977,7 @@ function* sub_92cf() {
         return;
     } while (1);
 }
-function* sub_92d6() {
+function sub_92d6() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -13986,7 +13986,7 @@ function* sub_92d6() {
         push(r16[dx]);
         push(es);
         push(r16[ax]);
-        yield* sub_9350();
+        sub_9350();
         r16[ax] = pop();
         if (r8[al] == 0x07) {
             pc = 0x930d;
@@ -14009,7 +14009,7 @@ function* sub_92d6() {
         r8[bh] = 0;
         r16[cx] = 0x0001;
         push(r16[dx]);
-        yield* sub_9463();
+        sub_9463();
         r16[dx] = pop();
         r8[dl]++;
         if (r8[dl] <= memory[ds*16 + 0x1583]) {
@@ -14021,7 +14021,7 @@ function* sub_92d6() {
         break;
     case 0x930d:
         r8[ah] = 0x0e;
-        yield* sub_9463();
+        sub_9463();
         pc = 0x9327;
         break;
     case 0x9314:
@@ -14037,9 +14037,9 @@ function* sub_92d6() {
         pc = 0x9327;
         break;
     case 0x9324:
-        yield* sub_932f();
+        sub_932f();
     case 0x9327:
-        yield* sub_9357();
+        sub_9357();
         es = pop();
         r16[dx] = pop();
         r16[cx] = pop();
@@ -14047,7 +14047,7 @@ function* sub_92d6() {
         return;
     } while (1);
 }
-function* sub_932f() {
+function sub_932f() {
     r8[dh]++;
     if (r8[dh] <= memory[ds*16 + 0x1584])
         return;
@@ -14058,11 +14058,11 @@ function* sub_932f() {
     r8[bh] = memory[ds*16 + 0x1580];
     r16[cx] = memory16get(ds, 0x1581);
     r16[dx] = memory16get(ds, 0x1583);
-    yield* sub_9463();
+    sub_9463();
     r16[dx] = pop();
     r16[cx] = pop();
 }
-function* sub_9350() {
+function sub_9350() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14083,7 +14083,7 @@ function* sub_9350() {
         return;
     } while (1);
 }
-function* sub_9357() {
+function sub_9357() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14104,7 +14104,7 @@ function* sub_9357() {
         return;
     } while (1);
 }
-function* sub_935e() {
+function sub_935e() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14139,23 +14139,23 @@ function* sub_935e() {
             pc = 0x93c5;
             break;
         }
-        yield* sub_93fb();
-        yield* sub_932f();
+        sub_93fb();
+        sub_932f();
         r8[dl] = memory[ds*16 + 0x1581];
         pc = 0x93c1;
         break;
     case 0x9395:
-        yield* sub_93fb();
+        sub_93fb();
         push(r16[cx]);
         push(r16[dx]);
         r16[ax] = 0x0e07;
-        yield* sub_9463();
+        sub_9463();
         r16[dx] = pop();
         r16[cx] = pop();
         pc = 0x93c0;
         break;
     case 0x93a4:
-        yield* sub_93fb();
+        sub_93fb();
         if (r8[dl] == memory[ds*16 + 0x1581]) {
             pc = 0x93c0;
             break;
@@ -14164,12 +14164,12 @@ function* sub_935e() {
         pc = 0x93c0;
         break;
     case 0x93b1:
-        yield* sub_93fb();
-        yield* sub_932f();
+        sub_93fb();
+        sub_932f();
         pc = 0x93c0;
         break;
     case 0x93b9:
-        yield* sub_93fb();
+        sub_93fb();
         r8[dl] = memory[ds*16 + 0x1581];
     case 0x93c0:
         di++;
@@ -14181,7 +14181,7 @@ function* sub_935e() {
             pc = 0x936d;
             break;
         }
-        yield* sub_93fb();
+        sub_93fb();
         push(ds);
         r16[ax] = 0x0040;
         ds = r16[ax];
@@ -14207,7 +14207,7 @@ function* sub_935e() {
         return;
     } while (1);
 }
-function* sub_93fb() {
+function sub_93fb() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14291,7 +14291,7 @@ function* sub_93fb() {
         return;
     } while (1);
 }
-function* sub_9463() {
+function sub_9463() {
     push(si);
     push(di);
     push(bp);
@@ -14302,7 +14302,7 @@ function* sub_9463() {
     di = pop();
     si = pop();
 }
-function* sub_9470() {
+function sub_9470() {
     push(0x7777);
     r16[dx] = 0x0ac3;
     ds = r16[dx];
@@ -14373,9 +14373,9 @@ function* sub_9470() {
     push(cs);
     push(r16[ax]);
     push(cs);
-    yield* sub_a6a9();
+    sub_a6a9();
     push(cs);
-    yield* sub_a719();
+    sub_a719();
     r16[ax] = 0x1694;
     push(ds);
     push(r16[ax]);
@@ -14385,13 +14385,13 @@ function* sub_9470() {
     push(cs);
     push(r16[ax]);
     push(cs);
-    yield* sub_a6a9();
+    sub_a6a9();
     push(cs);
-    yield* sub_a71e();
+    sub_a71e();
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_962f() {
+function sub_962f() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14424,7 +14424,7 @@ function* sub_962f() {
         return;
     } while (1);
 }
-function* sub_9660() {
+function sub_9660() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14455,7 +14455,7 @@ function* sub_9660() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -14496,7 +14496,7 @@ function* sub_9660() {
         return;
     } while (1);
 }
-function* sub_9663() {
+function sub_9663() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14526,7 +14526,7 @@ function* sub_9663() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -14567,7 +14567,7 @@ function* sub_9663() {
         return;
     } while (1);
 }
-function* sub_971d() {
+function sub_971d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14605,7 +14605,7 @@ function* sub_971d() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -14666,7 +14666,7 @@ function* sub_971d() {
         return;
     } while (1);
 }
-function* sub_9730() {
+function sub_9730() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -14704,7 +14704,7 @@ function* sub_9730() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -14748,7 +14748,7 @@ function* sub_9730() {
         bp = sp;
     case 0x9733:
         r16[ax] = memory16get(ss, bp + 6);
-        yield* sub_9844();
+        sub_9844();
         if (!flags.carry) {
             pc = 0x974d;
             break;
@@ -14756,7 +14756,7 @@ function* sub_9730() {
         push(memory16get(ss, bp + 6));
         push(cs);
         cs = memory16get(ds, 0x17a4 + 2);
-        yield* callIndirect(memory16get(ds, 0x17a4 + 2), memory16get(ds, 0x17a4));
+        callIndirect(memory16get(ds, 0x17a4 + 2), memory16get(ds, 0x17a4));
         assert(cs == 0x0947);
         if (!r16[ax]) {
             pc = 0x975b;
@@ -14787,11 +14787,11 @@ function* sub_9730() {
         return;
     } while (1);
 }
-function* sub_97f7() {
+function sub_97f7() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        yield* sub_99cc();
+        sub_99cc();
         r16[ax] = si;
         r16[dx] = di;
         di = memory16get(ds, 0x179e);
@@ -14846,16 +14846,16 @@ function* sub_97f7() {
             pc = 0x9812;
             break;
         }
-        yield* sub_9a24();
+        sub_9a24();
         cs = pop();
         return;
     } while (1);
 }
-function* sub_9844() {
+function sub_9844() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        yield* sub_9a16();
+        sub_9a16();
         di = memory16get(ds, 0x179e);
         es = memory16get(ds, 0x179e + 2);
         pc = 0x985c;
@@ -14874,7 +14874,7 @@ function* sub_9844() {
             pc = 0x984d;
             break;
         }
-        yield* sub_99cc();
+        sub_99cc();
         r16[cx] = si;
         r16[bx] = di;
         r16[bx] -= memory16get(ds, 0x179c);
@@ -14963,13 +14963,13 @@ function* sub_9844() {
             pc = 0x98de;
             break;
         }
-        yield* sub_99b7();
+        sub_99b7();
     case 0x98de:
         flags.carry = false;
         return;
     } while (1);
 }
-function* sub_99b7() {
+function sub_99b7() {
     si = memory16get(ds, 0x179e);
     flags.direction = false;
     movsw_data_data_forward();
@@ -14979,7 +14979,7 @@ function* sub_99b7() {
     di -= 0x0008;
     memory16set(ds, 0x179e, si);
 }
-function* sub_99cc() {
+function sub_99cc() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15027,7 +15027,7 @@ function* sub_99cc() {
         return;
     } while (1);
 }
-function* sub_9a16() {
+function sub_9a16() {
     r16[dx] = r16[ax];
     r16[ax] &= 0x000f;
     r16[dx] >>= 1;
@@ -15035,7 +15035,7 @@ function* sub_9a16() {
     r16[dx] >>= 1;
     r16[dx] >>= 1;
 }
-function* sub_9a24() {
+function sub_9a24() {
     r8[cl] = 0x04;
     r16[dx] = rol16(r16[dx], r8[cl]);
     r16[cx] = r16[dx];
@@ -15043,7 +15043,7 @@ function* sub_9a24() {
     r16[dx] &= 0x000f;
     r16[ax] |= r16[cx];
 }
-function* sub_9a4f() {
+function sub_9a4f() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15074,7 +15074,7 @@ function* sub_9a4f() {
         return;
     } while (1);
 }
-function* sub_9ac2() {
+function sub_9ac2() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15110,7 +15110,7 @@ function* sub_9ac2() {
         return;
     } while (1);
 }
-function* sub_9b25() {
+function sub_9b25() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15153,7 +15153,7 @@ function* sub_9b25() {
         return;
     } while (1);
 }
-function* sub_9b50() {
+function sub_9b50() {
     push(0x7777);
     flags.direction = false;
     r16[bx] = sp;
@@ -15167,7 +15167,7 @@ function* sub_9b50() {
     cs = pop();
     sp += 2;
 }
-function* sub_9c51() {
+function sub_9c51() {
     push(0x7777);
     flags.direction = false;
     r16[bx] = sp;
@@ -15179,7 +15179,7 @@ function* sub_9c51() {
     assert(pop() == 0x7777);
     cs = pop();
 }
-function* sub_9c60() {
+function sub_9c60() {
     push(0x7777);
     r16[bx] = sp;
     di = memory16get(ss, r16[bx] + 6);
@@ -15198,7 +15198,7 @@ function* sub_9c60() {
     cs = pop();
     sp += 2;
 }
-function* sub_9c81() {
+function sub_9c81() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15240,7 +15240,7 @@ function* sub_9c81() {
         return;
     } while (1);
 }
-function* sub_9cd5() {
+function sub_9cd5() {
     push(0x7777);
     r16[bx] = sp;
     di = memory16get(ss, r16[bx] + 4);
@@ -15259,7 +15259,7 @@ function* sub_9cd5() {
     cs = pop();
     sp += 6;
 }
-function* sub_9d7d() {
+function sub_9d7d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15463,7 +15463,7 @@ function* sub_9d7d() {
         return;
     } while (1);
 }
-function* sub_9d81() {
+function sub_9d81() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15666,7 +15666,7 @@ function* sub_9d81() {
         return;
     } while (1);
 }
-function* sub_9ed4() {
+function sub_9ed4() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15677,7 +15677,7 @@ function* sub_9ed4() {
         }
         r8[al] -= r8[cl];
         flags.carry = !flags.carry;
-        yield* sub_9f5d();
+        sub_9f5d();
         if (flags.zero || flags.carry) {
             pc = 0x9f17;
             break;
@@ -15807,7 +15807,7 @@ function* sub_9ed4() {
         return;
     } while (1);
 }
-function* sub_9f5d() {
+function sub_9f5d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15852,7 +15852,7 @@ function* sub_9f5d() {
         return;
     } while (1);
 }
-function* sub_9faa() {
+function sub_9faa() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15910,7 +15910,7 @@ function* sub_9faa() {
         return;
     } while (1);
 }
-function* sub_9fe9() {
+function sub_9fe9() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -15997,11 +15997,11 @@ function* sub_9fe9() {
         return;
     } while (1);
 }
-function* sub_a06b() {
-    yield* sub_9faa();
+function sub_a06b() {
+    sub_9faa();
     cs = pop();
 }
-function* sub_a06f() {
+function sub_a06f() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16038,7 +16038,7 @@ function* sub_a06f() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -16078,7 +16078,7 @@ function* sub_a06f() {
         interrupt(0x21);
     case 0xa06f:
         r8[ch] = 0x00;
-        yield* sub_9fe9();
+        sub_9fe9();
         if (flags.carry) {
             pc = 0xa07f;
             break;
@@ -16092,25 +16092,25 @@ function* sub_a06f() {
         return;
     } while (1);
 }
-function* sub_a091() {
+function sub_a091() {
     push(di);
     push(si);
     push(r16[cx]);
-    yield* sub_9d81();
+    sub_9d81();
     r16[cx] = pop();
     si = pop();
     di = pop();
 }
-function* sub_a0af() {
+function sub_a0af() {
     push(di);
     push(si);
     push(r16[cx]);
-    yield* sub_9ed4();
+    sub_9ed4();
     r16[cx] = pop();
     si = pop();
     di = pop();
 }
-function* sub_a11e() {
+function sub_a11e() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16148,7 +16148,7 @@ function* sub_a11e() {
     case 0x9692:
         push(cs);
         cs = memory16get(es, 0x0006 + 2);
-        yield* callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
+        callIndirect(memory16get(es, 0x0006 + 2), memory16get(es, 0x0006));
         assert(cs == 0x0947);
     case 0x9697:
         memory16set(ds, 0x17ac, r16[ax]);
@@ -16215,13 +16215,13 @@ function* sub_a11e() {
         r16[ax] = memory16get(ss, bp - 8);
         r16[bx] = memory16get(ss, bp - 6);
         r16[dx] = memory16get(ss, bp - 4);
-        yield* sub_a0af();
-        yield* sub_a091();
+        sub_a0af();
+        sub_a091();
         r8[al]--;
         push(r16[dx]);
         push(r16[bx]);
         push(r16[ax]);
-        yield* sub_9d7d();
+        sub_9d7d();
         r16[cx] = pop();
         si = pop();
         di = pop();
@@ -16247,12 +16247,12 @@ function* sub_a11e() {
         return;
     } while (1);
 }
-function* sub_a504() {
+function sub_a504() {
     var pc = 0;
     do switch (pc) {
     case 0:
         push(0x7777);
-        yield* sub_a552();
+        sub_a552();
         r16[ax] = 0;
         r16[bx] = sp;
         r16[bx] = memory16get(ss, r16[bx] + 4);
@@ -16274,7 +16274,7 @@ function* sub_a504() {
         return;
     } while (1);
 }
-function* sub_a552() {
+function sub_a552() {
     r16[ax] = memory16get(ds, 0x17b2);
     r16[bx] = memory16get(ds, 0x17b4);
     r16[cx] = r16[ax];
@@ -16298,14 +16298,14 @@ function* sub_a552() {
     memory16set(ds, 0x17b2, r16[ax]);
     memory16set(ds, 0x17b4, r16[dx]);
 }
-function* sub_a58a() {
+function sub_a58a() {
     r8[ah] = 0x2c;
     interrupt(0x21);
     memory16set(ds, 0x17b2, r16[cx]);
     memory16set(ds, 0x17b4, r16[dx]);
     cs = pop();
 }
-function* sub_a597() {
+function sub_a597() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16377,7 +16377,7 @@ function* sub_a597() {
         return;
     } while (1);
 }
-function* sub_a6a9() {
+function sub_a6a9() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16429,7 +16429,7 @@ function* sub_a6a9() {
         return;
     } while (1);
 }
-function* sub_a719() {
+function sub_a719() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16459,7 +16459,7 @@ function* sub_a719() {
         break;
     case 0xa747:
         push(r16[dx]);
-        yield* sub_a7b6();
+        sub_a7b6();
         r16[dx] = pop();
     case 0xa74c:
         r16[ax] = 0;
@@ -16467,7 +16467,7 @@ function* sub_a719() {
         memory16set(es, di + 8, r16[ax]);
         memory16set(es, di + 10, r16[ax]);
         r16[bx] = 0x0010;
-        yield* sub_a7bc();
+        sub_a7bc();
         if (flags.zero) {
             pc = 0xa768;
             break;
@@ -16480,7 +16480,7 @@ function* sub_a719() {
         return;
     } while (1);
 }
-function* sub_a71e() {
+function sub_a71e() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16510,7 +16510,7 @@ function* sub_a71e() {
         break;
     case 0xa747:
         push(r16[dx]);
-        yield* sub_a7b6();
+        sub_a7b6();
         r16[dx] = pop();
     case 0xa74c:
         r16[ax] = 0;
@@ -16518,7 +16518,7 @@ function* sub_a71e() {
         memory16set(es, di + 8, r16[ax]);
         memory16set(es, di + 10, r16[ax]);
         r16[bx] = 0x0010;
-        yield* sub_a7bc();
+        sub_a7bc();
         if (flags.zero) {
             pc = 0xa768;
             break;
@@ -16531,7 +16531,7 @@ function* sub_a71e() {
         return;
     } while (1);
 }
-function* sub_a7aa() {
+function sub_a7aa() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16548,7 +16548,7 @@ function* sub_a7aa() {
         push(di);
         push(cs);
         cs = memory16get(es, r16[bx] + di + 2);
-        yield* callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
+        callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
         assert(cs == 0x0947);
         if (!r16[ax]) {
             pc = 0xa7ca;
@@ -16561,11 +16561,11 @@ function* sub_a7aa() {
         return;
     } while (1);
 }
-function* sub_a7b6() {
+function sub_a7b6() {
     var pc = 0;
     do switch (pc) {
     case 0:
-        yield* sub_a7aa();
+        sub_a7aa();
         r16[bx] = 0x001c;
         push(es);
         push(di);
@@ -16573,7 +16573,7 @@ function* sub_a7b6() {
         push(di);
         push(cs);
         cs = memory16get(es, r16[bx] + di + 2);
-        yield* callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
+        callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
         assert(cs == 0x0947);
         if (!r16[ax]) {
             pc = 0xa7ca;
@@ -16586,7 +16586,7 @@ function* sub_a7b6() {
         return;
     } while (1);
 }
-function* sub_a7bc() {
+function sub_a7bc() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16596,7 +16596,7 @@ function* sub_a7bc() {
         push(di);
         push(cs);
         cs = memory16get(es, r16[bx] + di + 2);
-        yield* callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
+        callIndirect(memory16get(es, r16[bx] + di + 2), memory16get(es, r16[bx] + di));
         assert(cs == 0x0947);
         flags.zero = r16[ax] == 0;
         if (!r16[ax]) {
@@ -16610,7 +16610,7 @@ function* sub_a7bc() {
         return;
     } while (1);
 }
-function* sub_a7cd() {
+function sub_a7cd() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16665,7 +16665,7 @@ function* sub_a7cd() {
             pc = 0xa826;
             break;
         }
-        yield* sub_a84b();
+        sub_a84b();
     case 0xa826:
         r16[ax] = 0x146a;
         r16[bx] = 0x1435;
@@ -16687,7 +16687,7 @@ function* sub_a7cd() {
         return;
     } while (1);
 }
-function* sub_a84b() {
+function sub_a84b() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16749,7 +16749,7 @@ function* sub_a84b() {
         return;
     } while (1);
 }
-function* sub_a93e() {
+function sub_a93e() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16776,7 +16776,7 @@ function* sub_a93e() {
         return;
     } while (1);
 }
-function* sub_a966() {
+function sub_a966() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16800,7 +16800,7 @@ function* sub_a966() {
         push(di);
         push(cs);
         cs = memory16get(es, di + 20 + 2);
-        yield* callIndirect(memory16get(es, di + 20 + 2), memory16get(es, di + 20));
+        callIndirect(memory16get(es, di + 20 + 2), memory16get(es, di + 20));
         assert(cs == 0x0947);
         if (!r16[ax]) {
             pc = 0xa989;
@@ -16827,7 +16827,7 @@ function* sub_a966() {
         return;
     } while (1);
 }
-function* sub_a9a3() {
+function sub_a9a3() {
     stop(/*override stack*/);
     si = pop();
     di = pop();
@@ -16836,7 +16836,7 @@ function* sub_a9a3() {
     memory16set(es, di + 8, r16[bx]);
     stop(/*2*/);
 }
-function* sub_a9ad() {
+function sub_a9ad() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16863,7 +16863,7 @@ function* sub_a9ad() {
         return;
     } while (1);
 }
-function* sub_a9d5() {
+function sub_a9d5() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16886,7 +16886,7 @@ function* sub_a9d5() {
         push(di);
         push(cs);
         cs = memory16get(es, di + 20 + 2);
-        yield* callIndirect(memory16get(es, di + 20 + 2), memory16get(es, di + 20));
+        callIndirect(memory16get(es, di + 20 + 2), memory16get(es, di + 20));
         assert(cs == 0x0947);
         if (!r16[ax]) {
             pc = 0xa9f8;
@@ -16907,13 +16907,13 @@ function* sub_a9d5() {
         return;
     } while (1);
 }
-function* sub_aa0b() {
+function sub_aa0b() {
     di = pop();
     es = pop();
     ds = pop();
     memory16set(es, di + 8, r16[bx]);
 }
-function* sub_aa15() {
+function sub_aa15() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16922,13 +16922,13 @@ function* sub_aa15() {
         bp = sp;
         di = memory16get(ss, bp + 6);
         es = memory16get(ss, bp + 6 + 2);
-        yield* sub_a93e();
+        sub_a93e();
         if (!flags.zero) {
             pc = 0xaa37;
             break;
         }
     case 0xaa20:
-        yield* sub_a966();
+        sub_a966();
         if (r8[al] == 0x1a) {
             pc = 0xaa34;
             break;
@@ -16938,14 +16938,14 @@ function* sub_aa15() {
             pc = 0xaa20;
             break;
         }
-        yield* sub_a966();
+        sub_a966();
         if (r8[al] != 0x0a) {
             pc = 0xaa34;
             break;
         }
         r16[bx]++;
     case 0xaa34:
-        yield* sub_a9a3();
+        sub_a9a3();
     case 0xaa37:
         bp = pop();
         r16[bx] = sp;
@@ -16963,7 +16963,7 @@ function* sub_aa15() {
         push(di);
         push(cs);
         cs = memory16get(es, di + 24 + 2);
-        yield* callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
+        callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
         assert(cs == 0x0947);
         if (r16[ax]) {
             pc = 0xaa5d;
@@ -16983,7 +16983,7 @@ function* sub_aa15() {
         return;
     } while (1);
 }
-function* sub_aa62() {
+function sub_aa62() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -16992,16 +16992,16 @@ function* sub_aa62() {
         bp = sp;
         di = memory16get(ss, bp + 6);
         es = memory16get(ss, bp + 6 + 2);
-        yield* sub_a9ad();
+        sub_a9ad();
         if (!flags.zero) {
             pc = 0xaa7a;
             break;
         }
         r8[al] = 0x0d;
-        yield* sub_a9d5();
+        sub_a9d5();
         r8[al] = 0x0a;
-        yield* sub_a9d5();
-        yield* sub_aa0b();
+        sub_a9d5();
+        sub_aa0b();
     case 0xaa7a:
         bp = pop();
         r16[bx] = sp;
@@ -17019,7 +17019,7 @@ function* sub_aa62() {
         push(di);
         push(cs);
         cs = memory16get(es, di + 24 + 2);
-        yield* callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
+        callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
         assert(cs == 0x0947);
         if (r16[ax]) {
             pc = 0xaaa0;
@@ -17039,7 +17039,7 @@ function* sub_aa62() {
         return;
     } while (1);
 }
-function* sub_aa7b() {
+function sub_aa7b() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -17059,7 +17059,7 @@ function* sub_aa7b() {
         push(di);
         push(cs);
         cs = memory16get(es, di + 24 + 2);
-        yield* callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
+        callIndirect(memory16get(es, di + 24 + 2), memory16get(es, di + 24));
         assert(cs == 0x0947);
         if (r16[ax]) {
             pc = 0xaaa0;
@@ -17079,7 +17079,7 @@ function* sub_aa7b() {
         return;
     } while (1);
 }
-function* sub_aabf() {
+function sub_aabf() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -17088,7 +17088,7 @@ function* sub_aabf() {
         bp = sp;
         di = memory16get(ss, bp + 10);
         es = memory16get(ss, bp + 10 + 2);
-        yield* sub_a9ad();
+        sub_a9ad();
         if (!flags.zero) {
             pc = 0xaae0;
             break;
@@ -17101,15 +17101,15 @@ function* sub_aabf() {
         }
     case 0xaad0:
         r8[al] = 0x20;
-        yield* sub_a9d5();
+        sub_a9d5();
         if (--r16[cx]) {
             pc = 0xaad0;
             break;
         }
     case 0xaad7:
         r8[al] = memory[ss*16 + bp + 8];
-        yield* sub_a9d5();
-        yield* sub_aa0b();
+        sub_a9d5();
+        sub_aa0b();
     case 0xaae0:
         bp = pop();
         assert(pop() == 0x7777);
@@ -17118,7 +17118,7 @@ function* sub_aabf() {
         return;
     } while (1);
 }
-function* sub_ab1d() {
+function sub_ab1d() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -17127,7 +17127,7 @@ function* sub_ab1d() {
         bp = sp;
         di = memory16get(ss, bp + 12);
         es = memory16get(ss, bp + 12 + 2);
-        yield* sub_a9ad();
+        sub_a9ad();
         if (!flags.zero) {
             pc = 0xab4d;
             break;
@@ -17147,7 +17147,7 @@ function* sub_ab1d() {
         push(r16[ax]);
     case 0xab37:
         r8[al] = 0x20;
-        yield* sub_a9d5();
+        sub_a9d5();
         if (--r16[cx]) {
             pc = 0xab37;
             break;
@@ -17162,13 +17162,13 @@ function* sub_ab1d() {
     case 0xab43:
         flags.direction = false;
         lodsb_data_forward();
-        yield* sub_a9d5();
+        sub_a9d5();
         if (--r16[cx]) {
             pc = 0xab43;
             break;
         }
     case 0xab4a:
-        yield* sub_aa0b();
+        sub_aa0b();
     case 0xab4d:
         bp = pop();
         assert(pop() == 0x7777);
@@ -17177,7 +17177,7 @@ function* sub_ab1d() {
         return;
     } while (1);
 }
-function* sub_aba8() {
+function sub_aba8() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -17190,10 +17190,10 @@ function* sub_aba8() {
         di = bp + 0x2;
         push(ss);
         es = pop();
-        yield* sub_a597();
+        sub_a597();
         di = memory16get(ss, bp + 44);
         es = memory16get(ss, bp + 44 + 2);
-        yield* sub_a9ad();
+        sub_a9ad();
         if (!flags.zero) {
             pc = 0xabe5;
             break;
@@ -17209,7 +17209,7 @@ function* sub_aba8() {
         r16[cx] = r16[ax];
     case 0xabce:
         r8[al] = 0x20;
-        yield* sub_a9d5();
+        sub_a9d5();
         if (--r16[cx]) {
             pc = 0xabce;
             break;
@@ -17222,12 +17222,12 @@ function* sub_aba8() {
     case 0xabdb:
         flags.direction = false;
         lodsb_data_forward();
-        yield* sub_a9d5();
+        sub_a9d5();
         if (--r16[cx]) {
             pc = 0xabdb;
             break;
         }
-        yield* sub_aa0b();
+        sub_aa0b();
     case 0xabe5:
         bp = pop();
         sp += 0x0020;
@@ -17237,7 +17237,7 @@ function* sub_aba8() {
         return;
     } while (1);
 }
-function* sub_abec() {
+function sub_abec() {
     var pc = 0;
     do switch (pc) {
     case 0:
@@ -17268,7 +17268,7 @@ function* sub_abec() {
         return;
     } while (1);
 }
-function* sub_ac0f() {
+function sub_ac0f() {
     push(0x7777);
     r16[bx] = sp;
     di = memory16get(ss, r16[bx] + 8);

@@ -1,5 +1,5 @@
 cico=/Users/gabrielvalky/Documents/git/Projects/CicoJit/cicodis/cicodis/cicodis
-${cico} $PWD/dos/TUNNELER.EXE -load 01ed -ctx start -segofscomment -negative 52000 -recursive \
+${cico} $PWD/dos/TUNNELER.EXE -load 01ed -ctx start,01ed:2d0b+sync,01ed:0000+sync,08e1:002e+sync -segofscomment -negative 52000 -recursive \
   -indirect 0947:135d,08e1:03a4,08e1:0489,08e1:017a,0947:01bf,0947:01f0,08c0:006a \
 > tunneler.clean
 
