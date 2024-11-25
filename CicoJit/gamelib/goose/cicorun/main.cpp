@@ -896,6 +896,7 @@ void cicocontext_t::in(uint8_t& val, int port)
 void cicocontext_t::push(const uint16_t& r)
 {
     assert (ctx->_sp > 10);
+    static int counter = 0;
     ctx->_sp -= 2;
     memory16(ctx->_ss, ctx->_sp) = r;
     assert(ctx->_sp > 0);
