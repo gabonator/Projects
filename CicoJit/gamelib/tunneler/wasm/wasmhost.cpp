@@ -15,8 +15,8 @@ uint32_t mVideoPixels[640*400];
 uint8_t asyncifyBuffer[1024+12];
 uint8_t* appMemory = CicoContext::ctx.memory;
 uint32_t* appVideo = mVideoPixels;
-uint32_t tempxx[2];
-uint32_t* lastKey = tempxx;
+uint32_t lastKey = 0;
+uint32_t seed = 0;
 
 // javascript imports
 extern "C" {
@@ -322,23 +322,23 @@ apiPrint(temp);
     }
     if (i == 0x21 && ctx.a.r8.h == 0x2c)
     {
-        ctx.c.r8.h = 1; // hr
-        ctx.c.r8.l = 20; // min
-        ctx.d.r8.h = 17; // sec
-        ctx.d.r8.l = 50; // hundredths
+        ctx.c.r8.h = seed; // hr
+        ctx.c.r8.l = seed >> 8; // min
+        ctx.d.r8.h = seed >> 16; // sec
+        ctx.d.r8.l = seed >> 24; // hundredths
         return;
     }
     if (i == 0x16 && ctx.a.r8.h == 0x00)
     {
-        while (lastKey[0] == 0)
+        while (lastKey == 0)
             sync();
-        ctx.a.r16 = lastKey[0];
-        lastKey[0] = 0;
+        ctx.a.r16 = lastKey;
+        lastKey = 0;
         return;
     }
     if (i == 0x16 && ctx.a.r8.h == 0x01)
     {
-        ctx.zero = lastKey[0] == 0;
+        ctx.zero = lastKey == 0;
         return;
     }
 
