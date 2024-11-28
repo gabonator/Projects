@@ -529,10 +529,10 @@ function interrupt(i)
     }
     if (i == 0x21 && r8[ah] == 0x2c)
     {
-        r8[ch] = 1;
-        r8[cl] = 20;
-        r8[dh] = 17;
-        r8[dl] = 50;
+        r8[ch] = Math.random()*256;
+        r8[cl] = Math.random()*256;
+        r8[dh] = 117;
+        r8[dl] = 150;
         return;
     }
     if (i == 0x16 && r8[ah] == 0x01)
