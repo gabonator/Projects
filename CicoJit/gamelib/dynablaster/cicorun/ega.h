@@ -906,9 +906,9 @@ public:
         buffer[addr] = bWrite;
         
         static int q = 0;
-        if (q++ > 5000)
+        if (q++ > 2000)
         {
-         //   _sync();
+//            _sync();
             q= 0;
         }
     }
@@ -921,42 +921,10 @@ public:
     }
     virtual uint32_t GetPixel(int x, int y)
     {
-        /*
-        uint8_t c = 0;
-        int ofs = startAdr, pitch = 512;
-        if (y%5==0)
-            c = buffer[ofs+(y/5)*640*4+x];
-        else if (y%5==1)
-            c = buffer[ofs+(y/5)*640*4+x+pitch*1];
-        else if (y%5==2)
-            c = buffer[ofs+(y/5)*640*4+x+pitch*2];
-        else if (y%5==3)
-            c = buffer[ofs+(y/5)*640*4+x+pitch*3];
-        else if (y%5==4)
-            c = buffer[ofs+(y/5)*640*4+x+pitch*4];
+        uint8_t c;
+        int ofs = startAdr*4;
+        c = buffer[ofs+(y/5)*40*rowOffset+x+(y%5)*rowOffset*8];
         return (palette[3*c+2]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c]*4)<<16);
-         */
-        
-        uint8_t c = startAdr;
-        int ofs = 0; //rowOffset == 64 ? 0 : 138*256; //startAdr/8; //138*256; //320*120-256-256-256-256-256*10;
-        //c = buffer[ofs+(y/5)*320*4+x+(y%5)*rowOffset*8];
-        c = buffer[ofs+(y/5)*320*8+x+(y%5)*rowOffset*8];
-        //c = buffer[ofs+(y/2)*320*4+x+(y%2)*rowOffset*8];
-//        c = buffer[ofs+y*320*2+320+128+x]; //+(y%2)*(320*120)];
-        /*
-        if (y%5==0)
-            c = buffer[ofs+(y/5)*320*4+x];
-        else if (y%5==1)
-            c = buffer[ofs+(y/5)*320*4+x+ rowOffset*8];
-        else if (y%5==2)
-            c = buffer[ofs+(y/5)*320*4+x+ rowOffset*8*2];
-        else if (y%5==3)
-            c = buffer[ofs+(y/5)*320*4+x+ rowOffset*8*3];
-        else if (y%5==4)
-            c = buffer[ofs+(y/5)*320*4+x+ rowOffset*8*4];
-         */
-        return (palette[3*c+2]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c]*4)<<16);
-         
     }
     virtual void SetPixel(int x, int y, int c)
     {

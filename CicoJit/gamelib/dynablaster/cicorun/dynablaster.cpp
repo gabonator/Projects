@@ -4596,7 +4596,7 @@ loc_2cff:
     al &= 0xe0;
     bx = 0x0003;
 loc_2d30:
-    stop(/*74*/);
+    //stop(/*74*/);
     flags.carry = false;
     al = rcl(al, 0x01);
     if (!flags.carry)
@@ -4882,7 +4882,7 @@ loc_2f87:
         return;
     ax = memoryAGet16(ds, bx);
     dx = memoryAGet16(ds, bx + 2);
-    stop(/*74*/);
+   // stop(/*74*/);
     flags.carry = false;
     ax = rcl(ax, 0x0001);
     dx = rcl(dx, 0x0001);

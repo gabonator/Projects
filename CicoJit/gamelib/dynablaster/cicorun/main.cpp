@@ -1256,9 +1256,9 @@ void cicocontext_t::sync(void)
 {
     memory8(0xb52, 0x0020) = 0;
     memory8(0xb52, 0x204f) = 0xff;
-    memory16(0xb52, 0x001c)++;
+//    memory16(0xb52, 0x001c)++;
     //memoryASet(ds, 0x204f, 0xff);
-    memoryASet16(ds, 0x001c, memoryAGet16(ds, 0x001c) + 1);
+    //memoryASet16(ds, 0x001c, memoryAGet16(ds, 0x001c) + 1);
 
     _sync();
 }
