@@ -2,16 +2,18 @@ document.body.innerHTML += `<canvas id="map" width="1024" height="480" style="bo
 
 var mcanvas = document.getElementById('map');
 var mctx = mcanvas.getContext('2d');
-var mimageData = mctx.getImageData(0, 0, mcanvas.width, mcanvas.height);
-var step = 0;
-
+//var mimageData = mctx.getImageData(0, 0, mcanvas.width, mcanvas.height);
+//var step = 0;
+//var iter = 0;
 setInterval(()=>{
+  var game = session.gameLocal;
   if (!game.memoryBuffer)
     return
 
   const myImageData = mctx.createImageData(1024, 480);
   var pal = [0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
       0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff];
+/*
 
   var setPixel = (x, y, c) => {
     var b = game.memoryBuffer[64100+y*512+(x>>1)];
@@ -30,7 +32,7 @@ setInterval(()=>{
   // render letter 'G'
   step++;
   var fun = [10, 11, 12, 14];
-  var egafont14x8 = new Uint8ClampedArray(game.memory.buffer, game.symbols.egafont14x8.value, 256*14);
+  var egafont14x8 = new Uint8ClampedArray(game.app.memory.buffer, game.app.symbols.egafont14x8.value, 256*14);
   for (var x=0; x<8*10; x++)
     for (var y=0; y<14*10; y++)
     {
@@ -41,7 +43,7 @@ setInterval(()=>{
       if (egafont14x8[71*14+by] & (128>>bx))
         setPixel(480+x, 150+y, fun[((step+y+x)>>3)%fun.length]);
     }
-
+*/
   // render map
   var i=0;
   for (var y=0; y<480; y++)
