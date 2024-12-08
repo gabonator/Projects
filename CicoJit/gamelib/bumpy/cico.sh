@@ -32,12 +32,14 @@ arch -arm64 g++ -std=c++17 ../../cicodis/cicodis/main.cpp -I/opt/homebrew/Cellar
   -jumptable 01ed:ffff 1228:085c 21 callwords indirect \
   -jumptable 0ca6:ffff 1228:5536 26 callwords indirect \
   -indirect 0ed9:0def,01ed:a3ae,0ed9:0c34,1223:0015,0ca6:0aa0,0ca6:0823,0ca6:1087,0ed9:0e29,0ed9:10e1,0ca6:0db0 \
+\
    > bumpy.clean
+#  -sync sub_24b7,sub_2c6d,sub_4fad,sub_515f,sub_5475,sub_5722,sub_cd2e,sub_12190,sub_12245 
 
 cp bumpy.clean bumpy.cpp
 patch bumpy.cpp bumpy.patch
+patch bumpy.cpp bumpyextras.patch
 
-#patch bumpy.cpp bumpy.patch
 sed -E \
     -e 's/memoryASet16\(([^,]+), ([^,]+), (.+)\);/memory16(\1, \2) = \3;/' \
     -e 's/memoryAGet16\(([^,]+), ([^,]+)\)/memory16(\1, \2)/g' \
@@ -45,7 +47,7 @@ sed -E \
     -e 's/memoryAGet\(([^,]+), ([^,]+)\)/memory(\1, \2)/g' \
     -e 's/MemAuto/MemData/g' \
     -e 's/DirAuto/DirForward/g' \
-  bumpy.cpp > bumpyopt.cpp
-
+  bumpy.cpp > bumpyopt.clean
+cp bumpyopt.clean bumpyopt.cpp
 patch bumpyopt.cpp bumpyopt.patch
 rm cicodis

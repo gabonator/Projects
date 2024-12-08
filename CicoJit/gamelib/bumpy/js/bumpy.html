@@ -1,3 +1,33 @@
+<style> 
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+  font-family: 'Poppins', sans-serif;   
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Lorciel Bumpy <font color="silver">(cicoparser javascript port)</font></div>
+<div class="right-text"><span id="status"></span></div>
+</div>
+<br>
 <canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
 <script src="resources.js"></script>
 <script src="ega.js"></script>
@@ -202,7 +232,7 @@ function repne_scasb_bios_forward(value)
         r16[cx]--;
     }
 }
-function repne_scasb_MemPsp_forward(value)
+function repne_scasb_psp_forward(value)
 {                                  
     flags.zero = 0;
     while (r16[cx] != 0 && flags.zero == 0)
@@ -240,7 +270,7 @@ function lodsb_es_bios_forward()
   assert(es < 0xa000 && es*16 + si < memory.length && si <= 0xffff);
   r8[al] = memoryBiosGet(es, si++);
 }
-function lodsb_es_MemPsp_forward()
+function lodsb_es_psp_forward()
 {
   assert(es < 0xa000 && es*16 + si < memory.length && si <= 0xffff);
   r8[al] = memoryPspGet(es, si++);
@@ -259,7 +289,7 @@ function rep_movsb_data_bios_forward()
     memory[es*16 + di++] = memoryBiosGet(ds, si++);
   r16[cx] = 0;
 }
-function rep_movsb_data_MemPsp_forward()
+function rep_movsb_data_psp_forward()
 {
   assert(es < 0xa000 && ds < 0xa000 && r16[cx] > 0 && si <= 0xffff && di <= 0xffff);
   assert(ds*16 + si < memory.length && es*16 + di < memory.length);
@@ -278,7 +308,7 @@ function lodsb_bios_forward()
   assert(ds < 0xa000 && si <= 0xffff);
   r8[al] = memoryBiosGet(ds, si++);
 }
-function lodsb_MemPsp_forward()
+function lodsb_psp_forward()
 {
   assert(ds < 0xa000 && si <= 0xffff);
   r8[al] = memoryPspGet(ds, si++);
@@ -617,7 +647,19 @@ function* sync(k)
 }
 
 // app
-var bumpyStartupLevel = window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
+var h = window.location.hash;
+let [mlevel, mroom] = (window.location.search.substr(1) || "0,0").split(",").map(x=>parseInt(x))
+console.log([mlevel, mroom]);
+bumpyStartupLevel = mlevel; //window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
+if (mroom)
+{
+  bumpyQuickPlay = mroom;
+  if (mroom == -1)
+    document.querySelector("#status").innerHTML = `Level ${mlevel}`
+  else
+    document.querySelector("#status").innerHTML = `Level ${mlevel}, room ${mroom}`
+}
+
 var sequence = start();
 sequence.next();
 memory[0x1228 * 16 + 0x4d44 + 0x3d] = 1; // F3 - vga
@@ -626,6 +668,7 @@ memory[0x1228 * 16 + 0x4d44 + 0x3d] = 0;
 memory[0x1228 * 16 + 0x4d44 + 0x3f] = 1; // F5 - no sound
 sequence.next();
 memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
+for (var i=0; i<37; i++)
 sequence.next();
 
 setInterval( ()=>
@@ -647,9 +690,9 @@ function display()
     for (var x=0; x<320; x++)
     {
       var c = EGA.getPixel(x, y);
-      pixels[p++] = c>>16;
-      pixels[p++] = (c>>8)&0xff;
-      pixels[p++] = c & 0xff;
+      pixels[p++] = (c>>16)*1.5;
+      pixels[p++] = ((c>>8)&0xff)*1.5;
+      pixels[p++] = (c & 0xff)*1.5;
       pixels[p++] = 255;
     }
   ctx.putImageData(data, 0, 0);
@@ -679,4 +722,31 @@ function display()
         }
     }
 
+</script>
+
+
+<div id="quickpanel" style="width:350px; position:fixed; top:60px; bottom:0px; right:0px; overflow:auto;">
+</div>
+
+<script>
+var html = "";
+var lc = [0, 15, 15, 15, 12, 12, 15, 12, 15, 12];
+for (var level=1; level<=9; level++)
+{
+  html += `
+    <h3>Level ${level}</h3>
+    <a href="?${level},-1"><div style="position:relative">
+      <img width="320" src="../res/${("0"+level).substr(-2)}.png">
+    </a><br><hr>`;
+  for (var room=1; room<=lc[level]; room++)
+  {
+    html += `
+      <a href="?${level},${room}"><div style="position:relative">
+        <img style="position:relative; left:0px;" width="320" src="../res/${("0"+level).substr(-2)}${("0"+room).substr(-2)}bkg.png">
+        <img style="position:absolute; left:0px;" width="320" src="../res/${("0"+level).substr(-2)}${("0"+room).substr(-2)}.png">
+      </a><br>`;
+    html += "<hr>"
+  }
+}
+document.querySelector("#quickpanel").innerHTML = html;
 </script>

@@ -1,5 +1,9 @@
-var bumpyStartupLevel = 4;
+var bumpyStartupLevel = 7;
+var bumpyQuickPlay = 0;
 var bumpyScene = "";
+var bumpyNoAsking = true;
+var bumpyNoBackground = false;
+var bumpyOnPreview = null;
 
 function* start() {
     headerSize = 0x1200;
@@ -10,10 +14,10 @@ function* start() {
     ss = 0x1c49;
     sp = 0x0080;
     load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/dos", "B.EXE", 112704);
-    yield* fixReloc(cs);
+    fixReloc(cs);
     yield* sub_1ed0();
 }
-function* fixReloc(seg) {
+function fixReloc(seg) {
     memory16set(0x0000 + seg, 0x0001, memory16get(0x0000 + seg, 0x0001) + seg);
     memory16set(0x000b + seg, 0x000d, memory16get(0x000b + seg, 0x000d) + seg);
     memory16set(0x000f + seg, 0x0007, memory16get(0x000f + seg, 0x0007) + seg);
@@ -1386,7 +1390,7 @@ function* sub_1ed0() {
         r16[cx] = 0x7fff;
         flags.direction = false;
     case 0x1f04:
-        repne_scasb_MemPsp_forward(r8[al]);
+        repne_scasb_psp_forward(r8[al]);
         if (r16[cx] == 0) {
             pc = 0x1f44;
             break;
@@ -2794,6 +2798,8 @@ function* sub_2960() {
     var pc = 0;
     do switch (pc) {
     case 0:
+        if (bumpyNoBackground)
+            return;
         push(0x7777);
         push(bp);
         bp = sp;
@@ -3016,7 +3022,8 @@ function* sub_2ae8() {
     case 0x2b23:
         yield* sub_2e4a();
     case 0x2b26:
-        yield* sub_5475();
+        if (!bumpyQuickPlay)
+            yield* sub_5475();
         memory[ss*16 + bp - 1] = r8[al];
         if (r8[al]) {
             pc = 0x2b18;
@@ -3025,7 +3032,11 @@ function* sub_2ae8() {
         pc = 0x2c5a;
         break;
     case 0x2b33:
-        yield* sub_5722();
+        bumpyScene = "rooms";
+        if (bumpyQuickPlay <= 0)
+            yield* sub_5722();
+        else
+        memory[ds*16 + 0x854e] = bumpyQuickPlay != -1 ? bumpyQuickPlay : 0;
         if (memory[ds*16 + 0x928d] != 0xff) {
             pc = 0x2b42;
             break;
@@ -3064,7 +3075,11 @@ function* sub_2ae8() {
         yield* sub_24b7();
         sp++;
         sp++;
+        bumpyScene = "preview";
+        if (bumpyOnPreview)
+            bumpyOnPreview();
         yield* sub_515f();
+        bumpyScene = "game";
         yield* sub_3343();
         yield* sub_6a1e();
         yield* sub_325c();
@@ -6260,7 +6275,8 @@ function* sub_41cc() {
         pc = 0x4207;
         break;
     case 0x4200:
-        memory[ds*16 + 0x791a] -= 1;
+        if (!bumpyQuickPlay)
+            memory[ds*16 + 0x791a] -= 1;
         r8[al] = memory[ds*16 + 0x791a];
     case 0x4207:
         si = pop();
@@ -8074,7 +8090,8 @@ function* sub_4dc8() {
         push(r16[ax]);
         yield* sub_91d7();
         sp += 0x0004;
-        yield* sub_4e7c();
+        if (!bumpyQuickPlay)
+            yield* sub_4e7c();
         r16[ax] = 0x0004;
         push(r16[ax]);
         r16[ax] = 0;
@@ -9269,6 +9286,9 @@ function* sub_5722() {
         sp++;
         sp++;
         yield* sub_b734();
+        bumpyScene = "map";
+        if (bumpyOnPreview)
+            bumpyOnPreview();
         yield* sub_3343();
         yield* sub_325c();
         yield* sub_3aa7();
@@ -24050,7 +24070,7 @@ function* sub_c91e() {
         es = memory16get(ds, 0x0079);
         si = 0x0080;
         r8[ah] = 0;
-        lodsb_es_MemPsp_forward();
+        lodsb_es_psp_forward();
         r16[ax]++;
         bp = es;
         r16[tx] = si;
@@ -24071,7 +24091,7 @@ function* sub_c91e() {
         di = si;
         r8[cl] = 0x7f;
         r8[al] = 0;
-        repne_scasb_MemPsp_forward(r8[al]);
+        repne_scasb_psp_forward(r8[al]);
         if (r16[cx] == 0) {
             pc = 0xc9d5;
             break;
@@ -24097,7 +24117,7 @@ function* sub_c91e() {
         es = pop();
         push(r16[cx]);
         r16[cx]--;
-        rep_movsb_data_MemPsp_forward();
+        rep_movsb_data_psp_forward();
         r8[al] = 0;
         stosb_data_forward();
         ds = bp;
@@ -24228,7 +24248,7 @@ function* sub_c9ad() {
             pc = 0xc9d4;
             break;
         }
-        lodsb_MemPsp_forward();
+        lodsb_psp_forward();
         r16[cx]--;
         r8[al] -= 0x22;
         if (r8[al] == 0)
@@ -24945,6 +24965,10 @@ function* sub_cd2e() {
         }
     case 0xcd76:
         bumpyScene = "startup";
+        if (bumpyNoAsking) {
+            pc = 0xcd98;
+            break;
+        }
         yield* sync();
         r8[al] = 0x3c;
         push(cs);
@@ -26198,7 +26222,7 @@ function* sub_d65d() {
         r8[tl] = r8[al];
         r8[al] = r8[ah];
         r8[ah] = r8[tl];
-        sub_d69e(0x21);
+        yield* sub_d69e(0x21);
         r8[al]++;
         r8[ah] <<= 1;
         if (r8s[al] > signed8(0x03))
@@ -26232,7 +26256,7 @@ function* sub_d665() {
         r8[tl] = r8[al];
         r8[al] = r8[ah];
         r8[ah] = r8[tl];
-        sub_d69e(0x09);
+        yield* sub_d69e(0x09);
         r8[al]++;
         r8[ah] <<= 1;
         if (r8s[al] > signed8(0x03))
@@ -26266,7 +26290,7 @@ function* sub_d66d() {
         r8[tl] = r8[al];
         r8[al] = r8[ah];
         r8[ah] = r8[tl];
-        sub_d69e(0x31);
+        yield* sub_d69e(0x31);
         r8[al]++;
         r8[ah] <<= 1;
         if (r8s[al] > signed8(0x03))
@@ -26307,11 +26331,19 @@ function* sub_d69e(opcode) {
         r16[ax] = memory16get(ds, si);
         switch (opcode)
         {
-        case 0x21: memoryAAnd16(es, di, r16[ax]); break;
-        case 0x09: memoryAOr16(es, di, r16[ax]); break;
-        case 0x31: memoryAXor16(es, di, r16[ax]); break;
+        case 0x21:
+            videoSet(es, di, videoGet(es, di) & r8[al]);
+            videoSet(es, di+1, videoGet(es, di+1) & r8[ah]);
+            break;
+        case 0x09:
+            videoSet(es, di, videoGet(es, di) | r8[al]);
+            videoSet(es, di+1, videoGet(es, di+1) | r8[ah]);
+            break;
+        case 0x31:
+            videoSet(es, di, videoGet(es, di) ^ r8[al]);
+            videoSet(es, di+1, videoGet(es, di+1) ^ r8[ah]);
+            break;
         }
-        break;
         si += 0x0002;
         di += 0x0002;
         if (--r16[cx]) {
@@ -30788,6 +30820,10 @@ function* sub_12190() {
             break;
         }
     case 0x121d8:
+        if (bumpyNoAsking) {
+            pc = 0x121fe;
+            break;
+        }
         yield* sync();
         r8[al] = 0x3f;
         push(cs);

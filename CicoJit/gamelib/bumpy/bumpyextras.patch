@@ -1,18 +1,34 @@
 diff --git a/./bumpy.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/cicorun/./bumpy.cpp
-index 2e6f6e5..3d218f7 100644
+index 39b240e..e413ac0 100644
 --- a/./bumpy.cpp
 +++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/cicorun/./bumpy.cpp
-@@ -1,7 +1,8 @@
+@@ -1,9 +1,13 @@
  #include "cicoemu.h"
  using namespace CicoContext;
  
 -int bumpyStartupLevel = 4;
-+int bumpyStartupLevel = 3;
-+int bumpyQuickPlay = 0;
++int bumpyStartupLevel = 1;
++int bumpyQuickPlay = 3;
  const char* bumpyScene = "";
- 
+-
++bool bumpyNoAsking = true;
++bool bumpyNoBackground = false;
++bool bumpyNoGameElements = true;
++void (*bumpyOnPreview)() = nullptr;
  void sub_1ed0();
-@@ -3345,13 +3346,17 @@ loc_2b18:
+ void fixReloc(uint16_t seg);
+ 
+@@ -3159,6 +3163,9 @@ loc_28e4:
+ }
+ void sub_2960()
+ {
++    if (bumpyNoBackground)
++        return;
++
+     push(0x7777);
+     push(bp);
+     bp = sp;
+@@ -3345,13 +3352,18 @@ loc_2b18:
  loc_2b23:
      sub_2e4a();
  loc_2b26:
@@ -25,14 +41,41 @@ index 2e6f6e5..3d218f7 100644
      goto loc_2c5a;
  loc_2b33:
 -    sub_5722();
-+    if (!bumpyQuickPlay)
++    bumpyScene = "rooms";
++    if (bumpyQuickPlay <= 0)
 +        sub_5722(); // room selector
 +    else
-+        memoryASet(ds, 0x854e, bumpyQuickPlay);
++        memoryASet(ds, 0x854e, bumpyQuickPlay != -1 ? bumpyQuickPlay : 0);
      if (memoryAGet(ds, 0x928d) != 0xff)
          goto loc_2b42;
      sub_30bb();
-@@ -3402,7 +3407,7 @@ loc_2b42:
+@@ -3374,8 +3386,11 @@ loc_2b42:
+     push(ax);
+     sub_7051();
+     sp += 0x0004;
+-    sub_3b82();
+-    sub_3bba();
++    if (!bumpyNoGameElements)
++    {
++        sub_3b82();
++        sub_3bba();
++    }
+     sub_24d4();
+     ax = 0x0001;
+     push(ax);
+@@ -3387,7 +3402,11 @@ loc_2b42:
+     sub_24b7();
+     sp++;
+     sp++;
++    bumpyScene = "preview";
++    if (bumpyOnPreview)
++        bumpyOnPreview();
+     sub_515f();
++    bumpyScene = "game";
+     sub_3343();
+     sub_6a1e();
+     sub_325c();
+@@ -3402,7 +3421,7 @@ loc_2b42:
      sub_6a1e();
      goto loc_2c19;
  loc_2baa:
@@ -41,7 +84,7 @@ index 2e6f6e5..3d218f7 100644
      sub_b281();
      memoryASet(ds, 0x79b3, al);
      sub_325c();
-@@ -3447,11 +3452,11 @@ loc_2baa:
+@@ -3447,11 +3466,11 @@ loc_2baa:
      sub_68a7();
  loc_2c19:
      if (memoryAGet(ds, 0x928d) != 0x00)
@@ -56,7 +99,7 @@ index 2e6f6e5..3d218f7 100644
      goto loc_2baa;
  loc_2c31:
      if (memoryAGet(ds, 0x928d) != 0xff)
-@@ -6010,7 +6015,8 @@ loc_41e7:
+@@ -6010,7 +6029,8 @@ loc_41e7:
      memoryASet(ds, 0x928d, al);
      goto loc_4207;
  loc_4200:
@@ -66,7 +109,45 @@ index 2e6f6e5..3d218f7 100644
      al = memoryAGet(ds, 0x791a);
  loc_4207:
      si = pop();
-@@ -7465,7 +7471,8 @@ loc_4dd8:
+@@ -7127,8 +7147,11 @@ loc_4a3f:
+     bx = memoryAGet16(ss, bp - 16);
+     es = memoryAGet16(ss, bp - 16 + 2);
+     memoryASet16(es, bx + 10, ax);
+-    sub_352e();
+-    sub_3937();
++    if (!bumpyNoGameElements)
++    {
++        sub_352e();
++        sub_3937();
++    }
+ loc_4abb:
+     al = memoryAGet(ss, bp - 2);
+     ah = 0x00;
+@@ -7174,8 +7197,11 @@ loc_4abb:
+     bx = memoryAGet16(ss, bp - 20);
+     es = memoryAGet16(ss, bp - 20 + 2);
+     memoryASet16(es, bx + 10, ax);
+-    sub_3697();
+-    sub_39fb();
++    if (!bumpyNoGameElements)
++    {
++        sub_3697();
++        sub_39fb();
++    }
+ loc_4b2b:
+     al = memoryAGet(ss, bp - 2);
+     ah = 0x00;
+@@ -7230,7 +7256,8 @@ loc_4b2b:
+     push(ds);
+     ax = 0x792e;
+     push(ax);
+-    sub_b2fa();
++    if (!bumpyNoGameElements)
++        sub_b2fa();
+     sp += 0x0004;
+ loc_4bae:
+     memoryASet(ss, bp - 1, memoryAGet(ss, bp - 1) + 1);
+@@ -7465,7 +7492,8 @@ loc_4dd8:
      push(ax);
      sub_91d7();
      sp += 0x0004;
@@ -76,3 +157,40 @@ index 2e6f6e5..3d218f7 100644
      ax = 0x0004;
      push(ax);
      ax = 0;
+@@ -8538,6 +8566,9 @@ loc_580c:
+     sp++;
+     sp++;
+     sub_b734();
++    bumpyScene = "map";
++    if (bumpyOnPreview)
++        bumpyOnPreview();
+     sub_3343();
+     sub_325c();
+     sub_3aa7();
+@@ -10390,7 +10421,7 @@ loc_6718:
+     memoryASet16(es, bx + 32, 0x0019);
+     push(memoryAGet16(ds, 0x0576));
+     push(memoryAGet16(ds, 0x0574));
+-    sub_b288();
++    sub_b288(); // draw background?
+     sp += 0x0004;
+     bp = pop();
+     assert(pop() == 0x7777);
+@@ -21354,6 +21385,8 @@ loc_cd70:
+         goto loc_cd5d;
+ loc_cd76:
+     bumpyScene = "startup";
++    if (bumpyNoAsking)
++        goto loc_cd98;
+     sync();
+     al = 0x3c;
+     push(cs);
+@@ -26492,6 +26534,8 @@ loc_121d2:
+     if (--cx)
+         goto loc_121bf;
+ loc_121d8:
++    if (bumpyNoAsking)
++        goto loc_121fe;
+     sync();
+     al = 0x3f;
+     push(cs);

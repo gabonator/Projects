@@ -1258,8 +1258,81 @@ void cicocontext_t::load(const char* path, const char* file, int size)
 
 }
 void start();
+extern void (*bumpyOnPreview)();
+extern int bumpyStartupLevel;
+extern int bumpyQuickPlay;
+
+/*
+ [](){
+     exit(0);
+ };
+ */
+void WriteBmp(const char* filename, int width, int height)
+{
+    #pragma pack(push, 1) // Ensure no padding in BMP header structs
+    struct BMPFileHeader {
+        uint16_t bfType = 0x4D42;       // "BM"
+        uint32_t bfSize;
+        uint16_t bfReserved1 = 0;
+        uint16_t bfReserved2 = 0;
+        uint32_t bfOffBits = 54;        // Pixel data offset
+    };
+
+    struct BMPInfoHeader {
+        uint32_t biSize = 40;           // Header size
+        int32_t biWidth;
+        int32_t biHeight;
+        uint16_t biPlanes = 1;
+        uint16_t biBitCount = 32;       // 24 bits per pixel (RGB)
+        uint32_t biCompression = 0;    // No compression
+        uint32_t biSizeImage;
+        int32_t biXPelsPerMeter = 2835; // 72 DPI
+        int32_t biYPelsPerMeter = 2835; // 72 DPI
+        uint32_t biClrUsed = 0;
+        uint32_t biClrImportant = 0;
+    };
+    #pragma pack(pop)
+
+    BMPFileHeader fileHeader;
+    BMPInfoHeader infoHeader;
+
+    infoHeader.biWidth = width;
+    infoHeader.biHeight = height;
+    infoHeader.biSizeImage = width * height * 3;
+    fileHeader.bfSize = fileHeader.bfOffBits + infoHeader.biSizeImage;
+
+    FILE *outFile = fopen(filename, "wb");
+    fwrite(&fileHeader, sizeof(fileHeader), 1, outFile);
+    fwrite(&infoHeader, sizeof(infoHeader), 1, outFile);
+
+    const int rowPadding = (4 - (width * 3) % 4) % 4;
+    for (int y = height - 1; y >= 0; --y) {
+        for (int x = 0; x < width; ++x) {
+            uint32_t p = mVideo->GetPixel(x, y);
+//            if (p == mEga.palette[0])
+//                p = 0;
+//            else
+                p |= 0xff000000;
+            fwrite(&p, 4, 1, outFile);
+        }
+        uint8_t padding[3] = {0};
+        fwrite(padding, rowPadding, 1, outFile); // Row padding
+    }
+    fclose(outFile);
+}
+
 int main(int argc, const char * argv[])
 {
+    if (argc == 4) {
+        static const char* filename = nullptr;
+        filename = argv[1];
+        bumpyStartupLevel = atoi(argv[2]);
+        bumpyQuickPlay = atoi(argv[3]);
+        bumpyOnPreview = [](){
+            WriteBmp(filename, 320, 200);
+            exit(0);
+        };
+    }
     CicoContext::ctx = new CicoContext::cicocontext_t();
 
     memset(mem, 0, sizeof(mem));
