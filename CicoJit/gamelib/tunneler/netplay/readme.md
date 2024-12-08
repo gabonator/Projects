@@ -3,7 +3,7 @@
 ![readme](readme.png)
 
 Tunneler by Geoffrey Silverton is a DOS game from 1991 written in Turbo Pascal. With Cicoparser it was converted into C++ and then rebuild with emscripten so it could be played inside browser. This is a proof of concept of turning cicoparser games into network multiplayer game.
-You can play it here [http://cloud.valky.eu:8042/tunneler.html](http://cloud.valky.eu:8042/tunneler.html), or you can run it locally with docker/podman. For offline mode, just open the html file: [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/netplay/tunneler.html](tunneler.html)
+You can play it here [http://cloud.valky.eu:8042/](http://cloud.valky.eu:8042/), or you can run it locally with docker/podman. For offline mode, just open the html file: [tunneler.html](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/netplay/tunneler.html)
 
 There are a few extras: Maze, full map view, and realtime status of the gameplay. With this information you can add your own modifications - e.g. custom weapons or dynamic map elements, see [fun.js](fun.js) for details
 
