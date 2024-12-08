@@ -19,7 +19,7 @@ class WasmApp
       "abort": () => abort(1), 
       "_abort": () => abort(2),
       "__assert_fail": (condition, filename, line, func) =>
-        abort('Assertion failed: ' + env.string(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']),
+        abort('Assertion failed: ' + env.string(condition) + ', at: ' + [filename ? env.string(filename) : 'unknown filename', line, func ? env.string(func) : 'unknown function']),
       "__setErrNo": () => abort(3), 
       "emscripten_get_heap_size": () => abort(4),
       "emscripten_memcpy_big": (dest, src, num) => this.memory.copyWithin(dest, src, src + num), 

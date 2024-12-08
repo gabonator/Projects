@@ -1,8 +1,37 @@
-<canvas id="canvas1" width="640" height="400" style="border: 1px solid #d0d0d0;"></canvas>
-<div id="info" style="position:fixed; left:20px; top:20px; color:#ffffff"></div>
+<style> 
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+  font-family: 'Poppins', sans-serif; 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Tunneler multiplayer <font color="silver">(cicoparser wasm port)</font></div>
+<div class="right-text"><span id="status"></span></div>
+</div>
+<canvas id="canvas1" width="640" height="400" style="padding-bottom:20px; padding-top:20px;"></canvas>
 
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
+<script src="maze.js"></script>
 <script src="fun.js"></script>
 <script src="wasmapp.js"></script>
 <script>
@@ -97,7 +126,28 @@ class Game
     this.frame++;
     return true;
   }
+  state()
+  {
+    var getWord = (seg, ofs) => this.memoryBuffer[seg*16+ofs] + (this.memoryBuffer[seg*16+ofs+1]<<8);
+    var getByte = (seg, ofs) => this.memoryBuffer[seg*16+ofs];
 
+    return {
+      round: getWord(0x0ac3, 0x1264),
+      blue: {
+        score: getWord(0x0ac3, 0x1266),
+        x: getWord(0x0c41, 0x0ee6),
+        y: getWord(0x0c41, 0x0eea),
+        energy: getByte(0x0c41, 0x0c8c),
+        shield: getByte(0x0c41, 0x0c84)
+      },
+      green: { 
+        score: getWord(0x0ac3, 0x1268),
+        x: getWord(0x0c41, 0x0ee8),
+        y: getWord(0x0c41, 0x0eec),
+        energy: getByte(0x0c41, 0x0c8e),
+        shield: getByte(0x0c41, 0x0c86)
+      }};
+  }
   render(ctx)
   {
     if (this.app.symbols.appBlit())
@@ -129,6 +179,7 @@ class Net
     this.fps = 1000/30;
     this.lastFrame = 0;
     this.connected = false;
+    this.offline = false;
   }
   connect(masterSeed)
   {
@@ -137,6 +188,7 @@ class Net
       var p = {started:new Date().getTime(), seed:masterSeed};
       this.started = p.started;
       this.seed = p.seed;
+      this.offline = true;
       return Promise.resolve(p);
     }
 
@@ -331,16 +383,18 @@ class Session
     var netFrame = this.net.currentFrame()
     while (this.gameLocal.frame < netFrame)
       if (!this.gameLocal.step(this.keyState, this.keyEstimate))
+      {
+        // this could be a local glitch
+        this.running = false;
         break;
-//      {
-//        this.gameLocal.running = false;
-//        break;
-//      }
+      }
     this.gameLocal.render(this.ctx);
-    if (!this.net.connected)
-      document.querySelector("#info").innerHTML = "Offline"
+    if (!this.running)
+      document.querySelector("#status").innerHTML = "Game over";
+    else if (this.net.offline)
+      document.querySelector("#status").innerHTML = "&#x25EF;&nbsp;&nbsp;&nbsp;Offline mode";
     else
-      document.querySelector("#info").innerHTML = "Clients: " + this.clients;
+      document.querySelector("#status").innerHTML = `${this.net.connected ? "&#x1F7E2;" : "&#x1F534;"}&nbsp;&nbsp;&nbsp;${this.clients > 1 ? (this.clients-1)+" peers, " : ""}link to join: <a href="${document.location.href}">${document.location.href}</a>`;
   }
 
   async netsync()
