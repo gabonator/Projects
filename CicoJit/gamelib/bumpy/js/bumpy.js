@@ -1,5 +1,5 @@
 var bumpyStartupLevel = 1;
-var bumpyQuickPlay = 3;
+var bumpyQuickPlay = 0;
 var bumpyNoAsking = true;
 var bumpyNoBackground = false;
 var bumpyNoGameElements = false;
@@ -8420,9 +8420,9 @@ function* sub_4fad() {
     case 0x508d:
         memory[ds*16 + 0x8244] = 0x00;
         pc = 0x50a0;
+        bumpyEvent("splash");
         break;
     case 0x5094:
-        bumpyEvent("splash");
         yield* sync();
         yield* sub_3cae();
         r16[ax] = memory16get(ds, 0x119c);
@@ -8973,9 +8973,9 @@ function* sub_5475() {
         sp++;
         sp++;
         pc = 0x56d9;
+        bumpyEvent("menu");
         break;
     case 0x55cf:
-        bumpyEvent("menu");
         r8[al] = memory[ds*16 + 0x79b5];
         r8[ah] = 0x00;
         r16[ax] <<= 1;
@@ -9312,9 +9312,9 @@ function* sub_5722() {
         yield* sub_325c();
         yield* sub_5958();
         pc = 0x5944;
+        bumpyEvent("levels");
         break;
     case 0x58ec:
-        bumpyEvent("levels");
         yield* sync();
         yield* sub_3cae();
         if (!(memory[ds*16 + 0x8244] & 0x01)) {

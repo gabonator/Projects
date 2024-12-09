@@ -648,7 +648,7 @@ function* sync(k)
 
 // app
 var h = window.location.hash;
-let [mlevel, mroom] = (window.location.search.substr(1) || "0,0").split(",").map(x=>parseInt(x))
+let [mlevel, mroom] = (window.location.search.substr(1) || "1,0").split(",").map(x=>parseInt(x))
 console.log([mlevel, mroom]);
 bumpyStartupLevel = mlevel; //window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
 if (mroom)
