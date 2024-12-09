@@ -1,9 +1,10 @@
-var bumpyStartupLevel = 7;
-var bumpyQuickPlay = 0;
-var bumpyScene = "";
+var bumpyStartupLevel = 1;
+var bumpyQuickPlay = 3;
 var bumpyNoAsking = true;
 var bumpyNoBackground = false;
+var bumpyNoGameElements = false;
 var bumpyOnPreview = null;
+var bumpyEvent = e=>{};
 
 function* start() {
     headerSize = 0x1200;
@@ -3032,7 +3033,7 @@ function* sub_2ae8() {
         pc = 0x2c5a;
         break;
     case 0x2b33:
-        bumpyScene = "rooms";
+        bumpyEvent("rooms");
         if (bumpyQuickPlay <= 0)
             yield* sub_5722();
         else
@@ -3062,8 +3063,11 @@ function* sub_2ae8() {
         push(r16[ax]);
         yield* sub_7051();
         sp += 0x0004;
-        yield* sub_3b82();
-        yield* sub_3bba();
+        if (!bumpyNoGameElements)
+            {
+            yield* sub_3b82();
+            yield* sub_3bba();
+        }
         yield* sub_24d4();
         r16[ax] = 0x0001;
         push(r16[ax]);
@@ -3075,11 +3079,11 @@ function* sub_2ae8() {
         yield* sub_24b7();
         sp++;
         sp++;
-        bumpyScene = "preview";
+        bumpyEvent("preview");
         if (bumpyOnPreview)
             bumpyOnPreview();
         yield* sub_515f();
-        bumpyScene = "game";
+        bumpyEvent("game");
         yield* sub_3343();
         yield* sub_6a1e();
         yield* sub_325c();
@@ -3095,7 +3099,7 @@ function* sub_2ae8() {
         pc = 0x2c19;
         break;
     case 0x2baa:
-        bumpyScene = "game";
+        //bumpyEvent("game");
         yield* sub_b281();
         memory[ds*16 + 0x79b3] = r8[al];
         yield* sub_325c();
@@ -3141,15 +3145,21 @@ function* sub_2ae8() {
         }
         yield* sub_68a7();
     case 0x2c19:
-        if (memory[ds*16 + 0x928d] != 0x00) {
+        if (memory[ds*16 + 0x928d] != 0x00)
+            {
+            bumpyEvent("gameover");
             pc = 0x2c31;
             break;
         }
-        if (memory[ds*16 + 0x856d] != 0x00) {
+        if (memory[ds*16 + 0x856d] != 0x00)
+            {
+            bumpyEvent("lose");
             pc = 0x2c31;
             break;
         }
-        if (memory[ds*16 + 0x9d30] != 0x00) {
+        if (memory[ds*16 + 0x9d30] != 0x00)
+            {
+            bumpyEvent("win");
             pc = 0x2c31;
             break;
         }
@@ -7716,8 +7726,11 @@ function* sub_4948() {
         r16[bx] = memory16get(ss, bp - 16);
         es = memory16get(ss, bp - 16 + 2);
         memory16set(es, r16[bx] + 10, r16[ax]);
-        yield* sub_352e();
-        yield* sub_3937();
+        if (!bumpyNoGameElements)
+            {
+            yield* sub_352e();
+            yield* sub_3937();
+        }
     case 0x4abb:
         r8[al] = memory[ss*16 + bp - 2];
         r8[ah] = 0x00;
@@ -7767,8 +7780,11 @@ function* sub_4948() {
         r16[bx] = memory16get(ss, bp - 20);
         es = memory16get(ss, bp - 20 + 2);
         memory16set(es, r16[bx] + 10, r16[ax]);
-        yield* sub_3697();
-        yield* sub_39fb();
+        if (!bumpyNoGameElements)
+            {
+            yield* sub_3697();
+            yield* sub_39fb();
+        }
     case 0x4b2b:
         r8[al] = memory[ss*16 + bp - 2];
         r8[ah] = 0x00;
@@ -7825,7 +7841,8 @@ function* sub_4948() {
         push(ds);
         r16[ax] = 0x792e;
         push(r16[ax]);
-        yield* sub_b2fa();
+        if (!bumpyNoGameElements)
+            yield* sub_b2fa();
         sp += 0x0004;
     case 0x4bae:
         memory[ss*16 + bp - 1] += 1;
@@ -8405,7 +8422,7 @@ function* sub_4fad() {
         pc = 0x50a0;
         break;
     case 0x5094:
-        bumpyScene = "splash";
+        bumpyEvent("splash");
         yield* sync();
         yield* sub_3cae();
         r16[ax] = memory16get(ds, 0x119c);
@@ -8958,7 +8975,7 @@ function* sub_5475() {
         pc = 0x56d9;
         break;
     case 0x55cf:
-        bumpyScene = "menu";
+        bumpyEvent("menu");
         r8[al] = memory[ds*16 + 0x79b5];
         r8[ah] = 0x00;
         r16[ax] <<= 1;
@@ -9286,7 +9303,7 @@ function* sub_5722() {
         sp++;
         sp++;
         yield* sub_b734();
-        bumpyScene = "map";
+        bumpyEvent("map");
         if (bumpyOnPreview)
             bumpyOnPreview();
         yield* sub_3343();
@@ -9297,7 +9314,7 @@ function* sub_5722() {
         pc = 0x5944;
         break;
     case 0x58ec:
-        bumpyScene = "levels";
+        bumpyEvent("levels");
         yield* sync();
         yield* sub_3cae();
         if (!(memory[ds*16 + 0x8244] & 0x01)) {
@@ -13890,7 +13907,7 @@ function* sub_78a3() {
         pc = 0x7b30;
         break;
     case 0x791a:
-        bumpyScene = "highscores";
+        bumpyEvent("highscores");
         if (!(memory[ss*16 + bp - 1] & 0x01)) {
             pc = 0x7984;
             break;
@@ -18171,7 +18188,7 @@ function* sub_960c() {
     case 0x964b:
         r16[dx] = 0x0201;
         r8[al] = in8(r16[dx]);
-        r8[al] = ~al;
+        r8[al] = ~r8[al];
         if (!(r8[al] & 0x40)) {
             pc = 0x9658;
             break;
@@ -18219,7 +18236,7 @@ function* sub_960c() {
     case 0x968f:
         r16[dx] = 0x0201;
         r8[al] = in8(r16[dx]);
-        r8[al] = ~al;
+        r8[al] = ~r8[al];
         if (!(r8[al] & 0x10)) {
             pc = 0x969c;
             break;
@@ -23865,8 +23882,8 @@ function* sub_c865() {
             pc = 0xc878;
             break;
         }
-        r16[bx] = ~bx;
-        r16[cx] = ~cx;
+        r16[bx] = ~r16[bx];
+        r16[cx] = ~r16[cx];
         flags.carry = (r16[bx] + 0x0001) >= 0x10000;
         r16[bx] += 0x0001;
         r16[cx] += flags.carry;
@@ -24565,7 +24582,7 @@ function* sub_cb26() {
         r8[al] = 0x02;
         out16(r16[dx], r16[ax]);
         yield* sub_d02f();
-        r16[ax] = ~ax;
+        r16[ax] = ~r16[ax];
         yield* sub_cb44();
         r8[bl]++;
         r8[bh] <<= 1;
@@ -24964,7 +24981,7 @@ function* sub_cd2e() {
             break;
         }
     case 0xcd76:
-        bumpyScene = "startup";
+        bumpyEvent("startup");
         if (bumpyNoAsking) {
             pc = 0xcd98;
             break;
@@ -25691,7 +25708,7 @@ function* sub_d2f2() {
         si += bp;
         di += r16[bx];
         r16[dx] |= memory16get(ds, si);
-        r16[dx] = ~dx;
+        r16[dx] = ~r16[dx];
         r16[ax] = memory16get(es, di);
         r16[ax] &= r16[dx];
         r16[ax] |= memory16get(ds, si);
@@ -27165,7 +27182,7 @@ function* sub_e067() {
         r16[dx] |= r16[ax];
         r8[dh] |= r8[dl];
         r8[dl] = r8[dh];
-        r16[dx] = ~dx;
+        r16[dx] = ~r16[dx];
         if (r16[dx] == 0xffff) {
             pc = 0xe0d2;
             break;
@@ -27181,7 +27198,7 @@ function* sub_e067() {
         pc = 0xe0db;
         break;
     case 0xe0d2:
-        r16[bx] = ~bx;
+        r16[bx] = ~r16[bx];
         memory16set(es, di, memory16get(es, di) & r16[bx]);
         memory16set(es, di + 2, memory16get(es, di + 2) & r16[bx]);
     case 0xe0db:
