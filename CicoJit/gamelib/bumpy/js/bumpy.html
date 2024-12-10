@@ -1,5 +1,8 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <style> 
-body {  font-family: 'Poppins', sans-serif;   }
+body {  font-family: 'Poppins', sans-serif; overflow:hidden;}
 .banner {
   display: flex;
   justify-content: space-between;
@@ -21,16 +24,30 @@ body {  font-family: 'Poppins', sans-serif;   }
 .banner .right-text a {
   color: white;
 }
+.tile {
+display:block;
+width: 320px;
+height: 200px;
+background-image: url('preview.jpg');
+background-size: 5120px 1800px;
+background-repeat: no-repeat;
+}
+.replay { display:inline-block; font-size:30px; width:40px; height:40px; right:0px; left:295px; top:-190px; width:40px; height:40px; position:relative; text-decoration:none}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <div class="banner">
 <div class="left-text">Lorciel Bumpy <font color="silver">(cicoparser javascript port)</font></div>
 <div class="right-text"><span id="status"></span></div>
 </div>
+
 <br>
+<div id="quickpanel" style="width:350px; position:absolute; top:60px; bottom:0px; right:10px; overflow:auto">
+</div>
+
 <canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
 <script src="resources.js"></script>
 <script src="ega.js"></script>
+<script src="replays.js"></script>
 <script>
 "use strict";
 // index -> r16
@@ -65,6 +82,7 @@ var data = ctx.createImageData(can.width, can.height);
 <script>
 function load(path, name, size)
 {
+  console.log("load");
   var b = Module[name];
   var ofs = cs*16 - headerSize;
   for (var i=0; i<b.length; i++)
@@ -637,39 +655,8 @@ function in8(port)
 var skipSync = false;
 function* sync(k)
 {
-  // lowers framerate to half during gameplay
-//  if (skipSync)
-//  {
-//    skipSync = false;
-//    return;
-//  }
   yield 0;
 }
-
-// app
-var h = window.location.hash;
-let [mlevel, mroom] = (window.location.search.substr(1) || "1,0").split(",").map(x=>parseInt(x))
-console.log([mlevel, mroom]);
-bumpyStartupLevel = mlevel; //window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
-if (mroom)
-{
-  bumpyQuickPlay = mroom;
-  if (mroom == -1)
-    document.querySelector("#status").innerHTML = `Level ${mlevel}`
-  else
-    document.querySelector("#status").innerHTML = `Level ${mlevel}, room ${mroom}`
-}
-
-var sequence = start();
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3d] = 1; // F3 - vga
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3d] = 0;
-memory[0x1228 * 16 + 0x4d44 + 0x3f] = 1; // F5 - no sound
-sequence.next();
-memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
-for (var i=0; i<37; i++)
-  sequence.next();
 
 let Path = {
   Extract(path, f)
@@ -701,27 +688,41 @@ var inGame = false;
 var curKeys = 0;
 var curPath = [];
 var curFrame = 0;
-bumpyEvent = (e) => { console.log("event:", e); inGame = e == "game";
-if (e == "win")
-{
-  var report = {level:memory[0x1228*16 + 0x79b2], room:memory[0x1228*16 + 0x854e], path:curPath.flat()}
-  console.log(`Winning path level=${report.level} room=${report.room}, path=${report.path}`);
-  fetch("https://api.valky.eu/logtext/?bumpy", {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(report)})
-}
-if (e == "game")
-{
-  curFrame = 0;
-  curPath = [];
-}
+var paused = false;
+var curReplay = null;
+var curEvent = null;
+bumpyEvent = (e) => { curEvent = e; console.log("event:", e); inGame = e == "game";
+  if (e == "win" && !curReplay)
+  {
+    var report = {level:memory[0x1228*16 + 0x79b2], room:memory[0x1228*16 + 0x854e], path:curPath.flat()}
+    console.log(`Winning path level=${report.level} room=${report.room}, path=${report.path}`);
+    fetch("https://api.valky.eu/logtext/?bumpy", {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(report)})
+  }
+  if (e == "game")
+  {
+    curFrame = 0;
+    curPath = [];
+  }
 }
 
-//w = [[1,2],[56,3],[57,1],[72,0],[90,2],[141,3],[142,1],[160,0],[176,8],[187,0],[189,2],[232,3],[233,1],[246,0],[259,8],[269,0],[289,8],[345,9],[346,1],[358,0],[384,8],[391,0]]
 setInterval( ()=>
 {
-//  if (inGame)
-//    curKeys = Path.Extract(w, curFrame);
-//  else
-//    curKeys = w[0][1];
+  if (paused)
+    return;	
+  if (curReplay)
+  {
+    if (curKeys)
+      curReplay = null;
+    else {
+      if (curEvent == "preview")
+        curKeys = curReplay[0][1];       
+      if (inGame)
+        curKeys = Path.Extract(curReplay, curFrame);
+      else
+        curKeys = curReplay[0][1];
+    }
+  }
+  
   memory[0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = !!(curKeys & 1);
   memory[0x1228 * 16 + 0x4d44 + "M".charCodeAt(0)] = !!(curKeys & 2);
   memory[0x1228 * 16 + 0x4d44 + "P".charCodeAt(0)] = !!(curKeys & 4);
@@ -739,6 +740,9 @@ setInterval( ()=>
     display();
   }
   curFrame++;
+  if (curReplay)
+    curKeys = 0;
+
 }, 30);
 
 // mess
@@ -759,6 +763,7 @@ function display()
 }
     document.onkeydown = function(evt) {
         evt = evt || window.event;
+        var con = true;
         switch (evt.keyCode)
         {
           case 38: curKeys |= 1; break; //memory[0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 1; break; // up
@@ -767,10 +772,13 @@ function display()
           case 37: curKeys |= 8; break; //memory[0x1228 * 16 + 0x4d44 + "K".charCodeAt(0)] = 1; break; // left
           case 32: curKeys |= 16; break; //memory[0x1228 * 16 + 0x4d44 + 0x1c] = 1; break; // space -> enter
           case 27: curKeys |= 32; break; //memory[0x1228 * 16 + 0x4d44 + 1] = 1; break; // esc
+          default: con = false;
         }
+        if (con) evt.preventDefault();
     }
     document.onkeyup = function(evt) {
         evt = evt || window.event;
+        var con = true;
         switch (evt.keyCode)
         {
           case 38: curKeys &= ~1; break; //memory[0x1228 * 16 + 0x4d44 + "H".charCodeAt(0)] = 0; break; // up
@@ -779,14 +787,12 @@ function display()
           case 37: curKeys &= ~8; break; //memory[0x1228 * 16 + 0x4d44 + "K".charCodeAt(0)] = 0; break; // left
           case 32: curKeys &= ~16; break; //memory[0x1228 * 16 + 0x4d44 + 0x1c] = 0; break; // space -> enter
           case 27: curKeys &= ~32; break; //memory[0x1228 * 16 + 0x4d44 + 1] = 0; break; // esc
+          default: con = false;
         }
+        if (con) evt.preventDefault();
     }
 
 </script>
-
-
-<div id="quickpanel" style="width:350px; position:fixed; top:60px; bottom:0px; right:0px; overflow:auto;">
-</div>
 
 <script>
 var html = "";
@@ -795,18 +801,77 @@ for (var level=1; level<=9; level++)
 {
   html += `
     <h3>Level ${level}</h3>
-    <a href="?${level},-1"><div style="position:relative">
-      <img width="320" src="../res/${("0"+level).substr(-2)}.png">
-    </a><br><hr>`;
+    <a href="javascript:set(true, ${level})"><div style="position:relative; width:320px;">
+      <div class="tile" style="background-position: 0px -${(level-1)*200}px;"></div>
+    </a><br>`;
   for (var room=1; room<=lc[level]; room++)
   {
+    var repl = replays.find(r=>r.level == level && r.room == room)
+    var replIcon = repl ? `<a href='javascript:replay(${level}, ${room})' class=replay>&#x1F504;</a>` : ``;
     html += `
-      <a href="?${level},${room}"><div style="position:relative">
-        <img style="position:relative; left:0px;" width="320" src="../res/${("0"+level).substr(-2)}${("0"+room).substr(-2)}bkg.png">
-        <img style="position:absolute; left:0px;" width="320" src="../res/${("0"+level).substr(-2)}${("0"+room).substr(-2)}.png">
+      <a href="javascript:set(true, ${level},${room})">
+        <div class="tile" style=" background-position: -${room*320}px -${(level-1)*200}px;"></div>
+        ${replIcon}
       </a><br>`;
-    html += "<hr>"
+//    html += "<hr>"
   }
 }
 document.querySelector("#quickpanel").innerHTML = html;
+
+function set(sethistory, mlevel, mroom)
+{
+  if (sethistory)
+  {
+    if (mroom)
+      history.replaceState(null, '', `?${mlevel},${mroom}`);
+    else
+      history.replaceState(null, '', `?${mlevel}`);
+  }
+
+  paused = true;
+  delete window.freeMem
+  delete window.incounter
+  EGA.cfgAddr = 0;
+  EGA.init();
+  bumpyEvent("reset");
+  mroom = mroom || -1;
+
+  console.log([mlevel, mroom]);
+  bumpyStartupLevel = mlevel; //window.location.hash ? parseInt(window.location.hash.substr(1)) : 1;
+  if (mroom)
+  {
+    bumpyQuickPlay = mroom;
+    if (mroom == -1)
+      document.querySelector("#status").innerHTML = `Level ${mlevel}`
+    else
+      document.querySelector("#status").innerHTML = `Level ${mlevel}, room ${mroom}`
+  }
+
+  sequence = start();
+  sequence.next();
+  memory[0x1228 * 16 + 0x4d44 + 0x3d] = 1; // F3 - vga
+  sequence.next();
+  memory[0x1228 * 16 + 0x4d44 + 0x3d] = 0;
+  memory[0x1228 * 16 + 0x4d44 + 0x3f] = 1; // F5 - no sound
+  sequence.next();
+  memory[0x1228 * 16 + 0x4d44 + 0x3f] = 0;
+  for (var i=0; i<37; i++)
+    sequence.next();
+  paused = false;
+}
+
+function replay(level, room)
+{
+  set(true, level, room)
+  curReplay = [];
+  var path = replays.find(r=>r.level == level && r.room == room).path
+  for (let i = 0; i < path.length; i += 2)
+    curReplay.push([path[i], path[i + 1]]);
+}
+
+// app
+var h = window.location.hash;
+let [mlevel, mroom] = (window.location.search.substr(1) || "1,0").split(",").map(x=>parseInt(x))
+set(false, mlevel, mroom);
+
 </script>
