@@ -1,0 +1,135 @@
+<canvas id="canvas" style="width:512px; height:480px;"></canvas><br>
+<script src="resources.js"></script>
+<script src="cpu.js"></script>
+<script src="vga.js"></script>
+<script src="controls.js"></script>
+<script src="dynablaster.js"></script>
+<script>
+"use strict";
+var video = new VgaPaged();
+var can = document.getElementById("canvas");
+var ctx = can.getContext('2d');
+can.width = 256;
+can.height = 240;
+var data = ctx.createImageData(can.width, can.height);
+
+function interrupt(i)
+{
+  if (i == 0x21 && r8[ah] == 0x35)
+    return; // get int vect
+  if (i == 0x21 && r8[ah] == 0x25)
+    return; // set int vect
+  if (i == 0x15 && r8[ah] == 0x84)
+  {
+      flags.carry = true;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x2c)
+  {
+      r8[ch] = Math.random()*256;
+      r8[cl] = Math.random()*256;
+      r8[dh] = 117;
+      r8[dl] = 150;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x3d)
+  {
+      var filename = "";
+      var dot = false;
+      for (var i=0; i<100; i++)
+      {
+          var c = String.fromCharCode(memory[ds*16+r16[dx]+i]);
+          if (c==' ')
+              continue;
+          if (c=='\0')
+              break;
+          if (c=='\\')
+              c = "/";
+          filename += c;
+      }
+      console.log("Open: " + filename);
+      if (!Module[filename])
+        throw "resource not found";
+      window.currentFile = {ofs:0, len:Module[filename].length, data:Module[filename]};
+      flags.carry = 0;
+      r16[ax] = 1;
+      return; 
+  }
+  if (i == 0x21 && r8[ah] == 0x3f)
+  {
+      var bytes = Math.min(r16[cx], window.currentFile.len); 
+      var wptr = ds*16+r16[dx];
+      var rptr = window.currentFile.ofs;
+      r16[ax] = bytes;
+      window.currentFile.ofs += bytes;
+      while (bytes--)
+          memory[wptr++] = window.currentFile.data[rptr++];
+      flags.carry = 0;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x3e)
+  {   
+      window.currentFile = null;
+      return;
+  }
+  if (i == 0x16 && r8[ah] == 0x01)
+  {
+      flags.zero = lastKey == null;
+      return; 
+  }
+  if (i == 0x16 && r8[ah] == 0x00)
+  {
+      r16[ax] = lastKey;
+      lastKey = -1;
+      return; 
+  }
+  console.log(i.toString(16), r8[ah].toString(16));
+  throw "unhandled interrupt"
+}
+
+function out8(port, val)
+{
+  video.portWrite8(port, val);
+}
+function in8(port)
+{
+    if (port == 0x3da)
+    {
+        if (!("incounter" in window))
+            window.incounter = 0;
+        return (window.incounter++ & 1) ? 9 : 0;
+    }
+
+  console.log("in8", port.toString(16))
+  return 0;
+}
+
+function* sync(k)
+{
+  yield 0;
+}
+
+function display()
+{
+  var p = 0;
+  var pixels = data.data;
+  for (var y=0; y<240; y++)
+    for (var x=0; x<256; x++)
+    {
+      var c = video.getPixel(x, y);
+      pixels[p++] = c>>16;
+      pixels[p++] = (c>>8)&0xff;
+      pixels[p++] = c & 0xff;
+      pixels[p++] = 255;
+    }
+  ctx.putImageData(data, 0, 0);
+}
+
+var sequence = start();
+for (var i=0; i<150; i++)
+  sequence.next();
+setInterval(()=> {
+  sequence.next();
+  display();
+}, 40);
+</script>
