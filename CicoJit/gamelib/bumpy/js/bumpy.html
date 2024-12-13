@@ -820,6 +820,7 @@ document.querySelector("#quickpanel").innerHTML = html;
 
 function set(sethistory, mlevel, mroom)
 {
+  curReplay = null;
   if (sethistory)
   {
     if (mroom)
@@ -871,7 +872,9 @@ function replay(level, room)
 
 // app
 var h = window.location.hash;
-let [mlevel, mroom] = (window.location.search.substr(1) || "1,0").split(",").map(x=>parseInt(x))
+var s = window.location.search.substr(1);
+if (!s || s.length > 8) s = "1,0"
+let [mlevel, mroom] = s.split(",").map(x=>parseInt(x))
 set(false, mlevel, mroom);
 
 </script>
