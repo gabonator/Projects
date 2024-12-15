@@ -695,6 +695,13 @@ bumpyEvent = (e) => { curEvent = e; console.log("event:", e); inGame = e == "gam
   if (e == "win" && !curReplay)
   {
     var report = {level:memory[0x1228*16 + 0x79b2], room:memory[0x1228*16 + 0x854e], path:curPath.flat()}
+    var path = replays.find(r=>r.level == report.level && r.room == report.room)?.path
+    if (path)
+      console.log("Your time:", curPath[curPath.length-1][0], "Best time:", path[path.length-2])
+    if (!path || curPath[curPath.length-1][0] < path[path.length-2])
+      report.name = prompt("You made it! Give here your name to submit your solution", "no");
+    if (fbclid)
+      report.fbclid = fbclid;
     console.log(`Winning path level=${report.level} room=${report.room}, path=${report.path}`);
     fetch("https://api.valky.eu/logtext/?bumpy", {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(report)})
   }
@@ -824,9 +831,9 @@ function set(sethistory, mlevel, mroom)
   if (sethistory)
   {
     if (mroom)
-      history.replaceState(null, '', `?${mlevel},${mroom}`);
+      history.replaceState(null, '', `?level=${mlevel}&room=${mroom}`);
     else
-      history.replaceState(null, '', `?${mlevel}`);
+      history.replaceState(null, '', `?level=${mlevel}`);
   }
 
   paused = true;
@@ -868,13 +875,32 @@ function replay(level, room)
   var path = replays.find(r=>r.level == level && r.room == room).path
   for (let i = 0; i < path.length; i += 2)
     curReplay.push([path[i], path[i + 1]]);
+  history.replaceState(null, '', `?level=${level}&room=${room}&replay=1`);
 }
 
 // app
 var h = window.location.hash;
 var s = window.location.search.substr(1);
-if (!s || s.length > 8) s = "1,0"
-let [mlevel, mroom] = s.split(",").map(x=>parseInt(x))
-set(false, mlevel, mroom);
+//if (!s || s.length > 8) s = "level=1&room=0"
+var mlevel = 1;
+var mroom = 0
+var mreplay = false;
+var fbclid = null;
+for (var att of s.split("&"))
+{
+  let [key, value] = att.split("=");
+  switch (key)
+  {
+    case "level": mlevel = value; break;
+    case "room": mroom = value; break;
+    case "replay": mreplay = value; break;
+    case "fbclid": fbclid = value; break;
+  }
+}
+//let [mlevel, mroom] = s.split(",").map(x=>parseInt(x))
+if (mreplay)
+  replay(mlevel, mroom);
+else
+  set(false, mlevel, mroom);
 
 </script>
