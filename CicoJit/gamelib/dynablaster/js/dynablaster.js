@@ -2790,7 +2790,7 @@ function* sub_1f73() {
         r16[ax] = memory16get(ds, 0x001a);
         yield* sub_305b();
         yield* sub_3503();
-        yield* sync();
+//        yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x221a;
             break;
@@ -5645,7 +5645,7 @@ function* sub_3522() {
         r16[bx] = 0x08de;
         yield* sub_23b5();
     case 0x357c:
-        yield* sync();
+        //yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x358b;
             break;
@@ -5802,7 +5802,7 @@ function* sub_3650() {
         r16[bx] = 0x08de;
         yield* sub_23b5();
     case 0x36aa:
-        yield* sync();
+        //yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x36b9;
             break;
@@ -5959,7 +5959,7 @@ function* sub_377e() {
         yield* sub_23b5();
         memory[ds*16 + 0x236c] = 0x00;
     case 0x37db:
-        yield* sync();
+        //yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x37ea;
             break;
@@ -5968,7 +5968,7 @@ function* sub_377e() {
         pc = 0x3884;
         break;
     case 0x37ea:
-        yield* sync();
+        //yield* sync();
         yield* sub_5476();
         r8[ah] = r8[al];
         r8[al] &= 0x10;
@@ -6017,7 +6017,7 @@ function* sub_377e() {
         pc = 0x37db;
         break;
     case 0x3840:
-        yield* sync();
+        //yield* sync();
         memory[ds*16 + 0x236c] = 0x00;
         yield* sub_8b8b();
         pc = 0x37db;
@@ -6268,7 +6268,7 @@ function* sub_3a0c() {
         yield* sub_8c10();
         r16[cx] = 0x0005;
     case 0x3a82:
-        yield* sync();
+        //yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x3a91;
             break;
@@ -6594,7 +6594,7 @@ function* sub_3ae1() {
         r16[ax] = 0x0001;
         yield* sub_8c10();
     case 0x3d8f:
-        yield* sync();
+        //yield* sync();
         if (memory[ds*16 + 0x0020] != 0x01) {
             pc = 0x3d9e;
             break;
@@ -9522,31 +9522,10 @@ function* sub_53d1() {
     } while (1);
 }
 function* sub_5429() {
-    var pc = 0;
-    do switch (pc) {
-    case 0:
-        return;
-    case 0x5429:
-        r16[ax] = memory16get(ds, 0x001c);
-    case 0x542c:
-        yield* sync();
-        if (memory[ds*16 + 0x0020] != 0x01) {
-            pc = 0x543b;
-            break;
-        }
-        memory[ds*16 + 0x0025] = 0xff;
-        return;
-    case 0x543b:
-        if (r16[ax] == memory16get(ds, 0x001c)) {
-            pc = 0x542c;
-            break;
-        }
-        if (--r16[cx]) {
-            pc = 0x5429;
-            break;
-        }
-        return;
-    } while (1);
+    yield* sync();
+    yield* sync();
+    yield* sync();
+    yield* sync();
 }
 function* sub_5444() {
     var pc = 0;
@@ -9589,6 +9568,7 @@ function* sub_544d() {
     } while (1);
 }
 function* sub_5476() {
+    yield* sync();
     yield* sub_552a();
     r8[al] = memory[ds*16 + 0x37f3];
     r8[al] |= memory[ds*16 + 0x37f4];
@@ -9683,13 +9663,13 @@ function* sub_552a() {
         r8[bl] = 0x20;
         r8[bh] = 0x00;
         yield* sub_567c();
-        memory[ds*16 + 0x37f1] = r8[bh];
+        //memory[ds*16 + 0x37f1] = r8[bh];
         si = 0x37eb;
         r8[ah] = 0x00;
         r8[bl] = 0x80;
         r8[bh] = 0x00;
         yield* sub_567c();
-        memory[ds*16 + 0x37f2] = r8[bh];
+        //memory[ds*16 + 0x37f2] = r8[bh];
         if (memory[ds*16 + 0x37f9] != 0x00) {
             pc = 0x55b4;
             break;
