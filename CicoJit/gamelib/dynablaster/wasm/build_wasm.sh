@@ -15,7 +15,7 @@ BASE=http://localhost:8080/build/
 
 INCLUDES=
 EXPORTED="['_appLoop', '_appInit', '_appFinish', '_appMemory', '_appBlit', '_appVideo', '_asyncifyBuffer', '_lastKey', '_seed']"
-CONFIGURATION="-s TOTAL_STACK=4096 -s TOTAL_MEMORY=3145728 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -sASYNCIFY "
+CONFIGURATION="-s TOTAL_STACK=4096 -s TOTAL_MEMORY=2097152 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -sASYNCIFY "
 DEFINES=
 emcc $INCLUDES $SOURCE -gsource-map -O3 --std=c++11 $CONFIGURATION $DEFINES --source-map-base $BASE -s EXPORTED_FUNCTIONS="${EXPORTED}" -o $NAME.js || exit 1
 
@@ -33,6 +33,7 @@ rm pack.js
 cp ../../resources.js .
 cp ../dynablaster.html .
 cp ../controls.js .
+cp ../wasmapp.js .
 rm app.js
 
 # release
