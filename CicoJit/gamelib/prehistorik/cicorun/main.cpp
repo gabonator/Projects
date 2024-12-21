@@ -357,6 +357,10 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
+    if (seg == 0x598b && ofs == 0x03d8)
+    {
+        int f = 9;
+    }
 //    assert (seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
@@ -1051,6 +1055,24 @@ void cicocontext_t::div(uint8_t r)
     ctx->a.r8.l = result;
     ctx->a.r8.h = remain;
 }
+void cicocontext_t::daa()
+{
+    // TODO: set carry before!
+    int oldcf = ctx->carry;
+    if ((ctx->a.r8.l & 0xf) > 9)
+    {
+        ctx->a.r8.l += 6;
+        ctx->carry = ctx->a.r8.l < 6;
+    }
+    if ((ctx->a.r8.l > 0x99) || oldcf)
+    {
+        ctx->a.r8.l += 0x60;
+        ctx->carry = true;
+    } else {
+        ctx->carry = false;
+    }
+}
+
 }
 
 void sub_bb32();
@@ -1246,6 +1268,7 @@ void sub_2021();
 
 void CicoContext::cicocontext_t::callIndirect(int s, int o)
 {
+#if 0
     int a = s*16+o;
 #if 1
     printf("Skipping indirect=%04x:%04x 'case 0x%x: sub_%x(); return;'\n", CicoContext::ctx->_cs, a - CicoContext::ctx->_cs*16, a, a);
@@ -1444,6 +1467,7 @@ case 0x43f0: sub_43f0(); return;
      */
     assert(0);
 #endif
+#endif
 }
 
 void CicoContext::cicocontext_t::cmc()
@@ -1466,7 +1490,7 @@ void CicoContext::cicocontext_t::aaa()
 namespace CicoContext {
 void cicocontext_t::mul(uint8_t r)
 {
-    int v = r * ctx->a.r16;
+    int v = r * ctx->a.r8.l;
     ctx->a.r16 = v & 0xffff;
 }
 void cicocontext_t::mul(uint16_t r)

@@ -79,6 +79,7 @@ public:
     //virtual void onLine(int a);
     virtual void cmc();
     virtual void aaa();
+    virtual void daa();
     virtual void load(const char* path, const char* file, int size);
 };
 
@@ -150,6 +151,7 @@ public:
 #define sync ctx->sync
 #define cmc ctx->cmc
 #define aaa ctx->aaa
+#define daa ctx->daa
 
 extern cicocontext_t* ctx;
 

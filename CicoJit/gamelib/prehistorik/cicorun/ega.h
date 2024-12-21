@@ -190,6 +190,9 @@ public:
     uint32_t palette[128] = {
         0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
         0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
+    uint32_t xpalette[128] = {
+        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
+        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
 
 public:
     CEga()
@@ -330,8 +333,7 @@ public:
         }
         if (ctx->a.r8.h == 0x05)
         {
-            printf("skip: select active display page %d\n", ctx->a.r8.h);
-//            cfgAddr = ctx->a.r8.h*0x2000;
+            cfgAddr = ctx->a.r8.l*0x2000;
             //INT 10,5 - Select Active Display Page
             return true;
         }
@@ -495,15 +497,21 @@ public:
         {
             int base = colorindex/3;
             int ch = colorindex%3;
-            if (data == 255) // wtf?
-//            {
-//                for (int i=base; i<16; i++)
-//                    palette[base] = 0xffffff;
+           // printf("set pal %d %d = %d\n", base, 2-ch, data);
+            if (data == 255)
+            {
+                colorindex++;
                 return true;
-//            }
+            }
+            if (base >= 8 && base < 16)
+            {
+                colorindex++;
+                return true;
+            }
+            if (base >= 16)
+                base -= 8;
 
             assert(data >= 0 && data < 64);
-            printf("set pal %d %d = %d\n", base, 2-ch, data);
             ((uint8_t*)palette)[base*4+2-ch] = data * 4;
             colorindex++;
             return true;
@@ -562,7 +570,7 @@ public:
         if ( _video[shift + off*4 + 1] & mask ) b |= 2;
         if ( _video[shift + off*4 + 2] & mask ) b |= 4;
         if ( _video[shift + off*4 + 3] & mask ) b |= 8;
-        return palette[b];
+        return xpalette[b];
     }
 
     virtual void SetPixel(int x, int y, int c) override
@@ -655,9 +663,6 @@ public:
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
         dwAddr -= 0xa000 * 16;
-        if (bWrite){
-            int f = 9;
-        }
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
 
