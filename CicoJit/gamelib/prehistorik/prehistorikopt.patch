@@ -1,0 +1,1158 @@
+diff --git a/./prehistorikopt.clean b/cicorun/prehistorik.cpp
+index d665113..de0e9f4 100644
+--- a/./prehistorikopt.clean
++++ b/cicorun/prehistorik.cpp
+@@ -1,7 +1,7 @@
+ #include "cicoemu.h"
+ using namespace CicoContext;
+ 
+-const int prehistorikLevel = 5;
++const int prehistorikLevel = 1;
+ 
+ class CStackGuard
+ {
+@@ -2444,8 +2444,8 @@ void sub_1ed0() // 01ed:0000
+     memory16(cs, 0x0172) = dx;
+     ah = 0x30;
+     interrupt(0x21);
+-    bp = memory16(ds, 0x0002);
+-    bx = memory16(ds, 0x002c);
++    bp = memoryPsp16(ds, 0x0002);
++    bx = memoryPsp16(ds, 0x002c);
+     ds = dx;
+     memory16(ds, 0x0071) = ax;
+     memory16(ds, 0x006f) = es;
+@@ -2459,7 +2459,7 @@ void sub_1ed0() // 01ed:0000
+     bx = ax;
+     cx = 0x7fff;
+ loc_1f0a: // 01ed:003a
+-    if (memory16(es, di) != 0x3738)
++    if (memoryPsp16(es, di) != 0x3738)
+         goto loc_1f2a;
+     dx = memory16(es, di + 2);
+     if (dl != 0x3d)
+@@ -2470,11 +2470,11 @@ loc_1f0a: // 01ed:003a
+         goto loc_1f2a;
+     memory16(ds, 0x0075) = memory16(ds, 0x0075) + 1;
+ loc_1f2a: // 01ed:005a
+-    repne_scasb<MemData, DirForward>(al);
++    repne_scasb<MemPsp, DirForward>(al);
+     if (cx == 0)
+         goto loc_1f70;
+     bx++;
+-    if (memory(es, di) != al)
++    if (memoryPsp(es, di) != al)
+         goto loc_1f0a;
+     ch |= 0x80;
+     cx = -cx;
+@@ -3404,7 +3404,7 @@ void sub_21c4() // 01ed:02f4
+         goto loc_21e7;
+     flags.direction = false;
+ loc_21dd: // 01ed:030d
+-    rep_movsb<MemData, MemData, DirForward>();
++    flags.direction ? rep_movsb<MemData, MemData, DirBackward>() : rep_movsb<MemData, MemData, DirForward>();
+     flags.direction = false;
+     ds = pop();
+     di = pop();
+@@ -3432,7 +3432,7 @@ void sub_21f8() // 01ed:0328
+     es = memory16(ds, 0x006f);
+     si = 0x0080;
+     ax = 0;
+-    lodsb_es<MemData, DirForward>();
++    lodsb_es<MemPsp, DirForward>();
+     ax++;
+     bp = es;
+     tx = si;
+@@ -3450,7 +3450,7 @@ void sub_21f8() // 01ed:0328
+     di = si;
+     cl = 0x7f;
+     al = 0;
+-    repne_scasb<MemData, DirForward>(al);
++    repne_scasb<MemPsp, DirForward>(al);
+     if (cx == 0)
+         goto loc_22ae;
+     cl ^= 0x7f;
+@@ -3472,7 +3472,7 @@ loc_223b: // 01ed:036b
+     es = ax;
+     push(cx);
+     cx--;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemData, MemPsp, DirForward>();
+     al = 0;
+     stosb<MemData, DirForward>();
+     ds = bp;
+@@ -3567,7 +3567,7 @@ loc_2291: // 01ed:03c1
+         flags.zero = true;
+         goto loc_22ad;
+     }
+-    lodsb<MemData, DirForward>();
++    lodsb<MemPsp, DirForward>();
+     cx--;
+     al -= 0x22;
+     if (al == 0)
+@@ -3625,8 +3625,8 @@ loc_2324: // 01ed:0454
+     memory16(ds, bx) = di;
+     memory16(ds, bx + 2) = es;
+     bx += 0x0004;
+-    repne_scasb<MemData, DirForward>(al);
+-    if (memory(es, di) != al)
++    repne_scasb<MemPsp, DirForward>(al);
++    if (memoryPsp(es, di) != al)
+         goto loc_2324;
+     memory16(ds, bx) = ax;
+     memory16(ds, bx + 2) = ax;
+@@ -9422,10 +9422,10 @@ loc_5e68: // 023f:3a78
+         goto loc_5e83;
+     bx = memory16(ss, bp + 8);
+     es = memory16(ss, bp + 8 + 2);
+-    al = memory(es, bx);
++    al = memoryVideoGet(es, bx);
+     bx = memory16(ss, bp + 12);
+     es = memory16(ss, bp + 12 + 2);
+-    memory(es, bx) = al;
++    memoryVideoSet(es, bx, al);
+     memory16(ss, bp + 8) = memory16(ss, bp + 8) + 1;
+     memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
+     goto loc_5e68;
+@@ -11181,7 +11181,10 @@ loc_6f03: // 06c1:02f3
+     sp++;
+     bx = memory16(ss, bp + 12);
+     es = memory16(ss, bp + 12 + 2);
+-    memory(es, bx) = al;
++    if (es >= 0xa000)
++        memoryVideoSet(es, bx, al);
++    else
++        memory(es, bx) = al;
+     memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
+     memory16(ss, bp - 6) = memory16(ss, bp - 6) + 1;
+     goto loc_6f03;
+@@ -11195,7 +11198,10 @@ loc_6f2b: // 06c1:031b
+     al = memory(ss, bp - 1);
+     bx = memory16(ss, bp + 12);
+     es = memory16(ss, bp + 12 + 2);
+-    memory(es, bx) = al;
++    if (es >= 0xa000)
++        memoryVideoSet(es, bx, al);
++    else
++        memory(es, bx) = al;
+     memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
+     memory16(ss, bp - 6) = memory16(ss, bp - 6) + 1;
+     goto loc_6f21;
+@@ -17103,7 +17109,7 @@ loc_a30d: // 06c1:36fd
+     es = memory16(ds, 0x8df2 + 2);
+     bx += ax;
+     al = memory(es, bx);
+-    if (al == memory(ss, bp + si + 65528))
++    if (al == memory(ss, bp + si - 8))
+         goto loc_a326;
+     memory16(ss, bp - 12) = 0x0001;
+ loc_a326: // 06c1:3716
+@@ -21703,7 +21709,7 @@ void sub_d472() // 0cc2:0852
+     di = si;
+     cx = 0x1f40;
+     flags.direction = false;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -21749,7 +21755,7 @@ void sub_d4ec() // 0cc2:08cc
+     flags.direction = false;
+ loc_d520: // 0cc2:0900
+     cx = dx;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     di -= dx;
+     di += 0x0028;
+     si -= dx;
+@@ -21816,17 +21822,17 @@ void sub_d539() // 0cc2:0919
+     ax = memory16(ss, bp + 8);
+     es = ax;
+     di = 0;
+-    memory(es, di) = al;
++    memoryVideoSet(es, di, al);
+     dx = 0x03ce;
+     al = 0x05;
+     out(dx, al);
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    al = memory(es, di);
++    al = memoryVideoGet(es, di);
+     cx = 0x1f40;
+     flags.direction = false;
+-    rep_stosb<MemData, DirForward>();
++    rep_stosb<MemVideo, DirForward>();
+     dx = pop();
+     cx = pop();
+     di = pop();
+@@ -21898,7 +21904,7 @@ loc_d5f4: // 0cc2:09d4
+     si = es;
+     ds = si;
+     si = di;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+ loc_d605: // 0cc2:09e5
+     if (!cx)
+         goto loc_d615;
+@@ -21909,7 +21915,7 @@ loc_d605: // 0cc2:09e5
+     out(dx, al);
+     al = ah;
+     dx--;
+-    rep_stosb<MemData, DirForward>();
++    rep_stosb<MemVideo, DirForward>();
+ loc_d615: // 0cc2:09f5
+     if (!bh)
+         goto loc_d62a;
+@@ -21923,7 +21929,7 @@ loc_d615: // 0cc2:09f5
+     si = es;
+     ds = si;
+     si = di;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+ loc_d62a: // 0cc2:0a0a
+     cx = pop();
+     si = pop();
+@@ -22016,8 +22022,8 @@ loc_d691: // 0cc2:0a71
+     out(dx, al);
+     dx--;
+     al = 0x08;
+-    ah = memory(es, di);
+-    memory(es, di) = ah;
++    ah = memoryVideoGet(es, di);
++    memoryVideoSet(es, di, ah);
+     di++;
+     cx = pop();
+     cx--;
+@@ -22051,8 +22057,8 @@ loc_d6d9: // 0cc2:0ab9
+     cl = bh;
+     ah <<= cl;
+     out(dx, ax);
+-    ah = memory(es, di);
+-    memory(es, di) = ah;
++    ah = memoryVideoGet(es, di);
++    memoryVideoSet(es, di, ah);
+     si++;
+     goto loc_d6fd;
+ loc_d6e9: // 0cc2:0ac9
+@@ -22063,8 +22069,8 @@ loc_d6e9: // 0cc2:0ac9
+     out(dx, al);
+     dx--;
+     al = 0x08;
+-    ah = memory(es, di);
+-    memory(es, di) = ah;
++    ah = memoryVideoGet(es, di);
++    memoryVideoSet(es, di, ah);
+     si++;
+     di++;
+     if (--cx)
+@@ -22144,7 +22150,7 @@ loc_d75d: // 0cc2:0b3d
+     goto loc_d845;
+ loc_d760: // 0cc2:0b40
+     push(cx);
+-    ah = memory(es, di);
++    ah = memoryVideoGet(es, di);
+     ah = memory(ds, si);
+     cl = bl;
+     ah >>= cl;
+@@ -22162,22 +22168,22 @@ loc_d760: // 0cc2:0b40
+     out(dx, al);
+     ah = memory(ds, si + 1);
+     ah >>= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(ds, si + 2);
+     ah >>= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(ds, si + 3);
+     ah >>= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(ds, si + 4);
+     ah >>= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     di++;
+     cx = pop();
+     if (cx)
+@@ -22190,7 +22196,7 @@ loc_d7b0: // 0cc2:0b90
+     goto loc_d845;
+ loc_d7b6: // 0cc2:0b96
+     push(cx);
+-    ah = memory(es, di);
++    ah = memoryVideoGet(es, di);
+     ah = memory(ds, si);
+     cl = bh;
+     ah <<= cl;
+@@ -22221,7 +22227,7 @@ loc_d7b6: // 0cc2:0b96
+     cl = bl;
+     ah >>= cl;
+     ah |= ch;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(ds, si);
+@@ -22233,7 +22239,7 @@ loc_d7b6: // 0cc2:0b96
+     cl = bl;
+     ah >>= cl;
+     ah |= ch;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(ds, si);
+@@ -22245,7 +22251,7 @@ loc_d7b6: // 0cc2:0b96
+     cl = bl;
+     ah >>= cl;
+     ah |= ch;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(ds, si);
+@@ -22257,7 +22263,7 @@ loc_d7b6: // 0cc2:0b96
+     cl = bl;
+     ah >>= cl;
+     ah |= ch;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     di++;
+     cx = pop();
+     cx--;
+@@ -22265,7 +22271,7 @@ loc_d7b6: // 0cc2:0b96
+         goto loc_d845;
+     goto loc_d7b6;
+ loc_d845: // 0cc2:0c25
+-    ah = memory(es, di);
++    ah = memoryVideoGet(es, di);
+     ah = memory(ds, si);
+     si++;
+     cl = bh;
+@@ -22285,28 +22291,28 @@ loc_d845: // 0cc2:0c25
+     ah = memory(ds, si);
+     si++;
+     ah <<= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(ds, si);
+     si++;
+     ah <<= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(ds, si);
+     si++;
+     ah <<= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(ds, si);
+     si++;
+     ah <<= cl;
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     goto loc_d8ba;
+ loc_d88e: // 0cc2:0c6e
+-    ah = memory(es, di);
++    ah = memoryVideoGet(es, di);
+     ah = memory(ds, si);
+     si++;
+     al = 0x08;
+@@ -22321,19 +22327,19 @@ loc_d88e: // 0cc2:0c6e
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemData, DirForward>();
+     di--;
+     al <<= 1;
+     out(dx, al);
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemData, DirForward>();
+     di--;
+     al <<= 1;
+     out(dx, al);
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemData, DirForward>();
+     di--;
+     al <<= 1;
+     out(dx, al);
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemData, DirForward>();
+     if (--cx)
+         goto loc_d88e;
+ loc_d8ba: // 0cc2:0c9a
+@@ -22744,7 +22750,7 @@ loc_daf2: // 0cc2:0ed2
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= 1;
+@@ -22765,7 +22771,7 @@ loc_daf2: // 0cc2:0ed2
+     ax >>= 1;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -22773,7 +22779,7 @@ loc_daf2: // 0cc2:0ed2
+     ax >>= 1;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -22781,7 +22787,7 @@ loc_daf2: // 0cc2:0ed2
+     ax >>= 1;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -22789,7 +22795,7 @@ loc_daf2: // 0cc2:0ed2
+     ax >>= 1;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -22799,7 +22805,7 @@ loc_daf2: // 0cc2:0ed2
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -22808,19 +22814,19 @@ loc_daf2: // 0cc2:0ed2
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -22845,7 +22851,7 @@ loc_dbc3: // 0cc2:0fa3
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= 1;
+@@ -22868,7 +22874,7 @@ loc_dbc3: // 0cc2:0fa3
+     ax >>= 1;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -22877,7 +22883,7 @@ loc_dbc3: // 0cc2:0fa3
+     ax >>= 1;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -22886,7 +22892,7 @@ loc_dbc3: // 0cc2:0fa3
+     ax >>= 1;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -22895,7 +22901,7 @@ loc_dbc3: // 0cc2:0fa3
+     ax >>= 1;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -22907,7 +22913,7 @@ loc_dc49: // 0cc2:1029
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -22916,19 +22922,19 @@ loc_dc49: // 0cc2:1029
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -22953,7 +22959,7 @@ loc_dca1: // 0cc2:1081
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= 1;
+@@ -22978,7 +22984,7 @@ loc_dca1: // 0cc2:1081
+     ax >>= 1;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -22988,7 +22994,7 @@ loc_dca1: // 0cc2:1081
+     ax >>= 1;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -22998,7 +23004,7 @@ loc_dca1: // 0cc2:1081
+     ax >>= 1;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -23008,7 +23014,7 @@ loc_dca1: // 0cc2:1081
+     ax >>= 1;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -23020,7 +23026,7 @@ loc_dd31: // 0cc2:1111
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -23029,19 +23035,19 @@ loc_dd31: // 0cc2:1111
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -23066,7 +23072,7 @@ loc_dd89: // 0cc2:1169
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= 1;
+@@ -23093,7 +23099,7 @@ loc_dd89: // 0cc2:1169
+     ax >>= 1;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -23104,7 +23110,7 @@ loc_dd89: // 0cc2:1169
+     ax >>= 1;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -23115,7 +23121,7 @@ loc_dd89: // 0cc2:1169
+     ax >>= 1;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -23126,7 +23132,7 @@ loc_dd89: // 0cc2:1169
+     ax >>= 1;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -23138,7 +23144,7 @@ loc_de23: // 0cc2:1203
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -23147,19 +23153,19 @@ loc_de23: // 0cc2:1203
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -23184,7 +23190,7 @@ loc_de7b: // 0cc2:125b
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= cl;
+@@ -23205,7 +23211,7 @@ loc_de7b: // 0cc2:125b
+     ax >>= cl;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -23213,7 +23219,7 @@ loc_de7b: // 0cc2:125b
+     ax >>= cl;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -23221,7 +23227,7 @@ loc_de7b: // 0cc2:125b
+     ax >>= cl;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -23229,7 +23235,7 @@ loc_de7b: // 0cc2:125b
+     ax >>= cl;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -23241,7 +23247,7 @@ loc_def6: // 0cc2:12d6
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -23250,19 +23256,19 @@ loc_def6: // 0cc2:12d6
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -23287,7 +23293,7 @@ loc_df4e: // 0cc2:132e
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= cl;
+@@ -23308,7 +23314,7 @@ loc_df4e: // 0cc2:132e
+     ax >>= cl;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -23316,7 +23322,7 @@ loc_df4e: // 0cc2:132e
+     ax >>= cl;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -23324,7 +23330,7 @@ loc_df4e: // 0cc2:132e
+     ax >>= cl;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -23332,7 +23338,7 @@ loc_df4e: // 0cc2:132e
+     ax >>= cl;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -23344,7 +23350,7 @@ loc_dfc9: // 0cc2:13a9
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -23353,19 +23359,19 @@ loc_dfc9: // 0cc2:13a9
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -23390,7 +23396,7 @@ loc_e021: // 0cc2:1401
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     ah = memory(es, di);
+     al = 0;
+     ax >>= cl;
+@@ -23411,7 +23417,7 @@ loc_e021: // 0cc2:1401
+     ax >>= cl;
+     ah |= bh;
+     bh = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(es, di + 2);
+@@ -23419,7 +23425,7 @@ loc_e021: // 0cc2:1401
+     ax >>= cl;
+     ah |= memory(cs, 0x0446);
+     memory(cs, 0x0446) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(es, di + 3);
+@@ -23427,7 +23433,7 @@ loc_e021: // 0cc2:1401
+     ax >>= cl;
+     ah |= memory(cs, 0x0447);
+     memory(cs, 0x0447) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(es, di + 4);
+@@ -23435,7 +23441,7 @@ loc_e021: // 0cc2:1401
+     ax >>= cl;
+     ah |= memory(cs, 0x0448);
+     memory(cs, 0x0448) = al;
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     si++;
+     di += 0x0005;
+     ch--;
+@@ -23447,7 +23453,7 @@ loc_e09c: // 0cc2:147c
+     dx = 0x03ce;
+     out(dx, al);
+     dx++;
+-    al = memory(ds, si);
++    al = memoryVideoGet(ds, si);
+     al = bl;
+     out(dx, al);
+     dx = 0x03c4;
+@@ -23456,19 +23462,19 @@ loc_e09c: // 0cc2:147c
+     dx++;
+     al = 0x01;
+     out(dx, al);
+-    memory(ds, si) = bh;
++    memoryVideoSet(ds, si, bh);
+     al = 0x02;
+     out(dx, al);
+     ah = memory(cs, 0x0446);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x04;
+     out(dx, al);
+     ah = memory(cs, 0x0447);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     al = 0x08;
+     out(dx, al);
+     ah = memory(cs, 0x0448);
+-    memory(ds, si) = ah;
++    memoryVideoSet(ds, si, ah);
+     dx = pop();
+     cx = pop();
+     si = pop();
+@@ -25382,7 +25388,7 @@ void sub_f09b() // 0ee7:022b
+     memory16(ss, bp - 4) = 0x0088;
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    if (memory(es, bx) != 0x00)
++    if (memoryBiosGet(es, bx) != 0x00)
+         goto loc_f108;
+ loc_f104: // 0ee7:0294
+     ax = 0;
+@@ -25506,7 +25512,7 @@ void sub_f1af() // 0ee7:033f
+     memory16(ss, bp - 4) = 0x000e;
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    if (memory(es, bx) != 0xff)
++    if (memoryBiosGet(es, bx) != 0xff)
+         goto loc_f1df;
+     memory16(ss, bp - 2) = 0xfc00;
+     memory16(ss, bp - 4) = si;
+@@ -25935,7 +25941,7 @@ loc_f491: // 0ee7:0621
+ loc_f495: // 0ee7:0625
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    memory16(es, bx) = 0x0000;
++    memoryVideoSet16(es, bx, 0x0000);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 0x0002;
+     si++;
+ loc_f4a2: // 0ee7:0632
+@@ -25991,11 +25997,11 @@ loc_f505: // 0ee7:0695
+     al = memory(ss, bp - 5);
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    memory(es, bx) = al;
++    memoryVideoSet(es, bx, al);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
+     al = memory(ss, bp - 6);
+     bx = memory16(ss, bp - 4);
+-    memory(es, bx) = al;
++    memoryVideoSet(es, bx, al);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
+     memory16(ss, bp + 16) = memory16(ss, bp + 16) + 1;
+     goto loc_f505;
+@@ -37395,7 +37401,7 @@ void sub_15bc7() // 15bc:0007
+     sp += 0x0008;
+     di = 0;
+ loc_15be4: // 15bc:0024
+-    if (memory(ss, bp + di + 65492) == 0x00)
++    if (memory(ss, bp + di - 44) == 0x00)
+         goto loc_15bee;
+     di++;
+     goto loc_15be4;
+@@ -37413,7 +37419,7 @@ loc_15bf0: // 15bc:0030
+     si++;
+     goto loc_15bf0;
+ loc_15c07: // 15bc:0047
+-    memory(ss, bp + si + 65512) = 0x00;
++    memory(ss, bp + si - 24) = 0x00;
+     push(ss);
+     ax = bp - 0x2c;
+     push(ax);
+@@ -43582,7 +43588,7 @@ loc_18f9d: // 18f7:002d
+ loc_18fa1: // 18f7:0031
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    memory16(es, bx) = 0x0000;
++    memoryVideoSet16(es, bx, 0x0000);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 0x0002;
+     si++;
+ loc_18fae: // 18f7:003e
+@@ -43638,11 +43644,11 @@ loc_19011: // 18f7:00a1
+     al = memory(ss, bp - 5);
+     bx = memory16(ss, bp - 4);
+     es = memory16(ss, bp - 4 + 2);
+-    memory(es, bx) = al;
++    memoryVideoSet(es, bx, al);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
+     al = memory(ss, bp - 6);
+     bx = memory16(ss, bp - 4);
+-    memory(es, bx) = al;
++    memoryVideoSet(es, bx, al);
+     memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
+     memory16(ss, bp + 16) = memory16(ss, bp + 16) + 1;
+     goto loc_19011;
+@@ -47970,7 +47976,7 @@ loc_1b243: // 19e4:1403
+     sp += 0x0008;
+     di = 0;
+ loc_1b25a: // 19e4:141a
+-    if (memory(ss, bp + di + 65492) == 0x00)
++    if (memory(ss, bp + di - 44) == 0x00)
+         goto loc_1b264;
+     di++;
+     goto loc_1b25a;
+@@ -47988,7 +47994,7 @@ loc_1b266: // 19e4:1426
+     si++;
+     goto loc_1b266;
+ loc_1b27d: // 19e4:143d
+-    memory(ss, bp + si + 65512) = 0x00;
++    memory(ss, bp + si - 24) = 0x00;
+     push(ss);
+     ax = bp - 0x2c;
+     push(ax);
+@@ -48198,7 +48204,7 @@ void sub_1b3e8() // 19e4:15a8
+     sp += 0x0008;
+     di = 0;
+ loc_1b405: // 19e4:15c5
+-    if (memory(ss, bp + di + 65492) == 0x00)
++    if (memory(ss, bp + di - 44) == 0x00)
+         goto loc_1b40f;
+     di++;
+     goto loc_1b405;
+@@ -48216,7 +48222,7 @@ loc_1b411: // 19e4:15d1
+     si++;
+     goto loc_1b411;
+ loc_1b428: // 19e4:15e8
+-    memory(ss, bp + si + 65512) = 0x00;
++    memory(ss, bp + si - 24) = 0x00;
+     push(ss);
+     ax = bp - 0x2c;
+     push(ax);
+@@ -48303,7 +48309,7 @@ void sub_1b4ad() // 19e4:166d
+     sp += 0x0008;
+     di = 0;
+ loc_1b4cb: // 19e4:168b
+-    if (memory(ss, bp + di + 65492) == 0x00)
++    if (memory(ss, bp + di - 44) == 0x00)
+         goto loc_1b4d5;
+     di++;
+     goto loc_1b4cb;
+@@ -48321,7 +48327,7 @@ loc_1b4d7: // 19e4:1697
+     si++;
+     goto loc_1b4d7;
+ loc_1b4ee: // 19e4:16ae
+-    memory(ss, bp + si + 65512) = 0x00;
++    memory(ss, bp + si - 24) = 0x00;
+     push(ss);
+     ax = bp - 0x2c;
+     push(ax);
+@@ -54694,9 +54700,9 @@ void sub_1e9e2() // 1e9e:0002
+         goto loc_1ea19;
+     ax = 0x0040;
+     es = ax;
+-    bx = memory16(es, 0x006c);
++    bx = memoryBiosGet16(es, 0x006c);
+     sub_1ea3d(); // 1e9e:005d
+-    bx -= memory16(es, 0x006c);
++    bx -= memoryBiosGet16(es, 0x006c);
+     bx = -bx;
+     ax = 0x0037;
+     mul(bx);
+@@ -54707,14 +54713,14 @@ void sub_1e9e2() // 1e9e:0002
+ loc_1ea19: // 1e9e:0039
+     bx = 0;
+     es = bx;
+-    dl = memory(es, bx);
++    dl = memoryBiosGet(es, bx);
+     if (cx == 0)
+         goto loc_1ea31;
+ loc_1ea22: // 1e9e:0042
+     si = cx;
+     cx = ax;
+ loc_1ea26: // 1e9e:0046
+-    if (dl != memory(es, bx))
++    if (dl != memoryBiosGet(es, bx))
+         goto loc_1ea2b;
+ loc_1ea2b: // 1e9e:004b
+     if (--cx)
+@@ -54744,14 +54750,14 @@ void sub_1ea3d() // 1e9e:005d
+     ax = 0x0040;
+     es = ax;
+     bx = 0x006c;
+-    al = memory(es, bx);
++    al = memoryBiosGet(es, bx);
+     cx = 0xffff;
+ loc_1ea4f: // 1e9e:006f
+-    dl = memory(es, bx);
++    dl = memoryBiosGet(es, bx);
+     if (al == dl)
+         goto loc_1ea4f;
+ loc_1ea56: // 1e9e:0076
+-    if (dl != memory(es, bx))
++    if (dl != memoryBiosGet(es, bx))
+         goto loc_1ea5d;
+     if (--cx)
+         goto loc_1ea56;
+@@ -54766,10 +54772,10 @@ loc_1ea5d: // 1e9e:007d
+     div(cx);
+     memory16(cs, 0x0000) = ax;
+ loc_1ea6c: // 1e9e:008c
+-    al = memory(es, bx);
++    al = memoryBiosGet(es, bx);
+     cx = 0xffff;
+ loc_1ea72: // 1e9e:0092
+-    dl = memory(es, bx);
++    dl = memoryBiosGet(es, bx);
+     if (al == dl)
+         goto loc_1ea72;
+     push(bx);
+@@ -54783,7 +54789,7 @@ loc_1ea72: // 1e9e:0092
+     ax = pop();
+     dx = pop();
+     bx = pop();
+-    if (dl == memory(es, bx))
++    if (dl == memoryBiosGet(es, bx))
+         goto loc_1ea93;
+     memory16(cs, 0x0000) = memory16(cs, 0x0000) - 1;
+     goto loc_1ea6c;
+@@ -56459,8 +56465,8 @@ void sub_1f63a() // 1f63:000a
+     si = memory16(ss, bp + 10);
+     ds = memory16(ss, bp + 10 + 2);
+     repe_cmpsb<MemData, MemData, DirForward>();
+-    al = memory(ds, si + 65535);
+-    al -= memory(es, di + 65535);
++    al = memory(ds, si - 1);
++    al -= memory(es, di - 1);
+     cbw();
+     ds = pop();
+     bp = pop();

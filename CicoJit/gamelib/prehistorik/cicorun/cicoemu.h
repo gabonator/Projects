@@ -5,6 +5,9 @@
 #define import(name) void name() { ctx->call(#name); }
 #define L(l) ctx->onLine(l);
 
+uint16_t memoryPsp16(int seg, int ofs);
+uint8_t memoryPsp(int seg, int ofs);
+
 namespace CicoContext
 {
 
@@ -37,6 +40,8 @@ public:
     virtual void memoryBiosSet16(int seg, int ofs, uint16_t v);
     virtual uint8_t memoryBiosGet8(int seg, int ofs);
     virtual uint16_t memoryBiosGet16(int seg, int ofs);
+//    virtual uint8_t memoryPspGet8(int seg, int ofs);
+//    virtual uint16_t memoryPspGet16(int seg, int ofs);
 
     virtual uint8_t& memory8(int seg, int ofs);
     virtual uint16_t& memory16(int seg, int ofs);
@@ -128,6 +133,9 @@ public:
 #define memoryBiosGet ctx->memoryBiosGet8
 #define memoryBiosGet16 ctx->memoryBiosGet16
 
+//#define memoryPsp ctx.memoryPspGet8
+//#define memoryPsp16 ctx.memoryPspGet16
+
 #define out ctx->out
 #define in ctx->in
 #define push ctx->push
@@ -187,6 +195,14 @@ struct MemBios
     static void Set16(int seg, int nAddr, uint16_t nData) { memoryBiosSet16(seg, nAddr, nData); }
 };
 
+struct MemPsp
+{
+    static uint8_t Get8(int seg, int nAddr) { return memoryPsp(seg, nAddr); }
+    static void Set8(int seg, int nAddr, uint8_t nData) { assert(0); }
+    static uint16_t Get16(int seg, int nAddr) { return memoryPsp16(seg, nAddr); }
+    static void Set16(int seg, int nAddr, uint16_t nData) { assert(0); }
+};
+
 struct DirAuto
 {
     static void Assert()
@@ -212,6 +228,19 @@ struct DirForward
     {
         assert(!flags.direction);
         return i++;
+    }
+};
+
+struct DirBackward
+{
+    static void Assert()
+    {
+    }
+    template<class T>
+    static T Move(T& i)
+    {
+        assert(flags.direction);
+        return i--;
     }
 };
 

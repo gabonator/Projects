@@ -404,6 +404,11 @@ uint8_t& cicocontext_t::memory8(int seg, int ofs){
     int addr = seg*16 + ofs;
     addr -= loadAddress*16 - headerSize;
     assert(addr > 0 && addr < sizeof(mem));
+    if (mem[addr-6] == 'L' && mem[addr-5] == 'e' && mem[addr-4] == 'v' &
+        mem[addr-3] == 'e' && mem[addr-2] == 'l' && mem[addr-1] == ' ')
+    {
+        int  f= 9;
+    }
     return mem[addr];
 }
 

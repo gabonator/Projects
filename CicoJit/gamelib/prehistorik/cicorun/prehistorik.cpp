@@ -1,6 +1,8 @@
 #include "cicoemu.h"
 using namespace CicoContext;
 
+const int prehistorikLevel = 5;
+
 class CStackGuard
 {
     uint16_t minit;
@@ -2590,7 +2592,7 @@ loc_2052: // 01ed:0182
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -2598,7 +2600,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -2650,7 +2652,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -2663,7 +2665,7 @@ loc_20c9: // 01ed:01f9
 }
 void sub_1fd1() // 01ed:0101
 {
-    CStackGuardFar sg(0, true);
+    CStackGuardFar sg(8, true);
     push(0x7777);
     ds = memoryAGet16(cs, 0x0172);
     push(cs);
@@ -2708,7 +2710,7 @@ loc_2052: // 01ed:0182
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -2716,7 +2718,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -2768,7 +2770,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -2781,7 +2783,7 @@ loc_20c9: // 01ed:01f9
 }
 void sub_1fe9() // 01ed:0119
 {
-    CStackGuardFar sg(0, true);
+    CStackGuardFar sg(8, true);
     push(0x7777);
     cx = 0x000e;
     dx = 0x002f;
@@ -2815,7 +2817,7 @@ loc_2052: // 01ed:0182
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -2823,7 +2825,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -2875,7 +2877,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -2952,7 +2954,7 @@ loc_2052: // 01ed:0182
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -2960,7 +2962,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -3012,7 +3014,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -3045,7 +3047,7 @@ loc_2052: // 01ed:0182
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -3053,7 +3055,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -3105,7 +3107,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -3135,7 +3137,7 @@ void sub_2050() // 01ed:0180
     if (!(dx & 0x8000))
         goto loc_2077;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= si + flags.carry;
     cl |= 0x04;
@@ -3143,7 +3145,7 @@ loc_2077: // 01ed:01a7
     if (!(bp & 0x8000))
         goto loc_2089;
     bp = -bp;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     bp -= si + flags.carry;
     if (cl & 0x02)
@@ -3195,7 +3197,7 @@ loc_20bd: // 01ed:01ed
     if (!(cl & 0x04))
         goto loc_20c9;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_20c9: // 01ed:01f9
@@ -3994,7 +3996,7 @@ loc_26a0: // 023f:02b0
     push(cs);
     sub_24c6(); // 023f:00d6
     if (counter++ % 5 == 0)
-        sync(); //fade delay
+    {sync();} //fade delay
     sp += 0x0008;
     if (memoryAGet(ss, bp - 6) != 0x30)
         goto loc_26bd;
@@ -4231,7 +4233,7 @@ loc_28b6: // 023f:04c6
     sub_24c6(); // 023f:00d6
     sp += 0x0008;
     if (counter++ % 5 == 0)
-        sync(); //fade delay
+    {sync(); } //fade delay
     if (memoryAGet(ss, bp - 6) != 0x30)
         goto loc_28d3;
     goto loc_27a5;
@@ -4352,7 +4354,7 @@ loc_29c4: // 023f:05d4
     push(cs);
     sub_24c6(); // 023f:00d6
     sp += 0x0008;
-    sync(); //fade delay
+    sync();
     memoryASet16(ss, bp - 6, memoryAGet16(ss, bp - 6) - 1);
     goto loc_2927;
 loc_29de: // 023f:05ee
@@ -4467,7 +4469,7 @@ loc_2ab9: // 023f:06c9
     push(cs);
     sub_24c6(); // 023f:00d6
     sp += 0x0008;
-    sync(); //fade delay
+    sync();
     if (memoryAGet16(ss, bp - 6) != 0x0180)
         goto loc_2add;
     goto loc_2a3c;
@@ -4544,7 +4546,7 @@ loc_2b4e: // 023f:075e
     push(ax);
     push(cs);
     sub_24c6(); // 023f:00d6
-    sync(); //fade delay
+    sync();
     sp += 0x0008;
     dx = memoryAGet16(ss, bp - 2);
     ax = memoryAGet16(ss, bp - 4);
@@ -4557,7 +4559,7 @@ loc_2b4e: // 023f:075e
     push(ax);
     push(cs);
     sub_24c6(); // 023f:00d6
-    sync(); //fade delay
+    sync();
     sp += 0x0008;
 loc_2b81: // 023f:0791
     memoryASet(ds, 0x8de6, 0x01);
@@ -4624,7 +4626,7 @@ loc_2be0: // 023f:07f0
     push(ax);
     push(cs);
     sub_24c6(); // 023f:00d6
-    sync(); //fade delay
+    sync();
     sp += 0x0008;
 loc_2bfa: // 023f:080a
     push(memoryAGet16(ss, bp - 2));
@@ -19471,7 +19473,7 @@ void sub_b9cf() // 0a34:168f
         goto loc_b9dd;
     si--;
 loc_b9dd: // 0a34:169d
-    sync();
+    //{sync(); printf("sync at %d\n", __LINE__);} gabo!!!
 //    ax = memoryAGet16(ds, 0x8dd8);
 //    if (ax < si)
 //        goto loc_b9dd;
@@ -19494,7 +19496,7 @@ void sub_b9ed() // 0a34:16ad
         goto loc_b9fb;
     si--;
 loc_b9fb: // 0a34:16bb
-    sync();
+    sync(); // game
     ax = memoryAGet16(ds, 0x8dd8);
     if (ax >= si)
         goto loc_ba0b;
@@ -25012,7 +25014,6 @@ loc_ee6c: // 0e97:04fc
     di++;
     if (--cx)
         goto loc_ee6c;
-    //sync(); fade delay
     dx = pop();
     cx = pop();
     si = pop();
@@ -33801,7 +33802,7 @@ void sub_13e00() // 13e0:0000
     memoryASet16(ds, 0x9872, 0x0000);
     ax = 0;
     memoryASet16(ds, 0x9c6e, ax);
-    memoryASet16(ds, 0x9c68, ax);
+    memoryASet16(ds, 0x9c68, ax); // screen
     memoryASet16(ds, 0x9c6a, ax);
     memoryASet16(ds, 0x9874, 0x0028);
     memoryASet16(ds, 0x988e, 0x0064);
@@ -33821,10 +33822,10 @@ void sub_13e00() // 13e0:0000
     memoryASet16(ds, 0x9870, ax);
     memoryASet16(ds, 0x97f0, ax);
     memoryASet16(ds, 0x97ee, 0x0001);
-    memoryASet16(ds, 0x9c66, 0x0063);
+    memoryASet16(ds, 0x9c66, 0x0063); // time
     memoryASet16(ds, 0x985a, ax);
-    memoryASet16(ds, 0x9880, ax);
-    memoryASet16(ds, 0x989a, 0x000a);
+    memoryASet16(ds, 0x9880, ax); // food
+    memoryASet16(ds, 0x989a, 0x000a); // energy
     cs = pop();
 }
 // Discard check failed in sub_13e6f: cur=13e0:0597 last=13e0:058d> memoryAGet16(ds, 0x9870) modifies memoryAGet16(ds, 0x9870)
@@ -46032,6 +46033,7 @@ loc_1a12a: // 19e4:02ea
         case 72: goto loc_1a398;
         case 74: goto loc_1a3c6;
         case 76: goto loc_1a3ce;
+        case 78: goto loc_1a3ce;
         default:
         assert(0);
     }
@@ -46365,6 +46367,8 @@ loc_1a42b: // 19e4:05eb
         case 70: goto loc_1a4b7;
         case 72: goto loc_1a4bf;
         case 74: goto loc_1a4c7;
+        case 76: goto loc_1a4cf;
+        case 78: goto loc_1a4cf;
         default:
         assert(0);
     }
@@ -46467,6 +46471,7 @@ loc_1a4f6: // 19e4:06b6
         case 70: goto loc_1a5bf;
         case 72: goto loc_1a5c6;
         case 74: goto loc_1a5cd;
+        case 76: goto loc_1a5cd;
         default:
         assert(0);
     }
@@ -49512,6 +49517,7 @@ loc_1bf41: // 1bf1:0031
         case 70: goto loc_1da4b;
         case 72: goto loc_1db3d;
         case 74: goto loc_1dbb5;
+        case 76: goto loc_1dc1e;
         default:
         assert(0);
     }
@@ -52622,7 +52628,22 @@ loc_1dbff: // 1bf1:1cef
     assert(cs == 0x1bf1);
     sp += 0x000a;
     goto loc_1dc39;
-    //   gap of 27 bytes
+loc_1dc1e: // 1bf1:1d0e
+    ax = 0;
+    push(ax);
+    dx = memoryAGet16(ss, bp - 10);
+    ax = memoryAGet16(ss, bp - 12);
+    ax += 0x0002;
+    push(dx);
+    push(ax);
+    push(ds);
+    ax = 0x74cc;
+    push(ax);
+    push(cs);
+    cs = 0x19e4;
+    sub_1a77d(); // 19e4:093d
+    assert(cs == 0x1bf1);
+    sp += 0x000a;
 loc_1dc39: // 1bf1:1d29
     memoryASet16(ss, bp - 12, memoryAGet16(ss, bp - 12) + 0x001a);
     goto loc_1bf35;
@@ -53006,6 +53027,7 @@ loc_1de78: // 1dc4:0238
     sp += 0x0004;
     si -= 0x0002;
 loc_1deb9: // 1dc4:0279
+    sync();
     if ((short)si < (short)0x0049)
         goto loc_1dec1;
     goto loc_1de49;
@@ -53394,9 +53416,24 @@ void sub_1e0fe() // 1dc4:04be
 {
     push(cs);
     sub_1e0c4(); // 1dc4:0484
+    memoryASet16(ds, 0x9888, 0x0000); // score high
+    memoryASet16(ds, 0x9886, 0x0000); // score low
+    memoryASet16(ds, 0x9c5e, 0x0003); // lives
+    switch (prehistorikLevel)
+    {
+        case 0: goto loc_1e102;
+        case 1: goto loc_1e131;
+        case 2: goto loc_1e175;
+        case 3: goto loc_1e1b9;
+        case 4: goto loc_1e1fd;
+        case 5: goto loc_1e241;
+        case 6: goto loc_1e285;
+        case 7: goto loc_1e2c9;
+        case 8: goto loc_1e2ed;
+    }
 loc_1e102: // 1dc4:04c2
     push(cs);
-    sub_1dfa2(); // 1dc4:0362
+    sub_1dfa2(); // 1dc4:0362 - intro slide show
     memoryASet16(ds, 0x9888, 0x0000);
     memoryASet16(ds, 0x9886, 0x0000);
     memoryASet16(ds, 0x9c5e, 0x0003);
@@ -53853,6 +53890,7 @@ loc_1e39a: // 1dc4:075a
 }
 void sub_1e3e9() // 1dc4:07a9
 {
+    int counter = 0;
     CStackGuardFar sg(0, true);
     push(0x7777);
     push(si);
@@ -53884,7 +53922,8 @@ void sub_1e3e9() // 1dc4:07a9
     si = 0x0002;
     goto loc_1e456;
 loc_1e422: // 1dc4:07e2
-    sync();
+    if (counter++%2==0)
+        sync(); // map scroll
     ax = 0;
     push(ax);
     push(si);
@@ -54105,6 +54144,7 @@ loc_1e551: // 1dc4:0911
 }
 void sub_1e59e() // 1dc4:095e
 {
+    int counter = 0;
     CStackGuardFar sg(0, true);
     push(0x7777);
     push(si);
@@ -54171,7 +54211,8 @@ void sub_1e59e() // 1dc4:095e
     si = 0x0026;
     goto loc_1e64c;
 loc_1e612: // 1dc4:09d2
-    sync();
+    if (counter++%2==0)
+        sync(); // map scroll
     ax = 0x00cb;
     push(ax);
     ax = si;
@@ -55640,8 +55681,6 @@ loc_1f144: // 1f0d:0074
     si = memoryAGet16(ds, si + 8);
     ds = pop();
     es = pop();
-//    push(cs);
-//    cs = memoryAGet16(ss, bp - 14 + 2);
     {
         uint8_t buf[] = {
             memoryAGet(memoryAGet16(ss, bp - 14 + 2), memoryAGet16(ss, bp - 14)),
@@ -55656,17 +55695,9 @@ loc_1f144: // 1f0d:0074
             interrupt(buf[2]);
         } else
         {
-            //printf("indigen %02x %02x %02x %02x %02x %02x\n",
-            //    buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
             assert(0);
         }
     }
-//    printf("indicall 1f0d:0092 -> %04x:%04x (ofs at %04x:%04x)\n",
-//           memoryAGet16(ss, bp - 14 + 2), memoryAGet16(ss, bp - 14), ss, bp-14);
-    // 21e8, 21e2, 21d4*, 21d8, 21e0 "conversion by movie interactive", 21e8*******
-    // 55 (push bp), cd 10, 5d (pop bp), cb (retf)
-//    callIndirect(memoryAGet16(ss, bp - 14 + 2)*16 + memoryAGet16(ss, bp - 14));
-//    assert(cs == 0x1f0d);
     tx = flags.carry | (flags.zero << 1);
     push(tx);
     tx = flags.carry | (flags.zero << 1);
@@ -55743,7 +55774,7 @@ loc_1f1cb: // 1f1a:002b
 }
 void sub_1f1cd() // 1f1c:000d
 {
-    CStackGuardFar sg(0, true);
+    CStackGuardFar sg(2, true);
     push(0x7777);
     push(si);
     push(bp);
@@ -56269,7 +56300,7 @@ loc_1f546: // 1f4a:00a6
     push(bx);
     ax = 0x0002;
     push(ax);
-    stop(/*74*/);
+    flags.carry = cx != 0;
     cx = -cx;
     ax -= ax + flags.carry;
     push(ax);
