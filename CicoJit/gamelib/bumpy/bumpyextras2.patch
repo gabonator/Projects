@@ -1,5 +1,5 @@
 diff --git a/./bumpy.cpp b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/cicorun/./bumpy.cpp
-index 39b240e..e413ac0 100644
+index 39b240e..a5f3625 100644
 --- a/./bumpy.cpp
 +++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/bumpy/cicorun/./bumpy.cpp
 @@ -1,9 +1,13 @@
@@ -7,14 +7,15 @@ index 39b240e..e413ac0 100644
  using namespace CicoContext;
  
 -int bumpyStartupLevel = 4;
+-const char* bumpyScene = "";
+-
 +int bumpyStartupLevel = 1;
 +int bumpyQuickPlay = 3;
- const char* bumpyScene = "";
--
 +bool bumpyNoAsking = true;
 +bool bumpyNoBackground = false;
 +bool bumpyNoGameElements = false;
 +void (*bumpyOnPreview)() = nullptr;
++void (*bumpyEvent)(const char*) = [](const char*){};
  void sub_1ed0();
  void fixReloc(uint16_t seg);
  
@@ -41,7 +42,7 @@ index 39b240e..e413ac0 100644
      goto loc_2c5a;
  loc_2b33:
 -    sub_5722();
-+    bumpyScene = "rooms";
++    bumpyEvent("rooms");
 +    if (bumpyQuickPlay <= 0)
 +        sub_5722(); // room selector
 +    else
@@ -67,11 +68,11 @@ index 39b240e..e413ac0 100644
      sub_24b7();
      sp++;
      sp++;
-+    bumpyScene = "preview";
++    bumpyEvent("preview");
 +    if (bumpyOnPreview)
 +        bumpyOnPreview();
      sub_515f();
-+    bumpyScene = "game";
++    bumpyEvent("game");
      sub_3343();
      sub_6a1e();
      sub_325c();
@@ -80,26 +81,32 @@ index 39b240e..e413ac0 100644
      goto loc_2c19;
  loc_2baa:
 -    bumpyScene = "game";
-+    bumpyScene = "game"; // level
++    bumpyEvent("game");
      sub_b281();
      memoryASet(ds, 0x79b3, al);
      sub_325c();
-@@ -3447,11 +3466,11 @@ loc_2baa:
+@@ -3447,11 +3466,20 @@ loc_2baa:
      sub_68a7();
  loc_2c19:
      if (memoryAGet(ds, 0x928d) != 0x00)
--        goto loc_2c31;
-+        goto loc_2c31; // lost lives, game over
++    {
++        bumpyEvent("gameover");
+         goto loc_2c31;
++    }
      if (memoryAGet(ds, 0x856d) != 0x00)
--        goto loc_2c31;
-+        goto loc_2c31; // dies/exit
++    {
++        bumpyEvent("lose");
+         goto loc_2c31;
++    }
      if (memoryAGet(ds, 0x9d30) != 0x00)
--        goto loc_2c31;
-+        goto loc_2c31; // wins
++    {
++        bumpyEvent("win");
+         goto loc_2c31;
++    }
      goto loc_2baa;
  loc_2c31:
      if (memoryAGet(ds, 0x928d) != 0xff)
-@@ -6010,7 +6029,8 @@ loc_41e7:
+@@ -6010,7 +6038,8 @@ loc_41e7:
      memoryASet(ds, 0x928d, al);
      goto loc_4207;
  loc_4200:
@@ -109,7 +116,7 @@ index 39b240e..e413ac0 100644
      al = memoryAGet(ds, 0x791a);
  loc_4207:
      si = pop();
-@@ -7127,8 +7147,11 @@ loc_4a3f:
+@@ -7127,8 +7156,11 @@ loc_4a3f:
      bx = memoryAGet16(ss, bp - 16);
      es = memoryAGet16(ss, bp - 16 + 2);
      memoryASet16(es, bx + 10, ax);
@@ -123,7 +130,7 @@ index 39b240e..e413ac0 100644
  loc_4abb:
      al = memoryAGet(ss, bp - 2);
      ah = 0x00;
-@@ -7174,8 +7197,11 @@ loc_4abb:
+@@ -7174,8 +7206,11 @@ loc_4abb:
      bx = memoryAGet16(ss, bp - 20);
      es = memoryAGet16(ss, bp - 20 + 2);
      memoryASet16(es, bx + 10, ax);
@@ -137,7 +144,7 @@ index 39b240e..e413ac0 100644
  loc_4b2b:
      al = memoryAGet(ss, bp - 2);
      ah = 0x00;
-@@ -7230,7 +7256,8 @@ loc_4b2b:
+@@ -7230,7 +7265,8 @@ loc_4b2b:
      push(ds);
      ax = 0x792e;
      push(ax);
@@ -147,7 +154,7 @@ index 39b240e..e413ac0 100644
      sp += 0x0004;
  loc_4bae:
      memoryASet(ss, bp - 1, memoryAGet(ss, bp - 1) + 1);
-@@ -7465,7 +7492,8 @@ loc_4dd8:
+@@ -7465,7 +7501,8 @@ loc_4dd8:
      push(ax);
      sub_91d7();
      sp += 0x0004;
@@ -157,29 +164,58 @@ index 39b240e..e413ac0 100644
      ax = 0x0004;
      push(ax);
      ax = 0;
-@@ -8538,6 +8566,9 @@ loc_580c:
+@@ -7746,7 +7783,7 @@ loc_508d:
+     memoryASet(ds, 0x8244, 0x00);
+     goto loc_50a0;
+ loc_5094:
+-    bumpyScene = "splash";
++    bumpyEvent("splash");
+     sync();
+     sub_3cae();
+     ax = memoryAGet16(ds, 0x119c);
+@@ -8242,7 +8279,7 @@ loc_552d:
+     sp++;
+     goto loc_56d9;
+ loc_55cf:
+-    bumpyScene = "menu";
++    bumpyEvent("menu");
+     al = memoryAGet(ds, 0x79b5);
+     ah = 0x00;
+     ax <<= 1;
+@@ -8538,6 +8575,9 @@ loc_580c:
      sp++;
      sp++;
      sub_b734();
-+    bumpyScene = "map";
++    bumpyEvent("map");
 +    if (bumpyOnPreview)
 +        bumpyOnPreview();
      sub_3343();
      sub_325c();
      sub_3aa7();
-@@ -10390,7 +10421,7 @@ loc_6718:
-     memoryASet16(es, bx + 32, 0x0019);
-     push(memoryAGet16(ds, 0x0576));
-     push(memoryAGet16(ds, 0x0574));
--    sub_b288();
-+    sub_b288(); // draw background?
-     sp += 0x0004;
-     bp = pop();
-     assert(pop() == 0x7777);
-@@ -21354,6 +21385,8 @@ loc_cd70:
+@@ -8545,7 +8585,7 @@ loc_580c:
+     sub_5958();
+     goto loc_5944;
+ loc_58ec:
+-    bumpyScene = "levels";
++    bumpyEvent("levels");
+     sync();
+     sub_3cae();
+     if (!(memoryAGet(ds, 0x8244) & 0x01))
+@@ -12207,7 +12247,7 @@ loc_78b2:
+     sp += 0x0008;
+     goto loc_7b30;
+ loc_791a:
+-    bumpyScene = "highscores";
++    bumpyEvent("highscores");
+     if (!(memoryAGet(ss, bp - 1) & 0x01))
+         goto loc_7984;
+     if ((short)memoryAGet16(ss, bp - 6) <= (short)0x01ac)
+@@ -21353,7 +21393,9 @@ loc_cd70:
+     if (--cx)
          goto loc_cd5d;
  loc_cd76:
-     bumpyScene = "startup";
+-    bumpyScene = "startup";
++    bumpyEvent("startup");
 +    if (bumpyNoAsking)
 +        goto loc_cd98;
      sync();

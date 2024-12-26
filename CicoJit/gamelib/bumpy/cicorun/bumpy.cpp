@@ -3,11 +3,11 @@ using namespace CicoContext;
 
 int bumpyStartupLevel = 1;
 int bumpyQuickPlay = 3;
-const char* bumpyScene = "";
 bool bumpyNoAsking = true;
 bool bumpyNoBackground = false;
-bool bumpyNoGameElements = true;
+bool bumpyNoGameElements = false;
 void (*bumpyOnPreview)() = nullptr;
+void (*bumpyEvent)(const char*) = [](const char*){};
 void sub_1ed0();
 void fixReloc(uint16_t seg);
 
@@ -3359,7 +3359,7 @@ loc_2b26:
         goto loc_2b18;
     goto loc_2c5a;
 loc_2b33:
-    bumpyScene = "rooms";
+    bumpyEvent("rooms");
     if (bumpyQuickPlay <= 0)
         sub_5722(); // room selector
     else
@@ -3402,11 +3402,11 @@ loc_2b42:
     sub_24b7();
     sp++;
     sp++;
-    bumpyScene = "preview";
+    bumpyEvent("preview");
     if (bumpyOnPreview)
         bumpyOnPreview();
     sub_515f();
-    bumpyScene = "game";
+    bumpyEvent("game");
     sub_3343();
     sub_6a1e();
     sub_325c();
@@ -3421,7 +3421,7 @@ loc_2b42:
     sub_6a1e();
     goto loc_2c19;
 loc_2baa:
-    bumpyScene = "game"; // level
+    bumpyEvent("game");
     sub_b281();
     memoryASet(ds, 0x79b3, al);
     sub_325c();
@@ -3466,11 +3466,20 @@ loc_2baa:
     sub_68a7();
 loc_2c19:
     if (memoryAGet(ds, 0x928d) != 0x00)
-        goto loc_2c31; // lost lives, game over
+    {
+        bumpyEvent("gameover");
+        goto loc_2c31;
+    }
     if (memoryAGet(ds, 0x856d) != 0x00)
-        goto loc_2c31; // dies/exit
+    {
+        bumpyEvent("lose");
+        goto loc_2c31;
+    }
     if (memoryAGet(ds, 0x9d30) != 0x00)
-        goto loc_2c31; // wins
+    {
+        bumpyEvent("win");
+        goto loc_2c31;
+    }
     goto loc_2baa;
 loc_2c31:
     if (memoryAGet(ds, 0x928d) != 0xff)
@@ -7774,7 +7783,7 @@ loc_508d:
     memoryASet(ds, 0x8244, 0x00);
     goto loc_50a0;
 loc_5094:
-    bumpyScene = "splash";
+    bumpyEvent("splash");
     sync();
     sub_3cae();
     ax = memoryAGet16(ds, 0x119c);
@@ -8270,7 +8279,7 @@ loc_552d:
     sp++;
     goto loc_56d9;
 loc_55cf:
-    bumpyScene = "menu";
+    bumpyEvent("menu");
     al = memoryAGet(ds, 0x79b5);
     ah = 0x00;
     ax <<= 1;
@@ -8566,7 +8575,7 @@ loc_580c:
     sp++;
     sp++;
     sub_b734();
-    bumpyScene = "map";
+    bumpyEvent("map");
     if (bumpyOnPreview)
         bumpyOnPreview();
     sub_3343();
@@ -8576,7 +8585,7 @@ loc_580c:
     sub_5958();
     goto loc_5944;
 loc_58ec:
-    bumpyScene = "levels";
+    bumpyEvent("levels");
     sync();
     sub_3cae();
     if (!(memoryAGet(ds, 0x8244) & 0x01))
@@ -10421,7 +10430,7 @@ loc_6718:
     memoryASet16(es, bx + 32, 0x0019);
     push(memoryAGet16(ds, 0x0576));
     push(memoryAGet16(ds, 0x0574));
-    sub_b288(); // draw background?
+    sub_b288();
     sp += 0x0004;
     bp = pop();
     assert(pop() == 0x7777);
@@ -12238,7 +12247,7 @@ loc_78b2:
     sp += 0x0008;
     goto loc_7b30;
 loc_791a:
-    bumpyScene = "highscores";
+    bumpyEvent("highscores");
     if (!(memoryAGet(ss, bp - 1) & 0x01))
         goto loc_7984;
     if ((short)memoryAGet16(ss, bp - 6) <= (short)0x01ac)
@@ -19882,7 +19891,7 @@ loc_c30d:
     push(bx);
     ax = 0x0001;
     push(ax);
-    stop(/*74*/);
+    flags.carry = cx != 0;
     cx = -cx;
     ax -= ax + flags.carry;
     push(ax);
@@ -20341,7 +20350,7 @@ loc_c7f3:
     if (!(dx & 0x8000))
         goto loc_c807;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
     di |= 0x000c;
@@ -20349,7 +20358,7 @@ loc_c807:
     if (!(cx & 0x8000))
         goto loc_c815;
     cx = -cx;
-    stop(/*74*/);
+    flags.carry = bx != 0;
     bx = -bx;
     cx -= flags.carry;
     di ^= 0x0004;
@@ -20389,7 +20398,7 @@ loc_c845:
     if (!(bx & 0x0004))
         goto loc_c852;
     dx = -dx;
-    stop(/*74*/);
+    flags.carry = ax != 0;
     ax = -ax;
     dx -= flags.carry;
 loc_c852:
@@ -21384,7 +21393,7 @@ loc_cd70:
     if (--cx)
         goto loc_cd5d;
 loc_cd76:
-    bumpyScene = "startup";
+    bumpyEvent("startup");
     if (bumpyNoAsking)
         goto loc_cd98;
     sync();
@@ -22570,20 +22579,11 @@ loc_d6c0:
     switch (opcode)
     {
         // 26 21 05    and word ptr es:[di], ax
-        case 0x21:
-            memoryVideoSet(es, di, memoryVideoGet(es, di) & al);
-            memoryVideoSet(es, di+1, memoryVideoGet(es, di+1) & ah);
-            break;
+        case 0x21: memoryAAnd16(es, di, ax); break;
         // 26 09 05    or word ptr es:[di], ax
-        case 0x09: 
-            memoryVideoSet(es, di, memoryVideoGet(es, di) | al);
-            memoryVideoSet(es, di+1, memoryVideoGet(es, di+1) | ah);
-            break;
+        case 0x09: memoryAOr16(es, di, ax); break;
         // 26 31 05    xor word ptr es:[di], ax
-        case 0x31: 
-            memoryVideoSet(es, di, memoryVideoGet(es, di) ^ al);
-            memoryVideoSet(es, di+1, memoryVideoGet(es, di+1) ^ ah);
-            break;
+        case 0x31: memoryAXor16(es, di, ax); break;
     }
     si += 0x0002;
     di += 0x0002;
