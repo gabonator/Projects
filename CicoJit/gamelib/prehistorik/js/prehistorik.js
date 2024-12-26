@@ -25387,7 +25387,7 @@ function* sub_d99b() {
     case 0xd9e7:
         r16[cx] = memory16get(ss, bp + 16);
     case 0xd9ea:
-        movsb_data_data_forward();
+        movsb_video_data_forward();
         r16[si] += 0x0003;
         if (--r16[cx]) {
             pc = 0xd9ea;
@@ -25415,7 +25415,7 @@ function* sub_d99b() {
     case 0xda0b:
         r16[cx] = memory16get(ss, bp + 16);
     case 0xda0e:
-        movsb_data_data_forward();
+        movsb_video_data_forward();
         r16[si] += 0x0003;
         if (--r16[cx]) {
             pc = 0xda0e;
@@ -25443,7 +25443,7 @@ function* sub_d99b() {
     case 0xda2f:
         r16[cx] = memory16get(ss, bp + 16);
     case 0xda32:
-        movsb_data_data_forward();
+        movsb_video_data_forward();
         r16[si] += 0x0003;
         if (--r16[cx]) {
             pc = 0xda32;
@@ -25469,7 +25469,7 @@ function* sub_d99b() {
     case 0xda51:
         r16[cx] = memory16get(ss, bp + 16);
     case 0xda54:
-        movsb_data_data_forward();
+        movsb_video_data_forward();
         r16[si] += 0x0003;
         if (--r16[cx]) {
             pc = 0xda54;
