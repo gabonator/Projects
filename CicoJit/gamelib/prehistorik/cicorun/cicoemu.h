@@ -8,6 +8,78 @@
 uint16_t memoryPsp16(int seg, int ofs);
 uint8_t memoryPsp(int seg, int ofs);
 
+/*
+class safeint16
+{
+public:
+    int v{0};
+    safeint16() = default;
+    safeint16(const safeint16& z)
+    {
+        v = z.v;
+    }
+    operator uint16_t() const
+    {
+        assert(v >= 0 && v <= 0xffff);
+        return v;
+    }
+    void operator=(int n)
+    {
+        v = n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator -=(int n)
+    {
+        v -= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator +=(int n)
+    {
+        v += n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator >>=(int n)
+    {
+        v >>= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator <<=(int n)
+    {
+        v <<= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator |=(int n)
+    {
+        v |= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator &=(int n)
+    {
+        v &= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator ^=(int n)
+    {
+        v ^= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    uint16_t operator++(int)
+    {
+        v++;
+        assert(v >= 0 && v <= 0xffff);
+        return v-1;
+    }
+    uint16_t operator--(int)
+    {
+        v--;
+        assert(v >= 0 && v <= 0xffff);
+        return v+1;
+    }
+
+};
+*/
+typedef uint16_t safeint16;
+
 namespace CicoContext
 {
 
@@ -24,7 +96,7 @@ public:
       };
     } a, b, c, d, temp;
 
-    uint16_t _si, _di, _bp;
+    safeint16 _si, _di, _bp;
     uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
@@ -210,6 +282,13 @@ struct DirAuto
     }
     template<class T>
     static T Move(T& i)
+    {
+        if (flags.direction)
+            return i--;
+        else
+            return i++ & 0xffff;
+    }
+    static uint16_t Move(safeint16& i)
     {
         if (flags.direction)
             return i--;

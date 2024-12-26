@@ -1,7 +1,7 @@
-diff --git a/./prehistorikopt.clean b/cicorun/prehistorik.cpp
-index d665113..de0e9f4 100644
+diff --git a/./prehistorikopt.clean b/./prehistorikoptnew.cpp
+index 99c84ee..ef2f97d 100644
 --- a/./prehistorikopt.clean
-+++ b/cicorun/prehistorik.cpp
++++ b/./prehistorikoptnew.cpp
 @@ -1,7 +1,7 @@
  #include "cicoemu.h"
  using namespace CicoContext;
@@ -11,7 +11,7 @@ index d665113..de0e9f4 100644
  
  class CStackGuard
  {
-@@ -2444,8 +2444,8 @@ void sub_1ed0() // 01ed:0000
+@@ -2445,8 +2445,8 @@ void sub_1ed0() // 01ed:0000
      memory16(cs, 0x0172) = dx;
      ah = 0x30;
      interrupt(0x21);
@@ -22,7 +22,7 @@ index d665113..de0e9f4 100644
      ds = dx;
      memory16(ds, 0x0071) = ax;
      memory16(ds, 0x006f) = es;
-@@ -2459,7 +2459,7 @@ void sub_1ed0() // 01ed:0000
+@@ -2460,7 +2460,7 @@ void sub_1ed0() // 01ed:0000
      bx = ax;
      cx = 0x7fff;
  loc_1f0a: // 01ed:003a
@@ -31,7 +31,7 @@ index d665113..de0e9f4 100644
          goto loc_1f2a;
      dx = memory16(es, di + 2);
      if (dl != 0x3d)
-@@ -2470,11 +2470,11 @@ loc_1f0a: // 01ed:003a
+@@ -2471,11 +2471,11 @@ loc_1f0a: // 01ed:003a
          goto loc_1f2a;
      memory16(ds, 0x0075) = memory16(ds, 0x0075) + 1;
  loc_1f2a: // 01ed:005a
@@ -45,7 +45,7 @@ index d665113..de0e9f4 100644
          goto loc_1f0a;
      ch |= 0x80;
      cx = -cx;
-@@ -3404,7 +3404,7 @@ void sub_21c4() // 01ed:02f4
+@@ -3405,7 +3405,7 @@ void sub_21c4() // 01ed:02f4
          goto loc_21e7;
      flags.direction = false;
  loc_21dd: // 01ed:030d
@@ -54,7 +54,7 @@ index d665113..de0e9f4 100644
      flags.direction = false;
      ds = pop();
      di = pop();
-@@ -3432,7 +3432,7 @@ void sub_21f8() // 01ed:0328
+@@ -3433,7 +3433,7 @@ void sub_21f8() // 01ed:0328
      es = memory16(ds, 0x006f);
      si = 0x0080;
      ax = 0;
@@ -63,7 +63,7 @@ index d665113..de0e9f4 100644
      ax++;
      bp = es;
      tx = si;
-@@ -3450,7 +3450,7 @@ void sub_21f8() // 01ed:0328
+@@ -3451,7 +3451,7 @@ void sub_21f8() // 01ed:0328
      di = si;
      cl = 0x7f;
      al = 0;
@@ -72,7 +72,7 @@ index d665113..de0e9f4 100644
      if (cx == 0)
          goto loc_22ae;
      cl ^= 0x7f;
-@@ -3472,7 +3472,7 @@ loc_223b: // 01ed:036b
+@@ -3473,7 +3473,7 @@ loc_223b: // 01ed:036b
      es = ax;
      push(cx);
      cx--;
@@ -81,7 +81,7 @@ index d665113..de0e9f4 100644
      al = 0;
      stosb<MemData, DirForward>();
      ds = bp;
-@@ -3567,7 +3567,7 @@ loc_2291: // 01ed:03c1
+@@ -3568,7 +3568,7 @@ loc_2291: // 01ed:03c1
          flags.zero = true;
          goto loc_22ad;
      }
@@ -90,7 +90,7 @@ index d665113..de0e9f4 100644
      cx--;
      al -= 0x22;
      if (al == 0)
-@@ -3625,8 +3625,8 @@ loc_2324: // 01ed:0454
+@@ -3626,8 +3626,8 @@ loc_2324: // 01ed:0454
      memory16(ds, bx) = di;
      memory16(ds, bx + 2) = es;
      bx += 0x0004;
@@ -101,7 +101,7 @@ index d665113..de0e9f4 100644
          goto loc_2324;
      memory16(ds, bx) = ax;
      memory16(ds, bx + 2) = ax;
-@@ -9422,10 +9422,10 @@ loc_5e68: // 023f:3a78
+@@ -9423,10 +9423,10 @@ loc_5e68: // 023f:3a78
          goto loc_5e83;
      bx = memory16(ss, bp + 8);
      es = memory16(ss, bp + 8 + 2);
@@ -114,7 +114,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp + 8) = memory16(ss, bp + 8) + 1;
      memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
      goto loc_5e68;
-@@ -11181,7 +11181,10 @@ loc_6f03: // 06c1:02f3
+@@ -11182,7 +11182,10 @@ loc_6f03: // 06c1:02f3
      sp++;
      bx = memory16(ss, bp + 12);
      es = memory16(ss, bp + 12 + 2);
@@ -126,7 +126,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
      memory16(ss, bp - 6) = memory16(ss, bp - 6) + 1;
      goto loc_6f03;
-@@ -11195,7 +11198,10 @@ loc_6f2b: // 06c1:031b
+@@ -11196,7 +11199,10 @@ loc_6f2b: // 06c1:031b
      al = memory(ss, bp - 1);
      bx = memory16(ss, bp + 12);
      es = memory16(ss, bp + 12 + 2);
@@ -138,7 +138,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp + 12) = memory16(ss, bp + 12) + 1;
      memory16(ss, bp - 6) = memory16(ss, bp - 6) + 1;
      goto loc_6f21;
-@@ -17103,7 +17109,7 @@ loc_a30d: // 06c1:36fd
+@@ -17104,7 +17110,7 @@ loc_a30d: // 06c1:36fd
      es = memory16(ds, 0x8df2 + 2);
      bx += ax;
      al = memory(es, bx);
@@ -147,7 +147,7 @@ index d665113..de0e9f4 100644
          goto loc_a326;
      memory16(ss, bp - 12) = 0x0001;
  loc_a326: // 06c1:3716
-@@ -21703,7 +21709,7 @@ void sub_d472() // 0cc2:0852
+@@ -21947,7 +21953,7 @@ void sub_d472() // 0cc2:0852
      di = si;
      cx = 0x1f40;
      flags.direction = false;
@@ -156,7 +156,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -21749,7 +21755,7 @@ void sub_d4ec() // 0cc2:08cc
+@@ -21993,7 +21999,7 @@ void sub_d4ec() // 0cc2:08cc
      flags.direction = false;
  loc_d520: // 0cc2:0900
      cx = dx;
@@ -165,7 +165,7 @@ index d665113..de0e9f4 100644
      di -= dx;
      di += 0x0028;
      si -= dx;
-@@ -21816,17 +21822,17 @@ void sub_d539() // 0cc2:0919
+@@ -22060,17 +22066,17 @@ void sub_d539() // 0cc2:0919
      ax = memory16(ss, bp + 8);
      es = ax;
      di = 0;
@@ -186,7 +186,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      di = pop();
-@@ -21898,7 +21904,7 @@ loc_d5f4: // 0cc2:09d4
+@@ -22142,7 +22148,7 @@ loc_d5f4: // 0cc2:09d4
      si = es;
      ds = si;
      si = di;
@@ -195,7 +195,7 @@ index d665113..de0e9f4 100644
  loc_d605: // 0cc2:09e5
      if (!cx)
          goto loc_d615;
-@@ -21909,7 +21915,7 @@ loc_d605: // 0cc2:09e5
+@@ -22153,7 +22159,7 @@ loc_d605: // 0cc2:09e5
      out(dx, al);
      al = ah;
      dx--;
@@ -204,7 +204,7 @@ index d665113..de0e9f4 100644
  loc_d615: // 0cc2:09f5
      if (!bh)
          goto loc_d62a;
-@@ -21923,7 +21929,7 @@ loc_d615: // 0cc2:09f5
+@@ -22167,7 +22173,7 @@ loc_d615: // 0cc2:09f5
      si = es;
      ds = si;
      si = di;
@@ -213,7 +213,7 @@ index d665113..de0e9f4 100644
  loc_d62a: // 0cc2:0a0a
      cx = pop();
      si = pop();
-@@ -22016,8 +22022,8 @@ loc_d691: // 0cc2:0a71
+@@ -22260,8 +22266,8 @@ loc_d691: // 0cc2:0a71
      out(dx, al);
      dx--;
      al = 0x08;
@@ -224,7 +224,7 @@ index d665113..de0e9f4 100644
      di++;
      cx = pop();
      cx--;
-@@ -22051,8 +22057,8 @@ loc_d6d9: // 0cc2:0ab9
+@@ -22295,8 +22301,8 @@ loc_d6d9: // 0cc2:0ab9
      cl = bh;
      ah <<= cl;
      out(dx, ax);
@@ -235,7 +235,7 @@ index d665113..de0e9f4 100644
      si++;
      goto loc_d6fd;
  loc_d6e9: // 0cc2:0ac9
-@@ -22063,8 +22069,8 @@ loc_d6e9: // 0cc2:0ac9
+@@ -22307,8 +22313,8 @@ loc_d6e9: // 0cc2:0ac9
      out(dx, al);
      dx--;
      al = 0x08;
@@ -246,7 +246,7 @@ index d665113..de0e9f4 100644
      si++;
      di++;
      if (--cx)
-@@ -22144,7 +22150,7 @@ loc_d75d: // 0cc2:0b3d
+@@ -22388,7 +22394,7 @@ loc_d75d: // 0cc2:0b3d
      goto loc_d845;
  loc_d760: // 0cc2:0b40
      push(cx);
@@ -255,7 +255,7 @@ index d665113..de0e9f4 100644
      ah = memory(ds, si);
      cl = bl;
      ah >>= cl;
-@@ -22162,22 +22168,22 @@ loc_d760: // 0cc2:0b40
+@@ -22406,22 +22412,22 @@ loc_d760: // 0cc2:0b40
      out(dx, al);
      ah = memory(ds, si + 1);
      ah >>= cl;
@@ -282,7 +282,7 @@ index d665113..de0e9f4 100644
      di++;
      cx = pop();
      if (cx)
-@@ -22190,7 +22196,7 @@ loc_d7b0: // 0cc2:0b90
+@@ -22434,7 +22440,7 @@ loc_d7b0: // 0cc2:0b90
      goto loc_d845;
  loc_d7b6: // 0cc2:0b96
      push(cx);
@@ -291,7 +291,7 @@ index d665113..de0e9f4 100644
      ah = memory(ds, si);
      cl = bh;
      ah <<= cl;
-@@ -22221,7 +22227,7 @@ loc_d7b6: // 0cc2:0b96
+@@ -22465,7 +22471,7 @@ loc_d7b6: // 0cc2:0b96
      cl = bl;
      ah >>= cl;
      ah |= ch;
@@ -300,7 +300,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(ds, si);
-@@ -22233,7 +22239,7 @@ loc_d7b6: // 0cc2:0b96
+@@ -22477,7 +22483,7 @@ loc_d7b6: // 0cc2:0b96
      cl = bl;
      ah >>= cl;
      ah |= ch;
@@ -309,7 +309,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(ds, si);
-@@ -22245,7 +22251,7 @@ loc_d7b6: // 0cc2:0b96
+@@ -22489,7 +22495,7 @@ loc_d7b6: // 0cc2:0b96
      cl = bl;
      ah >>= cl;
      ah |= ch;
@@ -318,7 +318,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(ds, si);
-@@ -22257,7 +22263,7 @@ loc_d7b6: // 0cc2:0b96
+@@ -22501,7 +22507,7 @@ loc_d7b6: // 0cc2:0b96
      cl = bl;
      ah >>= cl;
      ah |= ch;
@@ -327,7 +327,7 @@ index d665113..de0e9f4 100644
      di++;
      cx = pop();
      cx--;
-@@ -22265,7 +22271,7 @@ loc_d7b6: // 0cc2:0b96
+@@ -22509,7 +22515,7 @@ loc_d7b6: // 0cc2:0b96
          goto loc_d845;
      goto loc_d7b6;
  loc_d845: // 0cc2:0c25
@@ -336,7 +336,7 @@ index d665113..de0e9f4 100644
      ah = memory(ds, si);
      si++;
      cl = bh;
-@@ -22285,28 +22291,28 @@ loc_d845: // 0cc2:0c25
+@@ -22529,28 +22535,28 @@ loc_d845: // 0cc2:0c25
      ah = memory(ds, si);
      si++;
      ah <<= cl;
@@ -370,7 +370,7 @@ index d665113..de0e9f4 100644
      ah = memory(ds, si);
      si++;
      al = 0x08;
-@@ -22321,19 +22327,19 @@ loc_d88e: // 0cc2:0c6e
+@@ -22565,19 +22571,19 @@ loc_d88e: // 0cc2:0c6e
      dx++;
      al = 0x01;
      out(dx, al);
@@ -394,7 +394,7 @@ index d665113..de0e9f4 100644
      if (--cx)
          goto loc_d88e;
  loc_d8ba: // 0cc2:0c9a
-@@ -22744,7 +22750,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -22988,7 +22994,7 @@ loc_daf2: // 0cc2:0ed2
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -403,7 +403,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= 1;
-@@ -22765,7 +22771,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -23009,7 +23015,7 @@ loc_daf2: // 0cc2:0ed2
      ax >>= 1;
      ah |= bh;
      bh = al;
@@ -412,7 +412,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -22773,7 +22779,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -23017,7 +23023,7 @@ loc_daf2: // 0cc2:0ed2
      ax >>= 1;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -421,7 +421,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -22781,7 +22787,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -23025,7 +23031,7 @@ loc_daf2: // 0cc2:0ed2
      ax >>= 1;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -430,7 +430,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -22789,7 +22795,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -23033,7 +23039,7 @@ loc_daf2: // 0cc2:0ed2
      ax >>= 1;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -439,7 +439,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -22799,7 +22805,7 @@ loc_daf2: // 0cc2:0ed2
+@@ -23043,7 +23049,7 @@ loc_daf2: // 0cc2:0ed2
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -448,7 +448,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -22808,19 +22814,19 @@ loc_daf2: // 0cc2:0ed2
+@@ -23052,19 +23058,19 @@ loc_daf2: // 0cc2:0ed2
      dx++;
      al = 0x01;
      out(dx, al);
@@ -472,7 +472,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -22845,7 +22851,7 @@ loc_dbc3: // 0cc2:0fa3
+@@ -23089,7 +23095,7 @@ loc_dbc3: // 0cc2:0fa3
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -481,7 +481,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= 1;
-@@ -22868,7 +22874,7 @@ loc_dbc3: // 0cc2:0fa3
+@@ -23112,7 +23118,7 @@ loc_dbc3: // 0cc2:0fa3
      ax >>= 1;
      ah |= bh;
      bh = al;
@@ -490,7 +490,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -22877,7 +22883,7 @@ loc_dbc3: // 0cc2:0fa3
+@@ -23121,7 +23127,7 @@ loc_dbc3: // 0cc2:0fa3
      ax >>= 1;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -499,7 +499,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -22886,7 +22892,7 @@ loc_dbc3: // 0cc2:0fa3
+@@ -23130,7 +23136,7 @@ loc_dbc3: // 0cc2:0fa3
      ax >>= 1;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -508,7 +508,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -22895,7 +22901,7 @@ loc_dbc3: // 0cc2:0fa3
+@@ -23139,7 +23145,7 @@ loc_dbc3: // 0cc2:0fa3
      ax >>= 1;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -517,7 +517,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -22907,7 +22913,7 @@ loc_dc49: // 0cc2:1029
+@@ -23151,7 +23157,7 @@ loc_dc49: // 0cc2:1029
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -526,7 +526,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -22916,19 +22922,19 @@ loc_dc49: // 0cc2:1029
+@@ -23160,19 +23166,19 @@ loc_dc49: // 0cc2:1029
      dx++;
      al = 0x01;
      out(dx, al);
@@ -550,7 +550,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -22953,7 +22959,7 @@ loc_dca1: // 0cc2:1081
+@@ -23197,7 +23203,7 @@ loc_dca1: // 0cc2:1081
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -559,7 +559,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= 1;
-@@ -22978,7 +22984,7 @@ loc_dca1: // 0cc2:1081
+@@ -23222,7 +23228,7 @@ loc_dca1: // 0cc2:1081
      ax >>= 1;
      ah |= bh;
      bh = al;
@@ -568,7 +568,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -22988,7 +22994,7 @@ loc_dca1: // 0cc2:1081
+@@ -23232,7 +23238,7 @@ loc_dca1: // 0cc2:1081
      ax >>= 1;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -577,7 +577,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -22998,7 +23004,7 @@ loc_dca1: // 0cc2:1081
+@@ -23242,7 +23248,7 @@ loc_dca1: // 0cc2:1081
      ax >>= 1;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -586,7 +586,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -23008,7 +23014,7 @@ loc_dca1: // 0cc2:1081
+@@ -23252,7 +23258,7 @@ loc_dca1: // 0cc2:1081
      ax >>= 1;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -595,7 +595,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -23020,7 +23026,7 @@ loc_dd31: // 0cc2:1111
+@@ -23264,7 +23270,7 @@ loc_dd31: // 0cc2:1111
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -604,7 +604,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -23029,19 +23035,19 @@ loc_dd31: // 0cc2:1111
+@@ -23273,19 +23279,19 @@ loc_dd31: // 0cc2:1111
      dx++;
      al = 0x01;
      out(dx, al);
@@ -628,7 +628,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -23066,7 +23072,7 @@ loc_dd89: // 0cc2:1169
+@@ -23310,7 +23316,7 @@ loc_dd89: // 0cc2:1169
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -637,7 +637,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= 1;
-@@ -23093,7 +23099,7 @@ loc_dd89: // 0cc2:1169
+@@ -23337,7 +23343,7 @@ loc_dd89: // 0cc2:1169
      ax >>= 1;
      ah |= bh;
      bh = al;
@@ -646,7 +646,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -23104,7 +23110,7 @@ loc_dd89: // 0cc2:1169
+@@ -23348,7 +23354,7 @@ loc_dd89: // 0cc2:1169
      ax >>= 1;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -655,7 +655,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -23115,7 +23121,7 @@ loc_dd89: // 0cc2:1169
+@@ -23359,7 +23365,7 @@ loc_dd89: // 0cc2:1169
      ax >>= 1;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -664,7 +664,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -23126,7 +23132,7 @@ loc_dd89: // 0cc2:1169
+@@ -23370,7 +23376,7 @@ loc_dd89: // 0cc2:1169
      ax >>= 1;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -673,7 +673,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -23138,7 +23144,7 @@ loc_de23: // 0cc2:1203
+@@ -23382,7 +23388,7 @@ loc_de23: // 0cc2:1203
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -682,7 +682,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -23147,19 +23153,19 @@ loc_de23: // 0cc2:1203
+@@ -23391,19 +23397,19 @@ loc_de23: // 0cc2:1203
      dx++;
      al = 0x01;
      out(dx, al);
@@ -706,7 +706,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -23184,7 +23190,7 @@ loc_de7b: // 0cc2:125b
+@@ -23428,7 +23434,7 @@ loc_de7b: // 0cc2:125b
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -715,7 +715,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= cl;
-@@ -23205,7 +23211,7 @@ loc_de7b: // 0cc2:125b
+@@ -23449,7 +23455,7 @@ loc_de7b: // 0cc2:125b
      ax >>= cl;
      ah |= bh;
      bh = al;
@@ -724,7 +724,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -23213,7 +23219,7 @@ loc_de7b: // 0cc2:125b
+@@ -23457,7 +23463,7 @@ loc_de7b: // 0cc2:125b
      ax >>= cl;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -733,7 +733,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -23221,7 +23227,7 @@ loc_de7b: // 0cc2:125b
+@@ -23465,7 +23471,7 @@ loc_de7b: // 0cc2:125b
      ax >>= cl;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -742,7 +742,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -23229,7 +23235,7 @@ loc_de7b: // 0cc2:125b
+@@ -23473,7 +23479,7 @@ loc_de7b: // 0cc2:125b
      ax >>= cl;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -751,7 +751,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -23241,7 +23247,7 @@ loc_def6: // 0cc2:12d6
+@@ -23485,7 +23491,7 @@ loc_def6: // 0cc2:12d6
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -760,7 +760,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -23250,19 +23256,19 @@ loc_def6: // 0cc2:12d6
+@@ -23494,19 +23500,19 @@ loc_def6: // 0cc2:12d6
      dx++;
      al = 0x01;
      out(dx, al);
@@ -784,7 +784,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -23287,7 +23293,7 @@ loc_df4e: // 0cc2:132e
+@@ -23531,7 +23537,7 @@ loc_df4e: // 0cc2:132e
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -793,7 +793,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= cl;
-@@ -23308,7 +23314,7 @@ loc_df4e: // 0cc2:132e
+@@ -23552,7 +23558,7 @@ loc_df4e: // 0cc2:132e
      ax >>= cl;
      ah |= bh;
      bh = al;
@@ -802,7 +802,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -23316,7 +23322,7 @@ loc_df4e: // 0cc2:132e
+@@ -23560,7 +23566,7 @@ loc_df4e: // 0cc2:132e
      ax >>= cl;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -811,7 +811,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -23324,7 +23330,7 @@ loc_df4e: // 0cc2:132e
+@@ -23568,7 +23574,7 @@ loc_df4e: // 0cc2:132e
      ax >>= cl;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -820,7 +820,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -23332,7 +23338,7 @@ loc_df4e: // 0cc2:132e
+@@ -23576,7 +23582,7 @@ loc_df4e: // 0cc2:132e
      ax >>= cl;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -829,7 +829,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -23344,7 +23350,7 @@ loc_dfc9: // 0cc2:13a9
+@@ -23588,7 +23594,7 @@ loc_dfc9: // 0cc2:13a9
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -838,7 +838,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -23353,19 +23359,19 @@ loc_dfc9: // 0cc2:13a9
+@@ -23597,19 +23603,19 @@ loc_dfc9: // 0cc2:13a9
      dx++;
      al = 0x01;
      out(dx, al);
@@ -862,7 +862,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -23390,7 +23396,7 @@ loc_e021: // 0cc2:1401
+@@ -23634,7 +23640,7 @@ loc_e021: // 0cc2:1401
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -871,7 +871,7 @@ index d665113..de0e9f4 100644
      ah = memory(es, di);
      al = 0;
      ax >>= cl;
-@@ -23411,7 +23417,7 @@ loc_e021: // 0cc2:1401
+@@ -23655,7 +23661,7 @@ loc_e021: // 0cc2:1401
      ax >>= cl;
      ah |= bh;
      bh = al;
@@ -880,7 +880,7 @@ index d665113..de0e9f4 100644
      al = 0x02;
      out(dx, al);
      ah = memory(es, di + 2);
-@@ -23419,7 +23425,7 @@ loc_e021: // 0cc2:1401
+@@ -23663,7 +23669,7 @@ loc_e021: // 0cc2:1401
      ax >>= cl;
      ah |= memory(cs, 0x0446);
      memory(cs, 0x0446) = al;
@@ -889,7 +889,7 @@ index d665113..de0e9f4 100644
      al = 0x04;
      out(dx, al);
      ah = memory(es, di + 3);
-@@ -23427,7 +23433,7 @@ loc_e021: // 0cc2:1401
+@@ -23671,7 +23677,7 @@ loc_e021: // 0cc2:1401
      ax >>= cl;
      ah |= memory(cs, 0x0447);
      memory(cs, 0x0447) = al;
@@ -898,7 +898,7 @@ index d665113..de0e9f4 100644
      al = 0x08;
      out(dx, al);
      ah = memory(es, di + 4);
-@@ -23435,7 +23441,7 @@ loc_e021: // 0cc2:1401
+@@ -23679,7 +23685,7 @@ loc_e021: // 0cc2:1401
      ax >>= cl;
      ah |= memory(cs, 0x0448);
      memory(cs, 0x0448) = al;
@@ -907,7 +907,7 @@ index d665113..de0e9f4 100644
      si++;
      di += 0x0005;
      ch--;
-@@ -23447,7 +23453,7 @@ loc_e09c: // 0cc2:147c
+@@ -23691,7 +23697,7 @@ loc_e09c: // 0cc2:147c
      dx = 0x03ce;
      out(dx, al);
      dx++;
@@ -916,7 +916,7 @@ index d665113..de0e9f4 100644
      al = bl;
      out(dx, al);
      dx = 0x03c4;
-@@ -23456,19 +23462,19 @@ loc_e09c: // 0cc2:147c
+@@ -23700,19 +23706,19 @@ loc_e09c: // 0cc2:147c
      dx++;
      al = 0x01;
      out(dx, al);
@@ -940,7 +940,7 @@ index d665113..de0e9f4 100644
      dx = pop();
      cx = pop();
      si = pop();
-@@ -25382,7 +25388,7 @@ void sub_f09b() // 0ee7:022b
+@@ -25626,7 +25632,7 @@ void sub_f09b() // 0ee7:022b
      memory16(ss, bp - 4) = 0x0088;
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -949,7 +949,7 @@ index d665113..de0e9f4 100644
          goto loc_f108;
  loc_f104: // 0ee7:0294
      ax = 0;
-@@ -25506,7 +25512,7 @@ void sub_f1af() // 0ee7:033f
+@@ -25750,7 +25756,7 @@ void sub_f1af() // 0ee7:033f
      memory16(ss, bp - 4) = 0x000e;
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -958,7 +958,7 @@ index d665113..de0e9f4 100644
          goto loc_f1df;
      memory16(ss, bp - 2) = 0xfc00;
      memory16(ss, bp - 4) = si;
-@@ -25935,7 +25941,7 @@ loc_f491: // 0ee7:0621
+@@ -26179,7 +26185,7 @@ loc_f491: // 0ee7:0621
  loc_f495: // 0ee7:0625
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -967,7 +967,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp - 4) = memory16(ss, bp - 4) + 0x0002;
      si++;
  loc_f4a2: // 0ee7:0632
-@@ -25991,11 +25997,11 @@ loc_f505: // 0ee7:0695
+@@ -26235,11 +26241,11 @@ loc_f505: // 0ee7:0695
      al = memory(ss, bp - 5);
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -981,7 +981,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
      memory16(ss, bp + 16) = memory16(ss, bp + 16) + 1;
      goto loc_f505;
-@@ -37395,7 +37401,7 @@ void sub_15bc7() // 15bc:0007
+@@ -37639,7 +37645,7 @@ void sub_15bc7() // 15bc:0007
      sp += 0x0008;
      di = 0;
  loc_15be4: // 15bc:0024
@@ -990,7 +990,7 @@ index d665113..de0e9f4 100644
          goto loc_15bee;
      di++;
      goto loc_15be4;
-@@ -37413,7 +37419,7 @@ loc_15bf0: // 15bc:0030
+@@ -37657,7 +37663,7 @@ loc_15bf0: // 15bc:0030
      si++;
      goto loc_15bf0;
  loc_15c07: // 15bc:0047
@@ -999,7 +999,7 @@ index d665113..de0e9f4 100644
      push(ss);
      ax = bp - 0x2c;
      push(ax);
-@@ -43582,7 +43588,7 @@ loc_18f9d: // 18f7:002d
+@@ -43826,7 +43832,7 @@ loc_18f9d: // 18f7:002d
  loc_18fa1: // 18f7:0031
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -1008,7 +1008,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp - 4) = memory16(ss, bp - 4) + 0x0002;
      si++;
  loc_18fae: // 18f7:003e
-@@ -43638,11 +43644,11 @@ loc_19011: // 18f7:00a1
+@@ -43882,11 +43888,11 @@ loc_19011: // 18f7:00a1
      al = memory(ss, bp - 5);
      bx = memory16(ss, bp - 4);
      es = memory16(ss, bp - 4 + 2);
@@ -1022,7 +1022,7 @@ index d665113..de0e9f4 100644
      memory16(ss, bp - 4) = memory16(ss, bp - 4) + 1;
      memory16(ss, bp + 16) = memory16(ss, bp + 16) + 1;
      goto loc_19011;
-@@ -47970,7 +47976,7 @@ loc_1b243: // 19e4:1403
+@@ -48214,7 +48220,7 @@ loc_1b243: // 19e4:1403
      sp += 0x0008;
      di = 0;
  loc_1b25a: // 19e4:141a
@@ -1031,7 +1031,7 @@ index d665113..de0e9f4 100644
          goto loc_1b264;
      di++;
      goto loc_1b25a;
-@@ -47988,7 +47994,7 @@ loc_1b266: // 19e4:1426
+@@ -48232,7 +48238,7 @@ loc_1b266: // 19e4:1426
      si++;
      goto loc_1b266;
  loc_1b27d: // 19e4:143d
@@ -1040,7 +1040,7 @@ index d665113..de0e9f4 100644
      push(ss);
      ax = bp - 0x2c;
      push(ax);
-@@ -48198,7 +48204,7 @@ void sub_1b3e8() // 19e4:15a8
+@@ -48442,7 +48448,7 @@ void sub_1b3e8() // 19e4:15a8
      sp += 0x0008;
      di = 0;
  loc_1b405: // 19e4:15c5
@@ -1049,7 +1049,7 @@ index d665113..de0e9f4 100644
          goto loc_1b40f;
      di++;
      goto loc_1b405;
-@@ -48216,7 +48222,7 @@ loc_1b411: // 19e4:15d1
+@@ -48460,7 +48466,7 @@ loc_1b411: // 19e4:15d1
      si++;
      goto loc_1b411;
  loc_1b428: // 19e4:15e8
@@ -1058,7 +1058,7 @@ index d665113..de0e9f4 100644
      push(ss);
      ax = bp - 0x2c;
      push(ax);
-@@ -48303,7 +48309,7 @@ void sub_1b4ad() // 19e4:166d
+@@ -48547,7 +48553,7 @@ void sub_1b4ad() // 19e4:166d
      sp += 0x0008;
      di = 0;
  loc_1b4cb: // 19e4:168b
@@ -1067,7 +1067,7 @@ index d665113..de0e9f4 100644
          goto loc_1b4d5;
      di++;
      goto loc_1b4cb;
-@@ -48321,7 +48327,7 @@ loc_1b4d7: // 19e4:1697
+@@ -48565,7 +48571,7 @@ loc_1b4d7: // 19e4:1697
      si++;
      goto loc_1b4d7;
  loc_1b4ee: // 19e4:16ae
@@ -1076,7 +1076,7 @@ index d665113..de0e9f4 100644
      push(ss);
      ax = bp - 0x2c;
      push(ax);
-@@ -54694,9 +54700,9 @@ void sub_1e9e2() // 1e9e:0002
+@@ -54938,9 +54944,9 @@ void sub_1e9e2() // 1e9e:0002
          goto loc_1ea19;
      ax = 0x0040;
      es = ax;
@@ -1088,7 +1088,7 @@ index d665113..de0e9f4 100644
      bx = -bx;
      ax = 0x0037;
      mul(bx);
-@@ -54707,14 +54713,14 @@ void sub_1e9e2() // 1e9e:0002
+@@ -54951,14 +54957,14 @@ void sub_1e9e2() // 1e9e:0002
  loc_1ea19: // 1e9e:0039
      bx = 0;
      es = bx;
@@ -1105,7 +1105,7 @@ index d665113..de0e9f4 100644
          goto loc_1ea2b;
  loc_1ea2b: // 1e9e:004b
      if (--cx)
-@@ -54744,14 +54750,14 @@ void sub_1ea3d() // 1e9e:005d
+@@ -54988,14 +54994,14 @@ void sub_1ea3d() // 1e9e:005d
      ax = 0x0040;
      es = ax;
      bx = 0x006c;
@@ -1123,7 +1123,7 @@ index d665113..de0e9f4 100644
          goto loc_1ea5d;
      if (--cx)
          goto loc_1ea56;
-@@ -54766,10 +54772,10 @@ loc_1ea5d: // 1e9e:007d
+@@ -55010,10 +55016,10 @@ loc_1ea5d: // 1e9e:007d
      div(cx);
      memory16(cs, 0x0000) = ax;
  loc_1ea6c: // 1e9e:008c
@@ -1136,7 +1136,7 @@ index d665113..de0e9f4 100644
      if (al == dl)
          goto loc_1ea72;
      push(bx);
-@@ -54783,7 +54789,7 @@ loc_1ea72: // 1e9e:0092
+@@ -55027,7 +55033,7 @@ loc_1ea72: // 1e9e:0092
      ax = pop();
      dx = pop();
      bx = pop();
@@ -1145,7 +1145,7 @@ index d665113..de0e9f4 100644
          goto loc_1ea93;
      memory16(cs, 0x0000) = memory16(cs, 0x0000) - 1;
      goto loc_1ea6c;
-@@ -56459,8 +56465,8 @@ void sub_1f63a() // 1f63:000a
+@@ -56703,8 +56709,8 @@ void sub_1f63a() // 1f63:000a
      si = memory16(ss, bp + 10);
      ds = memory16(ss, bp + 10 + 2);
      repe_cmpsb<MemData, MemData, DirForward>();

@@ -1,7 +1,7 @@
 #include "cicoemu.h"
 using namespace CicoContext;
 
-const int prehistorikLevel = 5;
+const int prehistorikLevel = 1;
 
 class CStackGuard
 {
@@ -17304,9 +17304,9 @@ void sub_a6c3() // 0a34:0383
     sub_1f0af(); // 1f09:001f
     assert(cs == 0x0a34);
     sp += 0x0006;
-    ax = memoryAGet16(ds, 0x8d60);
+    ax = memoryAGet16(ds, 0x8d60); // cursor X
     memoryASet16(ds, 0x8a28, ax);
-    ax = memoryAGet16(ds, 0x8db8);
+    ax = memoryAGet16(ds, 0x8db8); // cursor Y
     memoryASet16(ds, 0x91a0, ax);
     push(ax);
     push(memoryAGet16(ds, 0x8a28));
@@ -32444,7 +32444,7 @@ loc_1319e: // 12f9:020e
     if (memoryAGet(ds, 0x8dd0) != 0x00)
         goto loc_131bb;
     al = 0x01;
-    memoryASet(ds, 0x8f67, al);
+    memoryASet(ds, 0x8f67, al); // gabo!
     memoryASet(ds, 0x919d, al);
     goto loc_131bb;
 loc_131af: // 12f9:021f
@@ -35657,7 +35657,7 @@ void sub_14cbc() // 1463:068c
     memoryASet16(ds, 0x9c66, 0x0063);
     memoryASet16(ds, 0x985a, ax);
     memoryASet16(ds, 0x9880, ax);
-    memoryASet16(ds, 0x989a, 0x000a);
+    memoryASet16(ds, 0x989a, 0x000a); // energy
     cs = pop();
 }
 // Discard check failed in sub_14d22: cur=1463:0bb9 last=1463:0baf> memoryAGet16(ds, 0x9870) modifies memoryAGet16(ds, 0x9870)
@@ -36590,7 +36590,7 @@ void sub_154e6() // 154e:0006
     memoryASet16(ds, 0x9870, ax);
     memoryASet16(ds, 0x9c66, 0x0063);
     memoryASet16(ds, 0x985a, ax);
-    memoryASet16(ds, 0x989a, 0x000a);
+    memoryASet16(ds, 0x989a, 0x000a); // energy 3
     cs = pop();
 }
 // Discard check failed in sub_1554c: cur=154e:05be last=154e:05b4> memoryAGet16(ds, 0x9870) modifies memoryAGet16(ds, 0x9870)
@@ -41273,7 +41273,7 @@ void sub_17b95() // 179f:01a5
     memoryASet16(ds, 0x9c66, 0x0063);
     memoryASet16(ds, 0x985a, ax);
     memoryASet16(ds, 0x9880, ax);
-    memoryASet16(ds, 0x989a, 0x000a);
+    memoryASet16(ds, 0x989a, 0x000a); // energy
     cs = pop();
 }
 // Discard check failed in sub_17bfb: cur=179f:0638 last=179f:062e> memoryAGet16(ds, 0x9870) modifies memoryAGet16(ds, 0x9870)
@@ -54678,6 +54678,8 @@ loc_1e9dc: // 1e9b:002c
 }
 void sub_1e9e2() // 1e9e:0002
 {
+    cs = pop();
+    return;
     CStackGuardFar sg(0, true);
     push(0x7777);
     sp--;
