@@ -1,0 +1,249 @@
+<canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
+<script src="resources.js"></script>
+<script src="cpu.js"></script>
+<script src="ega.js"></script>
+<script src="controls.js"></script>
+<script src="prehistorik.js"></script>
+<script>
+"use strict";
+var video = new Ega();
+var can = document.getElementById("canvas");
+var ctx = can.getContext('2d');
+can.width = 320;
+can.height = 200;
+var data = ctx.createImageData(can.width, can.height);
+
+function interrupt(i)
+{
+  if (i == 0x10 && video.interrupt(i))
+    return;  
+  if (i == 0x21 && r8[ah] == 0x35)
+    return; // get int vect
+  if (i == 0x21 && r8[ah] == 0x25)
+    return; // set int vect
+  if (i == 0x15 && r8[ah] == 0x84)
+  {
+      flags.carry = true;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x2c)
+  {
+      r8[ch] = Math.random()*256;
+      r8[cl] = Math.random()*256;
+      r8[dh] = 117;
+      r8[dl] = 150;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x3d)
+  {
+      var filename = "";
+      var dot = false;
+      for (var i=0; i<100; i++)
+      {
+          var c = String.fromCharCode(memory[ds*16+r16[dx]+i]);
+          if (c==' ')
+              continue;
+          if (c=='\0')
+              break;
+          if (c=='\\')
+              c = "/";
+          filename += c;
+      }
+      filename = filename.toUpperCase();
+      console.log("Open: " + filename);
+      if (!Module[filename])
+        throw "resource not found";
+      window.currentFile = {ofs:0, len:Module[filename].length, data:Module[filename]};
+      flags.carry = 0;
+      r16[ax] = 1;
+      return; 
+  }
+  if (i == 0x21 && r8[ah] == 0x3f)
+  {
+      var bytes = Math.min(r16[cx], window.currentFile.len); 
+      var wptr = ds*16+r16[dx];
+      var rptr = window.currentFile.ofs;
+      r16[ax] = bytes;
+      window.currentFile.ofs += bytes;
+      while (bytes--)
+          memory[wptr++] = window.currentFile.data[rptr++];
+      flags.carry = 0;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x3e)
+  {   
+      window.currentFile = null;
+      return;
+  }
+  if (i == 0x16 && r8[ah] == 0x01)
+  {
+      flags.zero = lastKey == null;
+      return; 
+  }
+  if (i == 0x16 && r8[ah] == 0x00)
+  {
+      r16[ax] = lastKey;
+      lastKey = -1;
+      return; 
+  }
+  if (i == 0x21 && r8[ah] == 0x30)
+  {
+      r16[ax] = 0x0005;
+      r16[bx] = 0xff00;
+      r16[cx] = 0x0000;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x4a)
+  {
+      flags.carry = false;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x44)
+  {
+      r16[ax] = 2;
+      r16[dx] = 2;
+      flags.carry = false;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x42)
+  {
+      if (r8[al] == 2 && r16[cx] == 0 && r16[dx] == 0)
+      {
+          r16[ax] = window.currentFile.len;
+          r16[dx] = window.currentFile.ofs>>16;
+          return;
+      }
+      if (r8[al] == 1)
+      {
+          window.currentFile.ofs += r16[cx]*0x10000 + r16[dx];
+          r16[ax] = window.currentFile.ofs;
+          r16[dx] = window.currentFile.ofs>>16;
+          flags.carry = false;
+          return;
+      }
+      if (r8[al] == 0)
+      {
+          window.currentFile.ofs = r16[cx]*0x10000 + r16[dx];
+          r16[ax] = window.currentFile.ofs;
+          r16[dx] = window.currentFile.ofs>>16;
+          flags.carry = false;
+          return;
+      }
+  }
+  if (i == 0x21 && r8[ah] == 0x43)
+  {
+      r16[cx] = 1<<5;
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x40)
+  {
+      flags.carry = false;
+      r16[ax] = r16[cx];
+      return;
+  }
+  if (i == 0x21 && r8[ah] == 0x19)
+  {
+      r8[al] = 2;
+      return;
+  }
+  if (i == 0x15 && r8[ah] == 0x06)
+  {
+      return;
+  }
+  if (i == 0x11)
+  {
+      r16[ax] = 0;
+      return;
+  }
+  if (i == 0x33)
+  {
+      r16[ax] = -1;
+      r16[bx] = 3;
+      return;
+  }
+
+
+  console.log(i.toString(16), r8[ah].toString(16), r8[al].toString(16));
+  throw "unhandled interrupt"
+}
+
+function* callIndirect(s, o)
+{
+  console.log("indirect", [s, o].map(x=>x.toString(16)).join(":"))
+}
+function out8(port, val)
+{
+  if (port >= 0x200)
+    video.portWrite8(port, val);
+}
+function out16(port, val)
+{
+  video.portWrite16(port, val);
+}
+function in8(port)
+{
+    if (port == 0x201)
+      return 0;
+    if (port == 0x388) //audio
+      return 0x60;
+    if (port == 0x3b5) //mono
+      return 0xff;
+    if (port == 0x301)
+      return 0xff;
+    if (port == 0x331)
+      return 0xbf;
+
+    if (port == 0x3da)
+    {
+        if (!("incounter" in window))
+            window.incounter = 0;
+        return (window.incounter++ & 1) ? 9 : 0;
+    }
+
+  console.log("in8", port.toString(16))
+  return 0;
+}
+
+function* sync(k)
+{
+  memory[0x1f86*16 + 0x8dd8]++;
+  yield 0;
+}
+
+function display()
+{
+  var p = 0;
+  var pixels = data.data;
+    for (var x=0; x<200; x++)
+  for (var y=0; y<320; y++)
+    {
+      var c = video.getPixel(y, x);
+      pixels[p++] = c>>16;
+      pixels[p++] = (c>>8)&0xff;
+      pixels[p++] = c & 0xff;
+      pixels[p++] = 255;
+    }
+  ctx.putImageData(data, 0, 0);
+}
+
+var sequence = start();
+var prehistorikSpeed = 40;
+var s = window.location.search.substr(1);
+for (var att of s.split("&"))
+{
+  let [key, value] = att.split("=");
+  switch (key)
+  {
+    case "level": prehistorikLevel = parseInt(value); break;
+    case "room": prehistorikScreen = parseInt(value); break;
+    case "energy": prehistorikInifniteEnergy = parseInt(value); break;
+    case "lives": prehistorikInifniteLives = parseInt(value); break;
+    case "speed": prehistorikSpeed = parseInt(value); break;
+  }
+}
+
+setInterval(()=> {
+  sequence.next();
+  display();
+}, prehistorikSpeed);
+</script>
