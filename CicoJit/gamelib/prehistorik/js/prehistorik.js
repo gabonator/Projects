@@ -61759,8 +61759,10 @@ function* sub_1e0fe() {
         }
         break;
     case 0x1e102:
+        prehistorikLevel = 0;
         push(cs);
         yield* sub_1dfa2();
+        prehistorikLevel = 1;
         memory16set(ds, 0x9888, 0x0000);
         memory16set(ds, 0x9886, 0x0000);
         memory16set(ds, 0x9c5e, 0x0003);
@@ -61781,6 +61783,7 @@ function* sub_1e0fe() {
         pc = 0x1e141;
         break;
     case 0x1e131:
+        prehistorikLevel = 1;
         push(ds);
         r16[ax] = 0x8233;
         push(r16[ax]);
@@ -61829,6 +61832,7 @@ function* sub_1e0fe() {
         pc = 0x1e185;
         break;
     case 0x1e175:
+        prehistorikLevel = 2;
         push(ds);
         r16[ax] = 0x8249;
         push(r16[ax]);
@@ -61878,6 +61882,7 @@ function* sub_1e0fe() {
         pc = 0x1e1c9;
         break;
     case 0x1e1b9:
+        prehistorikLevel = 3;
         push(ds);
         r16[ax] = 0x825f;
         push(r16[ax]);
@@ -61927,6 +61932,7 @@ function* sub_1e0fe() {
         pc = 0x1e20d;
         break;
     case 0x1e1fd:
+        prehistorikLevel = 4;
         push(ds);
         r16[ax] = 0x8275;
         push(r16[ax]);
@@ -61976,6 +61982,7 @@ function* sub_1e0fe() {
         pc = 0x1e251;
         break;
     case 0x1e241:
+        prehistorikLevel = 5;
         push(ds);
         r16[ax] = 0x828c;
         push(r16[ax]);
@@ -62025,6 +62032,7 @@ function* sub_1e0fe() {
         pc = 0x1e295;
         break;
     case 0x1e285:
+        prehistorikLevel = 6;
         push(ds);
         r16[ax] = 0x82a3;
         push(r16[ax]);
@@ -62074,6 +62082,7 @@ function* sub_1e0fe() {
         pc = 0x1e2d9;
         break;
     case 0x1e2c9:
+        prehistorikLevel = 7;
         push(ds);
         r16[ax] = 0x82b9;
         push(r16[ax]);
@@ -62106,6 +62115,7 @@ function* sub_1e0fe() {
             pc = 0x1e2fb;
             break;
         }
+        prehistorikLevel = 8;
         push(cs);
         yield* sub_1ddc3();
         pc = 0x1e102;

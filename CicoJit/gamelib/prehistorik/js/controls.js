@@ -23,3 +23,15 @@ function onKey(code, pressed)
   }
   return true;   
 }
+
+document.onmousedown = evt => onKey(32, true)
+document.onmouseup = evt => onKey(32, false)
+document.ontouchstart = evt => onKey(32, true)
+document.ontouchend = evt => onKey(32, false)
+
+new JoyStick('joystick', {}, stickData => {
+    onKey(38, stickData.yPosition < 80)
+    onKey(40, stickData.yPosition > 120)
+    onKey(37, stickData.xPosition < 80)
+    onKey(39, stickData.xPosition > 120)
+});

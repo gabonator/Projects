@@ -1,9 +1,46 @@
-<canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style> 
+body {  font-family: 'Poppins', sans-serif; user-select: none;}
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Titus Prehistorik <font color="silver">(cicoparser javascript port)</font></div>
+<div class="right-text"><span id="status"></span></div>
+</div>
+
+<br>
+
+<canvas id="canvas" style="width:640px; max-width:100vw; aspect-ratio: 640/400;"></canvas><br>
 <script src="resources.js"></script>
 <script src="cpu.js"></script>
 <script src="ega.js"></script>
-<script src="controls.js"></script>
 <script src="prehistorik.js"></script>
+<div id="joystick" style="position:fixed; right:20px; bottom:20px; width:200px;height:200px;"></div>
+<script src="joy.js"></script>
+<script src="controls.js"></script>
 <script>
 "use strict";
 var video = new Ega();
@@ -161,8 +198,6 @@ function interrupt(i)
       r16[bx] = 3;
       return;
   }
-
-
   console.log(i.toString(16), r8[ah].toString(16), r8[al].toString(16));
   throw "unhandled interrupt"
 }
@@ -204,6 +239,18 @@ function in8(port)
   return 0;
 }
 
+function state()
+{
+  return {score:memory16get(0x1f86, 0x9888)*0x10000+memory16get(0x1f86, 0x9886),
+    lives:memory16get(0x1f86, 0x9c5e),
+    realLevel:memory16get(0x1f86, 0x9c6c),
+    level:prehistorikLevel, 
+    screen:memory16get(0x1f86, 0x9c68),
+    time:memory16get(0x1f86, 0x9c66),
+    food:memory16get(0x1f86, 0x9880), // out of 46
+    health:memory16get(0x1f86, 0x989a) // out of 10
+  };
+}
 function* sync(k)
 {
   memory[0x1f86*16 + 0x8dd8]++;
@@ -234,8 +281,9 @@ for (var att of s.split("&"))
   let [key, value] = att.split("=");
   switch (key)
   {
-    case "level": prehistorikLevel = parseInt(value); break;
-    case "room": prehistorikScreen = parseInt(value); break;
+    case "pos": 
+      prehistorikLevel = parseInt(value.split("/")[0]); 
+      prehistorikScreen = parseInt(value.split("/")[1]); break;
     case "energy": prehistorikInifniteEnergy = parseInt(value); break;
     case "lives": prehistorikInifniteLives = parseInt(value); break;
     case "speed": prehistorikSpeed = parseInt(value); break;
@@ -246,4 +294,20 @@ setInterval(()=> {
   sequence.next();
   display();
 }, prehistorikSpeed);
+
+setInterval(()=> {
+  var s = state();
+  var pos = `pos=${s.level}/${s.screen}`;
+  var oldPos = window.location.search.match("pos=\\d+/\\d+");
+  if (oldPos)
+    oldPos = oldPos[0];
+  if (oldPos)
+  {
+    if (oldPos != pos)
+      history.replaceState(null, '', window.location.search.split(oldPos).join(pos));
+  } else {
+    history.replaceState(null, '', "?"+pos);
+  }
+  document.querySelector("#status").innerHTML = `level: ${s.realLevel} score: ${s.score} lives: ${s.lives} health: ${s.health*10}% time: ${s.time} `;
+}, 1000);
 </script>
