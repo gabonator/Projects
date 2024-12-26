@@ -17,6 +17,7 @@ function onKey(code, pressed)
     case 37: cbit(0x1f86, 0x8baf, pressed); break;
     case 39: cbit(0x1f86, 0x8da6, pressed); break;
     case 32: cbit(0x1f86, 0x92b5, pressed); break;
+    case 77: memory[0x1f86*16+0x8b94]=1; break; // m
     default:
       return false;
   }

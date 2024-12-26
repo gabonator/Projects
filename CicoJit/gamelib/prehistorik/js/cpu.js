@@ -398,3 +398,14 @@ function rep_movsb_data_data_backward()
   }
   r16[cx] = 0;
 }
+function movsb_data_data_forward()
+{
+  assert(es < 0xa000 && ds < 0xa000 && r16[si] <= 0xffff && r16[di] <= 0xffff);
+  assert(ds*16 + r16[si] < memory.length);
+  memory[es*16 + r16[di]++] = memory[ds*16 + r16[si]++];
+}
+function movsb_data_video_forward()
+{
+  assert(es < 0xa000 && ds >= 0xa000 && r16[si] <= 0xffff && r16[di] <= 0xffff);
+  memory[es*16 + r16[di]++] = video.read(ds*16 + r16[si]++);
+}

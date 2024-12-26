@@ -25188,7 +25188,7 @@ function* sub_d8d2() {
         r16[bx] = 0x0004;
     case 0xd909:
         out8(r16[dx], r8[al]);
-        movsb_data_data_forward();
+        movsb_data_video_forward();
         r16[bx]--;
         if (r16[bx] == 0) {
             pc = 0xd913;
@@ -25289,7 +25289,7 @@ function* sub_d929() {
         r16[bx] = 0x0004;
     case 0xd97b:
         out8(r16[dx], r8[al]);
-        movsb_data_data_forward();
+        movsb_video_data_forward();
         r16[bx]--;
         if (r16[bx] == 0) {
             pc = 0xd985;
