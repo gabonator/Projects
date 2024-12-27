@@ -28,12 +28,13 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <div class="banner">
 <div class="left-text">Titus Prehistorik <font color="silver">(cicoparser javascript port)</font></div>
-<div class="right-text"><span id="status"></span></div>
+<div class="right-text"><span id="status">&nbsp;</span><a href="https://github.com/gabonator/Projects/tree/master/CicoJit/gamelib/prehistorik"><img src="mark-github.svg" style="position:relative; top:+5px;"></a></div>
 </div>
 
 <br>
 
-<canvas id="canvas" style="width:640px; max-width:100vw; aspect-ratio: 640/400;"></canvas><br>
+<img id="preview" src="preview.png" style="width:640px; max-width:100vw; aspect-ratio: 640/400;">
+<canvas id="canvas" style="display:none; width:640px; max-width:100vw; aspect-ratio: 640/400;"></canvas><br>
 <script src="resources.js"></script>
 <script src="cpu.js"></script>
 <script src="ega.js"></script>
@@ -290,9 +291,16 @@ for (var att of s.split("&"))
   }
 }
 
+var first = true;
 setInterval(()=> {
   sequence.next();
   display();
+  if (first)
+  {
+    first = false;
+    document.getElementById("preview").style.display = "none";
+    document.getElementById("canvas").style.display = "";
+  }
 }, prehistorikSpeed);
 
 setInterval(()=> {
