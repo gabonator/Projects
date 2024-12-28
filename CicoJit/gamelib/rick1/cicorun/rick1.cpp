@@ -110,6 +110,8 @@ void sub_36cfd();
 void sub_36d04();
 void sub_36d18();
 // INJECT: Error: cannot inject zero flag in sub_3545e()!
+// INJECT: Error: cannot inject zero flag in sub_36395()!
+// INJECT: Error: cannot inject zero flag in sub_363b5()!
 void sub_341b0()
 {
     sub_34720();
@@ -3901,6 +3903,7 @@ loc_3638e:
     di += 0x0005;
     goto loc_3625c;
 }
+// INJECT: Error: cannot inject zero flag in sub_36395()!
 void sub_36395()
 {
     push(ax);
@@ -3908,11 +3911,11 @@ void sub_36395()
     cx = 0x0005;
     ax = 0;
 loc_3639e:
+    flags.zero = ax == memory16(ds, si); // cico!
     if (ax != memory16(ds, si))
         goto loc_363ab;
     ax = pop();
     memory(ds, si + 38) = 0x00;
-    flags.zero = true;
     return;
 loc_363ab:
     si += 0x0030;
@@ -3920,9 +3923,10 @@ loc_363ab:
         goto loc_3639e;
     ax = 0;
     ax++;
-    ax = pop();
     flags.zero = false;
+    ax = pop();
 }
+// INJECT: Error: cannot inject zero flag in sub_363b5()!
 void sub_363b5()
 {
     push(ax);
@@ -3942,11 +3946,11 @@ loc_363cd:
     cx = 0x0003;
     ax = 0;
 loc_363da:
+    flags.zero = ax == memory16(ds, si);
     if (ax != memory16(ds, si))
         goto loc_363e7;
     ax = pop();
     memory(ds, si + 38) = 0x02;
-    flags.zero = true;
     return;
 loc_363e7:
     si += 0x0030;
@@ -3955,8 +3959,8 @@ loc_363e7:
 loc_363ec:
     ax = 0;
     ax++;
-    ax = pop();
     flags.zero = false;
+    ax = pop();
 }
 void sub_363f1()
 {

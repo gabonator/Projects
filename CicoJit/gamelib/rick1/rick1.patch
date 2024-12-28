@@ -82,6 +82,15 @@ index ef79cf4..d3d62a4 100644
      return;
  loc_35469:
      di = 0x7e7e;
+@@ -2734,7 +2734,7 @@ loc_358ac:
+     al = memory(ds, 0x7d69);
+     tl = al;
+     al = dh;
+-    if (stop("check inject: and al, al") && tl == 0)
++    if (tl == 0)
+         goto loc_358c3;
+     goto loc_359b8;
+ loc_358c3:
 @@ -2772,7 +2778,7 @@ loc_35926:
          goto loc_35931;
      return;
@@ -123,6 +132,32 @@ index ef79cf4..d3d62a4 100644
  }
  void sub_3612b()
  {
+@@ -3911,11 +3911,11 @@ void sub_36395()
+     cx = 0x0005;
+     ax = 0;
+ loc_3639e:
++    flags.zero = ax == memory16(ds, si); // cico!
+     if (ax != memoryAGet16(ds, si))
+         goto loc_363ab;
+     ax = pop();
+     memoryASet(ds, si + 38, 0x00);
+-    stop(/*inject ret*/);
+     return;
+ loc_363ab:
+     si += 0x0030;
+@@ -3946,11 +3946,11 @@ loc_363cd:
+     cx = 0x0003;
+     ax = 0;
+ loc_363da:
++    flags.zero = ax == memoryAGet16(ds, si);
+     if (ax != memoryAGet16(ds, si))
+         goto loc_363e7;
+     ax = pop();
+     memoryASet(ds, si + 38, 0x02);
+-    stop(/*inject ret*/);
+     return;
+ loc_363e7:
+     si += 0x0030;
 @@ -4176,7 +4183,7 @@ loc_36426:
  loc_36431:
      ah = 0;
