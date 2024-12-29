@@ -1,0 +1,416 @@
+diff --git a/./rick2opt.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rick2/wasm/./rick2.cpp
+index 1e80a29..2c719a5 100644
+--- a/./rick2opt.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/rick2/wasm/./rick2.cpp
+@@ -1,4 +1,4 @@
+-#include "cicoemu.h"
++#include "cicoctx.h"
+ using namespace CicoContext;
+ 
+ void sub_1c276();
+@@ -431,7 +431,7 @@ void sub_105f7()
+     dx = pop();
+     cx = bp;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0202;
+@@ -439,7 +439,7 @@ void sub_105f7()
+     dx = pop();
+     cx = bp;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0402;
+@@ -447,7 +447,7 @@ void sub_105f7()
+     dx = pop();
+     cx = bp;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0802;
+@@ -455,7 +455,7 @@ void sub_105f7()
+     dx = pop();
+     cx = bp;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0f02;
+@@ -471,21 +471,21 @@ void sub_105f7()
+ }
+ void sub_10661()
+ {
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+ }
+ void sub_10702()
+ {
+@@ -720,22 +720,22 @@ loc_108aa:
+     si = ax;
+     si = memory16(cs, si);
+     cx = 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += cx;
+-    movsb<MemData, MemData, DirForward>();
+-    di += 0xff20;
++    movsb<MemVideo, MemVideo, DirForward>();
++    di = (di + 0xff20) & 0xffff;
+     cx = bp;
+     if (--cx)
+         goto loc_1089b;
+@@ -771,7 +771,7 @@ void sub_108f7()
+     ds = memory16(cs, 0x0056);
+ loc_1090f:
+     cx = bp;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     di += bx;
+     dx--;
+     if (dx != 0)
+@@ -890,7 +890,7 @@ void sub_109ee()
+     push(ax);
+     ax = 0x0040;
+     es = ax;
+-    dx = memory16(es, 0x0063);
++    dx = memoryBiosGet16(es, 0x0063);
+     dx += 0x0006;
+ loc_10a22:
+     in(al, dx);
+@@ -918,10 +918,10 @@ loc_10a27:
+     flags.interrupts = true;
+     ah = ch;
+     ax <<= 1;
+-    memory16(es, 0x004e) = ax;
++    memoryBiosSet16(es, 0x004e, ax);
+     ax = 0x0040;
+     es = ax;
+-    dx = memory16(es, 0x0063);
++    dx = memoryBiosGet16(es, 0x0063);
+     dx += 0x0006;
+ loc_10a55:
+     in(al, dx);
+@@ -976,21 +976,21 @@ loc_10a76:
+     dx <<= 1;
+     dx <<= 1;
+     si = dx;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x001f;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     es = pop();
+     ds = pop();
+ loc_10ad2:
+@@ -1071,21 +1071,21 @@ loc_10b46:
+     ax <<= 1;
+     ax <<= 1;
+     si = ax;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     di += 0x0027;
+     di = pop();
+     si = pop();
+@@ -1173,7 +1173,7 @@ loc_10c15:
+     callIndirect(cs, memory16(ds, 0x001c));
+     si = pop();
+     cx = pop();
+-    si += 0xfffe;
++    si = (si + 0xfffe) & 0xffff;
+     if (--cx)
+         goto loc_10c15;
+     sub_17047();
+@@ -1232,13 +1232,13 @@ void sub_10c98()
+     dx = memory16(ds, 0x005c);
+ loc_10cad:
+     ds = ax;
+-    movsb<MemData, MemData, DirForward>();
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     ds = dx;
+     push(si);
+     si = bx;
+     cx = 0x001e;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     bx = si;
+     si = pop();
+     bx += 0x000a;
+@@ -1265,12 +1265,12 @@ loc_10ce3:
+     push(si);
+     si = bx;
+     cx = 0x001e;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     bx = si;
+     si = pop();
+     ds = ax;
+-    movsb<MemData, MemData, DirForward>();
+-    movsb<MemData, MemData, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
++    movsb<MemVideo, MemVideo, DirForward>();
+     bx += 0x000a;
+     si += 0x0026;
+     di += 0x0008;
+@@ -1288,10 +1288,10 @@ void sub_10d03()
+     ds = ax;
+     es = memory16(cs, 0x005a);
+     si = 0x0100;
+-    lodsb<MemData, DirForward>();
++    lodsb<MemVideo, DirForward>();
+     di = 0;
+     cx = 0x1f40;
+-    rep_stosb<MemData, DirForward>();
++    rep_stosb<MemVideo, DirForward>();
+     es = pop();
+     ds = pop();
+     sub_19b1c();
+@@ -1302,10 +1302,10 @@ void sub_10d03()
+     ds = ax;
+     es = memory16(cs, 0x005a);
+     si = 0x0100;
+-    lodsb<MemData, DirForward>();
++    lodsb<MemVideo, DirForward>();
+     di = 0;
+     cx = 0x1f40;
+-    rep_stosb<MemData, DirForward>();
++    rep_stosb<MemVideo, DirForward>();
+     es = pop();
+     ds = pop();
+ }
+@@ -1344,7 +1344,7 @@ void sub_10d5c()
+     dx = pop();
+     cx = 0x0fa0;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0202;
+@@ -1352,7 +1352,7 @@ void sub_10d5c()
+     dx = pop();
+     cx = 0x0fa0;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0f02;
+@@ -1388,7 +1388,7 @@ void sub_10daa()
+     dx = pop();
+     cx = 0x0fa0;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0802;
+@@ -1396,7 +1396,7 @@ void sub_10daa()
+     dx = pop();
+     cx = 0x0fa0;
+     di = 0;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemVideo, MemData, DirForward>();
+     push(dx);
+     dx = 0x03c4;
+     ax = 0x0f02;
+@@ -1421,7 +1421,7 @@ void sub_10df8()
+     si = 0;
+     di = si;
+     cx = 0x1f40;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     ax = 0xa780;
+     ds = ax;
+     ax = 0xa200;
+@@ -1429,7 +1429,7 @@ void sub_10df8()
+     si = 0;
+     di = si;
+     cx = 0x1f40;
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     es = pop();
+     ds = pop();
+ }
+@@ -1505,7 +1505,7 @@ loc_10e91:
+     cx = 0x0020;
+     push(si);
+     push(di);
+-    rep_movsb<MemData, MemData, DirForward>();
++    rep_movsb<MemVideo, MemVideo, DirForward>();
+     di = pop();
+     si = pop();
+     si += 0x0028;
+@@ -1524,10 +1524,10 @@ void sub_10ea6()
+     ds = ax;
+     es = memory16(cs, 0x0056);
+     si = 0x0100;
+-    lodsb<MemData, DirForward>();
++    lodsb<MemVideo, DirForward>();
+     di = 0;
+     cx = 0x1f40;
+-    rep_stosb<MemData, DirForward>();
++    rep_stosb<MemVideo, DirForward>();
+     es = pop();
+     ds = pop();
+ }
+@@ -1732,23 +1732,23 @@ loc_11291:
+     dl = 0xc4;
+     ax = 0x0f02;
+     out(dx, ax);
+-    ah = memory(es, di);
++    ah = memoryVideoGet(es, di);
+     ah = 0x01;
+     out(dx, ax);
+     ah = memory(ds, si + 1);
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     ah = 0x02;
+     out(dx, ax);
+     ah = memory(ds, si + 2);
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     ah = 0x04;
+     out(dx, ax);
+     ah = memory(ds, si + 3);
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+     ah = 0x08;
+     out(dx, ax);
+     ah = memory(ds, si + 4);
+-    memory(es, di) = ah;
++    memoryVideoSet(es, di, ah);
+ loc_112c9:
+     di++;
+     si += 0x0005;
+@@ -7547,7 +7547,7 @@ loc_192c4:
+     dx--;
+     if (dx != 0)
+         goto loc_192c4;
+-    di += 0xff84;
++    di = (di + 0xff84) & 0xffff;
+     cx = bp;
+     if (--cx)
+         goto loc_192b1;
+@@ -7577,7 +7577,7 @@ void sub_1930a()
+     di = 0x5b3a;
+     flags.direction = true;
+     cx = 0x0270;
+-    rep_movsw<MemData, MemData, DirForward>();
++    rep_movsw<MemData, MemData, DirBackward>();
+     flags.direction = false;
+     bx = memory16(ds, 0x8bf8);
+     memory16(ds, 0x8bfa) = memory16(ds, 0x8bfa) - 1;
+@@ -8274,6 +8274,7 @@ loc_19ae0:
+ }
+ void sub_19af6()
+ {
++    return;
+     push(dx);
+     push(ax);
+     ax = memory16(ds, 0x96f4);
+@@ -8282,7 +8283,7 @@ loc_19afb:
+     push(es);
+     dx = 0x0040;
+     es = dx;
+-    dx = memory16(es, 0x0063);
++    dx = memoryBiosGet16(es, 0x0063);
+     es = pop();
+     dl += 0x06;
+ loc_19b0b:
+@@ -8310,7 +8311,7 @@ void sub_19b1c()
+     push(es);
+     dx = 0x0040;
+     es = dx;
+-    dx = memory16(es, 0x0063);
++    dx = memoryBiosGet16(es, 0x0063);
+     es = pop();
+     dl += 0x06;
+ loc_19b2e:

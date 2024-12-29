@@ -22,6 +22,15 @@ index 6b0b447..dad4b38 100644
      push(cx);
      sub_19b1c();
      sub_19bdc();
+@@ -7188,7 +7188,7 @@ void sub_18d28()
+         goto loc_18d39;
+     return;
+ loc_18d39:
+-    if (stop(/*1 - jle loc_18d3e*/))
++    if ((short)memoryAGet16(ds, 0x0b38) <= (short)0x0001)
+         goto loc_18d3e;
+     goto loc_18f57;
+ loc_18d3e:
 @@ -8201,6 +8201,7 @@ loc_19a10:
  loc_19a45:
      memoryASet(ds, 0x97da, 0x01);

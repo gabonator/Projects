@@ -1,0 +1,29 @@
+<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
+
+<script src="app_inline.js"></script>
+<script src="resources.js"></script>
+<script src="controls.js"></script>
+<script src="wasmapp.js"></script>
+<script>
+"use strict"
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+var game = new WasmApp(f=>Module[f]);
+game.load().then(() => {
+  var videoBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appVideo.value>>2], 320 * 200 * 4);
+  game.memoryBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appMemory.value>>2], 0x10000*14);
+  game.HEAP32[game.symbols.seed.value>>2] = Math.floor(Math.random()*0x10000) | (Math.floor(Math.random()*0x10000)<<16);
+  game.symbols.appLoop();
+  game.symbols.asyncify_stop_unwind();
+
+  var gameTimer = setInterval(() => {
+    game.asyncifyResume();
+    if (game.symbols.appBlit())
+    {
+      const img = new ImageData(videoBuffer, 320, 200);
+      this.ctx.putImageData(img, 0, 0);
+    }
+  }, 40);
+})
+</script>
