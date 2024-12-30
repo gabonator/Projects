@@ -1,0 +1,49 @@
+<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
+<canvas id="canvas2" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
+<div id="info"></div>
+<script src="app_inline.js"></script>
+<script src="resources.js"></script>
+<script src="controls.js"></script>
+<script src="wasmapp.js"></script>
+<script src="game.js"></script>
+<script src="replay.js"></script>
+<script>
+"use strict"
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var canvas2 = document.getElementById('canvas2');
+var ctx2 = canvas2.getContext('2d');
+
+var gameLive = new Game();
+var gamePast = new Game();
+var delay = 100;
+var replay = null; Path.From(replaylevel1);
+Promise.all([gameLive.load(), gamePast.load()]).then(() => {
+  var gameTimer = setInterval(() => {
+    if (replay && Path.Length(replay) > gameLive.pathLength())
+    {
+      //for (var i=0; i<20; i++)
+      gameLive.step(Path.Extract(replay, gameLive.pathLength()));
+      gameLive.render(ctx);
+    } else
+    if (userReverse)
+    {
+      var append = [];
+      for (var i=gamePast.pathLength(); i<gameLive.pathLength()-1; i++)
+        append.push(Path.Extract(gameLive.path, i));
+      if (gamePast.pathLength() != gameLive.pathLength())
+        gameLive.copy(gamePast);
+      for (var a of append)
+        gameLive.step(a);
+      gameLive.render(ctx);
+    } else
+    {
+      gameLive.step(userState);
+      gameLive.render(ctx);
+      for (var i = gamePast.pathLength(); i < gameLive.pathLength() - delay; i++)
+        gamePast.step(Path.Extract(gameLive.path, i))
+      gamePast.render(ctx2);
+    }
+  }, 40);
+})
+</script>
