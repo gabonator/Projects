@@ -57,7 +57,7 @@ var ctx3 = canvas3.getContext('2d');
 
 var gameLive = new Game();
 var gamePast = new Game();
-var delay = 100;
+var delay = 250;
 var replay = window.location.search.includes("demo=1") ? Path.From(replaylevel1) : null;
 Promise.all([gameLive.load(), gamePast.load()]).then(() => {
   var gameTimer = setInterval(() => {
