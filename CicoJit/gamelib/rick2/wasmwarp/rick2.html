@@ -1,5 +1,44 @@
-<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
-<canvas id="canvas2" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style> 
+body {  font-family: 'Poppins', sans-serif; user-select: none;}
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Rick Dangerous 2 <font color="silver">(cicoparser js warp test)</font></div>
+<div class="right-text"><span id="status">&nbsp;</span><a href="https://github.com/gabonator/Projects/tree/master/CicoJit/gamelib/rick2/wasmwarp">
+<svg style="position:relative; top:5px; padding-left:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z" fill="silver"></path></svg>
+</a></div>
+</div>
+<br>
+
+<div style="position:relative">
+<canvas id="canvas" width="320" height="200" style="position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
+<canvas id="canvas2" width="320" height="200" style="display:none; position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px; opacity:0.3"></canvas>
+<canvas id="canvas3" width="320" height="200" style="display:none; position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px; opacity:0.3"></canvas>
+</div>
 <div id="info"></div>
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
@@ -13,37 +52,74 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var canvas2 = document.getElementById('canvas2');
 var ctx2 = canvas2.getContext('2d');
+var canvas3 = document.getElementById('canvas3');
+var ctx3 = canvas3.getContext('2d');
 
 var gameLive = new Game();
 var gamePast = new Game();
 var delay = 100;
-var replay = null; Path.From(replaylevel1);
+var replay = window.location.search.includes("demo=1") ? Path.From(replaylevel1) : null;
 Promise.all([gameLive.load(), gamePast.load()]).then(() => {
   var gameTimer = setInterval(() => {
     if (replay && Path.Length(replay) > gameLive.pathLength())
     {
-      //for (var i=0; i<20; i++)
       gameLive.step(Path.Extract(replay, gameLive.pathLength()));
       gameLive.render(ctx);
     } else
     if (userReverse)
     {
       var append = [];
-      for (var i=gamePast.pathLength(); i<gameLive.pathLength()-1; i++)
-        append.push(Path.Extract(gameLive.path, i));
-      if (gamePast.pathLength() != gameLive.pathLength())
-        gameLive.copy(gamePast);
-      for (var a of append)
-        gameLive.step(a);
+      var passed = (new Date().getTime() - userReverse)/40;
+      var pastFrames = gamePast.pathLength();
+      var targetTimeA = userReverseFrames+curve(passed)-pastFrames;
+      var targetTimeB = userReverseFrames+curve(passed+2)-pastFrames;
+      var targetTimeC = userReverseFrames+curve(passed+4)-pastFrames;
+      for (let i=0; i<targetTimeA; i++)
+        append.push(Path.Extract(gameLive.path, pastFrames+i));
+      gameLive.copy(gamePast);
+
+      let i=0;
+      for (; i<targetTimeC; i++)
+        gameLive.step(append[i]);
+      gameLive.render(ctx3);
+      for (; i<targetTimeB; i++)
+        gameLive.step(append[i]);
+      gameLive.render(ctx2);
+      for (; i<targetTimeA; i++)
+        gameLive.step(append[i]);
+      gameLive.render(ctx);
+      canvas2.style.display = "";
+      canvas3.style.display = "";
+
       gameLive.render(ctx);
     } else
     {
+      canvas2.style.display = "none";
+      canvas3.style.display = "none";
+
       gameLive.step(userState);
       gameLive.render(ctx);
       for (var i = gamePast.pathLength(); i < gameLive.pathLength() - delay; i++)
         gamePast.step(Path.Extract(gameLive.path, i))
-      gamePast.render(ctx2);
     }
   }, 40);
 })
+
+function curve(frame)
+{
+  // https://www.desmos.com/calculator
+  // 8-\operatorname{abs}\left(x-\frac{8}{2}\right)-\frac{8}{2}
+  // \sqrt{8^{2}\cdot0.5-\left(x-\frac{8}{2}\right)^{2}}-\frac{8}{2}
+  // \operatorname{abs}\left(x-\frac{8}{2}\right)<\frac{8}{2}
+  if (frame < 0)
+    return 0;
+  var radius = 40;
+  var linear = radius - Math.abs(frame-radius/2) - radius/2
+  var circular = Math.sqrt((radius**2)/2-(frame - radius/2)**2) - radius/2
+  if (frame <= radius)
+    return Math.floor(circular);
+  return Math.floor(linear);
+}                                                                       
+                                                                        
+document.querySelector("#status").innerHTML = (replay ? `<a href="?">Normal</a>` : `hold shift to time warp, <a href="?demo=1">Demo</a>`);
 </script>

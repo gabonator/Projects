@@ -1,14 +1,20 @@
 let Path = {
-  Extract(path, f)
-  {
-    // TODO: slow
+  Extract(path, f) {
     var binarySearch = (a, t) => {
-      for (var i=1; i<a.length; i++)
-        if (a[i][0] > t)
-          return i-1;
-      return a.length-1;
-    }
-    if (f <= path[0][0])
+        let low = 0, high = a.length - 1, result = -1;
+        while (low <= high) {
+            let mid = Math.floor((low + high) / 2);
+            if (a[mid][0] <= t) {
+                result = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return result;
+    };
+
+    if (f <= path[0][0]) 
       return path[0][1];
     var i = binarySearch(path, f);
     return path[i][1];
@@ -116,10 +122,7 @@ class Game
 
   copy(netGame)
   {
-    this.app.memory.set(netGame.app.memory)
-//    this.videoBuffer.set(netGame.videoBuffer); 
-//    this.memoryBuffer.set(netGame.memoryBuffer);
-//    this.asyncifyBuffer.set(netGame.asyncifyBuffer);
+    this.app.memory.set(netGame.app.memory);
     this.path = Path.Copy(netGame.path);
     this.seed = netGame.seed;
     this.frame = netGame.frame;
