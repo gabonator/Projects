@@ -1246,7 +1246,6 @@ bool ExtractMethod(Capstone& cap, address_t address, std::vector<std::shared_ptr
                        nextAddr.linearOffset()-addr.linearOffset());
                 return false;
             }
-            
             assert(addr == nextAddr);
         }
             
@@ -1729,7 +1728,8 @@ std::string MakeCCondition(address_t noticeCurrentMethod, std::shared_ptr<CapIns
                 if (inst->mId == X86_INS_CALL)
                 {
                     assert(x86.op_count == 1);
-                    assert(x86.operands[0].type == X86_OP_IMM);
+                    if(x86.operands[0].type != X86_OP_IMM)
+                        return "stop(/*call no imm*/);";
                 } else {
                     if (x86.op_count != 2)
                     {
@@ -2295,8 +2295,12 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         else
                             text.push_back("stop(/*74-3*/);");
                         break;
+                    case X86_INS_NEG:
+                        text.push_back(assign(x86, "flags.carry = $rd0 != 0;"));
+                        break;
                     default:
-                        text.push_back("stop(/*74*/);");
+                        text.push_back(format("stop(/*74*/);"));
+                        //text.push_back(format("stop(/*74 inject carry %s*/);", cs_insn_name(_handle, instr->mId)));
                         //assert(0);
                         break;
                 }
