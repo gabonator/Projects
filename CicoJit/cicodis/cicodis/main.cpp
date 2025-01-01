@@ -30,6 +30,7 @@ bool _stackGuard = false;
 bool _dumpReloc = false;
 bool _dumpTree = false;
 bool _coverage = false;
+bool _bit32 = false;
 enum {Unknown, Near, Far} _currentCall = Unknown;
 bool gNeedToRerun = false;
 int _linearToFileOffset = 0;
@@ -597,6 +598,12 @@ public:
 
             case X86_INS_JMP:
                 if (x86->op_count == 1 &&
+                    x86->operands[0].size == 4)
+                {
+                    mNextInstr = {};
+                    break;
+                }
+                if (x86->op_count == 1 &&
                     x86->operands[0].size == 2)
                 {
                     assert(x86->op_count == 1 &&
@@ -621,7 +628,7 @@ public:
             case X86_INS_JNE ... X86_INS_JS:
                 assert(x86->op_count == 1 &&
                        x86->operands[0].type == X86_OP_IMM &&
-                       x86->operands[0].size == 2);
+                       (x86->operands[0].size == 2 || x86->operands[0].size == 4));
                 mBranchInstr = fromRelative( x86->operands[0].imm);//{addr.segment, (int)x86->operands[0].imm - addr.segment*16 + 0x10000};
                 snprintf(mOperands, 64, "loc_%x", mBranchInstr.linearOffset());
                 break;
@@ -758,7 +765,7 @@ class Capstone
 public:
     Capstone()
     {
-        cs_err err = cs_open(CS_ARCH_X86, CS_MODE_16, &mHandle);
+        cs_err err = cs_open(CS_ARCH_X86, _bit32 ? CS_MODE_32 : CS_MODE_16, &mHandle);
         if (err) {
             printf("Failed on cs_open() with error returned: %u\n", err);
             abort();
@@ -956,7 +963,7 @@ public:
             std::vector<std::shared_ptr<CapInstr>> newtargets;
             for (auto j : targets)
             {
-                if (j->mId == X86_INS_POP || j->mId == X86_INS_MOV)
+                if (j->mId == X86_INS_POP || j->mId == X86_INS_MOV || j->mId == X86_INS_XCHG)
                 {
                     changed = true;
                     std::vector<std::shared_ptr<CapInstr>> targets2 = allPathsTo(j);
@@ -2119,6 +2126,14 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             default:
                 if (!noReturn)
                     text.push_back("stop(/*unk call conv*/);");
+                else {
+                    if (_stackGuard)
+                        text.push_back(format("CStackGuard sg(%d, %s); // no return", ofs, usesStack ? "true" : "false"));
+                    else if (!_simpleStack && usesStack)
+                        text.push_back("push(0x7777); // no return");
+                    else
+                        text.push_back("// no return");
+                }
         }
     };
     auto functionFooter = [&]()
@@ -2178,20 +2193,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         }
     }
     std::shared_ptr<CapInstr> lastCompare;
+    std::shared_ptr<CapInstr> prevInstr;
     bool keepLastCompare{false};
     
     functionHeader();
-
-    auto GetPrev = [&](const std::shared_ptr<CapInstr>& p)->std::shared_ptr<CapInstr>
-    {
-        if (code.size() && code[0]->mAddress == p->mAddress)
-            return {};
-        for (int i=0; i<code.size(); i++)
-            if (code[i]->mAddress == p->mAddress)
-                return code[i-1];
-        assert(0);
-        return {};
-    };
     
     for (const std::shared_ptr<CapInstr>& instr : code)
     {
@@ -2769,7 +2774,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
             case X86_INS_JL:
                 assert(x86.op_count == 1 &&
                        x86.operands[0].type == X86_OP_IMM &&
-                       x86.operands[0].size == 2);
+                       (x86.operands[0].size == 2 || x86.operands[0].size == 4));
 
                 if (!lastCompare && !instr->mForceFlagCondition)
                 {
@@ -2782,51 +2787,6 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     if (targets.size() == 1)
                         lastCompare = targets[0];
                 }
-                    /*
-
-                    // try to follow all paths to this instruction
-                    if (instr->mLabel)
-                    {
-                        // TODO: rework
-                        // find all paths to this label
-                        std::vector<std::shared_ptr<CapInstr>> allPaths;
-                        std::shared_ptr<CapInstr> prev = GetPrev(instr);
-                        if (prev && prev->mId != X86_INS_JMP && prev->mId != X86_INS_RET && prev->mId != X86_INS_RETF)
-                            allPaths.push_back(prev);
-
-                        for (const std::shared_ptr<CapInstr>& i : code)
-                        {
-                            if (i->NextBranch() == instr->mAddress)
-                            {
-                                //assert(!i->mLabel);
-                                allPaths.push_back(GetPrev(i));
-                            }
-                        }
-                        if (allPaths.size() == 1)
-                            lastCompare = allPaths[0];
-                        else
-                        {
-                            if (allPaths.size() == 2 &&
-                                allPaths[0]->mId == X86_INS_CMP &&
-                                allPaths[1]->mId == X86_INS_CMP &&
-                                allPaths[0]->mDetail.op_count == 2 &&
-                                allPaths[1]->mDetail.op_count == 2 &&
-                                allPaths[0]->mDetail.operands[0].type == X86_OP_REG &&
-                                allPaths[1]->mDetail.operands[0].type == X86_OP_REG &&
-                                allPaths[0]->mDetail.operands[0].reg == allPaths[1]->mDetail.operands[0].reg)
-                            {
-                                if (instr->mId == X86_INS_JE || instr->mId == X86_INS_JNE)
-                                {
-                                    allPaths[0]->mInject = (inject_t)((int)allPaths[0]->mInject | (int)inject_t::zero);
-                                    allPaths[1]->mInject = (inject_t)((int)allPaths[0]->mInject | (int)inject_t::zero);
-                                    instr->mForceFlagCondition = true;
-                                    modified = true;
-                                }
-
-                            }
-                        }
-                    }
-                }*/
                 {
                     inject_t injectPrev = lastCompare ? lastCompare->mInject : inject_t::none;
 
@@ -2865,6 +2825,11 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     // special injected jump at beginning of function!
 //                    text.push_back(format("stop(/* %s %s */);", instr->mMnemonic, instr->mOperands));
                     text.push_back(format("goto loc_%x;", instr->mAddress.linearOffset()));
+                    break;
+                }
+                if (x86.op_count == 1 && x86.operands[0].size == 4)
+                {
+                    text.push_back(format("stop(/* %s %s */);", instr->mMnemonic, instr->mOperands));
                     break;
                 }
                 if (instr->Next() == instr->NextFollowing())
@@ -3305,6 +3270,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     text.push_back(assign(x86, "$wr1 = tx;"));
                 } else
                     assert(0);
+                keepLastCompare = true;
                 break;
             case X86_INS_AAA:
                 text.push_back("aaa();");
@@ -3340,10 +3306,16 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(0);
                 break;
             case X86_INS_PUSHF:
+                if (prevInstr && prevInstr->mId == X86_INS_POP)
+                    text.push_back("stop(/*flag probing*/);");
+
                 text.push_back("tx = flags.carry | (flags.zero << 1);");
                 text.push_back("push(tx);");
                 break;
             case X86_INS_POPF:
+                if (prevInstr && prevInstr->mId == X86_INS_PUSH)
+                    text.push_back("stop(/*flag probing*/);");
+
                 text.push_back("tx = pop();");
                 text.push_back("flags.carry = tx & 1;");
                 text.push_back("flags.zero = (tx << 1) & 1;");
@@ -3513,16 +3485,21 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 text.push_back("sp = bp;");
                 text.push_back("bp = pop();");
                 break;
+            case X86_INS_ENTER:
+                assert(x86.op_count == 2);
+                assert(x86.operands[0].imm > 0);
+                assert(x86.operands[1].imm == 0);
+                text.push_back("push(bp);");
+                text.push_back("bp = sp;");
+                text.push_back(format("sp -= 0x%x;", x86.operands[0].imm));
+                break;
 
             case X86_INS_DAS:
             case X86_INS_SCASW:
-                
             case X86_INS_FLD:
             case X86_INS_FMUL:
             case X86_INS_FIDIV:
             case X86_INS_BOUND:
-            case X86_INS_ENTER:
-
             case X86_INS_FCOMP:
             case X86_INS_CMPSW:
             case X86_INS_FSTP:
@@ -3570,6 +3547,7 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                 assert(0);
         }
 
+        prevInstr = instr;
         if (!keepLastCompare)
             lastCompare.reset();
     }
@@ -3580,7 +3558,6 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
         instr->mInject = inject_t((int)instr->mInject & ~(int)inject_t::discard);
 
     return modified;
-    //X86_INS_MOV
 }
 
 void ReplaceAll(std::vector<std::string>& text, const std::string& from, const std::string& to)
@@ -3930,6 +3907,8 @@ int main(int argc, const char * argv[]) {
                 negativeoffset = atoi(argv[++i]);
             else if (strcmp(arg, "-tree") == 0)
                 _dumpTree = true;
+            else if (strcmp(arg, "-32bit") == 0)
+                _bit32 = true;
             else
                 assert(0);
         } else {
