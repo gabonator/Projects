@@ -1,269 +1,152 @@
-<div style="width:510px; height:320px; overflow:hidden; position:absolute; background:red; transform:translate(220px, 120px) scale(1.3)">
-<img id="img0" style="position: absolute;">
-<img id="img1" style="position: absolute;">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style> 
+body {  font-family: 'Poppins', sans-serif; user-select: none;}
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Xenon 2 <font color="silver">(cicoparser wasm port)</font></div>
+<div class="right-text"><span id="status">&nbsp;</span>&nbsp;&nbsp;&nbsp;
+<select id="level">
+  <option value="0">Intro</option>
+  <option value="1">Level 1</option>
+  <option value="2">Level 2</option>
+  <option value="3">Level 3</option>
+  <option value="4">Level 4</option>
+  <option value="5">Level 5</option>
+</select>
+<select id="powerup">
+<option value="-1">Powerup</option>
+<option value="1">autofire</option>
+<option value="4">rear shot</option>
+<option value="5">side shot</option>
+<option value="6">bullet size</option>
+<option value="7">side cannon</option>
+<option value="8">drone</option>
+<option value="9">lasers</option>
+<option value="10">globe</option>
+<option value="11">remote mine</option>
+<option value="12">side double cannon</option>
+<option value="13">homing missiles</option>
+<option value="14">flame thrower</option>
+<option value="15">missile</option>
+<option value="16">shield</option>
+<option value="18">zap</option>
+<option value="100">remove last</option>
+</select>
+<a href="https://github.com/gabonator/Projects/tree/master/CicoJit/gamelib/xenon2">
+<svg style="position:relative; top:5px; padding-left:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z" fill="silver"></path></svg>
+</a></div>
 </div>
-<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; transform:translate(320px, 175px) scale(2);"></canvas>
+<br>
+
+<!-- app -->
+<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
 
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
+<script src="controls.js"></script>
+<script src="wasmapp.js"></script>
 <script>
+"use strict"
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+var game = new WasmApp(f=>Module[f]);
 
-var Module = typeof Module !== 'undefined' ? Module : {};
-
-  function ___assert_fail(condition, filename, line, func) {
-      abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
-    }
-  function _emscripten_memcpy_big(dest, src, num) {
-      HEAPU8.copyWithin(dest, src, src + num);
-    }
-
-  var HEAPU8;
-  var HEAPU32;
-  var refreshInterval = 300;
-
-function Main() 
+function powerup(n)
 {
-  var WASM_PAGE_SIZE = 65536;
-  var TOTAL_MEMORY = 65536;
-  var DYNAMICTOP_PTR = 11856;
+  game.memory[game.symbols.xenonPowerup.value] = Number.isInteger(n) ? n : 100;
+}
 
-  var abort = (what) => { throw 'abort(' + what + '). Build with -s ASSERTIONS=1 for more info.'};
-  var env =
-     { "abort": () => {console.log("abort1"); abort()}, 
-       "_abort": () => {console.log("abort2"); abort()},
-       "__assert_fail": ___assert_fail, 
-       "__setErrNo": () => {console.log("abort3"); abort()}, 
-       "emscripten_get_heap_size": () => {console.log("abort4"); abort()}, 
-       "emscripten_memcpy_big": (dest, src, num) => {
-         HEAPU8.copyWithin(dest, src, src + num);
-       }, 
-       "emscripten_resize_heap": () => {console.log("abort6"); abort()},
-       "abortOnCannotGrowMemory": () => {console.log("abort7"); abort()}, 
-       "DYNAMICTOP_PTR": DYNAMICTOP_PTR,
-       memory:new WebAssembly.Memory({ 'initial': TOTAL_MEMORY / WASM_PAGE_SIZE, 'maximum': TOTAL_MEMORY / WASM_PAGE_SIZE }),
-       table:new WebAssembly.Table({'initial': 84,'maximum': 84,'element': 'anyfunc'}),
-       '__memory_base': 1024, 
-       '__table_base': 0
-  };
+function setConfig(config)
+{
+  game.memory[game.symbols.xenonInfiniteEnergy.value] = config.infiniteEnergy;
+  game.memory[game.symbols.xenonInfiniteLives.value] = config.infiniteLives;
+  game.memory[game.symbols.xenonStartLevel.value] = config.startLevel;
+  game.memory[game.symbols.xenonSkipIntro.value] = config.skipIntro;
+}
 
-  var imports = Module["imports"];
-  for (var i in imports)
-    env[i] = imports[i];
-
-  return WebAssembly.instantiate(new Uint8Array(Module['wasmBinary']), {env:env,wasi_snapshot_preview1: env})
-  .then( output => 
-   {
-    HEAPU8 = new Uint8Array(output.instance.exports.memory.buffer);
-    HEAP32 = new Int32Array(output.instance.exports.memory.buffer);
-    var exports = output.instance.exports;
-    Module['asm'] = exports;
-    if (Module["asm"]["__wasm_call_ctors"]) Module["asm"]["__wasm_call_ctors"]();
-//    Module["memory"] = new Uint8Array(env.memory.buffer);
-
-    var _exports = Module['exports'];
-    for (var i in _exports)
-      Module[i] = _exports[i] = Module["asm"][i];
-
-    Module["memory"] = new Uint8Array(exports.memory.buffer);
-    return output;
-  });
-};
-
-var rewinding = false;
-var startup = 0;
-var videoBuffer;
-var memoryBuffer;
-
-  Module['imports'] = {
-    apiPrint: (ptr) => { 
-      var msg = Module['imports'].string(ptr);
-      console.log(msg);
-    },
-    string: (ptr) => {
-      var text = "";
-      for (var i=0; i<50 && Module['memory'][ptr+i] != 0; i++)
-        text += String.fromCharCode(Module['memory'][ptr+i]);
-      return text;
-    },
-    apiRead: (ptrName, readOfs, readLen, ptrData) =>
-    {
-      var name = Module['imports'].string(ptrName);
-      console.log("Read ", name, readOfs, readLen);
-      var b = Module[name];
-      var willRead = Math.min(b.length-readOfs, readLen);
-      var memory = Module['memory'];
-      for (var i=0; i<readLen; i++)
-        memory[i+ptrData] = b[i+readOfs];
-      return willRead;
-    },
-    // https://gov.near.org/t/discussion-synchronous-contracts/11869/8
-    emscripten_sleep: () => {
-        if (!rewinding)
-        {
-          var ptr = Module.asm.asyncifyBuffer.value;
-          HEAP32[((ptr)>>2)] = ptr+12;
-          HEAP32[(((ptr)+(4))>>2)] = ptr+12 + 1024;
-          HEAP32[(((ptr)+(8))>>2)] = 0;
-          Module.asm.asyncify_start_unwind(ptr);
-          setTimeout( ()=> {
-            rewinding = true;
-
-            Module.asm.asyncify_start_rewind(ptr);
-            Module.asm.appLoop();
-            Module.asm.asyncify_stop_unwind();
-
-          }, refreshInterval);
-
-        } else {
-          Module.asm.asyncify_stop_rewind();
-          sync();
-          rewinding = false;
-          return 0;
-        }
-    },
-    fd_close: () => {
-      console.log("close");
-      throw "close"
-    },
-    fd_write: (handle, x, y, ptr) => {
-     console.log("write");
-
-      var msg = Module['imports'].string(ptr);
-      console.log(msg);
-
-      throw "write"
-    },
-    fd_seek: () => {
-     console.log("seek");
-
-      throw "seek"
-    },
-    __assert_fail: () => {
-     console.log("assert");
-       throw "assert";
-    }
+function getState()
+{
+  return {
+    score: game.memoryBuffer[0x28530 + 0x9152]+
+      game.memoryBuffer[0x28530 + 0x9152+1]*0x100+
+      game.memoryBuffer[0x28530 + 0x9152+2]*0x10000+
+      game.memoryBuffer[0x28530 + 0x9152+3]*0x1000000,
+    ydir:game.memoryBuffer[0x2853*16+0x9198],
+    ypos:game.memoryBuffer[0x2853*16+0xfcee]+game.memoryBuffer[0x2853*16+0xfcef]*0x100
   }
-  Module['exports'] = {
-    appFinish: null,
-    appInit: null,
-    appLoop: null,
-    appVideo: null
-  };
-Module['run'] = Main;
+}
 
-Main().then( (m)=>
+var config = {infiniteEnergy:true, infiniteLives:false, startLevel:1, skipIntro:false, speed:40};
+
+for (var att of window.location.search.substr(1).split("&"))
 {
-  videoBuffer = new Uint8ClampedArray(Module.asm.memory.buffer, HEAP32[Module.asm.appVideo.value>>2], 320 * 200 * 4);
-  memoryBuffer = new Uint8ClampedArray(Module.asm.memory.buffer, HEAP32[Module.asm.appMemory.value>>2], 0x10000*14);
-  Module.appLoop();
-  Module.asm.asyncify_stop_unwind();
+  let [key, value] = att.split("=");
+  if (key in config)
+  {
+    if (value == "true")
+      value = true;
+    else if (value == "false")
+      value = false;
+    else
+      value = parseInt(value)
+    config[key] = value;
+  }
+}
+
+document.querySelector("#level").value = config.skipIntro ? config.startLevel : 0;
+document.querySelector("#level").addEventListener("change", e =>
+  document.location.href=`?skipIntro=${e.target.value > 0}&startLevel=${Math.max(1, e.target.value)}`
+);
+document.querySelector("#powerup").addEventListener("change", e => {
+  powerup(parseInt(e.target.value))
+  e.target.value = -1;
 });
 
-    var canvas = document.getElementById('canvas');
-    var ctx = canvas.getContext('2d');
-    var imageData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-/*
-    int code = 0;
-    switch (k)
-    {
-        case SDL_SCANCODE_UP: code = 1; break;
-        case SDL_SCANCODE_DOWN: code = 2; break;
-        case SDL_SCANCODE_LEFT: code = 4; break;
-        case SDL_SCANCODE_RIGHT: code = 8; break;
-        case SDL_SCANCODE_SPACE: code = 0x80;
-            if (p && !(CicoContext::ctx->memory8(0x2853, 0x8f59) & 0x80))
-                CicoContext::ctx->memory8(0x2853, 0x8F5B) = 0xff;
-            break;
-        case SDL_SCANCODE_A: CicoContext::ctx->memoryASet16(0x2853, 0x9190, CicoContext::ctx->memoryAGet16(0x2853, 0x9190) - 0x100); break;
-        case SDL_SCANCODE_B: code = 0x20; break;
-        case SDL_SCANCODE_C: code = 0x40; break;
-            
-        case SDL_SCANCODE_RETURN: code = 0x80;
-            CicoContext::ctx->memory8(0x2853, 0x8f5b) = 0xff; break;
-    }
-    if (p)
-        CicoContext::ctx->memory8(0x2853, 0x8f59) |= code;
-    else
-        CicoContext::ctx->memory8(0x2853, 0x8f59) &= ~code;    
-
-*/
-    document.onkeydown = function(evt) {
-        evt = evt || window.event;
-        var code = 0;
-        switch (evt.keyCode)
-        {
-          case 38: code = 1; break; // up
-          case 39: code = 8; break; // right
-          case 40: code = 2; break; // down
-          case 37: code = 4; break; // left
-          case 32: if (!(memoryBuffer[0x2853*16+ 0x8f59] & 0x80))
-                     memoryBuffer[0x2853*16 + 0x8F5B] = 0xff;
-                   break; // space -> enter
-        }
-        memoryBuffer[0x2853*16+0x8f59] |= code;
-    }
-    document.onkeyup = function(evt) {
-        evt = evt || window.event;
-        var code = 0;
-        switch (evt.keyCode)
-        {
-          case 38: code = 1; break; // up
-          case 39: code = 8; break; // right
-          case 40: code = 2; break; // down
-          case 37: code = 4; break; // left
-        }
-        memoryBuffer[0x2853*16+0x8f59] &= ~code;
-    }
-
-function sync()
-{
-  var memory = Module["memory"];
-  var ptr = Module.asm.appBlit();
-  if (ptr)
-  {
-    const img = new ImageData(videoBuffer, 320, 200);
-    this.ctx.putImageData(img, 0, 0);
-  }
-  refreshInterval = 10;
-}
-</script>
-
-
-
-<script>
-var c1 = 0;
-var c2 = 0;
-var ofs0 = 0;
-var ofs1 = 320;
-var frame = 0;
-var all = 150; //153;
-if (1)
 setInterval(()=>{
-  frame++;
-  var fr1 = Math.floor(all/2+frame*0.4)%(all*2);
-  if (fr1 >= all)
-    fr1 = all*2-1-fr1;
+  document.querySelector("#status").innerHTML = `Score: ${getState().score}`
+}, 1000);
 
-  var fr2 = Math.floor(frame*0.4)%(all*2);
-  if (fr2 >= all)
-    fr2 = all*2-1-fr2;
+game.load().then(() => {
+  setConfig(config);
 
-  var img0 = document.getElementById("img0");
-  var img1 = document.getElementById("img1");
-  img0.src = "../floatcat/top"+ ("00"+(fr1+1)).substr(-3) + ".png";
-  img1.src = "../floatcat/btm"+ ("00"+(fr2+1)).substr(-3) + ".png";
-  img0.style.top = ofs0 + "px";
-  img1.style.top = ofs1 + "px";
-  var dir = memoryBuffer[0x2853*16+0x9198] == 1 ? 1 : -1;
-  ofs0 += dir;
-  ofs1 += dir;
-  if (ofs0 < -320) {ofs0 += 640; c1 = 0;}
-  if (ofs1 < -320) {ofs1 += 640; c2 = 0;}
-  if (ofs0 >= 320) {ofs0 -= 640; c1 = 0;}
-  if (ofs1 >= 320) {ofs1 -= 640; c2 = 0;}
-  c1 += 0.2;
-  c2 += 0.2;
+  var videoBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appVideo.value>>2], 320 * 200 * 4);
+  game.memoryBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appMemory.value>>2], 0x10000*14);
+  game.HEAP32[game.symbols.seed.value>>2] = Math.floor(Math.random()*0x10000) | (Math.floor(Math.random()*0x10000)<<16);
+  game.symbols.appLoop();
+  game.symbols.asyncify_stop_unwind();
 
-}, 50)
+  var gameTimer = setInterval(() => {
+    game.asyncifyResume();
+    if (game.symbols.appBlit())
+    {
+      const img = new ImageData(videoBuffer, 320, 200);
+      this.ctx.putImageData(img, 0, 0);
+    }
+  }, config.speed);
+})
 </script>

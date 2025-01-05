@@ -1,15 +1,10 @@
-extern "C" {
-  int sprintf ( char * str, const char * format, ... );
-  void apiPrint(char* msg);
-  int apiRead(char* name, int readofs, int readlen, void* targetofs);
-};
 
 class CVideoAdapter
 {
 public:
     virtual bool PortWrite16(int port, int data) = 0;
     virtual bool PortWrite8(int port, int data) = 0;
-    virtual bool PortRead8(int port, uint8_t& data) { assert(0); return false; }
+    virtual uint8_t PortRead8(int port) = 0;
     virtual bool Interrupt(CicoContext::cicocontext_t* ctx) = 0;
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) = 0;
     virtual uint8_t Read(uint32_t dwAddr) = 0;
@@ -17,178 +12,17 @@ public:
     virtual void SetPixel(int x, int y, int c) = 0;
 };
 
-class CText : public CVideoAdapter
-{
-public:
-    virtual bool PortWrite16(int port, int data) override { return false; }
-    virtual bool PortWrite8(int port, int data) override { return false; }
-    virtual bool PortRead8(int port, uint8_t& data) override { assert(0); return false; }
-    virtual bool Interrupt(CicoContext::cicocontext_t* ctx) override { return false; }
-    virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
-    {
-        if (bWrite && (dwAddr & 1) == 0)
-            printf("%c", bWrite);
-        
-    }
-    virtual uint8_t Read(uint32_t dwAddr) override { return 0; }
-    virtual uint32_t GetPixel(int x, int y) override { return 0; };
-    virtual void SetPixel(int x, int y, int c) override { return; };
-};
-
-class CCga : public CVideoAdapter
-{
-    enum {
-        MemSize = 0x10000*2
-    };
-
-public:
-    uint8_t memory[MemSize];
-
-    uint32_t _cgaPalette[4];
-    uint32_t _cgaBackground;
-
-    CCga()
-    {
-        _cgaPalette[0] = 0xff000000;
-        _cgaPalette[1] = 0xff808080;
-        _cgaPalette[2] = 0xffb0b0b0;
-        _cgaPalette[3] = 0xffffffff;
-        
-        _cgaPalette[0] = 0xff000000;
-        _cgaPalette[1] = 0xff55ffff;
-        _cgaPalette[2] = 0xffbb0000;
-        _cgaPalette[3] = 0xffffffff;
-
-    }
-    virtual void SetPixel(int x, int y, int c) override
-    {
-        bool _xor = c & 0x80;
-        c &= 0x7f;
-        
-        if ((y&1) == 0)
-        {
-            y /= 2;
-            uint8_t& pix4 = memory[y*80+x/4];
-            int bit = 6-((x&3)*2);
-            int mask = 3 << bit;
-            if (_xor)
-                pix4 = pix4 ^ (c << bit);
-            else
-                pix4 = (pix4 & ~mask) | (c << bit);
-        } else
-        {
-            y /= 2;
-            uint8_t& pix4 = memory[0x2000+y*80+x/4];
-            int bit = 6-((x&3)*2);
-            int mask = 3 << bit;
-            if (_xor)
-                pix4 = pix4 ^ (c << bit);
-            else
-                pix4 = (pix4 & ~mask) | (c << bit);
-        }
-    }
-
-    virtual bool PortWrite8(int port, int data) override
-    {
-        return false;
-    }
-
-    virtual bool PortWrite16(int port, int data) override
-    {
-        return false;
-    }
-
-    virtual bool Interrupt(CicoContext::cicocontext_t* ctx) override
-    {
-        //if ( CTextMode::Interrupt( ah, al, bh, bl ) )
-//            return true;
-        if (ctx->a.r8.h == 0x02)
-            return true;
-
-        if ( ctx->a.r8.h == 0x0b )
-        {
-            if ( ctx->b.r8.h == 0x00 )
-            {
-                _cgaBackground = ctx->b.r8.l;
-                return true;
-            }
-            if ( ctx->b.r8.h == 0x01 )
-            {
-                if (ctx->b.r8.l == 0x00)
-                {
-                    _cgaPalette[0] = 0xff000000;
-                    _cgaPalette[1] = 0xff55aa55;
-                    _cgaPalette[2] = 0xffaa5555;
-                    _cgaPalette[3] = 0xffaaaa55;
-                    return true;
-                }
-                if (ctx->b.r8.l == 0x01)
-                {
-                    _cgaPalette[0] = 0xff000000;
-                    _cgaPalette[1] = 0xff55ffff;
-                    _cgaPalette[2] = 0xffff55ff;
-                    _cgaPalette[3] = 0xffffffff;
-                    return true;
-                }
-            }
-        }
-        if (ctx->a.r8.h == 0x0c)
-        {
-            SetPixel(ctx->c.r16, ctx->c.r16, ctx->a.r8.l);
-            return true;
-        }
-
-        return false;
-    }
-
-    virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
-    {
-        assert(dwAddr >= 0xb800*16);
-        dwAddr -= 0xb800 * 16;
-        assert(dwAddr < MemSize);
-        assert(dwAddr < 17000);
-//        dwAddr %= 16000;
-        memory[dwAddr] = bWrite;
-    }
-
-    virtual uint8_t Read(uint32_t dwAddr) override
-    {
-        assert(dwAddr >= 0xb800*16);
-        dwAddr -= 0xb800 * 16;
-        assert(dwAddr < MemSize);
-        return memory[dwAddr];
-    }
-
-
-    uint32_t GetPixel(int x, int y) override
-    {
-        if ((y&1) == 0)
-        {
-            y /= 2;
-            uint8_t pix4 = memory[y*80+x/4];
-            pix4 <<= (x&3)*2;
-            return _cgaPalette[pix4 >> 6];
-        } else
-        {
-            y /= 2;
-            uint8_t pix4 = memory[0x2000+y*80+x/4];
-            pix4 <<= (x&3)*2;
-            return _cgaPalette[pix4 >> 6];
-        }
-        return 0;
-    }
-};
-
 class CEga : public CVideoAdapter
 {
     enum {
-        MemSize = 0x10000*1
+        MemSize = 0x20000
     };
 
 public:
     uint32_t egamemory[MemSize];
     int nWriteMode;
     int nReadMode;
+    bool modified{false};
     union TLatch
     {
         uint32_t u32Data;
@@ -218,13 +52,7 @@ public:
     uint32_t full_enable_and_set_reset;
     uint32_t full_enable_set_reset;
     uint32_t full_not_enable_set_reset;
-    
-    int vgareadcolorindex;
-    bool modified{false};
 
-    uint32_t egadefaultpal[16] = {
-        0xff000000, 0xff0000b0, 0xff00b000, 0xff00b0b0, 0xffb00000, 0xffb000b0, 0xffb0b000, 0xffb0b0b0,
-        0xff808080, 0xff0000ff, 0xff00ff00, 0xff00ffff, 0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
     uint32_t palette[128] = {
         0xff000000, 0xff0000b0, 0xff00b000, 0xff00b0b0, 0xffb00000, 0xffb000b0, 0xffb0b000, 0xffb0b0b0,
         0xff808080, 0xff0000ff, 0xff00ff00, 0xff00ffff, 0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
@@ -264,54 +92,45 @@ public:
         full_map_mask                = 0xffffffff;
         full_not_map_mask            = ~full_map_mask;
         full_bit_mask                = 0xffffffff;
-    
+        modified = false;
         memset(egamemory, 0, sizeof(egamemory));
     }
     
     bool Interrupt(CicoContext::cicocontext_t* ctx) override
     {
+        static int _videoMode = -1;
+/*
         if (ctx->a.r16 == 0x1002)
         {
-            auto tohex =[](int n)
-            {
-                static char temp[16];
-                sprintf(temp, "%d%d%d%d%d%d%d%d",
-                        (n & 128) ? 1 : 0,
-                        (n & 64) ? 1 : 0,
-                        (n & 32) ? 1 : 0,
-                        (n & 16) ? 1 : 0,
-                        (n & 8) ? 1 : 0,
-                        (n & 4) ? 1 : 0,
-                        (n & 2) ? 1 : 0,
-                        (n & 1) ? 1 : 0
-                        );
-                return temp;
-            };
             // es:DX!!!! 17 uint8_ts (documentation says es:bx)
             for (int i=0; i<16; i++)
             {
-                int rgb = ctx->memory[ctx->_es*16+ ctx->d.r16+i]; // 1040:9709+15
-                int r = ((rgb & 4) ? 1 : 0);
-                int g = ((rgb & 2) ? 1 : 0);
-                int b = ((rgb & 1) ? 1 : 0);
-                // CGA emulation! http://www.techhelpmanual.com/137-int_10h_1000h__set_one_palette_register.html
-                palette[i] = egadefaultpal[(rgb&7) + ((rgb&16)>>1)];
+                int rgb = ctx.memory[ctx._es*16 + ctx.d.r16+i];
+                int r = ((rgb & 4) ? 3 : 0) + ((rgb & 32) ? 1 : 0);
+                int g = ((rgb & 2) ? 3 : 0) + ((rgb & 16) ? 1 : 0);
+                int b = ((rgb & 1) ? 3 : 0) + ((rgb & 8) ? 1 : 0);
+                r = r * 255 / 3;
+                g = g * 255 / 3;
+                b = b * 255 / 3;
+//                std::cout << "pal[" << i << "] = " << r << ", " << g << ", " << b << std:: endl;
+                palette[i] = b | (g << 8) | (r << 16);
             }
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
             // << " data " << (int)_es << ":" << (int)_dx << endl;
             return true;
         }
+
         if (ctx->a.r16 == 0x1012)
         {
             for (int i=0; i<ctx->c.r16; i++)
             {
-                int r = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3]*4;
-                int g = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3+1]*4;
-                int b = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3+2]*4;
+                int r = ctx->memory8(ctx->_es, ctx->d.r16+i*3)*4;
+                int g = ctx->memory8(ctx->_es, ctx->d.r16+i*3+1)*4;
+                int b = ctx->memory8(ctx->_es, ctx->d.r16+i*3+2)*4;
                 
                 int palIndex = ctx->b.r16 + i;
-                palette[palIndex] = 0xff000000 | r | (g << 8) | (b << 16);
+                palette[palIndex] = b | (g << 8) | (r << 16);
             }
             // set palette BX first, CX count, ES:DX rgb ptr
             //std::cout << "set palette " << hex << (int)_bx << " .. " << (int)(_bx+_cx)
@@ -326,13 +145,13 @@ public:
             int r = ctx->c.r8.h * 4;
             int g = ctx->c.r8.l * 4;
             int b = ctx->d.r8.h * 4;
-            palette[ctx->b.r16] = 0xff000000 | r | (g << 8) | (b << 16);
+            palette[ctx->b.r16] = b | (g << 8) | (r << 16);
             return true;
         }
-
+*/
         if (ctx->a.r16 == 0x0b)
         {
-            printf( "set pallete not impl\n");
+//            printf( "set pallete not impl\n");
             
             return true;
         }
@@ -355,68 +174,85 @@ public:
             ctx->a.r16= 0x0720;
             return true;
         }
-        if (ctx->a.r8.h == 0x03)
+        if (ctx->a.r8.h == 0x00)
         {
-            
-        }
-        if (ctx->a.r8.h == 0x02)
-        {
-            // set cursor
+            _videoMode = ctx->a.r8.l;
             return true;
         }
-        if (ctx->a.r16 == 0x1015)
+        if (ctx->a.r8.h == 0x03)
+        {            
+        }
+        if (ctx->a.r8.h == 0x02 || ctx->a.r8.h == 0x01 || ctx->a.r8.h == 0x06 || ctx->a.r8.h == 0x09)
         {
-            if (ctx->b.r16 >= 16)
+            return true;
+        }
+
+        if (ctx->a.r8.h == 0x0f)
+        {
+            if (_videoMode==-1)
             {
-                printf("read dac color outside range %d\n", ctx->b.r16);
+                ctx->a.r16 = 0x5003;
+                ctx->b.r8.h = 0x00;
                 return true;
             }
-            assert(ctx->b.r16 >= 0 && ctx->b.r16 < 16);
-            // read palette DAC
-            ctx->d.r8.h = (palette[ctx->b.r16] & 0xff)/4;
-            ctx->c.r8.h = ((palette[ctx->b.r16] >> 8) & 0xff)/4;
-            ctx->c.r8.l = ((palette[ctx->b.r16] >> 16) & 0xff)/4;
-            return true;
-        }
-        if (ctx->a.r8.h == 0x05)
-        {
-//            printf("skip: select active display page %d\n", ctx->a.r8.h);
-//            cfgAddr = ctx->a.r8.h*0x2000;
-            //INT 10,5 - Select Active Display Page
-            return true;
-        }
-        if (ctx->a.r8.h == 0x01)
-        {
-            return true;
-        }
-        if (ctx->a.r8.h == 0x09)
-        {
-            printf("%c", ctx->a.r8.l);
-            return true;
+            if (_videoMode==0x12)
+            {
+                ctx->a.r16 = 0x5012;
+                ctx->b.r8.h = 0x00;
+                return true;
+            }
+            if (_videoMode==0x13)
+            {
+                ctx->a.r16 = 0x2813;
+                ctx->b.r8.h = 0x00;
+                return true;
+            }
+            if (_videoMode==0x10)
+            {
+                ctx->a.r16 = 0x5010;
+                ctx->b.r8.h = 0x00;
+                return true;
+            }
+            if (_videoMode==0x4)
+            {
+                ctx->a.r16 = 0x2804;
+                ctx->b.r8.h = 0x00;
+                return true;
+            }
+            if (_videoMode==0xd)
+            {
+                ctx->a.r16 = 0x280d;
+                ctx->b.r8.h = 0x00;
+                return true;
+            }
+            assert(0);
         }
         if (ctx->a.r8.h == 0x1a)
         {
+            //https://dos4gw.org/INT_10H_1aH_Set_or_Query_Display_Combination_Code
             ctx->a.r8.l = 0x1a;
             ctx->b.r8.l = 0x08; // vga color
             return true;
         }
-        if (ctx->a.r8.h == 0x0f)
-        {
-            ctx->a.r16 = 0x5003;
-            ctx->b.r8.h = 0x00;
-            return true;
-        }
-        if (ctx->a.r8.h == 0x10 && ctx->a.r8.l == 0)
+        if (ctx->a.r16 == 0x1000)
         {
             SetPaletteIndex(ctx->b.r8.l, ctx->b.r8.h);
             return true;
         }
-        if (ctx->a.r8.h < 10)
+        if (ctx->a.r16 == 0x1012)
+        {
+            for (int i=0; i<ctx->c.r16; i++)
+            {
+                int r = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3]*4;
+                int g = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3+1]*4;
+                int b = ctx->memory[ctx->_es*16+ ctx->d.r16+i*3+2]*4;
+                int palIndex = ctx->b.r16 + i;
+                palette[palIndex] = r | (g << 8) | (b << 16) | 0xff000000;
+            }
             return true;
-        char temp[128];
-        sprintf(temp, "not implemented ax=%04x!\n", ctx->a.r16);
-        apiPrint(temp);
-        assert(0);
+        }
+//        printf("not implemented!\n");
+//        assert(0);
         return false;
     }
     int last3c4reg = 0;
@@ -455,14 +291,12 @@ public:
             if ( (data & 0x00ff) == 0x0c )
             {
                 SetAddrHi( data >>8 );
-                modified = true;
-                emscripten_sleep(0);
+                _sync();
                 return true;
             }
             if ( (data & 0x00ff) == 0x0d )
             {
                 SetAddrLo( data >> 8);
-                modified = true;
                 return true;
             }
         }
@@ -484,7 +318,7 @@ public:
             }
         }
        // _ASSERT(0);
-        printf( "Unknown EGA reg\n");
+//        printf( "Unknown EGA reg\n");
         return true;
 
         return false;
@@ -498,7 +332,8 @@ public:
         r = r * 255 / 3;
         g = g * 255 / 3;
         b = b * 255 / 3;
-        palette[index] = 0xff000000 | r | (g << 8) | (b << 16);
+        palette[index] = b | (g << 8) | (r << 16) | 0xff000000;
+
     }
     
     int crtReg = 0;
@@ -573,56 +408,28 @@ public:
         }
         if (port == 0x3c9)
         {
+            //modified = true;
             int base = colorindex/3;
             int ch = colorindex%3;
-            if (data == 255) // wtf?
-//            {
-//                for (int i=base; i<16; i++)
-//                    palette[base] = 0xffffff;
-                return true;
-//            }
-
-            data &= 63;
-            assert(data >= 0 && data < 64);
-            printf("set pal %d %d = %d\n", base, 2-ch, data);
-            ((uint8_t*)palette)[base*4+2-ch] = data * 4;
+            ((uint8_t*)palette)[base*4+ch] = data*4;
             colorindex++;
-            
-//            ((uint8_t*)palette)[base*4+2-ch] = data;
-//            colorindex++;
             return true;
         }
-        if (port == 0x3c7)
-        {
-            //std::cout << "Set read color " << (int)data << "\n";
 
-            vgareadcolorindex = data*3/2;
-            return true;
-        }
         return false;
     }
 
-    virtual bool PortRead8(int port, uint8_t& data) override
+    virtual uint8_t PortRead8(int port) override
     {
         //        3d4h index 0Ch (W):  CRTC: Start Address High Register
         //        bit 0-7  Upper 8 bits of the start address of the display buffer
 
-        if (port == 0x3c9)
+        if (crtReg == 0x0c)
         {
-            int cindex = vgareadcolorindex/3;
-            int cch = vgareadcolorindex%3;
-            data = ((uint8_t*)palette)[cindex*4+2-cch]/4;
-            printf("get pal %d %d %d = %d\n", vgareadcolorindex, cindex, 2-cch, data);
-            vgareadcolorindex++;
-            return true;
+            return cfgAddr>>8;
         }
-        if (port == 0x3d4 && crtReg == 0x0c)
-        {
-            data = cfgAddr>>8;
-            return true;
-        }
-        
-        return false;
+        assert(0);
+        return 0;
     }
     
     virtual uint32_t GetPixel(int x, int y) override
@@ -642,8 +449,6 @@ public:
         if ( _video[shift + off*4 + 1] & mask ) b |= 2;
         if ( _video[shift + off*4 + 2] & mask ) b |= 4;
         if ( _video[shift + off*4 + 3] & mask ) b |= 8;
-        if (b==0)
-            return 0x400040;
         return palette[b];
     }
 
@@ -698,6 +503,7 @@ public:
     {
         cfgAddr &= 0x00ff;
         cfgAddr |= ((uint16_t)b)<<8;
+            modified = true;
         //std::cout << "video addr="<<std::hex << cfgAddr<<"\n";
     }
 
@@ -705,6 +511,7 @@ public:
     {
         cfgAddr &= 0xff00;
         cfgAddr |= b;
+            modified = true;
     }
 
     void SetMapMask(uint8_t b) // 3c5.2
@@ -772,16 +579,12 @@ public:
 
         uLatch.u32Data = pixels.u32Data;
         StoreLatch(dwAddr);
-/*        static int q = 0;
-        if (q++ > 5000)
-        {
-//            _sync();
-            q= 0;
-        }*/
     }
 
     virtual uint8_t Read(uint32_t dwAddr) override
     {
+//        if (dwAddr < 0xa0000 || dwAddr - 0xa0000 >= sizeof(egamemory))
+//          return 0;
         dwAddr -= 0xa000 * 16;
         assert( dwAddr < sizeof(egamemory) );
         LoadLatch(dwAddr); //((uint32_t*)&egamemory[dwAddr])[dwAddr];
@@ -873,118 +676,46 @@ public:
         };
         return 0;
     }
-    bool blit(uint32_t* pixels)
-    {
-        if (!modified)
-            return false;
-        modified = false;
-        uint8_t* planes = (uint8_t*)egamemory+cfgAddr*4;
-        palette[0] = 0x80000000;    
-        for (int y=0; y<320; y++)
-            for (int x=0; x<200/8; x++)
-            {
-                int plane0 = *planes++;
-                int plane1 = *planes++;
-                int plane2 = *planes++;
-                int plane3 = *planes++;
 
-                for (int i=0; i<8; i++)
-                {
-                    int index = (plane0 & 128) + (plane1 & 128)*2 + (plane2 & 128)*4 + (plane3 & 128)*8;
-                    plane0 <<= 1;
-                    plane1 <<= 1;
-                    plane2 <<= 1;
-                    plane3 <<= 1;
-                    *pixels++ = palette[index >> 7];
-                }
-            }
-        return true;
-    }
-
-};
-
-class CVga : public CVideoAdapter
+bool blit(uint32_t* pixels)
 {
-public:
-    uint8_t buffer[320*240*6];
-    uint8_t palette[0x300];
-    //uint8_t xpalette[0x300];
-    int readcolorindex{0};
-
-    CVga()
-    {
-      //  for (int i=0; i<0x300; i++)
-        //    xpalette[i] = rand();
-    }
-    virtual bool PortWrite16(int port, int data) override
-    {
-        return false;
-    }
-    virtual bool PortRead8(int port, uint8_t& data) override
-    {
-        if (port == 0x3c9)
-        {
-            //std::cout << "Read color  " << (int)readcolorindex/3 << "."
-            //<< (readcolorindex%3) << " = " << (int)palette[readcolorindex] << "\n";
-            data = palette[readcolorindex++];
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool PortWrite8(int port, int data) override
-    {
-        static int colorindex = 0;
+//  if (!modified)
+//    return false;
+  modified = false;
+/*
+        uint8_t* _video = (uint8_t*)egamemory;
+        uint32_t off = (int)y * 40L + ((int)x / 8L);
         
-        if (port == 0x3c7)
-        {
-            //std::cout << "Set read color " << (int)data << "\n";
+        //uint32_t mem_addr = off;
+        int mask = 0x80 >> (x % 8);
 
-            readcolorindex = data*3;
-            return true;
-        }
-        if (port == 0x3c8)
+        //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
+        int page = cfgAddr;
+    
+        int shift = page*4;
+
+*/
+    uint8_t* planes = (uint8_t*)egamemory+cfgAddr*4;
+        
+    for (int y=0; y<320; y++)
+        for (int x=0; x<200/8; x++)
         {
-            //_sync();
-            //std::cout << "Set write color " << (int)data << "\n";
-            colorindex = data*3;
-            return true;
+            int plane0 = *planes++;
+            int plane1 = *planes++;
+            int plane2 = *planes++;
+            int plane3 = *planes++;
+
+            for (int i=0; i<8; i++)
+            {
+                int index = (plane0 & 128) + (plane1 & 128)*2 + (plane2 & 128)*4 + (plane3 & 128)*8;
+                plane0 <<= 1;
+                plane1 <<= 1;
+                plane2 <<= 1;
+                plane3 <<= 1;
+                *pixels++ = palette[index >> 7];
+            }
         }
-        if (port == 0x3c9)
-        {
-            palette[colorindex++] = data;
-            return true;
-        }
-        return false;
-    }
-    virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
-    {
-        if (bWrite != 0)
-        {
-            int f = 9;
-        }
-        int addr = dwAddr - 0xa000*16;
-        assert(addr >= 0 && addr < sizeof(buffer));
-        buffer[addr] = bWrite;
-    }
-    virtual uint8_t Read(uint32_t dwAddr) override
-    {
-        int addr = dwAddr - 0xa000*16;
-        assert(addr >= 0 && addr < sizeof(buffer));
-        return buffer[addr];
-    }
-    virtual uint32_t GetPixel(int x, int y) override
-    {
-        uint8_t c = buffer[y*320+x];
-        return (palette[3*c+2]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c]*4)<<16);
-    }
-    virtual void SetPixel(int x, int y, int c) override
-    {
-        assert(0);
-    }
-    virtual bool Interrupt(CicoContext::cicocontext_t* ctx) override
-    {
-        return false;
-    }
+  return true;
+}
+
 };
-  

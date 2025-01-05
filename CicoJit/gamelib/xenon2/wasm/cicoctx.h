@@ -19,29 +19,34 @@ public:
     } a, b, c, d, temp;
 
     uint16_t _si, _di, _bp;
-    int _cs, _ds, _ss, _es, _sp;
+    uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
     int _loadAddress;
     bool interrupts, direction, carry, zero;
-    uint8_t memory[0x10000*8];
-
+    uint8_t memory[0x10000*10];
+/*
+    void memorySet8(int seg, int ofs, uint8_t v);
+    void memorySet16(int seg, int ofs, uint16_t v);
+    uint8_t memoryGet8(int seg, int ofs);
+    uint16_t memoryGet16(int seg, int ofs);
+*/
     void memoryASet8(int seg, uint16_t ofs, uint8_t v);
     void memoryASet16(int seg, uint16_t ofs, uint16_t v);
     uint8_t memoryAGet8(int seg, uint16_t ofs);
     uint16_t memoryAGet16(int seg, uint16_t ofs);
 
-    void memoryBiosSet8(int seg, uint16_t ofs, uint8_t v);
-    void memoryBiosSet16(int seg, uint16_t ofs, uint16_t v);
-    uint8_t memoryBiosGet8(int seg, uint16_t ofs);
-    uint16_t memoryBiosGet16(int seg, uint16_t ofs);
+    void memoryBiosSet8(int seg, int ofs, uint8_t v);
+    void memoryBiosSet16(int seg, int ofs, uint16_t v);
+    uint8_t memoryBiosGet8(int seg, int ofs);
+    uint16_t memoryBiosGet16(int seg, int ofs);
 
 //    uint8_t& memory8(int seg, int ofs);
 //    uint16_t& memory16(int seg, int ofs);
-    uint8_t memoryVideoGet8(int seg, uint16_t ofs);
-    void memoryVideoSet8(int seg, uint16_t ofs, uint8_t data);
-    uint16_t memoryVideoGet16(int seg, uint16_t ofs);
-    void memoryVideoSet16(int seg, uint16_t ofs, uint16_t data);
+    uint8_t memoryVideoGet8(int seg, int ofs);
+    void memoryVideoSet8(int seg, int ofs, uint8_t data);
+    uint16_t memoryVideoGet16(int seg, int ofs);
+    void memoryVideoSet16(int seg, int ofs, uint16_t data);
     void callInterrupt(int i);
     void out(int port, uint8_t val);
     void in(uint8_t& val, int port);
@@ -51,7 +56,7 @@ public:
 ///    void push(const int& r);
     //uint16_t pop();
     bool stop(const char* msg = nullptr);
-    void callIndirect(int seg, int ofs);
+    void callIndirect(int a);
     //void call(const char* n);
     void cbw();
     void div(uint8_t r);
@@ -81,6 +86,7 @@ public:
 };
 
 #ifndef _HOST
+
 #define ax ctx.a.r16
 #define bx ctx.b.r16
 #define cx ctx.c.r16
@@ -107,11 +113,6 @@ public:
 #define headerSize ctx._headerSize
 #define loadAddress ctx._loadAddress
 
-#define memoryASet ctx.memoryASet8
-#define memoryASet16 ctx.memoryASet16
-#define memoryAGet ctx.memoryAGet8
-#define memoryAGet16 ctx.memoryAGet16
-
 /*
 #define memory ctx.memory8
 #define memory16 ctx.memory16
@@ -121,10 +122,6 @@ public:
 #define memoryVideoSet16 ctx.memoryVideoSet16
 #define memoryVideoAnd(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) & val)
 #define memoryVideoOr(seg, ofs, val) memoryVideoSet(seg, ofs, memoryVideoGet(seg, ofs) | val)
-#define memoryASet ctx.memoryASet8
-#define memoryASet16 ctx.memoryASet16
-#define memoryAGet ctx.memoryAGet8
-#define memoryAGet16 ctx.memoryAGet16
 
 #define memoryBiosSet ctx.memoryBiosSet8
 #define memoryBiosSet16 ctx.memoryBiosSet16
@@ -136,12 +133,17 @@ public:
 #define memoryGet ctx.memoryGet8
 #define memoryGet16 ctx.memoryGet16
 */
+#define memoryASet ctx.memoryASet8
+#define memoryASet16 ctx.memoryASet16
+#define memoryAGet ctx.memoryAGet8
+#define memoryAGet16 ctx.memoryAGet16
 
 #define memory16(seg, ofs) *((uint16_t*)&ctx.memory[(seg)*16+ofs])
 #define memorySet(seg, ofs, val) ctx.memory[(seg)*16+ofs] = val
 #define memorySet16(seg, ofs, val) memory16(seg, ofs) = val
 #define memoryGet(seg, ofs) ctx.memory[(seg)*16+ofs]
 #define memoryGet16(seg, ofs) memory16(seg, ofs)
+#define memory(seg, ofs) ctx.memory[(seg)*16+ofs]
 
 #define memoryVideoGet ctx.memoryVideoGet8
 #define memoryVideoSet ctx.memoryVideoSet8
@@ -237,6 +239,19 @@ struct DirForward
     {
         assert(!flags.direction);
         return i++;
+    }
+};
+
+struct DirBackward
+{
+    static void Assert()
+    {
+    }
+    template<class T>
+    static T Move(T& i)
+    {
+        assert(flags.direction);
+        return i--;
     }
 };
 
@@ -348,37 +363,8 @@ template <class DST, class SRC, class DIR> void cmpsw()
 template <class DST, class SRC, class DIR> void repe_cmpsw()
 {
     flags.zero = 1;
-    while (cx)
-    {
+    while (cx-- && flags.zero == 1 )
         cmpsw<DST, SRC, DIR>();
-        cx--;
-        if (!flags.zero)
-            break;
-    }
-}
-
-template <class DST, class SRC, class DIR> void repe_cmpsb()
-{
-    flags.zero = 1; // ds:si = ILBM   es:di = BODY
-    while (cx)
-    {
-        cmpsb<DST, SRC, DIR>();
-        cx--;
-        if (!flags.zero)
-            break;
-    }
-}
-
-template <class DST, class SRC, class DIR> void repne_cmpsb()
-{
-    flags.zero = 0;
-    while (cx)
-    {
-        cmpsb<DST, SRC, DIR>();
-        cx--;
-        if (flags.zero)
-            break;
-    }
 }
 
 template <class SRC, class DIR> void repne_scasb(uint8_t value)
@@ -393,33 +379,12 @@ template <class SRC, class DIR> void repne_scasb(uint8_t value)
     }
 }
 
-template <typename DST, typename SRC, typename DIR> void repne_movsw()
-{
-    rep_movsw<DST, SRC, DIR>();
-    //assert(0);
-}
-
-template <typename DST, typename SRC, typename DIR> void repne_movsb()
-{
-    rep_movsb<DST, SRC, DIR>();
-//    assert(0);
-}
-
-template <typename DST, typename DIR> void repne_stosb()
-{
-    assert(0);
-}
-template <typename DST, typename DIR> void repne_stosw()
-{
-    assert(0);
-}
-
 #else
 
 extern cicocontext_t ctx;
 
 #define memory16(seg, ofs) *((uint16_t*)&ctx.memory[(seg)*16+ofs])
-#define memorySet(seg, ofs, val) ctx.memory[(seg)*16+ofs] = val
+#define memorySet(seg, ofs, val) ctx.memory[(seg)*16+ofs]
 #define memorySet16(seg, ofs, val) memory16(seg, ofs) = val
 #define memoryGet(seg, ofs) ctx.memory[(seg)*16+ofs]
 #define memoryGet16(seg, ofs) memory16(seg, ofs)
@@ -485,7 +450,7 @@ void cicocontext_t::div(uint8_t r)
     uint16_t result = ctx.a.r16 / r;
     uint16_t remain = ctx.a.r16 % r;
     ctx.a.r8.l = result;
-    ctx.d.r8.h = remain;
+    ctx.a.r8.h = remain; //gabo!
 }
 
 uint8_t cicocontext_t::rcr(uint8_t r, int i)

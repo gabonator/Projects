@@ -25,8 +25,6 @@ int sprintf ( char * str, const char * format, ... );
   int apiRead(char* name, int readofs, int readlen, void* targetofs);
 };
 
-#include "indirect.h"
-
 void start();
 
 namespace CicoContext

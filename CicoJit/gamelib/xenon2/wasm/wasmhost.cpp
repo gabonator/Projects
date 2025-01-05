@@ -7,6 +7,7 @@
 #include <emscripten.h>
 #include <emscripten/fiber.h>
 #include <string.h>
+void _sync();
 #include "ega.h"
 
 CEga mVideo;
@@ -15,6 +16,7 @@ uint32_t mVideoPixels[320*200];
 uint8_t asyncifyBuffer[1024+12];
 uint8_t* appMemory = CicoContext::ctx.memory;
 uint32_t* appVideo = mVideoPixels;
+uint32_t seed = 0;
 
 // javascript imports
 extern "C" {
@@ -23,8 +25,6 @@ int sprintf ( char * str, const char * format, ... );
   int apiRead(char* name, int readofs, int readlen, void* targetofs);
 };
 
-#include "indirect.h"
-
 void start();
 
 namespace CicoContext
@@ -32,60 +32,56 @@ namespace CicoContext
   cicocontext_t ctx;
   uint8_t cicocontext_t::memoryAGet8(int seg, uint16_t ofs)
   {
-    if (seg >= _loadAddress && seg < 0xa000)
-      return memoryGet(seg, ofs);
-    else if (seg >= 0xa000 && seg < 0xe000)
+    assert(seg >= 0x1000 && seg < 0xe000);
+    if (seg >= 0xa000)
       return memoryVideoGet8(seg, ofs);
-    assert(0);
-    return 0;
-  }
-  uint16_t cicocontext_t::memoryAGet16(int seg, uint16_t ofs)
-  {
-    if (seg >= _loadAddress && seg < 0xa000)
-      return memoryGet16(seg, ofs);
-    else if (seg >= 0xa000 && seg < 0xe000)
-      return memoryVideoGet16(seg, ofs);
-    else if (seg == 0x0040)
-      return memoryBiosGet16(seg, ofs);
-char temp[128];
-sprintf(temp, "memoryAGet16(%04x:%04x)", seg, ofs);
-apiPrint(temp);
-    assert(0);
-    return 0;
+    else
+    {
+      assert((seg)*16+ofs < sizeof(ctx.memory));
+      return ctx.memory[(seg)*16+ofs];
+    }
   }
   void cicocontext_t::memoryASet8(int seg, uint16_t ofs, uint8_t v)
   {
-    if (seg >= _loadAddress && seg < 0xa000)
-      memorySet(seg, ofs, v);
-    else if (seg >= 0xa000 && seg < 0xe000)
+    assert(seg >= 0x1000 && seg < 0xe000);
+    if (seg >= 0xa000)
       memoryVideoSet8(seg, ofs, v);
     else
-      assert(0);
+    {
+      assert((seg)*16+ofs < sizeof(ctx.memory));
+      ctx.memory[(seg)*16+ofs] = v;
+    }
+  }
+  uint16_t cicocontext_t::memoryAGet16(int seg, uint16_t ofs)
+  {
+    assert(seg >= 0x1000 && seg < 0xe000);
+    if (seg >= 0xa000)
+      return memoryVideoGet16(seg, ofs);
+    else
+    {
+      assert((seg)*16+ofs < sizeof(ctx.memory));
+      return memory16(seg, ofs);
+    }
   }
   void cicocontext_t::memoryASet16(int seg, uint16_t ofs, uint16_t v)
   {
-    if (seg >= _loadAddress && seg < 0xa000)
-      memorySet16(seg, ofs, v);
-    else if (seg >= 0xa000 && seg < 0xe000)
+    assert(seg >= 0x1000 && seg < 0xe000);
+    if (seg >= 0xa000)
       memoryVideoSet16(seg, ofs, v);
-    else if (seg == 0x0000)
-      memoryBiosSet16(seg, ofs, v);
-    else {
-char temp[128];
-sprintf(temp, "memoryASet16(%04x:%04x)", seg, ofs);
-apiPrint(temp);
-
-      assert(0);
-}
+    else
+    {
+      assert((seg)*16+ofs < sizeof(ctx.memory));
+      memory16(seg, ofs) = v;
+    }
   }
 
-  void cicocontext_t::memoryBiosSet8(int seg, uint16_t ofs, uint8_t v)
+  void cicocontext_t::memoryBiosSet8(int seg, int ofs, uint8_t v)
   {
   }
-  void cicocontext_t::memoryBiosSet16(int seg, uint16_t ofs, uint16_t v)
+  void cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t v)
   {
   }
-  uint8_t cicocontext_t::memoryBiosGet8(int seg, uint16_t ofs)
+  uint8_t cicocontext_t::memoryBiosGet8(int seg, int ofs)
   {
     if (seg == 0x1d3)
     {
@@ -119,7 +115,7 @@ apiPrint(temp);
     assert(0);
     return 0;
   }
-  uint16_t cicocontext_t::memoryBiosGet16(int seg, uint16_t ofs)
+  uint16_t cicocontext_t::memoryBiosGet16(int seg, int ofs)
   {
     if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
     {
@@ -147,21 +143,21 @@ apiPrint(temp);
     return 0;
   }
 
-  void cicocontext_t::memoryVideoSet8(int seg, uint16_t ofs, uint8_t data)
+  void cicocontext_t::memoryVideoSet8(int seg, int ofs, uint8_t data)
   {
     mVideo.Write(seg*16+ofs, data);
   }
-  void cicocontext_t::memoryVideoSet16(int seg, uint16_t ofs, uint16_t data)
+  void cicocontext_t::memoryVideoSet16(int seg, int ofs, uint16_t data)
   {
     memoryVideoSet8(seg, ofs, data & 0xff);
     memoryVideoSet8(seg, ofs+1, data >> 8);
   }
-  uint8_t cicocontext_t::memoryVideoGet8(int seg, uint16_t ofs)
+  uint8_t cicocontext_t::memoryVideoGet8(int seg, int ofs)
   {
     assert(seg*16+ofs >= 0xa0000 && seg*16+ofs-0xa0000 < 0x10000*2*4);
     return mVideo.Read(seg*16+ofs);
   }
-  uint16_t cicocontext_t::memoryVideoGet16(int seg, uint16_t ofs)
+  uint16_t cicocontext_t::memoryVideoGet16(int seg, int ofs)
   {
     return memoryVideoGet8(seg, ofs) | (memoryVideoGet8(seg, ofs+1) << 8);
   }
@@ -169,8 +165,11 @@ apiPrint(temp);
   {
     static char currentFile[128];
     static int currentOfs{0};
-    char temp[128];
-
+    if (i == 0x10)
+    {
+        mVideo.Interrupt(&ctx);
+        return;
+    }
     if (i == 0x21 && ctx.a.r8.h == 0x30)
     {
         ctx.a.r16 = 0x0005;
@@ -233,14 +232,18 @@ apiPrint(temp);
         ctx.a.r16 = 0;
         return;
     }
-    if (i == 0x10)
-    {
-        if (mVideo.Interrupt(&ctx))
-            return;
-    }
     if (i == 0x21 && ctx.a.r8.h == 0x09)
     {
-        // print char al
+        char temp[128];
+        for (int i=0; i<100; i++)
+        {
+            char c = ctx.memory[ctx._ds*16+ctx.d.r16+i];
+            if (c=='$' || c == 0)
+                break;
+            temp[i] = c;
+            temp[i+1] = 0;
+        }
+        apiPrint(temp);
         return;
     }
     if (i == 0x21 && ctx.a.r8.h == 0x3d)
@@ -254,8 +257,6 @@ apiPrint(temp);
                 break;
             if (c >= 'a' && c <= 'z')
                 c -= 'a' - 'A';
-            if (c == '\\')
-                c = '/'; 
             if (c != ' ')
             {
                 filename[j++] = c;
@@ -271,6 +272,7 @@ apiPrint(temp);
     }
     if (i == 0x21 && ctx.a.r8.h == 0x3f)
     {
+        assert(ctx._ds < 0xa000);
         int readBytes = apiRead(currentFile, currentOfs, ctx.c.r16, &memory[ctx._ds*16+ctx.d.r16]);
         assert(readBytes > 0);
         currentOfs += readBytes;
@@ -279,23 +281,24 @@ apiPrint(temp);
         return;
     }
     if (i == 0x21 && ctx.a.r8.h == 0x3e)
-    {   
         return;
-    }
     if (i == 0x80)
         return;
+
+    char temp[128];
     sprintf(temp, "unhanled interrupt 0x%02x ah=0x%02x", i, ctx.a.r8.h);
     apiPrint(temp);
     assert(0);
   }
   bool cicocontext_t::stop(const char* msg)
   {
+    assert(0);
     return false;
   }
   void cicocontext_t::load(const char* path, const char* file, int size)
   {
     apiPrint((char*)"load!");
-    int ofs = ctx._cs*16 - ctx._headerSize;
+    int ofs = ctx._loadAddress*16 - ctx._headerSize;
     apiRead((char*)file, 0, size, &ctx.memory[ofs]);
   } 
   void cicocontext_t::out(int port, uint8_t val)
@@ -316,14 +319,19 @@ apiPrint(temp);
         val = (counter++ & 2) ? 0xff:0x00;
     if (port == 0x201)
         val = 0;
-    if (port == 0x3d4 || port == 0x3d5 || port == 0x3c9)
-        mVideo.PortRead8(port, val);
+    if (port == 0x3d4 || port == 0x3d5)
+        val = mVideo.PortRead8(port);
   }
   void cicocontext_t::sync()
   {
     emscripten_sleep(0);
   }
 };
+
+void _sync()
+{
+  CicoContext::ctx.sync();
+}
 
 extern "C" bool appBlit() { 
   return mVideo.blit(mVideoPixels);
