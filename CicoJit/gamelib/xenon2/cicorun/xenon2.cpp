@@ -2,7 +2,8 @@
 #include "cicoemu.h"
 using namespace CicoContext;
 bool infiniteEnergy = true;
-int startLevel = 5;
+int startLevel = 3;
+int xenonPowerup = -1;
 
 class CStackGuard
 {
@@ -36,7 +37,7 @@ void start()
     es = 0x0ff0;
     ss = 0x447b;
     sp = 0x0200;
-    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/xenon/dos", "XENON2.EXE", 123496);
+    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/xenon2/dos", "XENON2.EXE", 123496);
     sub_104f2();
 }
 void sub_10000();
@@ -796,6 +797,9 @@ void sub_24afc();
 #endif
 #define jumpIndirect callIndirect
 
+void sub_12d00() // 1000:2d00
+{
+}
 void callIndirect(int seg, int ofs)
 {
     switch (seg*0x10000+ofs)
@@ -1038,12 +1042,14 @@ void callIndirect(int seg, int ofs)
         case 0x1f291716: sub_209a6(); return;
         case 0x1f293220: sub_224b0(); return;
         case 0x1f295213: sub_244a3(); return;
+        case 0x10002d00: sub_12d00(); return; //xxx
+        case 0x10002cc0: sub_12d00(); return;//xxx
         default:
             break;
     }
     assert(0);
 }
-// INJECT: Error: cannot inject zero flag in sub_10f96()!
+// INJECT: Error: cannot inject zero flag in sub_1100e()!
 // INJECT: Error: cannot inject zero flag in sub_1100e()!
 void sub_10000() // 1000:0000
 {
@@ -1145,7 +1151,7 @@ void sub_10097() // 1000:0097
     cx = 0x8000;
 loc_100c3: // 1000:00c3
     stop(); // repne scasw ax, word ptr es:[di]
-    if (stop(/*1 - je loc_100d6*/))
+    if (stop(/*70 - je*/))
         goto loc_100d6;
     es = bx;
     di = 0;
@@ -1184,7 +1190,7 @@ void sub_100a4() // 1000:00a4
     cx = 0x8000;
 loc_100c3: // 1000:00c3
     stop(); // repne scasw ax, word ptr es:[di]
-    if (stop(/*1 - je loc_100d6*/))
+    if (stop(/*70 - je*/))
         goto loc_100d6;
     es = bx;
     di = 0;
@@ -1207,7 +1213,7 @@ loc_100f1: // 1000:00f1
     di += 0x0002;
     goto loc_100c3;
 }
-void sub_10101() // 1000:0101
+void sub_10101() // 1000:0101+carry
 {
     CStackGuard sg(0, false);
     al = 0x0f;
@@ -2086,7 +2092,7 @@ loc_1053b: // 1000:053b
     sub_15c8b(); // 1000:5c8b
     ax = ds;
     es = ax;
-    sub_13c75(); // 1000:3c75
+    sub_13c75(); // 1000:3c75 - clear powerups?
     if (memoryAGet16(ds, 0x3044) != 0x0004)
         goto loc_10585;
     dx = 0x03b8;
@@ -2426,7 +2432,7 @@ void sub_10762() // 1000:0762
     memoryASet16(ds, si + 4, 0x0761);
     memoryASet16(ds, si + 6, 0x0761);
 }
-void sub_1077c() // 1000:077c
+void sub_1077c() // 1000:077c base powerup? add to linked list
 {
     CStackGuard sg(0, false);
     push(bx);
@@ -3344,7 +3350,7 @@ void sub_10ed9() // 1000:0ed9
     sub_14191(); // 1000:4191
     cs = pop();
 }
-void sub_10edd() // 1000:0edd
+void sub_10edd() // 1000:0edd+zero
 {
     CStackGuardFar sg(0, false);
     sub_11ccc(); // 1000:1ccc
@@ -3407,7 +3413,7 @@ void sub_10f2b() // 1000:0f2b
     CStackGuard sg(0, false);
     sub_107a0(); // 1000:07a0
 }
-void sub_10f2f() // 1000:0f2f
+void sub_10f2f() // 1000:0f2f+zero
 {
     CStackGuard sg(0, false);
     ax = memoryAGet16(ds, 0xfcfa);
@@ -3468,8 +3474,7 @@ void sub_10f78() // 1000:0f78
         assert(0);
     }
 }
-// INJECT: Error: cannot inject zero flag in sub_10f96()!
-void sub_10f96() // 1000:0f96
+void sub_10f96() // 1000:0f96+zero
 {
     CStackGuard sg(0, false);
     memoryASet16(ds, 0x8e74, bx);
@@ -3546,7 +3551,7 @@ void sub_10ff0() // 1000:0ff0
     }
 }
 // INJECT: Error: cannot inject zero flag in sub_1100e()!
-void sub_1100e() // 1000:100e
+void sub_1100e() // 1000:100e+zero
 {
     CStackGuard sg(0, false);
     bp = 0x9138;
@@ -3847,14 +3852,14 @@ loc_11709: // 1000:1709
     memoryASet16(ds, 0x9150, 0x0000);
     memoryASet16(ds, 0x8e80, 0x0000);
     memoryASet16(ds, 0x8e82, 0x0000);
-    memoryASet16(ds, 0x9152, 0x0000);
+    memoryASet16(ds, 0x9152, 0x0000);//score
     memoryASet16(ds, 0x9154, 0x0000);
     memoryASet16(ds, 0x9156, 0x0000);
     memoryASet16(ds, 0x9158, 0x0000);
     memoryASet16(ds, 0x915e, 0x0000);
     memoryASet16(ds, 0x9160, 0x0000);
     memoryASet16(ds, 0x8e84, 0x0000);
-    memoryASet16(ds, 0x9162, 0x0000);
+    memoryASet16(ds, 0x9162, 0x0000);//nashman
     di = 0x921c;
     cx = 0x0007;
     al = 0;
@@ -3942,7 +3947,7 @@ loc_11922: // 1000:1922
     si = memoryAGet16(ds, 0x9008);
     if (memoryAGet16(ds, si) == 0x0000)
         goto loc_11930;
-    sub_137a9(); // 1000:37a9
+    sub_137a9(); // 1000:37a9 - clear powerups?
     goto loc_11922;
 loc_11930: // 1000:1930
     di = 0x9c80;
@@ -4130,7 +4135,7 @@ loc_11a4b: // 1000:1a4b
 void sub_11a62() // 1000:1a62
 {
     CStackGuard sg(0, false);
-    sub_118f5(); // 1000:18f5
+    sub_118f5(); // 1000:18f5 - clear powerups?
     bx = memoryAGet16(ds, 0x8e7a);
     if (memoryAGet(ds, bx + 36701) == 0x00)
         goto loc_11a8e;
@@ -4372,7 +4377,7 @@ loc_11be2: // 1000:1be2
 loc_11be6: // 1000:1be6
     ax = 0x0003;
 }
-void sub_11bea() // 1000:1bea
+void sub_11bea() // 1000:1bea+zero
 {
     CStackGuard sg(0, false);
     push(si);
@@ -4397,7 +4402,7 @@ void sub_11bea() // 1000:1bea
 loc_11c16: // 1000:1c16
     si = pop();
 }
-void sub_11c18() // 1000:1c18
+void sub_11c18() // 1000:1c18+zero
 {
     CStackGuard sg(0, false);
 loc_11c18: // 1000:1c18
@@ -4476,7 +4481,7 @@ loc_11cc9: // 1000:1cc9
 loc_13a36: // 1000:3a36
     sub_13a36();
 }
-void sub_11ccc() // 1000:1ccc
+void sub_11ccc() // 1000:1ccc+zero
 {
     CStackGuard sg(0, false);
     di = memoryAGet16(ds, 0x9054);
@@ -4608,7 +4613,7 @@ loc_11e21: // 1000:1e21
 loc_11e27: // 1000:1e27
     cx = pop();
 }
-void sub_11e29() // 1000:1e29
+void sub_11e29() // 1000:1e29+zero
 {
     CStackGuard sg(0, false);
     ax = memoryAGet16(ds, si + 18);
@@ -6132,6 +6137,65 @@ loc_13a2f: // 1000:3a2f
 loc_13a36: // 1000:3a36
     sub_13a36();
 }
+void powerup(int n)
+{
+    assert(ds == 0x2853);
+    if (n==100)
+    {
+        push(si);
+        si = memoryAGet16(ds, 0x9008);
+        if (memoryAGet16(ds, si) != 0x0000 && memoryAGet16(ds, si) != 0x0094)
+            sub_137a9(); // 1000:37a9 - remove from linked list
+        si = pop();
+        return;
+    }
+    if (n==1)
+        return;
+
+    push(bx);
+    push(ax);
+    push(di);
+    bx = n;
+    bx <<= 1;
+    di = memoryAGet16(ds, bx + 12760);
+    ax = 0x000f;
+    if (!(di & 0x0001))
+        goto loc_129cf;
+    di--;
+    ax = 0x000f;
+loc_129cf: // 1000:29cf
+    memoryASet16(ds, 0x8e88, ax);
+    push(si);
+    switch (bx)
+    {
+        case 0: sub_12ab2(); break; // 0 1000:2ab2
+        case 2: sub_12aa4(); break; // 1 1000:2aa4 - autofire
+        case 4: sub_12a48(); break; // 2 1000:2a48
+        case 6: sub_12a66(); break; // 3 1000:2a66
+        case 8: sub_1308c(); break; // 4 1000:308c - rear shot
+        case 10: sub_12aca(); break; // 5 1000:2aca - side shot
+        case 12: sub_12a6e(); break; // 6 1000:2a6e - bullet size
+        case 14: sub_13246(); break; // 7 1000:3246 - side cannon
+        case 16: sub_12e84(); break; // 8 1000:2e84 - drone
+        case 18: sub_131b6(); break; // 9 1000:31b6 - lasers
+        case 20: sub_12f08(); break; // a 1000:2f08 - globe
+        case 22: sub_12f7c(); break; // b 1000:2f7c - remote mine
+        case 24: sub_13126(); break; // c 1000:3126 - side double cannon
+        case 26: sub_12d86(); break; // d 1000:2d86 - homing missiles
+        case 28: sub_12df0(); break; // e 1000:2df0 - front flame thrower
+        case 30: sub_12d2a(); break; // f 1000:2d2a - missile
+        case 32: sub_12b80(); break; // g 1000:2b80 - shield
+        case 34: sub_12ac4(); break; // h 1000:2ac4 - nothing??
+        case 36: sub_12ad0(); break; // i 1000:2ad0 - zap
+        default:
+            stop();
+    }
+    si = pop();
+    di = pop();
+    ax = pop();
+    bx = pop();
+}
+
 void sub_128df() // 1000:28df
 {
     CStackGuard sg(0, false);
@@ -6239,26 +6303,10 @@ loc_129b5: // 1000:29b5
 loc_129cf: // 1000:29cf
     memoryASet16(ds, 0x8e88, ax);
     push(si);
-    //    for (int i=0; i<19; i++)
-    //        printf("case %d: sub_%x(); break; // %04x:%04x\n", i*2, cs*16+(memoryAGet16(ds, i*2 + 12760)&~1), cs, memoryAGet16(ds, i*2 + 12760)&~1);
-    //if (bx == 0)
-    {
-        static int powerup = 0;
-        switch (powerup++)
-        {
-            case 0: bx = 12; break;
-            case 1: bx = 16; break;
-            case 2: bx = 28; break;
-            case 3: bx = 30; break;
-            default: ;
-        }
-//        bx = 16;
-    }
-        //bx = 24;
     switch (bx)
     {
         case 0: sub_12ab2(); break; // 1000:2ab2
-        case 2: sub_12aa4(); break; // 1000:2aa4
+        case 2: sub_12aa4(); break; // 1000:2aa4 - autofire
         case 4: sub_12a48(); break; // 1000:2a48
         case 6: sub_12a66(); break; // 1000:2a66
         case 8: sub_1308c(); break; // 1000:308c - rear shot
@@ -7103,7 +7151,7 @@ loc_12b17: // 1000:2b17
     cx = 0x0010;
     rep_stosw<MemAuto, DirAuto>();
 }
-void sub_12b22() // 1000:2b22
+void sub_12b22() // 1000:2b22 activate nashman
 {
     CStackGuard sg(0, false);
     ax = memoryAGet16(ds, 0x9008);
@@ -7114,7 +7162,7 @@ void sub_12b22() // 1000:2b22
     bx = 0x91b8;
     cx = 0x000e;
 loc_12b37: // 1000:2b37
-    ax = memoryAGet16(ds, di);
+    ax = memoryAGet16(ds, di); // save and remove all weapons
     memoryASet16(ds, bx, ax);
     bx += 0x0002;
     memoryASet16(ds, di, 0x0000);
@@ -7698,7 +7746,7 @@ loc_130ad: // 1000:30ad
     memoryASet16(ds, di + 54, 0x0008);
     memoryASet16(ds, di + 72, 0xffff);
 }
-void sub_13117() // 1000:3117
+void sub_13117() // 1000:3117+zero
 {
     CStackGuard sg(0, false);
     sub_1100e(); // 1000:100e
@@ -8230,7 +8278,7 @@ void sub_135ce() // 1000:35ce
     memoryASet16(ds, 0x9166, ax);
     ax = memoryAGet16(ds, 0x915c);
     memoryASet16(ds, 0x9168, ax);
-    if (memoryAGet16(ds, 0x9162) != 0x0000)
+    if (memoryAGet16(ds, 0x9162) != 0x0000) // nashman4
         return;
     di = 0x9134;
     si = 0x916a;
@@ -8357,6 +8405,30 @@ void sub_13682() // 1000:3682
     sub_136fc(); // 1000:36fc
     si = memoryAGet16(ds, 0x90a0);
     sub_136fc(); // 1000:36fc
+    {
+        // dump
+        if (0)
+        {
+            uint16_t current = memoryAGet16(ds, 0x8ffe + 10);
+            printf("Dump: ");
+            
+            while (current != 0x0000) { // Traverse until the end of the list
+                printf("Node %04x <", current);
+                printf("Prev=%04x, ", memoryAGet16(ds, current + 8));  // Pointer to the previous node
+                printf("Next=%04x, ", memoryAGet16(ds, current + 10)); // Pointer to the next node
+                printf("Data=%04x>, ", memoryAGet16(ds, current));      // Example data stored at the node
+                current = memoryAGet16(ds, current + 10);               // Move to the next node
+                if (current == 0x8ffe)
+                    break;
+            }
+            printf("\n");
+        }
+        if (xenonPowerup != -1)
+        {
+            powerup(xenonPowerup);
+            xenonPowerup = -1;
+        }
+    }
     si = memoryAGet16(ds, 0x90ec);
     sub_136fc(); // 1000:36fc
     si = memoryAGet16(ds, 0x8fbc);
@@ -8498,7 +8570,7 @@ loc_1379d: // 1000:379d
     sub_107c0(); // 1000:07c0
     si = pop();
 }
-void sub_137a9() // 1000:37a9
+void sub_137a9() // 1000:37a9 - clear powerups? final
 {
     CStackGuard sg(0, false);
     push(di);
@@ -9418,7 +9490,7 @@ loc_13f7b: // 1000:3f7b
         goto loc_13f9a;
     goto loc_13c9d;
 loc_13f9a: // 1000:3f9a
-    sub_11a62(); // 1000:1a62
+    sub_11a62(); // 1000:1a62 - clear powerups?
     if (memoryAGet(ds, 0x8f54) == 0x00)
         goto loc_13faa;
     ah = 0x02;
@@ -9497,7 +9569,7 @@ loc_14078: // 1000:4078
     sub_10e91(); // 1000:0e91
 loc_1407e: // 1000:407e
     memoryASet(ds, 0x8fb0, 0x00);
-    if (memoryAGet16(ds, 0x9162) == 0x0000)
+    if (memoryAGet16(ds, 0x9162) == 0x0000) // nashman2
         goto loc_1408d;
     sub_12b22(); // 1000:2b22
 loc_1408d: // 1000:408d
@@ -9749,7 +9821,7 @@ loc_1429d: // 1000:429d
     if (--cx)
         goto loc_14270;
 }
-void sub_142ae() // 1000:42ae
+void sub_142ae() // 1000:42ae+zero
 {
     CStackGuard sg(0, false);
     goto loc_142ae;
@@ -9799,7 +9871,7 @@ loc_142e8: // 1000:42e8
     ax = 0;
     flags.zero = true;
 }
-void sub_142eb() // 1000:42eb
+void sub_142eb() // 1000:42eb+zero
 {
     CStackGuard sg(0, false);
     if (memoryAGet16(ds, 0x8e80) != 0x0000)
@@ -10219,7 +10291,7 @@ loc_146b6: // 1000:46b6
     memoryASet16(ds, 0x8e82, 0xffff);
     memoryASet16(ds, 0x8e88, 0x0018);
 loc_146e4: // 1000:46e4
-    if (memoryAGet16(ds, 0x9162) == 0x0000)
+    if (memoryAGet16(ds, 0x9162) == 0x0000) // nashman3
         goto loc_14709;
     memoryASet16(ds, 0x9162, memoryAGet16(ds, 0x9162) - 1);
     dx = 0x00aa;
@@ -11211,7 +11283,7 @@ loc_14f37: // 1000:4f37
     memoryASet16(ds, 0x915c, memoryAGet16(ds, 0x915c) - (dx + flags.carry));
     si = memoryAGet16(ds, 0x39b4);
     bx = memoryAGet16(ds, si + 6);
-    bx <<= 1;
+    bx <<= 1; // shop buys
     switch (bx)
     {
         case 2: sub_10761(); break;
@@ -11219,7 +11291,7 @@ loc_14f37: // 1000:4f37
         case 6: sub_12ab2(); break;
         case 8: sub_12a48(); break;
         case 10: sub_12aa4(); break;
-        case 12: sub_14f96(); break;
+        case 12: sub_14f96(); break; // super nashman
         case 14: sub_12a66(); break;
         case 16: sub_1308c(); break;
         case 18: sub_12f7c(); break;
@@ -11299,7 +11371,7 @@ void sub_14fde() // 1000:4fde
     CStackGuard sg(0, false);
     memoryASet16(ds, 0x918a, memoryAGet16(ds, 0x918a) + 1);
 }
-void sub_14fe3() // 1000:4fe3
+void sub_14fe3() // 1000:4fe3+zero
 {
     CStackGuard sg(0, false);
     si = memoryAGet16(ds, 0x39b4);
@@ -11401,7 +11473,7 @@ loc_150b0: // 1000:50b0
     flags.zero = false;
     return;
 loc_150b4: // 1000:50b4
-    if (memoryAGet16(ds, 0x915e) == 0x0002)
+    if (memoryAGet16(ds, 0x915e) == 0x0002) // no room on ship?
         goto loc_150ad;
     goto loc_150b0;
 loc_150bd: // 1000:50bd
@@ -12885,7 +12957,7 @@ loc_15c07: // 1000:5c07
     memoryASet16(ds, 0x8e70, ax);
     goto loc_15950;
 }
-void sub_15c0f() // 1000:5c0f
+void sub_15c0f() // 1000:5c0f+zero
 {
     CStackGuard sg(0, true);
     push(0x7777);
@@ -13473,7 +13545,7 @@ void sub_1655b() // 1000:655b
     ax += memoryAGet16(ds, 0x9f16);
     if ((short)ax >= (short)0x0a80)
         goto loc_16590;
-    memoryASet(ds, 0x8fb0, 0xff);
+    memoryASet(ds, 0x8fb0, 0xff); // enters shop!
     memoryASet(ds, 0x922c, 0xff);
     memoryASet16(ds, 0x9190, 0x09c0);
     memoryASet16(ds, 0x91aa, 0x09c0);
@@ -14735,7 +14807,7 @@ loc_17144: // 1000:7144
     bx = 0x6337;
     goto loc_13389;
 }
-void sub_1714a() // 1000:714a
+void sub_1714a() // 1000:714a+zero
 {
     CStackGuard sg(0, false);
     ax = 0;
@@ -17901,7 +17973,7 @@ loc_18c9d: // 1000:8c9d
     di = memoryAGet16(cs, bx + 38147);
     di += 0x938b;
 }
-void sub_18ca7() // 1000:8ca7
+void sub_18ca7() // 1000:8ca7+zero
 {
     CStackGuard sg(0, false);
     ax = memoryAGet16(ds, 0x9190);
@@ -20100,8 +20172,8 @@ loc_1a4b4: // 1000:a4b4
     goto loc_1a4e2;
 loc_1a4b6: // 1000:a4b6
     ax = memoryAGet16(ds, bx + 16530);
-    //if (stop(/*1 - js loc_1a4d0*/)) AX was zero!?
-    //    goto loc_1a4d0;
+    if ((short)ax < 0)
+        goto loc_1a4d0;
     ax += memoryAGet16(ds, si + 22);
     memoryASet16(ds, si + 22, ax);
     ax += memoryAGet16(ds, 0x9190);
@@ -21938,10 +22010,11 @@ loc_1ac15: // 1000:ac15
     si = pop();
     goto loc_1ac15;
 }
-void sub_1ac4b() // 1000:ac4b
+void sub_1ac4b() // 1000:ac4b+zero
 {
     CStackGuard sg(0, false);
     ax = 0;
+    flags.zero = true;
 }
 void sub_1ac4e() // 1000:ac4e
 {
@@ -25027,10 +25100,11 @@ loc_1c78a: // 1000:c78a
     bx = 0xb04a;
     goto loc_13389;
 }
-void sub_1c79c() // 1000:c79c
+void sub_1c79c() // 1000:c79c+zero
 {
     CStackGuard sg(0, false);
     ax = 0;
+    flags.zero = true;
 }
 void sub_1c79f() // 1000:c79f
 {
@@ -27594,10 +27668,11 @@ loc_1e4a6: // 1000:e4a6
     bx = 0xcd1c;
     goto loc_13389;
 }
-void sub_1e4ac() // 1000:e4ac
+void sub_1e4ac() // 1000:e4ac+zero
 {
     CStackGuard sg(0, false);
     ax = 0;
+    flags.zero = true;
 }
 void sub_1e4af() // 1000:e4af
 {
@@ -33548,7 +33623,7 @@ loc_20a03: // 1f29:1773
     push(di);
     push(cx);
     push(cs);
-    sub_20a1d(); // 1f29:178d
+    sub_20a1d(); // 1f29:178d print score line
     cx = pop();
     di = pop();
     si = pop();
@@ -33604,7 +33679,7 @@ void sub_20a47() // 1f29:17b7
 {
     CStackGuardFar sg(0, false);
 loc_20a47: // 1f29:17b7
-    lodsb<MemAuto, DirAuto>();
+    lodsb<MemAuto, DirAuto>(); // read score char
     if (!al)
         goto loc_20a5b;
     tx = bp;
@@ -38595,7 +38670,7 @@ loc_22a3e: // 1f29:37ae
     ax = memoryAGet16(ds, si + 26);
     ax += memoryAGet16(ds, si + 22);
     ax--;
-    if (stop(/*82 - dec -> jle*/))
+    if ((short)ax <= 0)
         goto loc_22abc;
     memoryASet16(ds, 0x32bc, ax);
     ax = memoryAGet16(ds, si + 26);
@@ -43698,7 +43773,7 @@ loc_242ba: // 1f29:502a
     cx = memoryAGet16(ds, bx + 13252);
     ax = memoryAGet16(ds, 0x32ba);
     ax = sar(ax, 1);
-    if (stop(/*70*/))
+    if (stop(/*70 - jns*/))
         goto loc_24307;
     tx = cx;
     cx += ax;
@@ -44870,7 +44945,7 @@ loc_24b38: // 1f29:58a8
     ax = memoryAGet16(ds, si + 26);
     ax += memoryAGet16(ds, si + 22);
     ax--;
-    if (stop(/*82 - dec -> jle*/))
+    if ((short)ax <= 0)
         goto loc_24b89;
     memoryASet16(ds, 0x32bc, ax);
     ax = memoryAGet16(ds, si + 26);
