@@ -39,15 +39,16 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 </select>
 <select id="powerup">
 <option value="-1">Powerup</option>
+<option value="0">speed</option>
 <option value="1">autofire</option>
 <option value="4">rear shot</option>
 <option value="5">side shot</option>
 <option value="6">bullet size</option>
-<option value="7">side cannon</option>
+<option value="7">missile launcher</option>
 <option value="8">drone</option>
 <option value="9">lasers</option>
-<option value="10">globe</option>
-<option value="11">remote mine</option>
+<option value="10">electro ball</option>
+<option value="11">mine</option>
 <option value="12">side double cannon</option>
 <option value="13">homing missiles</option>
 <option value="14">flame thrower</option>
@@ -69,6 +70,8 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <script src="resources.js"></script>
 <script src="controls.js"></script>
 <script src="wasmapp.js"></script>
+<script src="cats.js"></script>
+<script src="touch.js"></script>
 <script>
 "use strict"
 var canvas = document.getElementById('canvas');
@@ -127,6 +130,49 @@ document.querySelector("#powerup").addEventListener("change", e => {
   e.target.value = -1;
 });
 
+function decodeScore()
+{
+  var ll = [];
+  for (var j=0; j<10; j++)
+  {
+    var l = "";
+    for (var i=0; i<15; i++)
+      l += String.fromCharCode(game.memoryBuffer[0x28530 + 0x358f+i+j*15]);
+    ll.push({pos:l.substr(0, 2), score:parseInt(l.substr(4, 7)), name:l.substr(12, 3)});
+  }
+  return ll;
+}
+
+function encodeScore(score)
+{
+  for (var j=0; j<10; j++)
+  {
+    var line = `${score[j].pos}  ${("0000000"+score[j].score).substr(-7)} ${score[j].name}`;
+    for (var i=0; i<15; i++)
+      game.memoryBuffer[0x28530 + 0x358f+i+j*15] = line.charCodeAt(i);
+  }  
+}
+
+function setScore()
+{
+  var sc = decodeScore();
+  sc[0].name = 'GAB'
+  sc[0].score = 1000000;
+  sc[1].name = 'ONA'
+  sc[1].score = 900000;
+  sc[2].name = 'TOR'
+  sc[2].score = 800000;
+  sc[4].name = 'CI '
+  sc[4].score = 700000;
+  sc[5].name = ' CO'
+  sc[5].score = 600000;
+  sc[6].name = 'PAR'
+  sc[6].score = 500000;
+  sc[7].name = 'SER'
+  sc[7].score = 400000;
+  encodeScore(sc);
+}
+
 setInterval(()=>{
   document.querySelector("#status").innerHTML = `Score: ${getState().score}`
 }, 1000);
@@ -139,6 +185,8 @@ game.load().then(() => {
   game.HEAP32[game.symbols.seed.value>>2] = Math.floor(Math.random()*0x10000) | (Math.floor(Math.random()*0x10000)<<16);
   game.symbols.appLoop();
   game.symbols.asyncify_stop_unwind();
+
+  setScore();
 
   var gameTimer = setInterval(() => {
     game.asyncifyResume();

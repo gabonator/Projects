@@ -17,10 +17,11 @@ uint8_t asyncifyBuffer[1024+12];
 uint8_t* appMemory = CicoContext::ctx.memory;
 uint32_t* appVideo = mVideoPixels;
 uint32_t seed = 0;
+uint32_t* egaPalette = mVideo.palette;
 
 // javascript imports
 extern "C" {
-int sprintf ( char * str, const char * format, ... );
+  int sprintf ( char * str, const char * format, ... );
   void apiPrint(char* msg);
   int apiRead(char* name, int readofs, int readlen, void* targetofs);
 };

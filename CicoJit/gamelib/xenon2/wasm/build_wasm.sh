@@ -14,7 +14,7 @@ NAME=app
 BASE=http://localhost:8084/
 
 INCLUDES=
-EXPORTED_EXTRAS="'_xenonInfiniteEnergy', '_xenonStartLevel', '_xenonPowerup', '_xenonSkipIntro', '_xenonInfiniteLives'"
+EXPORTED_EXTRAS="'_xenonInfiniteEnergy', '_xenonStartLevel', '_xenonPowerup', '_xenonSkipIntro', '_xenonInfiniteLives', '_egaPalette'"
 EXPORTED="['_appLoop', '_appInit', '_appFinish', '_appMemory', '_appBlit', '_appVideo', '_asyncifyBuffer', '_seed', ${EXPORTED_EXTRAS}]"
 CONFIGURATION="-s TOTAL_STACK=1024 -s TOTAL_MEMORY=2097152 -s MINIMAL_RUNTIME=1 -s WASM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s WARN_ON_UNDEFINED_SYMBOLS=0 -s ASSERTIONS=1 -sASYNCIFY "
 #DEFINES=-DNDEBUG

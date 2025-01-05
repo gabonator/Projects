@@ -66,7 +66,7 @@ class WasmApp
       apiRead: (ptrName, readOfs, readLen, ptrData) =>
       {
         var name = this.imports().string(ptrName);
-        console.log("Read", name, readOfs, readLen);
+        //console.log("Read", name, readOfs, readLen);
         var b = this.getFile(name.toLowerCase().split("\\").join("/"));
         var willRead = Math.min(b.length-readOfs, readLen);
         for (var i=0; i<willRead; i++)

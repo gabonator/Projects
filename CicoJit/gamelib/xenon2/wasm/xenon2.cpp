@@ -5244,7 +5244,7 @@ loc_122cf: // 1000:22cf
 loc_122e4: // 1000:22e4
     return;
 loc_122e5: // 1000:22e5
-    if (stop(/*1 - js loc_12330*/))
+    if ((short)memoryAGet16(ds, si + 26) < 0)
         goto loc_12330;
     if (!(memoryAGet(ds, 0x8f59) & 0x80))
         goto loc_1232a;
@@ -43757,7 +43757,7 @@ loc_242ba: // 1f29:502a
     cx = memoryAGet16(ds, bx + 13252);
     ax = memoryAGet16(ds, 0x32ba);
     ax = sar(ax, 1);
-    if (stop(/*70 - jns*/))
+    if ((short)ax >= 0)
         goto loc_24307;
     tx = cx;
     cx += ax;
