@@ -4,7 +4,7 @@ curl 'https://www.retrogames.cz/dos/zip/Titus.zip' \
   -H 'sec-fetch-site: same-origin' \
   --compressed --output titus.zip
 
-unzip -d dos -j titus.zip \
+unzip -o -d dos -j titus.zip \
   "FONTS.SQZ" \
   "LEVEL0.SQZ" \
   "LEVEL1.SQZ" \
@@ -29,5 +29,5 @@ unzip -d dos -j titus.zip \
   "TITREEGA.SQZ" \
   "TITUS.SQZ"
 
-unzip unpacked.zip -d dos
+unzip -o unpacked.zip -d dos
 rm titus.zip
