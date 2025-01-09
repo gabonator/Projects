@@ -1,4 +1,4 @@
-<head>
+<head>                  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style> 
@@ -25,8 +25,6 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
   color: white;
 }
 
-<!-- -->
-
 #container {
   position: relative;
   width: 200px;
@@ -39,33 +37,27 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
     filter: brightness(1);
     opacity: 1;
-/*    transform: scale(1);*/
   }
   10%, 24% {
     box-shadow: inset 0 0 20px 5px rgba(0, 128, 0, 9);
     filter: brightness(2);
     opacity: 1;
-/*    transform: scale(1.2);*/
   }
   27% {
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0);
     filter: brightness(1);
     opacity: 0;
-/*    transform: scale(1);*/
   }
   65%, 80% {
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0);
     filter: brightness(1);
     opacity: 0;
-/*    transform: scale(1);*/
   }
   85% {
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0);
     filter: brightness(1);
     opacity: 1;
-/*    transform: scale(1);*/
   }
-
 }
 
 .animatedLayer {
@@ -77,34 +69,14 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
   border: 2px solid #808080;
   animation: isometricCycle 30s ease-in-out, glowCycle 30s ease-in-out calc((var(--index) + 3) * 5s);
 }
-/*
-#layerA, #layerB, #layerC, #layerD, #layerE {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  animation: isometricCycle 20s ease-in-out infinite, glowCycle 20s ease-in-out infinite calc((var(--index) + 3) * 2.1s);
-}
-*/
+
 @keyframes isometricCycle {
-  0% {
-    transform: translateY(0) rotateX(0) rotateY(0);
-  }
-  10% {
-    transform: translateY(-60px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -40px));
-  }
-  15% {
-    transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px));
-  }
-  90% {
-    transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px));
-  }
-  95% {
-  }
-  100% {
-    transform: translateY(0) rotateX(0) rotateY(0);
-  }
+  0% { transform: translateY(0) rotateX(0) rotateY(0); }
+  10% { transform: translateY(-60px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -40px)); }
+  15% { transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px)); }
+  90% { transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px)); }
+  95% { }
+  100% { transform: translateY(0) rotateX(0) rotateY(0); }
 }
 
 #layerA { --index: 2; }
@@ -114,40 +86,24 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 #layerE { --index: -2; }
 
 @keyframes fadeout {
-  0% {
-    filter: opacity(1);
-  }
-  100% {
-    filter: opacity(0);
-  }
+  0% { filter: opacity(1); }
+  100% { filter: opacity(0); }
 }
 @keyframes fadeinout {
-  0%, 100% {
-    filter: opacity(0);
-  }
-  50% {
-    filter: opacity(1);
-  }
+  0%, 100% { filter: opacity(0); }
+  50% { filter: opacity(1); }
 }
-#intro1 {
-  animation: fadeinout 4s; animation-fill-mode: forwards;
-}
-#intro2 {
-  animation: fadeinout 4s 4s; animation-fill-mode: forwards;
-}
-#intro3 {
-  animation: fadeinout 4s 8s; animation-fill-mode: forwards;
-}
-#intro0 {
-  animation: fadeout 100ms 10s; animation-fill-mode: forwards;
-}
-
+#intro1 { animation: fadeinout 4s; animation-fill-mode: forwards; }
+#intro2 { animation: fadeinout 4s 4s; animation-fill-mode: forwards; }
+#intro3 { animation: fadeinout 4s 8s; animation-fill-mode: forwards; }
+#intro0 { animation: fadeout 100ms 10s; animation-fill-mode: forwards; }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <div class="banner">
 <div class="left-text">Titus the Fox <font color="silver">(cicoparser wasm port)</font></div>
 <div class="right-text"><span id="status">&nbsp;</span>&nbsp;&nbsp;&nbsp;
 <select id="level">
+<option value="0hd">1. On the foxy trail (HD)</option>
 <option value="0">1. On the foxy trail</option>
 <option value="19">2. Looking for clues</option>
 <option value="1">3. Road works ahead</option>
@@ -173,37 +129,13 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 
 <!-- app -->
 <div id="viewport" style="position: absolute; width:960px; height:600px; overflow:hidden; background:black">
-<!--<div id="viewport" style="position: absolute; width:960px; height:600px; left:+200px; top:+200px;">-->
-<div class="layer" id="layerA" style="position: absolute; width:960px; height:600px; overflow:hidden">
-  <img class="overlay" id="sky0" src="art/l1_sky.png" style="position:absolute; left:0px; top:0px; width:3312px; height:1776px;">
-  <img class="overlay" id="sky1" src="art/l1_sky.png" style="position:absolute; left:3312px; top:0px; width:3312px; height:1776px;">
-</div>
-<div class="layer" id="layerB" style="position: absolute; width:960px; height:600px; overflow:hidden">
-  <img class="overlay" id="moon" src="art/moon.png" style="position:absolute; left:700px; top:40px; width:100px; height:100px; mix-blend-mode: lighten; opacity:0.8">
-  <img class="overlay" id="back0" src="art/l1_back.png" style="position:absolute; left:0px; top:0px; width:3303px; height:1776px; opacity:1">
-  <img class="overlay" id="back1" src="art/l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
-</div>
-<div class="layer" id="layerC" style="position: absolute; width:960px; height:600px; overflow:hidden">
-  <img class="overlay" id="map" src="art/l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
-</div>
+<div class="layer" id="layerA" style="position: absolute; width:960px; height:600px; overflow:hidden"></div>
+<div class="layer" id="layerB" style="position: absolute; width:960px; height:600px; overflow:hidden"></div>
+<div class="layer" id="layerC" style="position: absolute; width:960px; height:600px; overflow:hidden"></div>
 <div class="layer" id="layerD" style="position: absolute; width:960px; height:600px; overflow:hidden">
   <canvas id="canvas" style="position:absolute; left:0px; top:0px; width:960px; height:600px;"></canvas><br>
 </div>
-<div class="layer" id="layerE" style="position: absolute; width:960px; height:600px; overflow:hidden; mix-blend-mode: lighten;">
-<img class="overlay" id="glow0" src="art/glow.gif" style="display:none; position:absolute; left:402px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img class="overlay" id="glow1" src="art/glow.gif" style="display:none; position:absolute; left:1872px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img class="overlay" id="glow2" src="art/glow.gif" style="display:none; position:absolute; left:2628px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img class="overlay" id="glow3" src="art/glow.gif" style="display:none; position:absolute; left:3568px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
-<img class="overlay" id="steam0" src="art/steam.gif" style="display:none; position:absolute; left:22px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam1" src="art/steam.gif" style="display:none; position:absolute; left:402px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam2" src="art/steam.gif" style="display:none; position:absolute; left:912px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam3" src="art/steam.gif" style="display:none; position:absolute; left:1362px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam4" src="art/steam.gif" style="display:none; position:absolute; left:1772px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam5" src="art/steam.gif" style="display:none; position:absolute; left:2372px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam6" src="art/steam.gif" style="display:none; position:absolute; left:2852px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam7" src="art/steam.gif" style="display:none; position:absolute; left:3282px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-<img class="overlay" id="steam8" src="art/steam.gif" style="display:none; position:absolute; left:3762px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
-</div>
+<div class="layer" id="layerE" style="position: absolute; width:960px; height:600px; overflow:hidden; mix-blend-mode: lighten;"></div>
 <div id="intro">
 <div id="intro0" style="position:absolute; width:960px; height:600px; background:black"></div>
 <img id="intro1" src="titus.png" style="position:absolute; filter:opacity(0); width:960px; height:600px">
@@ -222,16 +154,56 @@ var canvas = document.getElementById('canvas');
 canvas.width=320;
 canvas.height=200;
 var ctx = canvas.getContext('2d');
+var curhdtiles = [];
+var curintro = true;
+var currentSong = null;
+var currentSongUrl = null;
+var interacted = false;
+var soundSub = 0xdd;
 
 var game = new WasmApp(f=>Module[f], {foxEvent: x=>{
   game.phase = game.imports().string(x);
-  console.log("event", game.imports().string(x))
+  switch (game.phase)
+  {
+    //case "load": playSong("music/menu.mp3"); break;
+    //case "info": playSong("music/info.mp3"); break;
+    case "processMap": 
+      var levelSongs = {0: "music/level1.mp3", 19: "music/level2.mp3"}
+      playSong(levelSongs[getState().level]);
+    break;
+  }
+  console.log("event", game.phase)
 }, foxSoundPlay: x=>{
-  console.log("foxSoundPlay", x);
+  if (game.phase != "processMap")
+    return;
+  const audio = {
+    0x00c600ff: "bounce.mov",
+    0x00c60002: "spring.mov",
+    0x04c60002: "grab.mov",
+    0x0ac60000: "throw.aac",
+    0x0cc60001: "ouch1.mov",
+    0x0cc60002: "ouch2.mov",
+    0x0cc60003: "ouch3.mov",
+    0x0cc60004: "ouch4.mov",
+    0x0cc60007: "ouch4.mov",
+    0x0cc60008: "ouch1.mov",
+    0x0cc6000a: "bark.mp3",
+    0x0cc60000: "bark.mp3",
+    0x00c60000: "spring.mov",
+  };
+  var playAudio = audio[(x<<16) | soundSub];
+  //console.log(((x<<16) | soundSub).toString(16), playAudio)
+  if (playAudio)
+    new Audio("sounds/"+playAudio).play();
   return true;
-}, foxSoundSub: x=>{
-  console.log("foxSoundSub", x);
+}, foxSoundSub: (ax, bx) => {
+  //console.log("sub",ax.toString(16), bx.toString(16));
+  soundSub = ax>>8;
   return true;
+}, foxModifyTile: (x,y,s) => {
+  var t = curhdtiles.find(t=>t.x == x && t.y == y);
+  if (t)
+    t.o = 0x5dc0 + s*32;
 }});
 
 function getState()
@@ -248,10 +220,10 @@ function setConfig(config)
   game.memory[game.symbols.foxInfiniteEnergy.value] = config.infiniteEnergy;
   game.memory[game.symbols.foxInfiniteLives.value] = config.infiniteLives;
   game.memory[game.symbols.foxStartupLevel.value] = config.startLevel;
-  game.memory[game.symbols.foxCustomRender.value] = true;
+//  game.memory[game.symbols.foxCustomRender.value] = true;
 }
 
-var config = {infiniteEnergy:true, infiniteLives:false, startLevel:0, speed:40};
+var config = {infiniteEnergy:true, infiniteLives:false, startLevel:0, speed:40, hd:true, intro:true};
 
 for (var att of window.location.search.substr(1).split("&"))
 {
@@ -268,15 +240,27 @@ for (var att of window.location.search.substr(1).split("&"))
   }
 }
 
-document.querySelector("#level").value = config.startLevel;
-document.querySelector("#level").addEventListener("change", e =>
-  document.location.href=`?startLevel=${e.target.value}`
-);
+if (config.intro)
+{
+  playSong("music/menu.mp3");
+  setTimeout(()=>{ if (curintro) playSong("music/info.mp3"); curintro = false; }, 12000);
+} else {                                                         
+  playSong("music/info.mp3");
+  document.querySelector("#intro").style.display = "none";
+  curintro = false;
+}
+
+document.querySelector("#level").value = config.startLevel + (config.hd ? "hd" : "");
+document.querySelector("#level").addEventListener("change", e => {
+  var level = e.target.value;
+  var hd = level.includes("hd");
+  level = level.split("hd")[0];
+  document.location.href=`?startLevel=${level}&hd=${hd}&intro=${level==0 && hd}`
+});
 
 setInterval(()=>{
   document.querySelector("#status").innerHTML = `Energy: ${getState().energy} Lives: ${getState().lives}`
 }, 1000);
-
 
 game.load().then(() => {
   game.imageData = this.ctx.createImageData(320, 200);
@@ -303,48 +287,42 @@ game.load().then(() => {
   }, config.speed);
 })
 
-function hdcollect()
+function hdsprites()
 {
-  if (game.phase != "processMap")
-    return [];
+  let memory16get = addr => game.memoryBuffer[addr] | (game.memoryBuffer[addr+1]<<8);
+  let memory16set = (addr, val) => {
+    game.memoryBuffer[addr] = val & 255;
+    game.memoryBuffer[addr+1] = val >> 8;
+  }
+  let collect = [];
+  let ds = 0x168f;
+  let cs = 0x1020;
+  for (var i=0x567e; i >= 0x527c; i-=0x0012)
+  {
+     if (memory16get(ds*16 + i + 4) == 0xffff)
+       continue;
 
-    let memory16get = addr => game.memoryBuffer[addr] | (game.memoryBuffer[addr+1]<<8);
-    let memory16set = (addr, val) => {
-      game.memoryBuffer[addr] = val & 255;
-      game.memoryBuffer[addr+1] = val >> 8;
-    }
-    let collect = [];
-    let ds = 0x168f;
-    let cs = 0x1020;
-    for (var i=0x567e; i >= 0x527c; i-=0x0012)
-    {
-       if (memory16get(ds*16 + i + 4) == 0xffff)
-         continue;
+     var bb = memory16get(ds*16+i + 4) & 0xdfff;
+     var tbx = (bb << 1) & 0x7fff;
+     if (memory16get(ds*16+tbx + 0x5dc4) == 0xfffc)
+       memory16set(ds*16+tbx + 0x5dc4, 0x23fc);
 
-       var bb = memory16get(ds*16+i + 4) & 0xdfff;
-
-       var tbx = (bb << 1) & 0x7fff;
-
-       if (memory16get(ds*16+tbx + 0x5dc4) == 0xfffc)
-         memory16set(ds*16+tbx + 0x5dc4, 0x23fc);
-
-       //in: ds, bx, si, cs
-       var rel8x = game.memoryBuffer[ds*16+tbx + 26927];
-       if (rel8x & 0x0080) rel8x |= 0xff00;
-       
-       var rel8y = game.memoryBuffer[ds*16+tbx + 26928];
-       if (rel8y & 0x0080) rel8y |= 0xff00;
-       collect.push({
-         x:(-rel8x + memory16get(ds*16+i)) - (memory16get(ds*16+21104)<<4), 
-         y:rel8y + memory16get(ds*16+i + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+tbx + 26213)>>8),
-         w:(memory16get(ds*16+tbx + 26213) & 0xff) >> game.memoryBuffer[cs*16+0x0],
-         h:memory16get(ds*16+tbx + 26213)>>8, 
-         o:memory16get(ds*16+tbx + 0x5aa4),
-         s:memory16get(ds*16+tbx + 0x5dc4),
-         t:bb&0x8000
-        });
-    }
-    return collect;
+     var rel8x = game.memoryBuffer[ds*16+tbx + 26927];
+     if (rel8x & 0x0080) rel8x |= 0xff00;
+     
+     var rel8y = game.memoryBuffer[ds*16+tbx + 26928];
+     if (rel8y & 0x0080) rel8y |= 0xff00;
+     collect.push({
+       x:(-rel8x + memory16get(ds*16+i)) - (memory16get(ds*16+21104)<<4), 
+       y:rel8y + memory16get(ds*16+i + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+tbx + 26213)>>8),
+       w:(memory16get(ds*16+tbx + 26213) & 0xff) >> game.memoryBuffer[cs*16+0x0],
+       h:memory16get(ds*16+tbx + 26213)>>8, 
+       o:memory16get(ds*16+tbx + 0x5aa4),
+       s:memory16get(ds*16+tbx + 0x5dc4),
+       t:bb&0x8000
+      });
+  }
+  return collect;
 }
 
 function hdtiles()
@@ -362,8 +340,50 @@ function hdtiles()
 
 function hdrender()
 {
-  if (game.phase != "processMap" || getState().level != 0)
+  if (game.phase != "processMap" || getState().level != 0 || config.hd == false)
+  {
+    game.memory[game.symbols.foxCustomRender.value] = false;
     return false;
+  }
+
+  const overlay = [
+    {id:"glow0", src:"art/glow.gif", opacity:0.3, left:402, top:460},
+    {id:"glow1", src:"art/glow.gif", opacity:0.3, left:1872, top:460},
+    {id:"glow2", src:"art/glow.gif", opacity:0.3, left:2628, top:460},
+    {id:"glow3", src:"art/glow.gif", opacity:0.3, left:3568, top:460},
+    {id:"steam0", src:"art/steam.gif", opacity:0.9, left:22, top:500},
+    {id:"steam1", src:"art/steam.gif", opacity:0.9, left:402, top:500},
+    {id:"steam2", src:"art/steam.gif", opacity:0.9, left:912, top:500},
+    {id:"steam3", src:"art/steam.gif", opacity:0.9, left:1362, top:500},
+    {id:"steam4", src:"art/steam.gif", opacity:0.9, left:1772, top:500},
+    {id:"steam5", src:"art/steam.gif", opacity:0.9, left:2372, top:500},
+    {id:"steam6", src:"art/steam.gif", opacity:0.9, left:2852, top:500},
+    {id:"steam7", src:"art/steam.gif", opacity:0.9, left:3282, top:500},
+    {id:"steam8", src:"art/steam.gif", opacity:0.9, left:3762, top:500}
+  ];
+
+  if (!("hdlevelinit" in config) || config.hdlevelinit != getState().level)
+  {
+    config.hdlevelinit = getState().level;
+    curhdtiles = hdtiles();
+
+    document.querySelector("#layerA").innerHTML = `
+  <img class="overlay" id="sky0" src="art/l1_sky.png" style="position:absolute; left:0px; top:0px; width:3312px; height:1776px;">
+  <img class="overlay" id="sky1" src="art/l1_sky.png" style="position:absolute; left:3312px; top:0px; width:3312px; height:1776px;">
+`;
+    document.querySelector("#layerB").innerHTML = `
+  <img class="overlay" id="moon" src="art/moon.png" style="position:absolute; left:700px; top:40px; width:100px; height:100px; mix-blend-mode: lighten; opacity:0.8">
+  <img class="overlay" id="back0" src="art/l1_back.png" style="position:absolute; left:0px; top:0px; width:3303px; height:1776px; opacity:1">
+  <img class="overlay" id="back1" src="art/l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
+`;
+    document.querySelector("#layerC").innerHTML = `
+  <img class="overlay" id="map" src="art/l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
+`;
+    document.querySelector("#layerE").innerHTML = "";
+    for (var ovl of overlay)
+      document.querySelector("#layerE").innerHTML += `<img class="overlay" id="${ovl.id}" src="${ovl.src}" style="position:absolute; width:330px; height:270px; opacity:${ovl.opacity}; mix-blend-mode: lighten;">`
+  }
+  game.memory[game.symbols.foxCustomRender.value] = true;
 
   const smoothScrolling = true;
   const memory16get = addr => game.memoryBuffer[addr] | (game.memoryBuffer[addr+1]<<8);
@@ -393,8 +413,7 @@ function hdrender()
 
   game.imageData.data.fill(0);
 
-  const tiles = hdtiles()
-  for (var obj of tiles)
+  for (var obj of curhdtiles)
   {
     var bx = memory16get(0x168f*16 + 0x5270)*16;
     var by = memory16get(0x168f*16 + 0x5272)*16;
@@ -412,7 +431,7 @@ function hdrender()
     }
   }
 
-  const collect = hdcollect();
+  const collect = hdsprites();
   for (var obj of collect)
   {
       var frame = obj.w*obj.h;
@@ -422,96 +441,108 @@ function hdrender()
           for (var x=0; x<obj.w*8; x++)
           {
               var plane0 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*0];
+              var p0 = (plane0 >> (7-(x&7)))&1;
+              if (!p0)
+                  continue;
+
               var plane1 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*1];
               var plane2 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*2];
               var plane3 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*3];
               var plane4 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*4];
-              var p0 = (plane0 >> (7-(x&7)))&1;
+
               var p1 = (plane1 >> (7-(x&7)))&1;
               var p2 = (plane2 >> (7-(x&7)))&1;
               var p3 = (plane3 >> (7-(x&7)))&1;
               var p4 = (plane4 >> (7-(x&7)))&1;
               var p = p1 + 2*p2 + 4*p3 + 8*p4;
-              p = game.HEAP32[egaPalette+p];
-              if (p0)
-              {
-                  if (!obj.t)
-                      pixel(signed16(obj.x)+ x, signed16(obj.y) + y, p);
-                  else
-                      pixel(signed16(obj.x) + obj.w*8-1 - x, signed16(obj.y) + y, p);
-              }
 
+              p = game.HEAP32[egaPalette+p];
+              if (!obj.t)
+                  pixel(obj.x + x, obj.y + y, p);
+              else
+                  pixel(obj.x + obj.w*8-1 - x, obj.y + y, p);
           }
       }
   }
   ctx.putImageData(game.imageData, 0, 0);
 
-    var map = document.getElementById("map");
-    var newScrollX = memory16get(0x168f*16 + 0x5270)*3*16;
-    var newScrollY = memory16get(0x168f*16 + 0x5272)*3*16;
-    var scrollX = newScrollX;
-    var scrollY = newScrollY;
+  var map = document.getElementById("map");
+  var newScrollX = memory16get(0x168f*16 + 0x5270)*3*16;
+  var newScrollY = memory16get(0x168f*16 + 0x5272)*3*16;
+  var scrollX = newScrollX;
+  var scrollY = newScrollY;
 
-    if (smoothScrolling)
+  if (smoothScrolling)
+  {
+    if (typeof(window.oldScrollX) == "undefined")
+      window.oldScrollX = window.oldScrollY = 0;
+
+    if (typeof(window.oldScrollX) == "undefined" || Math.abs(window.oldScrollX - newScrollX) > 450 || Math.abs(window.oldScrollY - newScrollY) > 250)
     {
-      if (typeof(window.oldScrollX) == "undefined")
-        window.oldScrollX = window.oldScrollY = 0;
-
-      if (typeof(window.oldScrollX) == "undefined" || Math.abs(window.oldScrollX - newScrollX) > 450 || Math.abs(window.oldScrollY - newScrollY) > 250)
-      {
-        console.log(window.oldScrollX,  newScrollX, window.oldScrollY, newScrollY);
-        window.oldScrollX = newScrollX;
-        window.oldScrollY = newScrollY;
-      }
-      scrollX = Math.floor(oldScrollX*0.8+newScrollX*0.2);
-      scrollY = Math.floor(oldScrollY*0.8+newScrollY*0.2);
-      window.oldScrollX = scrollX;
-      window.oldScrollY = scrollY;
-      canvas.style.left = newScrollX - scrollX;
-      canvas.style.top = newScrollY - scrollY;
-      canvas.style.border = "";
+      //console.log(window.oldScrollX, newScrollX, window.oldScrollY, newScrollY);
+      window.oldScrollX = newScrollX;
+      window.oldScrollY = newScrollY;
     }
+    scrollX = Math.floor(oldScrollX*0.8+newScrollX*0.2);
+    scrollY = Math.floor(oldScrollY*0.8+newScrollY*0.2);
+    window.oldScrollX = scrollX;
+    window.oldScrollY = scrollY;
+    canvas.style.left = newScrollX - scrollX;
+    canvas.style.top = newScrollY - scrollY;
+    canvas.style.border = "";
+  }
 
-    map.style.left = -scrollX;
-    map.style.top = -scrollY;
+  map.style.left = -scrollX;
+  map.style.top = -scrollY;
 
-    var back0 = document.getElementById("back0");
-    back0.style.left = -scrollX*0.3;
-    back0.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
-    var back1 = document.getElementById("back1");
-    back1.style.left = -scrollX*0.3+3303;
-    back1.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+  var back0 = document.getElementById("back0");
+  back0.style.left = -scrollX*0.3;
+  back0.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+  var back1 = document.getElementById("back1");
+  back1.style.left = -scrollX*0.3+3303;
+  back1.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
 
-    var sky0 = document.getElementById("sky0");
-    sky0.style.left = -scrollX*0.1;
-    sky0.style.top = 0;
-    var sky1 = document.getElementById("sky1");
-    sky1.style.left = -scrollX*0.1+3312;
-    sky1.style.top = 0;
+  var sky0 = document.getElementById("sky0");
+  sky0.style.left = -scrollX*0.1;
+  sky0.style.top = 0;
+  var sky1 = document.getElementById("sky1");
+  sky1.style.left = -scrollX*0.1+3312;
+  sky1.style.top = 0;
 
-    const overlay = [
-      {id:"glow0", left:402, top:460},
-      {id:"glow1", left:1872, top:460},
-      {id:"glow2", left:2628, top:460},
-      {id:"glow3", left:3568, top:460},
-      {id:"steam0", left:22, top:500},
-      {id:"steam1", left:402, top:500},
-      {id:"steam2", left:912, top:500},
-      {id:"steam3", left:1362, top:500},
-      {id:"steam4", left:1772, top:500},
-      {id:"steam5", left:2372, top:500},
-      {id:"steam6", left:2852, top:500},
-      {id:"steam7", left:3282, top:500},
-      {id:"steam8", left:3762, top:500}
-    ];
-
-    for (var i=0; i<overlay.length; i++)
-    {
-      var o = document.getElementById(overlay[i].id);
-      o.style.display = "";
-      o.style.left = overlay[i].left*3-scrollX;
-      o.style.top = overlay[i].top*3-scrollY;
-    }
+  for (var i=0; i<overlay.length; i++)
+  {
+    var o = document.getElementById(overlay[i].id);
+    o.style.left = overlay[i].left*3-scrollX;
+    o.style.top = overlay[i].top*3-scrollY;
+  }
   return true;
 }
+
+function setInteracted()
+{
+  if (!interacted && currentSongUrl)
+  {
+    interacted = true;
+    playSong(currentSongUrl);
+  }
+  interacted = true;
+}
+function playSong(song)
+{
+  if (currentSong && currentSongUrl == song && currentSong.playing)
+    return;
+
+  if (currentSong)
+    currentSong.pause();
+
+  currentSongUrl = song;
+  currentSong = new Audio(song);
+  currentSong.loop = true;
+  if (interacted && song)
+  {
+    currentSong.playing = true;
+    currentSong.play();
+  }
+}
+
 </script>
