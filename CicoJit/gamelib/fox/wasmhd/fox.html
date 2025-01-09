@@ -1,0 +1,490 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style> 
+body {  font-family: 'Poppins', sans-serif; user-select: none;}
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+
+<!-- -->
+
+#container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  perspective: 1000px;
+}
+
+@keyframes glowCycle {
+  5%, 20% {
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
+    filter: brightness(1);
+/*    transform: scale(1);*/
+  }
+  10%, 15% {
+    box-shadow: inset 0 0 20px 5px rgba(0, 128, 0, 9);
+    filter: brightness(2);
+/*    transform: scale(1.2);*/
+  }
+}
+
+.animatedLayer {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 2px solid #808080;
+  animation: isometricCycle 20s ease-in-out, glowCycle 20s ease-in-out calc((var(--index) + 3) * 2.1s);
+}
+/*
+#layerA, #layerB, #layerC, #layerD, #layerE {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  animation: isometricCycle 20s ease-in-out infinite, glowCycle 20s ease-in-out infinite calc((var(--index) + 3) * 2.1s);
+}
+*/
+@keyframes isometricCycle {
+  0% {
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+  10% {
+    transform: translateY(-60px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -40px));
+  }
+  15% {
+    transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px));
+  }
+  85% {
+    transform: translateY(-80px) rotateX(25deg) rotateY(25deg) translateZ(calc(var(--index) * -200px));
+  }
+  95% {
+  }
+  100% {
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+}
+
+#layerA { --index: 2; }
+#layerB { --index: 1; }
+#layerC { --index: 0; }
+#layerD { --index: -1; }
+#layerE { --index: -2; }
+
+@keyframes fadeout {
+  0% {
+    filter: opacity(1);
+  }
+  100% {
+    filter: opacity(0);
+  }
+}
+@keyframes fadeinout {
+  0%, 100% {
+    filter: opacity(0);
+  }
+  50% {
+    filter: opacity(1);
+  }
+}
+#intro1 {
+  animation: fadeinout 4s; animation-fill-mode: forwards;
+}
+#intro2 {
+  animation: fadeinout 4s 4s; animation-fill-mode: forwards;
+}
+#intro3 {
+  animation: fadeinout 4s 8s; animation-fill-mode: forwards;
+}
+#intro0 {
+  animation: fadeout 100ms 10s; animation-fill-mode: forwards;
+}
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Titus the Fox <font color="silver">(cicoparser wasm port)</font></div>
+<div class="right-text"><span id="status">&nbsp;</span>&nbsp;&nbsp;&nbsp;
+<select id="level">
+<option value="0">1. On the foxy trail</option>
+<option value="19">2. Looking for clues</option>
+<option value="1">3. Road works ahead</option>
+<option value="2">4. Going underground</option>
+<option value="3">5. Flamig catacombes</option>
+<option value="4">6. Coming to town</option>
+<option value="5">7. Foxys den</option>
+<option value="6">8. On the road to Marrakesh</option>
+<option value="7">9. Home of the pharaohs</option>
+<option value="8">10. Desert experience</option>
+<option value="9">11. Walls of sand</option>
+<option value="11">12. A beacon of hope</option>
+<option value="12">13. A pipe dream</option>
+<option value="14">14. Going home</option>
+<!--<option value="15">15. Arrival in paris</option>-->
+<option value="16">15. Just married</option>
+</select>
+<a href="https://github.com/gabonator/Projects/tree/master/CicoJit/gamelib/fox">
+<svg style="position:relative; top:5px; padding-left:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z" fill="silver"></path></svg>
+</a></div>
+</div>
+<br>
+
+<!-- app -->
+<div id="viewport" style="position: absolute; width:960px; height:600px; overflow:hidden; background:black">
+<!--<div id="viewport" style="position: absolute; width:960px; height:600px; left:+200px; top:+200px;">-->
+<div class="layer" id="layerA" style="position: absolute; width:960px; height:600px; overflow:hidden">
+  <img class="overlay" id="sky0" src="art/l1_sky.png" style="position:absolute; left:0px; top:0px; width:3312px; height:1776px;">
+  <img class="overlay" id="sky1" src="art/l1_sky.png" style="position:absolute; left:3312px; top:0px; width:3312px; height:1776px;">
+</div>
+<div class="layer" id="layerB" style="position: absolute; width:960px; height:600px; overflow:hidden">
+  <img class="overlay" id="moon" src="art/moon.png" style="position:absolute; left:700px; top:40px; width:100px; height:100px; mix-blend-mode: lighten; opacity:0.8">
+  <img class="overlay" id="back0" src="art/l1_back.png" style="position:absolute; left:0px; top:0px; width:3303px; height:1776px; opacity:1">
+  <img class="overlay" id="back1" src="art/l1_back.png" style="position:absolute; left:3303px; top:0px; width:3303px; height:1776px;opacity:1">
+</div>
+<div class="layer" id="layerC" style="position: absolute; width:960px; height:600px; overflow:hidden">
+  <img class="overlay" id="map" src="art/l1_map.png" style="position:absolute; left:0px; top:0px; width:12288px; height:1776px">
+</div>
+<div class="layer" id="layerD" style="position: absolute; width:960px; height:600px; overflow:hidden">
+  <canvas id="canvas" style="position:absolute; left:0px; top:0px; width:960px; height:600px;"></canvas><br>
+</div>
+<div class="layer" id="layerE" style="position: absolute; width:960px; height:600px; overflow:hidden; mix-blend-mode: lighten;">
+<img class="overlay" id="glow0" src="art/glow.gif" style="display:none; position:absolute; left:402px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow1" src="art/glow.gif" style="display:none; position:absolute; left:1872px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow2" src="art/glow.gif" style="display:none; position:absolute; left:2628px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="glow3" src="art/glow.gif" style="display:none; position:absolute; left:3568px; top:460px; width:330px; height:270px; opacity:0.3; mix-blend-mode: lighten;">
+<img class="overlay" id="steam0" src="art/steam.gif" style="display:none; position:absolute; left:22px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam1" src="art/steam.gif" style="display:none; position:absolute; left:402px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam2" src="art/steam.gif" style="display:none; position:absolute; left:912px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam3" src="art/steam.gif" style="display:none; position:absolute; left:1362px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam4" src="art/steam.gif" style="display:none; position:absolute; left:1772px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam5" src="art/steam.gif" style="display:none; position:absolute; left:2372px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam6" src="art/steam.gif" style="display:none; position:absolute; left:2852px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam7" src="art/steam.gif" style="display:none; position:absolute; left:3282px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+<img class="overlay" id="steam8" src="art/steam.gif" style="display:none; position:absolute; left:3762px; top:500px; width:330px; height:270px; opacity:0.9; mix-blend-mode: lighten;">
+</div>
+<div id="intro">
+<div id="intro0" style="position:absolute; width:960px; height:600px; background:black"></div>
+<img id="intro1" src="titus.png" style="position:absolute; filter:opacity(0); width:960px; height:600px">
+<img id="intro2" src="fox.png" style="position:absolute; filter:opacity(0); width:960px; height:600px">
+<img id="intro3" src="menu.png" style="position:absolute; filter:opacity(0); width:960px; height:600px">
+</div>
+</div>
+
+<script src="app_inline.js"></script>
+<script src="resources.js"></script>
+<script src="controls.js"></script>
+<script src="wasmapp.js"></script>
+<script>
+"use strict"
+var canvas = document.getElementById('canvas');
+canvas.width=320;
+canvas.height=200;
+var ctx = canvas.getContext('2d');
+
+var game = new WasmApp(f=>Module[f], {foxEvent: x=>{
+  game.phase = game.imports().string(x);
+  console.log("event", game.imports().string(x))
+}});
+
+function getState()
+{
+  return {
+    energy: game.memoryBuffer[0x168f0 + 0x0419],
+    lives: game.memoryBuffer[0x168f0 + 0x041b],
+    level: game.memoryBuffer[0x168f0 + 0x5250]
+  };
+}
+
+function setConfig(config)
+{
+  game.memory[game.symbols.foxInfiniteEnergy.value] = config.infiniteEnergy;
+  game.memory[game.symbols.foxInfiniteLives.value] = config.infiniteLives;
+  game.memory[game.symbols.foxStartupLevel.value] = config.startLevel;
+  game.memory[game.symbols.foxCustomRender.value] = true;
+}
+
+var config = {infiniteEnergy:true, infiniteLives:false, startLevel:0, speed:40};
+
+for (var att of window.location.search.substr(1).split("&"))
+{
+  let [key, value] = att.split("=");
+  if (key in config)
+  {
+    if (value == "true")
+      value = true;
+    else if (value == "false")
+      value = false;
+    else
+      value = parseInt(value)
+    config[key] = value;
+  }
+}
+
+document.querySelector("#level").value = config.startLevel;
+document.querySelector("#level").addEventListener("change", e =>
+  document.location.href=`?startLevel=${e.target.value}`
+);
+
+setInterval(()=>{
+  document.querySelector("#status").innerHTML = `Energy: ${getState().energy} Lives: ${getState().lives}`
+}, 1000);
+
+
+game.load().then(() => {
+  game.imageData = this.ctx.createImageData(320, 200);
+
+  setConfig(config);
+
+  game.blitBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appVideo.value>>2], 320 * 200 * 4);
+  game.memoryBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appMemory.value>>2], 0x10000*14);
+  game.videoBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.egaMemory.value>>2], 0x20000*4);
+  game.HEAP32[game.symbols.seed.value>>2] = Math.floor(Math.random()*0x10000) | (Math.floor(Math.random()*0x10000)<<16);
+  game.symbols.appLoop();
+  game.symbols.asyncify_stop_unwind();
+
+  var gameTimer = setInterval(() => {
+    game.asyncifyResume();
+    if (!hdrender())
+    {
+      if (game.symbols.appBlit())
+      {
+        const img = new ImageData(game.blitBuffer, 320, 200);
+        this.ctx.putImageData(img, 0, 0);
+      }
+    }
+  }, config.speed);
+})
+
+function hdcollect()
+{
+  if (game.phase != "processMap")
+    return [];
+
+    let memory16get = addr => game.memoryBuffer[addr] | (game.memoryBuffer[addr+1]<<8);
+    let memory16set = (addr, val) => {
+      game.memoryBuffer[addr] = val & 255;
+      game.memoryBuffer[addr+1] = val >> 8;
+    }
+    let collect = [];
+    let ds = 0x168f;
+    let cs = 0x1020;
+    for (var i=0x567e; i >= 0x527c; i-=0x0012)
+    {
+       if (memory16get(ds*16 + i + 4) == 0xffff)
+         continue;
+
+       var bb = memory16get(ds*16+i + 4) & 0xdfff;
+
+       var tbx = (bb << 1) & 0x7fff;
+
+       if (memory16get(ds*16+tbx + 0x5dc4) == 0xfffc)
+         memory16set(ds*16+tbx + 0x5dc4, 0x23fc);
+
+       //in: ds, bx, si, cs
+       var rel8x = game.memoryBuffer[ds*16+tbx + 26927];
+       if (rel8x & 0x0080) rel8x |= 0xff00;
+       
+       var rel8y = game.memoryBuffer[ds*16+tbx + 26928];
+       if (rel8y & 0x0080) rel8y |= 0xff00;
+       collect.push({
+         x:(-rel8x + memory16get(ds*16+i)) - (memory16get(ds*16+21104)<<4), 
+         y:rel8y + memory16get(ds*16+i + 2) + 1 - (memory16get(ds*16+21106) << 4) - (memory16get(ds*16+tbx + 26213)>>8),
+         w:(memory16get(ds*16+tbx + 26213) & 0xff) >> game.memoryBuffer[cs*16+0x0],
+         h:memory16get(ds*16+tbx + 26213)>>8, 
+         o:memory16get(ds*16+tbx + 0x5aa4),
+         s:memory16get(ds*16+tbx + 0x5dc4),
+         t:bb&0x8000
+        });
+    }
+    return collect;
+}
+
+function hdtiles()
+{
+  var tiles = [];
+  for (var i=0; i<37*256; i++)
+  {
+    var tile = game.memoryBuffer[0x5b330+i];
+    if (tile == 0xff || tile == 0xfe || tile == 0xfd ||
+        tile == 0xfc || tile == 0xfb)
+      tiles.push({o:0x5dc0 + tile*32, x:(i&0xff)*16, y:Math.floor(i/256)*16, w:2, h:16});
+  }
+  return tiles;
+}
+
+function hdrender()
+{
+  if (game.phase != "processMap" || getState().level != 0)
+    return false;
+
+  const smoothScrolling = true;
+  const memory16get = addr => game.memoryBuffer[addr] | (game.memoryBuffer[addr+1]<<8);
+  const signed16 = x => x & 0x8000 ? x-63336 : x;
+  const egaPalette = game.HEAP32[(game.symbols.egaPalette.value>>2)]>>2;
+  const pixel = (x, y, c) =>
+  {
+    if (x<0 || x>=320 || y<0 || y>=200)
+      return;
+    game.imageData.data[(x+y*320)*4] = c & 0xff;
+    game.imageData.data[(x+y*320)*4+1] = (c>>8) & 0xff;
+    game.imageData.data[(x+y*320)*4+2] = (c>>16) & 0xff;
+    game.imageData.data[(x+y*320)*4+3] = 0xff;
+  }
+
+  const getSpritePixel = (x, y, addr, pitch) => {
+    var off = y * pitch + (x >> 3);
+    var mask = 0x80 >> (x & 7);
+    var b = 0;
+    addr = (addr+off)*4;
+    if (game.videoBuffer[addr++] & mask ) b |= 1;
+    if (game.videoBuffer[addr++] & mask ) b |= 2;
+    if (game.videoBuffer[addr++] & mask ) b |= 4;
+    if (game.videoBuffer[addr] & mask ) b |= 8;
+    return b;
+  };
+
+  game.imageData.data.fill(0);
+
+  const tiles = hdtiles()
+  for (var obj of tiles)
+  {
+    var bx = memory16get(0x168f*16 + 0x5270)*16;
+    var by = memory16get(0x168f*16 + 0x5272)*16;
+    for (var y=0; y<obj.h; y++)
+    {
+        for (var x=0; x<obj.w*8; x++)
+        {
+           var p = getSpritePixel(x, y, obj.o, 2);
+           if (p != 2)
+           {
+             p = game.HEAP32[egaPalette+p];
+             pixel(signed16(obj.x) + x - bx, signed16(obj.y) + y - by, p);
+           }
+        }
+    }
+  }
+
+  const collect = hdcollect();
+  for (var obj of collect)
+  {
+      var frame = obj.w*obj.h;
+      var pitch = obj.w;
+      for (var y=0; y<obj.h; y++)
+      {
+          for (var x=0; x<obj.w*8; x++)
+          {
+              var plane0 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*0];
+              var plane1 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*1];
+              var plane2 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*2];
+              var plane3 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*3];
+              var plane4 = game.memoryBuffer[obj.s*16+ obj.o+y*pitch+Math.floor(x/8)+frame*4];
+              var p0 = (plane0 >> (7-(x&7)))&1;
+              var p1 = (plane1 >> (7-(x&7)))&1;
+              var p2 = (plane2 >> (7-(x&7)))&1;
+              var p3 = (plane3 >> (7-(x&7)))&1;
+              var p4 = (plane4 >> (7-(x&7)))&1;
+              var p = p1 + 2*p2 + 4*p3 + 8*p4;
+              p = game.HEAP32[egaPalette+p];
+              if (p0)
+              {
+                  if (!obj.t)
+                      pixel(signed16(obj.x)+ x, signed16(obj.y) + y, p);
+                  else
+                      pixel(signed16(obj.x) + obj.w*8-1 - x, signed16(obj.y) + y, p);
+              }
+
+          }
+      }
+  }
+  ctx.putImageData(game.imageData, 0, 0);
+
+    var map = document.getElementById("map");
+    var newScrollX = memory16get(0x168f*16 + 0x5270)*3*16;
+    var newScrollY = memory16get(0x168f*16 + 0x5272)*3*16;
+    var scrollX = newScrollX;
+    var scrollY = newScrollY;
+
+    if (smoothScrolling)
+    {
+      if (typeof(window.oldScrollX) == "undefined")
+        window.oldScrollX = window.oldScrollY = 0;
+
+      if (typeof(window.oldScrollX) == "undefined" || Math.abs(window.oldScrollX - newScrollX) > 450 || Math.abs(window.oldScrollY - newScrollY) > 250)
+      {
+        console.log(window.oldScrollX,  newScrollX, window.oldScrollY, newScrollY);
+        window.oldScrollX = newScrollX;
+        window.oldScrollY = newScrollY;
+      }
+      scrollX = Math.floor(oldScrollX*0.8+newScrollX*0.2);
+      scrollY = Math.floor(oldScrollY*0.8+newScrollY*0.2);
+      window.oldScrollX = scrollX;
+      window.oldScrollY = scrollY;
+      canvas.style.left = newScrollX - scrollX;
+      canvas.style.top = newScrollY - scrollY;
+      canvas.style.border = "";
+    }
+
+    map.style.left = -scrollX;
+    map.style.top = -scrollY;
+
+    var back0 = document.getElementById("back0");
+    back0.style.left = -scrollX*0.3;
+    back0.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+    var back1 = document.getElementById("back1");
+    back1.style.left = -scrollX*0.3+3303;
+    back1.style.top = -(scrollY-25*3*16)*1.1 - 25*3*16;
+
+    var sky0 = document.getElementById("sky0");
+    sky0.style.left = -scrollX*0.1;
+    sky0.style.top = 0;
+    var sky1 = document.getElementById("sky1");
+    sky1.style.left = -scrollX*0.1+3312;
+    sky1.style.top = 0;
+
+    const overlay = [
+      {id:"glow0", left:402, top:460},
+      {id:"glow1", left:1872, top:460},
+      {id:"glow2", left:2628, top:460},
+      {id:"glow3", left:3568, top:460},
+      {id:"steam0", left:22, top:500},
+      {id:"steam1", left:402, top:500},
+      {id:"steam2", left:912, top:500},
+      {id:"steam3", left:1362, top:500},
+      {id:"steam4", left:1772, top:500},
+      {id:"steam5", left:2372, top:500},
+      {id:"steam6", left:2852, top:500},
+      {id:"steam7", left:3282, top:500},
+      {id:"steam8", left:3762, top:500}
+    ];
+
+    for (var i=0; i<overlay.length; i++)
+    {
+      var o = document.getElementById(overlay[i].id);
+      o.style.display = "";
+      o.style.left = overlay[i].left*3-scrollX;
+      o.style.top = overlay[i].top*3-scrollY;
+    }
+  return true;
+}
+</script>
