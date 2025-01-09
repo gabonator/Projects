@@ -18,6 +18,8 @@ function onKey(code, pressed)
     case 39: cbit(0x168f, 0x48d, pressed); break;
     case 32: cbit(0x168f, 0x45c, pressed); 
              cbit(0x168f, 0x042b, pressed); 
+             if (pressed)
+               document.querySelector("#intro").style.display = "none";
     break;
     case 65: 
       document.querySelectorAll('.layer').forEach(div => {
