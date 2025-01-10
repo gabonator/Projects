@@ -261,7 +261,8 @@ void callIndirect(int seg, int ofs)
             bx = 0x2e5;
             es = 0x11f2; // 11f2:2e5=00 00
         } else {
-            printf("EGAVGA %04x: \n", si, ax);
+            if (si != 0x2e && si != 0x30 && si != 0x1e && si != 0x0c)
+                printf("EGAVGA %04x: %x %x %x %x\n", si, ax, bx, cx, dx);
             interrupt(0x10);
         }
         cs = pop();
@@ -2144,7 +2145,7 @@ void sub_2d25() // 01ed:0e55
     sub_a537();
     assert(cs == 0x01ed);
     di = ax;
-    if (memoryAGet(ds, di + 8400) != 0x01)
+    if (memoryAGet(ds, di + 8400) != 0x01) // key
         goto loc_2d9e;
     ax = memoryAGet16(ss, bp + 4);
     dx = ax & 0x8000 ? 0xffff : 0x0000;
@@ -2166,7 +2167,7 @@ void sub_2d25() // 01ed:0e55
     assert(cs == 0x01ed);
     di = ax;
     di <<= 1;
-    memoryASet16(ds, di + 6142, memoryAGet16(ds, di + 6142) + 1);
+    memoryASet16(ds, di + 6142, memoryAGet16(ds, di + 6142) + 1); // gabo
     goto loc_2d9e;
 loc_2d88: // 01ed:0eb8
     ax = memoryAGet16(ss, bp + 4);
@@ -4459,7 +4460,7 @@ loc_4039: // 01ed:2169
     push(memoryAGet16(ds, 0x1820));
     sub_2d25();
     ax = memoryAGet16(ds, 0x20c8);
-    dx = memoryAGet16(ds, 0x20ca);
+    dx = memoryAGet16(ds, 0x20ca); // gabo
     memoryASet16(ss, bp - 942, ax);
     memoryASet16(ss, bp - 940, dx);
     ax = 0x0001;
@@ -5309,8 +5310,8 @@ loc_4769: // 01ed:2899
     cs = 0x0a08;
     sub_ad56();
     assert(cs == 0x01ed);
-    if (flags.zero)
-        goto loc_4769;
+//    if (flags.zero)
+//        goto loc_4769;
     ax = 0;
     memoryASet16(ds, 0x182c, ax);
     memoryASet16(ss, bp - 264, 0x0001);

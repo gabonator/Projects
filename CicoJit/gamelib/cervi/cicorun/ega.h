@@ -21,8 +21,8 @@ class CText : public CVideoAdapter
     uint8_t font[256*14];
     uint8_t font1[256*14];
     uint32_t palette[16] = {
-        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xb0b000, 0xb0b0b0,
-        0x808080, 0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00, 0xffffff};
+        0x000000, 0x0000b0, 0x00b000, 0x00b0b0, 0xb00000, 0xb000b0, 0xaa5500, 0xb0b0b0,
+        0x555555, 0x5555ff, 0x55ff55, 0x55ffff, 0xff5555, 0xff55ff, 0xffff55, 0xffffff};
 public:
     int posx{0}, posy{0};
 public:
@@ -31,7 +31,7 @@ public:
         memcpy(font, egafont14x8, sizeof(font));
         for (int i=0; i<80*25; i++)
         {
-            screen[i*2] = 0*' '+255;
+            screen[i*2] = 0*' '+0;
             screen[i*2+1] = 0x07;
         }
     }
@@ -143,7 +143,7 @@ return false;
 //        if ((attr & 0xf) > 7)
 //            return (font1[symbol*14+suby] & (128>>subx)) ? palette[attr & 0xf] : palette[attr >> 4];
 //        else
-        return (font[symbol*14+suby] & (128>>subx)) ? palette[attr & 0xf] : (symbol != 255 ? 0x404040 : 0);// palette[attr & 0xf] : palette[attr >> 4];
+        return (font[symbol*14+suby] & (128>>subx)) ? palette[attr & 0xf] : (symbol != 255 ? 0x101010 : 0);// palette[attr & 0xf] : palette[attr >> 4];
 //        return 0;
     };
     virtual void SetPixel(int x, int y, int c) { return; };
