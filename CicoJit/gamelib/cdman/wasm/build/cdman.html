@@ -24,6 +24,14 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 .banner .right-text a {
   color: white;
 }
+
+  .transition {
+    transition: clip-path 3s ease;
+    clip-path: polygon(0 0, 0% 0, -400px 100%, 0 100%);
+  }
+  .transition.visible {
+    clip-path: polygon(0 0, calc(100% + 400px) 0, 100% 100%, 0 100%);
+  }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <div class="banner">
@@ -41,12 +49,15 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <br>
 
 <!-- app -->
-<canvas id="canvas" width="640" height="350" style="border: 1px solid #d0d0d0; width:640px; height:350px;"></canvas>
+<div id="container">
+<canvas id="canvas" width="640" height="350" style="border: 1px solid #d0d0d0; width:960; height:525px;"></canvas>
+</div>
 
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
 <script src="controls.js"></script>
 <script src="wasmapp.js"></script>
+<script src="autopilot.js"></script>
 <script>
 "use strict"
 var canvas = document.getElementById('canvas');
