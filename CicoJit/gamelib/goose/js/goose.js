@@ -1480,7 +1480,7 @@ function sub_109e9() {
         }
         r16[bx] += 0x0100;
     case 0x10a0f:
-        r16[cx] = ~cx;
+        r16[cx] = ~r16[cx];
         r16[ax] = memory16get(ds, r16[bx] + 37545);
         r16[ax] &= r16[cx];
         bp = pop();
@@ -7863,7 +7863,7 @@ function sub_131a4() {
         r16[bx] = memory16get(ds, 0x94f4);
         si = 0x0340;
         sub_131e7();
-        r16[ax] = ~ax;
+        r16[ax] = ~r16[ax];
         r16[ax] &= 0x000f;
         r8[ah] = r8[al];
         r8[al] = 0x01;
@@ -8581,6 +8581,7 @@ function sub_136d4() {
         r16[bx] = memory16get(ss, bp - 10 - 2);
         di += memory16get(ss, bp - 10 - 2);
     case 0x1379d:
+        di &= 0xffff;
         memory[es*16 + di] = memory[es*16 + di] | r8[al];
         if (--r16[cx]) {
             pc = 0x1377c;
@@ -8613,6 +8614,7 @@ function sub_136d4() {
         r8[al] = 0x80;
         di++;
     case 0x137d0:
+        di &= 0xffff;
         memory[es*16 + di] = memory[es*16 + di] | r8[al];
         if (--r16[cx]) {
             pc = 0x137b2;
