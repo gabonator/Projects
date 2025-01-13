@@ -1075,7 +1075,7 @@ void cicocontext_t::load(const char* path, const char* file, int size)
     fread(mem, size, 1, f);
     fclose(f);
     headerSize = this->_headerSize;
-    loadAddress = 0x1000; // - 0x0130; //CicoContext::ctx->_cs;
+    loadAddress = this->_loadAddress;
 }
 
 }

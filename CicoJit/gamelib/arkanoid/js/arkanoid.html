@@ -240,7 +240,7 @@ function in8(port)
 var frame = 0;
 function* sync(k)
 {
-  if (frame++%3==0)
+//  if (frame++%3==0)
   {
     memory[0x1b0c*16+0x3259]++;
     memory16set(0x1b0c, 0x325d, memory16get(0x1b0c, 0x325d)+1);

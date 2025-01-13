@@ -1,4 +1,4 @@
-#include "cicoemu.h"
+#include "cicoctx.h"
 using namespace CicoContext;
 
 void sub_1c276();
@@ -3433,7 +3433,7 @@ loc_16bac:
     cx = pop();
     if (--cx)
         goto loc_16bac;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_16bc4:
     goto loc_1c3b0;
@@ -3839,7 +3839,7 @@ loc_16d57:
     cx = pop();
     if (--cx)
         goto loc_16d57;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_16d66:
     goto loc_1c3b0;
@@ -7734,7 +7734,7 @@ void sub_194c4()
     al = memory(ds, 0x90c2);
     if (al)
         goto loc_194cc;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_194cc:
     si = memory16(ds, 0x8bfe);
@@ -7793,7 +7793,7 @@ loc_19527:
     dx |= cx;
     sub_19553();
 loc_19552:
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
     //   gap of 253 bytes
 loc_19650:
@@ -8828,7 +8828,7 @@ loc_1a2af:
     callIndirect(cs, memory16(ds, si));
     goto loc_1a2af;
 loc_1a2c3:
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
 }
 void sub_1a2c4()
 {
@@ -8839,7 +8839,7 @@ void sub_1a2c4()
     dx = memory16(ds, 0x9e55);
     if (dx != 0x0000)
         goto loc_1a2d3;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_1a2d3:
     if (dx != 0x0001)
@@ -8849,17 +8849,17 @@ loc_1a2d3:
     if (memory16(ds, 0x9e53) == 0x0001)
         goto loc_1a2ee;
     sp = memory16(ds, 0x9e51);
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_1a2e8:
     memory16(ds, 0x9e53) = 0x0000;
 loc_1a2ee:
     al &= 0xef;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
     return;
 loc_1a2f1:
     al &= 0xef;
-    assert(pop() == 0x7777);
+    tx = pop(); assert(tx == 0x7777);
 }
 void sub_1a2f6()
 {

@@ -5,6 +5,77 @@
 #define import(name) void name() { ctx->call(#name); }
 #define L(l) ctx->onLine(l);
 
+class safeint16
+{
+public:
+    int v{0};
+    safeint16() = default;
+    safeint16(const safeint16& z)
+    {
+        v = z.v;
+    }
+    operator uint16_t() const
+    {
+        assert(v >= 0 && v <= 0xffff);
+        return v;
+    }
+    void operator=(int n)
+    {
+        v = n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator -=(int n)
+    {
+        v -= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator +=(int n)
+    {
+        v += n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator >>=(int n)
+    {
+        v >>= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator <<=(int n)
+    {
+        v <<= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator |=(int n)
+    {
+        v |= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator &=(int n)
+    {
+        v &= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    void operator ^=(int n)
+    {
+        v ^= n;
+        assert(v >= 0 && v <= 0xffff);
+    }
+    uint16_t operator++(int)
+    {
+        v++;
+        assert(v >= 0 && v <= 0xffff);
+        return v-1;
+    }
+    uint16_t operator--(int)
+    {
+        v--;
+        assert(v >= 0 && v <= 0xffff);
+        return v+1;
+    }
+
+};
+
+//typedef uint16_t safeint16;
+
 namespace CicoContext
 {
 
@@ -21,7 +92,7 @@ public:
       };
     } a, b, c, d, temp;
 
-    uint16_t _si, _di, _bp;
+    safeint16 _si, _di, _bp;
     uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;
@@ -206,10 +277,23 @@ struct DirForward
     {
     }
     template<class T>
-    static T Move(T& i)
+    static uint16_t Move(T& i)
     {
         assert(!flags.direction);
         return i++;
+    }
+};
+
+struct DirBackward
+{
+    static void Assert()
+    {
+    }
+    template<class T>
+    static uint16_t Move(T& i)
+    {
+        assert(flags.direction);
+        return i--;
     }
 };
 
