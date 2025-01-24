@@ -17,6 +17,7 @@
 #include <regex>
 #include <assert.h>
 #include <set>
+#include <cstring>
 
 bool verbose_asm = false;
 bool segofs_in_comment = false;
@@ -1486,6 +1487,12 @@ std::string ToCString(const cs_x86_op& op)
         snprintf(tmp, 32, "0x%04llx", op.imm & 0xffffffff);
         return tmp;
     }
+    if (op.type == X86_OP_IMM && op.size == 0)
+    {
+        char tmp[32];
+        snprintf(tmp, 32, "%d", (int)(op.imm & 0xffffffff));
+        return tmp;
+    }
     if (op.type == X86_OP_MEM)
     {
         char segment[32], offset[32], tmp[64];
@@ -1493,7 +1500,7 @@ std::string ToCString(const cs_x86_op& op)
         snprintf(tmp, 32, "memory%s(%s, %s)", op.size == 2 ? "16" : "", segment, offset);
         return tmp;
     }
-
+    printf("error: %d, %d\n", op.type, op.size);
     assert(0);
     return "?";
 }
@@ -2875,7 +2882,8 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         {
                             if (_coverage)
                             {
-                                text.push_back(format("// coverage: 0x%x-0x%x switch", sw->GetBaseAddress().fileOffset(), sw->GetBaseAddress().fileOffset() + sw->elements.back() * sw->GetSize()));
+                                text.push_back(format("// coverage: 0x%x-0x%x switch sw_%x", sw->GetBaseAddress().fileOffset(), 
+                                    sw->GetBaseAddress().fileOffset() + sw->elements.back() * sw->GetSize(), sw->GetBaseAddress().linearOffset()));
                             }
 
                             for (int i : sw->elements)
@@ -2991,6 +2999,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                             assert(!sw->elements.empty());
                             text.push_back(format("switch (%s)", sw->GetSelector().c_str()));
                             text.push_back("{");
+                            if (_coverage)
+                            {
+                                text.push_back(format("// coverage: 0x%x-0x%x switch sw_", sw->GetBaseAddress().fileOffset(), sw->GetBaseAddress().fileOffset() + sw->elements.back() * sw->GetSize(), sw->GetBaseAddress().linearOffset()));
+                            }
                             for (int i : sw->elements)
                                 text.push_back(sw->GetCase(i));
                             text.push_back("default:");
@@ -3057,6 +3069,10 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                         assert(!sw->elements.empty());
                         text.push_back(format("switch (%s)", selector.c_str()));
                         text.push_back("{");
+                        if (_coverage)
+                        {
+                            text.push_back(format("// coverage: 0x%x-0x%x switch sw_%x", sw->GetBaseAddress().fileOffset(), sw->GetBaseAddress().fileOffset() + sw->elements.back() * sw->GetSize(), sw->GetBaseAddress().linearOffset()));
+                        }
                         for (int i : sw->elements)
                             text.push_back(sw->GetCase(i));
                         text.push_back("default:");
@@ -4049,13 +4065,20 @@ public:
                 for (int i=1; i<argc; i++)
                     fprintf(fout, " %s", argv[i]);
                 fprintf(fout, "\n");
+                fprintf(fout, "// info: entry sub_%x\n", (_loadBase+header->cs)*16+header->ip);
                 fprintf(fout, "// info: linearToFile 0x%x", _linearToFileOffset);
             }
             
             fprintf(fout, R"(
 void start()
 {
-    headerSize = 0x%04x;
+)");
+            if (_coverage)
+            {
+                printf("%s// coverage: 0x%x-0x%x header\n", "    ", 0, (int)sizeof(MZHeader));
+            }
+
+            fprintf(fout, R"(    headerSize = 0x%04x;
     loadAddress = 0x%04x;
     cs = 0x%04x;
     ds = 0x%04x;
@@ -4129,7 +4152,7 @@ void start()
         }
         if (_coverage)
         {
-            printf("%s// coverage: 0x%x-0x%x header\n", _dumpReloc ? "    " : "", 0, (int)sizeof(MZHeader));
+//            printf("%s// coverage: 0x%x-0x%x header\n", _dumpReloc ? "    " : "", 0, (int)sizeof(MZHeader));
             printf("%s// coverage: 0x%x-0x%x reloc\n", _dumpReloc ? "    " : "", header->relocationOffset, header->relocationOffset + header->relocations*4);
         }
         for (int i=0; i<header->relocations; i++)
@@ -4466,10 +4489,10 @@ void start()
         {
             fprintf(fout, "/* Assembly listing of %04x:%04x sub_%x()\n", decl.first.segment, decl.first.offset,
                    decl.first.segment*16+decl.first.offset);
-            fprintf(fout, "            sub_%x PROC\n", decl.first.linearOffset());
+            fprintf(fout, "                            sub_%x PROC\n", decl.first.linearOffset());
             for (const auto& instr : code)
                 instr->Dump();
-            fprintf(fout, "            sub_%x ENDP\n", decl.first.linearOffset());
+            fprintf(fout, "                            sub_%x ENDP\n", decl.first.linearOffset());
             fprintf(fout, "*/\n");
         }
 
