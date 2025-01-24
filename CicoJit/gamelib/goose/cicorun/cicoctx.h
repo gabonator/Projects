@@ -21,7 +21,7 @@ public:
       };
     } a, b, c, d, temp;
 
-    uint16_t _si, _di, _bp;
+    int _si, _di, _bp;
     uint16_t _cs, _ds, _ss, _es, _sp;
 
     int _headerSize;

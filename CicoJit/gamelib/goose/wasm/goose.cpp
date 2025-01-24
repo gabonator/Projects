@@ -490,7 +490,6 @@ loc_1025c:
     sub_12c45();
     bx = 0x8e8a;
 loc_1026c:
-    sync();
     al = memoryAGet(ds, bx + 21);
     if (al != 0x00)
         goto loc_1027c;
@@ -755,7 +754,6 @@ loc_10520:
 void sub_10529()
 {
 loc_10529:
-    sync();
     si = 0x8e8a;
     ah = 0x00;
 loc_1052e:

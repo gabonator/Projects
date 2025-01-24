@@ -1,0 +1,1 @@
+arch -arm64 g++ -std=c++17 `pkg-config --libs --cflags sdl2` *.cpp -o goose

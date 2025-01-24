@@ -1,4 +1,5 @@
-<canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
+<body style="background: black">
+<canvas id="canvas" style="position:relative; left:+100px; width:960px; height:600px;"></canvas><br>
 <script src="resources.js"></script>
 <script src="ega.js"></script>
 <script>
@@ -423,78 +424,6 @@ function movsw_data_data_forward()
   memory[es*16 + di++] = memory[ds*16 + si++];
 }
 
-// bios / psp
-function memoryBiosSet16(seg, ofs, v)
-{
-}
-function memoryBiosGet16(seg, ofs)
-{
-    if (seg == 0x0040 && ofs == 0x0063)
-        return 0x3d4;
-    if (seg == 0x0040 && ofs == 0x0080)
-        return 0x1e;
-    return 0;
-}
-function memoryPspGet16(seg, ofs)
-{
-    if ((seg == 0x01dd || seg == 0x01ed || seg == 0x01d3) && ofs < 256)
-    {
-        if (seg==0x1d3)
-            return memoryBiosGet(seg, ofs) | (memoryBiosGet(seg, ofs) << 8);
-        assert(seg == 0x1dd);
-        switch (ofs)
-        {
-            case 0x02:
-                // Segment of the first byte beyond the memory allocated to the program
-                return 0x9fff;
-            case 0x2c:
-                // Environment segment
-                return 0x1d3;
-            default:
-                assert(0);
-                return 0;
-        }
-
-        assert(0);
-    }
-}
-function memoryBiosGet(seg, ofs)
-{
-    if (seg == 0x1dd && ofs == 0x80)
-        return 0;
-    if (seg == 0x1dd && ofs == 0x81)
-        return 0x0d;
-    if (seg == 0xffff && ofs == 0x000e)
-        return 0xfc;
-    if (seg == 0xf000 && ofs == 0xfffe)
-        return 0xfc; // pc at
-    if (seg == 0x0040 && ofs == 0x0087)
-        return 0x00; // ega active
-    if (seg == 0x0040 && ofs == 0x0088)
-        return 0x09;
-    if (seg == 0x0040 && ofs == 0x0017) 
-        return 0x00; // shift keys
-    if (seg == 0x0040 && ofs == 0x0010)
-        return 0x26;
-    if (seg == 0x0040 && ofs == 0x006c)
-        return (new Date().getTime())/1000/54; // number of ticks since midnight 54ms
-    if (seg == 0x0000 && ofs == 0x0000)
-        return 0x1a;
-    assert(0);
-    return 0;
-}
-function memoryPspGet(seg, ofs)
-{
-    if (seg == 0x1d3)
-    {
-        var env = "PATH=Z:\\" + "\x00" + "COMSPEC=Z:\\COMMAND.COM" + "\x00" +
-          "BLASTER=A220 I7 D1 H5 T6" + "\x00\x00\x01\x00" + "C:\\BUM\\B.EXE" +
-          "\x00\x00\x00\x00\x00\x00\x00";
-        if (ofs<env.length)
-            return env.charCodeAt(ofs);
-        return 0;
-    }
-}
 // dos
 function interrupt(i)
 {
@@ -671,12 +600,6 @@ function in8(port)
 var skipSync = false;
 function* sync(k)
 {
-  // lowers framerate to half during gameplay
-//  if (skipSync)
-//  {
-//    skipSync = false;
-//    return;
-//  }
   yield 0;
 }
 
@@ -692,7 +615,7 @@ setInterval( ()=>
     EGA.access = false;
     display();
   }
-}, 30);
+}, 40);
 
 // mess
 function display()
@@ -721,8 +644,8 @@ function onKey(keyCode, down)
           case 32: memory[0x13a5 * 16 + 0x8e8a+57] = down; break; // space -> enter
           case "N".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+49] = down; break; // space -> enter
           case "M".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+50] = down; break; // space -> enter
-          case "Q".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+16] = down; break; // space -> enter
-          case "Y".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+21] = down; break; // space -> enter
+//          case "Q".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+16] = down; break; // space -> enter
+//          case "Y".charCodeAt(0): memory[0x13a5 * 16 + 0x8e8a+21] = down; break; // space -> enter
 //          case 27: memory[0x1228 * 16 + 0x4d44 + 1] = 1; break; // esc
         }
 }

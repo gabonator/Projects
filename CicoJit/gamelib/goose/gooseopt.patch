@@ -1,71 +1,8 @@
 diff --git a/./gooseopt.clean b/./gooseopt.cpp
-index 262e960..40b1858 100644
+index 125c00e..578c4fb 100644
 --- a/./gooseopt.clean
 +++ b/./gooseopt.cpp
-@@ -3,7 +3,7 @@ using namespace CicoContext;
- 
- void sub_10010();
- 
--void start()
-+void start() // 0000:0000+sync
- {
-     headerSize = 0x0200;
-     loadAddress = 0x1000;
-@@ -210,7 +210,7 @@ void sub_13840();
- void sub_13914();
- void sub_139a3();
- void sub_139b8();
--void sub_10010()
-+void sub_10010() // 1000:0010+sync
- {
-     ax = 0x13a5;
-     ds = ax;
-@@ -265,7 +265,7 @@ loc_1008b:
-     sub_100fd();
-     goto loc_1008b;
- }
--void sub_100a9()
-+void sub_100a9() // 1000:00a9+sync
- {
-     sub_10103();
-     memory(ds, 0x9500) = 0x00;
-@@ -277,7 +277,7 @@ void sub_100a9()
-     sub_13423();
-     sub_121dc();
- }
--void sub_100cf()
-+void sub_100cf() // 1000:00cf+sync
- {
- loc_100cf:
-     sub_101c0();
-@@ -304,7 +304,7 @@ void sub_100fd()
- {
-     memory(ds, 0x0006) = 0x01;
- }
--void sub_10103()
-+void sub_10103() // 1000:0103+sync
- {
-     al = memory(ds, 0x0006);
-     if (al == 0x00)
-@@ -778,14 +778,16 @@ loc_1054a:
-     if (al == 0x00)
-         goto loc_10557;
-     ah = 0x01;
-+    flags.zero = si == memory16(ds, 0x8f0b);
-     if (si != memory16(ds, 0x8f0b))
-         goto loc_1055f;
- loc_10557:
-+    flags.zero = si == 0x8f0a;
-     if (si == 0x8f0a)
-         goto loc_1055f;
-     goto loc_1054a;
- loc_1055f:
--    if (stop(/*1 - je loc_10578*/))
-+    if (flags.zero)
-         goto loc_10578;
-     memory16(ds, 0x8f0b) = si;
-     si -= 0x8e8b;
-@@ -1031,7 +1033,7 @@ loc_1072c:
+@@ -1034,7 +1034,7 @@ loc_1072c:
      ax = 0x0f01;
      out(dx, ax);
      cx = 0x4000;
@@ -74,7 +11,7 @@ index 262e960..40b1858 100644
      ax = 0x8f29;
      memory16(ds, 0x8f25) = ax;
      memory16(ds, 0x8f23) = 0x03f0;
-@@ -1774,7 +1776,7 @@ loc_10d3a:
+@@ -1777,7 +1777,7 @@ loc_10d3a:
      if (bl == memory(cs, 0x0d95))
          goto loc_10d4f;
      out(dx, ax);
@@ -83,7 +20,7 @@ index 262e960..40b1858 100644
  loc_10d4f:
      ah >>= 1;
      if (ah != 0)
-@@ -1786,7 +1788,7 @@ loc_10d56:
+@@ -1789,7 +1789,7 @@ loc_10d56:
      if (bh == memory(cs, 0x0d95))
          goto loc_10d64;
      out(dx, ax);
@@ -92,16 +29,7 @@ index 262e960..40b1858 100644
  loc_10d64:
      ah >>= 1;
      if (ah != 0)
-@@ -4322,7 +4324,7 @@ void sub_122c1()
-     memory16(ds, 0x9534) = 0x0003;
-     return;
- loc_122d4:
--    if (stop(/*1 - je loc_12311*/))
-+    if (ax == 0x0003)
-         goto loc_12311;
-     if (ax == 0x0002)
-         goto loc_122f9;
-@@ -4915,11 +4917,11 @@ void sub_125e3()
+@@ -4917,11 +4917,11 @@ void sub_125e3()
      out(dx, ax);
      cx = 0x0007;
  loc_1261e:
@@ -116,7 +44,7 @@ index 262e960..40b1858 100644
  loc_1262d:
      di += 0x0028;
      if (--cx)
-@@ -5917,8 +5919,8 @@ loc_12d3d:
+@@ -5919,8 +5919,8 @@ loc_12d3d:
      if (bl == 0x02)
          goto loc_12d55;
      out(dx, ax);
@@ -127,7 +55,7 @@ index 262e960..40b1858 100644
  loc_12d55:
      ah >>= 1;
      if (ah != 0)
-@@ -5930,8 +5932,8 @@ loc_12d5c:
+@@ -5932,8 +5932,8 @@ loc_12d5c:
      if (bh == 0x02)
          goto loc_12d6d;
      out(dx, ax);
@@ -138,7 +66,7 @@ index 262e960..40b1858 100644
  loc_12d6d:
      ah >>= 1;
      if (ah != 0)
-@@ -5982,12 +5984,12 @@ void sub_12d9a()
+@@ -5984,12 +5984,12 @@ void sub_12d9a()
  loc_12db8:
      push(di);
      cx = memory16(ss, bp + 8 - 2);
@@ -153,7 +81,7 @@ index 262e960..40b1858 100644
      di = pop();
      di += 0x0028;
      bx--;
-@@ -6506,7 +6508,7 @@ void sub_131a4()
+@@ -6508,7 +6508,7 @@ void sub_131a4()
  loc_131d2:
      push(cx);
      cx = 0x0020;
@@ -162,7 +90,7 @@ index 262e960..40b1858 100644
      di += 0x0008;
      cx = pop();
      if (--cx)
-@@ -6573,7 +6575,7 @@ void sub_13291()
+@@ -6575,7 +6575,7 @@ void sub_13291()
  loc_132b0:
      push(cx);
      cx = 0x0020;
@@ -171,7 +99,7 @@ index 262e960..40b1858 100644
      si += 0x0008;
      di += 0x0008;
      cx = pop();
-@@ -6608,7 +6610,7 @@ void sub_132fe()
+@@ -6610,7 +6610,7 @@ void sub_132fe()
  loc_13326:
      push(cx);
      cx = 0x0020;
@@ -180,16 +108,7 @@ index 262e960..40b1858 100644
      si &= 0x7fff;
      di += 0x0008;
      cx = pop();
-@@ -6618,7 +6620,7 @@ loc_13326:
-     ax = 0x0005;
-     out(dx, ax);
- }
--void sub_1333c()
-+void sub_1333c() // 1000:333c+sync
- {
-     ax = 0x000d;
-     interrupt(0x10);
-@@ -6632,7 +6634,6 @@ void sub_1333c()
+@@ -6634,7 +6634,6 @@ void sub_1333c()
      bx = memory16(ds, 0x94fa);
      memory16(ds, 0x94f8) = bx;
      memory16(ds, 0x94fa) = ax;
@@ -197,19 +116,7 @@ index 262e960..40b1858 100644
      bx = memory16(ds, 0x94fa);
      bx <<= 1;
      bx <<= 1;
-@@ -6647,9 +6648,9 @@ void sub_1333c()
-     al++;
-     out(dx, ax);
-     flags.interrupts = true;
--    sub_133d7();
-+    sync();
- }
--void sub_13383()
-+void sub_13383() // 1000:3383+sync
- {
-     ax = memory16(ds, 0x94f8);
-     bx = memory16(ds, 0x94fa);
-@@ -6667,12 +6668,7 @@ void sub_13383()
+@@ -6669,12 +6668,7 @@ void sub_13383()
      out(dx, ax);
      flags.interrupts = true;
      dx = 0x03da;
@@ -223,7 +130,7 @@ index 262e960..40b1858 100644
  }
  void sub_133b3()
  {
-@@ -6689,25 +6685,15 @@ void sub_133b3()
+@@ -6691,7 +6685,7 @@ void sub_133b3()
      out(dx, ax);
      flags.direction = false;
      cx = 0x0fa0;
@@ -232,10 +139,9 @@ index 262e960..40b1858 100644
      ax = 0x0000;
      out(dx, ax);
      al++;
-     out(dx, ax);
+@@ -6699,17 +6693,7 @@ void sub_133b3()
  }
--void sub_133d7()
-+void sub_133d7() // 1000:33d7+sync
+ void sub_133d7()
  {
 -    dx = 0x03da;
 -loc_133da:
@@ -252,7 +158,7 @@ index 262e960..40b1858 100644
  }
  void sub_133e5()
  {
-@@ -6730,7 +6716,7 @@ loc_13400:
+@@ -6732,7 +6716,7 @@ loc_13400:
      cx = 0x1f40;
  loc_13406:
      lodsb<MemData, DirForward>();
@@ -261,16 +167,7 @@ index 262e960..40b1858 100644
      di++;
      if (--cx)
          goto loc_13406;
-@@ -6748,7 +6734,7 @@ loc_13406:
-     ax = 0x0f07;
-     out(dx, ax);
- }
--void sub_13423()
-+void sub_13423() // 1000:3423+sync
- {
-     ax = 0x0000;
-     sub_133b3();
-@@ -6765,15 +6751,15 @@ void sub_13439()
+@@ -6767,15 +6751,15 @@ void sub_13439()
      di = 0x011c;
      ax = 0xffff;
      cx = 0x0010;
@@ -289,7 +186,7 @@ index 262e960..40b1858 100644
      di += 0x0028;
      if (--cx)
          goto loc_13459;
-@@ -6781,12 +6767,12 @@ loc_13459:
+@@ -6783,7 +6767,7 @@ loc_13459:
      al = 0x80;
      cx = 0x00a2;
  loc_13469:
@@ -298,9 +195,19 @@ index 262e960..40b1858 100644
      di += 0x0028;
      if (--cx)
          goto loc_13469;
- }
--void sub_13472()
-+void sub_13472() // 1000:3472+sync
- {
-     si = 0x0000;
-     bx = memory16(ds, 0x94f2);
+@@ -7147,6 +7131,7 @@ loc_13783:
+     bx = memory16(ss, bp - 10 - 2);
+     di += memory16(ss, bp - 10 - 2);
+ loc_1379d:
++    di &= 0xffff;
+     memory(es, di) = memory(es, di) | al;
+     if (--cx)
+         goto loc_1377c;
+@@ -7172,6 +7157,7 @@ loc_137b2:
+     al = 0x80;
+     di++;
+ loc_137d0:
++    di &= 0xffff;
+     memory(es, di) = memory(es, di) | al;
+     if (--cx)
+         goto loc_137b2;

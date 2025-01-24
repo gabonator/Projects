@@ -653,6 +653,27 @@ public:
     {
         return IsInstruction() && mId == X86_INS_JMP && (mDetail.operands[0].type == X86_OP_MEM || mDetail.operands[0].type == X86_OP_REG);
     }
+    bool IsConditionalJump()
+    {
+        switch (mId)
+        {
+            case X86_INS_JAE:
+            case X86_INS_JA:
+            case X86_INS_JBE:
+            case X86_INS_JB:
+            case X86_INS_JE:
+            case X86_INS_JGE:
+            case X86_INS_JG:
+            case X86_INS_JLE:
+            case X86_INS_JL:
+            case X86_INS_JNE:
+            case X86_INS_JNP:
+            case X86_INS_JNS:
+                return true;
+            default:
+                return false;
+        }
+    }
     bool IsIndirectCall()
     {
         if (!IsInstruction())
@@ -691,6 +712,13 @@ public:
         return fromRelative(mDetail.operands[0].imm);
     }
     /*
+    address_t JumpTarget()
+    {
+     // use NextBranch()
+        assert(IsConditionalJump());
+        return fromRelative(mDetail.operands[0].imm);
+    }*/
+    /*
     address_t Next()
     {
         address_t temp = mNextInstr;
@@ -699,10 +727,6 @@ public:
 
         return temp;
     }*/
-    bool isConditionalBranch()
-    {
-        return false;
-    }
     void Dump() const
     {
         if (mLabel)
@@ -944,12 +968,15 @@ public:
         for( auto i = mInstructions.begin(); i != mInstructions.end(); i++ )
         {
             // instruction before branch
-            if (i->second->NextBranch() == instr->mAddress) // cond
-                targets.push_back(prev3);
-            if (i->second->NextFollowing() != i->second->Next() && i->second->Next() == instr->mAddress) // jmp
-                targets.push_back(prev3);
-            if (i->second->NextFollowing() == instr->mAddress && i->second->mId != X86_INS_JMP) // right before
-                targets.push_back(i->second);
+            if (i->second->mId != X86_INS_RET)
+            {
+                if (i->second->NextBranch() == instr->mAddress) // cond
+                    targets.push_back(prev3);
+                if (i->second->NextFollowing() != i->second->Next() && i->second->Next() == instr->mAddress) // jmp
+                    targets.push_back(prev3);
+                if (i->second->NextFollowing() == instr->mAddress && i->second->mId != X86_INS_JMP) // right before
+                    targets.push_back(i->second);
+            }
             prev3 = i->second;
         }
         return targets;
@@ -976,6 +1003,19 @@ public:
         }
 //        assert(targets.size());
         return targets;
+    }
+    std::shared_ptr<CapInstr> next(const std::shared_ptr<CapInstr>& instr)
+    {
+        for( auto i = mInstructions.begin(); i != mInstructions.end(); i++ )
+        {
+            if (i->second == instr)
+            {
+                i++;
+                assert(i != mInstructions.end());
+                return i->second;
+            }
+        }
+        return {};
     }
     std::shared_ptr<CapInstr> previousInstructionTo(const std::shared_ptr<CapInstr>& instr)
     {
@@ -2793,6 +2833,22 @@ bool DumpCodeAsC(const std::vector<std::shared_ptr<CapInstr>>& code, std::vector
                     std::vector<std::shared_ptr<CapInstr>> targets = tracer.allPathsToSkipInert(instr);
                     if (targets.size() == 1)
                         lastCompare = targets[0];
+                    else if (all(targets, [&](const std::shared_ptr<CapInstr>& i){ return i->mId == X86_INS_CMP; }))
+                    {
+                        all(targets, [&](std::shared_ptr<CapInstr>& i){
+                            std::shared_ptr<CapInstr> ni = tracer.next(i); // we are getting instruction before branch! (cmp->branch)
+                            assert(ni);
+                            if (ni->mId == X86_INS_JE || ni->mId == X86_INS_JNE)
+                                modified |= i->AddInject(inject_t::zero);
+                            else if (ni->mId == X86_INS_JB || ni->mId == X86_INS_JAE)
+                                modified |= i->AddInject(inject_t::carry);
+                            else
+                                assert(0);
+                            return true;
+                        });
+                        instr->mForceFlagCondition = true;
+                        lastCompare = targets[0];
+                    }
                 }
                 {
                     inject_t injectPrev = lastCompare ? lastCompare->mInject : inject_t::none;
@@ -4017,7 +4073,7 @@ int main(int argc, const char * argv[]) {
                 
         if (printctx)
         {
-            fprintf(fout, R"(#include "cicoemu.h"
+            fprintf(fout, R"(#include "cicoctx.h"
 using namespace CicoContext;
 
 )");

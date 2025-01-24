@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "sdl.h"
 #define _HOST
-#include "cicoemu.h"
+#include "cicoctx.h"
 #include "ega.h"
 #include <list>
 //#include "game/game.h"
