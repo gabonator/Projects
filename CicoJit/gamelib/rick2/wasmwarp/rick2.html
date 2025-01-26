@@ -2,7 +2,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style> 
-body {  font-family: 'Poppins', sans-serif; user-select: none;}
+body {  font-family: 'Poppins', sans-serif; user-select: none; background: black}
 .banner {
   display: flex;
   justify-content: space-between;
@@ -12,8 +12,8 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
   color: white;
   font-weight: bold;
   font-size: 1.2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 10px rgba(255, 255, 255, 0.2); 
 }
 .banner .left-text {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -24,6 +24,52 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 .banner .right-text a {
   color: white;
 }
+.fade {opacity:0; transition: opacity 0.5s ease-in-out;}
+.fade.visible {opacity:1}
+</style>
+<style>
+        .overlay {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            right: 80px;
+            bottom: 20px;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        .button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .button:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .space {
+            width: 150px;
+        }
+        .up-arrow {
+            margin-left: 164px; /* Center above the arrows below */
+        }
+        .pressed { background: rgba(255, 255, 255, 0.5); }
+        .hidden { display: none; }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <div class="banner">
@@ -34,11 +80,25 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 </div>
 <br>
 
-<div style="position:relative">
-<canvas id="canvas" width="320" height="200" style="position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px;"></canvas>
-<canvas id="canvas2" width="320" height="200" style="display:none; position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px; opacity:0.3"></canvas>
-<canvas id="canvas3" width="320" height="200" style="display:none; position:absolute; border: 1px solid #d0d0d0; width:640px; height:400px; opacity:0.3"></canvas>
+<div style="position:relative; margin: auto; width:960px">
+<canvas id="canvas" width="320" height="200" style="position:absolute; border: 0px solid #d0d0d0; width:960px; height:600px;"></canvas>
+<canvas id="canvas2" width="320" height="200" style="display:none; position:absolute; border: 0px solid #d0d0d0; width:960px; height:600px; opacity:0.3"></canvas>
+<canvas id="canvas3" width="320" height="200" style="display:none; position:absolute; border: 0px solid #d0d0d0; width:960px; height:600px; opacity:0.3"></canvas>
+<div id="stopwatch" style="position:absolute; right:70px; top:-50px; font-size:80px;" class="fade">&#x23F0;</div>
 </div>
+
+    <div id="overlay" class="overlay hidden">
+        <div class="row">
+            <div id="kbdup" class="button up-arrow">↑</div>
+        </div>
+        <div class="row">
+            <div id="kbdspace" class="button space">Space</div>
+            <div id="kbdleft" class="button">←</div>
+            <div id="kbddown" class="button">↓</div>
+            <div id="kbdright" class="button">→</div>
+        </div>
+    </div>
+
 <div id="info"></div>
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
@@ -58,22 +118,51 @@ var ctx3 = canvas3.getContext('2d');
 var gameLive = new Game();
 var gamePast = new Game();
 var delay = 250;
-var replay = window.location.search.includes("demo=1") ? Path.From(replaylevel1) : null;
+var replay = window.location.search.includes("demo=1") ? Path.From(replayall) : null;
+
+function kbdvis(k)
+{
+  var upd = (e, a) => a ? e.classList.add("pressed") : e.classList.remove("pressed");
+  upd(document.getElementById("kbdright"), k & 1)
+  upd(document.getElementById("kbdleft"), k & 2)
+  upd(document.getElementById("kbddown"), k & 4)
+  upd(document.getElementById("kbdup"), k & 8)
+  upd(document.getElementById("kbdspace"), k & 16)
+  return k;
+}
+
 Promise.all([gameLive.load(), gamePast.load()]).then(() => {
   var gameTimer = setInterval(() => {
-    if (replay && Path.Length(replay) > gameLive.pathLength())
+    if (userShift)
+      document.querySelector("#stopwatch").classList.add('visible')
+    else
+      document.querySelector("#stopwatch").classList.remove('visible')
+
+    if (replay)
     {
-      gameLive.step(Path.Extract(replay, gameLive.pathLength()));
+      if (userShift)
+      {
+        for (var r=0; r<100 && Path.Length(replay) > gameLive.pathLength(); r++)
+          gameLive.step(Path.Extract(replay, gameLive.pathLength()));
+      }
+      if (Path.Length(replay) > gameLive.pathLength())
+        gameLive.step(kbdvis(Path.Extract(replay, gameLive.pathLength())));
+      else
+        replay = null;
+
+      if (userState)
+        replay = null;
+
       gameLive.render(ctx);
     } else
-    if (userReverse)
+    if (userShift)
     {
       var append = [];
-      var passed = (new Date().getTime() - userReverse)/40;
+      var passed = (new Date().getTime() - userShift)/40;
       var pastFrames = gamePast.pathLength();
-      var targetTimeA = userReverseFrames+curve(passed)-pastFrames;
-      var targetTimeB = userReverseFrames+curve(passed+2)-pastFrames;
-      var targetTimeC = userReverseFrames+curve(passed+4)-pastFrames;
+      var targetTimeA = userShiftFrames+curve(passed)-pastFrames;
+      var targetTimeB = userShiftFrames+curve(passed+2)-pastFrames;
+      var targetTimeC = userShiftFrames+curve(passed+4)-pastFrames;
       for (let i=0; i<targetTimeA; i++)
         append.push(Path.Extract(gameLive.path, pastFrames+i));
       gameLive.copy(gamePast);
@@ -97,7 +186,7 @@ Promise.all([gameLive.load(), gamePast.load()]).then(() => {
       canvas2.style.display = "none";
       canvas3.style.display = "none";
 
-      gameLive.step(userState);
+      gameLive.step(kbdvis(userState));
       gameLive.render(ctx);
       for (var i = gamePast.pathLength(); i < gameLive.pathLength() - delay; i++)
         gamePast.step(Path.Extract(gameLive.path, i))

@@ -1,6 +1,6 @@
 var userState = 0;
-var userReverse = 0;
-var userReverseFrames = -1;
+var userShift = 0;
+var userShiftFrames = -1;
 
 document.onkeydown = evt => {
   if (onKey(evt.keyCode, 1))
@@ -22,11 +22,12 @@ function onKey(code, pressed)
     case 39: cbit(1, pressed); break;
     case 32: cbit(16, pressed); break;
     case 16: {
-      if (!userReverse && pressed)
-        userReverseFrames = gameLive.pathLength();
-      userReverse = pressed ? new Date().getTime() : 0;
+      if (!userShift && pressed)
+        userShiftFrames = gameLive.pathLength();
+      userShift = pressed ? new Date().getTime() : 0;
       break;
     }
+    case "D".charCodeAt(0): document.querySelector("#overlay").classList.remove("hidden"); break;
     default:
       return false;
   }

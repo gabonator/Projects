@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <cassert>
+#include <string.h>
+#include <stdio.h>
 #include "sdl.h"
 #include "controls.h"
 
@@ -24,10 +26,14 @@ void apiPrint(char* msg)
 
 int apiRead(char* name, int readofs, int readlen, void* targetofs)
 {
-    char fullName[128];
-    strcpy(fullName, "../dos/");
-    strcat(fullName, name);
-    FILE* f = fopen(fullName, "rb");
+    char path[128] = "../dos/";
+    strcat(path, name);
+    FILE* f = fopen(path, "rb");
+    if (!f)
+    {
+      printf("Error\n");
+      exit(0);
+    }
     fseek(f, readofs, SEEK_SET);
     int r = fread(targetofs, readlen, 1, f);
     fclose(f);
