@@ -50,7 +50,6 @@ if not exist port (
   curl https://raw.githubusercontent.com/gabonator/Projects/refs/heads/master/CicoJit/gamelib/goose/sdl/ega.h -o port/ega.h
   curl https://raw.githubusercontent.com/gabonator/Projects/refs/heads/master/CicoJit/gamelib/goose/sdl/controls.h -o port/controls.h
   curl https://raw.githubusercontent.com/gabonator/Projects/refs/heads/master/CicoJit/gamelib/goose/sdl/cicoctx.h -o port/cicoctx.h
-  cd ..
 )
 
 if not exist port\goose.cpp (
@@ -61,6 +60,7 @@ if not exist sdl2-2.30.11 (
   curl -L https://github.com/libsdl-org/SDL/releases/download/release-2.30.11/SDL2-devel-2.30.11-mingw.zip -o download/sdl2.zip
   tar -xvzf download/sdl2.zip
 )
+
 if not exist bin/goose.exe (
   cd port
   g++ main.cpp goose.cpp wasmhost.cpp -I ../SDL2-2.30.11/i686-w64-mingw32/include/SDL2 -L ../SDL2-2.30.11/i686-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -o ../bin/goose
@@ -68,6 +68,7 @@ if not exist bin/goose.exe (
   copy "..\mingw32\bin\libstdc++-6.dll" ..\bin
   copy ..\mingw32\bin\libwinpthread-1.dll ..\bin
   copy ..\SDL2-2.30.11\i686-w64-mingw32\bin\SDL2.dll ..\bin
+  cd ..
 )
 
 cd bin
