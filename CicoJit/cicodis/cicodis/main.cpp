@@ -4041,6 +4041,7 @@ int main(int argc, const char * argv[]) {
     {
         if (!executable)
         {
+            printf("Cicojit Disassembler - 2025 Gabriel Valky\n");
             printf("No exe file specified.\n");
             return 0;
         }

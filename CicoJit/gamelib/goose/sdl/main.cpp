@@ -1,3 +1,6 @@
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <stdint.h>
 #include <cassert>
 #include <string.h>
@@ -47,7 +50,11 @@ void emscripten_sleep(int)
     mSdl.Loop();
 }
 
+#ifndef _WIN32
 int main(int argc, const char * argv[])
+#else
+int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#endif
 {
     mSdl.Init();
     appLoop();

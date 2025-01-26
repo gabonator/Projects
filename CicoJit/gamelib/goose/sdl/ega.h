@@ -1,10 +1,3 @@
-extern "C" {
-  int sprintf ( char * str, const char * format, ... );
-  void apiPrint(char* msg);
-  int apiRead(char* name, int readofs, int readlen, void* targetofs);
-};
-
-
 class CVideoAdapter
 {
 public:
