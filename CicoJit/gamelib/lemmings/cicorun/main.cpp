@@ -32,6 +32,7 @@ int loadAddress = 0;
 
 std::list<char> keyBuffer;
 int newkey = -1;
+void sub_13e6f();
 
 void onMouseMove(int x, int y)
 {
@@ -45,7 +46,17 @@ void onMouseMove(int x, int y)
 }
 void onMouseButton(int b)
 {
-    CicoContext::ctx->memory16(0x19a9, 0x14) = b;
+    // sub_117c7
+    //CicoContext::ctx->memory16(0x19a9, 0x0014) = b;
+        CicoContext::ctx->memory16(0x19a9, 0x0014) = b;
+        //CicoContext::ctx->memory8(0x19a9, 0x1fd0) = 0;
+        CicoContext::ctx->push(CicoContext::ctx->a.r16);
+        CicoContext::ctx->push(CicoContext::ctx->a.r16);
+        sub_13e6f();
+        CicoContext::ctx->a.r16 = CicoContext::ctx->pop();
+        CicoContext::ctx->b.r16 = CicoContext::ctx->pop();
+        //CicoContext::ctx->memory16(0x19a9, 0x0014) = 0;
+    //CicoContext::ctx->memory16(0x19a9, 0x14) = b;
 }
 
 void _sync()
@@ -380,7 +391,7 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
-    if (ofs == 0x1fd0)
+    if (seg*16+ofs == 0x19a90 + 0x1f6b)
     {
         int f = 9;
     }
@@ -472,7 +483,7 @@ void cicocontext_t::_int(int i)
 {
     static FILE* files[32] = {0};
     static int curhandle = 0;
-    if (i == 0x10 && ctx->a.r16 == 0x1012)
+    if (i == 0x10)
     {
         int f = 9;
     }
@@ -605,7 +616,9 @@ void cicocontext_t::_int(int i)
             case 0x02: // 80x25 16 shades of gray text (CGA,EGA,MCGA,VGA)?
 
             case 1:
-                mVideo = &mEga; break;
+                mVideo = &mEga;
+                mEga.rowOffset = 40;
+                break;
             case 4:
                 mVideo = &mCga; break;
             case 3: // exit
