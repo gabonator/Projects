@@ -41,6 +41,7 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
 <script src="wasmapp.js"></script>
+<!--<script src="touch.js"></script>-->
 <script>
 "use strict"
 var speed = 40, startupLevel = 30;
@@ -86,7 +87,10 @@ game.load().then(() => {
 
   canvas.addEventListener('mousemove', e => game.symbols.lemmingsMouse(e.offsetX/1.5, e.offsetY/1.5), false);
   canvas.addEventListener('mousedown', e => game.symbols.lemmingsButton(1), false);
-  canvas.addEventListener('mouseup', e => game.symbols.lemmingsButton(0), false);
+  canvas.addEventListener('mouseup', e => game.symbols.lemmingsButton(0), false)
+  canvas.addEventListener("touchmove", e => game.symbols.lemmingsMouse(e.touches[0].clientX/1.5, e.touches[0].clientY/1.5), false);
+  canvas.addEventListener('touchstart', e => game.symbols.lemmingsButton(1), false);
+  canvas.addEventListener('touchend', e => game.symbols.lemmingsButton(0), false)
 
   var gameTimer = setInterval(() => {
     game.asyncifyResume();
