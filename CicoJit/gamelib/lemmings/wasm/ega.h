@@ -640,9 +640,11 @@ bool blit(uint32_t* pixels)
 //  if (!modified)
 //    return false;
 //  modified = false;
-    uint8_t* planes = (uint8_t*)egamemory+0;//cfgAddr*4;
+
+    uint8_t* planes = (uint8_t*)egamemory;
     if (rowOffset == 40)
     { 
+        //planes += cfgAddr*4;
         for (int x=0; x<640*25; x++)
            *pixels++ = 0;
         for (int y=0; y<350; y++)

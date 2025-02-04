@@ -55,6 +55,24 @@ for (var att of s.split("&"))
   }
 }
 
+function status()
+{
+  let memoryAGet = x => game.memoryBuffer[0x19a90 + x];
+  if (memoryAGet(0x20aa) < 0x30 || memoryAGet(0x20aa) > 0x39)
+    return;
+
+  return {
+    timeout: String.fromCharCode(memoryAGet(0x20a7))+
+      String.fromCharCode(memoryAGet(0x20a8))+
+      String.fromCharCode(memoryAGet(0x20a9))+
+      String.fromCharCode(memoryAGet(0x20aa)),
+    out: memoryAGet(0x0045),
+    total: memoryAGet(0x0047),
+    saved: memoryAGet(0x0046),
+    avail: [0x007c, 0x006d, 0x0079, 0x0073, 0x0076, 0x006a, 0x007f, 0x0070].map(x=>memoryAGet(x)).join(",")
+  };
+}
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -78,5 +96,10 @@ game.load().then(() => {
       this.ctx.putImageData(img, 0, 0);
     }
   }, 40);
+  setInterval(()=>{
+    var s = status();
+    if (s)
+      document.querySelector("#status").innerHTML = `out: ${s.out}/${s.total} saved: ${s.saved} timeout: ${s.timeout} avail: ${s.avail}`
+  }, 1000);
 })
 </script>
