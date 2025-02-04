@@ -1,0 +1,149 @@
+diff --git a/./lemmings.clean b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/lemmings/cicorun/./lemi.cpp
+index 676d668..89ec0dd 100644
+--- a/./lemmings.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/lemmings/cicorun/./lemi.cpp
+@@ -1,6 +1,8 @@
+ #include "cicoemu.h"
+ using namespace CicoContext;
+ 
++const int lemmingsStartupLevel = 20;
++
+ void sub_10000();
+ void fixReloc(uint16_t seg);
+ 
+@@ -349,6 +351,7 @@ void sub_10000()
+     cx = 0x2012;
+     al = 0;
+     rep_stosb<MemAuto, DirAuto>();
++    memoryASet(ds, 0x1f6b, lemmingsStartupLevel); // level
+     ax = pop();
+     memoryASet16(ds, 0x1ff6, ax);
+     sub_104f9();
+@@ -395,7 +398,7 @@ void sub_10000()
+     interrupt(0x10);
+     memoryASet(ds, 0x1fe1, al);
+     memoryASet(ds, 0x1fe2, bh);
+-    sub_1054e();
++//    sub_1054e(); // skip adlib
+     sub_11007();
+     sub_10f08();
+     memoryASet(cs, 0x83be, 0xff);
+@@ -479,26 +482,26 @@ loc_10164:
+     cx = memoryAGet16(ds, 0x1ffe);
+     dx = memoryAGet16(ds, 0x2000);
+     memoryASet(ds, 0x1fcf, 0x00);
+-loc_10171:
+-    cx--;
+-    if (cx != 0)
+-        goto loc_10179;
+-    if (dx == 0)
+-        goto loc_10183;
+-    dx--;
+-loc_10179:
+-    if (memoryAGet(ds, 0x1fcf) != 0xff)
+-        goto loc_10171;
++//loc_10171:
++//    cx--;
++//    if (cx != 0)
++//        goto loc_10179;
++//    if (dx == 0)
++//        goto loc_10183;
++//    dx--;
++//loc_10179:
++//    if (memoryAGet(ds, 0x1fcf) != 0xff)
++//        goto loc_10171;
+     goto loc_10186;
+ loc_10183:
+     sub_11644();
+ loc_10186:
+-    al = memoryAGet(ds, 0x1fcd);
+-    cl = 0x04;
+-    if ((char)al <= (char)cl)
+-        goto loc_10164;
++//    al = memoryAGet(ds, 0x1fcd);
++//    cl = 0x04;
++//    if ((char)al <= (char)cl)
++//        goto loc_10164;
+     memoryASet(ds, 0x1fcd, 0x00);
+-    memoryASet(ds, 0x1fd0, 0x00);
++//    memoryASet(ds, 0x1fd0, 0x00);
+     memoryASet(ds, 0x1fd3, memoryAGet(ds, 0x1fd3) + 1);
+     sub_1031e();
+     sub_14085();
+@@ -924,6 +927,7 @@ loc_147a9:
+     if (ax & 0x0007)
+         goto loc_147a9;
+ loc_147b1:
++    sync();
+     ax = memoryAGet16(ds, 0x0014);
+     if (ax & 0x0001)
+         goto loc_147d7;
+@@ -1286,18 +1290,18 @@ loc_10480:
+     dx = 0;
+     memoryASet(ds, 0x1fcf, 0x00);
+ loc_104aa:
+-    sync();
+-    if (memoryAGet(ds, 0x1fcf) != 0xff)
+-        goto loc_104aa;
++//    sync();
++//    if (memoryAGet(ds, 0x1fcf) != 0xff)
++//        goto loc_104aa;
+     memoryASet(ds, 0x1fcf, 0x00);
+-loc_104b6:
+-    cx--;
+-    if (cx != 0)
+-        goto loc_104ba;
+-    dx--;
+-loc_104ba:
+-    if (memoryAGet(ds, 0x1fcf) != 0xff)
+-        goto loc_104b6;
++//loc_104b6:
++//    cx--;
++//    if (cx != 0)
++//        goto loc_104ba;
++//    dx--;
++//loc_104ba:
++//    if (memoryAGet(ds, 0x1fcf) != 0xff)
++//        goto loc_104b6;
+     flags.carry = (cx + cx) >= 0x10000;
+     cx += cx;
+     dx += dx + flags.carry;
+@@ -1447,7 +1451,8 @@ void sub_1062b()
+         goto loc_10635;
+     goto loc_10e66;
+ loc_10635:
+-    sub_1063e();
++//    sub_1063e();
++    flags.carry = false;
+     if (!flags.carry)
+         goto loc_1063d;
+     goto loc_10edf;
+@@ -3425,7 +3430,6 @@ loc_11e11:
+     interrupt(0x21);
+     si = pop();
+     di = pop();
+-    stop(/*inject ret*/);
+ }
+ void sub_11e1c()
+ {
+@@ -8162,6 +8166,7 @@ loc_14668:
+     if (!flags.zero)
+         goto loc_14668;
+ loc_14680:
++    sync();
+     sub_146b9();
+     ax = memoryAGet16(ds, 0x0014);
+     if (ax & 0x0007)
+@@ -16449,11 +16454,11 @@ void sub_17c67()
+     dx >>= cl;
+     dx &= 0x00c0;
+     dx |= 0x000f;
++    flags.carry = false;
+     if (!(dx & 0x0040))
+         goto loc_17c7f;
+     dx |= 0x0f00;
+ loc_17c7f:
+-    stop(/*carry2*/);
+     ax = rcl(ax, 0x0001);
+     if (!flags.carry)
+         goto loc_17c87;
