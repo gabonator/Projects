@@ -26,6 +26,7 @@ public:
 
     int _headerSize;
     int _loadAddress;
+    int _endAddress;
     bool interrupts, direction, carry, zero /*, sign*/;
 
     virtual void memoryASet8(int seg, int ofs, uint8_t v);
@@ -110,6 +111,7 @@ public:
 #define tx ctx->temp.r16
 #define headerSize ctx->_headerSize
 #define loadAddress ctx->_loadAddress
+#define endAddress ctx->_endAddress
 
 #define memory ctx->memory8
 #define memory16 ctx->memory16

@@ -30,7 +30,7 @@ extern unsigned char font[2048];
 int headerSize = 0;
 int loadAddress = 0;
 
-std::list<char> keyBuffer;
+std::list<char> keyBuffer = {0x31, 0x31};
 int newkey = -1;
 void sub_13e6f();
 
@@ -50,7 +50,7 @@ void onMouseButton(int b)
     //CicoContext::ctx->memory16(0x19a9, 0x0014) = b;
         CicoContext::ctx->memory16(0x19a9, 0x0014) = b;
         //CicoContext::ctx->memory8(0x19a9, 0x1fd0) = 0;
-        CicoContext::ctx->push(CicoContext::ctx->a.r16);
+        CicoContext::ctx->push(CicoContext::ctx->b.r16);
         CicoContext::ctx->push(CicoContext::ctx->a.r16);
         sub_13e6f();
         CicoContext::ctx->a.r16 = CicoContext::ctx->pop();
@@ -253,6 +253,8 @@ uint8_t memoryBiosGet8(int seg, int ofs)
         return 0x00;
     if (seg == 0x0000 && ofs == 0x0484)
         return 40;
+    if (seg == 0x0ff0 && ofs == 0x0080)
+        return 0; // psp
     assert(0);
     return 0;
 }
@@ -328,6 +330,7 @@ namespace CicoContext
 
 uint8_t cicocontext_t::memoryAGet8(int seg, int ofs)
 {
+//    assert(seg >= 0x1000 && seg < 0xe000);
     if (seg == 0xf000)
     {
         int f= 9 ;
@@ -375,6 +378,7 @@ void cicocontext_t::memoryBiosSet16(int seg, int ofs, uint16_t val)
 
 uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 {
+//    assert(seg >= 0x1000 && seg < 0xe000);
 //    assert(seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0 && ofs <= 0xffff);
     ofs &= 0xffff;
@@ -391,6 +395,7 @@ uint16_t cicocontext_t::memoryAGet16(int seg, int ofs)
 
 void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 {
+    assert(seg >= 0x1000 && seg < 0xe000);
     if (seg*16+ofs == 0x19a90 + 0x1f6b)
     {
         int f = 9;
@@ -410,6 +415,7 @@ void cicocontext_t::memoryASet8(int seg, int ofs, uint8_t val)
 
 void cicocontext_t::memoryASet16(int seg, int ofs, uint16_t val)
 {
+//    assert(seg >= 0x1000 && seg < 0xe000);
 //    assert(seg >= 0x01ed && seg < 0xa000);
 //    assert(ofs >= 0x0000 && ofs <= 0xffff);
 
@@ -481,16 +487,21 @@ void cicocontext_t::memoryVideoSet16(int seg, int ofs, uint16_t data)
 
 void cicocontext_t::_int(int i)
 {
-    static FILE* files[32] = {0};
+    static FILE* files[128] = {0};
     static int curhandle = 0;
     if (i == 0x10)
     {
+        printf("EGA int ax=%x\n", ctx->a.r16);
         int f = 9;
     }
     if (i == 0x12)
     {
         ctx->a.r16 = 0x800;
         return;
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x07)
+    {
+        int f = 9;
     }
     if (i == 0x21 && ctx->a.r8.h == 0x09)
     {
@@ -542,6 +553,7 @@ void cicocontext_t::_int(int i)
         //assert(f == nullptr); // TODO multi files!
         ctx->a.r16 = curhandle + 10;
         
+        assert(curhandle < sizeof(files)/sizeof(files[0]));
         files[curhandle] = fopen(fullname, "rb");
         if(!files[curhandle])
         {
@@ -685,12 +697,15 @@ void cicocontext_t::_int(int i)
         return;
     if (i == 0x21 && ctx->a.r8.h == 0x4a)
     {
+        ctx->_endAddress = ctx->_loadAddress + ctx->b.r16;
         ctx->carry = false;
         return;
     }
     if (i == 0x21 && ctx->a.r8.h == 0x48)
     {
-        static int freeMem = 0x5000;
+        //static int freeMem = 0x5000;
+//        static int freeMem = 0x2800;
+        int& freeMem = ctx->_endAddress;
         // _bx size
         printf("malloc %d bytes -> %04x:0000\n", ctx->b.r16, freeMem);
         ctx->a.r16 = freeMem;
@@ -980,6 +995,11 @@ void cicocontext_t::_int(int i)
     }
     if (i == 0x61 || i == 0x60)
     {
+        return;
+    }
+    if (i == 0x21 && ctx->a.r8.h == 0x1b)
+    {
+        ctx->a.r8.l = 0x80;
         return;
     }
     printf("int %d\n", i);

@@ -1,7 +1,8 @@
 #include "cicoemu.h"
-#include <stdio.h>
 using namespace CicoContext;
+
 const int lemmingsStartupLevel = 0;
+
 void sub_10000();
 void fixReloc(uint16_t seg);
 
@@ -9,14 +10,14 @@ void start()
 {
     headerSize = 0x0120;
     loadAddress = 0x1000;
+    endAddress = 0x2460;
     cs = 0x1000;
     ds = 0x0ff0;
     es = 0x0ff0;
     ss = 0x243e;
     sp = 0x4af4;
-    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/lemmings/dos/", "VGALEMMI.EXE", 83194);
+    load("/Users/gabrielvalky/Documents/git/Projects/CicoJit/gamelib/lemmings/dos", "VGALEMMI.EXE", 83194);
     fixReloc(cs);
-
     sub_10000();
 }
 void fixReloc(uint16_t seg)
@@ -85,7 +86,6 @@ void fixReloc(uint16_t seg)
     memory16(0x0000 + seg, 0x9935) += seg; // 09a9 -> 19a9
     memory16(0x0000 + seg, 0x9953) += seg; // 09a9 -> 19a9
 }
-
 void sub_10000();
 void sub_1031e();
 void sub_103c1();
@@ -99,6 +99,7 @@ void sub_1063e();
 void sub_10659();
 void sub_10ec2();
 void sub_10f08();
+void sub_10f6f();
 void sub_10fa0();
 void sub_10fb2();
 void sub_10ff8();
@@ -118,6 +119,8 @@ void sub_115ad();
 void sub_11602();
 void sub_11644();
 void sub_116a9();
+void sub_117c7();
+void sub_118b2();
 void sub_11916();
 void sub_1197d();
 void sub_11a7b();
@@ -153,9 +156,12 @@ void sub_1394f();
 void sub_139ce();
 void sub_13ac8();
 void sub_13cde();
+void sub_13e6f();
 void sub_14085();
 void sub_1410f();
 void sub_1417b();
+void sub_1418c();
+void sub_14252();
 void sub_14334();
 void sub_14359();
 void sub_14386();
@@ -198,6 +204,7 @@ void sub_14ff8();
 void sub_15017();
 void sub_15019();
 void sub_15028();
+void sub_1503b();
 void sub_15042();
 void sub_151a2();
 void sub_152f4();
@@ -212,6 +219,7 @@ void sub_153fc();
 void sub_153fe();
 void sub_15425();
 void sub_15447();
+void sub_15473();
 void sub_1548c();
 void sub_154c4();
 void sub_1553d();
@@ -226,6 +234,7 @@ void sub_1570c();
 void sub_15726();
 void sub_157d1();
 void sub_15827();
+void sub_1587f();
 void sub_158d2();
 void sub_159bb();
 void sub_15ac1();
@@ -243,6 +252,15 @@ void sub_15f0f();
 void sub_15fac();
 void sub_1606b();
 void sub_16141();
+void sub_16170();
+void sub_164d9();
+void sub_165d8();
+void sub_166d7();
+void sub_16817();
+void sub_16957();
+void sub_16a97();
+void sub_16bdb();
+void sub_16cfc();
 void sub_16e83();
 void sub_16f7b();
 void sub_16fe2();
@@ -280,1572 +298,34 @@ void sub_18808();
 void sub_18822();
 void sub_19967();
 void sub_19a15();
-void sub_16170();
-
 
 #ifdef callIndirect
 #undef callIndirect
 #endif
 
-void sub_14d78()
-{
-    if (al == 0x20)
-        return;
-    al -= 0x21;
-    ah = 0;
-    ax += ax;
-    ax += ax;
-    ax += ax;
-    ax += ax;
-    ax += ax;
-    si = ax;
-    ax += ax;
-    si += ax;
-    si += 0x5bc0;
-    di = si;
-    di += 0x0040;
-    bx = memoryAGet16(ds, 0x1fee);
-    bx += 0x1000;
-    memoryASet16(ds, 0x1fe4, bx);
-    bl = ch;
-    bh = 0;
-    al = cl;
-    ah = 0;
-    cl = 0x04;
-    bx <<= cl;
-    ax <<= cl;
-    cl = 0x10;
-    ch = 0x03;
-    dx = 0x0010;
-    push(bp);
-    push(cs);
-    cs = 0x1000;
-    sub_18822();
-    assert(cs == 0x1000);
-    bp = pop();
-}
-
-void sub_1503b()
-{
-    goto loc_1503b;
-loc_14d4d:
-    lodsb<MemAuto, DirAuto>();
-    if (al == 0)
-        goto loc_14d77;
-    cl = al;
-    cl--;
-    lodsb<MemAuto, DirAuto>();
-    ch = al;
-    lodsb<MemAuto, DirAuto>();
-    if (al != 0)
-        goto loc_14d63;
-    bp = 0x0002;
-    goto loc_14d65;
-loc_14d63:
-    bp = 0;
-loc_14d65:
-    lodsb<MemAuto, DirAuto>();
-    if (al == 0x0d)
-        goto loc_14d4d;
-    push(cx);
-    push(bx);
-    push(si);
-    sub_14d78();
-    si = pop();
-    bx = pop();
-    cx = pop();
-    cl++;
-    goto loc_14d65;
-loc_14d77:
-    return;
-    //   gap of 707 bytes
-loc_1503b:
-    si = 0x4def;
-    goto loc_14d4d;
-}
-
-void sub_16957()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    bp = 0x000e;
-loc_16992:
-    push(bp);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_169b6;
-loc_169aa:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_169aa;
-loc_169b6:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    bp = pop();
-    bp--;
-    if (bp != 0)
-        goto loc_16992;
-    di = pop();
-    push(di);
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000e;
-loc_16a24:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16a39;
-loc_16a31:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16a31;
-loc_16a39:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_16a24;
-    di = pop();
-    dx = 0x03c4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000e;
-loc_16a64:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16a79;
-loc_16a71:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16a71;
-loc_16a79:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_16a64;
-    ds = pop();
-}
-void sub_165d8()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    bp = 0x000d;
-loc_16613:
-    push(bp);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16637;
-loc_1662b:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_1662b;
-loc_16637:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    bp = pop();
-    bp--;
-    if (bp != 0)
-        goto loc_16613;
-    di = pop();
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000d;
-loc_166a4:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_166b9;
-loc_166b1:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_166b1;
-loc_166b9:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_166a4;
-    ds = pop();
-}
-void sub_16a97()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    ax = 0x0010;
-loc_16ad2:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16af6;
-loc_16aea:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16aea;
-loc_16af6:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16ad2;
-    di = pop();
-    push(di);
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    ax = 0x0010;
-loc_16b64:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16b7a;
-loc_16b72:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16b72;
-loc_16b7a:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16b64;
-    di = pop();
-    dx = 0x03c4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    ax = 0x0010;
-loc_16ba6:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16bbc;
-loc_16bb4:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16bb4;
-loc_16bbc:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16ba6;
-    ds = pop();
-}
-
-void sub_16bdb()
-{
-    push(ds);
-    dx = 0x03c4;
-    ax = 0x0f02;
-    out(dx, ax);
-    memoryASet16(ss, 0x0008, ax);
-    dx = 0x03ce;
-    ax = 0;
-    out(dx, ax);
-    memoryASet16(ss, 0x000a, ax);
-    ax = 0x0e01;
-    out(dx, ax);
-    memoryASet16(ss, 0x000c, ax);
-    ax = 0x0005;
-    out(dx, ax);
-    memoryASet16(ss, 0x0000, ax);
-    ax = 0x0003;
-    out(dx, ax);
-    memoryASet16(ss, 0x0002, ax);
-    ds = cx;
-    cx = 0xa000;
-    es = cx;
-    bp = di;
-    cx = 0x0020;
-loc_16c15:
-    push(cx);
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    cl = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0027;
-    cx = pop();
-    cx--;
-    if (cx == 0)
-        goto loc_16c7c;
-    goto loc_16c15;
-loc_16c7c:
-    di = bp;
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    cx = 0x0020;
-loc_16ca3:
-    push(cx);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0027;
-    cx = pop();
-    if (--cx)
-        goto loc_16ca3;
-    di = bp;
-    dl = 0xc4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    cx = 0x0020;
-loc_16cd6:
-    push(cx);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0027;
-    cx = pop();
-    if (--cx)
-        goto loc_16cd6;
-    ds = pop();
-}
-void sub_164d9()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    bp = 0x000c;
-loc_16514:
-    push(bp);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16538;
-loc_1652c:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_1652c;
-loc_16538:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    bp = pop();
-    bp--;
-    if (bp != 0)
-        goto loc_16514;
-    di = pop();
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000c;
-loc_165a5:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_165ba;
-loc_165b2:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_165b2;
-loc_165ba:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_165a5;
-    ds = pop();
-}
-void sub_166d7()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    bp = 0x000a;
-loc_16712:
-    push(bp);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16736;
-loc_1672a:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_1672a;
-loc_16736:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    bp = pop();
-    bp--;
-    if (bp != 0)
-        goto loc_16712;
-    di = pop();
-    push(di);
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000a;
-loc_167a4:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_167b9;
-loc_167b1:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_167b1;
-loc_167b9:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_167a4;
-    di = pop();
-    dx = 0x03c4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000a;
-loc_167e4:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_167f9;
-loc_167f1:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_167f1;
-loc_167f9:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_167e4;
-    ds = pop();
-}
-void sub_16817()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    bp = 0x000d;
-loc_16852:
-    push(bp);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16876;
-loc_1686a:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_1686a;
-loc_16876:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    bp = pop();
-    bp--;
-    if (bp != 0)
-        goto loc_16852;
-    di = pop();
-    push(di);
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000d;
-loc_168e4:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_168f9;
-loc_168f1:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_168f1;
-loc_168f9:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_168e4;
-    di = pop();
-    dx = 0x03c4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    bp = 0x000d;
-loc_16924:
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16939;
-loc_16931:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16931;
-loc_16939:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    bp--;
-    if (bp != 0)
-        goto loc_16924;
-    ds = pop();
-}
-void sub_16cfc()
-{
-    push(ds);
-    ds = cx;
-    tx = dx;
-    dx = cx;
-    cx = tx;
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xa000;
-    es = ax;
-    push(di);
-    ax = 0x000e;
-loc_16d37:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    push(si);
-    tl = al;
-    al = ah;
-    ah = tl;
-    si = ax;
-    ax = memoryAGet16(ds, bx);
-    bx += 0x0002;
-    tl = al;
-    al = ah;
-    ah = tl;
-    bp = ax;
-    ch = cl;
-    ax = 0;
-    if (ch == 0)
-        goto loc_16d5b;
-loc_16d4f:
-    flags.carry = si & 1;
-    si >>= 1;
-    al = rcr(al, 0x01);
-    flags.carry = bp & 1;
-    bp >>= 1;
-    ah = rcr(ah, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16d4f;
-loc_16d5b:
-    push(bx);
-    push(cx);
-    bx = bp;
-    cx = si;
-    bp = ax;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    al = 0x08;
-    ah = bl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = cl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    bx = bp;
-    al = 0x08;
-    ah = bh;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = pop();
-    bx = pop();
-    si = pop();
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16d37;
-    di = pop();
-    push(di);
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    ax = 0x000e;
-loc_16dc9:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16ddf;
-loc_16dd7:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16dd7;
-loc_16ddf:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16dc9;
-    di = pop();
-    push(di);
-    dx = 0x03c4;
-    ax = 0x0402;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    ax = 0x000e;
-loc_16e0c:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16e22;
-loc_16e1a:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16e1a;
-loc_16e22:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16e0c;
-    di = pop();
-    dx = 0x03c4;
-    ax = 0x0802;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    ax = 0x000e;
-loc_16e4e:
-    push(ax);
-    lodsw<MemAuto, DirAuto>();
-    tl = al;
-    al = ah;
-    ah = tl;
-    bx = ax;
-    ch = cl;
-    al = 0;
-    if (ch == 0)
-        goto loc_16e64;
-loc_16e5c:
-    flags.carry = bx & 1;
-    bx >>= 1;
-    al = rcr(al, 0x01);
-    ch--;
-    if (ch != 0)
-        goto loc_16e5c;
-loc_16e64:
-    ch = al;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = bh;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = bl;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ax = pop();
-    ax--;
-    if (ax != 0)
-        goto loc_16e4e;
-    ds = pop();
-}
-
 void callIndirect(int seg, int ofs)
 {
     switch (seg*0x10000+ofs)
     {
+        case 0x10000f6f: sub_10f6f(); return;
+        case 0x100017c7: sub_117c7(); return;
+        case 0x10003e6f: sub_13e6f(); return;
+        case 0x10004252: sub_14252(); return;
         case 0x1000503b: sub_1503b(); return;
         case 0x10006170: sub_16170(); return;
-        case 0x10006957: sub_16957(); return;
-        case 0x100065d8: sub_165d8(); return;
-        case 0x10006a97: sub_16a97(); return;
-        case 0x10006bdb: sub_16bdb(); return;
         case 0x100064d9: sub_164d9(); return;
+        case 0x100065d8: sub_165d8(); return;
         case 0x100066d7: sub_166d7(); return;
         case 0x10006817: sub_16817(); return;
+        case 0x10006957: sub_16957(); return;
+        case 0x10006a97: sub_16a97(); return;
+        case 0x10006bdb: sub_16bdb(); return;
         case 0x10006cfc: sub_16cfc(); return;
         default:
             break;
     }
     assert(0);
 }
-
-
 // INJECT: Error: cannot inject carry flag in sub_1063e()!
 // INJECT: Error: cannot inject carry flag in sub_11d2e()!
 // INJECT: Error: cannot inject carry flag in sub_11d2e()!
@@ -1910,16 +390,15 @@ void sub_10000()
     memoryASet(ds, 0x1fdf, 0x00);
     push(ds);
     ah = 0x1b;
-    //interrupt(0x21);
-    //al = memoryAGet(ds, bx);
-    al = 0x80;
+    interrupt(0x21);
+    al = memoryAGet(ds, bx);
     ds = pop();
     memoryASet(ds, 0x1fde, al);
     ah = 0x0f;
     interrupt(0x10);
     memoryASet(ds, 0x1fe1, al);
     memoryASet(ds, 0x1fe2, bh);
-//    sub_1054e(); gabo adlib
+//    sub_1054e(); // skip adlib
     sub_11007();
     sub_10f08();
     memoryASet(cs, 0x83be, 0xff);
@@ -1998,7 +477,7 @@ loc_1015c:
     in(al, dx);
     if (!(al & 0x08))
         goto loc_1015c;
-    sub_15827(); // show cursor
+    sub_15827();
 loc_10164:
     cx = memoryAGet16(ds, 0x1ffe);
     dx = memoryAGet16(ds, 0x2000);
@@ -2016,7 +495,7 @@ loc_10164:
     goto loc_10186;
 loc_10183:
     sub_11644();
-loc_10186://gabo15
+loc_10186:
 //    al = memoryAGet(ds, 0x1fcd);
 //    cl = 0x04;
 //    if ((char)al <= (char)cl)
@@ -2126,7 +605,7 @@ loc_10288:
     if (!(memoryAGet(ds, 0x25a7) & 0x03))
         goto loc_102a1;
     ax = 0x0200;
-    interrupt(0x61); stop();
+    interrupt(0x61);
 loc_102a1:
     if (!(ax & 0x0100))
         goto loc_102ab;
@@ -2241,8 +720,8 @@ loc_14401:
     sub_14ff8();
     sub_14eef();
     sub_14f2b();
-    si = 0x4ad9; // e689
-    sub_14d4d(); // broken title
+    si = 0x4ad9;
+    sub_14d4d();
     sub_14ea2();
     sub_14e37();
     sub_14dc2();
@@ -2266,27 +745,27 @@ loc_1445b:
     goto loc_1454c;
 loc_14478:
     sub_14d1a();
-//    if (al != 0x80)
-//        goto loc_14482;
-    goto loc_1454c; // start game?
-loc_14482: // KEY TO START GAME gabo5
+    if (al != 0x80)
+        goto loc_14482;
+    goto loc_1454c;
+loc_14482:
     if (al == 0x81)
-        goto loc_144ad; // enter code
+        goto loc_144ad;
     if (al == 0x82)
-        goto loc_144b3; // fx
+        goto loc_144b3;
     if (al == 0x83)
-        goto loc_144b0; // inf loop
+        goto loc_144b0;
     if (al != 0x1b)
         goto loc_14495;
-    goto loc_104d0; // exit
+    goto loc_104d0;
 loc_14495:
     if (al == 0x8a)
-        goto loc_144ec; // up level
+        goto loc_144ec;
     if (al == 0x60)
-        goto loc_144ec; // dn level
+        goto loc_144ec;
     if (al != 0x8b)
         goto loc_144a4;
-    goto loc_1451c; // nothing
+    goto loc_1451c;
 loc_144a4:
     if (al != 0x2d)
         goto loc_144ab;
@@ -2365,7 +844,7 @@ loc_14530:
     memoryASet(ds, 0x1f6b, ah);
     goto loc_1445b;
 loc_1454c:
-    memoryASet(ds, 0x1f6d, 0);
+    memoryASet(ds, 0x1f6d, 0x00);
 loc_14551:
     push(ds);
     es = pop();
@@ -2511,7 +990,7 @@ loc_1497d:
     if (--cx)
         goto loc_1497d;
     si = 0x4de1;
-    sub_14d4d(); //broken title
+    sub_14d4d();
     sub_14dc2();
     sub_11550();
     sub_14c32();
@@ -2881,7 +1360,7 @@ loc_10565:
     push(ax);
     ax = 0x2561;
     dx = 0;
-    interrupt(0x21); // sets int vect empty block
+    interrupt(0x21);
     ax = pop();
     ds = pop();
     push(ax);
@@ -2896,7 +1375,7 @@ loc_10565:
     memoryASet(ds, 0x25a7, 0x01);
     memoryASet(ds, 0x1f71, 0x01);
     ah = 0x01;
-    interrupt(0x61); stop();
+    interrupt(0x61);
     ax = pop();
     if (al == 0)
         goto loc_105b4;
@@ -2972,7 +1451,7 @@ void sub_1062b()
         goto loc_10635;
     goto loc_10e66;
 loc_10635:
-    //gabo3! //sub_1063e();
+//    sub_1063e();
     flags.carry = false;
     if (!flags.carry)
         goto loc_1063d;
@@ -3104,7 +1583,7 @@ loc_1064a:
     tx = flags.carry | (flags.zero << 1);
     push(tx);
     flags.interrupts = false;
-    //gabo //sub_10659();
+    sub_10659();
     memoryASet16(ds, 0x000c, pop());
     memoryASet16(ds, 0x000c, memoryAGet16(ds, 0x000c) + 0x075a);
     push(cs);
@@ -3186,7 +1665,7 @@ void sub_10f08()
     push(cs);
     es = pop();
     dx = 0x0f6f;
-    interrupt(0x33); // 1000:0f6f - user routine
+    interrupt(0x33);
     ah = 0x25;
     al = memoryAGet(ds, 0x1fc6);
     push(ds);
@@ -3199,6 +1678,10 @@ void sub_10f08()
 loc_10f64:
     memoryASet(ds, 0x25a6, 0x02);
     memoryASet(ds, 0x1f73, 0xff);
+}
+void sub_10f6f()
+{
+    cs = pop();
 }
 void sub_10fa0()
 {
@@ -3351,7 +1834,7 @@ loc_110a3:
     sub_11218();
 loc_110b8:
     ah = 0x07;
-    al = 0x31; //interrupt(0x21); // 2=ega/1=vga
+    interrupt(0x21);
     if (al != 0x1b)
         goto loc_110c3;
     goto loc_1120c;
@@ -3393,7 +1876,7 @@ loc_11110:
     sub_11550();
     push(bx);
     ah = 0x07;
-    al = 0x31; //interrupt(0x21);
+    interrupt(0x21);
     bx = pop();
     if (al != 0)
         goto loc_1113e;
@@ -3585,7 +2068,7 @@ void sub_11293()
 {
     es = memoryAGet16(ds, 0x1ff6);
     si = 0x0080;
-    cx = 0; //gabo; cl = memoryAGet(es, si);
+    cl = memoryAGet(es, si);
     ch = 0;
     if (cx == 0)
         goto loc_112b0;
@@ -3967,6 +2450,124 @@ void sub_116a9()
     ah = 0x01;
     interrupt(0x1a);
 }
+void sub_117c7()
+{
+    // no return
+    push(ax);
+    push(ds);
+    push(es);
+    push(cx);
+    push(dx);
+    push(bx);
+    push(bp);
+    push(si);
+    push(di);
+    tx = flags.carry | (flags.zero << 1);
+    push(tx);
+    ax = 0x19a9;
+    ds = ax;
+    if (memoryAGet(ds, 0x200e) == 0xff)
+        goto loc_1183e;
+    sub_15473();
+    flags.interrupts = false;
+    dx = memoryAGet16(ds, 0x1fda);
+    bx = memoryAGet16(ds, 0x1f78);
+    bx += memoryAGet16(ds, 0x1f7a);
+    bx += 0x0002;
+    ah = bh;
+    al = 0x0c;
+    out(dx, ax);
+    ah = bl;
+    al++;
+    out(dx, ax);
+    dl += 0x06;
+    flags.interrupts = true;
+loc_117fe:
+    in(al, dx);
+    if (!(al & 0x08))
+        goto loc_117fe;
+loc_11809:
+    in(al, dx);
+    if (al & 0x08)
+        goto loc_11809;
+    flags.interrupts = false;
+    cx = memoryAGet16(ds, 0x1fc9);
+    al = 0x36;
+    out(0x43, al);
+    al = cl;
+    out(0x40, al);
+    al = ch;
+    out(0x40, al);
+    flags.interrupts = true;
+    sub_1553d();
+    sub_15827();
+loc_1183e:
+    dl = 0;
+    sub_1418c();
+    memoryASet(ds, 0x001c, memoryAGet(ds, 0x001c) + 1);
+    al = memoryAGet(ds, 0x001c);
+    al &= 0x01;
+    if (al == 0)
+        goto loc_11861;
+    if (memoryAGet(ds, 0x2010) == 0xff)
+        goto loc_11861;
+    if (!(memoryAGet(ds, 0x25a7) & 0x01))
+        goto loc_11861;
+    ax = 0x0000;
+    interrupt(0x60);
+loc_11861:
+    if (memoryAGet(ds, 0x2010) != 0xff)
+        goto loc_11874;
+    if (!(memoryAGet(ds, 0x25a7) & 0x03))
+        goto loc_11874;
+    ax = 0x0000;
+    interrupt(0x61);
+loc_11874:
+    sub_13e6f();
+    if (memoryAGet(ds, 0x2002) != 0x00)
+        goto loc_11881;
+    sub_1587f();
+loc_11881:
+    flags.interrupts = false;
+    al = memoryAGet(ds, 0x1fe3);
+    al++;
+    al &= 0x03;
+    memoryASet(ds, 0x1fe3, al);
+    if (al == 0)
+        goto loc_11893;
+    sub_118b2();
+    goto loc_1189d;
+loc_11893:
+    ax = 0x189d;
+    tx = flags.carry | (flags.zero << 1);
+    push(tx);
+    push(cs);
+    push(ax);
+    stop(/*inject carry*/);
+    daa();
+loc_1189d:
+    flags.interrupts = true;
+    memoryASet(ds, 0x1fcf, 0xff);
+    memoryASet(ds, 0x1fcd, memoryAGet(ds, 0x1fcd) + 1);
+    tx = pop();
+    flags.carry = tx & 1;
+    flags.zero = (tx << 1) & 1;
+    di = pop();
+    si = pop();
+    bp = pop();
+    bx = pop();
+    dx = pop();
+    cx = pop();
+    es = pop();
+    ds = pop();
+    ax = pop();
+    stop(); // iret 
+}
+void sub_118b2()
+{
+    al = 0x20;
+    out(0x20, al);
+}
 void sub_11916()
 {
     goto loc_11916;
@@ -4068,7 +2669,7 @@ loc_1196e:
 }
 void sub_1197d()
 {
-    bl = memoryAGet(ds, 0x1f6b); // level
+    bl = memoryAGet(ds, 0x1f6b);
     bh = 0;
     si = 0x54ee;
     cl = memoryAGet(ds, bx + si);
@@ -6805,9 +5406,7 @@ loc_13161:
         goto loc_131bd;
     memoryASet(ds, 0x0061, 0xff);
     si = memoryAGet16(ds, 0x0058);
-    al = memoryAGet(ds, 0x0082); // selected tool
-    //gabo 13 remove
-    //al = random()%11;
+    al = memoryAGet(ds, 0x0082);
     if ((char)al < (char)0x02)
         goto loc_131bd;
     if (al != 0x02)
@@ -8280,6 +6879,250 @@ loc_13e63:
     bx = 0x490c;
     goto loc_13e53;
 }
+void sub_13e6f()
+{
+    al = memoryAGet(ds, 0x1fd0);
+    if (al != 0x3b)
+        goto loc_13e79;
+    goto loc_14068;
+loc_13e79:
+    if (al != 0x3c)
+        goto loc_13e80;
+    goto loc_1403d;
+loc_13e80:
+    if (al != 0x4e)
+        goto loc_13e87;
+    goto loc_14018;
+loc_13e87:
+    if (al != 0x57)
+        goto loc_13e8e;
+    goto loc_14018;
+loc_13e8e:
+    if (al != 0x58)
+        goto loc_13e95;
+    goto loc_13fef;
+loc_13e95:
+    if (al != 0x53)
+        goto loc_13e9c;
+    goto loc_13fef;
+loc_13e9c:
+    ah = al;
+    al = 0x02;
+    if (ah != 0x3d)
+        goto loc_13ea8;
+    goto loc_13f5c;
+loc_13ea8:
+    al++;
+    if (ah != 0x3e)
+        goto loc_13eb2;
+    goto loc_13f5c;
+loc_13eb2:
+    al++;
+    if (ah != 0x3f)
+        goto loc_13ebc;
+    goto loc_13f5c;
+loc_13ebc:
+    al++;
+    if (ah != 0x40)
+        goto loc_13ec6;
+    goto loc_13f5c;
+loc_13ec6:
+    al++;
+    if (ah != 0x41)
+        goto loc_13ed0;
+    goto loc_13f5c;
+loc_13ed0:
+    al++;
+    if (ah != 0x42)
+        goto loc_13eda;
+    goto loc_13f5c;
+loc_13eda:
+    al++;
+    if (ah != 0x43)
+        goto loc_13ee4;
+    goto loc_13f5c;
+loc_13ee4:
+    al++;
+    if (ah != 0x44)
+        goto loc_13eee;
+    goto loc_13f5c;
+loc_13eee:
+    ax = memoryAGet16(ds, 0x0014);
+    if (ax & 0x0001)
+        goto loc_13ef9;
+    goto loc_13fe3;
+loc_13ef9:
+    ax = memoryAGet16(ds, 0x0012);
+    ax += 0x0008;
+    if ((short)ax >= (short)0x00c0)
+        goto loc_13f07;
+    goto loc_13fe9;
+loc_13f07:
+    ax = memoryAGet16(ds, 0x0010);
+    ax += 0xfff8;
+    if ((short)ax < (short)0x00d0)
+        goto loc_13f15;
+    goto loc_13f92;
+loc_13f15:
+    if (memoryAGet(ds, 0x0084) == 0x00)
+        goto loc_13f1f;
+    goto loc_13fe9;
+loc_13f1f:
+    ax >>= 1;
+    ax >>= 1;
+    ax >>= 1;
+    ax >>= 1;
+    if ((char)al >= (char)0x02)
+        goto loc_13f2e;
+    goto loc_14032;
+loc_13f2e:
+    if (memoryAGet(ds, 0x0062) != 0xff)
+        goto loc_13f38;
+    goto loc_13fe9;
+loc_13f38:
+    memoryASet(ds, 0x0062, 0xff);
+    if (al != 0x0a)
+        goto loc_13f44;
+    goto loc_14018;
+loc_13f44:
+    if (al != 0x0b)
+        goto loc_13f4b;
+    goto loc_13fef;
+loc_13f4b:
+    if (al != 0x0c)
+        goto loc_13f52;
+    goto loc_13fee;
+loc_13f52:
+    if (memoryAGet(ds, 0x002b) != 0xff)
+        goto loc_13f5c;
+    goto loc_13fe9;
+loc_13f5c:
+    if (memoryAGet(ds, 0x0084) == 0x00)
+        goto loc_13f66;
+    goto loc_13fe9;
+loc_13f66:
+    memoryASet(ds, 0x0082, al);
+    if (memoryAGet(ds, 0x2010) != 0xff)
+        goto loc_13f7c;
+    if (!(memoryAGet(ds, 0x25a7) & 0x03))
+        goto loc_13f7c;
+    ax = 0x0401;
+    interrupt(0x61);
+loc_13f7c:
+    if (memoryAGet(ds, 0x2010) == 0xff)
+        goto loc_13f8f;
+    if (!(memoryAGet(ds, 0x25a7) & 0x01))
+        goto loc_13f8f;
+    ax = 0x0313;
+    interrupt(0x60);
+loc_13f8f:
+    goto loc_13fe9;
+loc_13f92:
+    memoryASet(ds, 0x0062, 0xff);
+    if (memoryAGet(ds, 0x1fcf) != 0x00)
+        goto loc_13fee;
+    bx = memoryAGet16(ds, 0x0000);
+    bx >>= 1;
+    bx >>= 1;
+    bx >>= 1;
+    bx >>= 1;
+    bx += 0x00d0;
+    if ((short)ax >= (short)bx)
+        goto loc_13fbe;
+    bx += 0x0018;
+    if ((short)ax < (short)bx)
+        goto loc_13fbe;
+    if ((short)ax < (short)0x00d0)
+        goto loc_13fe9;
+loc_13fbe:
+    ax -= 0x00da;
+    if ((short)ax >= 0)
+        goto loc_13fc5;
+    ax = 0;
+loc_13fc5:
+    if ((short)ax <= (short)0x004f)
+        goto loc_13fcd;
+    ax = 0x004f;
+loc_13fcd:
+    ax <<= 1;
+    ax += 0x0002;
+    memoryASet16(ds, 0x0002, ax);
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    memoryASet16(ds, 0x0000, ax);
+    sub_1410f();
+    goto loc_13fe9;
+loc_13fe3:
+    memoryASet(ds, 0x0062, 0x00);
+    return;
+loc_13fe9:
+    memoryASet(ds, 0x0062, 0xff);
+loc_13fee:
+    return;
+loc_13fef:
+    if (memoryAGet(ds, 0x002b) == 0xff)
+        goto loc_13fee;
+    memoryASet(ds, 0x1fd0, 0x00);
+    al = memoryAGet(ds, 0x1fd3);
+    ah = memoryAGet(ds, 0x1fd4);
+    memoryASet(ds, 0x1fd4, al);
+    al -= ah;
+    if ((char)al > (char)0x05)
+        goto loc_13fee;
+    memoryASet(ds, 0x004b, 0xff);
+    al = memoryAGet(ds, 0x0043);
+    memoryASet(ds, 0x0047, al);
+    goto loc_13fee;
+loc_14018:
+    al = memoryAGet(ds, 0x0052);
+    bl = al;
+    bl -= memoryAGet(ds, 0x0053);
+    if (bl >= 0x02)
+        goto loc_14028;
+    goto loc_13fee;
+loc_14028:
+    memoryASet(ds, 0x002b, memoryAGet(ds, 0x002b) ^ 0xff);
+    memoryASet(ds, 0x0053, al);
+    goto loc_13fee;
+loc_14032:
+    if (memoryAGet(ds, 0x002b) == 0xff)
+        goto loc_13fee;
+    if (al == 0)
+        goto loc_14068;
+loc_1403d:
+    if (memoryAGet(ds, 0x0069) == 0x00)
+        goto loc_14046;
+    goto loc_13fe9;
+loc_14046:
+    if (memoryAGet(ds, 0x0067) != 0x63)
+        goto loc_1404f;
+    goto loc_13fe9;
+loc_1404f:
+    memoryASet(ds, 0x0067, memoryAGet(ds, 0x0067) + 1);
+loc_14053:
+    al = 0x63;
+    al -= memoryAGet(ds, 0x0067);
+    al >>= 1;
+    al = -al;
+    al += 0x35;
+    al = -al;
+    al += 0x39;
+    memoryASet(ds, 0x0049, al);
+    goto loc_13fe9;
+loc_14068:
+    bl = memoryAGet(ds, 0x0064);
+    if (memoryAGet(ds, 0x0069) == 0x00)
+        goto loc_14076;
+    goto loc_13fe9;
+loc_14076:
+    if (memoryAGet(ds, 0x0067) != bl)
+        goto loc_1407f;
+    goto loc_13fe9;
+loc_1407f:
+    memoryASet(ds, 0x0067, memoryAGet(ds, 0x0067) - 1);
+    goto loc_14053;
+}
 void sub_14085()
 {
     al = memoryAGet(ds, 0x1fd0);
@@ -8429,6 +7272,262 @@ loc_1417b:
     ax = pop();
     ah++;
     goto loc_1417b;
+}
+void sub_1418c()
+{
+    if (memoryAGet(ds, 0x25a6) != 0x00)
+        goto loc_14196;
+    goto loc_14252;
+loc_14196:
+    if (memoryAGet(ds, 0x25a6) != 0x01)
+        goto loc_141a0;
+    goto loc_142a1;
+loc_141a0:
+    bx = memoryAGet16(ds, 0x0016);
+    cx = memoryAGet16(ds, 0x0018);
+    ax = memoryAGet16(ds, 0x1fc7);
+    if (ax & 0x0c03)
+        goto loc_141b5;
+    cx = 0x0010;
+    goto loc_141d1;
+loc_141b5:
+    if (!(ax & 0x0401))
+        goto loc_141c1;
+    cx -= 0x0001;
+    if ((short)cx >= 0)
+        goto loc_141c1;
+    cx = 0;
+loc_141c1:
+    if (!(ax & 0x0802))
+        goto loc_141d1;
+    cx += 0x0001;
+    if ((short)cx <= (short)0x0020)
+        goto loc_141d1;
+    cx = 0x0020;
+loc_141d1:
+    if (ax & 0x300c)
+        goto loc_141db;
+    bx = 0x0010;
+    goto loc_141f7;
+loc_141db:
+    if (!(ax & 0x1004))
+        goto loc_141e7;
+    bx -= 0x0001;
+    if ((short)bx >= 0)
+        goto loc_141e7;
+    bx = 0;
+loc_141e7:
+    if (!(ax & 0x2008))
+        goto loc_141f7;
+    bx += 0x0001;
+    if ((short)bx <= (short)0x0020)
+        goto loc_141f7;
+    bx = 0x0020;
+loc_141f7:
+    memoryASet16(ds, 0x0016, bx);
+    memoryASet16(ds, 0x0018, cx);
+    bx >>= 1;
+    cx >>= 1;
+    bx >>= 1;
+    cx >>= 1;
+    bx -= 0x0004;
+    cx -= 0x0004;
+    bx += memoryAGet16(ds, 0x0010);
+    if ((short)bx > (short)0x0008)
+        goto loc_1421b;
+    bx = 0x0008;
+    goto loc_14224;
+loc_1421b:
+    if ((short)bx <= (short)0x0148)
+        goto loc_14224;
+    bx = 0x0148;
+loc_14224:
+    memoryASet16(ds, 0x0010, bx);
+    cx += memoryAGet16(ds, 0x0012);
+    if ((short)cx > (short)0x0008)
+        goto loc_14236;
+    cx = 0x0008;
+    goto loc_1423f;
+loc_14236:
+    if ((short)cx <= (short)0x00c8)
+        goto loc_1423f;
+    cx = 0x00c8;
+loc_1423f:
+    memoryASet16(ds, 0x0012, cx);
+    bx = 0;
+    if (!(ax & 0x4010))
+        goto loc_1424d;
+    bx |= 0x0001;
+loc_1424d:
+    memoryASet16(ds, 0x0014, bx);
+    return;
+loc_14252:
+    push(es);
+    push(ds);
+    push(bp);
+    push(si);
+    push(di);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(ds);
+    ax = 0x0003;
+    interrupt(0x33);
+    ds = pop();
+    if (memoryAGet(ds, 0x200b) == 0xff)
+        goto loc_1426d;
+    memoryASet16(ds, 0x0014, bx);
+loc_1426d:
+    if ((short)cx >= (short)0x0008)
+        goto loc_14275;
+    cx = 0x0008;
+loc_14275:
+    if ((short)cx <= (short)0x0148)
+        goto loc_1427e;
+    cx = 0x0148;
+loc_1427e:
+    memoryASet16(ds, 0x0010, cx);
+    if ((short)dx >= (short)0x0008)
+        goto loc_1428a;
+    dx = 0x0008;
+loc_1428a:
+    if ((short)dx <= (short)0x00c8)
+        goto loc_14293;
+    dx = 0x00c8;
+loc_14293:
+    memoryASet16(ds, 0x0012, dx);
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    di = pop();
+    si = pop();
+    bp = pop();
+    ds = pop();
+    es = pop();
+    return;
+loc_142a1:
+    ax = memoryAGet16(ds, 0x25a0);
+    push(dx);
+    callIndirect(cs, ax);
+    dx = pop();
+    if (dl != 0xff)
+        goto loc_142b0;
+    return;
+loc_142b0:
+    bx -= memoryAGet16(ds, 0x25a2);
+    cx -= memoryAGet16(ds, 0x25a4);
+    al = memoryAGet(ds, 0x2005);
+    if ((short)bx > (short)0x0008)
+        goto loc_142c5;
+    if ((short)bx >= (short)0xfff8)
+        goto loc_142f8;
+loc_142c5:
+    if (al == 0x02)
+        goto loc_142d3;
+    if (al == 0x03)
+        goto loc_142d7;
+    if (al == 0x04)
+        goto loc_142d9;
+    bx = sar(bx, 1);
+loc_142d3:
+    bx = sar(bx, 1);
+    bx = sar(bx, 1);
+loc_142d7:
+    bx = sar(bx, 1);
+loc_142d9:
+    bx = sar(bx, 1);
+    bx = sar(bx, 1);
+    bx += memoryAGet16(ds, 0x0010);
+    if ((short)bx > (short)0x0008)
+        goto loc_142eb;
+    bx = 0x0008;
+    goto loc_142f4;
+loc_142eb:
+    if ((short)bx <= (short)0x0148)
+        goto loc_142f4;
+    bx = 0x0148;
+loc_142f4:
+    memoryASet16(ds, 0x0010, bx);
+loc_142f8:
+    if ((short)cx > (short)0x0008)
+        goto loc_14302;
+    if ((short)cx >= (short)0xfff8)
+        return;
+loc_14302:
+    if (al == 0x02)
+        goto loc_14310;
+    if (al == 0x03)
+        goto loc_14314;
+    if (al == 0x04)
+        goto loc_14316;
+    cx = sar(cx, 1);
+loc_14310:
+    cx = sar(cx, 1);
+    cx = sar(cx, 1);
+loc_14314:
+    cx = sar(cx, 1);
+loc_14316:
+    cx = sar(cx, 1);
+    cx += memoryAGet16(ds, 0x0012);
+    if ((short)cx > (short)0x0008)
+        goto loc_14326;
+    cx = 0x0008;
+    goto loc_1432f;
+loc_14326:
+    if ((short)cx <= (short)0x00c8)
+        goto loc_1432f;
+    cx = 0x00c8;
+loc_1432f:
+    memoryASet16(ds, 0x0012, cx);
+}
+void sub_14252()
+{
+    push(es);
+    push(ds);
+    push(bp);
+    push(si);
+    push(di);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(ds);
+    ax = 0x0003;
+    interrupt(0x33);
+    ds = pop();
+    if (memoryAGet(ds, 0x200b) == 0xff)
+        goto loc_1426d;
+    memoryASet16(ds, 0x0014, bx);
+loc_1426d:
+    if ((short)cx >= (short)0x0008)
+        goto loc_14275;
+    cx = 0x0008;
+loc_14275:
+    if ((short)cx <= (short)0x0148)
+        goto loc_1427e;
+    cx = 0x0148;
+loc_1427e:
+    memoryASet16(ds, 0x0010, cx);
+    if ((short)dx >= (short)0x0008)
+        goto loc_1428a;
+    dx = 0x0008;
+loc_1428a:
+    if ((short)dx <= (short)0x00c8)
+        goto loc_14293;
+    dx = 0x00c8;
+loc_14293:
+    memoryASet16(ds, 0x0012, dx);
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    di = pop();
+    si = pop();
+    bp = pop();
+    ds = pop();
+    es = pop();
 }
 void sub_14334()
 {
@@ -8718,7 +7817,7 @@ loc_10288:
     if (!(memoryAGet(ds, 0x25a7) & 0x03))
         goto loc_102a1;
     ax = 0x0200;
-    interrupt(0x61); stop();
+    interrupt(0x61);
 loc_102a1:
     if (!(ax & 0x0100))
         goto loc_102ab;
@@ -9067,18 +8166,17 @@ loc_14668:
     if (!flags.zero)
         goto loc_14668;
 loc_14680:
+    sync();
     sub_146b9();
     ax = memoryAGet16(ds, 0x0014);
-//    ax = 1; // gabo12 skip wait?
     if (ax & 0x0007)
         goto loc_146a2;
     ax = memoryAGet16(ds, 0x1fc7);
-    ax = 0x40; //gabo!
     if (ax & 0x0020)
-        goto loc_1469b; // back to main menu
+        goto loc_1469b;
     if (!(ax & 0x0040))
         goto loc_14680;
-    goto loc_146a2; // start game?
+    goto loc_146a2;
 loc_1469b:
     sub_146a2();
     ax = pop();
@@ -9690,9 +8788,7 @@ void sub_14b1c()
     sub_14c32();
     sub_1536c();
     memoryASet(ds, 0x1fd0, 0x00);
-    // gabo skip 7
 loc_14b40:
-    sync();
     ax = memoryAGet16(ds, 0x0014);
     if (ax & 0x0007)
         goto loc_14b50;
@@ -9981,7 +9077,7 @@ loc_14cc4:
     push(cx);
     push(dx);
     push(bp);
-    callIndirect(cs, bp); // broken text
+    callIndirect(cs, bp);
     sub_14c20();
     sub_14d1a();
     bp = pop();
@@ -10090,6 +9186,43 @@ loc_14d65:
     cx = pop();
     cl++;
     goto loc_14d65;
+}
+void sub_14d78()
+{
+    if (al == 0x20)
+        return;
+    al -= 0x21;
+    ah = 0;
+    ax += ax;
+    ax += ax;
+    ax += ax;
+    ax += ax;
+    ax += ax;
+    si = ax;
+    ax += ax;
+    si += ax;
+    si += 0x5bc0;
+    di = si;
+    di += 0x0040;
+    bx = memoryAGet16(ds, 0x1fee);
+    bx += 0x1000;
+    memoryASet16(ds, 0x1fe4, bx);
+    bl = ch;
+    bh = 0;
+    al = cl;
+    ah = 0;
+    cl = 0x04;
+    bx <<= cl;
+    ax <<= cl;
+    cl = 0x10;
+    ch = 0x03;
+    dx = 0x0010;
+    push(bp);
+    push(cs);
+    cs = 0x1000;
+    sub_18822();
+    assert(cs == 0x1000);
+    bp = pop();
 }
 void sub_14dc2()
 {
@@ -10506,6 +9639,44 @@ void sub_15028()
     memoryASet16(ds, 0x0022, cs);
     ds = pop();
     flags.interrupts = true;
+}
+void sub_1503b()
+{
+    goto loc_1503b;
+loc_14d4d:
+    lodsb<MemAuto, DirAuto>();
+    if (al == 0)
+        goto loc_14d77;
+    cl = al;
+    cl--;
+    lodsb<MemAuto, DirAuto>();
+    ch = al;
+    lodsb<MemAuto, DirAuto>();
+    if (al != 0)
+        goto loc_14d63;
+    bp = 0x0002;
+    goto loc_14d65;
+loc_14d63:
+    bp = 0;
+loc_14d65:
+    lodsb<MemAuto, DirAuto>();
+    if (al == 0x0d)
+        goto loc_14d4d;
+    push(cx);
+    push(bx);
+    push(si);
+    sub_14d78();
+    si = pop();
+    bx = pop();
+    cx = pop();
+    cl++;
+    goto loc_14d65;
+loc_14d77:
+    return;
+    //   gap of 707 bytes
+loc_1503b:
+    si = 0x4def;
+    goto loc_14d4d;
 }
 void sub_15042()
 {
@@ -11373,9 +10544,7 @@ loc_154c4:
     push(dx);
 loc_154da:
     dx = 0x03c8;
-    al = ch; // gabo4
-//    for (int i=0; i<300; i++)
-//        printf("%02x ", memoryAGet(cs, 0x5507+i));
+    al = ch;
     ah = 0;
     di = 0x5507;
     di += ax;
@@ -11599,6 +10768,89 @@ loc_154ac:
     out(dx, al);
 loc_154c2:
     flags.interrupts = true;
+}
+void sub_15473()
+{
+    goto loc_15473;
+loc_15425:
+    flags.interrupts = false;
+    bl = ch;
+    ch = 0;
+    dx = memoryAGet16(ds, 0x1fda);
+    dl += 0x06;
+    in(al, dx);
+    push(dx);
+    dl = 0xc0;
+loc_15435:
+    al = bl;
+    out(dx, al);
+    lodsb<MemAuto, DirAuto>();
+    out(dx, al);
+    bl++;
+    if (--cx)
+        goto loc_15435;
+    dx = pop();
+    in(al, dx);
+    dl = 0xc0;
+    al = 0x20;
+    out(dx, al);
+    flags.interrupts = true;
+    return;
+    //   gap of 44 bytes
+loc_15473:
+    if (memoryAGet16(ds, 0x1f7c) == 0x0004)
+        goto loc_15485;
+    if (memoryAGet16(ds, 0x1f7c) != 0x0002)
+        goto loc_15484;
+    goto loc_15533;
+loc_15484:
+    return;
+loc_15485:
+    si = 0x2668;
+    cx = 0x1008;
+    flags.interrupts = false;
+    if (memoryAGet(ds, 0x200c) == 0xff)
+        goto loc_154a1;
+    dx = 0x03c4;
+    al = 0x01;
+    out(dx, al);
+    dx++;
+    in(al, dx);
+    al |= 0x20;
+    out(dx, al);
+    push(ax);
+    push(dx);
+loc_154a1:
+    dx = 0x03c8;
+    al = ch;
+    ch = 0;
+    out(dx, al);
+    ah = al;
+    dx++;
+loc_154ac:
+    lodsb<MemAuto, DirAuto>();
+    out(dx, al);
+    lodsb<MemAuto, DirAuto>();
+    out(dx, al);
+    lodsb<MemAuto, DirAuto>();
+    out(dx, al);
+    ah++;
+    if (--cx)
+        goto loc_154ac;
+    if (memoryAGet(ds, 0x200c) == 0xff)
+        goto loc_154c2;
+    dx = pop();
+    ax = pop();
+    al &= 0xdf;
+    out(dx, al);
+loc_154c2:
+    flags.interrupts = true;
+    return;
+    //   gap of 111 bytes
+loc_15533:
+    si = 0x2668;
+    cx = 0x0808;
+    goto loc_15425;
 }
 void sub_1548c()
 {
@@ -12224,6 +11476,46 @@ loc_15858:
     memoryASet16(ds, 0x000a, ax);
     ax = tx;
     memoryASet16(ds, 0x0008, ax);
+}
+void sub_1587f()
+{
+    flags.interrupts = false;
+    push(cx);
+    cx = es;
+    ax = 0x243e;
+    es = ax;
+    dx = 0x03c4;
+    ax = memoryAGet16(es, 0x0008);
+    al = 0x02;
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = memoryAGet16(es, 0x0000);
+    al = 0x05;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x0002);
+    al = 0x03;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x0004);
+    al = 0x02;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x0006);
+    al = 0x07;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x000a);
+    al = 0;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x000c);
+    al = 0x01;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x000e);
+    al = 0x08;
+    out(dx, ax);
+    ax = memoryAGet16(es, 0x0010);
+    al = 0x04;
+    out(dx, ax);
+    es = cx;
+    cx = pop();
+    flags.interrupts = true;
 }
 void sub_158d2()
 {
@@ -13390,6 +12682,1965 @@ void sub_16141()
     cx = pop();
     bx = pop();
 }
+void sub_16170()
+{
+    push(ds);
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ds = cx;
+    cx = 0xa000;
+    es = cx;
+    bp = di;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    di = bp;
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ds = pop();
+}
+void sub_164d9()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    bp = 0x000c;
+loc_16514:
+    push(bp);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16538;
+loc_1652c:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_1652c;
+loc_16538:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    bp = pop();
+    bp--;
+    if (bp != 0)
+        goto loc_16514;
+    di = pop();
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000c;
+loc_165a5:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_165ba;
+loc_165b2:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_165b2;
+loc_165ba:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_165a5;
+    ds = pop();
+}
+void sub_165d8()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    bp = 0x000d;
+loc_16613:
+    push(bp);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16637;
+loc_1662b:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_1662b;
+loc_16637:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    bp = pop();
+    bp--;
+    if (bp != 0)
+        goto loc_16613;
+    di = pop();
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000d;
+loc_166a4:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_166b9;
+loc_166b1:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_166b1;
+loc_166b9:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_166a4;
+    ds = pop();
+}
+void sub_166d7()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    bp = 0x000a;
+loc_16712:
+    push(bp);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16736;
+loc_1672a:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_1672a;
+loc_16736:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    bp = pop();
+    bp--;
+    if (bp != 0)
+        goto loc_16712;
+    di = pop();
+    push(di);
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000a;
+loc_167a4:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_167b9;
+loc_167b1:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_167b1;
+loc_167b9:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_167a4;
+    di = pop();
+    dx = 0x03c4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000a;
+loc_167e4:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_167f9;
+loc_167f1:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_167f1;
+loc_167f9:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_167e4;
+    ds = pop();
+}
+void sub_16817()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    bp = 0x000d;
+loc_16852:
+    push(bp);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16876;
+loc_1686a:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_1686a;
+loc_16876:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    bp = pop();
+    bp--;
+    if (bp != 0)
+        goto loc_16852;
+    di = pop();
+    push(di);
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000d;
+loc_168e4:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_168f9;
+loc_168f1:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_168f1;
+loc_168f9:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_168e4;
+    di = pop();
+    dx = 0x03c4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000d;
+loc_16924:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16939;
+loc_16931:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16931;
+loc_16939:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_16924;
+    ds = pop();
+}
+void sub_16957()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    bp = 0x000e;
+loc_16992:
+    push(bp);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_169b6;
+loc_169aa:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_169aa;
+loc_169b6:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    bp = pop();
+    bp--;
+    if (bp != 0)
+        goto loc_16992;
+    di = pop();
+    push(di);
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000e;
+loc_16a24:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16a39;
+loc_16a31:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16a31;
+loc_16a39:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_16a24;
+    di = pop();
+    dx = 0x03c4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    bp = 0x000e;
+loc_16a64:
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16a79;
+loc_16a71:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16a71;
+loc_16a79:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    bp--;
+    if (bp != 0)
+        goto loc_16a64;
+    ds = pop();
+}
+void sub_16a97()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    ax = 0x0010;
+loc_16ad2:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16af6;
+loc_16aea:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16aea;
+loc_16af6:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16ad2;
+    di = pop();
+    push(di);
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    ax = 0x0010;
+loc_16b64:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16b7a;
+loc_16b72:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16b72;
+loc_16b7a:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16b64;
+    di = pop();
+    dx = 0x03c4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    ax = 0x0010;
+loc_16ba6:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16bbc;
+loc_16bb4:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16bb4;
+loc_16bbc:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16ba6;
+    ds = pop();
+}
+void sub_16bdb()
+{
+    push(ds);
+    dx = 0x03c4;
+    ax = 0x0f02;
+    out(dx, ax);
+    memoryASet16(ss, 0x0008, ax);
+    dx = 0x03ce;
+    ax = 0;
+    out(dx, ax);
+    memoryASet16(ss, 0x000a, ax);
+    ax = 0x0e01;
+    out(dx, ax);
+    memoryASet16(ss, 0x000c, ax);
+    ax = 0x0005;
+    out(dx, ax);
+    memoryASet16(ss, 0x0000, ax);
+    ax = 0x0003;
+    out(dx, ax);
+    memoryASet16(ss, 0x0002, ax);
+    ds = cx;
+    cx = 0xa000;
+    es = cx;
+    bp = di;
+    cx = 0x0020;
+loc_16c15:
+    push(cx);
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    cx = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    tl = ch;
+    ch = ah;
+    ah = tl;
+    al = 0x08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    cl = memoryAGet(ds, bx);
+    bx++;
+    al = 0x08;
+    ah = cl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0027;
+    cx = pop();
+    cx--;
+    if (cx == 0)
+        goto loc_16c7c;
+    goto loc_16c15;
+loc_16c7c:
+    di = bp;
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    cx = 0x0020;
+loc_16ca3:
+    push(cx);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0027;
+    cx = pop();
+    if (--cx)
+        goto loc_16ca3;
+    di = bp;
+    dl = 0xc4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    cx = 0x0020;
+loc_16cd6:
+    push(cx);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsw<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ah;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    lodsb<MemAuto, DirAuto>();
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0027;
+    cx = pop();
+    if (--cx)
+        goto loc_16cd6;
+    ds = pop();
+}
+void sub_16cfc()
+{
+    push(ds);
+    ds = cx;
+    tx = dx;
+    dx = cx;
+    cx = tx;
+    dx = 0x03c4;
+    ax = 0x0f02;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    dx = 0x03ce;
+    ax = 0;
+    memoryASet16(ss, 0x000a, ax);
+    out(dx, ax);
+    ax = 0x0e01;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x0005;
+    memoryASet16(ss, 0x0000, ax);
+    out(dx, ax);
+    ax = 0x0003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xa000;
+    es = ax;
+    push(di);
+    ax = 0x000e;
+loc_16d37:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    push(si);
+    tl = al;
+    al = ah;
+    ah = tl;
+    si = ax;
+    ax = memoryAGet16(ds, bx);
+    bx += 0x0002;
+    tl = al;
+    al = ah;
+    ah = tl;
+    bp = ax;
+    ch = cl;
+    ax = 0;
+    if (ch == 0)
+        goto loc_16d5b;
+loc_16d4f:
+    flags.carry = si & 1;
+    si >>= 1;
+    al = rcr(al, 0x01);
+    flags.carry = bp & 1;
+    bp >>= 1;
+    ah = rcr(ah, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16d4f;
+loc_16d5b:
+    push(bx);
+    push(cx);
+    bx = bp;
+    cx = si;
+    bp = ax;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    al = 0x08;
+    ah = bl;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = cl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    bx = bp;
+    al = 0x08;
+    ah = bh;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    cx = pop();
+    bx = pop();
+    si = pop();
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16d37;
+    di = pop();
+    push(di);
+    ax = 0x0001;
+    memoryASet16(ss, 0x000c, ax);
+    out(dx, ax);
+    ax = 0x1003;
+    memoryASet16(ss, 0x0002, ax);
+    out(dx, ax);
+    ax = 0xff08;
+    memoryASet16(ss, 0x000e, ax);
+    out(dx, ax);
+    dl = 0xc4;
+    ax = 0x0202;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    ax = 0x000e;
+loc_16dc9:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16ddf;
+loc_16dd7:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16dd7;
+loc_16ddf:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16dc9;
+    di = pop();
+    push(di);
+    dx = 0x03c4;
+    ax = 0x0402;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    ax = 0x000e;
+loc_16e0c:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16e22;
+loc_16e1a:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16e1a;
+loc_16e22:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16e0c;
+    di = pop();
+    dx = 0x03c4;
+    ax = 0x0802;
+    memoryASet16(ss, 0x0008, ax);
+    out(dx, ax);
+    ax = 0x000e;
+loc_16e4e:
+    push(ax);
+    lodsw<MemAuto, DirAuto>();
+    tl = al;
+    al = ah;
+    ah = tl;
+    bx = ax;
+    ch = cl;
+    al = 0;
+    if (ch == 0)
+        goto loc_16e64;
+loc_16e5c:
+    flags.carry = bx & 1;
+    bx >>= 1;
+    al = rcr(al, 0x01);
+    ch--;
+    if (ch != 0)
+        goto loc_16e5c;
+loc_16e64:
+    ch = al;
+    flags.interrupts = false;
+    al = memoryAGet(es, di);
+    al = bh;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = bl;
+    stosb<MemAuto, DirAuto>();
+    al = memoryAGet(es, di);
+    al = ch;
+    stosb<MemAuto, DirAuto>();
+    flags.interrupts = true;
+    di += 0x0029;
+    ax = pop();
+    ax--;
+    if (ax != 0)
+        goto loc_16e4e;
+    ds = pop();
+}
 void sub_16e83()
 {
     al = memoryAGet(ds, si + 40);
@@ -13783,11 +15034,11 @@ loc_17182:
     ds = bp;
     dl = memoryAGet(ds, 0x1fe0);
     dh = 0;
-    dx += memoryAGet16(ds, 0x0010); // mouse x
+    dx += memoryAGet16(ds, 0x0010);
     dx >>= 1;
     dx >>= 1;
     dx >>= 1;
-    si = memoryAGet16(ds, 0x0012); // mouse y
+    si = memoryAGet16(ds, 0x0012);
     push(dx);
     ax = si;
     si = 0x002c;
@@ -15208,7 +16459,6 @@ void sub_17c67()
         goto loc_17c7f;
     dx |= 0x0f00;
 loc_17c7f:
-    //stop(/*carry2*/); //gabo10
     ax = rcl(ax, 0x0001);
     if (!flags.carry)
         goto loc_17c87;
@@ -15884,7 +17134,6 @@ loc_18147:
 loc_18160:
     push(cx);
     repne_scasb<MemAuto, DirAuto>(al);
-//    stop(); // repe scasb al, byte ptr es:[di]
     bx = pop();
     bx++;
     push(cx);
@@ -17323,7 +18572,7 @@ loc_18d27:
     memoryASet(ds, si, memoryAGet(ds, si) >> 1);
     si++;
 loc_18d30:
-//    memoryASet(ds, si, rcr(memoryAGet(ds, si), 0x01));
+    memoryASet(ds, si, rcr(memoryAGet(ds, si), 0x01));
     si++;
     if (--cx)
         goto loc_18d30;
@@ -17579,10 +18828,10 @@ loc_18ed6:
     push(si);
     push(cx);
     ch = 0;
+    flags.carry = memoryAGet(ds, si) & 1;
     memoryASet(ds, si, memoryAGet(ds, si) >> 1);
     si++;
 loc_18edf:
-    stop(/*carry1*/);
     memoryASet(ds, si, rcr(memoryAGet(ds, si), 0x01));
     si++;
     if (--cx)
@@ -17657,10 +18906,10 @@ loc_18f4c:
     push(si);
     push(cx);
     ch = 0;
+    flags.carry = memoryAGet(ds, si) & 1;
     memoryASet(ds, si, memoryAGet(ds, si) >> 1);
     si++;
 loc_18f55:
-    stop(/*carry1*/);
     memoryASet(ds, si, rcr(memoryAGet(ds, si), 0x01));
     si++;
     if (--cx)
@@ -17729,10 +18978,10 @@ loc_18fbc:
     push(si);
     push(cx);
     ch = 0;
+    flags.carry = memoryAGet(ds, si) & 1;
     memoryASet(ds, si, memoryAGet(ds, si) >> 1);
     si++;
 loc_18fc5:
-    stop(/*carry1*/);
     memoryASet(ds, si, rcr(memoryAGet(ds, si), 0x01));
     si++;
     if (--cx)
@@ -17818,10 +19067,10 @@ loc_1905a:
     push(bx);
     push(cx);
     ch = 0;
+    flags.carry = memoryAGet(ds, bx) & 1;
     memoryASet(ds, bx, memoryAGet(ds, bx) >> 1);
     bx++;
 loc_19063:
-    stop(/*carry1*/);
     memoryASet(ds, bx, rcr(memoryAGet(ds, bx), 0x01));
     bx++;
     if (--cx)
@@ -19307,750 +20556,4 @@ loc_19a87:
     bp = pop();
     di = pop();
     si = pop();
-}
-
-void sub_16170()
-{
-    push(ds);
-    dx = 0x03c4;
-    ax = 0x0f02;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    dx = 0x03ce;
-    ax = 0;
-    memoryASet16(ss, 0x000a, ax);
-    out(dx, ax);
-    ax = 0x0e01;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x0005;
-    memoryASet16(ss, 0x0000, ax);
-    out(dx, ax);
-    ax = 0x0003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ds = cx;
-    cx = 0xa000;
-    es = cx;
-    bp = di;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    cx = memoryAGet16(ds, bx);
-    bx++;
-    bx++;
-    al = 0x08;
-    ah = cl;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    tl = ch;
-    ch = ah;
-    ah = tl;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    al = ch;
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    ah = memoryAGet(ds, bx);
-    bx++;
-    al = 0x08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    di = bp;
-    ax = 0x0001;
-    memoryASet16(ss, 0x000c, ax);
-    out(dx, ax);
-    ax = 0x1003;
-    memoryASet16(ss, 0x0002, ax);
-    out(dx, ax);
-    ax = 0xff08;
-    memoryASet16(ss, 0x000e, ax);
-    out(dx, ax);
-    dl = 0xc4;
-    ax = 0x0202;
-    memoryASet16(ss, 0x0008, ax);
-    out(dx, ax);
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    flags.interrupts = false;
-    al = memoryAGet(es, di);
-    lodsw<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    al = ah;
-    stosb<MemAuto, DirAuto>();
-    al = memoryAGet(es, di);
-    lodsb<MemAuto, DirAuto>();
-    stosb<MemAuto, DirAuto>();
-    flags.interrupts = true;
-    di += 0x0029;
-    ds = pop();
-}
-
-void sub_13e6f()
-{
-    al = memoryAGet(ds, 0x1fd0);
-    if (al != 0x3b)
-        goto loc_13e79;
-    goto loc_14068;
-loc_13e79:
-    if (al != 0x3c)
-        goto loc_13e80;
-    goto loc_1403d;
-loc_13e80:
-    if (al != 0x4e)
-        goto loc_13e87;
-    goto loc_14018;
-loc_13e87:
-    if (al != 0x57)
-        goto loc_13e8e;
-    goto loc_14018;
-loc_13e8e:
-    if (al != 0x58)
-        goto loc_13e95;
-    goto loc_13fef;
-loc_13e95:
-    if (al != 0x53)
-        goto loc_13e9c;
-    goto loc_13fef;
-loc_13e9c:
-    ah = al;
-    al = 0x02;
-    if (ah != 0x3d)
-        goto loc_13ea8;
-    goto loc_13f5c;
-loc_13ea8:
-    al++;
-    if (ah != 0x3e)
-        goto loc_13eb2;
-    goto loc_13f5c;
-loc_13eb2:
-    al++;
-    if (ah != 0x3f)
-        goto loc_13ebc;
-    goto loc_13f5c;
-loc_13ebc:
-    al++;
-    if (ah != 0x40)
-        goto loc_13ec6;
-    goto loc_13f5c;
-loc_13ec6:
-    al++;
-    if (ah != 0x41)
-        goto loc_13ed0;
-    goto loc_13f5c;
-loc_13ed0:
-    al++;
-    if (ah != 0x42)
-        goto loc_13eda;
-    goto loc_13f5c;
-loc_13eda:
-    al++;
-    if (ah != 0x43)
-        goto loc_13ee4;
-    goto loc_13f5c;
-loc_13ee4:
-    al++;
-    if (ah != 0x44)
-        goto loc_13eee;
-    goto loc_13f5c;
-loc_13eee:
-    ax = memoryAGet16(ds, 0x0014);
-    if (ax & 0x0001)
-        goto loc_13ef9;
-    goto loc_13fe3;
-loc_13ef9:
-    ax = memoryAGet16(ds, 0x0012);
-    ax += 0x0008;
-    if ((short)ax >= (short)0x00c0)
-        goto loc_13f07;
-    goto loc_13fe9;
-loc_13f07:
-    ax = memoryAGet16(ds, 0x0010);
-    ax += 0xfff8;
-    if ((short)ax < (short)0x00d0)
-        goto loc_13f15;
-    goto loc_13f92;
-loc_13f15:
-    if (memoryAGet(ds, 0x0084) == 0x00)
-        goto loc_13f1f;
-    goto loc_13fe9;
-loc_13f1f:
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    if ((char)al >= (char)0x02)
-        goto loc_13f2e;
-    goto loc_14032;
-loc_13f2e:
-    if (memoryAGet(ds, 0x0062) != 0xff)
-        goto loc_13f38;
-    goto loc_13fe9;
-loc_13f38:
-    memoryASet(ds, 0x0062, 0xff);
-    if (al != 0x0a)
-        goto loc_13f44;
-    goto loc_14018;
-loc_13f44:
-    if (al != 0x0b)
-        goto loc_13f4b;
-    goto loc_13fef;
-loc_13f4b:
-    if (al != 0x0c)
-        goto loc_13f52;
-    goto loc_13fee;
-loc_13f52:
-    if (memoryAGet(ds, 0x002b) != 0xff)
-        goto loc_13f5c;
-    goto loc_13fe9;
-loc_13f5c:
-    if (memoryAGet(ds, 0x0084) == 0x00)
-        goto loc_13f66;
-    goto loc_13fe9;
-loc_13f66:
-    memoryASet(ds, 0x0082, al);
-    if (memoryAGet(ds, 0x2010) != 0xff)
-        goto loc_13f7c;
-    if (!(memoryAGet(ds, 0x25a7) & 0x03))
-        goto loc_13f7c;
-    ax = 0x0401;
-    interrupt(0x61);
-loc_13f7c:
-    if (memoryAGet(ds, 0x2010) == 0xff)
-        goto loc_13f8f;
-    if (!(memoryAGet(ds, 0x25a7) & 0x01))
-        goto loc_13f8f;
-    ax = 0x0313;
-    interrupt(0x60);
-loc_13f8f:
-    goto loc_13fe9;
-loc_13f92:
-    memoryASet(ds, 0x0062, 0xff);
-    if (memoryAGet(ds, 0x1fcf) != 0x00)
-        goto loc_13fee;
-    bx = memoryAGet16(ds, 0x0000);
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx += 0x00d0;
-    if ((short)ax >= (short)bx)
-        goto loc_13fbe;
-    bx += 0x0018;
-    if ((short)ax < (short)bx)
-        goto loc_13fbe;
-    if ((short)ax < (short)0x00d0)
-        goto loc_13fe9;
-loc_13fbe:
-    ax -= 0x00da;
-    if ((short)ax >= 0)
-        goto loc_13fc5;
-    ax = 0;
-loc_13fc5:
-    if ((short)ax <= (short)0x004f)
-        goto loc_13fcd;
-    ax = 0x004f;
-loc_13fcd:
-    ax <<= 1;
-    ax += 0x0002;
-    memoryASet16(ds, 0x0002, ax);
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    memoryASet16(ds, 0x0000, ax);
-    sub_1410f();
-    goto loc_13fe9;
-loc_13fe3:
-    memoryASet(ds, 0x0062, 0x00);
-    return;
-loc_13fe9:
-    memoryASet(ds, 0x0062, 0xff);
-loc_13fee:
-    return;
-loc_13fef:
-    if (memoryAGet(ds, 0x002b) == 0xff)
-        goto loc_13fee;
-    memoryASet(ds, 0x1fd0, 0x00);
-    al = memoryAGet(ds, 0x1fd3);
-    ah = memoryAGet(ds, 0x1fd4);
-    memoryASet(ds, 0x1fd4, al);
-    al -= ah;
-    if ((char)al > (char)0x05)
-        goto loc_13fee;
-    memoryASet(ds, 0x004b, 0xff);
-    al = memoryAGet(ds, 0x0043);
-    memoryASet(ds, 0x0047, al);
-    goto loc_13fee;
-loc_14018:
-    al = memoryAGet(ds, 0x0052);
-    bl = al;
-    bl -= memoryAGet(ds, 0x0053);
-    if (bl >= 0x02)
-        goto loc_14028;
-    goto loc_13fee;
-loc_14028:
-    memoryASet(ds, 0x002b, memoryAGet(ds, 0x002b) ^ 0xff);
-    memoryASet(ds, 0x0053, al);
-    goto loc_13fee;
-loc_14032:
-    if (memoryAGet(ds, 0x002b) == 0xff)
-        goto loc_13fee;
-    if (al == 0)
-        goto loc_14068;
-loc_1403d:
-    if (memoryAGet(ds, 0x0069) == 0x00)
-        goto loc_14046;
-    goto loc_13fe9;
-loc_14046:
-    if (memoryAGet(ds, 0x0067) != 0x63)
-        goto loc_1404f;
-    goto loc_13fe9;
-loc_1404f:
-    memoryASet(ds, 0x0067, memoryAGet(ds, 0x0067) + 1);
-loc_14053:
-    al = 0x63;
-    al -= memoryAGet(ds, 0x0067);
-    al >>= 1;
-    al = -al;
-    al += 0x35;
-    al = -al;
-    al += 0x39;
-    memoryASet(ds, 0x0049, al);
-    goto loc_13fe9;
-loc_14068:
-    bl = memoryAGet(ds, 0x0064);
-    if (memoryAGet(ds, 0x0069) == 0x00)
-        goto loc_14076;
-    goto loc_13fe9;
-loc_14076:
-    if (memoryAGet(ds, 0x0067) != bl)
-        goto loc_1407f;
-    goto loc_13fe9;
-loc_1407f:
-    memoryASet(ds, 0x0067, memoryAGet(ds, 0x0067) - 1);
-    goto loc_14053;
 }

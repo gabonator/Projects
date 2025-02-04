@@ -20,7 +20,7 @@ if not exist capstone-5.0.1\build\libcapstone.a (
   cd capstone-5.0.1
   mkdir build
   cd build
-  cmake -DCAPSTONE_BUILD_TESTS=OFF -DCAPSTONE_ARCHITECTURE_DEFAULT=OFF -DCAPSTONE_X86_SUPPORT=ON ..
+  cmake -G "MinGW Makefiles" -DCAPSTONE_BUILD_TESTS=OFF -DCAPSTONE_ARCHITECTURE_DEFAULT=OFF -DCAPSTONE_X86_SUPPORT=ON ..
   cmake --build .
   cd ..\..
 )

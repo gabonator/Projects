@@ -23,6 +23,7 @@ public:
 
     int _headerSize;
     int _loadAddress;
+    int _endAddress;
     bool interrupts, direction, carry, zero;
     uint8_t memory[0x10000*10];
 /*
@@ -112,6 +113,7 @@ public:
 #define tx ctx.temp.r16
 #define headerSize ctx._headerSize
 #define loadAddress ctx._loadAddress
+#define endAddress ctx._endAddress
 
 /*
 #define memory ctx.memory8

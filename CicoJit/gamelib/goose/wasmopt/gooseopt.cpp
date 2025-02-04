@@ -7,6 +7,7 @@ void start()
 {
     headerSize = 0x0200;
     loadAddress = 0x1000;
+    endAddress = 0x1d20;
     cs = 0x1000;
     ds = 0x0ff0;
     es = 0x0ff0;
