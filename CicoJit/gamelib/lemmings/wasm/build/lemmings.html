@@ -36,7 +36,12 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <br>
 
 <!-- app -->
-<canvas id="canvas" width="640" height="400" style="border: 1px solid #d0d0d0; width:960px; height:600px;"></canvas>
+<div>
+<canvas id="canvas" width="640" height="400" style="display:inline-block; border: 1px solid #d0d0d0; width:960px; height:600px;"></canvas>
+<div id="draw" style="display:inline-block; padding-left:10px; vertical-align:top; width:120px; height:600px;"><div id="drawIcon" style="display:inline-block; width:60px; height:80px; font-size:60px; opacity:0.5" onClick="toggleDraw()">&#x1F58C;</div><div id="drawContents" style="display:inline-block;"></div>
+</div>
+<br><br><br>
+<canvas id="canvas2" width="1664" height="200" style="border: 1px solid #d0d0d0; width:1664px; height:200px;"></canvas>
 
 <script src="app_inline.js"></script>
 <script src="resources.js"></script>
@@ -70,17 +75,75 @@ function status()
     out: memoryAGet(0x0045),
     total: memoryAGet(0x0047),
     saved: memoryAGet(0x0046),
-    avail: [0x007c, 0x006d, 0x0079, 0x0073, 0x0076, 0x006a, 0x007f, 0x0070].map(x=>memoryAGet(x)).join(",")
+    avail: [0x6a, 0x6d, 0x70, 0x73, 0x76, 0x79, 0x7c, 0x7f].map(x=>memoryAGet(x)),
+    scroll: memoryAGet(0x0000)+memoryAGet(0x0001)*256,
+    level: memoryAGet(0x1f6b)
   };
 }
+
+function setStatus(s)
+{
+  let memoryASet = (x, y) => game.memoryBuffer[0x19a90 + x] = y;
+  if (s.timeout)
+  {
+    memoryASet(0x20a7, s.timeout.charCodeAt(0))
+    memoryASet(0x20a8, s.timeout.charCodeAt(1))
+    memoryASet(0x20a9, s.timeout.charCodeAt(2))
+    memoryASet(0x20aa, s.timeout.charCodeAt(3))
+  }
+  if (s.saved)
+    memoryASet(0x46, s.saved)
+  if (s.avail)
+    [0x6a, 0x6d, 0x70, 0x73, 0x76, 0x79, 0x7c, 0x7f]
+      .map((ofs, i) => i < s.avail.length ? memoryASet(ofs, s.avail[i]) : 0)
+}
+
+var drawing = false;
+var selColor = 15;
+var drawDown = false;
+var drawLevel = -1;
+
+function toggleDraw()
+{
+  drawing = !drawing;
+  document.querySelector("#drawIcon").style.opacity = drawing ? "1" : "0.5"
+  if (drawing)
+  {
+    var html = ""
+    for (var c=0; c<16; c++)
+    {
+      var clr = [game.memoryPalette[c*4], game.memoryPalette[c*4+1], game.memoryPalette[c*4+2]]
+      clr = clr.map(x=>("0"+x.toString(16)).substr(-2)).join("");
+      html += `<div id="draw${c}" style="display:inline-block; width:40px; height:40px; margin:4px; box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); background:#${clr}" onClick="toggleColor(this, ${c})"></div>`
+    }
+    document.querySelector("#drawContents").innerHTML = html;
+  } else
+  {
+//    var html = "&#x1F58C;<br>"
+    document.querySelector("#drawContents").innerHTML = "";
+  }
+}
+
+function toggleColor(obj, s)
+{
+  selColor = s;
+  for (var c=0; c<16; c++)
+    document.querySelector("#draw"+c).style.boxShadow = c == s ? "0px 0px 8px #000" : "2px 2px 6px rgba(0, 0, 0, 0.5)"
+}
+
+var canvas2 = document.getElementById('canvas2');
+var ctx2 = canvas2.getContext('2d');
+var imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-var game = new WasmApp(f=>Module[f], {lemmingsMouse:0, lemmingsButton:0});
+var game = new WasmApp(f=>Module[f], {lemmingsMouse:0, lemmingsButton:0, lemmingsInvalidateMap:0});
 game.load().then(() => {
-  var videoBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appVideo.value>>2], 640 * 400 * 4);
+  var frameBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appFrameBuffer.value>>2], 640 * 400 * 4);
   game.memoryBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appMemory.value>>2], 0x10000*14);
+  game.memoryEga = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appEgaMemory.value>>2], 0x80000);
+  game.memoryPalette = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appEgaPalette.value>>2], 16*4);
   game.HEAP32[game.symbols.lemmingsStartupLevel.value>>2] = startupLevel;
   game.symbols.appLoop();
   game.symbols.asyncify_stop_unwind();
@@ -92,11 +155,29 @@ game.load().then(() => {
   canvas.addEventListener('touchstart', e => game.symbols.lemmingsButton(1), false);
   canvas.addEventListener('touchend', e => game.symbols.lemmingsButton(0), false)
 
+  canvas.addEventListener('mousedown', e => drawDown = true);
+  canvas.addEventListener('mouseup', e => drawDown = false);
+  canvas.addEventListener('mousemove', e => {
+    if (drawDown && drawing)
+    {
+      var ofs = game.memoryBuffer[0x19a90] + game.memoryBuffer[0x19a91]*256;
+      draw(Math.floor(e.offsetX/3)+ofs+64, Math.floor(e.offsetY/3))
+    }
+  });
+
+  document.querySelector("#drawIcon").addEventListener("mouseover", function() {
+      game.symbols.lemmingsMouse(100, 100)
+  });
+  document.querySelector("#draw").addEventListener("mouseover", function() {
+    if (drawing)
+      game.symbols.lemmingsMouse(100, 100)
+  });
+
   var gameTimer = setInterval(() => {
     game.asyncifyResume();
     if (game.symbols.appBlit())
     {
-      const img = new ImageData(videoBuffer, 640, 400);
+      const img = new ImageData(frameBuffer, 640, 400);
       this.ctx.putImageData(img, 0, 0);
     }
   }, 40);
@@ -104,6 +185,98 @@ game.load().then(() => {
     var s = status();
     if (s)
       document.querySelector("#status").innerHTML = `out: ${s.out}/${s.total} saved: ${s.saved} timeout: ${s.timeout} avail: ${s.avail}`
+    if (drawing && drawLevel != s.level)
+    {
+      if (drawLevel != -1)
+        toggleDraw();
+      drawLevel = s.level;
+    }
+var i = 0;
+for (var y=0; y<200; y++)
+for (var x=0; x<1664; x++) {
+ if (y >= 160)
+  {
+  if (x < 16*30)
+  {
+    if (Math.floor(x/40) == selColor)
+    {
+      var px = x%40;
+      var py = y-160;
+      if (px ==0 || px==1 || px==39 || px == 38 ||
+          py==0 || py==1 || py==38 || py==39)
+      {
+        imageData2.data[i++] = 255;
+        imageData2.data[i++] = 255;
+        imageData2.data[i++] = 255;
+        imageData2.data[i++] = 255;
+        continue;
+      }
+    }
+  imageData2.data[i++] = game.memoryPalette[Math.floor(x/40)*4];
+  imageData2.data[i++] = game.memoryPalette[Math.floor(x/40)*4+1];
+  imageData2.data[i++] = game.memoryPalette[Math.floor(x/40)*4+2];
+  imageData2.data[i++] = 255;
+  } else {
+  imageData2.data[i++] = 0;
+  imageData2.data[i++] = 0;
+  imageData2.data[i++] = 0;
+  imageData2.data[i++] = 255;
+  }
+  continue;
+  }
+  var mask = 0x80 >> (x % 8)
+  var b = 0;
+  var ptr = 0x4a60-40 + y*208 + (x>>3);
+  if (game.memoryEga[ptr*4] & mask) b |= 1;
+  if (game.memoryEga[ptr*4+1] & mask) b |= 2;
+  if (game.memoryEga[ptr*4+2] & mask) b |= 4;
+  if (game.memoryEga[ptr*4+3] & mask) b |= 8;
+  imageData2.data[i++] = game.memoryPalette[b*4];
+  imageData2.data[i++] = game.memoryPalette[b*4+1];
+  imageData2.data[i++] = game.memoryPalette[b*4+2];
+  imageData2.data[i++] = 255;
+}
+    this.ctx2.putImageData(imageData2, 0, 0);
+
   }, 1000);
 })
+
+function pixel(x, y, c)
+{
+  var mask = 0x80 >> (x % 8)
+  var ptr = 0x4a60 - 40 + y*208 + (x>>3);
+  game.memoryEga[ptr*4] &= ~mask;
+  game.memoryEga[ptr*4+1] &= ~mask;
+  game.memoryEga[ptr*4+2] &= ~mask;
+  game.memoryEga[ptr*4+3] &= ~mask;
+  game.memoryEga[ptr*4] |= (c & 1) ? mask : 0;
+  game.memoryEga[ptr*4+1] |= (c & 2) ? mask : 0;
+  game.memoryEga[ptr*4+2] |= (c & 4) ? mask : 0;
+  game.memoryEga[ptr*4+3] |= (c & 8) ? mask : 0;
+}
+
+function draw(x, y)
+{
+if (y > 160)
+{
+  if (x < 16*40)
+    selColor = Math.floor(x/40);
+  return;
+}
+  for (var xx = -5; xx <= 5; xx++)
+    for (var yy = -5; yy <= 5; yy++)
+      if (xx*xx+yy*yy<25)
+        pixel(x+xx, y+yy, selColor);
+        //game.memoryEga[ptr*4] = 0xff;
+  game.symbols.lemmingsInvalidateMap();
+
+}
+//  canvas.addEventListener('mousemove', e => game.symbols.lemmingsMouse(e.offsetX/1.5, e.offsetY/1.5), false);
+//  canvas2.addEventListener('mousedown', e => game.symbols.lemmingsButton(1), false);
+//  canvas.addEventListener('mouseup', e => game.symbols.lemmingsButton(0), false)
+  var drawOn = 0;
+  canvas2.addEventListener('mousedown', e => {drawOn = 1; draw(e.offsetX, e.offsetY)}, false);
+  canvas2.addEventListener('mousemove', e => drawOn ? draw(e.offsetX, e.offsetY) : 0, false);
+  canvas2.addEventListener('mouseup', e => {drawOn = 0; }, false);
+
 </script>
