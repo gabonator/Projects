@@ -11,6 +11,7 @@ void start()
 {
     headerSize = 0x0130;
     loadAddress = 0x1000;
+    endAddress = 0x3700;
     cs = 0x341b;
     ds = 0x340b;
     es = 0x340b;
