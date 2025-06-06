@@ -19,30 +19,29 @@ It converts EXE file into C++ code, by providing `cicoctx.h` header file, these 
 
 # Demo
 
-|------|--------|------|----------|-------|------|----------|
 | Game | Author | Year | Language | Video | Port | Controls |
 |------|--------|------|----------|-------|------|----------|
-| Alley cat | IBM / Bill Williams | 1984 | asm | cga | [gameslib/alleycat/cicorun](native) - difficult timing loops, not suitable for porting into web | |
-| Tetris | Spectrum Holobyte | 1987 | asm | cga, ega | [gameslib/tetris/cicorun](native) - not really fun, no web port | |
-| Xenon2 | Bitmap brothers | 1990 | asm | ega | [gameslib/xenon2/cicorun](native) - tons of indirect calls | |
-| | | | | | [gameslib/xenon2/wasm/build](wasm) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/xenon2/wasm/build/index.html](Play online!) | Touch / arrow keys, space |
-| Titus the fox | Eric Zmyro | 1992 | asm | ega | [gameslib/fox/cicorun](native) - had to hack copy protection first | |
-| | | | | | [gameslib/fox/wasm/build](wasm) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasm/build/fox.html](Play online!) | arrow keys, space |
-| | | | | | [gameslib/fox/wasm/build](wasm HD port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasmhd/build/fox.html](Play online!) | arrow keys, space (A, B - demo) |
-| Arcade Volleyball | Compute! | 1987 | Turbo C | cga | [gameslib/arcadevolleyball/cicorun](native) - just proof of concept for porting higher languages | |
-| Bumpy | Lorciel | 1992 | Turbo C++ | ega | [gameslib/bumpy/cicorun](native) | |
-| | | | | | [gameslib/bumpy/js](javascript port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/bumpy/js/bumpy.html](Play online!) - replays | arrow keys, space |
-| | | | | | [gameslib/bumpy/wasm/build](wasm) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/bumpy/wasm/build/bumpy.html](Play online!) | arrow keys, space |
-| Tunneler | Geoffrey Silverton | 1991 | Pascal | ega+ | [gameslib/tunneler/cicorun](native) | |
-| | | | | | [gameslib/tunneler/js](javascript port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/js/tunneler.html](Play online!) | asdf, arrow keys |
-| | | | | | [gameslib/tunneler/wasm](wasm port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/wasm/build/tunneler.html](Play online!) | asdf, arrow keys |
-| | | | | | [gameslib/tunneler/netplay](wasm port + network multiplayer) - docker file | |
-| Dynablaster | Hudson | 1990 | asm | vga | [gameslib/dynablaster/cicorun](native) | |
-| | | | | | [gameslib/dynablaster/js](javascript port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/dynablaster/js/dynablaster.html](Play online!) | |
-| | | | | | [gameslib/dynablaster/wasm](wasm port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/dynablaster/wasm/build/dynablaster.html](Play online!) | |
-| CD-Man | Creative Dimensions | 1989 | asm | hi ega | [gameslib/cdman/cicorun](native) | |
-| | | | | | [gameslib/cdman/wasm](wasm port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/cdman/wasm/build/dynablaster.html](Play online!) | arrow keys, (D - demo) |
-| Prehistorik | Titus | 1991 | Turbo C | ega | [gameslib/prehistorik/cicorun](native) | |
-| | | | | | [gameslib/prehistorik/js](javascript port) - [https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/prehistorik/js/index.html](Play online!) | arrow keys |
+| Alley cat | IBM / Bill Williams | 1984 | asm | cga | [native](gameslib/alleycat/cicorun) - difficult timing loops, not suitable for porting into web | |
+| Tetris | Spectrum Holobyte | 1987 | asm | cga, ega | [native](gameslib/tetris/cicorun)  - not really fun, no web port | |
+| Xenon2 | Bitmap brothers | 1990 | asm | ega | [native](gameslib/xenon2/cicorun)  - tons of indirect calls | |
+| | | | | | [wasm](gameslib/xenon2/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/xenon2/wasm/build/index.html)  | Touch / arrow keys, space |
+| Titus the fox | Eric Zmyro | 1992 | asm | ega | [native](gameslib/fox/cicorun) - had to hack copy protection first | |
+| | | | | | [wasm](gameslib/fox/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasm/build/fox.html) | arrow keys, space |
+| | | | | | [wasm HD port](gameslib/fox/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasmhd/build/fox.html) | arrow keys, space (A, B - demo]  |
+| Arcade Volleyball | Compute! | 1987 | Turbo C | cga | [native](gameslib/arcadevolleyball/cicorun) - just proof of concept for porting higher languages | |
+| Bumpy | Lorciel | 1992 | Turbo C++ | ega | [native](gameslib/bumpy/cicorun)  | |
+| | | | | | [javascript port](gameslib/bumpy/js) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/bumpy/js/bumpy.html) - replays | arrow keys, space |
+| | | | | | [wasm](gameslib/bumpy/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/bumpy/wasm/build/bumpy.html) | arrow keys, space |
+| Tunneler | Geoffrey Silverton | 1991 | Pascal | ega+ | [native](gameslib/tunneler/cicorun)  | |
+| | | | | | [javascript port](gameslib/tunneler/js) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/js/tunneler.html) | asdf, arrow keys |
+| | | | | | [wasm port](gameslib/tunneler/wasm) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/tunneler/wasm/build/tunneler.html) | asdf, arrow keys |
+| | | | | | [wasm port + network multiplayer](gameslib/tunneler/netplay) - docker file | |
+| Dynablaster | Hudson | 1990 | asm | vga | [native](gameslib/dynablaster/cicorun) | |
+| | | | | | [javascript port](gameslib/dynablaster/js) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/dynablaster/js/dynablaster.html) | |
+| | | | | | [wasm port](gameslib/dynablaster/wasm) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/dynablaster/wasm/build/dynablaster.html) | |
+| CD-Man | Creative Dimensions | 1989 | asm | hi ega | [native](gameslib/cdman/cicorun) | |
+| | | | | | [wasm port](gameslib/cdman/wasm) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/cdman/wasm/build/dynablaster.html) | arrow keys, (D - demo]  |
+| Prehistorik | Titus | 1991 | Turbo C | ega | [native](gameslib/prehistorik/cicorun) | |
+| | | | | | [javascript port](gameslib/prehistorik/js) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/prehistorik/js/index.html) | arrow keys |
 
 more TBD
