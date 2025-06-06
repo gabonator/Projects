@@ -1,6 +1,6 @@
 # CicoJit
 
-Cicojit was an experimental project which translates MSDOS binaries into C++ code during the program execution. Similar to QEMU or Rosetta, but instead of translating basic blocks (sequence of instruction between branches), CicoJit tries to translate whole methods to produce human readable code. Cruical part is the CicoDis disassembler which uses Capstone to turn sequence of instructions into human readable C code. CicoJit was extremely slow and later I focused on improving the CicoDis component, running CicoDis with recursive mode enabled converts most of the application in single run and it does it very quickly. Command line interface was extended to help CicoJit to process indirect jumps. CLI also allows setting the base address to debug the application side by side with DosBox. 
+Cicojit was an experimental project which translates MSDOS binaries into C++ code on the fly during the program execution while building a source code of complete application. Similar to QEMU or Rosetta, but instead of translating basic blocks (sequence of instruction between branches), CicoJit tries to translate whole methods to produce human readable code. Cruical part is the CicoDis disassembler which uses Capstone to turn sequence of instructions into human readable C code. CicoJit was extremely slow and later I focused on improving the CicoDis component, running CicoDis with recursive mode enabled converts most of the application in single run and it does it very quickly. Command line interface was extended to help CicoJit to process indirect jumps. CLI also allows setting the base address to debug the application side by side with DosBox. 
 
 # CicoDis
 
@@ -19,8 +19,9 @@ It converts EXE file into C++ code, by providing `cicoctx.h` header file, these 
 
 # Demo
 
-|------|----|
-| Game  | Author | Year | Language | Video | Port | Controls |
+|------|--------|------|----------|-------|------|----------|
+| Game | Author | Year | Language | Video | Port | Controls |
+|------|--------|------|----------|-------|------|----------|
 | Alley cat | IBM / Bill Williams | 1984 | asm | cga | [gameslib/alleycat/cicorun](native) - difficult timing loops, not suitable for porting into web | |
 | Tetris | Spectrum Holobyte | 1987 | asm | cga, ega | [gameslib/tetris/cicorun](native) - not really fun, no web port | |
 | Xenon2 | Bitmap brothers | 1990 | asm | ega | [gameslib/xenon2/cicorun](native) - tons of indirect calls | |
