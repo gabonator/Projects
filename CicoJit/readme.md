@@ -21,7 +21,7 @@ It converts EXE file into C++ code, by providing `cicoctx.h` header file, these 
 
 | Game | Author | Year | Language | Video | Port | Controls |
 |------|--------|------|----------|-------|------|----------|
-| Alley cat | IBM / Bill Williams | 1984 | asm | cga | [native](Projects/CicoJit/tree/master/gameslib/alleycat/cicorun) - difficult timing loops, not suitable for porting into web | |
+| Alley cat | IBM / Bill Williams | 1984 | asm | cga | [native](./gameslib/alleycat/cicorun) - difficult timing loops, not suitable for porting into web | |
 | Tetris | Spectrum Holobyte | 1987 | asm | cga, ega | [native](gameslib/tetris/cicorun/)  - not really fun, no web port | |
 | Xenon2 | Bitmap brothers | 1990 | asm | ega | [native](gameslib/xenon2/cicorun/)  - tons of indirect calls | |
 | | | | | | [wasm](gameslib/xenon2/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/xenon2/wasm/build/index.html)  | Touch / arrow keys, space |
