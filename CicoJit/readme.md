@@ -27,7 +27,7 @@ It converts EXE file into C++ code, by providing `cicoctx.h` header file, these 
 | | | | | | [wasm](gamelib/xenon2/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/xenon2/wasm/build/index.html)  | Touch / arrow keys, space |
 | Titus the fox | Eric Zmyro | 1992 | asm | ega | [native](gamelib/fox/cicorun) - had to hack copy protection first | |
 | | | | | | [wasm](gamelib/fox/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasm/build/fox.html) | arrow keys, space |
-| | | | | | [wasm HD port](gamelib/fox/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasmhd/build/fox.html) | arrow keys, space (A, B - demo]  |
+| | | | | | [wasm HD port](gamelib/fox/wasm/build) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/fox/wasmhd/fox.html) | arrow keys, space (A, B - demo]  |
 | Arcade Volleyball | Compute! | 1987 | Turbo C | cga | [native](gamelib/arcadevolleyball/cicorun) - just proof of concept for porting higher languages | |
 | Bumpy | Lorciel | 1992 | Turbo C++ | ega | [native](gamelib/bumpy/cicorun)  | |
 | | | | | | [javascript port](gamelib/bumpy/js) - [Play online!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/CicoJit/gamelib/bumpy/js/bumpy.html) - replays | arrow keys, space |
