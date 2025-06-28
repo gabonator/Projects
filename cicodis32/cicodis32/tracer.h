@@ -8,43 +8,19 @@
 
 struct instruction_t
 {
-    enum {
-        readsUndef,
-        readsNone,
-        oneReadsFirst,
-        twoReadsFirst,
-        twoReadsSecond,
-        twoReadsBoth,
-        regAh
-    } reads{readsUndef};
-    enum {
-        writesUndef,
-        writesNone,
-        oneWritesFirst,
-        twoWritesFirst,
-        twoWritesSecond,
-//        writesFlags
-    } writes{writesUndef};
-    bool writesCF{false}, writesZF{false}, writesOF{false};
     bool continuous{true};
     bool simpleJump{false};
     bool calls{false};
     bool visibleFlags{false};
     int stack{0};
-//    std::function<address_t(std::shared_ptr<CapInstr> instr)> jumps;
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
-    [X86_INS_RET] = { .continuous = false, .reads = instruction_t::readsNone, .writes = instruction_t::writesNone },
+    [X86_INS_RET] = { .continuous = false },
     [X86_INS_RETF] = { .continuous = false, },
     [X86_INS_JMP] = {
         .continuous = false,
         .simpleJump = true,
-//        .jumps = [](std::shared_ptr<CapInstr> instr) -> address_t {
-//            assert(instr->mDetail.op_count == 1 &&
-//                   (instr->mDetail.operands[0].size == 2 || instr->mDetail.operands[0].size == 4));
-//            return address_t{instr->mAddress.segment, (int)instr->mDetail.operands[0].imm};
-//        }
     },
     [X86_INS_JAE] = { .simpleJump = true },
     [X86_INS_JA] = { .simpleJump = true },
@@ -65,26 +41,26 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_JP] = { .simpleJump = true },
     [X86_INS_JRCXZ] = { .simpleJump = true },
     [X86_INS_JS] = { .simpleJump = true },
-    [X86_INS_CALL] = { .calls = true, .reads = instruction_t::readsNone, .writes = instruction_t::writesNone },
+    [X86_INS_CALL] = { .calls = true},
     
-    [X86_INS_PUSH] = { .stack = +2, .reads = instruction_t::oneReadsFirst, .writes = instruction_t::writesNone },
-    [X86_INS_POP] = { .stack = -2, .writes = instruction_t::oneWritesFirst, .reads = instruction_t::readsNone },
+    [X86_INS_PUSH] = { .stack = +2 },
+    [X86_INS_POP] = { .stack = -2 },
 
-    [X86_INS_LEA] = { .reads = instruction_t::twoReadsSecond, .writes = instruction_t::twoWritesFirst },
-    [X86_INS_MOV] = { .reads = instruction_t::twoReadsSecond, .writes = instruction_t::twoWritesFirst },
-    [X86_INS_SAHF] = { .reads = instruction_t::regAh, .writes = instruction_t::writesNone, .writesCF = true, .writesZF = true, .writesOF = true, .visibleFlags = true },
-    [X86_INS_XOR] = { .reads = instruction_t::twoReadsSecond, .writes = instruction_t::twoWritesFirst},
-    [X86_INS_TEST] = { .reads = instruction_t::twoReadsBoth, .writes = instruction_t::writesNone},
+    [X86_INS_LEA] = {  },
+    [X86_INS_MOV] = {  },
+    [X86_INS_SAHF] = { /*.reads = instruction_t::regAh,*/ .visibleFlags = true },
+    [X86_INS_XOR] = {},
+    [X86_INS_TEST] = {},
     
-    [X86_INS_INT] = { .reads = instruction_t::regAh, .writes = instruction_t::writesNone }, // TODO
-    [X86_INS_AND] = { .reads = instruction_t::twoReadsSecond, .writes = instruction_t::twoWritesFirst },
-    [X86_INS_PUSHFD] = { .stack = +4, .reads = instruction_t::readsNone, .writes = instruction_t::writesNone },
-    [X86_INS_POPFD] = { .stack = +4, .reads = instruction_t::readsNone, .writes = instruction_t::writesNone },
-    [X86_INS_SBB] = { .reads = instruction_t::twoReadsBoth, .writes = instruction_t::twoWritesFirst},
-    [X86_INS_SUB] = { .reads = instruction_t::twoReadsBoth, .writes = instruction_t::twoWritesFirst},
-    [X86_INS_CMP] = { .reads = instruction_t::twoReadsBoth, .writes = instruction_t::writesNone},
-    [X86_INS_ADD] = { .reads = instruction_t::twoReadsBoth, .writes = instruction_t::twoWritesFirst},
-    [X86_INS_MOVZX] = { .reads = instruction_t::twoReadsSecond, .writes = instruction_t::twoWritesFirst },
+    [X86_INS_INT] = { }, // TODO
+    [X86_INS_AND] = { },
+    [X86_INS_PUSHFD] = { .stack = +4 },
+    [X86_INS_POPFD] = { .stack = +4 },
+    [X86_INS_SBB] = { },
+    [X86_INS_SUB] = { },
+    [X86_INS_CMP] = { },
+    [X86_INS_ADD] = { },
+    [X86_INS_MOVZX] = { },
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>
@@ -153,123 +129,54 @@ public:
     {
         if (mTemplate.simpleJump)
             return {};
-        switch (mTemplate.reads)
+        
+        std::set<x86_reg> regs;
+        for (int i=0; i<mDetail.op_count; i++)
         {
-            case instruction_t::readsUndef:
-                assert(0);
-                return {};
-            case instruction_t::readsNone:
-                return {};
-            case instruction_t::oneReadsFirst:
-                assert(mDetail.op_count == 1);
-                if (mDetail.operands[0].type == X86_OP_REG)
-                    return {mDetail.operands[0].reg};
-                return {};
-            case instruction_t::twoReadsFirst:
-                assert(mDetail.op_count == 2);
-                if (mDetail.operands[0].type == X86_OP_REG)
-                    return {mDetail.operands[0].reg};
-                return {};
-            case instruction_t::twoReadsSecond:
-               assert(mDetail.op_count == 2);
-               if (mDetail.operands[1].type == X86_OP_REG)
-                   return {mDetail.operands[1].reg};
-               if (mDetail.operands[1].type == X86_OP_MEM)
-               {
-                   std::set<x86_reg> regs;
-                   if (mDetail.operands[1].mem.base != X86_REG_INVALID)
-                       regs.insert(mDetail.operands[1].mem.base);
-                   if (mDetail.operands[1].mem.index != X86_REG_INVALID)
-                       regs.insert(mDetail.operands[1].mem.index);
-                   return regs;
-               }
-               return {};
-            case instruction_t::twoReadsBoth:
+            if (mDetail.operands[i].access & CS_AC_READ)
             {
-                assert(mDetail.op_count == 2);
-                std::set<x86_reg> regs;
-                
-                switch (mDetail.operands[0].type)
+                if (mDetail.operands[i].type == X86_OP_REG)
+                    regs.insert(mDetail.operands[i].reg);
+                if (mDetail.operands[i].type == X86_OP_MEM)
                 {
-                    case X86_OP_REG:
-                        regs.insert(mDetail.operands[0].reg);
-                        break;
-                    case X86_OP_IMM:
-                        break;
-                    case X86_OP_MEM:
-                        if (mDetail.operands[0].mem.segment != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[0].mem.segment);
-                        if (mDetail.operands[0].mem.base != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[0].mem.base);
-                        if (mDetail.operands[0].mem.index != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[0].mem.index);
-                        break;
-                    default:
-                        assert(0);
+                    if (mDetail.operands[i].mem.base != X86_REG_INVALID)
+                        regs.insert(mDetail.operands[i].mem.base);
+                    if (mDetail.operands[i].mem.index != X86_REG_INVALID)
+                        regs.insert(mDetail.operands[i].mem.index);
                 }
-
-                switch (mDetail.operands[1].type)
-                {
-                    case X86_OP_REG:
-                        regs.insert(mDetail.operands[1].reg);
-                        break;
-                    case X86_OP_IMM:
-                        break;
-                    case X86_OP_MEM:
-                        if (mDetail.operands[1].mem.segment != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[1].mem.segment);
-                        if (mDetail.operands[1].mem.base != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[1].mem.base);
-                        if (mDetail.operands[1].mem.index != X86_REG_INVALID)
-                            regs.insert(mDetail.operands[1].mem.index);
-                        break;
-                    default:
-                        assert(0);
-                }
-                return regs;
             }
-            case instruction_t::regAh:
-                return {X86_REG_AH};
-            default:
-                assert(0);
-                return {};
         }
+        return regs;
     }
     std::set<x86_reg> WritesRegisters()
     {
         if (mTemplate.simpleJump)
             return {};
 
-        std::set<x86_reg> aux;
-
-        switch (mTemplate.writes)
+        std::set<x86_reg> regs;
+        for (int i=0; i<mDetail.op_count; i++)
         {
-            case instruction_t::writesUndef:
-                assert(0);
-                return {};
-            case instruction_t::writesNone:
-                return aux;
-            case instruction_t::oneWritesFirst:
-                assert(mDetail.op_count == 1);
-                if (mDetail.operands[0].type == X86_OP_REG)
-                    aux.insert(mDetail.operands[0].reg);
-                return aux;
-            case instruction_t::twoWritesFirst:
-                assert(mDetail.op_count == 2);
-                if (mDetail.operands[0].type == X86_OP_REG)
-                    aux.insert(mDetail.operands[0].reg);
-                return aux;
-            case instruction_t::twoWritesSecond:
-               assert(mDetail.op_count == 2);
-               if (mDetail.operands[1].type == X86_OP_REG)
-                   aux.insert(mDetail.operands[1].reg);
-               return aux;
-            default:
-                assert(0);
-                return {};
+            if (mDetail.operands[i].access & CS_AC_WRITE)
+            {
+                if (mDetail.operands[i].type == X86_OP_REG)
+                    regs.insert(mDetail.operands[i].reg);
+                if (mDetail.operands[i].type == X86_OP_MEM)
+                {
+                    if (mDetail.operands[i].mem.base != X86_REG_INVALID)
+                        regs.insert(mDetail.operands[i].mem.base);
+                    if (mDetail.operands[i].mem.index != X86_REG_INVALID)
+                        regs.insert(mDetail.operands[i].mem.index);
+                }
+            }
         }
+        return regs;
     }
 
+    bool ArgsEqual()
+    {
+        return ArgsEqual(0, 1);
+    }
+    
     bool ArgsEqual(int a, int b)
     {
         assert(a < mDetail.op_count);
@@ -348,7 +255,8 @@ class CCapstone
     csh mHandle;
     cs_insn* mInsn;
     shared<Loader> mLoader;
-    
+    uint8_t mRegMap[X86_REG_ENDING][X86_REG_ENDING] = {};
+
 public:
     CCapstone()
     {
@@ -359,6 +267,27 @@ public:
         }
         cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
         mInsn = cs_malloc(mHandle);
+        //
+        mRegMap[X86_REG_EAX][X86_REG_AX] = 1;
+        mRegMap[X86_REG_EAX][X86_REG_AL] = 1;
+        mRegMap[X86_REG_EAX][X86_REG_AH] = 1;
+        mRegMap[X86_REG_AX][X86_REG_AL] = 1;
+        mRegMap[X86_REG_AX][X86_REG_AH] = 1;
+        mRegMap[X86_REG_EBX][X86_REG_BX] = 1;
+        mRegMap[X86_REG_EBX][X86_REG_BL] = 1;
+        mRegMap[X86_REG_EBX][X86_REG_BH] = 1;
+        mRegMap[X86_REG_BX][X86_REG_BL] = 1;
+        mRegMap[X86_REG_BX][X86_REG_BH] = 1;
+        mRegMap[X86_REG_ECX][X86_REG_CX] = 1;
+        mRegMap[X86_REG_ECX][X86_REG_CL] = 1;
+        mRegMap[X86_REG_ECX][X86_REG_CH] = 1;
+        mRegMap[X86_REG_CX][X86_REG_CL] = 1;
+        mRegMap[X86_REG_CX][X86_REG_CH] = 1;
+        mRegMap[X86_REG_EDX][X86_REG_DX] = 1;
+        mRegMap[X86_REG_EDX][X86_REG_CL] = 1;
+        mRegMap[X86_REG_EDX][X86_REG_CH] = 1;
+        mRegMap[X86_REG_DX][X86_REG_DL] = 1;
+        mRegMap[X86_REG_DX][X86_REG_DH] = 1;
     }
     
     ~CCapstone()
@@ -396,6 +325,68 @@ public:
     {
         return cs_insn_name(mHandle, r);
     }
+    
+    std::string format(const char* fmt, ...)
+    {
+        char buf[256];
+        va_list args;
+        va_start(args, fmt);
+        vsnprintf(buf, 256, fmt, args);
+        va_end(args);
+        return std::string(buf);
+    }
+
+    std::string ToString(cs_x86_op op)
+    {
+        switch (op.type)
+        {
+            case X86_OP_INVALID:
+                assert(0);
+                return "INVALID!";
+            case X86_OP_IMM:
+                return format("0x%x", op.imm);
+            case X86_OP_REG:
+                return ToString(op.reg);
+            case X86_OP_MEM:
+            {
+                std::string aux;
+                if (op.mem.segment != X86_REG_INVALID)
+                    aux += ToString(op.mem.segment);
+                aux += "[";
+                if (op.mem.base != X86_REG_INVALID)
+                {
+                    aux += ToString(op.mem.base);
+                    aux += " + ";
+                }
+                aux += ToString(op.mem.index);
+                if (op.mem.scale != 1)
+                    aux += format(" * %d", op.mem.scale);
+                if (op.mem.disp != 0)
+                    aux += format(" + %d", op.mem.disp);
+                aux += "]";
+                return aux;
+            }
+        }
+    }
+    bool Intersects(cs_x86_op a, cs_x86_op b)
+    {
+        // check if operand A becomes invalidated after writing to operand B
+        if (a.type == X86_OP_INVALID || b.type == X86_OP_IMM)
+            return false;
+        if (a.type == X86_OP_REG && b.type == X86_OP_REG)
+            return mRegMap[a.reg][b.reg] || mRegMap[b.reg][a.reg];
+        if (a.type == X86_OP_MEM && b.type == X86_OP_REG)
+            return a.mem.index == b.reg || a.mem.segment == b.reg || a.mem.base == b.reg;
+        if (a.type == X86_OP_MEM && b.type == X86_OP_MEM)
+            return a.mem.segment == b.mem.segment && a.mem.base == b.mem.base && a.mem.index == b.mem.index &&
+            a.mem.scale == b.mem.scale && a.mem.disp == b.mem.disp;
+        if (a.type == X86_OP_REG && b.type == X86_OP_MEM)
+            return false;
+
+        assert(0);
+        return false;
+    }
+
 };
 
 std::unique_ptr<CCapstone> Capstone{new CCapstone};

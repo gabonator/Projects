@@ -161,6 +161,8 @@ public:
             return "char";
         if (op.size == 2)
             return "short";
+        if (op.size == 4)
+            return "int32_t";
         assert(0);
         return "?";
     }
@@ -228,7 +230,7 @@ public:
                     
                     char segment[32], offset[32], tmp[128];
                     GetOpAddress(op, segment, offset);
-                    snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);", memorySuffix(x86.operands[0].size), segment, offset, rvalue_formatted.c_str());
+                    snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);", memorySuffix(x86.operands[index].size), segment, offset, rvalue_formatted.c_str());
                     return tmp;
                 } else {
                     char tmp[128];
@@ -348,7 +350,7 @@ public:
                     char segment[32], offset[32];
                     GetOpAddress(x86.operands[1], segment, offset);
                     snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
-                             memorySuffix(x86.operands[0].size), segment, offset);
+                             memorySuffix(x86.operands[1].size), segment, offset);
                 } else
                     assert(0);
                 
@@ -366,7 +368,7 @@ public:
                             char segment[32], offset[32];
                             GetOpAddress(x86.operands[1], segment, offset);
                             snprintf(replace, 64, "memoryAGet%s(%s, %s)",
-                                     memorySuffix(x86.operands[0].size), segment, offset);
+                                     memorySuffix(x86.operands[1].size), segment, offset);
                         } else
                             strcpy(replace, ToCString(x86.operands[1]).c_str());
                     } else {
@@ -429,16 +431,11 @@ public:
                 strcpy(replace, BuildCondition(instr, info, false).c_str());
                 //                strcpy(replace, "XXX");
             }
-            if (strcmp(tok, "ncond") == 0)
-            {
-                strcpy(replace, BuildCondition(instr, info, true).c_str());
-                //                strcpy(replace, "XXX");
-            }
             if (strcmp(tok, "target") == 0)
             {
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "loc_%x", x86.operands[0].imm);
+                snprintf(replace, 64, "loc_%x", (int)x86.operands[0].imm);
             }
             
             assert(replace[0] > 0);
