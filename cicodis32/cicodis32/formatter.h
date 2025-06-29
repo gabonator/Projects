@@ -16,6 +16,7 @@ public:
             case 1: return "";
             case 2: return "16";
             case 4: return "32";
+            case 8: return "64";
             default:
                 assert(0);
                 return "";
@@ -168,7 +169,7 @@ public:
     }
     
     //std::string format(const cs_x86& x86, std::string fmt_)
-    std::string format(shared<CapInstr> instr, shared<instrInfo_t> info, std::string fmt_)
+    std::string iformat(shared<CapInstr> instr, shared<instrInfo_t> info, std::string fmt_)
     {
         const cs_x86& x86 = instr->mDetail;
         assert(fmt_.length() < 128);
@@ -226,7 +227,7 @@ public:
                     assert(rvalue[strlen(rvalue)-1] == ';');
                     rvalue[strlen(rvalue)-1] = 0;
                     
-                    std::string rvalue_formatted = format(instr, info, rvalue);
+                    std::string rvalue_formatted = iformat(instr, info, rvalue);
                     
                     char segment[32], offset[32], tmp[128];
                     GetOpAddress(op, segment, offset);
@@ -307,9 +308,14 @@ public:
                             case 2:
                                 snprintf(replace, 64, "memoryAGet16(%s, %s)", segment, offset);
                                 break;
-                            case 4: // carefull!
-                                assert(0);
-                                snprintf(replace, 64, "memoryAGet32(%s, %s + 2), memoryAGet16(%s, %s)", segment, offset, segment, offset);
+                            case 4:
+                                snprintf(replace, 64, "memoryAGet32(%s, %s)", segment, offset);
+                                break;
+                            case 8:
+                                snprintf(replace, 64, "memoryAGet64(%s, %s)", segment, offset);
+                                break;
+                            case 10:
+                                snprintf(replace, 64, "memoryAGet80(%s, %s)", segment, offset);
                                 break;
                             default:
                                 assert(0);
@@ -437,7 +443,24 @@ public:
                 assert(x86.operands[0].type == X86_OP_IMM);
                 snprintf(replace, 64, "loc_%x", (int)x86.operands[0].imm);
             }
-            
+            if (strcmp(tok, "method") == 0)
+            {
+                assert(x86.op_count == 1);
+                assert(x86.operands[0].type == X86_OP_IMM);
+                snprintf(replace, 64, "sub_%x", (int)x86.operands[0].imm);
+            }
+            if (strcmp(tok, "width0") == 0)
+            {
+                assert(x86.op_count >= 1);
+                //if (x86.operands[0].type == X86_OP_REG && x86.operands[0].reg >= X86_REG_ST0 && x86.operands[0].reg <= X86_REG_ST7)
+                //{
+                //    strncpy(replace, "64", 64);
+                //} else {
+                  //  assert(x86.operands[0].size == 1 || x86.operands[0].size == 2 || x86.operands[0].size == 4 || x86.operands[0].size ==  8);
+                    snprintf(replace, 64, "%d", x86.operands[0].size*8);
+                //}
+            }
+
             assert(replace[0] > 0);
             char temp[128];
             memcpy(temp, fmt, (p-1)-fmt);

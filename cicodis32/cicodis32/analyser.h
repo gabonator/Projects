@@ -179,14 +179,16 @@ public:
         std::vector<std::pair<address_t, address_t>> head({{address_t(), tracer->Address()}});
         funcInfo_t funcInfo;
         
+        mInfos.clear();
+        
         while (head.size())
         {
             std::vector<std::pair<address_t, address_t>> newHead;
             for (std::pair<address_t, address_t> link : head)
             {
-                printf("%x->%x: ", link.first.offset, link.second.offset);
+//                printf("%x->%x: ", link.first.offset, link.second.offset);
                 shared<CapInstr> instr = code.find(link.second)->second;
-                printf("    instr: %s\n", instr->AsString().c_str());
+//                printf("    instr: %s\n", instr->AsString().c_str());
 
                 shared<instrInfo_t> prevInfo;
                 if (link.first)
@@ -215,10 +217,8 @@ public:
 
                 auto applyFlags = [&](uint64_t modifyMask, instrInfo_t::instrInfoFlag_t& flag)
                 {
-                    // errata
-                    //if (instr->mId == X86_INS_TEST)
-                    //    modifyMask &= ~(X86_EFLAGS_MODIFY_SF | X86_EFLAGS_RESET_SF | X86_EFLAGS_SET_SF);
-                    if (instr->mDetail.eflags & modifyMask)
+                    // TODO: Temp workaround, CALL sets all flags!
+                    if (instr->mId == X86_INS_CALL || (instr->mDetail.eflags & modifyMask))
                     {
                         flag.wasWritten = true;
                         flag.lastSet = instr->mAddress;
@@ -230,7 +230,12 @@ public:
                         flag.dirty[1] = false;
 
                         int j = 0;
-                        assert(instr->mDetail.op_count <= 2);
+                        if (instr->mDetail.op_count == 3)
+                        {
+                            assert(instr->mDetail.operands[2].type == X86_OP_IMM);                            
+                        } else {
+                            assert(instr->mDetail.op_count <= 2);
+                        }
                         for (int i=0; i<instr->mDetail.op_count; i++)
                             if (instr->mDetail.operands[i].access & CS_AC_READ)
                                 flag.depends[j++] = instr->mDetail.operands[i];
@@ -249,7 +254,6 @@ public:
                     if (!prevInfo->reg[r].wasWritten)
                         funcInfo.readsReg[r] = true;
                     newInfo->reg[r].wasRead = true;
-
                 }
 
                 for (int i=0; i<instr->mDetail.op_count; i++)
@@ -262,13 +266,11 @@ public:
                         checkDirtyFlags(newInfo->flagSign, instr->mDetail.operands[i]);
                     }
                 }
-                
-                if (!writes.empty())
+
+                for (x86_reg r : writes)
                 {
-                    assert(writes.size() == 1);
-                    //printf("%s; writes %s\n", instr->AsString().c_str(), Capstone->ToString((x86_reg)*writes.begin()));
-                    funcInfo.writesReg[*writes.begin()] = true;
-                    newInfo->reg[*writes.begin()].wasWritten = true;
+                    funcInfo.writesReg[r] = true;
+                    newInfo->reg[r].wasWritten = true;
                 }
 
                 applyFlags(X86_EFLAGS_MODIFY_CF | X86_EFLAGS_RESET_CF | X86_EFLAGS_SET_CF, newInfo->flagCarry);

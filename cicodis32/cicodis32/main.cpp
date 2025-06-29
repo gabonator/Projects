@@ -29,20 +29,25 @@ int main(int argc, char **argv) {
     
     Capstone->Set(loader);
 
-    //address_t test(0, 0x164000);
-    address_t test(0, 0x15fee0);
-    
+    std::set<address_t, cmp_adress_t> process{address_t(0, 0x15e010)};
+    std::set<address_t, cmp_adress_t> processed;
+        
     Analyser analyser;
     analyser.RecursiveScan({0, 0x15e390});
-//    analyser.RecursiveScan({0, 0x15e370});
-    //analyser.AnalyseProc({0, 0x15e370});
-//    analyser.AnalyseProc({0, 0x15fac8});
-    analyser.AnalyseProc(test);
-    Convert convert(analyser);
-//    convert.ConvertProc({0, 0x15e370});
-//    convert.ConvertProc({0, 0x15fac8});
-    convert.ConvertProc(test);
-    
+    while (!process.empty())
+    {
+        address_t proc = *process.begin();
+        process.erase(proc);
+        processed.insert(proc);
+        
+        analyser.AnalyseProc(proc);
+        Convert convert(analyser);
+        convert.ConvertProc(proc);
+        convert.Dump();
+        for (address_t call : convert.GetCalls())
+            if (process.find(call) == process.end() && processed.find(call) == processed.end())
+                process.insert(call);
+    }
     
     return 0;
 }
