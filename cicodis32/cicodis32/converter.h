@@ -88,7 +88,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHR] = {.convert = [](convert_args){ return "$rw0 >>= $rd1;"; } },
     [X86_INS_IMUL] = {.convert = [](convert_args){
         if (instr->mDetail.op_count == 3 && instr->mDetail.operands[2].type == X86_OP_IMM)
-            return "$wr0 = $rd1 * $rd2";
+            return "$wr0 = $rd1 * $rd2;";
         assert(0);
         return "";
     } },
@@ -99,13 +99,13 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_FILD] = {.convert = [](convert_args){ return "fild$width0($rd0);"; } },
     [X86_INS_FMUL] = {.convert = [](convert_args){ return "fmul$width0($rd0);"; } },
     [X86_INS_FDIV] = {.convert = [](convert_args){ return "fdiv$width0($rd0);"; } },
-    [X86_INS_FADD] = {.convert = [](convert_args){ return "fadd$width0($rd0);"; } },
+    [X86_INS_FADD] = {.convert = [](convert_args){ return "fadd$width0($rd0);"; } }, // TODO: FADDP!!!!
     [X86_INS_FSTP] = {.convert = [](convert_args){ return "$wr0 = fstp$width0();"; } },
     [X86_INS_FLD1] = {.convert = [](convert_args){ return "fld1();"; } },
     [X86_INS_FSUBR] = {.convert = [](convert_args){ return "fsubr$width0($rd0);"; } },
     [X86_INS_FSUBP] = {.convert = [](convert_args){ return "fsubp$width0($rd0);"; } },
     [X86_INS_FCOMP] = {.convert = [](convert_args){ return "fcomp$width0($rd0);"; } },
-    [X86_INS_FISTP] = {.convert = [](convert_args){ return "$wr0 = fistp();"; } },
+    [X86_INS_FISTP] = {.convert = [](convert_args){ return "$wr0 = fistp$width0();"; } },
     [X86_INS_FNSTSW] = {.convert = [](convert_args){ return "$wr0 = fnstsw();"; } },
     [X86_INS_FCOS] = {.convert = [](convert_args){ return "fcos();"; } },
     [X86_INS_WAIT] = {.convert = [](convert_args){ return ""; } },
@@ -178,7 +178,7 @@ public:
             shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
 //            printf("/*%x %s %s*/", p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
             if (pinstr->isLabel)
-                mCode.push_back(format("lab_%x:\n", pinstr->mAddress.offset));
+                mCode.push_back(format("loc_%x:\n", pinstr->mAddress.offset));
             if (convert[pinstr->mId].convert)
                 mCode.push_back("  " + iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo)) + "\n");
             else
