@@ -41,6 +41,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_JP] = { .simpleJump = true },
     [X86_INS_JRCXZ] = { .simpleJump = true },
     [X86_INS_JS] = { .simpleJump = true },
+    [X86_INS_LOOP] = { .simpleJump = true },
     [X86_INS_CALL] = { .calls = true},
     
     [X86_INS_PUSH] = { .stack = +2 },
@@ -75,6 +76,7 @@ public:
     std::vector<address_t> mPrev;
     instruction_t mTemplate;
     bool isLabel{false};
+    bool isTerminating{false};
     // processing
 //    instrInfo_t mInfo;
     // debug
@@ -96,7 +98,7 @@ public:
         assert(mId == X86_INS_CALL);
         assert(mDetail.op_count == 1);
         assert(mDetail.operands[0].type == X86_OP_IMM);
-        assert(mDetail.operands[0].size == 4);
+        assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
         return {mAddress.segment, (int)mDetail.operands[0].imm};
     }
     bool IsDirectJump()
@@ -116,7 +118,7 @@ public:
         //assert(mId == X86_INS_JMP);
         assert(mDetail.op_count == 1);
         assert(mDetail.operands[0].type == X86_OP_IMM);
-        assert(mDetail.operands[0].size == 4);
+        assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
         return {mAddress.segment, (int)mDetail.operands[0].imm};
     }
 
@@ -260,7 +262,8 @@ class CCapstone
 public:
     CCapstone()
     {
-        cs_err err = cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
+//        cs_err err = cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
+        cs_err err = cs_open(CS_ARCH_X86, cs_mode(CS_MODE_16 | CS_MODE_32), &mHandle);
         if (err) {
             printf("Failed on cs_open() with error returned: %u\n", err);
             abort();
@@ -303,7 +306,7 @@ public:
         
     std::shared_ptr<CapInstr> Disasm(address_t addr)
     {
-        uint64_t address = addr.segment*16*0 + addr.offset;
+        uint64_t address = addr.offset;
         size_t codeSize = 32;
         const uint8_t* buf = mLoader->GetBufferAt(addr);
         if (buf[0] == 0 && buf[1] == 0 && buf[2] == 0)
@@ -326,16 +329,6 @@ public:
         return cs_insn_name(mHandle, r);
     }
     
-    std::string format(const char* fmt, ...)
-    {
-        char buf[256];
-        va_list args;
-        va_start(args, fmt);
-        vsnprintf(buf, 256, fmt, args);
-        va_end(args);
-        return std::string(buf);
-    }
-
     std::string ToString(cs_x86_op op)
     {
         switch (op.type)
@@ -403,10 +396,10 @@ private:
 public:
     void Trace(address_t a)
     {
+        const bool verbose = false;
         address_t stub;
         address = a;
         assert(code.empty());
-        //        std::vector<address_t> calls;
         std::vector<std::pair<address_t, address_t>> queue;
         
         queue.push_back({{},a});
@@ -416,7 +409,8 @@ public:
             
             for (std::pair<address_t, address_t> addr : queue)
             {
-//                printf("disasm: %x->%x ", addr.first.offset, addr.second.offset);
+                if (verbose)
+                    printf("disasm: %x->%x ", addr.first.offset, addr.second.offset);
                 std::shared_ptr<CapInstr> instr = Capstone->Disasm(addr.second);
                 //                if (instr->mTemplate.calls)
                 //                    calls.push_back(instr->CallTarget());
@@ -427,22 +421,24 @@ public:
                     stub = *instr->mNext.begin();
                     instr->mNext.clear();
                 }
-//                if (!instr)
-//                {
-//                    int f = 9;
-//                    instr = Capstone->Disasm(addr.second);
-//                }
                 if (addr.first)
                     instr->mPrev.push_back(addr.first);
-//                printf("(+%d) %s %s\n", instr->mSize, instr->mMnemonic, instr->mOperands);
+                if (verbose)
+                    printf("(+%d) %s %s\n", instr->mSize, instr->mMnemonic, instr->mOperands);
                 if (instr->AsString() == "int 0x21")
                 {
                     assert(instr->mPrev.size() == 1);
                     std::string prev = code.find(instr->mPrev[0])->second->AsString();
                     if (prev.find("mov ax, 0x4c") != std::string::npos)
+                    {
                         instr->mNext.clear();
+                        instr->isTerminating = true;
+                    }
                     if (prev.find("mov ah, 0x4c") != std::string::npos)
+                    {
                         instr->mNext.clear();
+                        instr->isTerminating = true;
+                    }
                 }
                 code.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(addr.second, instr));
                 for (address_t cont : instr->mNext)
@@ -467,11 +463,12 @@ public:
                     code.find(target)->second->isLabel = true;
             }
         }
-
+        if (code.begin()->first != a)
+            code.find(a)->second->isLabel = true;
     }
     void Dump()
     {
-        printf("sub_%x begin\n", address.offset);
+        printf("sub_%x begin\n", address.linearOffset());
         address_t next;
         for (const auto& p : code)
         {
@@ -482,7 +479,7 @@ public:
             printf("%x %s %s\n", p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
             next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
         }
-        printf("sub_%x ends\n\n", address.offset);
+        printf("sub_%x ends\n\n", address.linearOffset());
         //std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> code;
     }
     std::set<address_t, cmp_adress_t> GetCalls()

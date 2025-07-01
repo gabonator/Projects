@@ -6,8 +6,14 @@
 //
 
 class Formatter {
+    uint64_t mOffsetMask{-1ul};
+    
 public:
     virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, bool invert) = 0;
+    void SetOffsetMask(uint64_t mask)
+    {
+        mOffsetMask = mask;
+    }
     
     const char* memorySuffix(int w)
     {
@@ -22,13 +28,13 @@ public:
                 return "";
         }
     }
-    void GetOpAddress(const cs_x86_op& op, char* segment, char* offset)
+    void GetOpAddress(const cs_x86_op& op, char* segment, char* offset, shared<instrInfo_t> info)
     {
         const int negativeoffset = 65536;
         strcpy(offset, "");
         
         if (op.mem.base == X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
-            snprintf(offset, 32, "0x%04x", (int)op.mem.disp);
+            snprintf(offset, 32, "0x%04x", (int)(op.mem.disp & mOffsetMask));
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID && op.mem.disp == 0)
             snprintf(offset, 32, "%s", Capstone->ToString(op.mem.base));
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
@@ -75,30 +81,28 @@ public:
         {
             case X86_REG_INVALID:
                 strcpy(segment, op.mem.base == X86_REG_BP ? "ss" : "ds");
-                assert(op.mem.base != X86_REG_BP);
-                
-                //                if (_simpleStack && op.mem.base == X86_REG_BP)
-                //                {
-                //                    switch (_currentCall)
-                //                    {
-                //                        case Near:
-                //                            strcat(offset, " - 2");
-                //                            break;
-                //                        case Far:
-                //                            strcat(offset, " - 4");
-                //                            break;
-                //                        default:
-                //                            strcat(offset, " - stop()");
-                //                            break;
-                //                    }
-                //                }
+                if (op.mem.base == X86_REG_BP)
+                {
+                    switch (info->callConv)
+                    {
+                        case instrInfo_t::callConvSimpleStackNear:
+                            strcat(offset, " - 2");
+                            break;
+                        case instrInfo_t::callConvSimpleStackFar:
+                            strcat(offset, " - 4");
+                            break;
+                        default:
+                            strcat(offset, " - stop(\"simple stack\")");
+                            break;
+                    }
+                }
                 break;
             default:
                 strcpy(segment, Capstone->ToString(op.mem.segment));
         }
     }
     
-    std::string ToCString(const cs_x86_op& op)
+    std::string ToCString(const cs_x86_op& op, shared<instrInfo_t> info)
     {
         if (op.type == X86_OP_REG)
             return Capstone->ToString(op.reg);
@@ -130,23 +134,13 @@ public:
         if (op.type == X86_OP_MEM)
         {
             char segment[32], offset[32], tmp[64];
-            GetOpAddress(op, segment, offset);
+            GetOpAddress(op, segment, offset, info);
             snprintf(tmp, 32, "memory%s(%s, %s)", memorySuffix(op.size), segment, offset);
             return tmp;
         }
         printf("error: %d, %d\n", op.type, op.size);
         assert(0);
         return "?";
-    }
-    
-    std::string format(const char* fmt, ...)
-    {
-        char buf[256];
-        va_list args;
-        va_start(args, fmt);
-        vsnprintf(buf, 256, fmt, args);
-        va_end(args);
-        return std::string(buf);
     }
     
     std::string enclose(const std::string& str)
@@ -230,13 +224,13 @@ public:
                     std::string rvalue_formatted = iformat(instr, info, rvalue);
                     
                     char segment[32], offset[32], tmp[128];
-                    GetOpAddress(op, segment, offset);
+                    GetOpAddress(op, segment, offset, info);
                     snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);", memorySuffix(x86.operands[index].size), segment, offset, rvalue_formatted.c_str());
                     return tmp;
                 } else {
                     char tmp[128];
                     //assert(0);
-                    strcpy(tmp, ToCString(op).c_str());
+                    strcpy(tmp, ToCString(op, info).c_str());
                     strcat(tmp, fmt+4);
                     strcpy(fmt, tmp);
                 }
@@ -262,12 +256,12 @@ public:
             if (strcmp(tok, "reg0") == 0)
             {
                 assert(x86.op_count >= 1 /*&& x86.operands[0].type == X86_OP_REG*/);
-                strcpy(replace, ToCString(x86.operands[0]).c_str());
+                strcpy(replace, ToCString(x86.operands[0], info).c_str());
             }
             if (strcmp(tok, "reg1") == 0)
             {
                 assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_REG);
-                strcpy(replace, ToCString(x86.operands[1]).c_str());
+                strcpy(replace, ToCString(x86.operands[1], info).c_str());
             }
             if (strcmp(tok, "immd0") == 0)
             {
@@ -299,7 +293,7 @@ public:
                     if (getset && x86.operands[0].type == X86_OP_MEM)
                     {
                         char segment[32], offset[32];
-                        GetOpAddress(x86.operands[0], segment, offset);
+                        GetOpAddress(x86.operands[0], segment, offset, info);
                         switch (x86.operands[0].size)
                         {
                             case 1:
@@ -321,7 +315,7 @@ public:
                                 assert(0);
                         }
                     } else
-                        strcpy(replace, ToCString(x86.operands[0]).c_str());
+                        strcpy(replace, ToCString(x86.operands[0], info).c_str());
                 }
             }
             if (strcmp(tok, "rns0") == 0)
@@ -331,7 +325,7 @@ public:
                 {
                     assert(x86.operands[0].size == 4);
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[0], segment, offset);
+                    GetOpAddress(x86.operands[0], segment, offset, info);
                     snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
                 } else
                     assert(0);
@@ -342,7 +336,7 @@ public:
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[1], segment, offset);
+                    GetOpAddress(x86.operands[1], segment, offset, info);
                     strcpy(replace, offset);
                 } else
                     assert(0);
@@ -354,7 +348,7 @@ public:
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[1], segment, offset);
+                    GetOpAddress(x86.operands[1], segment, offset, info);
                     snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
                              memorySuffix(x86.operands[1].size), segment, offset);
                 } else
@@ -372,11 +366,11 @@ public:
                         if (getset && x86.operands[1].type == X86_OP_MEM)
                         {
                             char segment[32], offset[32];
-                            GetOpAddress(x86.operands[1], segment, offset);
+                            GetOpAddress(x86.operands[1], segment, offset, info);
                             snprintf(replace, 64, "memoryAGet%s(%s, %s)",
                                      memorySuffix(x86.operands[1].size), segment, offset);
                         } else
-                            strcpy(replace, ToCString(x86.operands[1]).c_str());
+                            strcpy(replace, ToCString(x86.operands[1], info).c_str());
                     } else {
                         // capstone 5
                         if (x86.opcode[0] == 0xd0 || x86.opcode[0] == 0xd1 || x86.opcode[0] == 0xfe) // RCL, INC
@@ -392,7 +386,7 @@ public:
             if (strcmp(tok, "rd2") == 0)
             {
                 assert(x86.op_count >= 3);
-                strcpy(replace, ToCString(x86.operands[2]).c_str());
+                strcpy(replace, ToCString(x86.operands[2], info).c_str());
             }
             if (strcmp(tok, "sig0") == 0)
             {
@@ -441,24 +435,23 @@ public:
             {
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "loc_%x", (int)x86.operands[0].imm);
+                snprintf(replace, 64, "loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
             }
             if (strcmp(tok, "method") == 0)
             {
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "sub_%x", (int)x86.operands[0].imm);
+                snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
             }
             if (strcmp(tok, "width0") == 0)
             {
                 assert(x86.op_count >= 1);
-                //if (x86.operands[0].type == X86_OP_REG && x86.operands[0].reg >= X86_REG_ST0 && x86.operands[0].reg <= X86_REG_ST7)
-                //{
-                //    strncpy(replace, "64", 64);
-                //} else {
-                  //  assert(x86.operands[0].size == 1 || x86.operands[0].size == 2 || x86.operands[0].size == 4 || x86.operands[0].size ==  8);
-                    snprintf(replace, 64, "%d", x86.operands[0].size*8);
-                //}
+                snprintf(replace, 64, "%d", x86.operands[0].size*8);
+            }
+            if (strcmp(tok, "width1") == 0)
+            {
+                assert(x86.op_count >= 2);
+                snprintf(replace, 64, "%d", x86.operands[1].size*8);
             }
 
             assert(replace[0] > 0);

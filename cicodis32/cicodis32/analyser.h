@@ -35,6 +35,12 @@ struct instrInfo_t {
 //    bool writesCarry = false;
 //    bool writesZero = false;
 
+    enum {
+        callConvUnknown = 0,
+        callConvSimpleStackNear = 1,
+        callConvSimpleStackFar = 2
+    } callConv{callConvUnknown}; // TODO: move to func info!
+    
     int stackDepth{0};
     struct instrInfoReg_t
     {
@@ -48,9 +54,9 @@ struct instrInfo_t {
     
     struct instrInfoFlag_t {
         bool wasRead{false};
-//        bool wasReadPartially{false};
         bool wasWritten{false};
-//        bool wasWrittenPartially{false};
+        bool isDestructive{false};
+        bool save{false};
         
         address_t lastSet;
         x86_insn lastSetInsn;
@@ -89,6 +95,10 @@ struct instrInfo_t {
         flagCarry = o.flagCarry;
         flagOverflow = o.flagOverflow;
         flagSign = o.flagSign;
+        
+//        flagCarry.isDestructive = false; // do not spread!
+        flagCarry.save = false; // do not spread!
+        callConv = o.callConv;
     }
     void Dump()
     {
@@ -173,6 +183,7 @@ public:
     }
     void AnalyseProc(address_t proc)
     {
+        const bool verbose{false};
         shared<CTracer> tracer = mMethods.find(proc)->second;
         std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
         shared<info_t> info(new info_t);
@@ -181,14 +192,30 @@ public:
         
         mInfos.clear();
         
+        int retFar = 0, retNear = 0;
+        for (const auto& p : code)
+        {
+            if (p.second->mId == X86_INS_RETF)
+                retFar++;
+            if (p.second->mId == X86_INS_RET)
+                retNear++;
+        }
+        
+        if (retFar > 0)
+            assert(retNear == 0);
+        if (retNear > 0)
+            assert(retFar == 0);
+
         while (head.size())
         {
             std::vector<std::pair<address_t, address_t>> newHead;
             for (std::pair<address_t, address_t> link : head)
             {
-//                printf("%x->%x: ", link.first.offset, link.second.offset);
+                if (verbose)
+                    printf("%x->%x: ", link.first.offset, link.second.offset);
                 shared<CapInstr> instr = code.find(link.second)->second;
-//                printf("    instr: %s\n", instr->AsString().c_str());
+                if (verbose)
+                    printf("    instr: %s\n", instr->AsString().c_str());
 
                 shared<instrInfo_t> prevInfo;
                 if (link.first)
@@ -198,27 +225,36 @@ public:
                     assert(prevInfo);
                 } else {
                     prevInfo = shared<instrInfo_t>(new instrInfo_t);
+                    if (retFar)
+                        prevInfo->callConv = instrInfo_t::callConvSimpleStackFar;
+                    if (retNear)
+                        prevInfo->callConv = instrInfo_t::callConvSimpleStackNear;
                 }
                 
                 shared<instrInfo_t> newInfo(new instrInfo_t);
                 newInfo->CopyFrom(*prevInfo.get());
 
-
                 std::set<x86_reg> reads = instr->ReadsRegisters();
                 std::set<x86_reg> writes = instr->WritesRegisters();
-                if (instr->mDetail.eflags & X86_EFLAGS_PRIOR_CF)
+                if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF))
+                {
+                    shared<instrInfo_t> destructive = info->code.find(newInfo->flagCarry.lastSet)->second;
+                    if (destructive->flagCarry.isDestructive)
+                        destructive->flagCarry.save = true;
                     newInfo->flagCarry.wasRead = true;
-                if (instr->mDetail.eflags & X86_EFLAGS_PRIOR_ZF)
+                }
+                if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF))
                     newInfo->flagZero.wasRead = true;
-                if (instr->mDetail.eflags & X86_EFLAGS_PRIOR_OF)
+                if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF))
                     newInfo->flagOverflow.wasRead = true;
-                if (instr->mDetail.eflags & X86_EFLAGS_PRIOR_SF)
+                if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF))
                     newInfo->flagSign.wasRead = true;
 
                 auto applyFlags = [&](uint64_t modifyMask, instrInfo_t::instrInfoFlag_t& flag)
                 {
                     // TODO: Temp workaround, CALL sets all flags!
-                    if (instr->mId == X86_INS_CALL || (instr->mDetail.eflags & modifyMask))
+                    // TODO: interrupt could also update some flags
+                    if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & modifyMask))
                     {
                         flag.wasWritten = true;
                         flag.lastSet = instr->mAddress;
@@ -228,6 +264,13 @@ public:
                         flag.depends[1].type = X86_OP_INVALID;
                         flag.dirty[0] = false;
                         flag.dirty[1] = false;
+                        
+                        flag.isDestructive = false;
+                        flag.save = false;
+
+                        // scasb sets the flag directly
+                        if (flag.lastSetInsn == X86_INS_SCASB)
+                            return;
 
                         int j = 0;
                         if (instr->mDetail.op_count == 3)
@@ -278,6 +321,17 @@ public:
                 applyFlags(X86_EFLAGS_MODIFY_OF | X86_EFLAGS_RESET_OF | X86_EFLAGS_SET_OF, newInfo->flagOverflow);
                 applyFlags(X86_EFLAGS_MODIFY_SF | X86_EFLAGS_RESET_SF | X86_EFLAGS_SET_SF, newInfo->flagSign);
 
+                switch (instr->mId)
+                {
+                    case X86_INS_SHL:
+                    case X86_INS_SHR:
+                        newInfo->flagCarry.isDestructive = true;
+                        break;
+                    default:
+//                        newInfo->flagCarry.isDestructive = false;
+                        break;
+                }
+                
                 newInfo->stackDepth = prevInfo->stackDepth + instr->mTemplate.stack;
                 // update info, store
                 bool forceScan = false;
@@ -288,6 +342,7 @@ public:
 //                    info->code.find(link.second)->second->Dump();
 //                    printf("\nmerging ============= NEW\n");
 //                    newInfo->Dump();
+                    assert(!newInfo->flagCarry.save && !mergeInfoIt->second->flagCarry.save);
                     if (mergeInfoIt->second->Merge(newInfo))
                     {
                         // invalidate all paths
