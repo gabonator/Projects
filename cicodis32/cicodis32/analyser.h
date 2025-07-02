@@ -19,22 +19,9 @@ struct funcInfo_t {
     bool shouldWriteZero = false;
     bool shouldWriteCarry = false;
     bool noReturn = false;
-    //ritesZero = false;
-// TODO: flags visibility!
-//    uint8_t readsReg[X86_REG_ENDING] = {0};
-//    uint8_t writesReg[X86_REG_ENDING] = {0};
-
 };
 
 struct instrInfo_t {
-//    bool valid{false};
-//    uint8_t readsReg[X86_REG_ENDING] = {0};
-//    uint8_t writesReg[X86_REG_ENDING] = {0};
-//    bool readsCarry = false;
-//    bool readsZero = false;
-//    bool writesCarry = false;
-//    bool writesZero = false;
-
     enum {
         callConvUnknown = 0,
         callConvSimpleStackNear = 1,
@@ -45,11 +32,7 @@ struct instrInfo_t {
     struct instrInfoReg_t
     {
         bool wasRead{false};
-//        bool wasReadPartially{false};
         bool wasWritten{false};
-//        bool wasWrittenPartially{false};
-//        address_t lastSet;
-//        bool lastSetDirty{false};
     } reg[X86_REG_ENDING];
     
     struct instrInfoFlag_t {
@@ -57,10 +40,11 @@ struct instrInfo_t {
         bool wasWritten{false};
         bool isDestructive{false};
         bool save{false};
+        bool saved{true};
         
         address_t lastSet;
-        x86_insn lastSetInsn;
-        cs_x86_op depends[2];
+        x86_insn lastSetInsn{X86_INS_INVALID};
+        cs_x86_op depends[2] = {{.type = X86_OP_INVALID}};
         bool dirty[2] = {false, false};
         bool broken{false};
         
@@ -82,10 +66,6 @@ struct instrInfo_t {
     
     void CopyFrom(const instrInfo_t& o)
     {
-//        readsCarry = o.readsCarry;
-//        readsZero = o.readsZero;
-//        writesCarry = o.writesCarry;
-//        writesZero = o.writesZero;
         stackDepth = o.stackDepth;
         for (int i=0; i<X86_REG_ENDING; i++)
         {
@@ -98,6 +78,7 @@ struct instrInfo_t {
         
 //        flagCarry.isDestructive = false; // do not spread!
         flagCarry.save = false; // do not spread!
+        flagCarry.saved = o.flagCarry.saved | o.flagCarry.save;
         callConv = o.callConv;
     }
     void Dump()
@@ -347,8 +328,6 @@ public:
                     {
                         // invalidate all paths
                         forceScan = true;
-                        //for (address_t outgoing : instr->mNext)
-                        //    info->code.erase(outgoing);
                     }
                 } else
                     info->code.insert(std::pair<address_t, shared<instrInfo_t>>(link.second, newInfo));

@@ -71,14 +71,14 @@ public:
     cs_x86 mDetail;
     int mSize;
     address_t mAddress;
+
     //
     std::vector<address_t> mNext;
     std::vector<address_t> mPrev;
     instruction_t mTemplate;
     bool isLabel{false};
     bool isTerminating{false};
-    // processing
-//    instrInfo_t mInfo;
+
     // debug
     char mMnemonic[64];
     char mOperands[64];
@@ -115,7 +115,6 @@ public:
     address_t JumpTarget()
     {
         assert (mTemplate.simpleJump);
-        //assert(mId == X86_INS_JMP);
         assert(mDetail.op_count == 1);
         assert(mDetail.operands[0].type == X86_OP_IMM);
         assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
@@ -216,20 +215,13 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
     memset(mBytes, 0, sizeof(mBytes));
     memcpy(mBytes, p->bytes, mSize);
 }
-// dosbox 160:15e390
-// bpm 160:15e6a6, 160:15e69c
-// memdumpbin 160:15e000 8000
-// 0160:15E47C  66268C1D5DE61500    mov  es:[0015E65D],ds (ds=168)
+
 void CapInstr::Populate()
 {
     const instruction_t& templ = Instructions[mId];
     mTemplate = templ;
     if (templ.continuous)
     {
-//        if (AsString() == "int 0x21")
-//        {
-//            int f = 9;
-//        }
         mNext.push_back({mAddress.segment, mAddress.offset + mSize});
     }
     if (templ.simpleJump)
@@ -239,17 +231,6 @@ void CapInstr::Populate()
         if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
             mNext.push_back({mAddress.segment, (int)mDetail.operands[0].imm});
     }
-    //for (address_t t : mNext)
-//        printf("%x -> %x\n", mAddress.offset, t.offset);
-//
-//    if (std::find(mNext.begin(), mNext.end(), address_t{0, 0x15e6a6}) != mNext.end())
-//    {
-//        int f = 9;
-//    }
-//    if (std::find(mNext.begin(), mNext.end(), address_t{0, 0x15e6a8}) != mNext.end())
-//    {
-//        int f = 9;
-//    }
 }
 
 class CCapstone
@@ -312,7 +293,6 @@ public:
         if (buf[0] == 0 && buf[1] == 0 && buf[2] == 0)
         {
             return std::shared_ptr<CapInstr>();
-//            assert(0);
         }
             
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
@@ -361,6 +341,7 @@ public:
             }
         }
     }
+
     bool Intersects(cs_x86_op a, cs_x86_op b)
     {
         // check if operand A becomes invalidated after writing to operand B
@@ -466,6 +447,7 @@ public:
         if (code.begin()->first != a)
             code.find(a)->second->isLabel = true;
     }
+
     void Dump()
     {
         printf("sub_%x begin\n", address.linearOffset());
@@ -480,8 +462,8 @@ public:
             next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
         }
         printf("sub_%x ends\n\n", address.linearOffset());
-        //std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> code;
     }
+
     std::set<address_t, cmp_adress_t> GetCalls()
     {
         std::set<address_t, cmp_adress_t> aux;
@@ -492,10 +474,8 @@ public:
         }
         for (const auto& p : code)
         {
-            //if (p.second->IsDirectJump())
             if (p.second->mTemplate.calls && p.second->IsDirectCall())
             {
-//                printf("GetCalls: %x %s %s -> sub_%x\n", p.first.offset, p.second->mMnemonic, p.second->mOperands, p.second->CallTarget().offset);
                 aux.insert(p.second->CallTarget());
             }
         }
@@ -506,6 +486,7 @@ public:
     {
         return address;
     }
+
     code_t& GetCode()
     {
         return code;

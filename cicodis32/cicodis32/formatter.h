@@ -453,6 +453,13 @@ public:
                 assert(x86.op_count >= 2);
                 snprintf(replace, 64, "%d", x86.operands[1].size*8);
             }
+            if (strcmp(tok, "realmode") == 0)
+            {
+                if (mOffsetMask == -1)
+                    strncpy(replace, "false", 64);
+                else
+                    strncpy(replace, "true", 64);
+            }
 
             assert(replace[0] > 0);
             char temp[128];

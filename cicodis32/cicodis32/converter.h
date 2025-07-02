@@ -5,6 +5,59 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 
+#include <sstream>
+
+std::string ConvertStringopName(shared<CapInstr> instr)
+{
+    auto replace = [](const char* in, const char* s, const char* r)
+    {
+        char temp[128];
+        strcpy(temp, in);
+        for (int i=0; temp[i]; i++)
+            if (temp[i] == s[0])
+                temp[i] = r[0];
+        return std::string(temp);
+    };
+    auto split = [] (const std::string& input, const std::string& delimiter) -> std::vector<std::string> {
+        std::vector<std::string> tokens;
+        std::size_t start = 0;
+        std::size_t end;
+
+        while ((end = input.find(delimiter, start)) != std::string::npos) {
+            tokens.push_back(input.substr(start, end - start));
+            start = end + delimiter.length();
+        }
+
+        tokens.push_back(input.substr(start)); // add the last token
+        return tokens;
+    };
+    auto argToTemplate = [](std::string in) -> std::string {
+        if (in == "byte ptr es:[edi]" || in == "word ptr es:[edi]" || in == "dword ptr es:[edi]")
+            return "ES_EDI";
+        if (in == "byte ptr es:[di]" || in == "word ptr es:[di]")
+            return "ES_DI";
+        if (in == "word ptr [si]" || in == "byte ptr [si]")
+            return "DS_SI";
+        if (in == "word ptr [esi]")
+            return "DS_ESI";
+        assert(0);
+        return "?";
+    };
+    std::string repeat = "";
+    std::string templ = replace(instr->mMnemonic, " ", "_");
+    std::vector<std::string> args = split(instr->mOperands, ", ");
+    assert(args.size() == 2);
+    if (templ.starts_with("rep_"))
+    {
+        repeat = "for (; cx != 0; --cx) ";
+        templ = templ.substr(4);
+    }
+    if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
+        return repeat + templ + "<" + argToTemplate(args[0]) + ">("+args[1]+");";
+    else
+        return repeat + templ + "<" + argToTemplate(args[0]) + ", " + argToTemplate(args[1]) + ">();";
+}
+
 #define convert_args shared<CapInstr> instr, shared<instrInfo_t> info
 struct convert_t
 {
@@ -69,7 +122,15 @@ convert_t convert[X86_INS_ENDING] = {
         if (instr->mDetail.operands[0].type == X86_OP_IMM)
             return "$method();";
         else
-            return "callIndirect($rd0);";
+        {
+            if (instr->mDetail.operands[0].size == 2)
+                return "callIndirect(cs, $rd0);";
+            else
+            {
+                assert(0);
+                return "stop();";
+            }
+        }
     },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -85,7 +146,7 @@ convert_t convert[X86_INS_ENDING] = {
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
         .numeric = [](convert_args){ return "$rd0"; },
     },
-    [X86_INS_TEST] = {// TODO: BUG SETS CARRY!!!!!!! sub_164000
+    [X86_INS_TEST] = {
         .convert = [](convert_args){ return ""; },
         .zf = [](convert_args){ return instr->ArgsEqual() ? "$rd0" : "$rd0 & $rd1"; },
         .numeric = [](convert_args){ return "$rd0"; },
@@ -99,8 +160,10 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_CLI] = {.convert = [](convert_args){ return "flags.interrupts = 0;"; } },
     [X86_INS_STI] = {.convert = [](convert_args){ return "flags.interrupts = 1;"; } },
     [X86_INS_LODSB] = {.convert = [](convert_args){
-        if (strcmp(instr->mOperands, "al, byte ptr [si]") == 0 || strcmp(instr->mOperands, "al, byte ptr [esi]") == 0)
-            return "lodsb<MemAuto, DirAuto>();";
+        if (strcmp(instr->mOperands, "al, byte ptr [si]") == 0)
+            return "al = lodsb<DS_SI>();";
+        else if (strcmp(instr->mOperands, "al, byte ptr [esi]") == 0)
+            return "al = lodsb<DS_ESI>();";
         assert(0);
         return "";
     } },
@@ -111,7 +174,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_INC] = {.convert = [](convert_args){ return "$rw0++;"; } },
     [X86_INS_SHR] = {.convert = [](convert_args){ return "$rw0 >>= $rd1;"; },
         .zf = [](convert_args){ return "!$rd0"; },
-        .cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
+        //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
         .savecf = [](convert_args){ assert(instr->mDetail.operands[1].type == X86_OP_IMM && instr->mDetail.operands[1].imm == 1); return "$rd0 & 1"; },
     },
     [X86_INS_SHL] = {.convert = [](convert_args){ return "$rw0 <<= $rd1;"; } },
@@ -157,53 +220,15 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_FLDCW] = {.convert = [](convert_args){ return "fldcw($rd0);"; } },
     [X86_INS_FRNDINT] = {.convert = [](convert_args){ return "frndtint();"; } },
 
-    [X86_INS_SCASB] = {.convert = [](convert_args){
-            if (strcmp(instr->mMnemonic, "repe scasb") == 0 && strcmp(instr->mOperands, "al, byte ptr es:[edi]") == 0)
-                return "repe_scasb<ES_EDI>(al);";
-            else
-                assert(0);
-        },
+    [X86_INS_SCASB] = {.convert = [](convert_args){ return ConvertStringopName(instr); },
         .zf = [](convert_args){ return "flags.zero"; }
     },
-    [X86_INS_MOVSB] = {.convert = [](convert_args){
-        if (strcmp(instr->mMnemonic, "rep movsb") == 0 && strcmp(instr->mOperands, "byte ptr es:[edi], byte ptr [esi]") == 0)
-            return "rep_movsb<ES_EDI, DS_ESI>();";
-        else if (strcmp(instr->mMnemonic, "movsb") == 0 && strcmp(instr->mOperands, "byte ptr es:[edi], byte ptr [esi]") == 0)
-            return "movsb<ES_EDI, DS_ESI>();";
-        else if (strcmp(instr->mMnemonic, "rep movsb") == 0 && strcmp(instr->mOperands, "byte ptr es:[di], byte ptr [si]") == 0)
-            return "rep_movsb<ES_DI, DS_SI>();";
-        else
-            assert(0);
-    }},
-    [X86_INS_STOSB] = {.convert = [](convert_args){
-        if (strcmp(instr->mMnemonic, "stosb") == 0 && strcmp(instr->mOperands, "byte ptr es:[edi], al") == 0)
-            return "stosb<ES_EDI>(al);";
-        else if (strcmp(instr->mMnemonic, "rep stosb") == 0 && strcmp(instr->mOperands, "byte ptr es:[edi], al") == 0)
-            return "rep_stosb<ES_EDI>(al);";
-        else if (strcmp(instr->mMnemonic, "rep stosb") == 0 && strcmp(instr->mOperands, "byte ptr es:[di], al") == 0)
-            return "rep_stosb<ES_DI>(al);";
-        else
-            assert(0);
-    }},
-    [X86_INS_STOSW] = {.convert = [](convert_args){
-        if (strcmp(instr->mMnemonic, "rep stosw") == 0 && strcmp(instr->mOperands, "word ptr es:[di], ax") == 0)
-            return "rep_stosb<ES_DI>(ax);";
-        else
-            assert(0);
-    }},
-    [X86_INS_MOVSW] = {.convert = [](convert_args){
-        if (strcmp(instr->mMnemonic, "movsw") == 0 && strcmp(instr->mOperands, "word ptr es:[di], word ptr [si]") == 0)
-            return "movsw<ES_DI, DS_SI>();";
-        else
-            assert(0);
-    }},
-    [X86_INS_STOSD] = {.convert = [](convert_args){
-        if (strcmp(instr->mMnemonic, "rep stosd") == 0 && strcmp(instr->mOperands, "dword ptr es:[edi], eax") == 0)
-            return "rep_stosd<ES_EDI>(eax);";
-        else
-            assert(0);
-    }},
-    [X86_INS_CWDE] = {.convert = [](convert_args){ return "cwde();"; } },
+    [X86_INS_MOVSB] = {.convert = [](convert_args){ return ConvertStringopName(instr); }},
+    [X86_INS_STOSB] = {.convert = [](convert_args){ return ConvertStringopName(instr); }},
+    [X86_INS_STOSW] = {.convert = [](convert_args){ return ConvertStringopName(instr); }},
+    [X86_INS_MOVSW] = {.convert = [](convert_args){ return ConvertStringopName(instr); }},
+    [X86_INS_STOSD] = {.convert = [](convert_args){ return ConvertStringopName(instr); }},
+    [X86_INS_CWDE] = {.convert = [](convert_args){ return "$realmode ? cbw() : cwde();"; } }, // CBW/CWDE
 
 };
 
@@ -239,6 +264,21 @@ public:
         shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
         
         mCode.push_back(format("void sub_%x()\n{\n", proc.linearOffset()));
+        
+        int tempCounter = 0;
+        for (const auto& p : code)
+        {
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            if (pinfo->flagCarry.save)
+            {
+                assert(tempCounter++ == 0);
+                mCode.push_back("  bool temp_cf;\n");
+            }
+        }
+
+        if (tempCounter)
+            mCode.push_back("\n");
+
         assert(!code.empty());
         if (code.begin()->first != proc)
             mCode.push_back(format("  goto loc_%x;\n", proc.linearOffset()));
@@ -267,7 +307,7 @@ public:
             if (pinfo->flagCarry.save)
             {
                 assert(convert[pinstr->mId].savecf);
-                mCode.push_back(format("  bool save_cf = %s;\n", convert[pinstr->mId].savecf(p.second, pinfo).c_str()));
+                mCode.push_back(("  temp_cf = " + iformat(pinstr, pinfo, convert[pinstr->mId].savecf(p.second, pinfo) + ";\n")).c_str());
             }
             if (convert[pinstr->mId].convert)
                 mCode.push_back("  " + iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo)) + "\n");
@@ -332,9 +372,11 @@ public:
                 assert(!info->flagZero.dirty[0] && !info->flagZero.dirty[1]);
                 return iformat(refzf, info, InvertCondition(czf.zf(refzf, info)));
             case X86_INS_JAE:
+                if (info->flagCarry.saved)
+                    return InvertCondition("temp_cf");
                 assert(ccf.cf);
                 assert(!info->flagZero.dirty[0] && !info->flagZero.dirty[1]);
-                return iformat(refzf, info, InvertCondition(ccf.cf(refzf, info)));
+                return iformat(refcf, info, InvertCondition(ccf.cf(refzf, info)));
             case X86_INS_JLE:
                 switch(refzf->mId)
                 {
