@@ -37,8 +37,24 @@ int main(int argc, char **argv) {
     std::set<address_t, cmp_adress_t> process{entry};
     std::set<address_t, cmp_adress_t> processed;
         
+    Options options;
+    options.jumpTables.push_back(std::shared_ptr<jumpTable_t>(new jumpTable_t{
+        .instruction = address_t(0x1000, 0x104e),
+        .table = address_t(0x1000, 0x105a),
+        .type = jumpTable_t::CallWords,
+        .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34},
+        .selector = "bx",
+        .baseptr = loader->GetBufferAt(address_t(0x1000, 0x105a))
+    }));
+
+    std::vector<address_t> startEntries{entry};
+    for (shared<jumpTable_t> j : options.jumpTables)
+        for (int i=0; i<j->GetSize(); i++)
+            startEntries.push_back(j->GetTarget(i));
+    
     Analyser analyser;
-    analyser.RecursiveScan(entry);
+    analyser.RecursiveScan(startEntries);
     
     printf("#include \"cico32.h\"\n\n");
     printf("%s\n", loader->GetMain().c_str());
@@ -53,7 +69,7 @@ int main(int argc, char **argv) {
         processed.insert(proc);
         
         analyser.AnalyseProc(proc);
-        Convert convert(analyser);
+        Convert convert(analyser, options);
         convert.SetOffsetMask(0xffff); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
@@ -65,3 +81,72 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+
+
+
+
+
+
+/*
+ // -jumptable 01ed:46dc 01ed:4725 4 jumpwords bx
+ address_t indirectJumpAddr = address_t::fromString(argv[++i]);
+ address_t jumpTableBegin = address_t::fromString(argv[++i]);
+ const char* strJumpEntries = argv[++i];
+
+ std::vector<int> jumpEntries;
+ if (strstr(strJumpEntries, "-"))
+ {
+     int jumpTableEntriesBegin = (int)strtol(strJumpEntries, nullptr, 10);
+     strJumpEntries = strstr(strJumpEntries, "-")+1;
+     int jumpTableEntriesEnd = (int)strtol(strJumpEntries, nullptr, 10);
+     for (int i=jumpTableEntriesBegin; i<=jumpTableEntriesEnd; i++)
+         jumpEntries.push_back(i);
+ } else
+ {
+     int jumpTableEntries = (int)strtol(strJumpEntries, nullptr, 10);
+     for (int i=0; i<jumpTableEntries; i++)
+         jumpEntries.push_back(i);
+ }
+ 
+ const char* jumpTableEntryType = argv[++i];
+ 
+ switch_t::switch_e tableType = switch_t::switch_e::None;
+ if (strcmp(jumpTableEntryType, "jumpwords") == 0)
+     tableType = switch_t::switch_e::JumpWords;
+ if (strcmp(jumpTableEntryType, "callwords") == 0)
+     tableType = switch_t::switch_e::CallWords;
+ if (strcmp(jumpTableEntryType, "calldwords") == 0)
+     tableType = switch_t::switch_e::CallDwords;
+ if (strcmp(jumpTableEntryType, "jumpfix") == 0)
+     tableType = switch_t::switch_e::JumpFix;
+ if (strcmp(jumpTableEntryType, "call") == 0)
+     tableType = switch_t::switch_e::Call;
+ if (strcmp(jumpTableEntryType, "callwordsbyofs") == 0)
+     tableType = switch_t::switch_e::CallWordsByOfs;
+ assert(tableType != switch_t::switch_e::None);
+ 
+ const char* jumpSelector = argv[++i];
+ 
+ x86_reg index = X86_REG_INVALID;
+ if (strcmp(jumpSelector, "bx") == 0)
+     index = X86_REG_BX;
+ else if (strcmp(jumpSelector, "di") == 0)
+     index = X86_REG_DI;
+ else if (strcmp(jumpSelector, "bp") == 0)
+     index = X86_REG_BP;
+ else if (strcmp(jumpSelector, "ax") == 0)
+     index = X86_REG_AX;
+ else if (strcmp(jumpSelector, "si") == 0)
+     index = X86_REG_SI;
+ else if (strcmp(jumpSelector, "none") == 0)
+     index = X86_REG_INVALID;
+ else if (strcmp(jumpSelector, "indirect") == 0)
+     index = X86_REG_INVALID;
+ else
+     assert(0);
+ if (strcmp(jumpSelector, "indirect") == 0)
+     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
+ else
+     jumpTables.push_back({indirectJumpAddr, jumpTableBegin, jumpEntries, tableType, index, nullptr});
+
+ */

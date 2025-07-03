@@ -177,14 +177,22 @@ public:
             uint16_t* addr = (uint16_t*)&buffer[linearOffset];
             if (_dumpReloc)
             {
-                strReloc += format("    memory16(0x%04x + seg, 0x%04x) += seg; // %04x -> %04x\n",
-                       reloc->segment, reloc->offset, *addr, *addr + _loadBase);
+//                strReloc += format("    memory16(0x%04x + seg, 0x%04x) += seg; // %04x -> %04x\n",
+//                       reloc->segment, reloc->offset, *addr, *addr + _loadBase);
+                if (reloc->segment == 0)
+                    strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x\n",
+                           reloc->offset, reloc->offset, *addr, *addr + _loadBase);
+                else
+                    strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x\n",
+                       reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr, *addr + _loadBase);
             }
             *addr += _loadBase; // TODO: move
         }
 
         strReloc += "}";
         
-        return "void fixReloc(uint16_t seg);\n\n" + strMain + "\n" + strReloc + "\n";
+        std::string strForward = format("void fixReloc(uint16_t seg);\nvoid sub_%x();\n\n", (_loadBase/16+header->cs)*16+header->ip);
+        
+        return strForward + strMain + "\n" + strReloc + "\n";
     }
 };

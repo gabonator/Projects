@@ -93,6 +93,13 @@ public:
         assert(mDetail.op_count == 1);
         return mDetail.operands[0].type == X86_OP_IMM;
     }
+    bool IsIndirectCall()
+    {
+        if (mId != X86_INS_CALL)
+            return false;
+        assert(mDetail.op_count == 1);
+        return mDetail.operands[0].type != X86_OP_IMM;
+    }
     address_t CallTarget()
     {
         assert(mId == X86_INS_CALL);

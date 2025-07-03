@@ -138,6 +138,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -flags.carry;" : "$wr0 -= $rd1 + flags.carry;"; } },
     [X86_INS_SUB] = {.convert = [](convert_args){ return "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
+            .zf = [](convert_args){ return "!$rd0"; },
+
     },
     [X86_INS_CMP] = {
         .convert = [](convert_args){ return ""; },
@@ -171,7 +173,10 @@ convert_t convert[X86_INS_ENDING] = {
             .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
-    [X86_INS_INC] = {.convert = [](convert_args){ return "$rw0++;"; } },
+    [X86_INS_INC] = {
+        .convert = [](convert_args){ return "$rw0++;"; },
+        .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
+    },
     [X86_INS_SHR] = {.convert = [](convert_args){ return "$rw0 >>= $rd1;"; },
         .zf = [](convert_args){ return "!$rd0"; },
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
@@ -235,18 +240,19 @@ convert_t convert[X86_INS_ENDING] = {
 class Convert : public Formatter
 {
     const Analyser& mAnal;
+    const Options& mOptions;
     shared<CTracer> mTracer;
     std::set<address_t, cmp_adress_t> mCalls;
     std::vector<std::string> mCode;
     
 public:
-    Convert(const Analyser& anal) : mAnal(anal)
+    Convert(const Analyser& anal, const Options& options) : mAnal(anal), mOptions(options)
     {
     }
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{false};
+        const bool verbose{true};
         
         mTracer = mAnal.mMethods.find(proc)->second;
         CTracer::code_t& code = mTracer->GetCode();
@@ -309,8 +315,15 @@ public:
                 assert(convert[pinstr->mId].savecf);
                 mCode.push_back(("  temp_cf = " + iformat(pinstr, pinfo, convert[pinstr->mId].savecf(p.second, pinfo) + ";\n")).c_str());
             }
+            
+            if (pinstr->IsIndirectCall() && mOptions.GetJumpTable(pinstr->mAddress))
+            {
+                DumpIndirectTable(mOptions.GetJumpTable(pinstr->mAddress));
+            } else
             if (convert[pinstr->mId].convert)
+            {
                 mCode.push_back("  " + iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo)) + "\n");
+            }
             else
             {
                 printf("Conversion for '%s'/%x (ZF=%s/%x, CF=%s, OF=%s, SF=%s) not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.offset, Capstone->ToString(pinfo->flagZero.lastSetInsn), pinfo->flagZero.lastSet.offset, Capstone->ToString(pinfo->flagCarry.lastSetInsn), Capstone->ToString(pinfo->flagOverflow.lastSetInsn), Capstone->ToString(pinfo->flagSign.lastSetInsn));
@@ -322,6 +335,20 @@ public:
             next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
         }
         mCode.push_back("}\n\n");
+    }
+    
+    void DumpIndirectTable(shared<jumpTable_t> jt)
+    {
+        mCode.push_back(format("  switch (%s)\n", jt->selector));
+        mCode.push_back(format("  {\n"));
+        for (int i=0; i<jt->GetSize(); i++)
+        {
+            mCode.push_back(format("    %s\n", jt->GetCase(i).c_str()));
+            mCalls.insert(jt->GetTarget(i));
+        }
+        mCode.push_back(format("    default:\n"));
+        mCode.push_back(format("      stop();\n"));
+        mCode.push_back(format("  }\n"));
     }
     
     std::string InvertCondition(std::string cond)

@@ -429,7 +429,6 @@ public:
             if (strcmp(tok, "cond") == 0)
             {
                 strcpy(replace, BuildCondition(instr, info, false).c_str());
-                //                strcpy(replace, "XXX");
             }
             if (strcmp(tok, "target") == 0)
             {

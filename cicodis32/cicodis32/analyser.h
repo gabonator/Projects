@@ -40,7 +40,7 @@ struct instrInfo_t {
         bool wasWritten{false};
         bool isDestructive{false};
         bool save{false};
-        bool saved{true};
+        bool saved{false};
         
         address_t lastSet;
         x86_insn lastSetInsn{X86_INS_INVALID};
@@ -121,6 +121,12 @@ struct instrInfo_t {
             changed = flagOverflow.broken = true;
         if (flagSign.lastSet != o->flagSign.lastSet)
             changed = flagSign.broken = true;
+        if (flagCarry.saved != o->flagCarry.saved)
+        {
+            flagCarry.saved = o->flagCarry.saved;
+            changed = true;
+        }
+
         return changed;
     }
 };
@@ -136,9 +142,9 @@ public:
     std::map<address_t, std::shared_ptr<info_t>, cmp_adress_t> mInfos;
 
 public:
-    void RecursiveScan(address_t proc)
+    //void RecursiveScan(address_t proc)
+    void RecursiveScan(std::vector<address_t> methodsToProcess)
     {
-        std::vector<address_t> methodsToProcess{proc};
         std::set<address_t, cmp_adress_t> methodsProcessed;
         while (!methodsToProcess.empty())
         {
@@ -219,9 +225,21 @@ public:
                 std::set<x86_reg> writes = instr->WritesRegisters();
                 if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF))
                 {
+                    shared<CapInstr> destructed = code.find(newInfo->flagCarry.lastSet)->second;
                     shared<instrInfo_t> destructive = info->code.find(newInfo->flagCarry.lastSet)->second;
                     if (destructive->flagCarry.isDestructive)
-                        destructive->flagCarry.save = true;
+                    {
+                        if (!destructive->flagCarry.save)
+                        {
+                            destructive->flagCarry.save = true;
+                            // spread the flag
+                            for (address_t next : destructed->mNext) // TODO: not twice!
+                            {
+                                newHead.push_back(std::pair<address_t, address_t>(destructed->mAddress, next));
+                            }
+                        }
+
+                    }
                     newInfo->flagCarry.wasRead = true;
                 }
                 if (instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF))
