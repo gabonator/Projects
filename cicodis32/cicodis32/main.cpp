@@ -33,9 +33,6 @@ int main(int argc, char **argv) {
     Capstone->Set(loader);
 
     //address_t(0, 0x15e390)
-    address_t entry{loader->GetEntry()};
-    std::set<address_t, cmp_adress_t> process{entry};
-    std::set<address_t, cmp_adress_t> processed;
         
     Options options;
     options.jumpTables.push_back(std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -47,18 +44,22 @@ int main(int argc, char **argv) {
         .selector = "bx",
         .baseptr = loader->GetBufferAt(address_t(0x1000, 0x105a))
     }));
-
+    
+    address_t entry{loader->GetEntry()};
+    std::set<address_t, cmp_adress_t> process{entry};
+    std::set<address_t, cmp_adress_t> processed;
     std::vector<address_t> startEntries{entry};
+    
     for (shared<jumpTable_t> j : options.jumpTables)
         for (int i=0; i<j->GetSize(); i++)
             startEntries.push_back(j->GetTarget(i));
-    
+        
+    printf("#include \"cico32.h\"\n\n");
+    printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
+
     Analyser analyser;
     analyser.RecursiveScan(startEntries);
-    
-    printf("#include \"cico32.h\"\n\n");
-    printf("%s\n", loader->GetMain().c_str());
-    
+
     for (std::pair<address_t, std::shared_ptr<CTracer>> proc : analyser.mMethods)
         printf("void sub_%x();\n", proc.first.linearOffset());
     printf("\n");

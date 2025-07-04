@@ -181,12 +181,12 @@ public:
 //                       reloc->segment, reloc->offset, *addr, *addr + _loadBase);
                 if (reloc->segment == 0)
                     strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x\n",
-                           reloc->offset, reloc->offset, *addr, *addr + _loadBase);
+                           reloc->offset, reloc->offset, *addr, *addr + _loadBase/16);
                 else
                     strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x\n",
-                       reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr, *addr + _loadBase);
+                       reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr, *addr + _loadBase/16);
             }
-            *addr += _loadBase; // TODO: move
+            *addr += _loadBase/16; // TODO: move
         }
 
         strReloc += "}";

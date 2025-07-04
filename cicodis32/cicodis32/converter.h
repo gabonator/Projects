@@ -99,7 +99,12 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_JMP] = {.convert = [](convert_args){ return "goto $target;"; } },
     [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx) goto $target;"; } },
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0) goto $target;"; } },
-    [X86_INS_RET] = {.convert = [](convert_args){ return "return;"; } },
+    [X86_INS_RET] = {.convert = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
+            return "sp += $immd0;\n  return;";
+        else
+            return "return;";
+        } },
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -252,7 +257,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{true};
+        const bool verbose{false};
         
         mTracer = mAnal.mMethods.find(proc)->second;
         CTracer::code_t& code = mTracer->GetCode();
