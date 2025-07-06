@@ -207,6 +207,22 @@ public:
                 assert(0);
         }
     }
+    int Imm()
+    {
+        if (mDetail.op_count == 0)
+        {
+            assert(mId == X86_INS_RET);
+            return 0;
+        }
+        if (mDetail.op_count == 1)
+        {
+            assert (mDetail.operands[0].type == X86_OP_IMM);
+            return (int)mDetail.operands[0].imm;
+        }
+        assert (mDetail.op_count == 2);
+        assert (mDetail.operands[1].type == X86_OP_IMM);
+        return (int)mDetail.operands[1].imm;
+    }
 };
 
 CapInstr::CapInstr(address_t addr, cs_insn* p)

@@ -76,13 +76,13 @@ int sar16(int a, int b)
 struct DS_SI { 
   static uint8_t Get8() { return memoryAGet(ds, si); } 
   static uint16_t Get16() { return memoryAGet16(ds, si); } 
-  static void Advance(int n) { si += flags.direction ? n : -n; }
+  static void Advance(int n) { si += flags.direction ? -n : n; }
 };
 
 struct ES_DI { 
   static void Set8(uint8_t v) { return memoryASet(es, di, v); }
   static void Set16(uint16_t v) { return memoryASet16(es, di, v); }
-  static void Advance(int n) { di += flags.direction ? n : -n; }
+  static void Advance(int n) { di += flags.direction ? -n : n; }
 };
 
 template <typename src> int lodsb()
@@ -113,7 +113,7 @@ template <typename dst, typename src> void movsw()
 
 template <typename dst, typename src> void movsb()
 {
-  dst::Set16(src::Get16());
+  dst::Set8(src::Get8());
   dst::Advance(1);
   src::Advance(1);
 }

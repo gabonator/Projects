@@ -110,6 +110,7 @@ public:
 //        int entries;
 //        char index[32];
 //    };
+    bool recursive{true};
     std::vector<shared<jumpTable_t>> jumpTables;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {

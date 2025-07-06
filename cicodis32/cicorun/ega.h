@@ -410,19 +410,21 @@ assert(0);
         uint8_t* _video = (uint8_t*)egamemory;
         uint32_t off = (int)y * 40L + ((int)x / 8L);
         
-        //uint32_t mem_addr = off;
         int mask = 0x80 >> (x % 8);
-
-        //int page = ((getTick() >> 8) & 1) ? 0x6800 : cfgAddr; //cfgAddr; 0xa700-0
         int page = cfgAddr;
-    
         int shift = page*4;
+        
         uint8_t b = 0;
         if ( _video[shift + off*4 + 0] & mask ) b |= 1;
         if ( _video[shift + off*4 + 1] & mask ) b |= 2;
         if ( _video[shift + off*4 + 2] & mask ) b |= 4;
         if ( _video[shift + off*4 + 3] & mask ) b |= 8;
-        return palette[b];
+        uint32_t c = palette[b];
+        uint8_t cr = c & 255;
+        uint8_t cg = (c >> 8) & 255;
+        uint8_t cb = (c >> 16) & 255;
+        
+        return (cr<<16) | (cg<<8) | cb; //(c & 0xff00ff00) | ((c>>16)&255) || ((c&255)<<16);
     }
 
 
@@ -499,8 +501,6 @@ assert(0);
 
         TLatch pixels;
         pixels.u32Data = uLatch.u32Data;
-        //pixels.u32Data = ReadLatch(dwAddr); //((uint32_t*)&egamemory[dwAddr])[dwAddr];
-
         pixels.u32Data &= full_not_map_mask;
         pixels.u32Data |= (data & full_map_mask);
 

@@ -28,12 +28,15 @@ struct instrInfo_t {
         callConvSimpleStackFar = 2
     } callConv{callConvUnknown}; // TODO: move to func info!
     
-    int stackDepth{0};
     struct instrInfoReg_t
     {
         bool wasRead{false};
         bool wasWritten{false};
     } reg[X86_REG_ENDING];
+    
+    int stackDepth{0};
+    bool jumpsToRet{false};
+    bool isLast{false};
     
     struct instrInfoFlag_t {
         bool wasRead{false};
@@ -220,6 +223,15 @@ public:
                 
                 shared<instrInfo_t> newInfo(new instrInfo_t);
                 newInfo->CopyFrom(*prevInfo.get());
+                if (instr->IsJump())
+                {
+                    shared<CapInstr> target = code.find(instr->JumpTarget())->second;
+                    if (target->mId == X86_INS_RET || target->mId == X86_INS_RETF)
+                    {
+                        assert(target->Imm() == 0);
+                        newInfo->jumpsToRet = true;
+                    }
+                }
 
                 std::set<x86_reg> reads = instr->ReadsRegisters();
                 std::set<x86_reg> writes = instr->WritesRegisters();
@@ -361,5 +373,6 @@ public:
         }
         // BAD, collect all RET, and merge
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
+        info->code[code.rbegin()->first]->isLast = true;
     }
 };

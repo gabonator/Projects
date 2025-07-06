@@ -82,24 +82,31 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_MOV] = {.convert = [](convert_args){ return "$wr0 = $rd1;"; } },
     [X86_INS_MOVZX] = {.convert = [](convert_args){
         return "$wr0 = $rd1;"; } },
-    [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JLE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JL] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JAE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JA] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JB] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JBE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JG] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JGE] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JP] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JNP] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JNS] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond) goto $target;"; } },
-    [X86_INS_JMP] = {.convert = [](convert_args){ return "goto $target;"; } },
-    [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx) goto $target;"; } },
-    [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0) goto $target;"; } },
+    [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JLE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JL] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JAE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JA] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JB] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JBE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JG] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JGE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JNP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JNS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JMP] = {.convert = [](convert_args){ return "$goto_target;"; } },
+    [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx)\n        $goto_target;"; } },
+    [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
+        if (info->isLast && !instr->isLabel)
+        {
+            if (instr->Imm() == 0)
+                return "";
+            else
+                return "sp += $immd0;";
+        }
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
             return "sp += $immd0;\n  return;";
         else
@@ -155,7 +162,7 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_TEST] = {
         .convert = [](convert_args){ return ""; },
-        .zf = [](convert_args){ return instr->ArgsEqual() ? "$rd0" : "$rd0 & $rd1"; },
+        .zf = [](convert_args){ return instr->ArgsEqual() ? "!$rd0" : "!($rd0 & $rd1)"; },
         .numeric = [](convert_args){ return "$rd0"; },
         .signedNumeric = [](convert_args){ return "$rd0"; }, //[](convert_args){ return "(sig0)$rd0"; },
     },
@@ -182,12 +189,16 @@ convert_t convert[X86_INS_ENDING] = {
         .convert = [](convert_args){ return "$rw0++;"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
-    [X86_INS_SHR] = {.convert = [](convert_args){ return "$rw0 >>= $rd1;"; },
+    [X86_INS_SHR] = {.convert = [](convert_args) {
+            return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
+        },
         .zf = [](convert_args){ return "!$rd0"; },
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
         .savecf = [](convert_args){ assert(instr->mDetail.operands[1].type == X86_OP_IMM && instr->mDetail.operands[1].imm == 1); return "$rd0 & 1"; },
     },
-    [X86_INS_SHL] = {.convert = [](convert_args){ return "$rw0 <<= $rd1;"; } },
+    [X86_INS_SHL] = {.convert = [](convert_args){
+        return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
+    } },
     [X86_INS_IMUL] = {.convert = [](convert_args){
         if (instr->mDetail.op_count == 3 && instr->mDetail.operands[2].type == X86_OP_IMM && instr->mDetail.operands[0].size == 4)
             return "$wr0 = $rd1 * $rd2;";
@@ -318,16 +329,17 @@ public:
             if (pinfo->flagCarry.save)
             {
                 assert(convert[pinstr->mId].savecf);
-                mCode.push_back(("  temp_cf = " + iformat(pinstr, pinfo, convert[pinstr->mId].savecf(p.second, pinfo) + ";\n")).c_str());
+                mCode.push_back(("    temp_cf = " + iformat(pinstr, pinfo, convert[pinstr->mId].savecf(p.second, pinfo) + ";\n")).c_str());
             }
-            
-            if (pinstr->IsIndirectCall() && mOptions.GetJumpTable(pinstr->mAddress))
+            else if (pinstr->IsIndirectCall() && mOptions.GetJumpTable(pinstr->mAddress))
             {
                 DumpIndirectTable(mOptions.GetJumpTable(pinstr->mAddress));
             } else
             if (convert[pinstr->mId].convert)
             {
-                mCode.push_back("  " + iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo)) + "\n");
+                std::string command = iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo));
+                if (command.size())
+                    mCode.push_back("    " + command + "\n");
             }
             else
             {
@@ -339,7 +351,7 @@ public:
                 
             next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
         }
-        mCode.push_back("}\n\n");
+        mCode.push_back("}\n");
     }
     
     void DumpIndirectTable(shared<jumpTable_t> jt)
@@ -366,6 +378,8 @@ public:
             return "$rd0 >= $rd1";
         if (cond == "$rd0 & $rd1")
             return "!($rd0 & $rd1)";
+        if (cond == "!($rd0 & $rd1)")
+            return "$rd0 & $rd1";
         if (cond == "($sig0)$rd0 < 0")
             return "($sig0)$rd0 >= 0";
         if (cond == "!$rd0")

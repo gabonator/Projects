@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     //address_t(0, 0x15e390)
         
     Options options;
+//    options.recursive = false;
     options.jumpTables.push_back(std::shared_ptr<jumpTable_t>(new jumpTable_t{
         .instruction = address_t(0x1000, 0x104e),
         .table = address_t(0x1000, 0x105a),
@@ -46,6 +47,7 @@ int main(int argc, char **argv) {
     }));
     
     address_t entry{loader->GetEntry()};
+//    entry = {0x1000, 0x1c0a};
     std::set<address_t, cmp_adress_t> process{entry};
     std::set<address_t, cmp_adress_t> processed;
     std::vector<address_t> startEntries{entry};
@@ -74,9 +76,12 @@ int main(int argc, char **argv) {
         convert.SetOffsetMask(0xffff); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
-        for (address_t call : convert.GetCalls())
-            if (process.find(call) == process.end() && processed.find(call) == processed.end())
-                process.insert(call);
+        if (options.recursive)
+        {
+            for (address_t call : convert.GetCalls())
+                if (process.find(call) == process.end() && processed.find(call) == processed.end())
+                    process.insert(call);
+        }
     }
     
     return 0;

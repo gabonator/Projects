@@ -182,6 +182,7 @@ void interrupt(int i)
     if (i == 0x21 && ah == 0x3f)
     {
         assert(f);
+        assert(ds < 0xa000);
         uint8_t* buf = new uint8_t[cx];
         int c = (int)fread(buf, 1, (size_t)cx, f);
         int linear = (ds-loadAddress)*16 + dx;
