@@ -137,7 +137,7 @@ public:
             if (_videoMode==-1)
             {
                 ax = 0x5003;
-                bh = 0x00;
+      //          bh = 0x00;
                 return true;
             }
             if (_videoMode==0x12)
@@ -176,7 +176,7 @@ public:
         {
             //https://dos4gw.org/INT_10H_1aH_Set_or_Query_Display_Combination_Code
             al = 0x1a;
-            bl = 0x08; // vga color
+            ////bl = 0x08; // vga color
             return true;
         }
         if (ax == 0x1000)
@@ -315,13 +315,11 @@ assert(0);
         }
         if (port == 0x3d4)
         {
-assert(0);
             crtReg = data;
             return true;
         }
         if (port == 0x3d5)
         {
-assert(0);
             PortWrite16(0x3d4, (data << 8)|crtReg);
             return true;
         }

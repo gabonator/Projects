@@ -13,6 +13,9 @@ uint8_t& ch = *(reinterpret_cast<uint8_t*>(&cx) + 1);
 uint16_t dx;
 uint8_t& dl = *reinterpret_cast<uint8_t*>(&dx);
 uint8_t& dh = *(reinterpret_cast<uint8_t*>(&dx) + 1);
+uint16_t tx;
+uint8_t& tl = *reinterpret_cast<uint8_t*>(&tx);
+uint8_t& th = *(reinterpret_cast<uint8_t*>(&tx) + 1);
 uint16_t cs, ds, es, ss, sp, si, di, bp;
 
 struct flags_t {
@@ -22,6 +25,7 @@ struct flags_t {
 int headerSize, loadAddress, endAddress;
 flags_t flags;
 
+void sync();
 void load(const char*, const char*, int);
 //uint16_t& memory16(int s, int o);
 void memoryASet(int s, int o, int v);
@@ -73,7 +77,63 @@ int sar16(int a, int b)
     return sa;
 }
 
-struct DS_SI { 
+void mul16(uint16_t r)
+{
+    int v = r * ax;
+    ax = v & 0xffff;
+    dx = v >> 16;
+}
+
+uint8_t rcr8(uint8_t r, int i)
+{
+    assert(i == 1);
+    int newCarry = !!(r & 0x1);
+    r >>= 1;
+    r |= flags.carry ? 0x80 : 0;
+    flags.carry = newCarry;
+    return r;
+}
+
+uint8_t sar8(uint8_t a, uint8_t b)
+{
+    int8_t sa = (char)a;
+    sa >>= b;
+    return sa;
+}
+uint16_t rol16(uint16_t r, int l)
+{
+    return (r<<l) | (r>>(16-l));
+}
+
+void div8(uint8_t r)
+{
+    uint16_t result = ax / r;
+    uint16_t remain = ax % r;
+    al = result;
+    ah = remain;
+}
+
+void idiv8(uint8_t r)
+{
+    int32_t dw = (dx << 16) | ax;
+    uint16_t result = dw / r;
+    uint16_t remainder = dw % r;
+    ax = result;
+    dx = remainder;
+}
+
+
+int flagAsReg()
+{
+    return flags.carry | (flags.zero << 1);
+}
+void flagsFromReg(int r)
+{
+    flags.carry = r & 1;
+    flags.zero = (r>>1) & 1;
+}
+
+struct DS_SI {
   static uint8_t Get8() { return memoryAGet(ds, si); } 
   static uint16_t Get16() { return memoryAGet16(ds, si); } 
   static void Advance(int n) { si += flags.direction ? -n : n; }
@@ -89,6 +149,13 @@ template <typename src> int lodsb()
 {
   int temp = src::Get8();
   src::Advance(1);
+  return temp;
+}
+
+template <typename src> int lodsw()
+{
+  int temp = src::Get16();
+  src::Advance(2);
   return temp;
 }
 

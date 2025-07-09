@@ -1,7363 +1,10463 @@
 #include "cico32.h"
 
 void fixReloc(uint16_t seg);
-void sub_10010();
+void sub_1c276();
 
 void start()
 {
     headerSize = 0x0200;
     loadAddress = 0x1000;
-    endAddress = 0x1d20;
-    cs = 0x1000;
-    ds = 0x0ff0;
-    es = 0x0ff0;
-    ss = 0x1cfc;
-    sp = 0x0100;
-    load("", "GOOSE.EXE", 53684);
+    endAddress = 0x1c80;
+    cs = 0x1040;
+    ds = 0x1030;
+    es = 0x1030;
+    ss = 0x1000;
+    sp = 0x0400;
+    load("", "RICK2.EXE", 50927);
     fixReloc(cs);
-    sub_10010();
+    sub_1c276();
 }
+
+void sub_10524();
+void sub_10533();
+void sub_10594();
+void sub_105a1();
+void sub_105cc();
+void sub_105f7();
+void sub_10661();
+void sub_10702();
+void sub_10776();
+void sub_1079d();
+void sub_107ac();
+void sub_107f1();
+void sub_10836();
+void sub_1087b();
+void sub_1088d();
+void sub_108dd();
+void sub_108f7();
+void sub_1091b();
+void sub_10986();
+void sub_109a5();
+void sub_109c4();
+void sub_109d3();
+void sub_109ee();
+void sub_10a67();
+void sub_10ae7();
+void sub_10bb1();
+void sub_10bc4();
+void sub_10c2e();
+void sub_10c98();
+void sub_10ccd();
+void sub_10d03();
+void sub_10d3d();
+void sub_10d5c();
+void sub_10daa();
+void sub_10df8();
+void sub_10e23();
+void sub_10e40();
+void sub_10e7f();
+void sub_10ea6();
+void sub_10ec0();
+void sub_10ed8();
+void sub_10ee4();
+void sub_10ee5();
+void sub_10ee6();
+void sub_10ee7();
+void sub_10ee8();
+void sub_11162();
+void sub_111f1();
+void sub_112d6();
+void sub_11376();
+void sub_15f40();
+void sub_15fe4();
+void sub_16022();
+void sub_16126();
+void sub_1613c();
+void sub_1615f();
+void sub_16174();
+void sub_1618f();
+void sub_16205();
+void sub_16222();
+void sub_16407();
+void sub_1646e();
+void sub_164a0();
+void sub_164e1();
+void sub_16519();
+void sub_16555();
+void sub_16591();
+void sub_1686f();
+void sub_168a8();
+void sub_168e4();
+void sub_16907();
+void sub_1691d();
+void sub_169e3();
+void sub_16b3b();
+void sub_16b9b();
+void sub_16bc7();
+void sub_16bf7();
+void sub_16c27();
+void sub_16c3d();
+void sub_16c53();
+void sub_16c69();
+void sub_16cb8();
+void sub_16cd7();
+void sub_16d69();
+void sub_16e16();
+void sub_16e39();
+void sub_16e66();
+void sub_16e74();
+void sub_16ea1();
+void sub_16eb2();
+void sub_16ff5();
+void sub_17018();
+void sub_17047();
+void sub_1705d();
+void sub_1709d();
+void sub_170e6();
+void sub_17132();
+void sub_17180();
+void sub_1718e();
+void sub_17205();
+void sub_17222();
+void sub_17674();
+void sub_176e6();
+void sub_176f4();
+void sub_17702();
+void sub_17723();
+void sub_177fb();
+void sub_17896();
+void sub_17a31();
+void sub_17a8b();
+void sub_17c64();
+void sub_17cf4();
+void sub_17d53();
+void sub_17d70();
+void sub_17dfb();
+void sub_17fbf();
+void sub_17ff3();
+void sub_18014();
+void sub_1802d();
+void sub_181a4();
+void sub_181c6();
+void sub_18351();
+void sub_18a9a();
+void sub_18c83();
+void sub_18cbe();
+void sub_18d28();
+void sub_19214();
+void sub_1926d();
+void sub_192ae();
+void sub_192da();
+void sub_1930a();
+void sub_1933f();
+void sub_19351();
+void sub_19420();
+void sub_19462();
+void sub_194c4();
+void sub_19553();
+void sub_19577();
+void sub_19593();
+void sub_195ea();
+void sub_1961d();
+void sub_196dd();
+void sub_199c8();
+void sub_19af6();
+void sub_19b1c();
+void sub_19b40();
+void sub_19bac();
+void sub_19bdc();
+void sub_19c05();
+void sub_19c43();
+void sub_19e18();
+void sub_19eb5();
+void sub_19ebb();
+void sub_19ed0();
+void sub_19ee5();
+void sub_19f8a();
+void sub_1a102();
+void sub_1a111();
+void sub_1a120();
+void sub_1a121();
+void sub_1a137();
+void sub_1a13f();
+void sub_1a155();
+void sub_1a168();
+void sub_1a1bc();
+void sub_1a1d7();
+void sub_1a1e4();
+void sub_1a1e6();
+void sub_1a1fd();
+void sub_1a234();
+void sub_1a23e();
+void sub_1a24c();
+void sub_1a257();
+void sub_1a2c4();
+void sub_1a2f6();
+void sub_1a389();
+void sub_1a3cf();
+void sub_1a437();
+void sub_1a44f();
+void sub_1a45c();
+void sub_1a54a();
+void sub_1a56b();
+void sub_1a592();
+void sub_1a5e3();
+void sub_1a5f0();
+void sub_1a65b();
+void sub_1a67b();
+void sub_1a693();
+void sub_1a69d();
+void sub_1ad6e();
+void sub_1adb0();
+void sub_1adcb();
+void sub_1ae03();
+void sub_1ae81();
+void sub_1aecd();
+void sub_1b95d();
+void sub_1bb3f();
+void sub_1bc92();
+void sub_1bcb7();
+void sub_1bf7c();
+void sub_1bfa0();
+void sub_1c0a8();
+void sub_1c164();
+void sub_1c1a2();
+void sub_1c276();
+void sub_1c4bd();
+void sub_1c4ca();
+void sub_1c4e1();
+void sub_1c4e2();
 
 void fixReloc(uint16_t seg)
 {
-    memoryASet16(seg, 0x0011, memoryAGet16(seg, 0x0011) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x04d1, memoryAGet16(seg, 0x04d1) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x05d8, memoryAGet16(seg, 0x05d8) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x0b59, memoryAGet16(seg, 0x0b59) + seg); // 03a5 -> 13a5
+    memoryASet16(0x0040 + seg, 0x9334, memoryAGet16(0x0040 + seg, 0x9334) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa05d, memoryAGet16(0x0040 + seg, 0xa05d) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa069, memoryAGet16(0x0040 + seg, 0xa069) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa075, memoryAGet16(0x0040 + seg, 0xa075) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa081, memoryAGet16(0x0040 + seg, 0xa081) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa08d, memoryAGet16(0x0040 + seg, 0xa08d) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa099, memoryAGet16(0x0040 + seg, 0xa099) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa0a5, memoryAGet16(0x0040 + seg, 0xa0a5) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa289, memoryAGet16(0x0040 + seg, 0xa289) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa2d0, memoryAGet16(0x0040 + seg, 0xa2d0) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa2e1, memoryAGet16(0x0040 + seg, 0xa2e1) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa2f1, memoryAGet16(0x0040 + seg, 0xa2f1) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa302, memoryAGet16(0x0040 + seg, 0xa302) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa30f, memoryAGet16(0x0040 + seg, 0xa30f) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa864, memoryAGet16(0x0040 + seg, 0xa864) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa86e, memoryAGet16(0x0040 + seg, 0xa86e) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xa9d5, memoryAGet16(0x0040 + seg, 0xa9d5) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xaa0f, memoryAGet16(0x0040 + seg, 0xaa0f) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xaa33, memoryAGet16(0x0040 + seg, 0xaa33) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xaa7b, memoryAGet16(0x0040 + seg, 0xaa7b) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xaae7, memoryAGet16(0x0040 + seg, 0xaae7) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xb53c, memoryAGet16(0x0040 + seg, 0xb53c) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xb89b, memoryAGet16(0x0040 + seg, 0xb89b) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xb8b9, memoryAGet16(0x0040 + seg, 0xb8b9) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xb8d2, memoryAGet16(0x0040 + seg, 0xb8d2) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xbda3, memoryAGet16(0x0040 + seg, 0xbda3) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xbe8b, memoryAGet16(0x0040 + seg, 0xbe8b) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xbefa, memoryAGet16(0x0040 + seg, 0xbefa) + seg); // 0040 -> 1040
+    memoryASet16(0x0040 + seg, 0xbf13, memoryAGet16(0x0040 + seg, 0xbf13) + seg); // 0040 -> 1040
 }
 
-void sub_10010();
-void sub_100a9();
-void sub_100cf();
-void sub_100fd();
-void sub_10103();
-void sub_1019d();
-void sub_101ad();
-void sub_101c0();
-void sub_1033b();
-void sub_10442();
-void sub_104a5();
-void sub_104f3();
-void sub_10529();
-void sub_10541();
-void sub_10588();
-void sub_10591();
-void sub_105bc();
-void sub_105ec();
-void sub_10600();
-void sub_10637();
-void sub_10644();
-void sub_1064d();
-void sub_10674();
-void sub_1069a();
-void sub_107af();
-void sub_107fd();
-void sub_108ba();
-void sub_1094a();
-void sub_109a4();
-void sub_109b5();
-void sub_109e9();
-void sub_10a1b();
-void sub_10a51();
-void sub_10ad5();
-void sub_10b58();
-void sub_10b7c();
-void sub_10b8e();
-void sub_10bc5();
-void sub_10bdc();
-void sub_10c24();
-void sub_10d98();
-void sub_10da7();
-void sub_10dc0();
-void sub_10e07();
-void sub_10e3d();
-void sub_10e84();
-void sub_10f3c();
-void sub_10f9d();
-void sub_10fda();
-void sub_110a0();
-void sub_110c6();
-void sub_110f3();
-void sub_11108();
-void sub_112a7();
-void sub_112cb();
-void sub_112eb();
-void sub_11384();
-void sub_113a8();
-void sub_11429();
-void sub_114f0();
-void sub_115fc();
-void sub_116d6();
-void sub_116df();
-void sub_116fe();
-void sub_1171f();
-void sub_11740();
-void sub_1176c();
-void sub_11783();
-void sub_117ac();
-void sub_117d6();
-void sub_117f4();
-void sub_118a9();
-void sub_118c7();
-void sub_1196f();
-void sub_11993();
-void sub_119c2();
-void sub_11a04();
-void sub_11a9e();
-void sub_11b09();
-void sub_11b4a();
-void sub_11b57();
-void sub_11b80();
-void sub_11bb9();
-void sub_11c0a();
-void sub_11c33();
-void sub_11c56();
-void sub_11c78();
-void sub_11cd9();
-void sub_11d1e();
-void sub_11def();
-void sub_11e7d();
-void sub_11f0b();
-void sub_11fba();
-void sub_12005();
-void sub_12047();
-void sub_12092();
-void sub_12099();
-void sub_120a0();
-void sub_120db();
-void sub_120f0();
-void sub_12121();
-void sub_1215b();
-void sub_121dc();
-void sub_12200();
-void sub_1220d();
-void sub_122b1();
-void sub_122c1();
-void sub_122e1();
-void sub_122f9();
-void sub_12311();
-void sub_12329();
-void sub_1237c();
-void sub_1239b();
-void sub_123d4();
-void sub_123ec();
-void sub_12404();
-void sub_1241c();
-void sub_12434();
-void sub_1244c();
-void sub_12464();
-void sub_1250b();
-void sub_1252f();
-void sub_12536();
-void sub_12542();
-void sub_12553();
-void sub_12577();
-void sub_1257e();
-void sub_1258a();
-void sub_1259b();
-void sub_125bf();
-void sub_125c6();
-void sub_125d2();
-void sub_125e3();
-void sub_1264a();
-void sub_12662();
-void sub_12676();
-void sub_1268a();
-void sub_1269e();
-void sub_12714();
-void sub_12762();
-void sub_1279f();
-void sub_12809();
-void sub_12872();
-void sub_128da();
-void sub_12907();
-void sub_12959();
-void sub_1296f();
-void sub_129ae();
-void sub_129db();
-void sub_12a64();
-void sub_12a7f();
-void sub_12b28();
-void sub_12c07();
-void sub_12c45();
-void sub_12c9a();
-void sub_12cc7();
-void sub_12cea();
-void sub_12d9a();
-void sub_12ddc();
-void sub_12df6();
-void sub_12e02();
-void sub_12f50();
-void sub_12fe8();
-void sub_1300a();
-void sub_13059();
-void sub_13084();
-void sub_1309d();
-void sub_13130();
-void sub_1315e();
-void sub_13170();
-void sub_13181();
-void sub_13191();
-void sub_131a4();
-void sub_131e7();
-void sub_13209();
-void sub_13291();
-void sub_132fe();
-void sub_1333c();
-void sub_13383();
-void sub_133b3();
-void sub_133d7();
-void sub_133e5();
-void sub_13423();
-void sub_13439();
-void sub_13472();
-void sub_13498();
-void sub_134a8();
-void sub_135bc();
-void sub_136d4();
-void sub_13801();
-void sub_1382a();
-void sub_13840();
-void sub_13914();
-void sub_139a3();
-void sub_139b8();
-
-void sub_10010()
+void callIndirect(int seg, int ofs)
 {
-    ax = 0x13a5;
-    ds = ax;
-    bx = 0x9670;
-    bx += 0x000f;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    ax += bx;
-    memoryASet16(ds, 0x94e8, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94ea, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94ec, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94ee, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94f0, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94f2, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94f4, ax);
-    ax += 0x0800;
-    memoryASet16(ds, 0x94f6, ax);
-    interrupt(0x12);
-    if (ax >= 0x0200)
-        goto loc_10067;
-    dx = 0x0007;
-    ah = 0x09;
-    interrupt(0x21);
-    ax = 0x4c00;
-    interrupt(0x21);
-    stop();
-  // gap 2 bytes
-loc_10067:
-    dx = 0x002a;
-    ah = 0x09;
-    interrupt(0x21);
-    sub_10600();
-    sub_1333c();
-    sub_12762();
-    sub_105ec();
-    sub_10442();
-    sub_10588();
-    sub_10591();
-    sub_1382a();
-    memoryASet(ds, 0x9501, 0x00);
-loc_1008b:
-    sub_100a9();
-    sub_100cf();
-    sub_100fd();
-    goto loc_1008b;
-}
-void sub_100a9()
-{
-    sub_10103();
-    memoryASet(ds, 0x9500, 0x00);
-    memoryASet(ds, 0x94fe, 0x01);
-    memoryASet(ds, 0x94fc, 0x10);
-    memoryASet(ds, 0x94ff, 0x00);
-    memoryASet(ds, 0x9502, 0x00);
-    sub_10da7();
-    sub_13423();
-    sub_121dc();
-}
-void sub_100cf()
-{
-loc_100cf:
-    sub_101c0();
-    sub_10fda();
-    al = memoryAGet(ds, 0x94ff);
-    if (al != 0x00)
-        goto loc_100e4;
-    sub_132fe();
-    sub_10b8e();
-    goto loc_100ed;
-loc_100e4:
-    sub_134a8();
-    sub_131a4();
-    sub_10b8e();
-loc_100ed:
-    sub_1220d();
-    sub_13383();
-    al = memoryAGet(ds, 0x9500);
-    if (al != 0x00)
-        return;
-    goto loc_100cf;
-}
-void sub_100fd()
-{
-    memoryASet(ds, 0x0006, 0x01);
-}
-void sub_10103()
-{
-    al = memoryAGet(ds, 0x0006);
-    if (al == 0x00)
-        goto loc_10115;
-    memoryASet16(ds, 0x8e7e, 0x00da);
-    sub_1279f();
-    goto loc_1011e;
-loc_10115:
-    memoryASet16(ds, 0x8e7e, 0x00e9);
-    sub_128da();
-loc_1011e:
-    sub_139b8();
-    sub_13472();
-    memoryASet(ds, 0x9503, 0x01);
-    memoryASet16(ds, 0x8e80, 0x0000);
-    sub_10d98();
-loc_10132:
-    sub_101c0();
-    sub_10fda();
-    sub_13498();
-    sub_10b8e();
-    sub_13383();
-    ax = memoryAGet16(ds, 0x954c);
-    if (ax & 0x0080)
-        goto loc_10197;
-    memoryASet16(ds, 0x8e80, memoryAGet16(ds, 0x8e80) + 1);
-    bx = memoryAGet16(ds, 0x8e80);
-    if (bx & 0x0007)
-        goto loc_10195;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx += memoryAGet16(ds, 0x8e7e);
-    al = memoryAGet(ds, bx);
-    if (al == 0x00)
-        goto loc_10195;
-    if (al == 0xff)
-        goto loc_10197;
-    if (al != 0xfe)
-        goto loc_10180;
-    al = memoryAGet(ds, 0x9546);
-    if (al == 0x00)
-        goto loc_1017b;
-    sub_129db();
-    goto loc_1017e;
-loc_1017b:
-    sub_101ad();
-loc_1017e:
-    goto loc_10195;
-loc_10180:
-    if (al & 0x80)
-        goto loc_10189;
-    sub_1019d();
-    goto loc_10195;
-loc_10189:
-    al &= 0x3f;
-    push(ax);
-    sub_1019d();
-    ax = pop();
-    al++;
-    sub_1019d();
-loc_10195:
-    goto loc_10132;
-loc_10197:
-    memoryASet(ds, 0x9503, 0x00);
-}
-void sub_1019d()
-{
-    si = 0x0109;
-    memoryASet(ds, si + 4, al);
-    bx = 0x0120;
-    sub_12121();
-    sub_10b58();
-}
-void sub_101ad()
-{
-    cx = 0x1f40;
-loc_101b0:
-    push(cx);
-    sub_101c0();
-    cx = pop();
-    ax = memoryAGet16(ds, 0x954c);
-    if (!(al & 0x80))
-        goto loc_101bd;
-    return;
-loc_101bd:
-    if (--cx)
-        goto loc_101b0;
-}
-void sub_101c0()
-{
-  goto loc_101c0;
-loc_10096:
-    sub_139a3();
-    sub_105bc();
-    sub_104a5();
-    ax = 0x0003;
-    interrupt(0x10);
-    ax = 0x4c00;
-    interrupt(0x21);
-    stop();
-  // gap 279 bytes
-loc_101c0:
-    bx = 0x8e8a;
-    si = 0x003d;
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_101d5;
-    si = 0x003e;
-loc_101cf:
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_101cf;
-loc_101d5:
-    si = 0x003b;
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_101e1;
-    sub_1033b();
-loc_101e1:
-    bx = 0x8e8a;
-    si = memoryAGet16(ds, 0x8f0d);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_101f6;
-    memoryASet16(ds, 0x954c, 0x0001);
-    goto loc_1020e;
-loc_101f6:
-    si = memoryAGet16(ds, 0x8f0f);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_10208;
-    memoryASet16(ds, 0x954c, 0x0002);
-    goto loc_1020e;
-loc_10208:
-    memoryASet16(ds, 0x954c, 0x0000);
-loc_1020e:
-    si = memoryAGet16(ds, 0x8f11);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1021f;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0004);
-    goto loc_1022e;
-loc_1021f:
-    si = memoryAGet16(ds, 0x8f13);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1022e;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0008);
-loc_1022e:
-    si = memoryAGet16(ds, 0x8f15);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1023e;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0080);
-loc_1023e:
-    si = memoryAGet16(ds, 0x8f17);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1024d;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0040);
-loc_1024d:
-    si = memoryAGet16(ds, 0x8f19);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1025c;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0020);
-loc_1025c:
-    si = memoryAGet16(ds, 0x8f1b);
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_1028c;
-    sub_12c45();
-    bx = 0x8e8a;
-loc_1026c:
-    al = memoryAGet(ds, bx + 21);
-    if (al != 0x00)
-        goto loc_1027c;
-    al = memoryAGet(ds, bx + 49);
-    if (al != 0x00)
-        goto loc_1027c;
-    goto loc_1026c;
-loc_1027c:
-    bx = 0x8e8a;
-    al = memoryAGet(ds, bx + 21);
-    if (al == 0x00)
-        goto loc_10289;
-    goto loc_10096;
-loc_10289:
-    sub_10529();
-loc_1028c:
-    bx = 0x8e8a;
-    si = 0x003c;
-    al = memoryAGet(ds, bx + si);
-    if (al == 0x00)
-        goto loc_102c5;
-    al = memoryAGet(ds, 0x9505);
-    if (al != 0x00)
-        goto loc_102b0;
-    al = 0x0e;
-    sub_13840();
-    memoryASet(ds, 0x9505, 0x01);
-    memoryASet(ds, 0x9506, 0x00);
-    goto loc_102c3;
-loc_102b0:
-    if (al != 0x02)
-        goto loc_102c3;
-    memoryASet(ds, 0x9505, 0x03);
-    memoryASet(ds, 0x9506, 0x01);
-    al = 0x0d;
-    sub_13840();
-loc_102c3:
-    goto loc_102dc;
-loc_102c5:
-    al = memoryAGet(ds, 0x9505);
-    if (al != 0x01)
-        goto loc_102d3;
-    memoryASet(ds, 0x9505, 0x02);
-    goto loc_102dc;
-loc_102d3:
-    if (al != 0x03)
-        goto loc_102dc;
-    memoryASet(ds, 0x9505, 0x00);
-loc_102dc:
-    al = memoryAGet(ds, 0x8f0a);
-    if (al != 0x00)
-        goto loc_102e4;
-    return;
-loc_102e4:
-    ax = 0x0003;
-    interrupt(0x33);
-    if (!(bx & 0x0001))
-        goto loc_102f5;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0080);
-loc_102f5:
-    if (!(bx & 0x0002))
-        goto loc_10300;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0020);
-loc_10300:
-    ax = memoryAGet16(ds, 0x954c);
-    ax &= 0x000f;
-    if (!ax)
-        goto loc_10309;
-    return;
-loc_10309:
-    ax = 0x000b;
-    interrupt(0x33);
-    if ((short)cx >= (short)0xfffb)
-        goto loc_1031a;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0001);
-    goto loc_10324;
-loc_1031a:
-    if ((short)cx <= (short)0x0005)
-        goto loc_10324;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0002);
-loc_10324:
-    if ((short)dx >= (short)0xfff6)
-        goto loc_10330;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0004);
-    return;
-loc_10330:
-    if ((short)dx <= (short)0x000a)
-        return;
-    memoryASet16(ds, 0x954c, memoryAGet16(ds, 0x954c) | 0x0008);
-}
-void sub_1033b()
-{
-    sub_12c07();
-    al = 0x04;
-    sub_12c9a();
-    sub_104f3();
-    memoryASet16(ds, 0x8f15, ax);
-    al = 0x00;
-    sub_12c9a();
-loc_1034e:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_1034e;
-    memoryASet16(ds, 0x8f0d, ax);
-    al = 0x01;
-    sub_12c9a();
-loc_1035f:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_1035f;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_1035f;
-    memoryASet16(ds, 0x8f0f, ax);
-    al = 0x02;
-    sub_12c9a();
-loc_10376:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_10376;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_10376;
-    if (ax == memoryAGet16(ds, 0x8f0f))
-        goto loc_10376;
-    memoryASet16(ds, 0x8f11, ax);
-    al = 0x03;
-    sub_12c9a();
-loc_10393:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_10393;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_10393;
-    if (ax == memoryAGet16(ds, 0x8f0f))
-        goto loc_10393;
-    if (ax == memoryAGet16(ds, 0x8f11))
-        goto loc_10393;
-    memoryASet16(ds, 0x8f13, ax);
-    al = 0x06;
-    sub_12c9a();
-loc_103b6:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_103b6;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_103b6;
-    if (ax == memoryAGet16(ds, 0x8f0f))
-        goto loc_103b6;
-    if (ax == memoryAGet16(ds, 0x8f11))
-        goto loc_103b6;
-    if (ax == memoryAGet16(ds, 0x8f13))
-        goto loc_103b6;
-    memoryASet16(ds, 0x8f17, ax);
-    al = 0x07;
-    sub_12c9a();
-loc_103df:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_103df;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_103df;
-    if (ax == memoryAGet16(ds, 0x8f0f))
-        goto loc_103df;
-    if (ax == memoryAGet16(ds, 0x8f11))
-        goto loc_103df;
-    if (ax == memoryAGet16(ds, 0x8f13))
-        goto loc_103df;
-    if (ax == memoryAGet16(ds, 0x8f17))
-        goto loc_103df;
-    memoryASet16(ds, 0x8f19, ax);
-    al = 0x05;
-    sub_12c9a();
-loc_1040e:
-    sub_104f3();
-    if (ax == memoryAGet16(ds, 0x8f15))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f0d))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f0f))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f11))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f13))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f17))
-        goto loc_1040e;
-    if (ax == memoryAGet16(ds, 0x8f19))
-        goto loc_1040e;
-    memoryASet16(ds, 0x8f1b, ax);
-    sub_10529();
-}
-void sub_10442()
-{
-    memoryASet16(ds, 0x8f0b, 0x0000);
-    memoryASet16(ds, 0x8f0d, 0x004b);
-    memoryASet16(ds, 0x8f0f, 0x004d);
-    memoryASet16(ds, 0x8f11, 0x0048);
-    memoryASet16(ds, 0x8f13, 0x0050);
-    memoryASet16(ds, 0x8f15, 0x0039);
-    memoryASet16(ds, 0x8f17, 0x0031);
-    memoryASet16(ds, 0x8f19, 0x0032);
-    memoryASet16(ds, 0x8f1b, 0x0010);
-    ax = ds;
-    es = ax;
-    ax = 0x0000;
-    cx = 0x0040;
-    di = 0x8e8a;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    al = 0x09;
-    ah = 0x35;
-    interrupt(0x21);
-    memoryASet16(ds, 0x8e84, bx);
-    memoryASet16(ds, 0x8e82, es);
-    push(ds);
-    dx = 0x04b7;
-    ax = cs;
-    ds = ax;
-    al = 0x09;
-    ah = 0x25;
-    interrupt(0x21);
-    ds = pop();
-}
-void sub_104a5()
-{
-    dx = memoryAGet16(ds, 0x8e84);
-    ax = memoryAGet16(ds, 0x8e82);
-    push(ds);
-    ds = ax;
-    al = 0x09;
-    ah = 0x25;
-    interrupt(0x21);
-    ds = pop();
-}
-void sub_104f3()
-{
-    flags.direction = 0;
-loc_104f4:
-    si = 0x8e8a;
-loc_104f7:
-    al = lodsb<DS_SI>();
-    if (al == 0x00)
-        goto loc_10520;
-    ax = si;
-    ax -= 0x8e8b;
-    if (ax == 0x003b)
-        goto loc_10520;
-    if (ax == 0x003c)
-        goto loc_10520;
-    if (ax == 0x003d)
-        goto loc_10520;
-    if (ax == 0x003e)
-        goto loc_10520;
-    if (ax == 0x002a)
-        goto loc_10520;
-    if (ax == 0x0036)
-        goto loc_10520;
-    return;
-loc_10520:
-    if (si != 0x8f0a)
-        goto loc_104f7;
-    goto loc_104f4;
-}
-void sub_10529()
-{
-loc_10529:
-    si = 0x8e8a;
-    ah = 0x00;
-loc_1052e:
-    al = lodsb<DS_SI>();
-    if (al == 0x00)
-        goto loc_10535;
-    ah++;
-loc_10535:
-    if (si != 0x8f0a)
-        goto loc_1052e;
-    if (ah != 0x00)
-        goto loc_10529;
-}
-void sub_10541()
-{
-    bool temp_zf;
-    cx = 0x4e20;
-loc_10544:
-    si = 0x8e8a;
-    ah = 0x00;
-    flags.direction = 0;
-loc_1054a:
-    al = lodsb<DS_SI>();
-    if (al == 0x00)
-        goto loc_10557;
-    ah = 0x01;
-    temp_zf = si == memoryAGet16(ds, 0x8f0b);
-    if (!temp_zf)
-        goto loc_1055f;
-loc_10557:
-    temp_zf = si == 0x8f0a;
-    if (temp_zf)
-        goto loc_1055f;
-    goto loc_1054a;
-loc_1055f:
-    if (temp_zf)
-        goto loc_10578;
-    memoryASet16(ds, 0x8f0b, si);
-    si -= 0x8e8b;
-    al = memoryAGet(ds, si + 90);
-    if (al == 0x00)
-        goto loc_10576;
-    if ((char)al >= (char)0x00)
-        return;
-    al = 0x00;
-loc_10575:
-    return;
-loc_10576:
-    goto loc_10583;
-loc_10578:
-    if (ah != 0x00)
-        goto loc_10583;
-    memoryASet16(ds, 0x8f0b, 0x0000);
-loc_10583:
-    if (--cx)
-        goto loc_10544;
-    al = 0x00;
-}
-void sub_10588()
-{
-    ax = 0x0000;
-    interrupt(0x33);
-    memoryASet(ds, 0x8f0a, al);
-}
-void sub_10591()
-{
-    al = 0x1c;
-    ah = 0x35;
-    interrupt(0x21);
-    memoryASet16(ds, 0x8e88, bx);
-    memoryASet16(ds, 0x8e86, es);
-    push(ds);
-    dx = 0x05ce;
-    ax = cs;
-    ds = ax;
-    al = 0x1c;
-    ah = 0x25;
-    interrupt(0x21);
-    ds = pop();
-    al = 0x36;
-    out8(0x43, al);
-    ax = 0x4d0e;
-    out8(0x40, al);
-    al = ah;
-    out8(0x40, al);
-}
-void sub_105bc()
-{
-    dx = memoryAGet16(ds, 0x8e88);
-    ax = memoryAGet16(ds, 0x8e86);
-    push(ds);
-    ds = ax;
-    al = 0x1c;
-    ah = 0x25;
-    interrupt(0x21);
-    ds = pop();
-}
-void sub_105ec()
-{
-    push(ds);
-    dx = 0x05fc;
-    ax = cs;
-    ds = ax;
-    al = 0x24;
-    ah = 0x25;
-    interrupt(0x21);
-    ds = pop();
-}
-void sub_10600()
-{
-    dx = 0x01e2;
-    ax = memoryAGet16(ds, 0x94e8);
-    sub_10637();
-    dx = 0x01ea;
-    ax = memoryAGet16(ds, 0x94ea);
-    sub_10637();
-    dx = 0x01f2;
-    ax = memoryAGet16(ds, 0x94ec);
-    sub_10637();
-    dx = 0x01f9;
-    ax = memoryAGet16(ds, 0x94ee);
-    sub_10637();
-    dx = 0x0203;
-    ax = memoryAGet16(ds, 0x94f0);
-    sub_10637();
-    dx = 0x020b;
-    ax = memoryAGet16(ds, 0x94f2);
-    sub_10637();
-}
-void sub_10637()
-{
-    memoryASet16(ds, 0x8f20, ax);
-    di = 0x0000;
-    cx = 0x7d00;
-    sub_1064d();
-}
-void sub_10644()
-{
-    ax = ds;
-    memoryASet16(ds, 0x8f20, ax);
-    sub_1064d();
-}
-void sub_1064d()
-{
-    push(di);
-    push(cx);
-    ax = 0x3d00;
-    interrupt(0x21);
-    cx = pop();
-    dx = pop();
-    if (!flags.carry)
-        goto loc_10659;
-    return;
-loc_10659:
-    memoryASet16(ds, 0x8f1e, ax);
-    bx = ax;
-    ax = memoryAGet16(ds, 0x8f20);
-    push(ds);
-    ds = ax;
-    ax = 0x3f00;
-    interrupt(0x21);
-    ds = pop();
-    ax = 0x3e00;
-    bx = memoryAGet16(ds, 0x8f1e);
-    interrupt(0x21);
-}
-void sub_10674()
-{
-    push(di);
-    push(cx);
-    cx = 0x0000;
-    ax = 0x3c00;
-    interrupt(0x21);
-    cx = pop();
-    dx = pop();
-    if (!flags.carry)
-        goto loc_10683;
-    return;
-loc_10683:
-    memoryASet16(ds, 0x8f1e, ax);
-    bx = ax;
-    ax = 0x4000;
-    interrupt(0x21);
-    if (!flags.carry)
-        goto loc_10690;
-    return;
-loc_10690:
-    ax = 0x3e00;
-    bx = memoryAGet16(ds, 0x8f1e);
-    interrupt(0x21);
-}
-void sub_1069a()
-{
-    al = memoryAGet(ds, 0x9501);
-    bl = al;
-    bl <<= 1;
-    bl += al;
-    bl += memoryAGet(ds, 0x9502);
-    bh = 0x00;
-    bx <<= 1;
-    si = memoryAGet16(ds, bx + 580);
-    di = 0x9229;
-    cx = 0x0040;
-    ax = ds;
-    es = ax;
-    ax = 0x0000;
-    flags.direction = 0;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    di = 0x9229;
-loc_106c2:
-    al = lodsb<DS_SI>();
-    if (al == 0xff)
-        goto loc_106eb;
-    al <<= 1;
-    al <<= 1;
-    ah = al;
-    al = lodsb<DS_SI>();
-    al <<= 1;
-    bl = al;
-    bh = 0x00;
-    al = 0x00;
-    ax |= memoryAGet16(ds, bx + 3287);
-    cx = ax;
-    al = lodsb<DS_SI>();
-    al = -al;
-    al += 0x3f;
-    al <<= 1;
-    bl = al;
-    memoryASet16(ds, bx + 37417, memoryAGet16(ds, bx + 37417) | cx);
-    goto loc_106c2;
-loc_106eb:
-    al = memoryAGet(ds, 0x9501);
-    bl = al;
-    bl <<= 1;
-    bl += al;
-    bl += memoryAGet(ds, 0x9502);
-    bh = 0x00;
-    bx <<= 1;
-    si = memoryAGet16(ds, bx + 532);
-    di = 0x8f29;
-    cx = 0x0300;
-    bl = 0x00;
-loc_10708:
-    bl--;
-    if ((char)bl >= 0)
-        goto loc_1072c;
-    al = lodsb<DS_SI>();
-    dl = al;
-    dl &= 0x3f;
-    al &= 0xc0;
-    if (al)
-        goto loc_1071a;
-    bl = 0x00;
-    goto loc_1072c;
-loc_1071a:
-    if (al != 0x40)
-        goto loc_10722;
-    bl = 0x01;
-    goto loc_1072c;
-loc_10722:
-    if (al != 0x80)
-        goto loc_1072a;
-    bl = 0x02;
-    goto loc_1072c;
-loc_1072a:
-    bl = 0x03;
-loc_1072c:
-    memoryASet(ds, di, dl);
-    di++;
-    if (--cx)
-        goto loc_10708;
-    di = 0x0000;
-    ax = 0xa800;
-    es = ax;
-    dx = 0x03ce;
-    ah = 0x00;
-    al = 0x00;
-    out16(dx, ax);
-    ax = 0x0f01;
-    out16(dx, ax);
-    cx = 0x4000;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    ax = 0x8f29;
-    memoryASet16(ds, 0x8f25, ax);
-    memoryASet16(ds, 0x8f23, 0x03f0);
-    cx = 0x0040;
-loc_10759:
-    push(cx);
-    memoryASet(ds, 0x8f22, 0x00);
-    sub_107af();
-    memoryASet16(ds, 0x0279, 0x0000);
-    memoryASet(ds, 0x027d, 0x08);
-    memoryASet16(ds, 0x0283, memoryAGet16(ds, 0x0283) + 0x0008);
-    si = 0x0274;
-    sub_10bc5();
-    memoryASet16(ds, 0x0279, 0x0008);
-    memoryASet(ds, 0x027d, 0x18);
-    cx = 0x000a;
-loc_10786:
-    push(cx);
-    sub_107af();
-    si = 0x0274;
-    sub_10bc5();
-    memoryASet16(ds, 0x0279, memoryAGet16(ds, 0x0279) + 0x0018);
-    cx = pop();
-    if (--cx)
-        goto loc_10786;
-    memoryASet(ds, 0x027d, 0x08);
-    sub_107af();
-    si = 0x0274;
-    sub_10bc5();
-    memoryASet16(ds, 0x8f23, memoryAGet16(ds, 0x8f23) - 0x0010);
-    cx = pop();
-    if (--cx)
-        goto loc_10759;
-}
-void sub_107af()
-{
-    al = memoryAGet(ds, 0x8f22);
-    memoryASet(ds, 0x0277, al);
-    bx = memoryAGet16(ds, 0x8f25);
-    al = memoryAGet(ds, bx);
-    bx++;
-    memoryASet16(ds, 0x8f25, bx);
-    bh = 0x00;
-    bl = al;
-    al = memoryAGet(ds, bx + 1309);
-    memoryASet(ds, 0x027e, al);
-    al = memoryAGet(ds, bx + 1393);
-    memoryASet(ds, 0x8f22, memoryAGet(ds, 0x8f22) + al);
-    al = memoryAGet(ds, bx + 1351);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, 0x8f23);
-    memoryASet16(ds, 0x027b, ax);
-    if (bx < 0x0026)
-        goto loc_107ec;
-    memoryASet16(ds, 0x0281, 0x0002);
-    goto loc_107f2;
-loc_107ec:
-    memoryASet16(ds, 0x0281, 0x0004);
-loc_107f2:
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 1519);
-    memoryASet16(ds, 0x0283, bx);
-}
-void sub_107fd()
-{
-    push(bp);
-    bp = sp;
-    sp -= 0x0008;
-    ax = memoryAGet16(ss, bp + 6 - 2);
-    ax += 0x0010;
-    cl = 0x18;
-    div8(cl);
-    push(ax);
-    ah = 0x00;
-    memoryASet16(ss, bp - 2 - 2, ax);
-    ax = pop();
-    al = ah;
-    ah = 0x00;
-    cl = 0x03;
-    div8(cl);
-    ah = 0x00;
-    memoryASet16(ss, bp - 4 - 2, ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    ax &= 0x03ff;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax = -ax;
-    ax += 0x003f;
-    memoryASet16(ss, bp - 6 - 2, ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    ax &= 0x000f;
-    ax >>= 1;
-    memoryASet16(ss, bp - 8 - 2, ax);
-    ax = memoryAGet16(ss, bp - 6 - 2);
-    ax <<= 1;
-    ax <<= 1;
-    bx = ax;
-    ax <<= 1;
-    bx += ax;
-    bx += 0x8f29;
-    si = bx;
-    bx += memoryAGet16(ss, bp - 2 - 2);
-    al = memoryAGet(ds, bx);
-    ah = 0x00;
-    push(ax);
-    ax <<= 1;
-    bx = ax;
-    bx = memoryAGet16(ds, bx + 1603);
-    ax = memoryAGet16(ss, bp - 8 - 2);
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    bx += ax;
-    bx += memoryAGet16(ss, bp - 4 - 2);
-    cl = memoryAGet(ds, bx);
-    push(cx);
-    cl &= 0x1f;
-    if (!(cl & 0x10))
-        goto loc_10881;
-    cl |= 0xe0;
-loc_10881:
-    dx = memoryAGet16(ss, bp - 2 - 2);
-    flags.direction = 0;
-loc_10885:
-    if (dx == 0x0000)
-        goto loc_10896;
-    al = lodsb<DS_SI>();
-    bh = 0x00;
-    bl = al;
-    cl += memoryAGet(ds, bx + 1393);
-    dx--;
-    goto loc_10885;
-loc_10896:
-    al = cl;
-    true ? cbw() : cwde();
-    cx = pop();
-    bx = pop();
-    if (cl & 0x80)
-        goto loc_108a6;
-    bl = memoryAGet(ds, bx + 1435);
-    goto loc_108aa;
-loc_108a6:
-    bl = memoryAGet(ds, bx + 1477);
-loc_108aa:
-    bh = 0x00;
-    cx = memoryAGet16(ss, bp - 6 - 2);
-    cx = -cx;
-    cx += 0x003f;
-    sp = bp;
-    bp = pop();
-    sp += 4;
-}
-void sub_108ba()
-{
-    bool temp_cf;
-    push(bp);
-    bp = sp;
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 37417);
-    if (ax == 0x0000)
-        goto loc_10946;
-    push(ax);
-    ah >>= 1;
-    ah >>= 1;
-    bl = ah;
-    bh = 0x00;
-    bx <<= 1;
-    si = memoryAGet16(ds, bx + 651);
-    if (ah < 0x0f)
-        goto loc_10902;
-    if (ah > 0x14)
-        goto loc_10902;
-    ah -= 0x0f;
-    memoryASet(ds, si + 1, ah);
-    bl = ah;
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 38190);
-    if (al == 0x00)
-        goto loc_108f9;
-    ax = pop();
-    goto loc_10946;
-loc_108f9:
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 814);
-    memoryASet16(ds, si + 15, ax);
-loc_10902:
-    memoryASet(ds, si + 19, 0x0a);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    memoryASet(ds, si + 20, al);
-    ax = pop();
-    cx = 0x000a;
-loc_10910:
-    temp_cf = ax & 1;
-    ax >>= 1;
-    if (!temp_cf)
-        goto loc_10941;
-    push(ax);
-    push(cx);
-    sub_1094a();
-    al = memoryAGet(ds, si + 19);
-    ah = 0x00;
-    push(ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    sub_109e9();
-    if (ax == 0x0000)
-        goto loc_10932;
-    push(si);
-    sub_10b58();
-    si = pop();
-    goto loc_1093f;
-loc_10932:
-    push(si);
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_1093e;
-    sub_10a1b();
-loc_1093e:
-    si = pop();
-loc_1093f:
-    cx = pop();
-    ax = pop();
-loc_10941:
-    memoryASet(ds, si + 19, memoryAGet(ds, si + 19) - 1);
-    if (--cx)
-        goto loc_10910;
-loc_10946:
-    bp = pop();
-    sp += 2;
-}
-void sub_1094a()
-{
-    dl = memoryAGet(ds, si + 19);
-    push(si);
-    al = 0x3f;
-    al -= memoryAGet(ds, si + 20);
-    al <<= 1;
-    al <<= 1;
-    ah = 0x00;
-    si = ax;
-    ax <<= 1;
-    si += ax;
-    si += 0x8f29;
-    cl = 0x00;
-    flags.direction = 0;
-loc_10966:
-    if (dl == 0x00)
-        goto loc_10978;
-    al = lodsb<DS_SI>();
-    bh = 0x00;
-    bl = al;
-    cl += memoryAGet(ds, bx + 1393);
-    dl--;
-    goto loc_10966;
-loc_10978:
-    si = pop();
-    memoryASet(ds, si + 3, cl);
-    al = memoryAGet(ds, si + 20);
-    ah = 0x00;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, si + 19);
-    ah = 0x00;
-    ax <<= 1;
-    cx = ax;
-    ax <<= 1;
-    ax += cx;
-    ax <<= 1;
-    ax <<= 1;
-    ax -= 0x0004;
-    memoryASet16(ds, si + 5, ax);
-}
-void sub_109a4()
-{
-    di = 0x92a9;
-    cx = 0x00c0;
-    ax = ds;
-    es = ax;
-    ax = 0xffff;
-    flags.direction = 0;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-}
-void sub_109b5()
-{
-    push(bp);
-    bp = sp;
-    si = memoryAGet16(ss, bp + 8 - 2);
-    sub_10a1b();
-    bx = memoryAGet16(ss, bp + 6 - 2);
-    bx <<= 1;
-    cx = memoryAGet16(ds, bx + 3307);
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    bx <<= 1;
-    al = memoryAGet(ds, 0x9502);
-    if (al != 0x01)
-        goto loc_109d9;
-    bx += 0x0080;
-    goto loc_109e1;
-loc_109d9:
-    if (al != 0x02)
-        goto loc_109e1;
-    bx += 0x0100;
-loc_109e1:
-    memoryASet16(ds, bx + 37545, memoryAGet16(ds, bx + 37545) & cx);
-    bp = pop();
-    sp += 6;
-}
-void sub_109e9()
-{
-    push(bp);
-    bp = sp;
-    bx = memoryAGet16(ss, bp + 6 - 2);
-    bx <<= 1;
-    cx = memoryAGet16(ds, bx + 3307);
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    bx <<= 1;
-    al = memoryAGet(ds, 0x9502);
-    if (al != 0x01)
-        goto loc_10a07;
-    bx += 0x0080;
-    goto loc_10a0f;
-loc_10a07:
-    if (al != 0x02)
-        goto loc_10a0f;
-    bx += 0x0100;
-loc_10a0f:
-    cx = ~cx;
-    ax = memoryAGet16(ds, bx + 37545);
-    ax &= cx;
-    bp = pop();
-    sp += 4;
-}
-void sub_10a1b()
-{
-    al = memoryAGet(ds, si + 18);
-    al <<= 1;
-    bl = al;
-    bh = 0x00;
-    di = memoryAGet16(ds, bx + 798);
-    al = memoryAGet(ds, di);
-    memoryASet(ds, si, al);
-    al = memoryAGet(ds, di + 9);
-    memoryASet(ds, si + 9, al);
-    al = memoryAGet(ds, di + 10);
-    memoryASet(ds, si + 10, al);
-    al = memoryAGet(ds, di + 11);
-    memoryASet(ds, si + 11, al);
-    al = memoryAGet(ds, di + 12);
-    memoryASet(ds, si + 12, al);
-    ax = memoryAGet16(ds, di + 15);
-    memoryASet16(ds, si + 15, ax);
-    al = memoryAGet(ds, di + 18);
-    memoryASet(ds, si + 18, al);
-}
-void sub_10a51()
-{
-    bool temp_cf;
-    bl = memoryAGet(ds, 0x1b9e);
-    bh = 0x00;
-    bx <<= 1;
-    si = bx;
-    al = memoryAGet(ds, 0x9502);
-    if (al != 0x01)
-        goto loc_10a68;
-    si += 0x0080;
-    goto loc_10a70;
-loc_10a68:
-    if (al != 0x02)
-        goto loc_10a70;
-    si += 0x0100;
-loc_10a70:
-    ax = memoryAGet16(ds, si + 37545);
-    ax &= memoryAGet16(ds, bx + 37417);
-    if (ax == 0x0000)
-        goto loc_10ad1;
-    bl = ah;
-    bl >>= 1;
-    bl >>= 1;
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 693);
-    if (cl == 0x00)
-        goto loc_10ad1;
-    memoryASet(ds, 0x9429, cl);
-    memoryASet16(ds, 0x942c, 0x000a);
-    bx <<= 1;
-    dx = memoryAGet16(ds, bx + 714);
-    bx = memoryAGet16(ds, bx + 756);
-    cx = 0x000a;
-loc_10aa5:
-    temp_cf = ax & 1;
-    ax >>= 1;
-    if (!temp_cf)
-        goto loc_10ac8;
-    push(bx);
-    bx -= dx;
-    if ((short)bx > (short)memoryAGet16(ds, 0x1b8f))
-        goto loc_10ac7;
-    bx += dx;
-    bx += dx;
-    if ((short)bx < (short)memoryAGet16(ds, 0x1b8f))
-        goto loc_10ac7;
-    ax = pop();
-    al = memoryAGet(ds, 0x9429);
-    ah = 0x00;
-    bx = memoryAGet16(ds, 0x942c);
-    return;
-loc_10ac7:
-    bx = pop();
-loc_10ac8:
-    bx -= 0x0018;
-    memoryASet16(ds, 0x942c, memoryAGet16(ds, 0x942c) - 1);
-    if (--cx)
-        goto loc_10aa5;
-loc_10ad1:
-    ax = 0x0000;
-}
-void sub_10ad5()
-{
-    bool temp_cf;
-    push(bp);
-    bp = sp;
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    bx <<= 1;
-    si = bx;
-    al = memoryAGet(ds, 0x9502);
-    if (al != 0x01)
-        goto loc_10aec;
-    si += 0x0080;
-    goto loc_10af4;
-loc_10aec:
-    if (al != 0x02)
-        goto loc_10af4;
-    si += 0x0100;
-loc_10af4:
-    ax = memoryAGet16(ds, si + 37545);
-    ax &= memoryAGet16(ds, bx + 37417);
-    if (ax == 0x0000)
-        goto loc_10b51;
-    bl = ah;
-    bl >>= 1;
-    bl >>= 1;
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 693);
-    if (cl == 0x00)
-        goto loc_10b51;
-    memoryASet16(ds, 0x942c, 0x000a);
-    bx <<= 1;
-    dx = memoryAGet16(ds, bx + 714);
-    dx -= 0x000e;
-    bx = memoryAGet16(ds, bx + 756);
-    cx = 0x000a;
-loc_10b28:
-    temp_cf = ax & 1;
-    ax >>= 1;
-    if (!temp_cf)
-        goto loc_10b48;
-    push(bx);
-    bx -= dx;
-    if ((short)bx > (short)memoryAGet16(ss, bp + 6 - 2))
-        goto loc_10b47;
-    bx += dx;
-    bx += dx;
-    if ((short)bx < (short)memoryAGet16(ss, bp + 6 - 2))
-        goto loc_10b47;
-    ax = pop();
-    ax = 0x0001;
-    bx = memoryAGet16(ds, 0x942c);
-    goto loc_10b54;
-loc_10b47:
-    bx = pop();
-loc_10b48:
-    bx -= 0x0018;
-    memoryASet16(ds, 0x942c, memoryAGet16(ds, 0x942c) - 1);
-    if (--cx)
-        goto loc_10b28;
-loc_10b51:
-    ax = 0x0000;
-loc_10b54:
-    bp = pop();
-    sp += 4;
-}
-void sub_10b58()
-{
-    ax = 0x13a5;
-    es = ax;
-    di = 0x1b8a;
-loc_10b60:
-    al = memoryAGet(ds, di);
-    if (al & 0x80)
-        goto loc_10b78;
-    if (al & 0x01)
-        goto loc_10b73;
-    push(di);
-    cx = 0x0017;
-    flags.direction = 0;
-    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
-    si = pop();
-    return;
-loc_10b73:
-    di += 0x0017;
-    goto loc_10b60;
-loc_10b78:
-    si = 0x0000;
-}
-void sub_10b7c()
-{
-    si = 0x1b8a;
-loc_10b7f:
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        return;
-    memoryASet(ds, si, 0x00);
-    si += 0x0017;
-    goto loc_10b7f;
-}
-void sub_10b8e()
-{
-    ax = memoryAGet16(ds, 0x94f8);
-    memoryASet16(ds, 0x942e, ax);
-    memoryASet16(cs, 0x0d93, 0x0028);
-    memoryASet16(ds, 0x9430, 0x0001);
-    cx = 0x0007;
-loc_10ba4:
-    si = 0x1b8a;
-loc_10ba7:
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        goto loc_10bc2;
-    if (!(al & 0x01))
-        goto loc_10bbd;
-    if (cl != memoryAGet(ds, si + 2))
-        goto loc_10bbd;
-    push(cx);
-    push(si);
-    sub_10bdc();
-    si = pop();
-    cx = pop();
-loc_10bbd:
-    si += 0x0017;
-    goto loc_10ba7;
-loc_10bc2:
-    if (--cx)
-        goto loc_10ba4;
-}
-void sub_10bc5()
-{
-    ax = 0xa800;
-    memoryASet16(ds, 0x942e, ax);
-    memoryASet16(cs, 0x0d93, 0x0020);
-    memoryASet16(ds, 0x9430, 0x0000);
-    sub_10bdc();
-}
-void sub_10bdc()
-{
-    al = memoryAGet(ds, si + 11);
-    true ? cbw() : cwde();
-    bx = memoryAGet16(ds, si + 5);
-    bx -= ax;
-    push(bx);
-    al = memoryAGet(ds, si + 3);
-    al += memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
-    ax = -ax;
-    ax += memoryAGet16(ds, si + 7);
-    push(ax);
-    al = memoryAGet(ds, si + 9);
-    ah = 0x00;
-    push(ax);
-    al = memoryAGet(ds, si + 10);
-    ah = 0x00;
-    push(ax);
-    bx = memoryAGet16(ds, si + 13);
-    bx = memoryAGet16(ds, bx + 38120);
-    al = memoryAGet(ds, si + 17);
-    memoryASet(cs, 0x0d95, al);
-    cl = al;
-    cl <<= 1;
-    cl <<= 1;
-    cl <<= 1;
-    cl <<= 1;
-    al |= cl;
-    memoryASet(cs, 0x0d96, al);
-    si = memoryAGet16(ds, si + 15);
-    sub_10c24();
-}
-void sub_10c24()
-{
-    push(bp);
-    bp = sp;
-    ax = memoryAGet16(ds, 0x9430);
-    if (ax != 0x0000)
-        goto loc_10c32;
-    goto loc_10cbc;
-loc_10c32:
-    ax = memoryAGet16(ss, bp + 8 - 2);
-    ax -= memoryAGet16(ds, 0x9528);
-    ax &= 0x03ff;
-    if (!(ax & 0x0200))
-        goto loc_10c44;
-    ax |= 0xfc00;
-loc_10c44:
-    memoryASet16(ss, bp + 8 - 2, ax);
-    if ((short)ax >= (short)0x0000)
-        goto loc_10c77;
-    memoryASet16(ss, bp + 4 - 2, memoryAGet16(ss, bp + 4 - 2) + ax);
-    if ((short)memoryAGet16(ss, bp + 4 - 2) >= 0)
-        goto loc_10c54;
-    goto loc_10d8f;
-loc_10c54:
-    if (memoryAGet16(ss, bp + 4 - 2))
-        goto loc_10c59;
-    goto loc_10d8f;
-loc_10c59:
-    ax = -ax;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    cx = ax;
-    ax <<= 1;
-    ax <<= 1;
-    cx += ax;
-    cx <<= 1;
-    cx <<= 1;
-    si += cx;
-    ax = 0x0000;
-    memoryASet16(ss, bp + 8 - 2, ax);
-    goto loc_10c8f;
-loc_10c77:
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    ax -= 0x00a0;
-    if ((short)ax < 0)
-        goto loc_10c8f;
-    ax = -ax;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    if ((short)ax > (short)0x0000)
-        goto loc_10c8c;
-    goto loc_10d8f;
-loc_10c8c:
-    memoryASet16(ss, bp + 4 - 2, ax);
-loc_10c8f:
-    ax = 0x0020;
-    memoryASet16(ss, bp + 10 - 2, memoryAGet16(ss, bp + 10 - 2) + ax);
-    ax = 0x0008;
-    memoryASet16(ss, bp + 8 - 2, memoryAGet16(ss, bp + 8 - 2) + ax);
-    ax = memoryAGet16(ss, bp + 10 - 2);
-    if ((short)ax >= (short)0x0020)
-        goto loc_10cab;
-    ax = 0x0020;
-    memoryASet16(ss, bp + 10 - 2, ax);
-    goto loc_10cbc;
-loc_10cab:
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    if ((short)ax <= (short)0x0120)
-        goto loc_10cbc;
-    ax = 0x0120;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    memoryASet16(ss, bp + 10 - 2, ax);
-loc_10cbc:
-    push(ds);
-    push(bx);
-    dx = 0x03ce;
-    ax = 0x0a05;
-    out16(dx, ax);
-    ax = 0x0007;
-    out16(dx, ax);
-    ax = memoryAGet16(ss, bp + 10 - 2);
-    bx = memoryAGet16(ss, bp + 8 - 2);
-    push(cx);
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    cx = memoryAGet16(cs, 0x0d93);
-    if (cx != 0x0028)
-        goto loc_10ce4;
-    di = bx;
-    goto loc_10ce7;
-loc_10ce4:
-    di = 0x0000;
-loc_10ce7:
-    bx <<= 1;
-    bx <<= 1;
-    di += bx;
-    cl = al;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    di += ax;
-    cl &= 0x07;
-    ax = 0x0080;
-    ax >>= cl;
-    ah = al;
-    bx = memoryAGet16(ds, 0x942e);
-    es = bx;
-    cx = pop();
-    cx = memoryAGet16(ss, bp + 6 - 2);
-    cx >>= 1;
-    al = 0x08;
-    ds = pop();
-    bx = memoryAGet16(ss, bp + 4 - 2);
-loc_10d13:
-    push(ax);
-    push(bx);
-    push(cx);
-    push(di);
-    push(si);
-loc_10d18:
-    bh = memoryAGet(cs, 0x0d96);
-loc_10d1d:
-    bl = memoryAGet(ds, si);
-    si++;
-    if (bh != bl)
-        goto loc_10d3a;
-    ah >>= 1;
-    if (ah)
-        goto loc_10d2f;
-    ah = 0x40;
-    di++;
-    if (--cx)
-        goto loc_10d1d;
-    goto loc_10d6d;
-loc_10d2f:
-    ah >>= 1;
-    if (ah)
-        goto loc_10d36;
-    ah = 0x80;
-    di++;
-loc_10d36:
-    if (--cx)
-        goto loc_10d1d;
-    goto loc_10d6d;
-loc_10d3a:
-    bh = bl;
-    bl >>= 1;
-    bl >>= 1;
-    bl >>= 1;
-    bl >>= 1;
-    if (bl == memoryAGet(cs, 0x0d95))
-        goto loc_10d4f;
-    out16(dx, ax);
-    memoryASet(es, di, memoryAGet(es, di) & bl);
-loc_10d4f:
-    ah >>= 1;
-    if (ah)
-        goto loc_10d56;
-    ah = 0x80;
-    di++;
-loc_10d56:
-    bh &= 0x0f;
-    if (bh == memoryAGet(cs, 0x0d95))
-        goto loc_10d64;
-    out16(dx, ax);
-    memoryASet(es, di, memoryAGet(es, di) & bh);
-loc_10d64:
-    ah >>= 1;
-    if (ah)
-        goto loc_10d6b;
-    ah = 0x80;
-    di++;
-loc_10d6b:
-    if (--cx)
-        goto loc_10d18;
-loc_10d6d:
-    si = pop();
-    si += 0x00a0;
-    di = pop();
-    di += memoryAGet16(cs, 0x0d93);
-    di &= 0x7fff;
-    cx = pop();
-    bx = pop();
-    ax = pop();
-    bx--;
-    if (bx)
-        goto loc_10d13;
-    ds = pop();
-    ax = 0xff08;
-    out16(dx, ax);
-    ax = 0x0005;
-    out16(dx, ax);
-    ax = 0x0f07;
-    out16(dx, ax);
-loc_10d8f:
-    bp = pop();
-    sp += 8;
-}
-void sub_10d98()
-{
-    memoryASet16(ds, 0x9528, 0x001a);
-    memoryASet(ds, 0x9513, 0x00);
-    sub_10b7c();
-}
-void sub_10da7()
-{
-    sub_109a4();
-    sub_1069a();
-    memoryASet(ds, 0x9519, 0x00);
-    memoryASet(ds, 0x951a, 0x00);
-    memoryASet(ds, 0x951b, 0x00);
-    sub_10e3d();
-}
-void sub_10dc0()
-{
-    memoryASet(ds, 0x94fe, memoryAGet(ds, 0x94fe) + 1);
-    al = memoryAGet(ds, 0x94fe);
-    if (al < 0x06)
-        goto loc_10dd3;
-    memoryASet16(ds, 0x94fc, 0x0030);
-    goto loc_10de5;
-loc_10dd3:
-    if (al < 0x03)
-        goto loc_10ddf;
-    memoryASet16(ds, 0x94fc, 0x0020);
-    goto loc_10de5;
-loc_10ddf:
-    memoryASet16(ds, 0x94fc, 0x0010);
-loc_10de5:
-    memoryASet(ds, 0x9501, memoryAGet(ds, 0x9501) + 1);
-    al = memoryAGet(ds, 0x9501);
-    if (al <= 0x07)
-        goto loc_10df5;
-    memoryASet(ds, 0x9501, 0x01);
-loc_10df5:
-    sub_109a4();
-    sub_1069a();
-    memoryASet(ds, 0x9519, 0x00);
-    sub_10e3d();
-    sub_12a7f();
-}
-void sub_10e07()
-{
-    ax = memoryAGet16(ds, 0x9534);
-    if (ax != 0x0000)
-        goto loc_10e15;
-    memoryASet(ds, 0x9500, 0x01);
-    return;
-loc_10e15:
-    sub_12329();
-    al = memoryAGet(ds, 0x9502);
-    if (al == 0x00)
-        goto loc_10e27;
-    memoryASet(ds, 0x9502, 0x00);
-    sub_1069a();
-loc_10e27:
-    sub_12200();
-    memoryASet(ds, 0x9519, 0x01);
-    memoryASet(ds, 0x951a, 0x00);
-    memoryASet(ds, 0x951b, 0x00);
-    sub_10e3d();
-}
-void sub_10e3d()
-{
-    bl = memoryAGet(ds, 0x9501);
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5365);
-    ax &= 0x03ff;
-    memoryASet16(ds, 0x9528, ax);
-    ax = memoryAGet16(ds, 0x94fc);
-    memoryASet16(ds, 0x952a, ax);
-    memoryASet16(ds, 0x950a, 0x0080);
-    memoryASet(ds, 0x950e, 0x00);
-    memoryASet16(ds, 0x950f, 0x0000);
-    memoryASet16(ds, 0x9511, 0x0000);
-    memoryASet(ds, 0x9513, 0x00);
-    memoryASet(ds, 0x9515, 0x00);
-    memoryASet(ds, 0x9517, 0x00);
-    memoryASet(ds, 0x9432, 0x00);
-    sub_10e84();
-}
-void sub_10e84()
-{
-    al = memoryAGet(ds, 0x950e);
-    if (al == 0x00)
-        goto loc_10e93;
-    memoryASet(ds, 0x950e, 0x00);
-    sub_1069a();
-loc_10e93:
-    memoryASet16(ds, 0x952c, 0x0000);
-    sub_10b7c();
-    si = 0x0d32;
-    sub_10b58();
-    ax = memoryAGet16(ds, 0x950a);
-    memoryASet16(ds, 0x1b8f, ax);
-    sub_11b57();
-    ax = memoryAGet16(ds, 0x9528);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax -= 0x0003;
-    ax &= 0x003f;
-    memoryASet16(ds, 0x9507, ax);
-    cx = 0x000f;
-loc_10ec2:
-    push(cx);
-    push(ax);
-    push(ax);
-    sub_108ba();
-    ax = pop();
-    cx = pop();
-    ax++;
-    ax &= 0x003f;
-    if (--cx)
-        goto loc_10ec2;
-    al = memoryAGet(ds, 0x9432);
-    if (al == 0x00)
-        goto loc_10eea;
-    si = 0x1b8a;
-    bx = 0x0d49;
-    memoryASet(ds, si + 4, 0x0a);
-    sub_12121();
-    memoryASet(ds, 0x1b9c, 0x23);
-    return;
-loc_10eea:
-    al = memoryAGet(ds, 0x9519);
-    if (al == 0x00)
-        goto loc_10f08;
-    memoryASet(ds, 0x9519, 0x00);
-    si = 0x0da2;
-    ax = memoryAGet16(ds, 0x1b91);
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x1b8d);
-    memoryASet(ds, si + 3, al);
-    sub_10b58();
-loc_10f08:
-    sub_10f9d();
-    al = memoryAGet(ds, 0x951a);
-    if (al == 0x00)
-        goto loc_10f23;
-    memoryASet(ds, 0x951a, 0x01);
-    si = 0x0dc3;
-    memoryASet(ds, si, memoryAGet(ds, si) & 0xdf);
-    sub_11cd9();
-    sub_10b58();
-loc_10f23:
-    al = memoryAGet(ds, 0x951b);
-    if (al == 0x00)
-        return;
-    memoryASet(ds, 0x951b, 0x01);
-    si = 0x0dc3;
-    memoryASet(ds, si, memoryAGet(ds, si) | 0x20);
-    sub_11cd9();
-    sub_10b58();
-}
-void sub_10f3c()
-{
-    memoryASet(ds, 0x951c, 0x00);
-    sub_12ddc();
-    memoryASet16(ds, 0x9528, 0x001a);
-    memoryASet16(ds, 0x9547, 0x0000);
-    memoryASet16(ds, 0x951e, 0x0000);
-    memoryASet(ds, 0x9524, 0x00);
-    memoryASet(ds, 0x9549, 0x03);
-    sub_10b7c();
-    si = 0x0d04;
-    sub_10b58();
-    sub_12df6();
-    al = memoryAGet(ds, 0x951a);
-    if (al == 0x00)
-        goto loc_10f84;
-    memoryASet(ds, 0x951a, 0x01);
-    si = 0x0d1b;
-    memoryASet(ds, si, memoryAGet(ds, si) & 0xdf);
-    sub_12f50();
-    sub_10b58();
-loc_10f84:
-    al = memoryAGet(ds, 0x951b);
-    if (al == 0x00)
-        return;
-    memoryASet(ds, 0x951b, 0x01);
-    si = 0x0d1b;
-    memoryASet(ds, si, memoryAGet(ds, si) | 0x20);
-    sub_12f50();
-    sub_10b58();
-}
-void sub_10f9d()
-{
-    ax = memoryAGet16(ds, 0x1b8f);
-    memoryASet16(ds, 0x9433, ax);
-    memoryASet16(ds, 0x9435, ax);
-    memoryASet16(ds, 0x9437, ax);
-    memoryASet16(ds, 0x9439, ax);
-    ax = memoryAGet16(ds, 0x1b91);
-    memoryASet16(ds, 0x943b, ax);
-    memoryASet16(ds, 0x943d, ax);
-    memoryASet16(ds, 0x943f, ax);
-    memoryASet16(ds, 0x9441, ax);
-    al = memoryAGet(ds, 0x1b8e);
-    memoryASet(ds, 0x9443, al);
-    memoryASet(ds, 0x9444, al);
-    memoryASet(ds, 0x9445, al);
-    memoryASet(ds, 0x9446, al);
-    al = memoryAGet(ds, 0x1b8d);
-    memoryASet(ds, 0x9447, al);
-    memoryASet(ds, 0x9448, al);
-    memoryASet(ds, 0x9449, al);
-    memoryASet(ds, 0x944a, al);
-}
-void sub_10fda()
-{
-loc_10fda:
-    al = memoryAGet(ds, 0x94ff);
-    memoryASet(ds, 0x9509, al);
-    si = 0x1b8a;
-loc_10fe3:
-    al = memoryAGet(ds, 0x9513);
-    if (al == 0x00)
-        goto loc_10ff5;
-    sub_10e07();
-    al = memoryAGet(ds, 0x9500);
-    if (al == 0x00)
-        goto loc_10fda;
-    return;
-loc_10ff5:
-    al = memoryAGet(ds, 0x94ff);
-    if (al == memoryAGet(ds, 0x9509))
-        goto loc_11036;
-    if (al != 0x01)
-        goto loc_1100e;
-    al = 0x0b;
-    sub_13840();
-    sub_10f3c();
-    goto loc_10fda;
-  // gap 2 bytes
-loc_1100e:
-    al = 0x0b;
-    sub_13840();
-    al = memoryAGet(ds, 0x951d);
-    if (al != 0xf0)
-        goto loc_1101f;
-    sub_10dc0();
-    goto loc_11034;
-loc_1101f:
-    al = memoryAGet(ds, 0x1ba0);
-    al &= 0x7f;
-    if (al <= 0x28)
-        goto loc_11031;
-    if (al >= 0x58)
-        goto loc_11031;
-    memoryASet(ds, 0x9432, 0x01);
-loc_11031:
-    sub_10e84();
-loc_11034:
-    goto loc_10fda;
-loc_11036:
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        return;
-    if (!(al & 0x02))
-        goto loc_11054;
-    push(si);
-    bl = memoryAGet(ds, si + 18);
-    if (bl == 0x00)
-        goto loc_11053;
-    bh = 0x00;
-    bx--;
-    bx <<= 1;
-    switch (bx)
+    if (seg == 0x1040)
     {
-        case 0: sub_11108(); break;
-        case 2: sub_1176c(); break;
-        case 4: sub_11783(); break;
-        case 6: sub_110c6(); break;
-        case 8: sub_117ac(); break;
-        case 10: sub_117d6(); break;
-        case 12: sub_118a9(); break;
-        case 14: sub_11a9e(); break;
-        case 16: sub_110c6(); break;
-        case 18: sub_11993(); break;
-        case 20: sub_119c2(); break;
-        case 22: sub_12e02(); break;
-        case 24: sub_110c6(); break;
-        case 26: sub_12fe8(); break;
-        case 28: sub_1300a(); break;
-        case 30: sub_116fe(); break;
-        case 32: sub_112cb(); break;
-        case 34: sub_110c6(); break;
-        case 36: sub_112eb(); break;
-        case 38: sub_115fc(); break;
-        case 40: sub_116df(); break;
-        case 42: sub_116d6(); break;
-        case 44: sub_11740(); break;
-        case 46: sub_11384(); break;
-        case 48: sub_113a8(); break;
-        case 50: sub_114f0(); break;
-        case 52: sub_110f3(); break;
-        case 54: sub_118c7(); break;
-        case 56: sub_11429(); break;
-        case 58: sub_117f4(); break;
-        case 60: sub_1171f(); break;
-        case 62: sub_11b09(); break;
-        case 64: sub_11b4a(); break;
-        case 66: sub_12f50(); break;
-        case 68: sub_112a7(); break;
-        default:
-            stop();
+        switch (ofs)
+        {
+            case 0x124: sub_10524(); return;
+            case 0x133: sub_10533(); return;
+            case 0x194: sub_10594(); return;
+            case 0x1a1: sub_105a1(); return;
+            case 0x1cc: sub_105cc(); return;
+            case 0x302: sub_10702(); return;
+            case 0x3f1: sub_107f1(); return;
+            case 0x436: sub_10836(); return;
+            case 0x47b: sub_1087b(); return;
+            case 0x4dd: sub_108dd(); return;
+            case 0x586: sub_10986(); return;
+            case 0x5a5: sub_109a5(); return;
+            case 0x5c4: sub_109c4(); return;
+            case 0x5d3: sub_109d3(); return;
+            case 0x5ee: sub_109ee(); return;
+            case 0x667: sub_10a67(); return;
+            case 0x7c4: sub_10bc4(); return;
+            case 0x82e: sub_10c2e(); return;
+            case 0x51b: sub_1091b(); return;
+            case 0x903: sub_10d03(); return;
+            case 0x9f8: sub_10df8(); return;
+            case 0x93d: sub_10d3d(); return;
+            case 0xa23: sub_10e23(); return;
+            case 0xa40: sub_10e40(); return;
+            case 0xaa6: sub_10ea6(); return;
+            case 0xac0: sub_10ec0(); return;
+            case 0xa7f: sub_10e7f(); return;
+            case 0xad8: sub_10ed8(); return;
+            case 0xae4: sub_10ee4(); return;
+            case 0xae6: sub_10ee6(); return;
+            case 0xae5: sub_10ee5(); return;
+            case 0xd62: sub_11162(); return;
+            case 0xdf1: sub_111f1(); return;
+            case 0xed6: sub_112d6(); return;
+            case 0xf76: sub_11376(); return;
+            case 0x3ac: sub_107ac(); return;
+            case 0xae7: sub_10ee7(); return;
+            case 0xae8: sub_10ee8(); return;
+        }
     }
-loc_11053:
-    si = pop();
-loc_11054:
-    si += 0x0017;
-    goto loc_10fe3;
-}
-void sub_110a0()
-{
-    al = memoryAGet(ds, si + 10);
-    al -= memoryAGet(ds, si + 3);
-    al -= memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 7);
-    ax &= 0x03ff;
-    bx = memoryAGet16(ds, 0x9528);
-    if (ax >= bx)
-        goto loc_110bb;
-    ax += 0x0400;
-loc_110bb:
-    ax -= bx;
-    if (ax <= 0x0200)
-        return;
-    memoryASet(ds, si, 0x00);
-}
-void sub_110c6()
-{
-    al = memoryAGet(ds, si + 3);
-    al += memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
-    ax = -ax;
-    ax += memoryAGet16(ds, si + 7);
-    ax &= 0x03ff;
-    bx = memoryAGet16(ds, 0x9528);
-    bx += 0x00a0;
-    bx &= 0x03ff;
-    if (ax >= bx)
-        goto loc_110e8;
-    ax += 0x0400;
-loc_110e8:
-    ax -= bx;
-    if (ax >= 0x0200)
-        return;
-    memoryASet(ds, si, 0x00);
-}
-void sub_110f3()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    if (al <= 0x08)
-        goto loc_110ff;
-    al = 0x08;
-loc_110ff:
-    ah = 0x00;
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) - ax);
-    sub_110a0();
-}
-void sub_11108()
-{
-    sub_11b80();
-    sub_11bb9();
-    bx = memoryAGet16(ds, 0x954c);
-    ax = memoryAGet16(ds, 0x952c);
-    if (!(bl & 0x01))
-        goto loc_11131;
-    ax -= 0x0001;
-    if ((short)ax < 0)
-        goto loc_11127;
-    if ((short)ax <= (short)0x0004)
-        goto loc_11127;
-    ax = 0x0004;
-loc_11127:
-    if ((short)ax >= (short)0xffe8)
-        goto loc_1112f;
-    ax = 0xffe8;
-loc_1112f:
-    goto loc_11158;
-loc_11131:
-    if (!(bl & 0x02))
-        goto loc_1114d;
-    ax += 0x0001;
-    if ((short)ax >= 0)
-        goto loc_11143;
-    if ((short)ax >= (short)0xfffc)
-        goto loc_11143;
-    ax = 0xfffc;
-loc_11143:
-    if ((short)ax <= (short)0x0018)
-        goto loc_1114b;
-    ax = 0x0018;
-loc_1114b:
-    goto loc_11158;
-loc_1114d:
-    if (ax == 0x0000)
-        goto loc_11158;
-    if ((short)ax <= (short)0x0000)
-        goto loc_11157;
-    ax--;
-    goto loc_11158;
-loc_11157:
-    ax++;
-loc_11158:
-    memoryASet16(ds, 0x952c, ax);
-    ax += 0x0003;
-    ax = sar16(ax, 0x0001);
-    ax = sar16(ax, 0x0001);
-    ax += memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= (short)0x0014)
-        goto loc_11174;
-    ax = 0x0014;
-    memoryASet16(ds, 0x952c, 0x0000);
-loc_11174:
-    if ((short)ax <= (short)0x00ec)
-        goto loc_11182;
-    ax = 0x00ec;
-    memoryASet16(ds, 0x952c, 0x0000);
-loc_11182:
-    memoryASet16(ds, 0x1b8f, ax);
-    al = memoryAGet(ds, 0x1b8e);
-    if (al == 0x00)
-        goto loc_1118f;
-    sub_11b57();
-loc_1118f:
-    sub_11c78();
-    sub_10a51();
-    if (ax == 0x0000)
-        goto loc_1119f;
-    sub_11c56();
-    goto loc_111bc;
-loc_1119f:
-    memoryASet(ds, 0x1b9e, memoryAGet(ds, 0x1b9e) + 1);
-    memoryASet(ds, 0x1b9e, memoryAGet(ds, 0x1b9e) & 0x3f);
-    sub_10a51();
-    if (ax == 0x0000)
-        goto loc_111b3;
-    sub_11c56();
-loc_111b3:
-    memoryASet(ds, 0x1b9e, memoryAGet(ds, 0x1b9e) - 1);
-    memoryASet(ds, 0x1b9e, memoryAGet(ds, 0x1b9e) & 0x3f);
-loc_111bc:
-    ax = memoryAGet16(ds, 0x9542);
-    if ((short)ax > (short)0x0000)
-        goto loc_111c8;
-    sub_11c33();
-    return;
-loc_111c8:
-    al = memoryAGet(ds, 0x1b8e);
-    if (al != 0x00)
-        goto loc_111de;
-    memoryASet(ds, 0x9515, memoryAGet(ds, 0x9515) + 1);
-    al = memoryAGet(ds, 0x9515);
-    if (al < 0x04)
-        return;
-    sub_11c33();
-loc_111dd:
-    return;
-loc_111de:
-    ax = memoryAGet16(ds, 0x953e);
-    if ((short)ax <= (short)0x0000)
-        goto loc_111f0;
-    ax = memoryAGet16(ds, 0x954c);
-    if (!(al & 0x80))
-        goto loc_111f0;
-    sub_11d1e();
-loc_111f0:
-    ax = memoryAGet16(ds, 0x954c);
-    bl = memoryAGet(ds, 0x951a);
-    if (!(al & 0x40))
-        goto loc_11235;
-    if (bl != 0x00)
-        goto loc_11224;
-    ax = memoryAGet16(ds, 0x9536);
-    if (ax <= 0x0000)
-        goto loc_11222;
-    memoryASet(ds, 0x951a, 0x01);
-    si = 0x0dc3;
-    memoryASet(ds, si, memoryAGet(ds, si) & 0xdf);
-    sub_11cd9();
-    sub_10b58();
-    memoryASet16(ds, 0x9538, memoryAGet16(ds, 0x9538) - 1);
-    al = 0x01;
-    sub_13840();
-loc_11222:
-    goto loc_11233;
-loc_11224:
-    if (bl != 0x02)
-        goto loc_11233;
-    memoryASet(ds, 0x951a, 0x03);
-    al = 0x02;
-    sub_13840();
-loc_11233:
-    goto loc_1124b;
-loc_11235:
-    if (bl != 0x01)
-        goto loc_11241;
-    memoryASet(ds, 0x951a, 0x02);
-    goto loc_1124b;
-loc_11241:
-    if (bl != 0x03)
-        goto loc_1124b;
-    memoryASet(ds, 0x951a, 0x00);
-loc_1124b:
-    ax = memoryAGet16(ds, 0x954c);
-    bl = memoryAGet(ds, 0x951b);
-    if (!(al & 0x20))
-        goto loc_11290;
-    if (bl != 0x00)
-        goto loc_1127f;
-    ax = memoryAGet16(ds, 0x9536);
-    if (ax <= 0x0000)
-        goto loc_1127d;
-    memoryASet(ds, 0x951b, 0x01);
-    si = 0x0dc3;
-    memoryASet(ds, si, memoryAGet(ds, si) | 0x20);
-    sub_11cd9();
-    sub_10b58();
-    memoryASet16(ds, 0x9538, memoryAGet16(ds, 0x9538) - 1);
-    al = 0x01;
-    sub_13840();
-loc_1127d:
-    goto loc_1128e;
-loc_1127f:
-    if (bl != 0x02)
-        goto loc_1128e;
-    memoryASet(ds, 0x951b, 0x03);
-    al = 0x02;
-    sub_13840();
-loc_1128e:
-    return;
-loc_11290:
-    if (bl != 0x01)
-        goto loc_1129c;
-    memoryASet(ds, 0x951b, 0x02);
-    return;
-loc_1129c:
-    if (bl != 0x03)
-        return;
-    memoryASet(ds, 0x951b, 0x00);
-}
-void sub_112a7()
-{
-    ax = memoryAGet16(ds, 0x952a);
-    ax -= 0x0003;
-    if ((short)ax < 0)
-        goto loc_112b4;
-    memoryASet16(ds, 0x952a, ax);
-    goto loc_112b7;
-loc_112b4:
-    sub_11c33();
-loc_112b7:
-    sub_11bb9();
-    sub_11b57();
-    si = 0x1b8a;
-    bx = 0x0d49;
-    memoryASet(ds, si + 4, 0x0a);
-    sub_12121();
-}
-void sub_112cb()
-{
-    ax = memoryAGet16(ds, 0x952a);
-    ax--;
-    if ((short)ax < 0)
-        goto loc_112d4;
-    memoryASet16(ds, 0x952a, ax);
-loc_112d4:
-    sub_11bb9();
-    sub_11b57();
-    memoryASet(ds, 0x9514, memoryAGet(ds, 0x9514) + 1);
-    al = memoryAGet(ds, 0x9514);
-    if (al < 0x28)
-        return;
-    memoryASet(ds, 0x9513, 0x01);
-}
-void sub_112eb()
-{
-    sub_110a0();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_112f5;
-    return;
-loc_112f5:
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) - 0x0010);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    al = memoryAGet(ds, si + 4);
-    if (al != 0x01)
-        goto loc_11312;
-    al = memoryAGet(ds, si + 3);
-    if ((char)al <= (char)0x9c)
-        goto loc_11310;
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) - 0x08);
-loc_11310:
-    goto loc_11321;
-loc_11312:
-    if (al != 0x02)
-        goto loc_11321;
-    al = memoryAGet(ds, si + 3);
-    if ((char)al >= (char)0x64)
-        goto loc_11321;
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) + 0x08);
-loc_11321:
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    ax = memoryAGet16(ds, si + 7);
-    push(ax);
-    sub_107fd();
-    si = pop();
-    if ((char)al < (char)memoryAGet(ds, si + 3))
-        goto loc_11338;
-    sub_12092();
-    return;
-loc_11338:
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    memoryASet(ds, si + 20, cl);
-    push(cx);
-    sub_10ad5();
-    si = pop();
-    if (ax == 0x0000)
-        return;
-    push(si);
-    al = memoryAGet(ds, si + 20);
-    ah = 0x00;
-    push(bx);
-    push(ax);
-    sub_11c0a();
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        goto loc_11382;
-    bx = pop();
-    push(bx);
-    al = memoryAGet(ds, si + 3);
-    al -= memoryAGet(ds, bx + 3);
-    if ((char)al >= 0)
-        goto loc_11367;
-    al = -al;
-loc_11367:
-    if (al >= 0x10)
-        goto loc_11382;
-    memoryASet(ds, si + 21, memoryAGet(ds, si + 21) - 1);
-    if ((char)memoryAGet(ds, si + 21) >= 0)
-        goto loc_1137a;
-    sub_120db();
-    al = 0x06;
-    sub_13840();
-    goto loc_1137d;
-loc_1137a:
-    sub_12662();
-loc_1137d:
-    si = pop();
-    push(si);
-    sub_12047();
-loc_11382:
-    si = pop();
-}
-void sub_11384()
-{
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_1138e;
-    memoryASet(ds, si, 0x00);
-loc_1138e:
-    sub_11cd9();
-    al = memoryAGet(ds, si);
-    if (al & 0x20)
-        goto loc_1139c;
-    al = memoryAGet(ds, 0x951a);
-    goto loc_1139f;
-loc_1139c:
-    al = memoryAGet(ds, 0x951b);
-loc_1139f:
-    if (al != 0x03)
-        return;
-    memoryASet(ds, si + 18, 0x19);
-}
-void sub_113a8()
-{
-    sub_110a0();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_113b2;
-    return;
-loc_113b2:
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) - 0x0006);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    ax = memoryAGet16(ds, si + 7);
-    push(ax);
-    sub_107fd();
-    si = pop();
-    al += 0x04;
-    memoryASet(ds, si + 3, al);
-    memoryASet(ds, si + 20, cl);
-    memoryASet(ds, si + 4, bl);
-    bx = 0x0dda;
-    sub_12121();
-    al = memoryAGet(ds, si + 4);
-    if (al != 0x00)
-        goto loc_113f5;
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0004);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    memoryASet(ds, si + 21, memoryAGet(ds, si + 21) - 1);
-    if ((char)memoryAGet(ds, si + 21) >= 0)
-        goto loc_113f5;
-    sub_120f0();
-    memoryASet(ds, si, 0x00);
-    return;
-loc_113f5:
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    cl = memoryAGet(ds, si + 20);
-    ch = 0x00;
-    push(cx);
-    sub_10ad5();
-    si = pop();
-    if (ax == 0x0000)
-        return;
-    push(si);
-    al = memoryAGet(ds, si + 20);
-    ah = 0x00;
-    push(bx);
-    push(ax);
-    sub_11c0a();
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        goto loc_11427;
-    sub_120db();
-    al = 0x06;
-    sub_13840();
-    si = pop();
-    push(si);
-    memoryASet(ds, si, 0x00);
-loc_11427:
-    si = pop();
-}
-void sub_11429()
-{
-    sub_110c6();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_11433;
-    return;
-loc_11433:
-    al = memoryAGet(ds, si + 1);
-    if (al != 0x02)
-        goto loc_11440;
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0005);
-    goto loc_1146a;
-loc_11440:
-    if (al != 0x00)
-        goto loc_1144a;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0005);
-    goto loc_1146a;
-loc_1144a:
-    if (al != 0x01)
-        goto loc_11458;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0003);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0002);
-    goto loc_1146a;
-loc_11458:
-    if (al != 0x03)
-        goto loc_11466;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0003);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0002);
-    goto loc_1146a;
-loc_11466:
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0005);
-loc_1146a:
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    ax = memoryAGet16(ds, si + 5);
-    if ((short)ax >= (short)0x000c)
-        goto loc_1147b;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_1147b:
-    if ((short)ax <= (short)0x00f4)
-        goto loc_11484;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11484:
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    ax = memoryAGet16(ds, si + 7);
-    push(ax);
-    sub_107fd();
-    si = pop();
-    al += 0x08;
-    memoryASet(ds, si + 3, al);
-    memoryASet(ds, si + 20, cl);
-    memoryASet(ds, si + 4, bl);
-    bl = memoryAGet(ds, si + 1);
-    bh = 0x00;
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 4351);
-    sub_12121();
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_114b2;
-    return;
-loc_114b2:
-    ax = memoryAGet16(ds, si + 5);
-    ax -= memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= 0)
-        goto loc_114bd;
-    ax = -ax;
-loc_114bd:
-    if (ax >= 0x0010)
-        return;
-    ax = memoryAGet16(ds, si + 7);
-    ax -= memoryAGet16(ds, 0x1b91);
-    ax -= 0x0008;
-    if ((short)ax >= 0)
-        goto loc_114d0;
-    ax = -ax;
-loc_114d0:
-    if (ax >= 0x0010)
-        return;
-    al = 0x05;
-    sub_13840();
-    memoryASet16(ds, 0x9544, memoryAGet16(ds, 0x9544) - 0x0064);
-    memoryASet(ds, 0x12a0, 0x01);
-    sub_120f0();
-    memoryASet(ds, 0x12a0, 0x05);
-    memoryASet(ds, si, 0x00);
-}
-void sub_114f0()
-{
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0001);
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    ax = memoryAGet16(ds, si + 7);
-    push(ax);
-    sub_107fd();
-    si = pop();
-    memoryASet(ds, si + 3, al);
-    memoryASet(ds, si + 20, cl);
-    memoryASet(ds, si + 4, bl);
-    bl = memoryAGet(ds, si + 1);
-    bh = 0x00;
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 4065);
-    sub_12121();
-    al = memoryAGet(ds, 0x1b9c);
-    if (al == 0x11)
-        goto loc_11548;
-    ax = memoryAGet16(ds, si + 5);
-    ax -= memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= 0)
-        goto loc_1152a;
-    ax = -ax;
-loc_1152a:
-    if (ax >= 0x001a)
-        goto loc_11548;
-    ax = memoryAGet16(ds, si + 7);
-    ax -= memoryAGet16(ds, 0x1b91);
-    if ((short)ax >= 0)
-        goto loc_1153a;
-    ax = -ax;
-loc_1153a:
-    if (ax >= 0x0012)
-        goto loc_11548;
-    memoryASet16(ds, 0x9544, memoryAGet16(ds, 0x9544) - 0x000c);
-    memoryASet(ds, si + 21, 0xff);
-loc_11548:
-    di = 0x1ba1;
-loc_1154b:
-    al = memoryAGet(ds, si + 21);
-    if ((char)al >= (char)0x00)
-        goto loc_11561;
-    al = 0x07;
-    sub_13840();
-    sub_120f0();
-    memoryASet(ds, si, 0x00);
-    sub_12676();
-    return;
-loc_11561:
-    al = memoryAGet(ds, di);
-    if (al & 0x80)
-        goto loc_115c0;
-    if (!(al & 0x40))
-        goto loc_115bb;
-    push(di);
-    ax = memoryAGet16(ds, di + 5);
-    ax -= memoryAGet16(ds, si + 5);
-    if ((short)ax >= 0)
-        goto loc_11576;
-    ax = -ax;
-loc_11576:
-    if (ax >= 0x0014)
-        goto loc_115ba;
-    ax = memoryAGet16(ds, di + 7);
-    ax -= memoryAGet16(ds, si + 7);
-    if ((short)ax >= 0)
-        goto loc_11585;
-    ax = -ax;
-loc_11585:
-    if (ax >= 0x0010)
-        goto loc_115ba;
-    al = memoryAGet(ds, di + 18);
-    if (al != 0x19)
-        goto loc_1159a;
-    memoryASet(ds, si + 21, 0xff);
-    memoryASet(ds, di, 0x00);
-    goto loc_115ba;
-loc_1159a:
-    al = memoryAGet(ds, di + 3);
-    al -= memoryAGet(ds, si + 3);
-    if ((char)al >= 0)
-        goto loc_115a4;
-    al = -al;
-loc_115a4:
-    if (al >= 0x10)
-        goto loc_115ba;
-    memoryASet(ds, si + 21, memoryAGet(ds, si + 21) - 1);
-    push(si);
-    si = di;
-    sub_12092();
-    al = 0x03;
-    sub_13840();
-    sub_12662();
-    si = pop();
-loc_115ba:
-    di = pop();
-loc_115bb:
-    di += 0x0017;
-    goto loc_1154b;
-loc_115c0:
-    al = memoryAGet(ds, 0x1b9c);
-    if (al == 0x11)
-        goto loc_115f8;
-    ax = memoryAGet16(ds, 0x1b91);
-    if (ax <= memoryAGet16(ds, si + 7))
-        goto loc_115f8;
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    if ((short)ax >= 0)
-        goto loc_115d9;
-    ax = -ax;
-loc_115d9:
-    if (ax >= 0x0020)
-        goto loc_115f8;
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) - 1);
-    if ((char)memoryAGet(ds, si + 22) >= 0)
-        goto loc_115ee;
-    memoryASet(ds, si + 22, 0x07);
-    memoryASet(ds, 0x9518, 0x01);
-    goto loc_115f3;
-loc_115ee:
-    memoryASet(ds, 0x9518, 0x00);
-loc_115f3:
-    push(si);
-    sub_11def();
-    si = pop();
-loc_115f8:
-    sub_110c6();
-}
-void sub_115fc()
-{
-    sub_110c6();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_11606;
-    return;
-loc_11606:
-    al = memoryAGet(ds, si + 1);
-    if (al != 0x02)
-        goto loc_11613;
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0008);
-    goto loc_1163d;
-loc_11613:
-    if (al != 0x00)
-        goto loc_1161d;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0008);
-    goto loc_1163d;
-loc_1161d:
-    if (al != 0x01)
-        goto loc_1162b;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0006);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0004);
-    goto loc_1163d;
-loc_1162b:
-    if (al != 0x03)
-        goto loc_11639;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0006);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0004);
-    goto loc_1163d;
-loc_11639:
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0008);
-loc_1163d:
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    ax = memoryAGet16(ds, si + 5);
-    if ((short)ax >= (short)0x0004)
-        goto loc_1164e;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_1164e:
-    if ((short)ax <= (short)0x00fc)
-        goto loc_11657;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11657:
-    al = memoryAGet(ds, si + 4);
-    if (al != 0x01)
-        goto loc_1166b;
-    al = memoryAGet(ds, si + 3);
-    if ((char)al >= (char)0x64)
-        goto loc_11669;
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) + 0x04);
-loc_11669:
-    goto loc_1167a;
-loc_1166b:
-    if (al != 0x02)
-        goto loc_1167a;
-    al = memoryAGet(ds, si + 3);
-    if ((char)al <= (char)0x9c)
-        goto loc_1167a;
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) - 0x04);
-loc_1167a:
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    push(ax);
-    ax = memoryAGet16(ds, si + 7);
-    push(ax);
-    sub_107fd();
-    si = pop();
-    if ((char)al < (char)memoryAGet(ds, si + 3))
-        goto loc_11691;
-    sub_12092();
-    return;
-loc_11691:
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_11699;
-    return;
-loc_11699:
-    ax = memoryAGet16(ds, si + 5);
-    ax -= memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= 0)
-        goto loc_116a4;
-    ax = -ax;
-loc_116a4:
-    if (ax >= 0x000c)
-        return;
-    ax = memoryAGet16(ds, si + 7);
-    ax -= memoryAGet16(ds, 0x1b91);
-    if ((short)ax >= 0)
-        goto loc_116b4;
-    ax = -ax;
-loc_116b4:
-    if (ax >= 0x0008)
-        return;
-    al = memoryAGet(ds, si + 3);
-    al -= memoryAGet(ds, 0x1b8d);
-    if ((char)al >= 0)
-        goto loc_116c4;
-    al = -al;
-loc_116c4:
-    if (al >= 0x10)
-        return;
-    memoryASet16(ds, 0x9544, memoryAGet16(ds, 0x9544) - 0x0001);
-    sub_12092();
-    al = 0x04;
-    sub_13840();
-}
-void sub_116d6()
-{
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) - 1);
-    if ((char)memoryAGet(ds, si + 4) >= 0)
-        return;
-    memoryASet(ds, si, 0x00);
-}
-void sub_116df()
-{
-    al = memoryAGet(ds, si + 4);
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) + 1);
-    if (al < 0x04)
-        goto loc_116ed;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_116ed:
-    al <<= 1;
-    bl = al;
-    bh = 0x00;
-    ax = memoryAGet16(ds, bx + 5182);
-    memoryASet16(ds, si + 15, ax);
-    sub_110c6();
-}
-void sub_116fe()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    al >>= 1;
-    al >>= 1;
-    al &= 0x07;
-    if ((char)al < (char)0x05)
-        goto loc_11712;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11712:
-    memoryASet(ds, si + 4, al);
-    bx = 0x12b5;
-    sub_12121();
-    sub_110c6();
-}
-void sub_1171f()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    al >>= 1;
-    al >>= 1;
-    al &= 0x07;
-    if ((char)al < (char)0x06)
-        goto loc_11733;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11733:
-    memoryASet(ds, si + 4, al);
-    bx = 0x12f5;
-    sub_12121();
-    sub_110c6();
-}
-void sub_11740()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    al &= 0x07;
-    if ((char)al < (char)0x04)
-        goto loc_11762;
-    al = memoryAGet(ds, si);
-    if (!(al & 0x20))
-        goto loc_11759;
-    memoryASet(ds, 0x9517, memoryAGet(ds, 0x9517) & 0x7f);
-    goto loc_1175e;
-loc_11759:
-    memoryASet(ds, 0x9517, memoryAGet(ds, 0x9517) & 0xfe);
-loc_1175e:
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11762:
-    memoryASet(ds, si + 4, al);
-    bx = 0x133d;
-    sub_12121();
-}
-void sub_1176c()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    al >>= 1;
-    al &= 0x03;
-    memoryASet(ds, si + 4, al);
-    bx = 0x0e2b;
-    sub_12121();
-    sub_110c6();
-}
-void sub_11783()
-{
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    al = memoryAGet(ds, si + 22);
-    al >>= 1;
-    al &= 0x07;
-    if (al < 0x06)
-        goto loc_11797;
-    al = 0x00;
-    memoryASet(ds, si + 22, 0x00);
-loc_11797:
-    bl = al;
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 3660);
-    memoryASet(ds, si + 4, al);
-    bx = 0x0e52;
-    sub_12121();
-    sub_110c6();
-}
-void sub_117ac()
-{
-    sub_1215b();
-    if (cx == 0x0000)
-        goto loc_117cc;
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) - 1);
-    if ((char)memoryAGet(ds, si + 22) >= 0)
-        goto loc_117c4;
-    memoryASet(ds, si + 22, 0x08);
-    memoryASet(ds, 0x9518, 0x01);
-    goto loc_117c9;
-loc_117c4:
-    memoryASet(ds, 0x9518, 0x00);
-loc_117c9:
-    sub_11f0b();
-loc_117cc:
-    bx = 0x0e73;
-    sub_12121();
-    sub_110c6();
-}
-void sub_117d6()
-{
-    sub_1215b();
-    if (cx == 0x0000)
-        goto loc_117ea;
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) - 1);
-    if ((char)memoryAGet(ds, si + 22) >= 0)
-        goto loc_117ea;
-    memoryASet(ds, si + 22, 0x12);
-    sub_12005();
-loc_117ea:
-    bx = 0x0e9c;
-    sub_12121();
-    sub_110c6();
-}
-void sub_117f4()
-{
-    sub_110c6();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_117fe;
-    return;
-loc_117fe:
-    al = memoryAGet(ds, si + 1);
-    if (al != 0x02)
-        goto loc_1180b;
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0003);
-    goto loc_11835;
-loc_1180b:
-    if (al != 0x00)
-        goto loc_11815;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0004);
-    goto loc_11835;
-loc_11815:
-    if (al != 0x01)
-        goto loc_11823;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0004);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0003);
-    goto loc_11835;
-loc_11823:
-    if (al != 0x03)
-        goto loc_11831;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0004);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) + 0x0003);
-    goto loc_11835;
-loc_11831:
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0004);
-loc_11835:
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    ax = memoryAGet16(ds, si + 5);
-    if ((short)ax >= (short)0x0008)
-        goto loc_11846;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_11846:
-    if ((short)ax <= (short)0x00f8)
-        goto loc_1184f;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_1184f:
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + 1);
-    bl = memoryAGet(ds, si + 22);
-    if (bl < 0x10)
-        goto loc_1185e;
-    sub_12099();
-    return;
-loc_1185e:
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5223);
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) + al);
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_1186f;
-    return;
-loc_1186f:
-    ax = memoryAGet16(ds, si + 5);
-    ax -= memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= 0)
-        goto loc_1187a;
-    ax = -ax;
-loc_1187a:
-    if (ax >= 0x000e)
-        return;
-    ax = memoryAGet16(ds, si + 7);
-    ax -= memoryAGet16(ds, 0x1b91);
-    if ((short)ax >= 0)
-        goto loc_1188a;
-    ax = -ax;
-loc_1188a:
-    if (ax >= 0x000a)
-        return;
-    al = memoryAGet(ds, si + 3);
-    al -= memoryAGet(ds, 0x1b8d);
-    if ((char)al >= 0)
-        goto loc_1189a;
-    al = -al;
-loc_1189a:
-    if (al >= 0x10)
-        return;
-    memoryASet16(ds, 0x9544, memoryAGet16(ds, 0x9544) - 0x000a);
-    al = 0x05;
-    sub_13840();
-}
-void sub_118a9()
-{
-    sub_1215b();
-    if (cx == 0x0000)
-        goto loc_118bd;
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) - 1);
-    if ((char)memoryAGet(ds, si + 22) >= 0)
-        goto loc_118bd;
-    memoryASet(ds, si + 22, 0x28);
-    sub_11fba();
-loc_118bd:
-    bx = 0x0ec5;
-    sub_12121();
-    sub_110c6();
-}
-void sub_118c7()
-{
-    al = memoryAGet(ds, 0x952e);
-    al &= memoryAGet(ds, 0x952f);
-    al &= memoryAGet(ds, 0x9530);
-    al &= memoryAGet(ds, 0x9531);
-    al &= memoryAGet(ds, 0x9532);
-    al &= memoryAGet(ds, 0x9533);
-    if (al)
-        goto loc_118e4;
-    sub_110c6();
-    return;
-loc_118e4:
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    ax -= 0x000c;
-    if ((short)ax >= 0)
-        goto loc_118f1;
-    ax = -ax;
-loc_118f1:
-    cx = memoryAGet16(ds, 0x1b91);
-    cx -= 0x0008;
-    cx -= memoryAGet16(ds, si + 7);
-    if ((short)cx >= 0)
-        goto loc_118ff;
-    cx = -cx;
-loc_118ff:
-    bl = memoryAGet(ds, si + 4);
-    bl >>= 1;
-    ax += cx;
-    if (ax > 0x0040)
-        goto loc_11915;
-    if (bl == 0x08)
-        goto loc_11913;
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) + 1);
-loc_11913:
-    goto loc_1191d;
-loc_11915:
-    if (bl == 0x00)
-        goto loc_1191d;
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) - 1);
-loc_1191d:
-    push(bx);
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5251);
-    memoryASet16(ds, si + 15, ax);
-    bx = pop();
-    if (bl < 0x02)
-        goto loc_1196b;
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    ax -= 0x000c;
-    if ((short)ax >= 0)
-        goto loc_11947;
-    ax = -ax;
-    if (ax > 0x0018)
-        goto loc_11945;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) + 1);
-loc_11945:
-    goto loc_11952;
-loc_11947:
-    if (!ax)
-        goto loc_11952;
-    if (ax > 0x0018)
-        goto loc_11952;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) - 1);
-loc_11952:
-    if (bl != 0x08)
-        goto loc_1196b;
-    if (cx > 0x0008)
-        goto loc_1196b;
-    if (ax > 0x0008)
-        goto loc_1196b;
-    al = memoryAGet(ds, 0x1b9c);
-    if (al == 0x11)
-        goto loc_1196b;
-    sub_1196f();
-loc_1196b:
-    sub_110c6();
-}
-void sub_1196f()
-{
-    al = memoryAGet(ds, 0x1b8e);
-    if (al != 0x00)
-        goto loc_11982;
-    memoryASet(ds, 0x951d, 0xf0);
-    memoryASet(ds, 0x94ff, 0x01);
-    return;
-loc_11982:
-    push(si);
-    memoryASet(ds, 0x1b8e, 0x00);
-    si = 0x1b8a;
-    bx = 0x0d49;
-    sub_12121();
-    si = pop();
-}
-void sub_11993()
-{
-    sub_11a04();
-    al = memoryAGet(ds, 0x94ff);
-    if (al != 0x01)
-        return;
-    al = memoryAGet(ds, 0x9501);
-    bl = al;
-    al <<= 1;
-    bl += al;
-    bl += memoryAGet(ds, 0x9502);
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5269);
-    bh = ah;
-    ax &= 0x03ff;
-    memoryASet16(ds, 0x950c, ax);
-    bh &= 0xc0;
-    memoryASet(ds, 0x951d, bh);
-}
-void sub_119c2()
-{
-    sub_11a04();
-    al = memoryAGet(ds, 0x94ff);
-    if (al != 0x01)
-        return;
-    al = memoryAGet(ds, 0x9501);
-    bl = al;
-    al <<= 1;
-    bl += al;
-    bl += memoryAGet(ds, 0x9502);
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5317);
-    bh = ah;
-    ax &= 0x03ff;
-    memoryASet16(ds, 0x950c, ax);
-    bh &= 0xc0;
-    memoryASet(ds, 0x951d, bh);
-    memoryASet(ds, 0x950e, 0x01);
-    al = memoryAGet(ds, 0x9502);
-    al++;
-    if (al <= 0x02)
-        goto loc_11a00;
-    al = 0x00;
-loc_11a00:
-    memoryASet(ds, 0x9502, al);
-}
-void sub_11a04()
-{
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    ax -= 0x000c;
-    if ((short)ax >= 0)
-        goto loc_11a11;
-    ax = -ax;
-loc_11a11:
-    cx = memoryAGet16(ds, 0x1b91);
-    cx -= memoryAGet16(ds, si + 7);
-    if ((short)cx >= 0)
-        goto loc_11a1c;
-    cx = -cx;
-loc_11a1c:
-    bl = memoryAGet(ds, si + 4);
-    bl >>= 1;
-    ax += cx;
-    if (ax > 0x0040)
-        goto loc_11a32;
-    if (bl == 0x06)
-        goto loc_11a30;
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) + 1);
-loc_11a30:
-    goto loc_11a3a;
-loc_11a32:
-    if (bl == 0x00)
-        goto loc_11a3a;
-    memoryASet(ds, si + 4, memoryAGet(ds, si + 4) - 1);
-loc_11a3a:
-    if (bl != 0x06)
-        goto loc_11a45;
-    memoryASet(ds, si + 2, 0x00);
-    goto loc_11a56;
-loc_11a45:
-    push(bx);
-    memoryASet(ds, si + 2, 0x07);
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5239);
-    memoryASet16(ds, si + 15, ax);
-    bx = pop();
-loc_11a56:
-    if (bl < 0x01)
-        goto loc_11a9a;
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    ax -= 0x000c;
-    if ((short)ax >= 0)
-        goto loc_11a73;
-    ax = -ax;
-    if (ax > 0x0018)
-        goto loc_11a71;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) + 1);
-loc_11a71:
-    goto loc_11a7e;
-loc_11a73:
-    if (!ax)
-        goto loc_11a7e;
-    if (ax > 0x0018)
-        goto loc_11a7e;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) - 1);
-loc_11a7e:
-    if (cx > 0x0008)
-        goto loc_11a9a;
-    if (ax > 0x0008)
-        goto loc_11a9a;
-    al = memoryAGet(ds, 0x1b9c);
-    if (al == 0x11)
-        goto loc_11a9a;
-    ax = memoryAGet16(ds, 0x1b8f);
-    memoryASet16(ds, 0x950a, ax);
-    memoryASet(ds, 0x94ff, 0x01);
-loc_11a9a:
-    sub_110c6();
-}
-void sub_11a9e()
-{
-    sub_110c6();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_11aa8;
-    return;
-loc_11aa8:
-    bx = memoryAGet16(ds, 0x1b91);
-    bx -= memoryAGet16(ds, si + 7);
-    if ((short)bx >= 0)
-        goto loc_11abb;
-    if ((short)bx >= (short)0xfff0)
-        return;
-    memoryASet(ds, si + 2, 0x01);
-loc_11aba:
-    return;
-loc_11abb:
-    if ((short)bx <= (short)0x0020)
-        goto loc_11ac1;
-    return;
-loc_11ac1:
-    ax = memoryAGet16(ds, 0x1b8f);
-    ax -= memoryAGet16(ds, si + 5);
-    ax -= 0x000c;
-    if ((short)ax >= 0)
-        goto loc_11ad9;
-    ax = -ax;
-    if (ax >= 0x0018)
-        goto loc_11ad7;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) + 1);
-loc_11ad7:
-    goto loc_11ae7;
-loc_11ad9:
-    if (ax >= 0x0018)
-        goto loc_11ae7;
-    if (ax == 0x0000)
-        goto loc_11ae7;
-    memoryASet16(ds, 0x1b8f, memoryAGet16(ds, 0x1b8f) - 1);
-loc_11ae7:
-    if (bx <= 0x0008)
-        goto loc_11aed;
-    return;
-loc_11aed:
-    if (ax > 0x0002)
-        goto loc_11af8;
-    memoryASet16(ds, 0x9538, memoryAGet16(ds, 0x9538) + 1);
-    return;
-loc_11af8:
-    if (ax >= 0x0024)
-        return;
-    memoryASet16(ds, 0x9542, 0x0000);
-    al = 0x06;
-    sub_13840();
-}
-void sub_11b09()
-{
-    sub_110c6();
-    al = memoryAGet(ds, si);
-    if (al != 0x00)
-        goto loc_11b13;
-    return;
-loc_11b13:
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_11b1b;
-    return;
-loc_11b1b:
-    ax = memoryAGet16(ds, si + 5);
-    ax -= memoryAGet16(ds, 0x1b8f);
-    if ((short)ax >= 0)
-        goto loc_11b26;
-    ax = -ax;
-loc_11b26:
-    if (ax >= 0x0012)
-        return;
-    ax = memoryAGet16(ds, si + 7);
-    ax -= memoryAGet16(ds, 0x1b91);
-    if ((short)ax >= 0)
-        goto loc_11b36;
-    ax = -ax;
-loc_11b36:
-    if (ax >= 0x0010)
-        return;
-    memoryASet(ds, si, 0x00);
-    al = memoryAGet(ds, si + 1);
-    sub_12b28();
-    al = 0x0a;
-    sub_13840();
-}
-void sub_11b4a()
-{
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) - 0x0002);
-    memoryASet16(ds, si + 7, memoryAGet16(ds, si + 7) & 0x03ff);
-    sub_110a0();
-}
-void sub_11b57()
-{
-    ax = memoryAGet16(ds, 0x1b8f);
-    push(ax);
-    ax = memoryAGet16(ds, 0x9528);
-    ax += 0x0070;
-    ax &= 0x03ff;
-    memoryASet16(ds, 0x1b91, ax);
-    push(ax);
-    sub_107fd();
-    memoryASet(ds, 0x1b8d, al);
-    memoryASet(ds, 0x1b9e, cl);
-    memoryASet(ds, 0x1b8e, bl);
-    si = 0x1b8a;
-    bx = 0x0d49;
-    sub_12121();
-}
-void sub_11b80()
-{
-    bx = memoryAGet16(ds, 0x952a);
-    ax = memoryAGet16(ds, 0x953a);
-    if ((short)ax > (short)0x0000)
-        goto loc_11b91;
-    ax = 0x0008;
-    goto loc_11b94;
-loc_11b91:
-    ax = memoryAGet16(ds, 0x954c);
-loc_11b94:
-    if (!(al & 0x04))
-        goto loc_11ba3;
-    bx++;
-    if ((short)bx <= (short)0x0040)
-        goto loc_11ba1;
-    bx = 0x0040;
-loc_11ba1:
-    goto loc_11bb4;
-loc_11ba3:
-    if (!(al & 0x08))
-        goto loc_11bb4;
-    bx -= 0x0002;
-    if ((short)bx >= (short)memoryAGet16(ds, 0x94fc))
-        goto loc_11bb4;
-    bx = memoryAGet16(ds, 0x94fc);
-loc_11bb4:
-    memoryASet16(ds, 0x952a, bx);
-}
-void sub_11bb9()
-{
-    bx = memoryAGet16(ds, 0x952a);
-    bx += 0x000f;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    ax = bx;
-    ax--;
-    bx >>= 1;
-    ax += memoryAGet16(ds, 0x950f);
-    if (ax <= 0x008b)
-        goto loc_11bdd;
-    ax = 0x0000;
-    memoryASet16(ds, 0x953c, 0xffff);
-loc_11bdd:
-    memoryASet16(ds, 0x950f, ax);
-    ax = memoryAGet16(ds, 0x9528);
-    ax -= bx;
-    ax &= 0x03ff;
-    memoryASet16(ds, 0x9528, ax);
-    ax = memoryAGet16(ds, 0x9528);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax -= 0x0003;
-    ax &= 0x003f;
-    if (ax == memoryAGet16(ds, 0x9507))
-        return;
-    memoryASet16(ds, 0x9507, ax);
-    push(ax);
-    sub_108ba();
-}
-void sub_11c0a()
-{
-    push(bp);
-    bp = sp;
-    bx = memoryAGet16(ss, bp + 6 - 2);
-    cx = memoryAGet16(ss, bp + 4 - 2);
-    si = 0x1b8a;
-loc_11c16:
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        goto loc_11c2f;
-    if (!(al & 0x08))
-        goto loc_11c2a;
-    if (cl != memoryAGet(ds, si + 20))
-        goto loc_11c2a;
-    if (bl == memoryAGet(ds, si + 19))
-        goto loc_11c2f;
-loc_11c2a:
-    si += 0x0017;
-    goto loc_11c16;
-loc_11c2f:
-    bp = pop();
-    sp += 4;
-}
-void sub_11c33()
-{
-    al = memoryAGet(ds, 0x1b9c);
-    if (al != 0x11)
-        goto loc_11c3b;
-    return;
-loc_11c3b:
-    al = 0x0c;
-    sub_13840();
-    si = 0x1b8a;
-    sub_120f0();
-    memoryASet(ds, 0x1b9c, 0x11);
-    memoryASet(ds, 0x1b8c, 0x00);
-    memoryASet(ds, 0x9514, 0x00);
-}
-void sub_11c56()
-{
-    ax = -ax;
-    memoryASet16(ds, 0x9544, ax);
-    push(ax);
-    al = 0x06;
-    sub_13840();
-    ax = pop();
-    ax = bx;
-    push(ax);
-    al = memoryAGet(ds, 0x1b9e);
-    ah = 0x00;
-    push(ax);
-    sub_11c0a();
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        return;
-    sub_120db();
-}
-void sub_11c78()
-{
-    ax = memoryAGet16(ds, 0x9437);
-    memoryASet16(ds, 0x9439, ax);
-    ax = memoryAGet16(ds, 0x9435);
-    memoryASet16(ds, 0x9437, ax);
-    ax = memoryAGet16(ds, 0x9433);
-    memoryASet16(ds, 0x9435, ax);
-    ax = memoryAGet16(ds, 0x1b8f);
-    memoryASet16(ds, 0x9433, ax);
-    ax = memoryAGet16(ds, 0x943f);
-    memoryASet16(ds, 0x9441, ax);
-    ax = memoryAGet16(ds, 0x943d);
-    memoryASet16(ds, 0x943f, ax);
-    ax = memoryAGet16(ds, 0x943b);
-    memoryASet16(ds, 0x943d, ax);
-    ax = memoryAGet16(ds, 0x1b91);
-    memoryASet16(ds, 0x943b, ax);
-    al = memoryAGet(ds, 0x9445);
-    memoryASet(ds, 0x9446, al);
-    al = memoryAGet(ds, 0x9444);
-    memoryASet(ds, 0x9445, al);
-    al = memoryAGet(ds, 0x9443);
-    memoryASet(ds, 0x9444, al);
-    al = memoryAGet(ds, 0x1b8e);
-    memoryASet(ds, 0x9443, al);
-    al = memoryAGet(ds, 0x9449);
-    memoryASet(ds, 0x944a, al);
-    al = memoryAGet(ds, 0x9448);
-    memoryASet(ds, 0x9449, al);
-    al = memoryAGet(ds, 0x9447);
-    memoryASet(ds, 0x9448, al);
-    al = memoryAGet(ds, 0x1b8d);
-    memoryASet(ds, 0x9447, al);
-}
-void sub_11cd9()
-{
-    ax = memoryAGet16(ds, 0x9439);
-    memoryASet16(ds, si + 5, ax);
-    ax = memoryAGet16(ds, 0x9441);
-    ax += 0x0006;
-    ax &= 0x03ff;
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x9446);
-    memoryASet(ds, si + 4, al);
-    bl = al;
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 3513);
-    al = memoryAGet(ds, 0x944a);
-    al += 0x06;
-    memoryASet(ds, si + 3, al);
-    al = memoryAGet(ds, si);
-    if (al & 0x20)
-        goto loc_11d10;
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) - 0x0008);
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) + cl);
-    goto loc_11d17;
-loc_11d10:
-    memoryASet16(ds, si + 5, memoryAGet16(ds, si + 5) + 0x0008);
-    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) - cl);
-loc_11d17:
-    bx = 0x0dda;
-    sub_12121();
-}
-void sub_11d1e()
-{
-    si = 0x135e;
-    memoryASet(ds, si, memoryAGet(ds, si) & 0xdf);
-    bl = memoryAGet(ds, 0x1b8e);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5021);
-    memoryASet(ds, si + 4, al);
-    al = memoryAGet(ds, bx + 4981);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, 0x1b8f);
-    memoryASet16(ds, si + 5, ax);
-    ax = memoryAGet16(ds, 0x1b91);
-    ax -= 0x0004;
-    ax &= 0x03ff;
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x1b8d);
-    al += memoryAGet(ds, bx + 5001);
-    memoryASet(ds, si + 3, al);
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5031);
-    memoryASet(ds, si + 10, al);
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5034);
-    memoryASet16(ds, si + 15, ax);
-    sub_10b58();
-    si = 0x0ff7;
-    ax = memoryAGet16(ds, 0x1363);
-    memoryASet16(ds, si + 5, ax);
-    ax = memoryAGet16(ds, 0x1365);
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x1361);
-    memoryASet(ds, si + 3, al);
-    memoryASet(ds, 0x9516, memoryAGet(ds, 0x9516) + 1);
-    bl = memoryAGet(ds, 0x9516);
-    bx &= 0x000f;
-    al = memoryAGet(ds, bx + 4071);
-    memoryASet(ds, si + 4, al);
-    bx = 0x100e;
-    sub_12121();
-    sub_10b58();
-    si = 0x135e;
-    memoryASet(ds, si, memoryAGet(ds, si) | 0x20);
-    bl = memoryAGet(ds, 0x1b8e);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 4991);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, 0x1b8f);
-    memoryASet16(ds, si + 5, ax);
-    al = memoryAGet(ds, 0x1b8d);
-    al += memoryAGet(ds, bx + 5011);
-    memoryASet(ds, si + 3, al);
-    sub_10b58();
-    si = 0x0ff7;
-    ax = memoryAGet16(ds, 0x1363);
-    memoryASet16(ds, si + 5, ax);
-    ax = memoryAGet16(ds, 0x1365);
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x1361);
-    memoryASet(ds, si + 3, al);
-    sub_10b58();
-    ax = memoryAGet16(ds, 0x9511);
-    ax += bx;
-    if (ax <= 0x0010)
-        goto loc_11deb;
-    ax = 0x0000;
-    memoryASet16(ds, 0x9540, 0xffff);
-loc_11deb:
-    memoryASet16(ds, 0x9511, ax);
-}
-void sub_11def()
-{
-    memoryASet(ds, 0x9516, memoryAGet(ds, 0x9516) + 1);
-    bl = memoryAGet(ds, 0x9516);
-    bx &= 0x000f;
-    al = memoryAGet(ds, bx + 4071);
-    memoryASet(ds, 0x0ffb, al);
-    al = memoryAGet(ds, si + 1);
-    if (al != 0x00)
-        goto loc_11e2e;
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5069);
-    ax = 0xfffd;
-    bx = 0x0008;
-    sub_11e7d();
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5079);
-    ax = 0x0003;
-    bx = 0x0008;
-    sub_11e7d();
-    return;
-loc_11e2e:
-    if (al != 0x01)
-        goto loc_11e46;
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5089);
-    ax = 0x0000;
-    bx = 0x0008;
-    sub_11e7d();
-    return;
-loc_11e46:
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5099);
-    ax = 0xfff9;
-    bx = 0x0008;
-    sub_11e7d();
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5109);
-    ax = 0x0000;
-    bx = 0x000b;
-    sub_11e7d();
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 5119);
-    ax = 0x0007;
-    bx = 0x0008;
-    sub_11e7d();
-}
-void sub_11e7d()
-{
-    push(si);
-    di = 0x0ff7;
-    ax += memoryAGet16(ds, si + 5);
-    memoryASet16(ds, di + 5, ax);
-    bx += memoryAGet16(ds, si + 7);
-    bx &= 0x03ff;
-    memoryASet16(ds, di + 7, bx);
-    cl += memoryAGet(ds, si + 3);
-    memoryASet(ds, di + 3, cl);
-    si = di;
-    bx = 0x1039;
-    sub_12121();
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_11eb0;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_11eb0;
-    sub_116d6();
-loc_11eb0:
-    si = pop();
-    al = memoryAGet(ds, 0x9518);
-    if (al != 0x00)
-        goto loc_11eb9;
-    return;
-loc_11eb9:
-    push(si);
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    si = 0x13b0;
-    al = memoryAGet(ds, bx + 5021);
-    memoryASet(ds, si + 4, al);
-    ax = memoryAGet16(ds, 0x0ffc);
-    memoryASet16(ds, si + 5, ax);
-    ax = memoryAGet16(ds, 0x0ffe);
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, 0x0ffa);
-    memoryASet(ds, si + 3, al);
-    memoryASet(ds, si + 1, 0x02);
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5031);
-    memoryASet(ds, si + 10, al);
-    memoryASet(ds, si + 9, 0x04);
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5063);
-    memoryASet16(ds, si + 15, ax);
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_11f09;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_11f09;
-    sub_115fc();
-loc_11f09:
-    si = pop();
-}
-void sub_11f0b()
-{
-    push(si);
-    memoryASet(ds, 0x9516, memoryAGet(ds, 0x9516) + 1);
-    bl = memoryAGet(ds, 0x9516);
-    bx &= 0x000f;
-    al = memoryAGet(ds, bx + 4071);
-    memoryASet(ds, 0x0ffb, al);
-    di = 0x0ff7;
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5129);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 5);
-    memoryASet16(ds, di + 5, ax);
-    al = memoryAGet(ds, bx + 5134);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 7);
-    ax &= 0x03ff;
-    memoryASet16(ds, di + 7, ax);
-    al = memoryAGet(ds, si + 3);
-    al += 0x04;
-    memoryASet(ds, di + 3, al);
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 4143);
-    si = di;
-    sub_12121();
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_11f63;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_11f63;
-    sub_116d6();
-loc_11f63:
-    si = pop();
-    al = memoryAGet(ds, 0x9518);
-    if (al != 0x00)
-        goto loc_11f6c;
-    return;
-loc_11f6c:
-    push(si);
-    di = 0x13b0;
-    bl = memoryAGet(ds, si + 4);
-    bh = 0x00;
-    memoryASet(ds, di + 1, bl);
-    ax = memoryAGet16(ds, 0x0ffc);
-    memoryASet16(ds, di + 5, ax);
-    ax = memoryAGet16(ds, 0x0ffe);
-    memoryASet16(ds, di + 7, ax);
-    al = memoryAGet(ds, 0x0ffa);
-    memoryASet(ds, di + 3, al);
-    al = memoryAGet(ds, bx + 5139);
-    memoryASet(ds, di + 9, al);
-    al = memoryAGet(ds, bx + 5144);
-    memoryASet(ds, di + 10, al);
-    memoryASet(ds, di + 4, 0x00);
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5149);
-    memoryASet16(ds, di + 15, ax);
-    si = di;
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_11fb8;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_11fb8;
-    sub_115fc();
-loc_11fb8:
-    si = pop();
-}
-void sub_11fba()
-{
-    push(si);
-    di = 0x10e8;
-    bl = memoryAGet(ds, si + 4);
-    memoryASet(ds, di + 1, bl);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 4318);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 5);
-    memoryASet16(ds, di + 5, ax);
-    al = memoryAGet(ds, bx + 4323);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 7);
-    ax &= 0x03ff;
-    memoryASet16(ds, di + 7, ax);
-    al = memoryAGet(ds, si + 3);
-    al += 0x08;
-    memoryASet(ds, di + 3, al);
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 4351);
-    si = di;
-    sub_12121();
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_12003;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_12003;
-    sub_11429();
-loc_12003:
-    si = pop();
-}
-void sub_12005()
-{
-    push(si);
-    di = 0x1446;
-    bl = memoryAGet(ds, si + 4);
-    memoryASet(ds, di + 1, bl);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 5213);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 5);
-    memoryASet16(ds, di + 5, ax);
-    al = memoryAGet(ds, bx + 5218);
-    true ? cbw() : cwde();
-    ax += memoryAGet16(ds, si + 7);
-    ax &= 0x03ff;
-    memoryASet16(ds, di + 7, ax);
-    al = memoryAGet(ds, si + 3);
-    al += 0x08;
-    memoryASet(ds, di + 3, al);
-    si = di;
-    sub_10b58();
-    if (si == 0x0000)
-        goto loc_12045;
-    ax = pop();
-    push(ax);
-    if (ax <= si)
-        goto loc_12045;
-    sub_117f4();
-loc_12045:
-    si = pop();
-}
-void sub_12047()
-{
-    al = memoryAGet(ds, si);
-    bl = memoryAGet(ds, 0x9517);
-    if (!(al & 0x20))
-        goto loc_12072;
-    if (bl & 0x80)
-        goto loc_1206d;
-    memoryASet(ds, 0x9517, memoryAGet(ds, 0x9517) | 0x80);
-    memoryASet(ds, 0x1326, memoryAGet(ds, 0x1326) | 0x20);
-    di = 0x1326;
-    sub_120a0();
-    al = 0x03;
-    sub_13840();
-    goto loc_12070;
-loc_1206d:
-    memoryASet(ds, si, 0x00);
-loc_12070:
-    return;
-loc_12072:
-    if (bl & 0x01)
-        goto loc_1208e;
-    memoryASet(ds, 0x9517, memoryAGet(ds, 0x9517) | 0x01);
-    memoryASet(ds, 0x1326, memoryAGet(ds, 0x1326) & 0xdf);
-    di = 0x1326;
-    sub_120a0();
-    al = 0x03;
-    sub_13840();
-    return;
-loc_1208e:
-    memoryASet(ds, si, 0x00);
-}
-void sub_12092()
-{
-    di = 0x1427;
-    sub_120a0();
-}
-void sub_12099()
-{
-    di = 0x12de;
-    sub_120a0();
-}
-void sub_120a0()
-{
-    al = memoryAGet(ds, di);
-    memoryASet(ds, si, al);
-    al = memoryAGet(ds, di + 2);
-    memoryASet(ds, si + 2, al);
-    al = memoryAGet(ds, di + 22);
-    memoryASet(ds, si + 22, al);
-    al = memoryAGet(ds, di + 4);
-    memoryASet(ds, si + 4, al);
-    al = memoryAGet(ds, di + 9);
-    memoryASet(ds, si + 9, al);
-    al = memoryAGet(ds, di + 10);
-    memoryASet(ds, si + 10, al);
-    al = memoryAGet(ds, di + 11);
-    memoryASet(ds, si + 11, al);
-    al = memoryAGet(ds, di + 12);
-    memoryASet(ds, si + 12, al);
-    ax = memoryAGet16(ds, di + 15);
-    memoryASet16(ds, si + 15, ax);
-    al = memoryAGet(ds, di + 18);
-    memoryASet(ds, si + 18, al);
-}
-void sub_120db()
-{
-    sub_12676();
-    sub_120f0();
-    push(si);
-    al = memoryAGet(ds, si + 19);
-    ah = 0x00;
-    push(ax);
-    al = memoryAGet(ds, si + 20);
-    push(ax);
-    sub_109b5();
-}
-void sub_120f0()
-{
-    push(si);
-    ax = memoryAGet16(ds, si + 5);
-    memoryASet16(ds, 0x12a3, ax);
-    ax = memoryAGet16(ds, si + 7);
-    memoryASet16(ds, 0x12a5, ax);
-    al = memoryAGet(ds, si + 3);
-    memoryASet(ds, 0x12a1, al);
-    al = memoryAGet(ds, si);
-    if (!(al & 0x10))
-        goto loc_12119;
-    memoryASet16(ds, 0x12a3, memoryAGet16(ds, 0x12a3) - 0x000c);
-    memoryASet16(ds, 0x12a5, memoryAGet16(ds, 0x12a5) - 0x0008);
-    memoryASet16(ds, 0x12a5, memoryAGet16(ds, 0x12a5) & 0x03ff);
-loc_12119:
-    si = 0x129e;
-    sub_10b58();
-    si = pop();
-}
-void sub_12121()
-{
-    cl = memoryAGet(ds, bx);
-    ch = 0x00;
-    bx++;
-    al = memoryAGet(ds, si + 4);
-    ah = 0x00;
-    di = ax;
-    al = memoryAGet(ds, bx + di);
-    memoryASet(ds, si + 9, al);
-    bx += cx;
-    al = memoryAGet(ds, bx + di);
-    memoryASet(ds, si + 10, al);
-    bx += cx;
-    al = memoryAGet(ds, bx + di);
-    memoryASet(ds, si + 11, al);
-    bx += cx;
-    al = memoryAGet(ds, bx + di);
-    memoryASet(ds, si + 12, al);
-    bx += cx;
-    di <<= 1;
-    di <<= 1;
-    ax = memoryAGet16(ds, bx + di);
-    memoryASet16(ds, si + 13, ax);
-    bx += 0x0002;
-    ax = memoryAGet16(ds, bx + di);
-    memoryASet16(ds, si + 15, ax);
-}
-void sub_1215b()
-{
-    cx = 0x0001;
-    ax = memoryAGet16(ds, 0x1b91);
-    ax -= memoryAGet16(ds, si + 7);
-    if ((short)ax <= (short)0x008c)
-        goto loc_12171;
-    memoryASet(ds, si + 4, 0x02);
-    cx = 0x0000;
-    return;
-loc_12171:
-    if ((short)ax >= (short)0xfff0)
-        goto loc_121a0;
-    ah = memoryAGet(ds, si + 4);
-    al = memoryAGet(ds, si);
-    if (!(al & 0x20))
-        goto loc_1218d;
-    ah++;
-    if ((char)ah <= (char)0x04)
-        goto loc_1218b;
-    memoryASet(ds, si, memoryAGet(ds, si) & 0xdf);
-    ah = 0x04;
-loc_1218b:
-    goto loc_12199;
-loc_1218d:
-    ah--;
-    if ((char)ah >= (char)0x00)
-        goto loc_12199;
-    memoryASet(ds, si, memoryAGet(ds, si) | 0x20);
-    ah = 0x00;
-loc_12199:
-    memoryASet(ds, si + 4, ah);
-    cx = 0x0000;
-    return;
-loc_121a0:
-    bx = memoryAGet16(ds, 0x1b8f);
-    bx -= memoryAGet16(ds, si + 5);
-    if ((short)bx >= 0)
-        goto loc_121c2;
-    if ((short)bx <= (short)0xffe0)
-        goto loc_121b3;
-    memoryASet(ds, si + 4, 0x02);
-    return;
-loc_121b3:
-    if ((short)ax <= (short)0x0020)
-        goto loc_121bd;
-    memoryASet(ds, si + 4, 0x01);
-    return;
-loc_121bd:
-    memoryASet(ds, si + 4, 0x00);
-    return;
-loc_121c2:
-    if ((short)bx >= (short)0x0020)
-        goto loc_121cc;
-    memoryASet(ds, si + 4, 0x02);
-    return;
-loc_121cc:
-    if ((short)ax <= (short)0x0020)
-        goto loc_121d6;
-    memoryASet(ds, si + 4, 0x03);
-    return;
-loc_121d6:
-    memoryASet(ds, si + 4, 0x04);
-}
-void sub_121dc()
-{
-    ax = 0x403c;
-    push(ax);
-    ax = 0x1e11;
-    push(ax);
-    ax = 0x0038;
-    push(ax);
-    ax = 0x0007;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    sub_12200();
-    sub_1264a();
-    sub_12a7f();
-    sub_122b1();
-}
-void sub_12200()
-{
-    sub_1250b();
-    sub_12553();
-    sub_1259b();
-    sub_1237c();
-}
-void sub_1220d()
-{
-    memoryASet(ds, 0x944c, memoryAGet(ds, 0x944c) + 1);
-    al = memoryAGet(ds, 0x944c);
-    al &= 0x03;
-    if (al)
-        goto loc_12228;
-    ax = 0x0000;
-    push(ax);
-    push(ax);
-    push(ax);
-    al = memoryAGet(ds, 0x94fe);
-    push(ax);
-    sub_1269e();
-    sub_12714();
-loc_12228:
-    ax = memoryAGet16(ds, 0x953c);
-    if (ax == 0x0000)
-        goto loc_12246;
-    if ((short)ax >= (short)0x0000)
-        goto loc_12237;
-    sub_1252f();
-    goto loc_12240;
-loc_12237:
-    cx = ax;
-loc_12239:
-    push(cx);
-    sub_12542();
-    cx = pop();
-    if (--cx)
-        goto loc_12239;
-loc_12240:
-    memoryASet16(ds, 0x953c, 0x0000);
-loc_12246:
-    ax = memoryAGet16(ds, 0x9540);
-    if (ax == 0x0000)
-        goto loc_12264;
-    if ((short)ax >= (short)0x0000)
-        goto loc_12255;
-    sub_12577();
-    goto loc_1225e;
-loc_12255:
-    cx = ax;
-loc_12257:
-    push(cx);
-    sub_1258a();
-    cx = pop();
-    if (--cx)
-        goto loc_12257;
-loc_1225e:
-    memoryASet16(ds, 0x9540, 0x0000);
-loc_12264:
-    ax = memoryAGet16(ds, 0x9544);
-    if (ax == 0x0000)
-        goto loc_1228a;
-    if ((short)ax >= (short)0x0000)
-        goto loc_1227b;
-    ax = -ax;
-    cx = ax;
-loc_12272:
-    push(cx);
-    sub_125bf();
-    cx = pop();
-    if (--cx)
-        goto loc_12272;
-    goto loc_12284;
-loc_1227b:
-    cx = ax;
-loc_1227d:
-    push(cx);
-    sub_125d2();
-    cx = pop();
-    if (--cx)
-        goto loc_1227d;
-loc_12284:
-    memoryASet16(ds, 0x9544, 0x0000);
-loc_1228a:
-    ax = memoryAGet16(ds, 0x9538);
-    if (ax == 0x0000)
-        return;
-    if ((short)ax >= (short)0x0000)
-        goto loc_122a1;
-    ax = -ax;
-    cx = ax;
-loc_12298:
-    push(cx);
-    sub_12464();
-    cx = pop();
-    if (--cx)
-        goto loc_12298;
-    goto loc_122aa;
-loc_122a1:
-    cx = ax;
-loc_122a3:
-    push(cx);
-    sub_1239b();
-    cx = pop();
-    if (--cx)
-        goto loc_122a3;
-loc_122aa:
-    memoryASet16(ds, 0x9538, 0x0000);
-}
-void sub_122b1()
-{
-    memoryASet16(ds, 0x9534, 0x0003);
-    sub_122e1();
-    sub_122f9();
-    sub_12311();
-}
-void sub_122c1()
-{
-    memoryASet16(ds, 0x9534, memoryAGet16(ds, 0x9534) + 1);
-    ax = memoryAGet16(ds, 0x9534);
-    if (ax <= 0x0003)
-        goto loc_122d4;
-    memoryASet16(ds, 0x9534, 0x0003);
-    return;
-loc_122d4:
-    if (ax == 0x0003)
-        goto loc_12311;
-    if (ax == 0x0002)
-        goto loc_122f9;
-    if (ax == 0x0001)
-        goto loc_122e1;
-    return;
-loc_122e1:
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b90;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_122f9:
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b93;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12311:
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b96;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_122e1()
-{
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b90;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_122f9()
-{
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b93;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12311()
-{
-    ax = 0x43e6;
-    push(ax);
-    ax = 0x1b96;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12329()
-{
-    memoryASet16(ds, 0x9534, memoryAGet16(ds, 0x9534) - 1);
-    ax = memoryAGet16(ds, 0x9534);
-    if (ax == 0x0002)
-        goto loc_12368;
-    if (ax == 0x0001)
-        goto loc_12354;
-    if (ax == 0x0000)
-        goto loc_12340;
-    return;
-loc_12340:
-    ax = 0x1b90;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_12354:
-    ax = 0x1b93;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_12368:
-    ax = 0x1b96;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-}
-void sub_1237c()
-{
-    memoryASet16(ds, 0x9536, 0x0006);
-    memoryASet16(ds, 0x9538, 0x0000);
-    sub_123d4();
-    sub_123ec();
-    sub_12404();
-    sub_1241c();
-    sub_12434();
-    sub_1244c();
-}
-void sub_1239b()
-{
-    memoryASet16(ds, 0x9536, memoryAGet16(ds, 0x9536) + 1);
-    ax = memoryAGet16(ds, 0x9536);
-    if (ax <= 0x0006)
-        goto loc_123ae;
-    memoryASet16(ds, 0x9536, 0x0006);
-    return;
-loc_123ae:
-    push(ax);
-    al = 0x08;
-    sub_13840();
-    ax = pop();
-    if (ax == 0x0001)
-        goto loc_123d4;
-    if (ax == 0x0002)
-        goto loc_123ec;
-    if (ax == 0x0003)
-        goto loc_12404;
-    if (ax == 0x0004)
-        goto loc_1241c;
-    if (ax == 0x0005)
-        goto loc_12434;
-    if (ax == 0x0006)
-        goto loc_1244c;
-    return;
-loc_123d4:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b99;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_123ec:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9b;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12404:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9d;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_1241c:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9f;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12434:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1ba1;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    return;
-loc_1244c:
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1ba3;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_123d4()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b99;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_123ec()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9b;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12404()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9d;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_1241c()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1b9f;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12434()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1ba1;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_1244c()
-{
-    ax = 0x43ee;
-    push(ax);
-    ax = 0x1ba3;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12464()
-{
-    ax = memoryAGet16(ds, 0x9536);
-    memoryASet16(ds, 0x9536, memoryAGet16(ds, 0x9536) - 1);
-    if ((short)memoryAGet16(ds, 0x9536) >= 0)
-        goto loc_12474;
-    memoryASet16(ds, 0x9536, 0x0000);
-    return;
-loc_12474:
-    if (ax == 0x0001)
-        goto loc_12493;
-    if (ax == 0x0002)
-        goto loc_124a7;
-    if (ax == 0x0003)
-        goto loc_124bb;
-    if (ax == 0x0004)
-        goto loc_124cf;
-    if (ax == 0x0005)
-        goto loc_124e3;
-    if (ax == 0x0006)
-        goto loc_124f7;
-    return;
-loc_12493:
-    ax = 0x1b99;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_124a7:
-    ax = 0x1b9b;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_124bb:
-    ax = 0x1b9d;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_124cf:
-    ax = 0x1b9f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_124e3:
-    ax = 0x1ba1;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-    return;
-loc_124f7:
-    ax = 0x1ba3;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_12d9a();
-}
-void sub_1250b()
-{
-    memoryASet16(ds, 0x953a, 0x002c);
-    memoryASet16(ds, 0x953c, 0x0000);
-    ax = 0x48f6;
-    push(ax);
-    ax = 0x1b88;
-    push(ax);
-    ax = 0x002c;
-    push(ax);
-    ax = 0x0007;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_1252f()
-{
-    ax = memoryAGet16(ds, 0x953a);
-    ax--;
-    if ((short)ax >= 0)
-        goto loc_12536;
-    return;
-loc_12536:
-    memoryASet16(ds, 0x953a, ax);
-    push(ax);
-    ax = 0x1b88;
-    push(ax);
-    sub_125e3();
-}
-void sub_12536()
-{
-    memoryASet16(ds, 0x953a, ax);
-    push(ax);
-    ax = 0x1b88;
-    push(ax);
-    sub_125e3();
-}
-void sub_12542()
-{
-    ax = memoryAGet16(ds, 0x953a);
-    if (ax < 0x002c)
-        goto loc_1254b;
-    return;
-loc_1254b:
-    sub_12536();
-    memoryASet16(ds, 0x953a, memoryAGet16(ds, 0x953a) + 1);
-}
-void sub_12553()
-{
-    memoryASet16(ds, 0x953e, 0x0030);
-    memoryASet16(ds, 0x9540, 0x0000);
-    ax = 0x2ce6;
-    push(ax);
-    ax = 0x1cc8;
-    push(ax);
-    ax = 0x0030;
-    push(ax);
-    ax = 0x0007;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_12577()
-{
-    ax = memoryAGet16(ds, 0x953e);
-    ax--;
-    if ((short)ax >= 0)
-        goto loc_1257e;
-    return;
-loc_1257e:
-    memoryASet16(ds, 0x953e, ax);
-    push(ax);
-    ax = 0x1cc8;
-    push(ax);
-    sub_125e3();
-}
-void sub_1257e()
-{
-    memoryASet16(ds, 0x953e, ax);
-    push(ax);
-    ax = 0x1cc8;
-    push(ax);
-    sub_125e3();
-}
-void sub_1258a()
-{
-    ax = memoryAGet16(ds, 0x953e);
-    if (ax < 0x0030)
-        goto loc_12593;
-    return;
-loc_12593:
-    sub_1257e();
-    memoryASet16(ds, 0x953e, memoryAGet16(ds, 0x953e) + 1);
-}
-void sub_1259b()
-{
-    memoryASet16(ds, 0x9542, 0x0038);
-    memoryASet16(ds, 0x9544, 0x0000);
-    ax = 0x4496;
-    push(ax);
-    ax = 0x1e08;
-    push(ax);
-    ax = 0x0038;
-    push(ax);
-    ax = 0x0007;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-}
-void sub_125bf()
-{
-    ax = memoryAGet16(ds, 0x9542);
-    ax--;
-    if ((short)ax >= 0)
-        goto loc_125c6;
-    return;
-loc_125c6:
-    memoryASet16(ds, 0x9542, ax);
-    push(ax);
-    ax = 0x1e08;
-    push(ax);
-    sub_125e3();
-}
-void sub_125c6()
-{
-    memoryASet16(ds, 0x9542, ax);
-    push(ax);
-    ax = 0x1e08;
-    push(ax);
-    sub_125e3();
-}
-void sub_125d2()
-{
-    ax = memoryAGet16(ds, 0x9542);
-    if (ax < 0x0038)
-        goto loc_125db;
-    return;
-loc_125db:
-    sub_125c6();
-    memoryASet16(ds, 0x9542, memoryAGet16(ds, 0x9542) + 1);
-}
-void sub_125e3()
-{
-    push(bp);
-    bp = sp;
-    ax = 0xa000;
-    es = ax;
-    ax = memoryAGet16(ss, bp + 6 - 2);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    di = ax;
-    dx = 0x03ce;
-    ax = 0x0805;
-    out16(dx, ax);
-    cx = memoryAGet16(ss, bp + 6 - 2);
-    cx &= 0x0007;
-    ah = 0x80;
-    ah >>= cl;
-    al = 0x08;
-    out16(dx, ax);
-    bl = ah;
-    ax = 0x1803;
-    out16(dx, ax);
-    ax = 0x0f01;
-    out16(dx, ax);
-    ax = 0x0700;
-    out16(dx, ax);
-    cx = 0x0007;
-loc_1261e:
-    al = memoryAGet(es, di);
-    if (bl & al)
-        goto loc_1262d;
-    memoryASet(es, di, bl);
-    memoryASet(es, di + 8192, bl);
-loc_1262d:
-    di += 0x0028;
-    if (--cx)
-        goto loc_1261e;
-    ax = 0x0005;
-    out16(dx, ax);
-    ax = 0xff08;
-    out16(dx, ax);
-    ax = 0x0003;
-    out16(dx, ax);
-    ax = 0x0001;
-    out16(dx, ax);
-    ax = 0x0000;
-    out16(dx, ax);
-    bp = pop();
-    sp += 4;
-}
-void sub_1264a()
-{
-    al = 0x00;
-    memoryASet(ds, 0x94a9, al);
-    memoryASet(ds, 0x94aa, al);
-    memoryASet(ds, 0x94ab, al);
-    memoryASet(ds, 0x94ac, al);
-    memoryASet(ds, 0x94ad, al);
-    memoryASet(ds, 0x94ae, al);
-    sub_12714();
-}
-void sub_12662()
-{
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0001;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_1269e();
-}
-void sub_12676()
-{
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0001;
-    push(ax);
-    ax = 0x0005;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_1269e();
-}
-void sub_1268a()
-{
-    ax = 0x0002;
-    push(ax);
-    ax = 0x0005;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_1269e();
-}
-void sub_1269e()
-{
-    push(bp);
-    bp = sp;
-    al = memoryAGet(ds, 0x94ae);
-    al += memoryAGet(ss, bp + 4 - 2);
-    if (al <= 0x09)
-        goto loc_126b1;
-    al -= 0x0a;
-    memoryASet(ds, 0x94ad, memoryAGet(ds, 0x94ad) + 1);
-loc_126b1:
-    memoryASet(ds, 0x94ae, al);
-    al = memoryAGet(ds, 0x94ad);
-    al += memoryAGet(ss, bp + 6 - 2);
-    if (al <= 0x09)
-        goto loc_126c4;
-    al -= 0x0a;
-    memoryASet(ds, 0x94ac, memoryAGet(ds, 0x94ac) + 1);
-loc_126c4:
-    memoryASet(ds, 0x94ad, al);
-    al = memoryAGet(ds, 0x94ac);
-    al += memoryAGet(ss, bp + 8 - 2);
-    if (al <= 0x09)
-        goto loc_126d7;
-    al -= 0x0a;
-    memoryASet(ds, 0x94ab, memoryAGet(ds, 0x94ab) + 1);
-loc_126d7:
-    memoryASet(ds, 0x94ac, al);
-    al = memoryAGet(ds, 0x94ab);
-    al += memoryAGet(ss, bp + 10 - 2);
-    if (al <= 0x09)
-        goto loc_126ea;
-    al -= 0x0a;
-    memoryASet(ds, 0x94aa, memoryAGet(ds, 0x94aa) + 1);
-loc_126ea:
-    memoryASet(ds, 0x94ab, al);
-    al = memoryAGet(ds, 0x94aa);
-    if (al <= 0x09)
-        goto loc_12701;
-    al -= 0x0a;
-    memoryASet(ds, 0x94a9, memoryAGet(ds, 0x94a9) + 1);
-    push(ax);
-    push(si);
-    sub_122c1();
-    si = pop();
-    ax = pop();
-loc_12701:
-    memoryASet(ds, 0x94aa, al);
-    al = memoryAGet(ds, 0x94a9);
-    if (al <= 0x09)
-        goto loc_1270d;
-    al -= 0x0a;
-loc_1270d:
-    memoryASet(ds, 0x94a9, al);
-    bp = pop();
-    sp += 8;
-}
-void sub_12714()
-{
-    memoryASet(ds, 0x944d, 0x01);
-    si = 0x94a9;
-    cx = 0x0006;
-    dx = 0x0000;
-loc_12722:
-    push(cx);
-    al = lodsb<DS_SI>();
-    if (al == 0x00)
-        goto loc_1272d;
-    memoryASet(ds, 0x944d, 0x00);
-loc_1272d:
-    cl = memoryAGet(ds, 0x944d);
-    if (cl != 0x00)
-        goto loc_1275e;
-    push(dx);
-    push(si);
-    bh = 0x00;
-    bl = al;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5471);
-    push(ax);
-    bx = dx;
-    ax = memoryAGet16(ds, bx + 5491);
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0009;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    si = pop();
-    dx = pop();
-    dx += 0x0002;
-loc_1275e:
-    cx = pop();
-    if (--cx)
-        goto loc_12722;
-}
-void sub_12762()
-{
-    cx = 0x0012;
-    ax = ds;
-    es = ax;
-    di = 0x94af;
-    flags.direction = 0;
-    ax = 0x0000;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    cx = 0x002a;
-    di = 0x9455;
-    al = 0x2e;
-    ah = 0x2e;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    memoryASet(ds, 0x9455, 0x5f);
-    al = 0x00;
-    cx = 0x0007;
-    si = 0x94da;
-loc_1278b:
-    memoryASet(ds, si, al);
-    al++;
-    si++;
-    if (--cx)
-        goto loc_1278b;
-    di = 0x9455;
-    dx = 0x1506;
-    cx = 0x008c;
-    sub_10644();
-}
-void sub_1279f()
-{
-    sub_12809();
-    al = memoryAGet(ds, 0x94e0);
-    if (al != 0x00)
-        goto loc_127af;
-    memoryASet(ds, 0x9546, 0x00);
-    return;
-loc_127af:
-    memoryASet(ds, 0x9546, 0x01);
-    bl = al;
-    bl <<= 1;
-    bl += al;
-    bh = 0x00;
-    bx <<= 1;
-    push(bx);
-    bx += 0x94a9;
-    si = 0x94a9;
-    cx = 0x0006;
-loc_127c9:
-    al = lodsb<DS_SI>();
-    memoryASet(ds, bx, al);
-    bx++;
-    if (--cx)
-        goto loc_127c9;
-    bx = pop();
-    bx <<= 1;
-    bx += 0x9455;
-    memoryASet16(ds, 0x9451, bx);
-    si = 0x9455;
-    cx = 0x000c;
-loc_127e0:
-    al = lodsb<DS_SI>();
-    memoryASet(ds, bx, al);
-    bx++;
-    if (--cx)
-        goto loc_127e0;
-    si = 0x94da;
-loc_127e9:
-    al = memoryAGet(ds, si);
-    if (al == 0x00)
-        goto loc_127f2;
-    si++;
-    goto loc_127e9;
-loc_127f2:
-    al = memoryAGet(ds, 0x94e0);
-    memoryASet(ds, si, al);
-    memoryASet(ds, 0x94e0, 0x00);
-    si -= 0x94da;
-    ax = si;
-    memoryASet(ds, 0x9450, al);
-    sub_128da();
-}
-void sub_12809()
-{
-    al = memoryAGet(ds, 0x94da);
-    memoryASet(ds, 0x94d3, al);
-    al = memoryAGet(ds, 0x94db);
-    memoryASet(ds, 0x94d4, al);
-    al = memoryAGet(ds, 0x94dc);
-    memoryASet(ds, 0x94d5, al);
-    al = memoryAGet(ds, 0x94dd);
-    memoryASet(ds, 0x94d6, al);
-    al = memoryAGet(ds, 0x94de);
-    memoryASet(ds, 0x94d7, al);
-    al = memoryAGet(ds, 0x94df);
-    memoryASet(ds, 0x94d8, al);
-    al = memoryAGet(ds, 0x94e0);
-    memoryASet(ds, 0x94d9, al);
-    si = 0x94d3;
-    di = 0x94da;
-    cx = 0x0007;
-loc_1283c:
-    push(cx);
-    push(si);
-loc_1283e:
-    al = memoryAGet(ds, si);
-    if (al != 0xff)
-        goto loc_12847;
-    si++;
-    goto loc_1283e;
-loc_12847:
-    if (si == 0x94d9)
-        goto loc_12865;
-    bx = si;
-loc_1284f:
-    bx++;
-    al = memoryAGet(ds, bx);
-    if (al == 0xff)
-        goto loc_1285f;
-    sub_12872();
-    if (al == 0x00)
-        goto loc_1285f;
-    si = bx;
-loc_1285f:
-    if (bx != 0x94d9)
-        goto loc_1284f;
-loc_12865:
-    al = memoryAGet(ds, si);
-    memoryASet(ds, si, 0xff);
-    memoryASet(ds, di, al);
-    di++;
-    si = pop();
-    cx = pop();
-    if (--cx)
-        goto loc_1283c;
-}
-void sub_12872()
-{
-    push(si);
-    push(di);
-    al = memoryAGet(ds, si);
-    ah = al;
-    al <<= 1;
-    al += ah;
-    al <<= 1;
-    ah = 0x00;
-    ax += 0x94a9;
-    si = ax;
-    al = memoryAGet(ds, bx);
-    ah = al;
-    al <<= 1;
-    al += ah;
-    al <<= 1;
-    ah = 0x00;
-    ax += 0x94a9;
-    di = ax;
-    al = memoryAGet(ds, di);
-    if (al > memoryAGet(ds, si))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si))
-        goto loc_128d0;
-    al = memoryAGet(ds, di + 1);
-    if (al > memoryAGet(ds, si + 1))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si + 1))
-        goto loc_128d0;
-    al = memoryAGet(ds, di + 2);
-    if (al > memoryAGet(ds, si + 2))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si + 2))
-        goto loc_128d0;
-    al = memoryAGet(ds, di + 3);
-    if (al > memoryAGet(ds, si + 3))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si + 3))
-        goto loc_128d0;
-    al = memoryAGet(ds, di + 4);
-    if (al > memoryAGet(ds, si + 4))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si + 4))
-        goto loc_128d0;
-    al = memoryAGet(ds, di + 5);
-    if (al > memoryAGet(ds, si + 5))
-        goto loc_128d5;
-    if (al < memoryAGet(ds, si + 5))
-        goto loc_128d0;
-loc_128d0:
-    al = 0x00;
-    di = pop();
-    si = pop();
-    return;
-loc_128d5:
-    al = 0x01;
-    di = pop();
-    si = pop();
-}
-void sub_128da()
-{
-    si = 0x94da;
-    di = 0x01b1;
-    cx = 0x0006;
-loc_128e3:
-    push(cx);
-    di += 0x0002;
-    ax = memoryAGet16(ds, di);
-    di += 0x0002;
-    push(si);
-    push(di);
-    sub_12959();
-    di = pop();
-    si = pop();
-    di += 0x0002;
-    ax = memoryAGet16(ds, di);
-    di += 0x0002;
-    push(si);
-    push(di);
-    sub_12907();
-    di = pop();
-    si = pop();
-    si++;
-    cx = pop();
-    if (--cx)
-        goto loc_128e3;
-}
-void sub_12907()
-{
-    memoryASet16(ds, 0x944e, ax);
-    al = memoryAGet(ds, si);
-    ah = al;
-    al <<= 1;
-    al += ah;
-    ah = 0x00;
-    ax <<= 1;
-    ax += 0x94a9;
-    si = ax;
-    memoryASet(ds, 0x944d, 0x01);
-    cx = 0x0006;
-    dx = 0x0000;
-loc_12926:
-    push(cx);
-    al = lodsb<DS_SI>();
-    if (al == 0x00)
-        goto loc_12931;
-    memoryASet(ds, 0x944d, 0x00);
-loc_12931:
-    cl = memoryAGet(ds, 0x944d);
-    if (cl == 0x00)
-        goto loc_1293f;
-    ax = 0x6f6c;
-    goto loc_12949;
-loc_1293f:
-    bh = 0x00;
-    bl = al;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5503);
-loc_12949:
-    push(dx);
-    push(si);
-    push(ax);
-    push(dx);
-    sub_129ae();
-    si = pop();
-    dx = pop();
-    dx += 0x0006;
-    cx = pop();
-    if (--cx)
-        goto loc_12926;
-}
-void sub_12959()
-{
-    memoryASet16(ds, 0x944e, ax);
-    al = memoryAGet(ds, si);
-    ah = al;
-    al <<= 1;
-    al += ah;
-    ah = 0x00;
-    ax <<= 1;
-    ax <<= 1;
-    ax += 0x9455;
-    si = ax;
-    cx = 0x000c;
-    dx = 0x0000;
-loc_12975:
-    push(cx);
-    al = lodsb<DS_SI>();
-    push(si);
-    push(dx);
-    if (al != 0x20)
-        goto loc_12982;
-    ax = 0x6546;
-    goto loc_129a0;
-loc_12982:
-    if (al != 0x2e)
-        goto loc_1298b;
-    ax = 0x6f6c;
-    goto loc_129a0;
-loc_1298b:
-    if (al != 0x5f)
-        goto loc_12994;
-    ax = 0x764c;
-    goto loc_129a0;
-loc_12994:
-    al -= 0x41;
-    ah = al;
-    al <<= 1;
-    al += ah;
-    al <<= 1;
-    ah = 0x00;
-loc_129a0:
-    push(ax);
-    push(dx);
-    sub_129ae();
-    dx = pop();
-    dx += 0x0006;
-    si = pop();
-    cx = pop();
-    if (--cx)
-        goto loc_12975;
-}
-void sub_1296f()
-{
-    cx = 0x000c;
-    dx = 0x0000;
-loc_12975:
-    push(cx);
-    al = lodsb<DS_SI>();
-    push(si);
-    push(dx);
-    if (al != 0x20)
-        goto loc_12982;
-    ax = 0x6546;
-    goto loc_129a0;
-loc_12982:
-    if (al != 0x2e)
-        goto loc_1298b;
-    ax = 0x6f6c;
-    goto loc_129a0;
-loc_1298b:
-    if (al != 0x5f)
-        goto loc_12994;
-    ax = 0x764c;
-    goto loc_129a0;
-loc_12994:
-    al -= 0x41;
-    ah = al;
-    al <<= 1;
-    al += ah;
-    al <<= 1;
-    ah = 0x00;
-loc_129a0:
-    push(ax);
-    push(dx);
-    sub_129ae();
-    dx = pop();
-    dx += 0x0006;
-    si = pop();
-    cx = pop();
-    if (--cx)
-        goto loc_12975;
-}
-void sub_129ae()
-{
-    push(bp);
-    bp = sp;
-    ax = memoryAGet16(ds, 0x94f0);
-    es = ax;
-    di = memoryAGet16(ds, 0x944e);
-    di += memoryAGet16(ss, bp + 4 - 2);
-    ax = memoryAGet16(ds, 0x94ea);
-    push(ds);
-    ds = ax;
-    si = memoryAGet16(ss, bp + 6 - 2);
-    cx = 0x000b;
-loc_129c9:
-    movsw<ES_DI, DS_SI>();
-    movsw<ES_DI, DS_SI>();
-    movsw<ES_DI, DS_SI>();
-    di += 0x009a;
-    si += 0x009a;
-    if (--cx)
-        goto loc_129c9;
-    ds = pop();
-    bp = pop();
-    sp += 4;
-}
-void sub_129db()
-{
-    memoryASet16(ds, 0x9453, 0x0000);
-loc_129e1:
-    ax = memoryAGet16(ds, 0x9453);
-    if (ax >= 0x000c)
-        goto loc_12a39;
-    sub_10541();
-    if (al == 0x00)
-        goto loc_12a39;
-    if (al != 0x08)
-        goto loc_12a0d;
-    bx = memoryAGet16(ds, 0x9451);
-    bx += memoryAGet16(ds, 0x9453);
-    memoryASet(ds, bx, 0x2e);
-    memoryASet16(ds, 0x9453, memoryAGet16(ds, 0x9453) - 1);
-    if ((short)memoryAGet16(ds, 0x9453) >= 0)
-        goto loc_12a0b;
-    memoryASet16(ds, 0x9453, 0x0000);
-loc_12a0b:
-    goto loc_12a1b;
-loc_12a0d:
-    bx = memoryAGet16(ds, 0x9451);
-    bx += memoryAGet16(ds, 0x9453);
-    memoryASet(ds, bx, al);
-    memoryASet16(ds, 0x9453, memoryAGet16(ds, 0x9453) + 1);
-loc_12a1b:
-    bx = memoryAGet16(ds, 0x9453);
-    if (bx >= 0x000c)
-        goto loc_12a2b;
-    bx += memoryAGet16(ds, 0x9451);
-    memoryASet(ds, bx, 0x5f);
-loc_12a2b:
-    sub_12a64();
-    sub_13498();
-    sub_10b8e();
-    sub_13383();
-    goto loc_129e1;
-loc_12a39:
-    bx = memoryAGet16(ds, 0x9453);
-    if (bx >= 0x000c)
-        goto loc_12a52;
-    bx += memoryAGet16(ds, 0x9451);
-    al = memoryAGet(ds, bx);
-    if (al != 0x5f)
-        goto loc_12a52;
-    memoryASet(ds, bx, 0x2e);
-    sub_12a64();
-loc_12a52:
-    di = 0x9455;
-    dx = 0x1506;
-    cx = 0x008c;
-    sub_10674();
-    memoryASet(ds, 0x9546, 0x00);
-}
-void sub_12a64()
-{
-    si = memoryAGet16(ds, 0x9451);
-    bl = memoryAGet(ds, 0x9450);
-    bh = 0x00;
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 435);
-    memoryASet16(ds, 0x944e, ax);
-    sub_1296f();
-}
-void sub_12a7f()
-{
-    memoryASet(ds, 0x952e, 0x00);
-    memoryASet(ds, 0x952f, 0x00);
-    memoryASet(ds, 0x9530, 0x00);
-    memoryASet(ds, 0x9531, 0x00);
-    memoryASet(ds, 0x9532, 0x00);
-    memoryASet(ds, 0x9533, 0x00);
-    ax = 0x1178;
-    push(ax);
-    ax = 0x1b82;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    ax = 0x1678;
-    push(ax);
-    ax = 0x1cc2;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    ax = 0x1b78;
-    push(ax);
-    ax = 0x1e02;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    ax = 0x2078;
-    push(ax);
-    ax = 0x1b85;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    ax = 0x2578;
-    push(ax);
-    ax = 0x1cc5;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    ax = 0x2a78;
-    push(ax);
-    ax = 0x1e05;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-}
-void sub_12b28()
-{
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0001;
-    push(ax);
-    ax = 0x0005;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_1269e();
-    ax = pop();
-    if (al == 0x00)
-        goto loc_12b59;
-    if (al == 0x01)
-        goto loc_12b76;
-    if (al == 0x02)
-        goto loc_12b93;
-    if (al == 0x03)
-        goto loc_12bb0;
-    if (al == 0x04)
-        goto loc_12bcd;
-    if (al != 0x05)
-        return;
-    goto loc_12bea;
-loc_12b58:
-    return;
-loc_12b59:
-    memoryASet(ds, 0x952e, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1b82;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12b76:
-    memoryASet(ds, 0x952f, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1cc2;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12b93:
-    memoryASet(ds, 0x9530, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1e02;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12bb0:
-    memoryASet(ds, 0x9531, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1b85;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12bcd:
-    memoryASet(ds, 0x9532, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1cc5;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-    return;
-loc_12bea:
-    memoryASet(ds, 0x9533, 0x01);
-    ax = 0x2f78;
-    push(ax);
-    ax = 0x1e05;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0008;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-}
-void sub_12c07()
-{
-    ax = 0x0a0b;
-    push(ax);
-    ax = 0x0013;
-    push(ax);
-    ax = 0x0030;
-    push(ax);
-    ax = 0x0005;
-    push(ax);
-    sub_12d9a();
-    ax = 0x0aac;
-    push(ax);
-    ax = 0x0011;
-    push(ax);
-    ax = 0x0028;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12d9a();
-    ax = 0x5a5c;
-    push(ax);
-    ax = 0x0b4d;
-    push(ax);
-    ax = 0x0078;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-}
-void sub_12c45()
-{
-    ax = 0x0aac;
-    push(ax);
-    ax = 0x0010;
-    push(ax);
-    ax = 0x0028;
-    push(ax);
-    ax = 0x0005;
-    push(ax);
-    sub_12d9a();
-    ax = 0x0b4d;
-    push(ax);
-    ax = 0x000e;
-    push(ax);
-    ax = 0x0020;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12d9a();
-    ax = 0x7592;
-    push(ax);
-    ax = 0x0c8f;
-    push(ax);
-    ax = 0x0028;
-    push(ax);
-    ax = 0x000c;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12cea();
-    ax = 0x1ab8;
-    push(ax);
-    ax = 0x0ce4;
-    push(ax);
-    ax = 0x0020;
-    push(ax);
-    ax = 0x000d;
-    push(ax);
-    ax = 0x0004;
-    push(ax);
-    sub_12cea();
-}
-void sub_12c9a()
-{
-    push(ax);
-    ax = 0x0dcc;
-    push(ax);
-    ax = 0x0011;
-    push(ax);
-    ax = 0x000f;
-    push(ax);
-    ax = 0x0002;
-    push(ax);
-    sub_12d9a();
-    ax = pop();
-    if (al != 0x06)
-        goto loc_12cbc;
-    al = 0x00;
-    sub_12cc7();
-    al = 0x06;
-    goto loc_12cc7;
-loc_12cbc:
-    if (al != 0x07)
-        goto loc_12cc7;
-    al = 0x01;
-    sub_12cc7();
-    al = 0x07;
-loc_12cc7:
-    bl = al;
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5407);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5423);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5439);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5455);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5391);
-    push(ax);
-    sub_12cea();
-}
-void sub_12cc7()
-{
-    bl = al;
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 5407);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5423);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5439);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5455);
-    push(ax);
-    ax = memoryAGet16(ds, bx + 5391);
-    push(ax);
-    sub_12cea();
-}
-void sub_12cea()
-{
-    push(bp);
-    bp = sp;
-    ax = 0xa000;
-    es = ax;
-    di = memoryAGet16(ss, bp + 10 - 2);
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    bx = memoryAGet16(ds, bx + 38120);
-    si = memoryAGet16(ss, bp + 12 - 2);
-    push(ds);
-    push(bx);
-    dx = 0x03ce;
-    ax = 0x0a05;
-    out16(dx, ax);
-    ax = 0x0007;
-    out16(dx, ax);
-    cx = memoryAGet16(ss, bp + 8 - 2);
-    cx >>= 1;
-    ah = 0x80;
-    al = 0x08;
-    ds = pop();
-    bx = memoryAGet16(ss, bp + 6 - 2);
-loc_12d19:
-    push(ax);
-    push(bx);
-    push(cx);
-    push(di);
-    push(si);
-loc_12d1e:
-    bh = 0x22;
-loc_12d20:
-    bl = memoryAGet(ds, si);
-    si++;
-    if (bh != bl)
-        goto loc_12d3d;
-    ah >>= 1;
-    if (ah)
-        goto loc_12d32;
-    ah = 0x40;
-    di++;
-    if (--cx)
-        goto loc_12d20;
-    goto loc_12d76;
-loc_12d32:
-    ah >>= 1;
-    if (ah)
-        goto loc_12d39;
-    ah = 0x80;
-    di++;
-loc_12d39:
-    if (--cx)
-        goto loc_12d20;
-    goto loc_12d76;
-loc_12d3d:
-    bh = bl;
-    bl >>= 1;
-    bl >>= 1;
-    bl >>= 1;
-    bl >>= 1;
-    if (bl == 0x02)
-        goto loc_12d55;
-    out16(dx, ax);
-    memoryASet(es, di, memoryAGet(es, di) & bl);
-    memoryASet(es, di + 8192, memoryAGet(es, di + 8192) & bl);
-loc_12d55:
-    ah >>= 1;
-    if (ah)
-        goto loc_12d5c;
-    ah = 0x80;
-    di++;
-loc_12d5c:
-    bh &= 0x0f;
-    if (bh == 0x02)
-        goto loc_12d6d;
-    out16(dx, ax);
-    memoryASet(es, di, memoryAGet(es, di) & bh);
-    memoryASet(es, di + 8192, memoryAGet(es, di + 8192) & bh);
-loc_12d6d:
-    ah >>= 1;
-    if (ah)
-        goto loc_12d74;
-    ah = 0x80;
-    di++;
-loc_12d74:
-    if (--cx)
-        goto loc_12d1e;
-loc_12d76:
-    si = pop();
-    si += 0x00a0;
-    di = pop();
-    di += 0x0028;
-    di &= 0x7fff;
-    cx = pop();
-    bx = pop();
-    ax = pop();
-    bx--;
-    if (bx)
-        goto loc_12d19;
-    ds = pop();
-    ax = 0xff08;
-    out16(dx, ax);
-    ax = 0x0005;
-    out16(dx, ax);
-    ax = 0x0f07;
-    out16(dx, ax);
-    bp = pop();
-    sp += 10;
-}
-void sub_12d9a()
-{
-    push(bp);
-    bp = sp;
-    ax = 0xa000;
-    es = ax;
-    di = memoryAGet16(ss, bp + 10 - 2);
-    dx = 0x03ce;
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    ah = al;
-    al = 0x00;
-    out16(dx, ax);
-    ax = 0x0f01;
-    out16(dx, ax);
-    flags.direction = 0;
-    bx = memoryAGet16(ss, bp + 6 - 2);
-loc_12db8:
-    push(di);
-    cx = memoryAGet16(ss, bp + 8 - 2);
-    for (; cx != 0; --cx) stosb<ES_DI>(al);
-    di = pop();
-    push(di);
-    di += 0x2000;
-    cx = memoryAGet16(ss, bp + 8 - 2);
-    for (; cx != 0; --cx) stosb<ES_DI>(al);
-    di = pop();
-    di += 0x0028;
-    bx--;
-    if (bx)
-        goto loc_12db8;
-    ax = 0x0000;
-    out16(dx, ax);
-    al++;
-    out16(dx, ax);
-    bp = pop();
-    sp += 8;
-}
-void sub_12ddc()
-{
-    bl = memoryAGet(ds, 0x94e4);
-    bx &= 0x0003;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 6698);
-    memoryASet16(ds, 0x94e2, ax);
-    memoryASet(ds, 0x94e4, memoryAGet(ds, 0x94e4) + 1);
-    memoryASet(ds, 0x9527, 0xff);
-}
-void sub_12df6()
-{
-    al = 0x00;
-    memoryASet(ds, 0x94e5, al);
-    memoryASet(ds, 0x94e6, al);
-    memoryASet(ds, 0x94e7, al);
-}
-void sub_12e02()
-{
-    push(si);
-    sub_11b80();
-    sub_1309d();
-    si = pop();
-    ax = memoryAGet16(ds, 0x952a);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    bx = memoryAGet16(ds, 0x954c);
-    if (!(bl & 0x01))
-        goto loc_12e23;
-    ax = -ax;
-    ax -= 0x0003;
-    goto loc_12e30;
-loc_12e23:
-    if (!(bl & 0x02))
-        goto loc_12e2d;
-    ax += 0x0003;
-    goto loc_12e30;
-loc_12e2d:
-    ax = 0x0000;
-loc_12e30:
-    memoryASet16(ds, 0x9522, ax);
-    al = memoryAGet(ds, si + 22);
-    ax &= 0x007f;
-    if (al <= 0x3f)
-        goto loc_12e48;
-    al = -al;
-    al += 0x7f;
-    sub_13084();
-    ax = -ax;
-    goto loc_12e4b;
-loc_12e48:
-    sub_13084();
-loc_12e4b:
-    memoryASet16(ds, 0x9520, ax);
-    ax = memoryAGet16(ds, 0x951e);
-    ax += memoryAGet16(ds, 0x9522);
-    ax += memoryAGet16(ds, 0x9520);
-    if (!ax)
-        goto loc_12e6a;
-    if ((short)ax >= 0)
-        goto loc_12e63;
-    ax++;
-    if ((short)ax >= 0)
-        goto loc_12e61;
-    ax++;
-loc_12e61:
-    goto loc_12e6a;
-loc_12e63:
-    ax--;
-    if ((short)ax <= (short)0x0000)
-        goto loc_12e6a;
-    ax--;
-loc_12e6a:
-    if ((short)ax <= (short)0x0040)
-        goto loc_12e74;
-    ax = 0x0040;
-    goto loc_12e7c;
-loc_12e74:
-    if ((short)ax >= (short)0xffc0)
-        goto loc_12e7c;
-    ax = 0xffc0;
-loc_12e7c:
-    memoryASet16(ds, 0x951e, ax);
-    ax = sar16(ax, 0x0001);
-    ax = sar16(ax, 0x0001);
-    memoryASet(ds, si + 22, memoryAGet(ds, si + 22) + al);
-    al = memoryAGet(ds, si + 22);
-    ax &= 0x007f;
-    bx = ax;
-    al = memoryAGet(ds, bx + 5749);
-    true ? cbw() : cwde();
-    ax <<= 1;
-    ax += 0x0080;
-    memoryASet16(ds, si + 5, ax);
-    al = memoryAGet(ds, bx + 5877);
-    true ? cbw() : cwde();
-    ax <<= 1;
-    ax += 0x0080;
-    push(bx);
-    if (ax == 0x0000)
-        goto loc_12ebe;
-    bx = ax;
-    ax <<= 1;
-    ax <<= 1;
-    ax += bx;
-    ax <<= 1;
-    ax += 0x0005;
-    bl = 0x0c;
-    div8(bl);
-    ah = 0x00;
-loc_12ebe:
-    bx = pop();
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, bx + 6005);
-    memoryASet(ds, si + 4, al);
-    bx = 0x1594;
-    sub_12121();
-    al = memoryAGet(ds, 0x94e6);
-    memoryASet(ds, 0x94e7, al);
-    al = memoryAGet(ds, 0x94e5);
-    memoryASet(ds, 0x94e6, al);
-    al = memoryAGet(ds, 0x1ba0);
-    memoryASet(ds, 0x94e5, al);
-    ax = memoryAGet16(ds, 0x954c);
-    bl = memoryAGet(ds, 0x951a);
-    if (!(al & 0x40))
-        goto loc_12f02;
-    if (bl != 0x02)
-        goto loc_12f00;
-    memoryASet(ds, 0x951a, 0x03);
-    al = 0x02;
-    sub_13840();
-    memoryASet(ds, 0x951c, 0x02);
-loc_12f00:
-    goto loc_12f18;
-loc_12f02:
-    if (bl != 0x01)
-        goto loc_12f0e;
-    memoryASet(ds, 0x951a, 0x02);
-    goto loc_12f18;
-loc_12f0e:
-    if (bl != 0x03)
-        goto loc_12f18;
-    memoryASet(ds, 0x951a, 0x00);
-loc_12f18:
-    ax = memoryAGet16(ds, 0x954c);
-    bl = memoryAGet(ds, 0x951b);
-    if (!(al & 0x20))
-        goto loc_12f39;
-    if (bl != 0x02)
-        goto loc_12f37;
-    memoryASet(ds, 0x951b, 0x03);
-    al = 0x02;
-    sub_13840();
-    memoryASet(ds, 0x951c, 0x02);
-loc_12f37:
-    return;
-loc_12f39:
-    if (bl != 0x01)
-        goto loc_12f45;
-    memoryASet(ds, 0x951b, 0x02);
-    return;
-loc_12f45:
-    if (bl != 0x03)
-        return;
-    memoryASet(ds, 0x951b, 0x00);
-}
-void sub_12f50()
-{
-    al = memoryAGet(ds, si);
-    if (al & 0x20)
-        goto loc_12f5e;
-    ah = memoryAGet(ds, 0x951a);
-    al = 0xf8;
-    goto loc_12f64;
-loc_12f5e:
-    ah = memoryAGet(ds, 0x951b);
-    al = 0x08;
-loc_12f64:
-    if (ah == 0x03)
-        goto loc_12f6e;
-    if (ah != 0x00)
-        goto loc_12f90;
-loc_12f6e:
-    memoryASet(ds, si, 0x00);
-    si = 0x1ba1;
-loc_12f74:
-    al = memoryAGet(ds, si);
-    if (al & 0x80)
-        return;
-    if (!(al & 0x01))
-        goto loc_12f8a;
-    al = memoryAGet(ds, si + 18);
-    if (al != 0x0f)
-        goto loc_12f8a;
-    push(si);
-    sub_13059();
-    si = pop();
-loc_12f8a:
-    si += 0x0017;
-    goto loc_12f74;
-loc_12f8f:
-    return;
-loc_12f90:
-    al += memoryAGet(ds, 0x94e7);
-    ax &= 0x007f;
-    bx = ax;
-    al = memoryAGet(ds, bx + 5749);
-    true ? cbw() : cwde();
-    cx = ax;
-    cx = sar16(cx, 0x0001);
-    ax += cx;
-    ax += 0x0080;
-    memoryASet16(ds, si + 5, ax);
-    al = memoryAGet(ds, bx + 5877);
-    true ? cbw() : cwde();
-    cx = ax;
-    cx = sar16(cx, 0x0001);
-    ax += cx;
-    ax += 0x0080;
-    if (ax == 0x0000)
-        goto loc_12fd0;
-    bx = ax;
-    ax <<= 1;
-    ax <<= 1;
-    ax += bx;
-    ax <<= 1;
-    ax += 0x0005;
-    bl = 0x0c;
-    div8(bl);
-    ah = 0x00;
-loc_12fd0:
-    bl = memoryAGet(ds, 0x1ba0);
-    bx &= 0x007f;
-    memoryASet16(ds, si + 7, ax);
-    al = memoryAGet(ds, bx + 6290);
-    memoryASet(ds, si + 4, al);
-    bx = 0x1811;
-    sub_12121();
-}
-void sub_12fe8()
-{
-    bx = memoryAGet16(ds, 0x9525);
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx &= 0x001f;
-    al = memoryAGet(ds, bx + 6666);
-    memoryASet(ds, 0x9549, al);
-    al = memoryAGet(ds, bx + 6634);
-    memoryASet(ds, si + 4, al);
-    bx = 0x1929;
-    sub_12121();
-}
-void sub_1300a()
-{
-    ax = memoryAGet16(ds, 0x9547);
-    ax -= memoryAGet16(ds, si + 19);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    if (ax <= 0x002d)
-        goto loc_1301f;
-    memoryASet(ds, si, 0x00);
-    return;
-loc_1301f:
-    push(ax);
-    sub_13130();
-    ax = pop();
-    ax >>= 1;
-    memoryASet(ds, si + 4, al);
-    bx = ax;
-    al = memoryAGet(ds, bx + 6810);
-    memoryASet(ds, si + 2, al);
-    bx = 0x1ac9;
-    sub_12121();
-    al = memoryAGet(ds, si + 2);
-    if (al == 0x02)
-        goto loc_13040;
-    return;
-loc_13040:
-    bl = memoryAGet(ds, 0x1b8e);
-    bh = 0x00;
-    al = memoryAGet(ds, bx + 6133);
-    if (al == memoryAGet(ds, si + 1))
-        goto loc_13050;
-    return;
-loc_13050:
-    al = 0x09;
-    sub_13840();
-    sub_13059();
-}
-void sub_13059()
-{
-    memoryASet(ds, si, 0x00);
-    al = memoryAGet(ds, 0x951d);
-    if (al != 0x40)
-        goto loc_1306a;
-    memoryASet16(ds, 0x9540, memoryAGet16(ds, 0x9540) + 0x0006);
-    return;
-loc_1306a:
-    if (al != 0x80)
-        goto loc_13075;
-    memoryASet16(ds, 0x953c, memoryAGet16(ds, 0x953c) + 0x0004);
-    return;
-loc_13075:
-    if (al != 0xc0)
-        goto loc_13080;
-    memoryASet16(ds, 0x9544, memoryAGet16(ds, 0x9544) + 0x0008);
-    return;
-loc_13080:
-    sub_1268a();
-}
-void sub_13084()
-{
-    al -= 0x05;
-    if ((char)al >= 0)
-        goto loc_1308d;
-    ax = 0x0000;
-    return;
-loc_1308d:
-    if (al <= 0x38)
-        goto loc_13093;
-    al = 0x38;
-loc_13093:
-    al >>= 1;
-    ah = 0x00;
-    ax = -ax;
-    ax -= 0x0003;
-}
-void sub_1309d()
-{
-    bx = memoryAGet16(ds, 0x952a);
-    bx += 0x0007;
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
-    bx += 0x0002;
-    memoryASet16(ds, 0x9547, memoryAGet16(ds, 0x9547) + bx);
-    ax = memoryAGet16(ds, 0x950f);
-    ax += bx;
-    if (ax <= 0x02e8)
-        goto loc_130c4;
-    ax = 0x0000;
-    memoryASet16(ds, 0x953c, 0xffff);
-loc_130c4:
-    memoryASet16(ds, 0x950f, ax);
-    ax = memoryAGet16(ds, 0x9547);
-    ax -= 0x0380;
-    if ((short)ax >= 0)
-        goto loc_13124;
-    ax = -ax;
-    if (ax >= 0x0100)
-        goto loc_130ed;
-    memoryASet16(ds, 0x9525, ax);
-    al = memoryAGet(ds, 0x9524);
-    if (al != 0x00)
-        goto loc_130eb;
-    si = 0x1912;
-    sub_10b58();
-    memoryASet(ds, 0x9524, 0x01);
-loc_130eb:
-    goto loc_13122;
-loc_130ed:
-    ax = memoryAGet16(ds, 0x9547);
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    if (al == memoryAGet(ds, 0x9527))
-        goto loc_13122;
-    memoryASet(ds, 0x9527, al);
-    bl = al;
-    bh = 0x00;
-    bx += memoryAGet16(ds, 0x94e2);
-    al = memoryAGet(ds, bx);
-    if (al == 0x00)
-        goto loc_13122;
-    si = 0x1ab2;
-    memoryASet(ds, si + 1, al);
-    ax = memoryAGet16(ds, 0x9547);
-    memoryASet16(ds, si + 19, ax);
-    sub_10b58();
-loc_13122:
-    return;
-loc_13124:
-    memoryASet(ds, 0x94ff, 0x00);
-    ax = memoryAGet16(ds, 0x950c);
-    memoryASet16(ds, 0x9528, ax);
-}
-void sub_13130()
-{
-    bl = al;
-    bh = 0x00;
-    cl = memoryAGet(ds, bx + 6762);
-    ch = 0x00;
-    al = memoryAGet(ds, si + 1);
-    if (al == 0x01)
-        goto loc_1315e;
-    if (al == 0x02)
-        goto loc_13167;
-    if (al == 0x03)
-        goto loc_13170;
-    if (al == 0x04)
-        goto loc_13178;
-    if (al == 0x05)
-        goto loc_13181;
-    if (al == 0x06)
-        goto loc_13188;
-    if (al == 0x07)
-        goto loc_13191;
-    if (al == 0x08)
-        goto loc_1319b;
-    return;
-loc_1315e:
-    cx = -cx;
-    cx += 0x006a;
-    memoryASet16(ds, si + 7, cx);
-    return;
-loc_13167:
-    push(cx);
-    sub_1315e();
-    cx = pop();
-    sub_13170();
-    return;
-loc_13170:
-    cx += 0x0080;
-    memoryASet16(ds, si + 5, cx);
-    return;
-loc_13178:
-    push(cx);
-    sub_13170();
-    cx = pop();
-    sub_13181();
-    return;
-loc_13181:
-    cx += 0x006a;
-    memoryASet16(ds, si + 7, cx);
-    return;
-loc_13188:
-    push(cx);
-    sub_13181();
-    cx = pop();
-    sub_13191();
-    return;
-loc_13191:
-    cx = -cx;
-    cx += 0x0080;
-    memoryASet16(ds, si + 5, cx);
-    return;
-loc_1319b:
-    push(cx);
-    sub_13191();
-    cx = pop();
-    sub_1315e();
-}
-void sub_1315e()
-{
-    cx = -cx;
-    cx += 0x006a;
-    memoryASet16(ds, si + 7, cx);
-}
-void sub_13170()
-{
-    cx += 0x0080;
-    memoryASet16(ds, si + 5, cx);
-}
-void sub_13181()
-{
-    cx += 0x006a;
-    memoryASet16(ds, si + 7, cx);
-}
-void sub_13191()
-{
-    cx = -cx;
-    cx += 0x0080;
-    memoryASet16(ds, si + 5, cx);
-}
-void sub_131a4()
-{
-    ax = memoryAGet16(ds, 0x94f8);
-    es = ax;
-    di = 0x0144;
-    bx = memoryAGet16(ds, 0x94f4);
-    si = 0x0340;
-    sub_131e7();
-    ax = ~ax;
-    ax &= 0x000f;
-    ah = al;
-    al = 0x01;
-    dx = 0x03ce;
-    out16(dx, ax);
-    sub_13209();
-    ah = al;
-    al = 0x00;
-    out16(dx, ax);
-    push(ds);
-    ds = bx;
-    flags.direction = 0;
-    cx = 0x00a0;
-loc_131d2:
-    push(cx);
-    cx = 0x0020;
-    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
-    di += 0x0008;
-    cx = pop();
-    if (--cx)
-        goto loc_131d2;
-    ds = pop();
-    ax = 0x0000;
-    out16(dx, ax);
-    al++;
-    out16(dx, ax);
-}
-void sub_131e7()
-{
-    al = memoryAGet(ds, 0x951d);
-    if (al != 0x40)
-        goto loc_131f3;
-    ax = 0x0002;
-    return;
-loc_131f3:
-    if (al != 0x80)
-        goto loc_131fc;
-    ax = 0x0004;
-    return;
-loc_131fc:
-    if (al != 0xc0)
-        goto loc_13205;
-    ax = 0x0001;
-    return;
-loc_13205:
-    ax = 0x0003;
-}
-void sub_13209()
-{
-    al = memoryAGet(ds, 0x951c);
-    if (al != 0x00)
-        goto loc_13215;
-    ax = 0x0000;
-    return;
-loc_13215:
-    if (al != 0x01)
-        goto loc_13223;
-    ax = 0x0007;
-    memoryASet(ds, 0x951c, 0x00);
-    return;
-loc_13223:
-    ax = 0x000f;
-    memoryASet(ds, 0x951c, 0x01);
-}
-void sub_13291()
-{
-    push(bp);
-    bp = sp;
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    es = ax;
-    di = 0x0144;
-    bx = memoryAGet16(ss, bp + 6 - 2);
-    si = 0x0144;
-    dx = 0x03ce;
-    ax = 0x0105;
-    out16(dx, ax);
-    push(ds);
-    ds = bx;
-    flags.direction = 0;
-    cx = 0x00a0;
-loc_132b0:
-    push(cx);
-    cx = 0x0020;
-    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
-    si += 0x0008;
-    di += 0x0008;
-    cx = pop();
-    if (--cx)
-        goto loc_132b0;
-    ds = pop();
-    ax = 0x0005;
-    out16(dx, ax);
-    bp = pop();
-    sp += 4;
-}
-void sub_132fe()
-{
-    dx = 0x03ce;
-    ax = 0x0105;
-    out16(dx, ax);
-    ax = memoryAGet16(ds, 0x94f8);
-    es = ax;
-    di = 0x0144;
-    ax = memoryAGet16(ds, 0x9528);
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    si = ax;
-    push(ds);
-    ax = 0xa800;
-    ds = ax;
-    flags.direction = 0;
-    cx = 0x00a0;
-loc_13326:
-    push(cx);
-    cx = 0x0020;
-    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
-    si &= 0x7fff;
-    di += 0x0008;
-    cx = pop();
-    if (--cx)
-        goto loc_13326;
-    ds = pop();
-    ax = 0x0005;
-    out16(dx, ax);
-}
-void sub_1333c()
-{
+    if (seg == 0x1040)
+    {
+        switch (ofs)
+        {
+            case 0x9d20: sub_1a120(); return;
+            case 0x9d21: sub_1a121(); return;
+            case 0x9d37: sub_1a137(); return;
+            case 0x9d3f: sub_1a13f(); return;
+            case 0x9d55: sub_1a155(); return;
+            case 0x9d68: sub_1a168(); return;
+            case 0x9dbc: sub_1a1bc(); return;
+            case 0x9dd7: sub_1a1d7(); return;
+            case 0x9de4: sub_1a1e4(); return;
+            case 0x9ef6: sub_1a2f6(); return;
+            case 0x9de6: sub_1a1e6(); return;
+            case 0x9dfd: sub_1a1fd(); return;
+            case 0x9e34: sub_1a234(); return;
+            case 0x9e3e: sub_1a23e(); return;
+            case 0x9e4c: sub_1a24c(); return;
+        }
+    }
+}
+
+void sub_10524()
+{
+    ah = 0x0f;
+    interrupt(0x10);
+    memoryASet(ds, 0x006a, al);
     ax = 0x000d;
     interrupt(0x10);
-    ax = 0xa000;
-    memoryASet16(ds, 0x94fa, ax);
-    ax += 0x0200;
-    memoryASet16(ds, 0x94f8, ax);
-    ax = 0x0000;
-    sub_133b3();
-    ax = memoryAGet16(ds, 0x94f8);
-    bx = memoryAGet16(ds, 0x94fa);
-    memoryASet16(ds, 0x94f8, bx);
-    memoryASet16(ds, 0x94fa, ax);
-    sub_133d7();
-    bx = memoryAGet16(ds, 0x94fa);
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    flags.interrupts = 0;
-    dx = 0x03d4;
-    ah = bh;
-    al = 0x0c;
-    out16(dx, ax);
-    ah = bl;
-    al++;
-    out16(dx, ax);
-    flags.interrupts = 1;
-    sub_133d7();
 }
-void sub_13383()
+void sub_10533()
 {
-    ax = memoryAGet16(ds, 0x94f8);
-    bx = memoryAGet16(ds, 0x94fa);
-    memoryASet16(ds, 0x94f8, bx);
-    memoryASet16(ds, 0x94fa, ax);
-    bx = memoryAGet16(ds, 0x94fa);
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    bx <<= 1;
-    flags.interrupts = 0;
-    dx = 0x03d4;
-    ah = bh;
-    al = 0x0c;
+    ah = 0x48;
+    bx = 0x0200;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1053f;
+    goto loc_19731;
+loc_1053f:
+    memoryASet16(ds, 0x004c, ax);
+    ah = 0x48;
+    bx = 0x0aaa;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1054e;
+    goto loc_19731;
+loc_1054e:
+    memoryASet16(ds, 0x0062, ax);
+    ah = 0x48;
+    bx = 0x0aaa;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1055d;
+    goto loc_19731;
+loc_1055d:
+    memoryASet16(ds, 0x0064, ax);
+    ah = 0x48;
+    bx = 0x0aaa;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1056c;
+    goto loc_19731;
+loc_1056c:
+    memoryASet16(ds, 0x0066, ax);
+    ah = 0x48;
+    bx = 0x0aaa;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1057b;
+    goto loc_19731;
+loc_1057b:
+    memoryASet16(ds, 0x0068, ax);
+    ah = 0x48;
+    bx = 0x0080;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1058a;
+    goto loc_19731;
+loc_1058a:
+    memoryASet16(ds, 0x0052, ax);
+    memoryASet16(ds, 0x0056, 0xa400);
+    return;
+  // gap 37277 bytes
+loc_19731:
+    ah = 0x09;
+    dx = 0x1040;
+    ds = dx;
+    dx = 0x92b1;
+    interrupt(0x21);
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+}
+void sub_10594()
+{
+    ax = memoryAGet16(ds, 0x0062);
+    cx = 0x4344;
+    dx = 0x00cd;
+    sub_1a65b();
+}
+void sub_105a1()
+{
+    ax = memoryAGet16(ds, 0x004c);
+    cx = 0x0000;
+    dx = 0x00e5;
+    sub_1a65b();
+    cx = 0x0400;
+    ax = 0xa680;
+    sub_105f7();
+    ax = memoryAGet16(ds, 0x004c);
+    cx = 0x0000;
+    dx = 0x00f1;
+    sub_1a65b();
+    cx = 0x0080;
+    ax = 0xa700;
+    sub_105f7();
+}
+void sub_105cc()
+{
+    ax = memoryAGet16(ds, 0x004c);
+    cx = 0x0000;
+    dx = 0x00d9;
+    sub_1a65b();
+    cx = 0x0400;
+    ax = 0xa600;
+    sub_105f7();
+    ax = memoryAGet16(ds, 0x004c);
+    cx = 0x0000;
+    dx = 0x00fd;
+    sub_1a65b();
+    cx = 0x0180;
+    ax = 0xa980;
+    sub_105f7();
+}
+void sub_105f7()
+{
+    push(ds);
+    push(es);
+    bp = cx;
+    dx = memoryAGet16(ds, 0x004c);
+    ds = dx;
+    es = ax;
+    si = 0;
+    di = 0;
+    push(dx);
+    ax = 0x0005;
+    dx = 0x03ce;
     out16(dx, ax);
-    flags.interrupts = 1;
-    dx = 0x03da;
-loc_133aa:
+    dx = pop();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0102;
+    out16(dx, ax);
+    dx = pop();
+    cx = bp;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0202;
+    out16(dx, ax);
+    dx = pop();
+    cx = bp;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0402;
+    out16(dx, ax);
+    dx = pop();
+    cx = bp;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0802;
+    out16(dx, ax);
+    dx = pop();
+    cx = bp;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0f02;
+    out16(dx, ax);
+    dx = pop();
+    push(dx);
+    ax = 0x0105;
+    dx = 0x03ce;
+    out16(dx, ax);
+    dx = pop();
+    es = pop();
+    ds = pop();
+}
+void sub_10661()
+{
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+}
+void sub_10702()
+{
+    memoryASet(ds, 0x0279, 0x00);
+    si = 0x029a;
+    di = 0x02ce;
+    cx = 0x0033;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    ax = 0x1a00;
+    interrupt(0x10);
+    if ((char)bl <= (char)0x05)
+        goto loc_10731;
+    if ((char)bl < (char)0x07)
+        goto loc_10731;
+    if ((char)bl > (char)0x08)
+        goto loc_10731;
+    si = 0x028a;
+    memoryASet(ds, 0x0279, 0x01);
+    goto loc_1073e;
+  // gap 1 bytes
+loc_10731:
+    si = 0x027a;
+    memoryASet(ds, 0x0279, 0x00);
+    memoryASet(ds, 0x0278, 0x01);
+loc_1073e:
+    memoryASet(ds, 0x0301, 0x00);
+    cx = 0x0010;
+loc_10746:
+    ah = 0x10;
+    al = 0x00;
+    bh = memoryAGet(ds, si);
+    si++;
+    bl = memoryAGet(ds, 0x0301);
+    memoryASet(ds, 0x0301, memoryAGet(ds, 0x0301) + 1);
+    push(si);
+    push(cx);
+    interrupt(0x10);
+    cx = pop();
+    si = pop();
+    if (--cx)
+        goto loc_10746;
+    if (memoryAGet(ds, 0x0279) != 0x01)
+        goto loc_1076a;
+    sub_10776();
+    sub_1079d();
+loc_1076a:
+    di = 0x029a;
+    si = 0x02ce;
+    cx = 0x0033;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+}
+void sub_10776()
+{
+    si = 0x029a;
+    memoryASet(ds, 0x0301, 0x00);
+    cx = 0x0010;
+loc_10781:
+    push(cx);
+    bh = 0x09;
+    al = memoryAGet(ds, si);
+    ax = ((char)bh * (short)ax) & 0xffff;
+    memoryASet(ds, si, al);
+    si++;
+    al = memoryAGet(ds, si);
+    ax = ((char)bh * (short)ax) & 0xffff;
+    memoryASet(ds, si, al);
+    si++;
+    al = memoryAGet(ds, si);
+    ax = ((char)bh * (short)ax) & 0xffff;
+    memoryASet(ds, si, al);
+    si++;
+    cx = pop();
+    if (--cx)
+        goto loc_10781;
+}
+void sub_1079d()
+{
+    bx = 0;
+    cx = 0x0010;
+    dx = 0x029a;
+    al = 0x12;
+    ah = 0x10;
+    interrupt(0x10);
+}
+void sub_107ac()
+{
+    dx = 0;
+    cx = dx;
+    ch = ah;
+    dh = ah;
+    dx >>= 1;
+    dx >>= 1;
+    dx += cx;
+    ah = 0;
+    dx += ax;
+    di = dx;
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005a);
+    cx = 0x0027;
+    ax = 0xa980;
+    ds = ax;
+loc_107ce:
+    ax = 0;
+    al = memoryAGet(cs, si);
+    si++;
+    if (al == 0xff)
+        goto loc_107ee;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    bx = si;
+    si = ax;
+    ax = di;
+    sub_10661();
+    si = bx;
+    di = ax;
+    di++;
+    goto loc_107ce;
+loc_107ee:
+    es = pop();
+    ds = pop();
+}
+void sub_107f1()
+{
+    dx = 0;
+    cx = dx;
+    ch = ah;
+    dh = ah;
+    dx >>= 1;
+    dx >>= 1;
+    dx += cx;
+    ah = 0;
+    dx += ax;
+    di = dx;
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005a);
+    cx = 0x0027;
+    ax = 0xa600;
+    ds = ax;
+loc_10813:
+    ax = 0;
+    al = memoryAGet(cs, si);
+    si++;
+    if (al == 0xff)
+        goto loc_10833;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    bx = si;
+    si = ax;
+    ax = di;
+    sub_10661();
+    si = bx;
+    di = ax;
+    di++;
+    goto loc_10813;
+loc_10833:
+    es = pop();
+    ds = pop();
+}
+void sub_10836()
+{
+    dx = 0;
+    cx = dx;
+    ch = ah;
+    dh = ah;
+    dx >>= 1;
+    dx >>= 1;
+    dx += cx;
+    ah = 0;
+    dx += ax;
+    di = dx;
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005c);
+    cx = 0x0027;
+    ax = 0xa600;
+    ds = ax;
+loc_10858:
+    ax = 0;
+    al = memoryAGet(cs, si);
+    si++;
+    if (al == 0xff)
+        goto loc_10878;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    bx = si;
+    si = ax;
+    ax = di;
+    sub_10661();
+    si = bx;
+    di = ax;
+    di++;
+    goto loc_10858;
+loc_10878:
+    es = pop();
+    ds = pop();
+}
+void sub_1087b()
+{
+    cx = 0x0100;
+    ax = 0x0000;
+    dx = 0x0008;
+    di = 0x2f73;
+loc_10887:
+    stosw<ES_DI>(ax);
+    ax += dx;
+    if (--cx)
+        goto loc_10887;
+}
+void sub_1088d()
+{
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x0056);
+    ax = 0xa680;
+    ds = ax;
+    cx = 0x0020;
+loc_1089b:
+    bp = cx;
+    ax = 0;
+    al = memoryAGet(cs, bx);
+    if ((short)ax < (short)0x00f8)
+        goto loc_108aa;
+    sub_19593();
+loc_108aa:
+    bx++;
+    ax <<= 1;
+    ax += 0x2f73;
+    si = ax;
+    si = memoryAGet16(cs, si);
+    cx = 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += cx;
+    movsb<ES_DI, DS_SI>();
+    di += 0xff20;
+    cx = bp;
+    if (--cx)
+        goto loc_1089b;
+    di += 0x00e0;
+    es = pop();
+    ds = pop();
+}
+void sub_108dd()
+{
+    bx = 0x571c;
+    di = 0x1e00;
+    sub_1088d();
+    di = 0x0000;
+    bx = 0x573c;
+    cx = 0x001a;
+loc_108ef:
+    push(cx);
+    sub_1088d();
+    cx = pop();
+    if (--cx)
+        goto loc_108ef;
+}
+void sub_108f7()
+{
+    if (!ax)
+        return;
+    push(ds);
+    push(es);
+    dx = ax;
+    bp = 0x0020;
+    bx = 0x0008;
+    es = memoryAGet16(cs, 0x005a);
+    ds = memoryAGet16(cs, 0x0056);
+loc_1090f:
+    cx = bp;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    di += bx;
+    dx--;
+    if (dx)
+        goto loc_1090f;
+    es = pop();
+    ds = pop();
+}
+void sub_1091b()
+{
+    dx = memoryAGet16(ds, 0x6c45);
+    dx += 0x00c0;
+    dx &= 0x00ff;
+    if ((short)dx > (short)memoryAGet16(ds, 0x6c45))
+        goto loc_10969;
+    ax = dx;
+    si = 0x0000;
+    di = 0x0144;
+    dx = 0x0100;
+    dx -= memoryAGet16(ds, 0x6c45);
+    dx += dx;
+    bx = 0x3173;
+    bx += dx;
+    di += memoryAGet16(ds, bx);
+    sub_108f7();
+    si = 0x0000;
+    dx = memoryAGet16(ds, 0x6c45);
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    si += dx;
+    di = 0x0144;
+    ax = 0x0100;
+    ax -= memoryAGet16(ds, 0x6c45);
+    sub_108f7();
+    return;
+loc_10969:
+    si = 0x0000;
+    dx = memoryAGet16(ds, 0x6c45);
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    si += dx;
+    di = 0x0144;
+    ax = 0x00c0;
+    sub_108f7();
+}
+void sub_10986()
+{
+    bx = 0x573c;
+    ax = memoryAGet16(ds, 0x6c45);
+    ax &= 0x00f8;
+    ax -= 0x0008;
+    ax &= 0x00ff;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    di = ax;
+    sub_1088d();
+}
+void sub_109a5()
+{
+    bx = 0x5a5c;
+    ax = memoryAGet16(ds, 0x6c45);
+    ax &= 0x00f8;
+    ax += 0x00d0;
+    ax &= 0x00ff;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    di = ax;
+    sub_1088d();
+}
+void sub_109c4()
+{
+    di = 0x3173;
+    ax = 0;
+    cx = 0x0100;
+loc_109cc:
+    stosw<ES_DI>(ax);
+    ax += 0x0028;
+    if (--cx)
+        goto loc_109cc;
+}
+void sub_109d3()
+{
+    memoryASet16(ds, 0x005a, 0xa000);
+    memoryASet16(ds, 0x005c, 0xa200);
+    memoryASet16(ds, 0x005e, 0x0000);
+    memoryASet16(ds, 0x0060, 0x2000);
+}
+void sub_109ee()
+{
+    push(ds);
+    push(es);
+    push(ax);
+    push(cx);
+    push(dx);
+    ax = memoryAGet16(ds, 0x005a);
+    dx = memoryAGet16(ds, 0x005c);
+    memoryASet16(ds, 0x005c, ax);
+    memoryASet16(ds, 0x005a, dx);
+    ax = memoryAGet16(ds, 0x005e);
+    dx = memoryAGet16(ds, 0x0060);
+    memoryASet16(ds, 0x0060, ax);
+    memoryASet16(ds, 0x005e, dx);
+    cx = memoryAGet16(ds, 0x0060);
+    push(dx);
+    push(ax);
+    ax = 0x0040;
+    es = ax;
+    dx = memoryAGet16(es, 0x0063);
+    dx += 0x0006;
+loc_10a22:
     al = in8(dx);
     al &= 0x08;
     if (al)
-        goto loc_133aa;
-    sub_133d7();
-}
-void sub_133b3()
-{
-    push(ax);
-    ax = memoryAGet16(ds, 0x94f8);
-    es = ax;
-    di = 0x0000;
-    dx = 0x03ce;
-    ax = pop();
-    ah = al;
-    al = 0x00;
-    out16(dx, ax);
-    ax = 0x0f01;
-    out16(dx, ax);
-    flags.direction = 0;
-    cx = 0x0fa0;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    ax = 0x0000;
-    out16(dx, ax);
-    al++;
-    out16(dx, ax);
-}
-void sub_133d7()
-{
-    dx = 0x03da;
-loc_133da:
+        goto loc_10a22;
+loc_10a27:
     al = in8(dx);
     al &= 0x08;
     if (!al)
-        goto loc_133da;
-loc_133df:
+        goto loc_10a27;
+    dx -= 0x0006;
+    flags.interrupts = 0;
+    al = 0x0c;
+    out8(dx, al);
+    dx++;
+    al = ch;
+    out8(dx, al);
+    dx--;
+    al = 0x0d;
+    out8(dx, al);
+    dx++;
+    al = cl;
+    out8(dx, al);
+    flags.interrupts = 1;
+    ah = ch;
+    ax <<= 1;
+    memoryASet16(es, 0x004e, ax);
+    ax = 0x0040;
+    es = ax;
+    dx = memoryAGet16(es, 0x0063);
+    dx += 0x0006;
+loc_10a55:
     al = in8(dx);
     al &= 0x08;
     if (al)
-        goto loc_133df;
-}
-void sub_133e5()
-{
-    ax = memoryAGet16(ds, 0x94f8);
-    es = ax;
-    di = 0x0000;
-    dx = 0x03ce;
-    ax = 0x0805;
-    out16(dx, ax);
-    ax = 0x0007;
-    out16(dx, ax);
-    dl = 0xc4;
-    ax = 0x0802;
-    push(ds);
-    ds = bx;
-loc_13400:
-    out16(dx, ax);
-    push(ax);
-    push(di);
-    cx = 0x1f40;
-loc_13406:
-    al = lodsb<DS_SI>();
-    memoryASet(es, di, memoryAGet(es, di) & al);
-    di++;
-    if (--cx)
-        goto loc_13406;
-    di = pop();
+        goto loc_10a55;
+loc_10a5a:
+    al = in8(dx);
+    al &= 0x08;
+    if (!al)
+        goto loc_10a5a;
     ax = pop();
-    ah >>= 1;
-    if (ah)
-        goto loc_13400;
+    dx = pop();
+    dx = pop();
+    cx = pop();
+    ax = pop();
+    es = pop();
     ds = pop();
+}
+void sub_10a67()
+{
+    if (memoryAGet16(ds, 0x9173) != 0x0000)
+        goto loc_10a6f;
+    return;
+loc_10a6f:
+    bx = memoryAGet16(ds, 0x9175);
+    cx = 0x0008;
+loc_10a76:
+    push(cx);
+    al = memoryAGet(ds, bx);
+    if (!al)
+        goto loc_10ad2;
+    if ((char)al < 0)
+        goto loc_10adc;
+    dx = 0;
+    dl = memoryAGet(ds, bx + 1);
+    cl = dl;
+    cl++;
+    cl &= 0x03;
+    dl &= 0xfc;
+    dl |= cl;
+    memoryASet(ds, bx + 1, dl);
+    di = memoryAGet16(ds, bx + 4);
+    bp = memoryAGet16(cs, bx + 6);
+    si = 0;
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x0056);
+    ax = 0xa700;
+    ds = ax;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    si = dx;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    di += 0x001f;
+    movsb<ES_DI, DS_SI>();
+    es = pop();
+    ds = pop();
+loc_10ad2:
+    bx += 0x0008;
+    cx = pop();
+    if (--cx)
+        goto loc_10a76;
+    goto loc_10ae2;
+  // gap 1 bytes
+loc_10adc:
+    bx = 0x54fa;
+    cx = pop();
+    if (--cx)
+        goto loc_10a76;
+loc_10ae2:
+    memoryASet16(ds, 0x9175, bx);
+}
+void sub_10ae7()
+{
+    push(ds);
+    push(es);
+    bx = 0x573c;
+    di = 0x0144;
+    es = memoryAGet16(ds, 0x0056);
+    ax = 0xa680;
+    ds = ax;
+    cx = 0x0018;
+    dx = memoryAGet16(cs, 0x8bf0);
+    dx &= 0x0007;
+    if (!dx)
+        goto loc_10b43;
+    si = dx;
+    bp = 0x0020;
+    dx ^= 0x0007;
+loc_10b0d:
+    push(si);
+    push(di);
+    ax = 0;
+    al = memoryAGet(cs, bx);
+    bx++;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    si += ax;
+    push(dx);
+loc_10b1e:
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    dx--;
+    if ((short)dx >= 0)
+        goto loc_10b1e;
+    dx = pop();
+    di = pop();
+    si = pop();
+    di++;
+    bp--;
+    if (bp)
+        goto loc_10b0d;
+    dx++;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    ax = dx;
+    dx <<= 1;
+    dx <<= 1;
+    dx += ax;
+    dx += 0xffe0;
+    di += dx;
+    goto loc_10b80;
+  // gap 1 bytes
+loc_10b43:
+    bp = 0x0020;
+loc_10b46:
+    push(si);
+    push(di);
+    ax = 0;
+    al = memoryAGet(cs, bx);
+    bx++;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    si = ax;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    di = pop();
+    si = pop();
+    di++;
+    bp--;
+    if (bp)
+        goto loc_10b46;
+    di += 0x0120;
+loc_10b80:
+    if (--cx)
+        goto loc_10b43;
+    dx = memoryAGet16(cs, 0x8bf0);
+    dx &= 0x0007;
+    if (!dx)
+        goto loc_10bae;
+    bp = 0x0020;
+loc_10b8f:
+    push(si);
+    push(di);
+    ax = 0;
+    al = memoryAGet(cs, bx);
+    bx++;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    si = ax;
+    push(dx);
+loc_10ba0:
+    movsb<ES_DI, DS_SI>();
+    di += 0x0027;
+    dx--;
+    if ((short)dx >= 0)
+        goto loc_10ba0;
+    dx = pop();
+    di = pop();
+    si = pop();
+    di++;
+    bp--;
+    if (bp)
+        goto loc_10b8f;
+loc_10bae:
+    es = pop();
+    ds = pop();
+}
+void sub_10bb1()
+{
+    ax = memoryAGet16(ds, 0x005a);
+    push(ax);
+    ax = memoryAGet16(ds, 0x0056);
+    memoryASet16(ds, 0x005a, ax);
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    ax = pop();
+    memoryASet16(ds, 0x005a, ax);
+}
+void sub_10bc4()
+{
+    cx = memoryAGet16(ds, 0x96f4);
+    push(cx);
+    memoryASet16(ds, 0x96f4, 0x0001);
+    push(ax);
+    push(dx);
+    callIndirect(cs, memoryAGet16(ds, 0x0024));
+    memoryASet16(ds, 0x0b1c, 0x0000);
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    memoryASet16(ds, 0x0b1c, 0x0001);
+    dx = pop();
+    ax = pop();
+    sub_19351();
+    sub_19214();
+    sub_10ae7();
+    sub_1618f();
+    sub_15fe4();
+    memoryASet(ds, 0x5b3e, 0x01);
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+    sub_10bb1();
+    sub_19af6();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    si = 0x0162;
+    cx = 0x0010;
+loc_10c15:
+    push(cx);
+    push(si);
+    sub_10c98();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    si = pop();
+    cx = pop();
+    si += 0xfffe;
+    if (--cx)
+        goto loc_10c15;
+    sub_17047();
+    cx = pop();
+    memoryASet16(ds, 0x96f4, cx);
+}
+void sub_10c2e()
+{
+    cx = memoryAGet16(ds, 0x96f4);
+    push(cx);
+    memoryASet16(ds, 0x96f4, 0x0001);
+    push(ax);
+    push(dx);
+    callIndirect(cs, memoryAGet16(ds, 0x0024));
+    memoryASet16(ds, 0x0b1c, 0x0000);
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    memoryASet16(ds, 0x0b1c, 0x0001);
+    dx = pop();
+    ax = pop();
+    sub_19351();
+    sub_19214();
+    sub_1618f();
+    sub_10ae7();
+    sub_15fe4();
+    memoryASet(ds, 0x5b3e, 0x01);
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+    sub_10bb1();
+    sub_19af6();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    si = 0x0144;
+    cx = 0x0010;
+loc_10c7f:
+    push(cx);
+    push(si);
+    sub_10ccd();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    si = pop();
+    cx = pop();
+    si += 0x0002;
+    if (--cx)
+        goto loc_10c7f;
+    sub_17047();
+    cx = pop();
+    memoryASet16(ds, 0x96f4, cx);
+}
+void sub_10c98()
+{
+    push(ds);
+    push(es);
+    bx = 0x0144;
+    di = bx;
+    bp = 0x00c0;
+    es = memoryAGet16(ds, 0x005a);
+    ax = memoryAGet16(ds, 0x0056);
+    dx = memoryAGet16(ds, 0x005c);
+loc_10cad:
+    ds = ax;
+    movsb<ES_DI, DS_SI>();
+    movsb<ES_DI, DS_SI>();
+    ds = dx;
+    push(si);
+    si = bx;
+    cx = 0x001e;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    bx = si;
+    si = pop();
+    bx += 0x000a;
+    si += 0x0026;
+    di += 0x0008;
+    bp--;
+    if (bp)
+        goto loc_10cad;
+    es = pop();
+    ds = pop();
+}
+void sub_10ccd()
+{
+    push(ds);
+    push(es);
+    bx = 0x0146;
+    di = 0x0144;
+    bp = 0x00c0;
+    es = memoryAGet16(ds, 0x005a);
+    ax = memoryAGet16(ds, 0x0056);
+    dx = memoryAGet16(ds, 0x005c);
+loc_10ce3:
+    ds = dx;
+    push(si);
+    si = bx;
+    cx = 0x001e;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    bx = si;
+    si = pop();
+    ds = ax;
+    movsb<ES_DI, DS_SI>();
+    movsb<ES_DI, DS_SI>();
+    bx += 0x000a;
+    si += 0x0026;
+    di += 0x0008;
+    bp--;
+    if (bp)
+        goto loc_10ce3;
+    es = pop();
+    ds = pop();
+}
+void sub_10d03()
+{
+    push(ds);
+    push(es);
+    ax = 0xa700;
+    ds = ax;
+    es = memoryAGet16(cs, 0x005a);
+    si = 0x0100;
+    al = lodsb<DS_SI>();
+    di = 0;
+    cx = 0x1f40;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    es = pop();
+    ds = pop();
+    sub_19b1c();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    push(ds);
+    push(es);
+    ax = 0xa700;
+    ds = ax;
+    es = memoryAGet16(cs, 0x005a);
+    si = 0x0100;
+    al = lodsb<DS_SI>();
+    di = 0;
+    cx = 0x1f40;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    es = pop();
+    ds = pop();
+}
+void sub_10d3d()
+{
+    ax = memoryAGet16(ds, 0x0062);
+    cx = 0x0000;
+    dx = 0x010a;
+    sub_1a65b();
+    sub_10d5c();
+    ax = memoryAGet16(ds, 0x0062);
+    cx = 0x0000;
+    dx = 0x0116;
+    sub_1a65b();
+    sub_10daa();
+}
+void sub_10d5c()
+{
+    push(ds);
+    push(es);
+    ax = memoryAGet16(ds, 0x0062);
+    ds = ax;
+    ax = 0xa780;
+    es = ax;
+    si = 0;
+    di = 0;
+    push(dx);
+    ax = 0x0005;
+    dx = 0x03ce;
+    out16(dx, ax);
+    dx = pop();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0102;
+    out16(dx, ax);
+    dx = pop();
+    cx = 0x0fa0;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0202;
+    out16(dx, ax);
+    dx = pop();
+    cx = 0x0fa0;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0f02;
+    out16(dx, ax);
+    dx = pop();
+    push(dx);
+    ax = 0x0105;
+    dx = 0x03ce;
+    out16(dx, ax);
+    dx = pop();
+    es = pop();
+    ds = pop();
+}
+void sub_10daa()
+{
+    push(ds);
+    push(es);
+    ax = memoryAGet16(ds, 0x0062);
+    ds = ax;
+    ax = 0xa780;
+    es = ax;
+    si = 0;
+    di = 0;
+    push(dx);
+    ax = 0x0005;
+    dx = 0x03ce;
+    out16(dx, ax);
+    dx = pop();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0402;
+    out16(dx, ax);
+    dx = pop();
+    cx = 0x0fa0;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0802;
+    out16(dx, ax);
+    dx = pop();
+    cx = 0x0fa0;
+    di = 0;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    push(dx);
+    dx = 0x03c4;
+    ax = 0x0f02;
+    out16(dx, ax);
+    dx = pop();
+    push(dx);
+    ax = 0x0105;
+    dx = 0x03ce;
+    out16(dx, ax);
+    dx = pop();
+    es = pop();
+    ds = pop();
+}
+void sub_10df8()
+{
+    push(ds);
+    push(es);
+    ax = 0xa780;
+    ds = ax;
+    ax = 0xa000;
+    es = ax;
+    si = 0;
+    di = si;
+    cx = 0x1f40;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    ax = 0xa780;
+    ds = ax;
+    ax = 0xa200;
+    es = ax;
+    si = 0;
+    di = si;
+    cx = 0x1f40;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    es = pop();
+    ds = pop();
+}
+void sub_10e23()
+{
+    dx = 0;
+    dl = ah;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    cx = dx;
+    dx <<= 1;
+    dx <<= 1;
+    dx += cx;
+    cl = 0x03;
+    dx <<= cl;
+    di = dx;
+    ah = 0;
+    di += ax;
+}
+void sub_10e40()
+{
+    push(ds);
+    push(es);
+    ax = 0xa600;
+    ds = ax;
+    es = memoryAGet16(cs, 0x0056);
+loc_10e4c:
+    push(cx);
+    push(si);
+    push(di);
+loc_10e4f:
+    ax = 0;
+    al = memoryAGet(cs, si);
+    si++;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    push(si);
+    push(di);
+    si = ax;
+    push(cx);
+    cx = 0x0027;
+    sub_10661();
+    cx = pop();
+    di = pop();
+    si = pop();
+    di++;
+    cl--;
+    if (cl)
+        goto loc_10e4f;
+    di = pop();
+    di += 0x0140;
+    si = pop();
+    si += 0x0020;
+    cx = pop();
+    ch--;
+    if (ch)
+        goto loc_10e4c;
+    es = pop();
+    ds = pop();
+}
+void sub_10e7f()
+{
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005a);
+    ds = memoryAGet16(ds, 0x0056);
+    di = 0x0144;
+    si = di;
+    bp = 0x00c0;
+loc_10e91:
+    cx = 0x0020;
+    push(si);
+    push(di);
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    di = pop();
+    si = pop();
+    si += 0x0028;
+    di += 0x0028;
+    bp--;
+    if (bp)
+        goto loc_10e91;
+    es = pop();
+    ds = pop();
+}
+void sub_10ea6()
+{
+    push(ds);
+    push(es);
+    ax = 0xa700;
+    ds = ax;
+    es = memoryAGet16(cs, 0x0056);
+    si = 0x0100;
+    al = lodsb<DS_SI>();
+    di = 0;
+    cx = 0x1f40;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    es = pop();
+    ds = pop();
+}
+void sub_10ec0()
+{
+    dx = memoryAGet16(ds, 0x005a);
+    push(dx);
+    dx = memoryAGet16(ds, 0x0056);
+    memoryASet16(ds, 0x005a, dx);
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    dx = pop();
+    memoryASet16(ds, 0x005a, dx);
+}
+void sub_10ed8()
+{
+}
+void sub_10ee4()
+{
+}
+void sub_10ee5()
+{
+}
+void sub_10ee6()
+{
+}
+void sub_10ee7()
+{
+}
+void sub_10ee8()
+{
+    ax = memoryAGet16(cs, 0x96f4);
+    if (ax == 0x0001)
+        return;
+    ax--;
+    memoryASet16(cs, 0x96f4, ax);
+}
+void sub_11162()
+{
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005a);
+    si = 0x0b00;
+    dx = 0x03ce;
+    ax = 0x0001;
+    out16(dx, ax);
+    ax = 0x0003;
+    out16(dx, ax);
+    ax = 0x0005;
+    out16(dx, ax);
+loc_1117a:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        goto loc_11196;
+    if (!ax)
+        goto loc_11191;
+    if (memoryAGet16(ds, si + 10) == 0x00fe)
+        goto loc_11191;
+    push(ds);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x0040));
+    si = pop();
+    ds = pop();
+loc_11191:
+    si += 0x001c;
+    goto loc_1117a;
+loc_11196:
+    si = 0x0b56;
+loc_11199:
+    ax = memoryAGet16(ds, si);
+    if ((char)ah < 0)
+        goto loc_111b7;
+    if (!(al & 0x01))
+        goto loc_111b2;
+    if (memoryAGet16(ds, si + 10) == 0x00fe)
+        goto loc_111b2;
+    push(ds);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x0040));
+    si = pop();
+    ds = pop();
+loc_111b2:
+    si += 0x0034;
+    goto loc_11199;
+loc_111b7:
+    si = 0x0c28;
+loc_111ba:
+    ax = memoryAGet16(ds, si);
+    if ((char)ah < 0)
+        goto loc_111d8;
+    if (!(al & 0x01))
+        goto loc_111d3;
+    if (memoryAGet16(ds, si + 10) == 0x00fe)
+        goto loc_111d3;
+    push(ds);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x0040));
+    si = pop();
+    ds = pop();
+loc_111d3:
+    si += 0x0034;
+    goto loc_111ba;
+loc_111d8:
+    dx = 0x03c4;
     ax = 0x0f02;
     out16(dx, ax);
     dl = 0xce;
-    ax = 0x0005;
+    ax = 0x0105;
     out16(dx, ax);
-    ax = 0x0f07;
+    ax = 0x0001;
     out16(dx, ax);
+    ax = 0xff08;
+    out16(dx, ax);
+    es = pop();
+    ds = pop();
 }
-void sub_13423()
+void sub_111f1()
 {
-    ax = 0x0000;
-    sub_133b3();
-    sub_13439();
-    sub_13383();
-    ax = 0x0000;
-    sub_133b3();
-    sub_13439();
-}
-void sub_13439()
-{
-    ax = memoryAGet16(ds, 0x94f8);
-    es = ax;
-    di = 0x011c;
-    ax = 0xffff;
-    cx = 0x0010;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    di = 0x1a44;
-    cx = 0x0010;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    di = 0x011b;
-    al = 0x01;
-    cx = 0x00a2;
-loc_13459:
-    memoryASet(es, di, al);
-    di += 0x0028;
-    if (--cx)
-        goto loc_13459;
-    di = 0x013c;
-    al = 0x80;
-    cx = 0x00a2;
-loc_13469:
-    memoryASet(es, di, al);
-    di += 0x0028;
-    if (--cx)
-        goto loc_13469;
-}
-void sub_13472()
-{
-    si = 0x0000;
-    bx = memoryAGet16(ds, 0x94f2);
-    sub_133e5();
-    sub_13383();
-    si = 0x0000;
-    bx = memoryAGet16(ds, 0x94f2);
-    sub_133e5();
-    ax = memoryAGet16(ds, 0x94f8);
-    push(ax);
-    ax = 0xa000;
-    ax += 0x0400;
-    push(ax);
-    sub_13291();
-}
-void sub_13498()
-{
-    ax = 0xa000;
-    ax += 0x0400;
-    push(ax);
-    ax = memoryAGet16(ds, 0x94f8);
-    push(ax);
-    sub_13291();
-}
-void sub_134a8()
-{
-    di = 0x0000;
-    ax = memoryAGet16(ds, 0x94f4);
-    es = ax;
-    ax = 0x0000;
-    cx = 0x1000;
-    flags.direction = 0;
-    for (; cx != 0; --cx) stosw<ES_DI>(ax);
-    ax = 0x004f;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    ax = 0x00b0;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    sub_136d4();
-    ax = 0x004f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x00b0;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    sub_136d4();
-    ax = 0x0000;
-    push(ax);
-    ax = 0x004f;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    ax = 0x00b0;
-    push(ax);
-    sub_136d4();
-    ax = 0x0000;
-    push(ax);
-    ax = 0x00b0;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    ax = 0x004f;
-    push(ax);
-    sub_136d4();
-    ax = memoryAGet16(ds, 0x9547);
-    ax &= 0x003f;
-    memoryASet16(ds, 0x954e, ax);
-    bx = ax;
-    ax += 0x0040;
-    push(ax);
-    al = memoryAGet(ds, bx + 8156);
-    ah = 0x00;
-    push(ax);
-    sub_135bc();
-    ax = memoryAGet16(ds, 0x954e);
-    if (ax <= 0x000c)
-        goto loc_13527;
+    bool temp_cond;
+    bp = 0;
+    ax = memoryAGet16(ds, si + 4);
+    ax -= 0x0038;
+    dx = memoryAGet16(ds, 0x8bf0);
+    dx &= 0x0007;
+    ax -= dx;
+    if ((short)ax >= (short)0x0008)
+        goto loc_1122c;
+    cx = 0x0008;
+    cx -= ax;
+    ax = cx;
+    cx = -cx;
+    temp_cond = (short)cx + (short)0x0015 > 0;
+    cx += 0x0015;
+    if (temp_cond)
+        goto loc_11218;
     return;
-loc_13527:
-    bx = memoryAGet16(ds, 0x954e);
-    al = memoryAGet(ds, bx + 8220);
-    ah = 0x00;
-    ax += 0x0080;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    al = memoryAGet(ds, bx + 8233);
-    ah = 0x00;
-    ax = -ax;
-    ax += 0x007f;
-    push(ax);
-    sub_136d4();
-    bx = memoryAGet16(ds, 0x954e);
-    al = memoryAGet(ds, bx + 8220);
-    ah = 0x00;
-    ax = -ax;
-    ax += 0x007f;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    al = memoryAGet(ds, bx + 8233);
-    ah = 0x00;
-    ax = -ax;
-    ax += 0x007f;
-    push(ax);
-    sub_136d4();
-    bx = memoryAGet16(ds, 0x954e);
-    al = memoryAGet(ds, bx + 8220);
-    ah = 0x00;
-    ax += 0x0080;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    al = memoryAGet(ds, bx + 8233);
-    ah = 0x00;
-    ax += 0x0080;
-    push(ax);
-    sub_136d4();
-    bx = memoryAGet16(ds, 0x954e);
-    al = memoryAGet(ds, bx + 8220);
-    ah = 0x00;
-    ax = -ax;
-    ax += 0x007f;
-    push(ax);
-    ax = 0x00ff;
-    push(ax);
-    ax = 0x0000;
-    push(ax);
-    al = memoryAGet(ds, bx + 8233);
-    ah = 0x00;
-    ax += 0x0080;
-    push(ax);
-    sub_136d4();
-}
-void sub_135bc()
-{
-    push(bp);
-    bp = sp;
-loc_135bf:
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    sub_136d4();
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4 - 2);
-    push(ax);
-    ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6 - 2);
-    push(ax);
-    sub_136d4();
-    ax = memoryAGet16(ss, bp + 6 - 2);
-    ax >>= 1;
-    if (al <= memoryAGet(ds, 0x9549))
-        goto loc_136d0;
-    memoryASet16(ss, bp + 6 - 2, ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    ax >>= 1;
-    memoryASet16(ss, bp + 4 - 2, ax);
-    goto loc_135bf;
-loc_136d0:
-    bp = pop();
-    sp += 4;
-}
-void sub_136d4()
-{
-    push(bp);
-    bp = sp;
-    sp -= 0x000a;
-    ax = memoryAGet16(ds, 0x94f4);
-    es = ax;
-    ax = memoryAGet16(ss, bp + 8 - 2);
-    if (ax == 0x0000)
-        goto loc_136fa;
-    bx = ax;
+loc_11218:
     ax <<= 1;
     ax <<= 1;
-    ax += bx;
-    ax <<= 1;
-    ax += 0x0005;
-    bl = 0x0c;
-    div8(bl);
-    ah = 0x00;
-loc_136fa:
-    memoryASet16(ss, bp + 8 - 2, ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    if (ax == 0x0000)
-        goto loc_13718;
-    bx = ax;
+    dx = ax;
     ax <<= 1;
     ax <<= 1;
-    ax += bx;
-    ax <<= 1;
-    ax += 0x0005;
-    bl = 0x0c;
-    div8(bl);
-    ah = 0x00;
-loc_13718:
-    memoryASet16(ss, bp + 4 - 2, ax);
-    ax = memoryAGet16(ss, bp + 10 - 2);
-    bx = memoryAGet16(ss, bp + 6 - 2);
-    if (bx >= ax)
-        goto loc_13737;
-    memoryASet16(ss, bp + 10 - 2, bx);
-    memoryASet16(ss, bp + 6 - 2, ax);
-    ax = memoryAGet16(ss, bp + 8 - 2);
-    bx = memoryAGet16(ss, bp + 4 - 2);
-    memoryASet16(ss, bp + 8 - 2, bx);
-    memoryASet16(ss, bp + 4 - 2, ax);
-loc_13737:
-    ax = memoryAGet16(ss, bp + 6 - 2);
-    ax -= memoryAGet16(ss, bp + 10 - 2);
-    memoryASet16(ss, bp - 2 - 2, ax);
-    ax = memoryAGet16(ss, bp + 4 - 2);
-    ax -= memoryAGet16(ss, bp + 8 - 2);
-    if ((short)ax >= 0)
-        goto loc_13751;
-    ax = -ax;
-    memoryASet16(ss, bp - 10 - 2, 0xffe0);
-    goto loc_13756;
-loc_13751:
-    memoryASet16(ss, bp - 10 - 2, 0x0020);
-loc_13756:
-    memoryASet16(ss, bp - 4 - 2, ax);
-    cx = memoryAGet16(ss, bp - 2 - 2);
-    if (cx == 0x0000)
-        goto loc_137db;
-    if (ax != 0x0000)
-        goto loc_13769;
-    goto loc_137ed;
-loc_13769:
-    if (ax >= memoryAGet16(ss, bp - 2 - 2))
-        goto loc_137a4;
-    ax = memoryAGet16(ss, bp - 2 - 2);
-    ax >>= 1;
-    memoryASet16(ss, bp - 6 - 2, ax);
-    sub_13801();
-    cx = memoryAGet16(ss, bp - 2 - 2);
-loc_1377c:
-    al >>= 1;
-    if (al)
-        goto loc_13783;
-    al = 0x80;
-    di++;
-loc_13783:
-    bx = memoryAGet16(ss, bp - 6 - 2);
-    bx += memoryAGet16(ss, bp - 4 - 2);
-    memoryASet16(ss, bp - 6 - 2, bx);
-    if (bx <= memoryAGet16(ss, bp - 2 - 2))
-        goto loc_1379d;
-    bx -= memoryAGet16(ss, bp - 2 - 2);
-    memoryASet16(ss, bp - 6 - 2, bx);
-    bx = memoryAGet16(ss, bp - 10 - 2);
-    di += memoryAGet16(ss, bp - 10 - 2);
-loc_1379d:
-    memoryASet(es, di, memoryAGet(es, di) | al);
-    if (--cx)
-        goto loc_1377c;
-    goto loc_137d5;
-loc_137a4:
-    ax = memoryAGet16(ss, bp - 4 - 2);
-    ax >>= 1;
-    memoryASet16(ss, bp - 6 - 2, ax);
-    sub_13801();
-    cx = memoryAGet16(ss, bp - 4 - 2);
-loc_137b2:
-    di += memoryAGet16(ss, bp - 10 - 2);
-    bx = memoryAGet16(ss, bp - 6 - 2);
-    bx += memoryAGet16(ss, bp - 2 - 2);
-    memoryASet16(ss, bp - 6 - 2, bx);
-    if (bx <= memoryAGet16(ss, bp - 4 - 2))
-        goto loc_137d0;
-    bx -= memoryAGet16(ss, bp - 4 - 2);
-    memoryASet16(ss, bp - 6 - 2, bx);
-    al >>= 1;
-    if (al)
-        goto loc_137d0;
-    al = 0x80;
-    di++;
-loc_137d0:
-    memoryASet(es, di, memoryAGet(es, di) | al);
-    if (--cx)
-        goto loc_137b2;
-loc_137d5:
-    sp = bp;
-    bp = pop();
-    sp += 8;
-  return;
-loc_137db:
-    sub_13801();
-    cx = memoryAGet16(ss, bp - 4 - 2);
-    if (cx==0)
-        goto loc_137d5;
-loc_137e3:
-    di += memoryAGet16(ss, bp - 10 - 2);
-    memoryASet(es, di, memoryAGet(es, di) | al);
-    if (--cx)
-        goto loc_137e3;
-    goto loc_137d5;
-loc_137ed:
-    sub_13801();
-    cx = memoryAGet16(ss, bp - 2 - 2);
-loc_137f3:
-    al >>= 1;
-    if (al)
-        goto loc_137fa;
-    al = 0x80;
-    di++;
-loc_137fa:
-    memoryASet(es, di, memoryAGet(es, di) | al);
-    if (--cx)
-        goto loc_137f3;
-    goto loc_137d5;
-}
-void sub_13801()
-{
-    ax = memoryAGet16(ss, bp + 8 - 2);
+    ax += dx;
+    bp = ax;
+    ax = 0x0140;
+    goto loc_11252;
+  // gap 1 bytes
+loc_1122c:
+    if ((short)ax <= (short)0x00b3)
+        goto loc_11241;
+    cx = 0x00b3;
+    cx -= ax;
+    temp_cond = (short)cx + (short)0x0015 > 0;
+    cx += 0x0015;
+    if (temp_cond)
+        goto loc_1123e;
+    return;
+loc_1123e:
+    goto loc_11244;
+  // gap 1 bytes
+loc_11241:
+    cx = 0x0015;
+loc_11244:
     ax <<= 1;
     ax <<= 1;
     ax <<= 1;
+    dx = ax;
     ax <<= 1;
     ax <<= 1;
+    ax += dx;
+loc_11252:
     di = ax;
-    ax = memoryAGet16(ss, bp + 10 - 2);
+    ax = memoryAGet16(ds, si + 2);
+    ax += 0x0020;
+    ax &= 0xfff8;
     ax >>= 1;
     ax >>= 1;
     ax >>= 1;
     di += ax;
-    cx = memoryAGet16(ss, bp + 10 - 2);
-    cx &= 0x0007;
-    al = 0x80;
-    al >>= cl;
-    memoryASet(es, di, memoryAGet(es, di) | al);
-}
-void sub_1382a()
-{
-    al = 0x00;
-    memoryASet(ds, 0x9550, al);
-    memoryASet(ds, 0x9551, al);
-    memoryASet(ds, 0x9552, al);
-    memoryASet(ds, 0x9506, 0x01);
-    memoryASet(ds, 0x9505, 0x00);
-}
-void sub_13840()
-{
-    ah = memoryAGet(ds, 0x955e);
-    if (ah == 0x00)
-        goto loc_1384a;
-    return;
-loc_1384a:
-    ah = memoryAGet(ds, 0x9506);
-    if (ah != 0x00)
-        goto loc_13854;
-    return;
-loc_13854:
-    ah = memoryAGet(ds, 0x9550);
-    if (ah != 0x00)
-        goto loc_13866;
-    push(bx);
-    memoryASet(ds, 0x9550, al);
-    sub_13914();
-    bx = pop();
-    return;
-loc_13866:
-    ah = memoryAGet(ds, 0x9551);
-    if (ah != 0x00)
-        goto loc_13873;
-    memoryASet(ds, 0x9551, al);
-    return;
-loc_13873:
-    if (al <= memoryAGet(ds, 0x9552))
-        return;
-    memoryASet(ds, 0x9552, al);
-}
-void sub_13914()
-{
-    al--;
-    bl = al;
-    bh = 0x00;
-    bx <<= 1;
-    bx = memoryAGet16(ds, bx + 35812);
-    al = memoryAGet(ds, bx + 1);
-    memoryASet(ds, 0x9557, al);
-    if (bx != 0x8c2c)
-        goto loc_13941;
-    ax = memoryAGet16(ds, 0x9536);
-    ah = al;
-    al = 0x00;
-    ax <<= 1;
-    ax <<= 1;
-    ax = -ax;
-    ax += 0x1f40;
-    memoryASet16(ds, 0x8c2e, ax);
-    goto loc_13966;
-loc_13941:
-    if (bx != 0x8c32)
-        goto loc_13966;
-    al = memoryAGet(ds, 0x1ba0);
-    ax &= 0x007f;
-    if (ax <= 0x003f)
-        goto loc_13957;
+    ax = memoryAGet16(ds, si + 10);
+    if ((short)ax < (short)0x0080)
+        goto loc_11270;
     ax -= 0x0040;
-    goto loc_1395c;
-loc_13957:
-    ax = -ax;
-    ax += 0x003f;
-loc_1395c:
-    ax <<= 1;
-    ax <<= 1;
-    ax += 0x0190;
-    memoryASet16(ds, 0x8c34, ax);
-loc_13966:
-    ax = memoryAGet16(ds, bx + 2);
-    memoryASet16(ds, 0x9558, ax);
-    ax = memoryAGet16(ds, bx + 4);
-    memoryASet16(ds, 0x955a, ax);
-    bl = memoryAGet(ds, bx);
-    memoryASet(ds, 0x9553, bl);
-    if ((char)bl <= (char)0x00)
-        goto loc_1398f;
-    bl--;
-    bh = 0x00;
-    bx <<= 1;
-    ax = memoryAGet16(ds, bx + 35932);
-    memoryASet16(ds, 0x9555, ax);
-    memoryASet(ds, 0x9554, 0x00);
-loc_1398f:
-    al = 0xb6;
-    out8(0x43, al);
-    ax = memoryAGet16(ds, 0x9558);
-    out8(0x42, al);
-    al = ah;
-    out8(0x42, al);
-    al = in8(0x61);
-    al |= 0x03;
-    out8(0x61, al);
+loc_11270:
+    bx = 0x01a4;
+    mul16(bx);
+    bx = memoryAGet16(ds, si + 2);
+    bx += 0x0020;
+    bx &= 0x0006;
+    bx += 0x0062;
+    ds = memoryAGet16(ds, bx);
+    si = ax;
+    si += bp;
+    bp = 0x0024;
+    dh = 0x03;
+loc_1128d:
+    push(cx);
+    cx = 0x0004;
+loc_11291:
+    ah = memoryAGet(ds, si);
+    if (!ah)
+        goto loc_112c9;
+    al = 0x08;
+    dl = 0xce;
+    out16(dx, ax);
+    dl = 0xc4;
+    ax = 0x0f02;
+    out16(dx, ax);
+    ah = memoryAGet(es, di);
+    ah = 0x01;
+    out16(dx, ax);
+    ah = memoryAGet(ds, si + 1);
+    memoryASet(es, di, ah);
+    ah = 0x02;
+    out16(dx, ax);
+    ah = memoryAGet(ds, si + 2);
+    memoryASet(es, di, ah);
+    ah = 0x04;
+    out16(dx, ax);
+    ah = memoryAGet(ds, si + 3);
+    memoryASet(es, di, ah);
+    ah = 0x08;
+    out16(dx, ax);
+    ah = memoryAGet(ds, si + 4);
+    memoryASet(es, di, ah);
+loc_112c9:
+    di++;
+    si += 0x0005;
+    if (--cx)
+        goto loc_11291;
+    di += bp;
+    cx = pop();
+    cx--;
+    if (cx)
+        goto loc_1128d;
 }
-void sub_139a3()
+void sub_112d6()
 {
+    push(ds);
+    push(es);
+    ds = memoryAGet16(ds, 0x0062);
+    bp = 0x0064;
+    di = 0;
+    si = 0;
+    cx = 0x0888;
+loc_112e6:
+    push(cx);
+    push(si);
+    push(di);
+    ah = memoryAGet(ds, si);
+    al = memoryAGet(ds, si + 5);
+    bh = memoryAGet(ds, si + 10);
+    bl = 0x00;
+    push(bp);
+    cx = 0x0003;
+loc_112f7:
+    flags.carry = 0;
+    ah = rcr8(ah, 0x01);
+    al = rcr8(al, 0x01);
+    bh = rcr8(bh, 0x01);
+    bl = rcr8(bl, 0x01);
+    flags.carry = 0;
+    ah = rcr8(ah, 0x01);
+    al = rcr8(al, 0x01);
+    bh = rcr8(bh, 0x01);
+    bl = rcr8(bl, 0x01);
+    es = memoryAGet16(cs, bp);
+    bp++;
+    bp++;
+    memoryASet(es, di, ah);
+    memoryASet(es, di + 5, al);
+    memoryASet(es, di + 10, bh);
+    memoryASet(es, di + 15, bl);
+    if (--cx)
+        goto loc_112f7;
+    bp = pop();
+    si++;
+    di++;
+    cx = 0x0004;
+loc_11326:
+    push(cx);
+    ah = memoryAGet(ds, si);
+    al = memoryAGet(ds, si + 5);
+    bh = memoryAGet(ds, si + 10);
+    bl = 0x00;
+    push(bp);
+    cx = 0x0003;
+loc_11335:
+    flags.carry = 0;
+    ah = rcr8(ah, 0x01);
+    al = rcr8(al, 0x01);
+    bh = rcr8(bh, 0x01);
+    bl = rcr8(bl, 0x01);
+    flags.carry = 0;
+    ah = rcr8(ah, 0x01);
+    al = rcr8(al, 0x01);
+    bh = rcr8(bh, 0x01);
+    bl = rcr8(bl, 0x01);
+    es = memoryAGet16(cs, bp);
+    bp++;
+    bp++;
+    memoryASet(es, di, ah);
+    memoryASet(es, di + 5, al);
+    memoryASet(es, di + 10, bh);
+    memoryASet(es, di + 15, bl);
+    if (--cx)
+        goto loc_11335;
+    bp = pop();
+    si++;
+    di++;
+    cx = pop();
+    if (--cx)
+        goto loc_11326;
+    di = pop();
+    si = pop();
+    si += 0x0014;
+    di += 0x0014;
+    cx = pop();
+    cx--;
+    if (!cx)
+        goto loc_11373;
+    goto loc_112e6;
+loc_11373:
+    es = pop();
+    ds = pop();
+}
+void sub_11376()
+{
+    push(ds);
+    push(es);
+    es = memoryAGet16(ds, 0x005a);
+    si = 0x0b00;
+    dx = 0x03ce;
+    ax = 0x0001;
+    out16(dx, ax);
+    ax = 0x0003;
+    out16(dx, ax);
+    ax = 0x0005;
+    out16(dx, ax);
+    si = 0x9bd6;
+loc_11391:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        goto loc_113b0;
+    if (!ax)
+        goto loc_113aa;
+    if (memoryAGet16(ds, si + 10) == 0x00fe)
+        goto loc_113aa;
+    push(bx);
+    push(ds);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x0040));
+    si = pop();
+    ds = pop();
+    bx = pop();
+loc_113aa:
+    si += 0x001a;
+    goto loc_11391;
+loc_113b0:
+    dx = 0x03c4;
+    ax = 0x0f02;
+    out16(dx, ax);
+    dl = 0xce;
+    ax = 0x0105;
+    out16(dx, ax);
+    ax = 0x0001;
+    out16(dx, ax);
+    ax = 0xff08;
+    out16(dx, ax);
+    es = pop();
+    ds = pop();
+}
+void sub_15f40()
+{
+    if (memoryAGet16(ds, 0x762d) != 0x0001)
+        goto loc_15f52;
+    if (memoryAGet16(ds, 0x762f) == 0x0001)
+        return;
+    sub_17a31();
+loc_15f51:
+    return;
+loc_15f52:
+    bx = memoryAGet16(ds, 0x5b3c);
+    if (bx)
+        goto loc_15f5b;
+    return;
+loc_15f5b:
+    cx = memoryAGet16(ds, 0x8bf0);
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+    cx += 0x0025;
+loc_15f68:
+    al = memoryAGet(ds, bx);
+    if (al)
+        goto loc_15f6f;
+    return;
+loc_15f6f:
+    ah = al;
+    bx++;
+    al = memoryAGet(ds, bx);
+    if (al < cl)
+        goto loc_15f79;
+    return;
+loc_15f79:
+    if (!(ah & 0x80))
+        goto loc_15f90;
+    bx++;
+loc_15f7f:
+    bx++;
+loc_15f80:
+    al = memoryAGet(ds, bx);
+    bx++;
+    al &= 0x03;
+    if (!al)
+        goto loc_15f68;
+loc_15f87:
+    bx += 0x0004;
+    al--;
+    if (al)
+        goto loc_15f87;
+    goto loc_15f68;
+loc_15f90:
+    bx++;
+    if (!(memoryAGet(ds, bx) & 0x80))
+        goto loc_15fd4;
+    al = memoryAGet(ds, 0x5b3e);
+    if (al)
+        goto loc_15fb9;
+    push(cx);
+    cx = memoryAGet16(ds, 0x8bf0);
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+    ah = cl;
+    bx--;
+    al = memoryAGet(ds, bx);
+    bx++;
+    al -= ah;
+    cx = pop();
+    if (al < 0x05)
+        goto loc_15fb9;
+    if (al < 0x22)
+        goto loc_15f7f;
+loc_15fb9:
+    bx--;
+    bx--;
+    push(bx);
+loc_15fbc:
+    si = bx;
+    sub_16205();
+    bx = pop();
+loc_15fc2:
+    bx++;
+    bx++;
+    bx++;
+    cx = memoryAGet16(ds, 0x8bf0);
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+    cx += 0x0025;
+    goto loc_15f80;
+loc_15fd4:
+    bx--;
+    bx--;
+    push(bx);
+    si = bx;
+    dx = 0;
+    sub_16222();
+    bx = pop();
+    if (!flags.carry)
+        goto loc_15fc2;
+    push(bx);
+    goto loc_15fbc;
+}
+void sub_15fe4()
+{
+    bx = memoryAGet16(ds, 0x8bfc);
+    memoryASet16(ds, 0x5b3c, bx);
+    if (bx)
+        goto loc_15ff1;
+    return;
+loc_15ff1:
+    al = memoryAGet(ds, bx);
+    if (al)
+        goto loc_15ff8;
+    return;
+loc_15ff8:
+    bx++;
+    cx = memoryAGet16(ds, 0x8bf0);
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+    if (cl == memoryAGet(ds, bx))
+        goto loc_1601c;
+    if (cl < memoryAGet(ds, bx))
+        goto loc_1601c;
+    bx += 0x0002;
+    al = memoryAGet(ds, bx);
+    bx++;
+    al &= 0x03;
+    if (!al)
+        goto loc_15ff1;
+loc_16013:
+    bx += 0x0004;
+    al--;
+    if (al)
+        goto loc_16013;
+    goto loc_15ff1;
+loc_1601c:
+    bx--;
+    memoryASet16(ds, 0x5b3c, bx);
+}
+void sub_16022()
+{
+    sub_16126();
+    if (!flags.carry)
+        goto loc_16028;
+    return;
+loc_16028:
+    ax = 0;
+    memoryASet16(ds, di + 50, ax);
+    memoryASet16(ds, di + 24, ax);
+    memoryASet16(ds, di + 34, ax);
+    memoryASet16(ds, di + 28, si);
+    cx = 0;
+    cl = memoryAGet(ds, si);
+    cx += cx;
+    bx = 0x117e;
+    bx += cx;
+    bx = memoryAGet16(ds, bx);
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    memoryASet16(ds, di + 30, ax);
+    bx++;
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    memoryASet16(ds, di + 32, ax);
+    bx++;
+    al = memoryAGet(ds, bx);
+    al &= 0xc0;
+    dl = al;
+    ax = 0;
+    al = memoryAGet(ds, si + 3);
+    al &= 0x3c;
+    if (al != 0x10)
+        goto loc_16072;
+    memoryASet16(ds, di + 50, 0x0060);
+    if (!(memoryAGet(ds, si + 3) & 0x40))
+        goto loc_16072;
+    memoryASet16(ds, di + 28, 0x0000);
+loc_16072:
+    al |= 0x01;
+    al |= dl;
+    memoryASet(ds, di, al);
+    al &= 0x3f;
+    dl = al;
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    al += al;
+    al += al;
+    al |= dl;
+    memoryASet(ds, di + 44, al);
+    bx++;
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    memoryASet16(ds, di + 36, ax);
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    memoryASet16(ds, di + 22, ax);
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    memoryASet16(ds, di + 40, ax);
+    ax = memoryAGet16(ds, bx);
+    memoryASet16(ds, di + 42, ax);
+    al = memoryAGet(ds, si + 2);
+    ax &= 0x001f;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    if (!(memoryAGet(ds, si + 2) & 0x20))
+        goto loc_160ba;
+    ax++;
+    ax++;
+    ax++;
+    ax++;
+loc_160ba:
+    memoryASet16(ds, di + 2, ax);
+    ax = memoryAGet16(ds, 0x8bf0);
+    ax >>= 1;
+    ax >>= 1;
+    ax >>= 1;
+    dl = al;
+    al = memoryAGet(ds, si + 1);
+    al -= dl;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    if (!(memoryAGet(ds, si + 2) & 0x40))
+        goto loc_160dc;
+    ax++;
+    ax++;
+    ax++;
+loc_160dc:
+    memoryASet16(ds, di + 4, ax);
+    memoryASet(ds, si, memoryAGet(ds, si) | 0x80);
+    al = memoryAGet(ds, di);
+    al &= 0x3f;
+    ah = 0x29;
+    if (al != 0x21)
+        goto loc_160f2;
+    memoryASet(ds, di + 10, ah);
+    return;
+  // gap 1 bytes
+loc_160f2:
+    ah = 0x27;
+    if (al != 0x29)
+        goto loc_160fe;
+    memoryASet(ds, di + 10, ah);
+    return;
+  // gap 1 bytes
+loc_160fe:
+    ah = 0x28;
+    if (al != 0x2d)
+        goto loc_1610a;
+    memoryASet(ds, di + 10, ah);
+    return;
+  // gap 1 bytes
+loc_1610a:
+    push(si);
+    push(di);
+    push(bx);
+    si = di;
+    ax = memoryAGet16(ds, si + 24);
+    push(ax);
+    ax = memoryAGet16(ds, si + 22);
+    push(ax);
+    sub_1718e();
+    ax = pop();
+    memoryASet16(ds, si + 22, ax);
+    ax = pop();
+    memoryASet16(ds, si + 24, ax);
+    bx = pop();
+    di = pop();
+    si = pop();
+}
+void sub_16126() // +returnCarry
+{
+    di = 0x0c28;
+loc_16129:
+    ax = memoryAGet16(ds, di);
+    if ((char)ah < 0)
+        goto loc_16138;
+    if (!(al & 0x01))
+        goto loc_1613a;
+    di += 0x0034;
+    goto loc_16129;
+loc_16138:
+    flags.carry = 1;
+    return;
+loc_1613a:
+    flags.carry = 0;
+}
+void sub_1613c()
+{
+    push(cx);
+    cx = memoryAGet16(ds, si + 2);
+    if ((short)cx < (short)0x0000)
+        goto loc_1615c;
+    if ((short)cx > (short)0x00e8)
+        goto loc_1615c;
+    cx = memoryAGet16(ds, si + 4);
+    if ((short)cx < (short)0x0000)
+        goto loc_1615c;
+    if ((short)cx >= (short)0x0128)
+        goto loc_1615c;
+    cx = pop();
+    flags.carry = 0;
+    return;
+loc_1615c:
+    cx = pop();
+    flags.carry = 1;
+}
+void sub_1615f()
+{
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        return;
+    bx = memoryAGet16(ds, si + 28);
+    if (!bx)
+        goto loc_1616f;
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+loc_1616f:
+    memoryASet16(ds, si, 0x0000);
+}
+void sub_16174()
+{
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        return;
+    bx = memoryAGet16(ds, si + 28);
+    if (!bx)
+        goto loc_1618a;
+    if (memoryAGet(ds, bx + 3) & 0x40)
+        goto loc_1618a;
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+loc_1618a:
+    memoryASet16(ds, si, 0x0000);
+}
+void sub_1618f()
+{
+    push(si);
+    si = 0x0b56;
+loc_16193:
+    if (memoryAGet16(ds, si) == 0xffff)
+        goto loc_161ad;
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        goto loc_161a8;
+    bx = memoryAGet16(ds, si + 28);
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+    memoryASet16(ds, si, 0x0000);
+loc_161a8:
+    si += 0x0034;
+    goto loc_16193;
+loc_161ad:
+    si = 0x0c28;
+loc_161b0:
+    if (memoryAGet16(ds, si) == 0xffff)
+        goto loc_161ca;
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        goto loc_161c5;
+    bx = memoryAGet16(ds, si + 28);
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+    memoryASet16(ds, si, 0x0000);
+loc_161c5:
+    si += 0x0034;
+    goto loc_161b0;
+loc_161ca:
+    si = pop();
+}
+void sub_16205()
+{
+  goto loc_16205;
+loc_161ce:
+    memoryASet(ds, si, memoryAGet(ds, si) | 0x80);
+    memoryASet16(ds, 0x5dcc, 0x0001);
+    memoryASet16(ds, 0x65e1, 0x0018);
+    si = 0x661d;
+    di = 0x6624;
+    cx = 0x0006;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    ax = 0x0013;
+    sub_1aecd();
+    return;
+loc_161ef:
+    memoryASet(ds, si, memoryAGet(ds, si) | 0x80);
+    memoryASet16(ds, 0x5dcc, 0x0000);
+    si = 0x6624;
+    sub_16bc7();
+    ax = 0x0001;
+    sub_1aecd();
+    return;
+loc_16205:
+    ah = 0;
+    al = memoryAGet(ds, si);
+    if (ax == 0x0078)
+        goto loc_161ce;
+    if (ax == 0x007c)
+        goto loc_161ef;
+    if ((short)ax >= (short)0x0075)
+        goto loc_1621c;
+    sub_16022();
+    return;
+loc_1621c:
+    sub_1691d();
+}
+void sub_16222() // +returnCarry
+{
+    bool temp_cf;
+    bool temp_cf1;
+    bool temp_cf2;
+    bool temp_cf3;
+    bool temp_cf4;
+    bool temp_cf5;
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    al = memoryAGet(ds, si + 3);
+    flags.carry = 0;
+    al &= 0x03;
+    if (al)
+        goto loc_1623e;
+    return;
+loc_1623e:
+    si += 0x0004;
+    push(memoryAGet16(ds, 0x54f8));
+    push(ax);
+    memoryASet16(ds, 0x54f8, pop());
+    ax = pop();
+    al = memoryAGet(ds, si + 2);
+    cl = al;
+    al >>= 1;
+    al >>= 1;
+    al >>= 1;
+    al >>= 1;
+    al &= 0x0f;
+    al++;
+    ah = al;
+    dx = memoryAGet16(ds, 0x8bf0);
+    dx >>= 1;
+    dx >>= 1;
+    dx >>= 1;
+    al = memoryAGet(ds, si + 1);
+    al -= dl;
+    if ((char)al >= 0)
+        goto loc_1627d;
+    al += ah;
+    if ((char)al >= 0)
+        goto loc_16277;
+loc_16273:
+    flags.carry = 0;
+    goto loc_163f5;
+loc_16277:
+    if (!al)
+        goto loc_16273;
+    ah = al;
+    al = 0;
+loc_1627d:
+    if (al >= 0x20)
+        goto loc_16273;
+    bx = 0;
+    bl = al;
+    bx += bx;
+    bx += bx;
+    bx += bx;
+    ah += ah;
+    ah += ah;
+    ah += ah;
+    cl &= 0x0f;
+    cl++;
+    cl += cl;
+    cl += cl;
+    cl += cl;
+    dl = cl;
+    dh = memoryAGet(ds, si);
+    push(si);
+    al = memoryAGet(ds, si + 3);
+    temp_cf = al & 1;
+    al >>= 1;
+    if (!temp_cf)
+        goto loc_162cd;
+    push(bx);
+    cl = al;
+    push(cx);
+    si = 0x0b1c;
+    sub_16407();
+    cx = pop();
+    al = cl;
+    bx = pop();
+    if (!flags.carry)
+        goto loc_162cd;
+loc_162b8:
+    si = pop();
+    al = memoryAGet(ds, si + 3);
+    if ((char)al >= 0)
+        goto loc_162c3;
+    goto loc_163f5;
+loc_162c3:
+    al &= 0x40;
+    if (al)
+        goto loc_162cb;
+    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) | 0x80);
+loc_162cb:
+    flags.carry = 1;
+    return;
+loc_162cd:
+    temp_cf1 = al & 1;
+    al >>= 1;
+    if (!temp_cf1)
+        goto loc_162ec;
+    cl = al;
+    if (memoryAGet16(ds, 0x0b00) != 0x0001)
+        goto loc_162ea;
+    push(cx);
+    push(bx);
+    sub_164a0();
+    bx = pop();
+    cx = pop();
+    if (!flags.carry)
+        goto loc_162ea;
+    memoryASet(ds, 0x5e20, 0xff);
+    goto loc_162b8;
+loc_162ea:
+    al = cl;
+loc_162ec:
+    temp_cf2 = al & 1;
+    al >>= 1;
+    if (!temp_cf2)
+        goto loc_1630f;
+    cl = al;
+    if (memoryAGet16(ds, 0x0b38) != 0x0002)
+        goto loc_1630d;
+    al = memoryAGet(ds, 0x0b4a);
+    if ((char)al <= (char)0x01)
+        goto loc_1630d;
+    if ((char)al > (char)0x04)
+        goto loc_1630d;
+    push(cx);
+    push(bx);
+    sub_164e1();
+    bx = pop();
+    cx = pop();
+    if (flags.carry)
+        goto loc_162b8;
+loc_1630d:
+    al = cl;
+loc_1630f:
+    temp_cf3 = al & 1;
+    al >>= 1;
+    if (!temp_cf3)
+        goto loc_1632f;
+    cl = al;
+    if (memoryAGet16(ds, 0x7ecc) != 0x0001)
+        goto loc_1632d;
+    push(cx);
+    push(bx);
+    sub_1646e();
+    bx = pop();
+    cx = pop();
+    if (!flags.carry)
+        goto loc_1632d;
+    ax = 0x0014;
+    sub_1aecd();
+    goto loc_162b8;
+loc_1632d:
+    al = cl;
+loc_1632f:
+    temp_cf4 = al & 1;
+    al >>= 1;
+    if (!temp_cf4)
+        goto loc_16389;
+    cl = al;
+    push(si);
+    si = 0x0b56;
+loc_16339:
+    bp = memoryAGet16(cs, si);
+    if (bp == 0xffff)
+        goto loc_1637d;
+    if (!(bp & 0x0001))
+        goto loc_16378;
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    push(cx);
+    push(bx);
+    sub_16519();
+    bx = pop();
+    cx = pop();
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    if (flags.carry)
+        goto loc_16382;
+loc_16378:
+    si += 0x0034;
+    goto loc_16339;
+loc_1637d:
+    si = pop();
+    flags.carry = 0;
+    goto loc_16387;
+  // gap 1 bytes
+loc_16382:
+    si = pop();
+    flags.carry = 1;
+    goto loc_162b8;
+loc_16387:
+    al = cl;
+loc_16389:
+    temp_cf5 = al & 1;
+    al >>= 1;
+    if (!temp_cf5)
+        goto loc_163f0;
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    bx = 0x0c28;
+loc_163a4:
+    al = memoryAGet(ds, bx + 1);
+    if ((char)al < 0)
+        goto loc_163f0;
+    al = memoryAGet(ds, bx);
+    if (!al)
+        goto loc_163eb;
+    if (bx == dx)
+        goto loc_163eb;
+    si = bx;
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    push(cx);
+    push(bx);
+    sub_16555();
+    bx = pop();
+    cx = pop();
+    push(memoryAGet16(ds, 0x54f4));
+    push(dx);
+    memoryASet16(ds, 0x54f4, pop());
+    dx = pop();
+    push(memoryAGet16(ds, 0x54f6));
+    push(bx);
+    memoryASet16(ds, 0x54f6, pop());
+    bx = pop();
+    if (!flags.carry)
+        goto loc_163eb;
+    goto loc_162b8;
+loc_163eb:
+    bx += 0x0034;
+    goto loc_163a4;
+loc_163f0:
+    si = pop();
+    memoryASet(ds, si + 3, memoryAGet(ds, si + 3) & 0x7f);
+loc_163f5:
+    push(memoryAGet16(ds, 0x54f8));
+    push(ax);
+    memoryASet16(ds, 0x54f8, pop());
+    ax = pop();
+    al--;
+    if (!al)
+        return;
+    goto loc_1623e;
+}
+void sub_16407() // +returnCarry
+{
+    if (memoryAGet16(ds, 0x7e16) != 0x0001)
+        goto loc_16410;
+    flags.carry = 0;
+    return;
+loc_16410:
+    bp = memoryAGet16(ds, 0x0b1e);
+    bp += 0x0014;
+    cx = 0;
+    cl = dh;
+    if ((short)cx >= (short)bp)
+        goto loc_1646c;
+    bp -= 0x0010;
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx <= (short)bp)
+        goto loc_1646c;
+    bp = memoryAGet16(ds, 0x0b20);
+    cx = bx;
+    if (memoryAGet16(ds, 0x7e04) == 0x0001)
+        goto loc_16454;
+    bp += 0x0015;
+    if ((short)cx >= (short)bp)
+        goto loc_1646c;
+    bp -= 0x0015;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx <= (short)bp)
+        goto loc_1646c;
+    goto loc_1646a;
+  // gap 1 bytes
+loc_16454:
+    bp += 0x0015;
+    if ((short)cx >= (short)bp)
+        goto loc_1646c;
+    bp -= 0x0010;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx <= (short)bp)
+        goto loc_1646c;
+loc_1646a:
+    flags.carry = 1;
+    return;
+loc_1646c:
+    flags.carry = 0;
+}
+void sub_1646e() // +returnCarry
+{
+    bp = memoryAGet16(ds, 0x7ece);
+    cx = 0;
+    cl = dh;
+    if ((short)cx > (short)bp)
+        goto loc_1649e;
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx < (short)bp)
+        goto loc_1649e;
+    bp = memoryAGet16(ds, 0x7ed0);
+    cx = bx;
+    if ((short)cx > (short)bp)
+        goto loc_1649e;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx < (short)bp)
+        goto loc_1649e;
+    flags.carry = 1;
+    return;
+loc_1649e:
+    flags.carry = 0;
+}
+void sub_164a0() // +returnCarry
+{
+    if (memoryAGet16(ds, 0x0b00) != 0x0001)
+        goto loc_164df;
+    bp = memoryAGet16(cs, 0x0b02);
+    bp += 0x0008;
+    cx = 0;
+    cl = dh;
+    if ((short)cx > (short)bp)
+        goto loc_164df;
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx < (short)bp)
+        goto loc_164df;
+    bp = memoryAGet16(cs, 0x0b04);
+    bp += 0x0004;
+    cx = bx;
+    if ((short)cx > (short)bp)
+        goto loc_164df;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx < (short)bp)
+        goto loc_164df;
+    flags.carry = 1;
+    return;
+loc_164df:
+    flags.carry = 0;
+}
+void sub_164e1() // +returnCarry
+{
+    bp = memoryAGet16(ds, 0x0b3a);
+    bp += 0x000c;
+    cx = 0;
+    cl = dh;
+    if ((short)cx > (short)bp)
+        goto loc_16517;
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx < (short)bp)
+        goto loc_16517;
+    bp = memoryAGet16(ds, 0x0b3c);
+    bp += 0x000a;
+    cx = bx;
+    if ((short)cx > (short)bp)
+        goto loc_16517;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx < (short)bp)
+        goto loc_16517;
+    flags.carry = 1;
+    return;
+loc_16517:
+    flags.carry = 0;
+}
+void sub_16519() // +returnCarry
+{
+    bp = memoryAGet16(ds, si + 2);
+    bp += 0x0014;
+    cx = 0;
+    cl = dh;
+    if ((short)cx >= (short)bp)
+        goto loc_16553;
+    bp -= 0x0010;
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx <= (short)bp)
+        goto loc_16553;
+    bp = memoryAGet16(ds, si + 4);
+    cx = bx;
+    bp += 0x0015;
+    if ((short)cx >= (short)bp)
+        goto loc_16553;
+    bp -= 0x0015;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx <= (short)bp)
+        goto loc_16553;
+    flags.carry = 1;
+    return;
+loc_16553:
+    flags.carry = 0;
+}
+void sub_16555() // +returnCarry
+{
+    bp = memoryAGet16(ds, si + 2);
+    bp += memoryAGet16(ds, si + 30);
+    cx = 0;
+    cl = dh;
+    if ((short)cx >= (short)bp)
+        goto loc_1658f;
+    bp -= memoryAGet16(ds, si + 30);
+    al = dh;
+    dh = 0;
+    cx += dx;
+    dh = al;
+    if ((short)cx <= (short)bp)
+        goto loc_1658f;
+    bp = memoryAGet16(ds, si + 4);
+    cx = bx;
+    bp += memoryAGet16(ds, si + 32);
+    if ((short)cx >= (short)bp)
+        goto loc_1658f;
+    bp -= memoryAGet16(ds, si + 32);
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    cx += ax;
+    tl = ah; ah = al; al = tl;
+    if ((short)cx <= (short)bp)
+        goto loc_1658f;
+    flags.carry = 1;
+    return;
+loc_1658f:
+    flags.carry = 0;
+}
+void sub_16591()
+{
+    bool temp_cf;
+    bool temp_cf1;
+  goto loc_16591;
+loc_1615f:
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        return;
+    bx = memoryAGet16(ds, si + 28);
+    if (!bx)
+        goto loc_1616f;
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+loc_1616f:
+    memoryASet16(ds, si, 0x0000);
+loc_16173:
+    return;
+loc_16174:
+    if (!(memoryAGet16(ds, si) & 0x0001))
+        return;
+    bx = memoryAGet16(ds, si + 28);
+    if (!bx)
+        goto loc_1618a;
+    if (memoryAGet(ds, bx + 3) & 0x40)
+        goto loc_1618a;
+    memoryASet(ds, bx, memoryAGet(ds, bx) & 0x7f);
+loc_1618a:
+    memoryASet16(ds, si, 0x0000);
+loc_1618e:
+    return;
+  // gap 1026 bytes
+loc_16591:
+    al = memoryAGet(ds, si);
+    al &= 0x3f;
+    ah = 0x29;
+    if (al != 0x21)
+        goto loc_1659e;
+    goto loc_167d9;
+loc_1659e:
+    ah = 0x27;
+    if (al != 0x29)
+        goto loc_165a7;
+    goto loc_167d9;
+loc_165a7:
+    ah = 0x28;
+    if (al != 0x2d)
+        goto loc_165b0;
+    goto loc_167d9;
+loc_165b0:
+    if (!(al & 0x02))
+        goto loc_165b7;
+    goto loc_16748;
+loc_165b7:
+    bx = memoryAGet16(ds, si + 36);
+loc_165ba:
+    al = memoryAGet(ds, bx);
+    if (al == 0x00)
+        goto loc_165cf;
+    if (al != 0xff)
+        goto loc_16604;
+    ax = memoryAGet16(ds, bx + 1);
+    sub_1aecd();
+    bx += 0x0003;
+    goto loc_165ba;
+loc_165cf:
+    bx++;
+    bx = memoryAGet16(ds, bx);
+    memoryASet16(ds, si + 36, bx);
+    al = memoryAGet(ds, si + 50);
+    if (!(al & 0x20))
+        goto loc_165df;
+    goto loc_16174;
+loc_165df:
+    if (!(al & 0x10))
+        goto loc_165ba;
+    if (!(al & 0x08))
+        goto loc_165ee;
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) & 0xf7);
+    goto loc_165f2;
+  // gap 1 bytes
+loc_165ee:
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) & 0xef);
+loc_165f2:
+    al = memoryAGet(ds, si);
+    al &= 0x1c;
+    if (al == 0x14)
+        goto loc_165fd;
+    goto loc_1679d;
+loc_165fd:
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) | 0x20);
+    goto loc_1679d;
+loc_16604:
+    bx++;
+    al = memoryAGet(ds, bx);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    if (al != 0x07)
+        goto loc_16615;
+    al++;
+loc_16615:
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 46, ax);
+    if ((short)ax >= 0)
+        goto loc_16625;
+    temp_cf = (ax + memoryAGet16(ds, si + 2)) >= 0x10000;
+    ax += memoryAGet16(ds, si + 2);
+    if (temp_cf)
+        goto loc_1662a;
+    goto loc_1662a;
+  // gap 1 bytes
+loc_16625:
+    temp_cf1 = (ax + memoryAGet16(ds, si + 2)) >= 0x10000;
+    ax += memoryAGet16(ds, si + 2);
+    if (!temp_cf1)
+        goto loc_1662a;
+loc_1662a:
+    memoryASet16(ds, si + 2, ax);
+    dh = 0;
+    al = memoryAGet(ds, bx);
+    al &= 0x0f;
+    if (!(al & 0x08))
+        goto loc_1663b;
+    dh--;
+    al |= 0xf0;
+loc_1663b:
+    if (al != 0x07)
+        goto loc_16641;
+    al++;
+loc_16641:
+    dl = al;
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 48, ax);
+    cx = bx;
+    bx = memoryAGet16(ds, si + 4);
+    bx += dx;
+    memoryASet16(ds, si + 4, bx);
+    sub_1613c();
+    if (!flags.carry)
+        goto loc_16659;
+    goto loc_1615f;
+loc_16659:
+    bx = cx;
+    bx--;
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 34, memoryAGet16(ds, si + 34) + 1);
+    if (ax == memoryAGet16(ds, si + 34))
+        goto loc_16669;
+    if (ax >= memoryAGet16(ds, si + 34))
+        goto loc_16673;
+loc_16669:
+    memoryASet16(ds, si + 34, 0x0000);
+    bx++;
+    bx++;
+    memoryASet16(ds, si + 36, bx);
+loc_16673:
+    sub_1718e();
+    if (!(memoryAGet16(ds, si) & 0x0080))
+        goto loc_166bd;
+    if (memoryAGet16(ds, si) & 0x0040)
+        goto loc_16685;
+    goto loc_16748;
+loc_16685:
+    if (memoryAGet16(ds, 0x0b38) != 0x0001)
+        goto loc_166bd;
+    bx = memoryAGet16(ds, 0x0b3c);
+    dh = memoryAGet(ds, 0x0b3a);
+    dh += 0x08;
+    dl = 0x08;
+    ah = 0x10;
+    sub_16555();
+    if (!flags.carry)
+        goto loc_166bd;
+    memoryASet16(ds, 0x0b38, 0x0002);
+    memoryASet16(ds, 0x0b50, 0x0000);
+    memoryASet16(ds, 0x0b4e, 0x7eb2);
+    memoryASet16(ds, 0x0b3c, memoryAGet16(ds, 0x0b3c) - 0x0005);
+    memoryASet16(ds, 0x0b4a, 0x0000);
+loc_166bd:
+    if (memoryAGet16(ds, si) & 0x0040)
+        goto loc_166c6;
+    goto loc_16748;
+loc_166c6:
+    if (memoryAGet16(ds, si + 10) == 0x00fe)
+        goto loc_16748;
+    di = 0x0b56;
+loc_166d3:
+    ax = memoryAGet16(ds, di);
+    if (ax == 0xffff)
+        goto loc_16717;
+    if (!(al & 0x01))
+        goto loc_16712;
+    if (memoryAGet16(ds, di + 22) == 0x0001)
+        goto loc_16712;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    push(si);
+    push(di);
+    si = di;
+    sub_16519();
+    if (!flags.carry)
+        goto loc_16710;
+    push(si);
+    si = 0x6711;
+    sub_16bc7();
+    si = pop();
+    sub_17674();
+loc_16710:
+    di = pop();
+    si = pop();
+loc_16712:
+    di += 0x0034;
+    goto loc_166d3;
+loc_16717:
+    if (memoryAGet16(ds, 0x7e16) == 0x0001)
+        goto loc_16748;
+    if (!(memoryAGet(ds, si) & 0x40))
+        goto loc_16748;
+    ax = memoryAGet16(ds, si + 10);
+    if (ax == 0x00fe)
+        goto loc_16748;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    sub_16407();
+    if (!flags.carry)
+        goto loc_16748;
+    goto loc_168a8;
+loc_16748:
+    al = memoryAGet(ds, si + 50);
+    if (!(al & 0x40))
+        goto loc_16750;
+    return;
+loc_16750:
+    if (!(memoryAGet(ds, si + 50) & 0x10))
+        goto loc_1675c;
+    if (!(memoryAGet(ds, si) & 0x20))
+        goto loc_1675c;
+    return;
+loc_1675c:
+    push(si);
+    dx = si;
+    si = memoryAGet16(ds, si + 28);
+    sub_16222();
+    si = pop();
+    if (flags.carry)
+        goto loc_16774;
+    al = memoryAGet(ds, si);
+    al &= 0x1c;
+    if (al == 0x1c)
+        goto loc_16771;
+    return;
+loc_16771:
+    goto loc_16174;
+loc_16774:
+    al = memoryAGet(ds, si);
+    al &= 0x1c;
+    if (al)
+        goto loc_16781;
+    al = memoryAGet(ds, si);
+    al ^= 0x02;
+    memoryASet(ds, si, al);
+    return;
+loc_16781:
+    if (al != 0x1c)
+        goto loc_16786;
+    return;
+loc_16786:
+    if (al != 0x0c)
+        goto loc_1678d;
+    goto loc_16174;
+loc_1678d:
+    if (!(al & 0x08))
+        goto loc_167ca;
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) | 0x40);
+    if (!(al & 0x10))
+        goto loc_1679d;
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) | 0x20);
+loc_1679d:
+    bx = memoryAGet16(ds, si + 40);
+    cx = memoryAGet16(ds, si + 36);
+    memoryASet16(ds, si + 40, cx);
+    memoryASet16(ds, si + 36, bx);
+    bx = memoryAGet16(ds, si + 22);
+    cx = memoryAGet16(ds, si + 42);
+    memoryASet16(ds, si + 22, cx);
+    memoryASet16(ds, si + 42, bx);
+    memoryASet16(ds, si + 24, 0x0000);
+    memoryASet16(ds, si + 18, 0x0000);
+    al = memoryAGet(ds, si);
+    ah = memoryAGet(ds, si + 44);
+    memoryASet(ds, si, ah);
+    memoryASet(ds, si + 44, al);
+    return;
+loc_167ca:
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) | 0x10);
+    if (memoryAGet(ds, si) & 0x20)
+        goto loc_167d4;
+    return;
+loc_167d4:
+    memoryASet(ds, si + 50, memoryAGet(ds, si + 50) | 0x08);
+    return;
+loc_167d9:
+    memoryASet(ds, si, al);
+    memoryASet(ds, si + 10, ah);
+    memoryASet(ds, si + 11, 0x00);
+    memoryASet16(ds, si + 30, 0x0018);
+    memoryASet16(ds, si + 32, 0x0015);
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    sub_16407();
+    if (!flags.carry)
+        goto loc_16803;
+    sub_1686f();
+    sub_16174();
+loc_16803:
+    if (memoryAGet16(ds, 0x0b38) != 0x0002)
+        goto loc_1683f;
+    al = memoryAGet(ds, 0x0b4a);
+    if ((char)al <= (char)0x01)
+        goto loc_1683f;
+    if ((char)al > (char)0x04)
+        goto loc_1683f;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    if (dh >= 0x0f)
+        goto loc_1682b;
+    dh = 0;
+    goto loc_1682e;
+  // gap 1 bytes
+loc_1682b:
+    dh -= 0x10;
+loc_1682e:
+    bx -= 0x000e;
+    dl += 0x20;
+    ah += 0x1d;
+    sub_164e1();
+    if (!flags.carry)
+        goto loc_1683f;
+    sub_16174();
+loc_1683f:
+    if (memoryAGet16(ds, 0x0b00) != 0x0001)
+        goto loc_16866;
+    al = memoryAGet(ds, si);
+    if (al == 0x21)
+        goto loc_16866;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    sub_164a0();
+    if (!flags.carry)
+        goto loc_16866;
+    sub_16174();
+    memoryASet16(ds, 0x0b00, 0x0000);
+loc_16866:
+    sub_1613c();
+    if (!flags.carry)
+        return;
+    sub_1615f();
+loc_1686e:
+    return;
+  // gap 57 bytes
+loc_168a8:
+    ax = 0x000b;
+    sub_1aecd();
+    memoryASet16(ds, 0x7e16, 0x0001);
+    memoryASet16(ds, 0x0b24, 0xfb00);
+    ax = memoryAGet16(ds, 0x0b1e);
+    if ((short)ax < (short)0x0080)
+        goto loc_168cb;
+    memoryASet16(ds, 0x7e1c, 0xfffe);
+    goto loc_168d1;
+  // gap 1 bytes
+loc_168cb:
+    memoryASet16(ds, 0x7e1c, 0x0002);
+loc_168d1:
+    ax = memoryAGet16(ds, 0x6614);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        return;
+    memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
+}
+void sub_1686f()
+{
+    al = memoryAGet(ds, si);
+    if (al != 0x21)
+        goto loc_16884;
+    push(si);
+    si = 0x6717;
+    sub_16bc7();
+    si = pop();
+    ax = 0x0012;
+    sub_1aecd();
+    return;
+loc_16884:
+    if (al == 0x29)
+        goto loc_16898;
+    memoryASet16(ds, 0x6612, 0x0006);
+    sub_16c3d();
+    ax = 0x0011;
+    sub_1aecd();
+    return;
+loc_16898:
+    memoryASet16(ds, 0x6610, 0x0006);
+    sub_16c27();
+    ax = 0x0011;
+    sub_1aecd();
+}
+void sub_168a8()
+{
+    ax = 0x000b;
+    sub_1aecd();
+    memoryASet16(ds, 0x7e16, 0x0001);
+    memoryASet16(ds, 0x0b24, 0xfb00);
+    ax = memoryAGet16(ds, 0x0b1e);
+    if ((short)ax < (short)0x0080)
+        goto loc_168cb;
+    memoryASet16(ds, 0x7e1c, 0xfffe);
+    goto loc_168d1;
+  // gap 1 bytes
+loc_168cb:
+    memoryASet16(ds, 0x7e1c, 0x0002);
+loc_168d1:
+    ax = memoryAGet16(ds, 0x6614);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        return;
+    memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
+}
+void sub_168e4()
+{
+    if (memoryAGet16(ds, 0x762d) != 0x0001)
+        goto loc_168ef;
+    sub_17a8b();
+    return;
+loc_168ef:
+    si = 0x0c28;
+loc_168f2:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        return;
+    if (!(al & 0x01))
+        goto loc_16901;
+    push(si);
+    sub_16591();
+    si = pop();
+loc_16901:
+    si += 0x0034;
+    goto loc_168f2;
+}
+void sub_16907()
+{
+    di = 0x0b56;
+loc_1690a:
+    ax = memoryAGet16(ds, di);
+    if ((char)ah < 0)
+        goto loc_16919;
+    if (!(al & 0x01))
+        goto loc_1691b;
+    di += 0x0034;
+    goto loc_1690a;
+loc_16919:
+    flags.carry = 1;
+    return;
+loc_1691b:
+    flags.carry = 0;
+}
+void sub_1691d()
+{
+    sub_16907();
+    if (!flags.carry)
+        goto loc_16923;
+    return;
+loc_16923:
+    memoryASet16(ds, di + 22, 0x0000);
+    memoryASet16(ds, di + 24, 0x0000);
+    memoryASet(ds, si, memoryAGet(ds, si) | 0x80);
+    al = memoryAGet(ds, si);
+    al &= 0x03;
+    memoryASet(ds, di + 49, 0x00);
+    memoryASet(ds, di + 48, al);
+    memoryASet16(ds, di + 28, si);
+    memoryASet16(ds, di, memoryAGet16(ds, di) | 0x0001);
+    al = memoryAGet(ds, si);
+    if (!(al & 0x04))
+        goto loc_16954;
+    memoryASet16(ds, di + 10, 0x002a);
+    memoryASet16(ds, di + 50, 0x002a);
+    goto loc_1695e;
+  // gap 1 bytes
+loc_16954:
+    memoryASet16(ds, di + 10, 0x0034);
+    memoryASet16(ds, di + 50, 0x0034);
+loc_1695e:
+    al = memoryAGet(ds, si + 2);
+    ax &= 0x001f;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    memoryASet16(ds, di + 2, ax);
+    ax = memoryAGet16(ds, 0x8bf0);
+    ax >>= 1;
+    ax >>= 1;
+    ax >>= 1;
+    dl = al;
+    al = memoryAGet(ds, si + 1);
+    al -= dl;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    if (!(memoryAGet(ds, si + 2) & 0x40))
+        goto loc_1698c;
+    ax++;
+    ax++;
+    ax++;
+loc_1698c:
+    memoryASet16(ds, di + 4, ax);
+    memoryASet16(ds, di + 30, 0x0010);
+    memoryASet16(ds, di + 32, 0x0015);
+    ax = memoryAGet16(ds, di + 48);
+    if (ax != 0x0001)
+        goto loc_169b3;
+    al = memoryAGet(ds, si + 3);
+    al &= 0x3c;
+    ax <<= 1;
+    ax += 0x0008;
+    memoryASet16(ds, di + 18, ax);
+    ax = 0;
+    memoryASet16(ds, di + 20, ax);
+loc_169b3:
+    memoryASet16(ds, di + 8, 0x0100);
+    memoryASet(ds, di + 6, 0x00);
+    memoryASet16(ds, di + 16, 0x0000);
+    ax = 0x0000;
+    memoryASet16(ds, di + 34, ax);
+    memoryASet16(ds, di + 36, ax);
+    memoryASet16(ds, di + 38, ax);
+    memoryASet16(ds, di + 40, ax);
+    memoryASet16(ds, di + 42, ax);
+    memoryASet16(ds, di + 44, ax);
+    memoryASet16(ds, di + 26, 0x0000);
+    memoryASet16(ds, di + 16, 0x0002);
+}
+void sub_169e3()
+{
+    if (memoryAGet16(ds, 0x5dcc) == 0x0000)
+        return;
+    ax = memoryAGet16(ds, 0x65e1);
+    ax++;
+    if (ax != 0x0019)
+        goto loc_16a0b;
+    si = 0x6624;
+    cx = 0x0006;
     al = 0x00;
-    memoryASet(ds, 0x9550, al);
-    memoryASet(ds, 0x9551, al);
-    memoryASet(ds, 0x9552, al);
-    memoryASet(ds, 0x9557, al);
+loc_169fb:
+    if (al != memoryAGet(ds, si))
+        goto loc_16a03;
+    si++;
+    if (--cx)
+        goto loc_169fb;
+    return;
+loc_16a03:
+    si = 0x662b;
+    sub_16bf7();
+    ax = 0;
+loc_16a0b:
+    memoryASet16(ds, 0x65e1, ax);
+}
+void sub_16b3b()
+{
+    push(ds);
+    push(es);
+    push(bx);
+    sub_16c53();
+    sub_16c27();
+    sub_16c3d();
+    ax = 0x0004;
+    si = 0x6616;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = 0x000d;
+    si = 0x66f6;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = 0x0015;
+    si = 0x66fd;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = 0x001e;
+    si = 0x6704;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = 0x0004;
+    si = 0x6616;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    ax = 0x000d;
+    si = 0x66f6;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    ax = 0x0015;
+    si = 0x66fd;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    ax = 0x001e;
+    si = 0x6704;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    bx = pop();
+    es = pop();
+    ds = pop();
+}
+void sub_16b9b()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    callIndirect(cs, memoryAGet16(ds, 0x0028));
+    memoryASet(ds, 0x97da, 0x01);
+    cx = 0x01e0;
+loc_16bac:
+    push(cx);
+    sub_19b1c();
+    sub_19bdc();
+    if (al & 0x10)
+        goto loc_16bc4;
+    al = memoryAGet(ds, 0xb888);
+    al &= 0x30;
+    if (al == 0x30)
+        goto loc_16bc4;
+    cx = pop();
+    if (--cx)
+        goto loc_16bac;
+    return;
+loc_16bc4:
+    goto loc_1c3b0;
+  // gap 11052 bytes
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 2017 bytes
+loc_19f12:
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0002;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    sub_19ee5();
+    sub_16d69();
+    sub_1a5e3();
+    sub_16cd7();
+    goto loc_1c359;
+  // gap 9250 bytes
+loc_1c359:
+    sp = memoryAGet16(ds, 0xc0df);
+    callIndirect(cs, memoryAGet16(ds, 0x000a));
+    sub_1a592();
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    memoryASet16(ds, 0xbdf2, 0x0003);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+    callIndirect(cs, memoryAGet16(ds, 0x0028));
+loc_1c378:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c378;
+    goto loc_1c398;
+  // gap 1 bytes
+loc_1c382:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c395;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c395:
+    sub_16b9b();
+loc_1c398:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c3ab;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c3ab:
+    sub_16cd7();
+    goto loc_1c382;
+loc_1c3b0:
+    memoryASet16(ds, 0x6614, 0x0006);
+    sub_199c8();
+    sp = memoryAGet16(ds, 0xc0df);
+    memoryASet16(ds, 0x6610, 0x0006);
+    memoryASet16(ds, 0x6612, 0x0006);
+    memoryASet16(ds, 0x7e00, 0x0000);
+    memoryASet16(ds, 0x762d, 0x0000);
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1a54a();
+    push(cs);
+    ds = pop();
+    sub_1a56b();
+    callIndirect(cs, memoryAGet16(ds, 0x0004));
+    callIndirect(cs, memoryAGet16(ds, 0x0006));
+    sub_1a45c();
+    sub_1c4e2();
+    callIndirect(cs, memoryAGet16(ds, 0x0042));
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    callIndirect(cs, memoryAGet16(ds, 0x003c));
+    callIndirect(cs, memoryAGet16(ds, 0x0048));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = memoryAGet16(ds, 0x8bec);
+    ax--;
+    ax += ax;
+    si = 0x2f69;
+    si += ax;
+    ax = memoryAGet16(ds, si);
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0000;
+    sub_1a257();
+    sub_1a5f0();
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    sub_19420();
+    memoryASet16(ds, 0x973c, 0x3245);
+    memoryASet16(ds, 0x973e, 0x5432);
+loc_1c439:
+    memoryASet16(ds, 0x7e16, 0x0000);
+    memoryASet16(ds, 0x7e18, 0x0000);
+loc_1c445:
+    sub_16b3b();
+    if (memoryAGet16(ds, 0x7e18) != 0x0001)
+        goto loc_1c467;
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1618f();
+    sub_19462();
+    if (memoryAGet16(ds, 0x6614) != 0x0000)
+        goto loc_1c465;
+    goto loc_19f12;
+loc_1c465:
+    goto loc_1c439;
+loc_1c467:
+    sub_19bac();
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+    sub_169e3();
+    sub_168e4();
+    sub_17205();
+    sub_18351();
+    sub_18cbe();
+    sub_18d28();
+    sub_1705d();
+    callIndirect(cs, memoryAGet16(ds, 0x001e));
+    callIndirect(cs, memoryAGet16(ds, 0x0024));
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    sub_19af6();
+    callIndirect(cs, memoryAGet16(ds, 0x0038));
+    sub_194c4();
+    if (memoryAGet(ds, 0xb888) != 0x10)
+        goto loc_1c4b3;
+    sub_19f8a();
+    if (!flags.carry)
+        goto loc_1c4b3;
+    goto loc_1c359;
+loc_1c4b3:
+    if (memoryAGet(ds, 0xb888) != 0x01)
+        goto loc_1c445;
+    goto loc_196f3;
+}
+void sub_16bc7()
+{
+    si += 0x0005;
+    di = 0x661b;
+    bl = 0x00;
+    cx = 0x0006;
+loc_16bd2:
+    al = memoryAGet(ds, si);
+    ah = memoryAGet(ds, di);
+    ah += al;
+    ah += bl;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    if ((short)ax < (short)0x000a)
+        goto loc_16bee;
+    bl = 0x01;
+    al -= 0x0a;
+    memoryASet(ds, di, al);
+    di--;
+    si--;
+    if (--cx)
+        goto loc_16bd2;
+    return;
+loc_16bee:
+    bl = 0x00;
+    memoryASet(ds, di, al);
+    di--;
+    si--;
+    if (--cx)
+        goto loc_16bd2;
+}
+void sub_16bf7()
+{
+    si += 0x0005;
+    di = 0x6629;
+    bl = 0x00;
+    cx = 0x0006;
+loc_16c02:
+    al = memoryAGet(ds, si);
+    ah = memoryAGet(ds, di);
+    ah += al;
+    ah += bl;
+    tl = ah; ah = al; al = tl;
+    ah = 0;
+    if ((short)ax < (short)0x000a)
+        goto loc_16c1e;
+    bl = 0x01;
+    al -= 0x0a;
+    memoryASet(ds, di, al);
+    di--;
+    si--;
+    if (--cx)
+        goto loc_16c02;
+    return;
+loc_16c1e:
+    bl = 0x00;
+    memoryASet(ds, di, al);
+    di--;
+    si--;
+    if (--cx)
+        goto loc_16c02;
+}
+void sub_16c27()
+{
+    di = 0x66f6;
+    cx = 0x0006;
+    al = 0x20;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    cx = memoryAGet16(ds, 0x6610);
+    di = 0x66f6;
+    al = 0x0a;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+}
+void sub_16c3d()
+{
+    di = 0x66fd;
+    cx = 0x0006;
+    al = 0x20;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    cx = memoryAGet16(ds, 0x6612);
+    di = 0x66fd;
+    al = 0x0b;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+}
+void sub_16c53()
+{
+    di = 0x6704;
+    cx = 0x0006;
+    al = 0x20;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    cx = memoryAGet16(ds, 0x6614);
+    di = 0x6704;
+    al = 0x0c;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+}
+void sub_16c69()
+{
+    cx = 0x0008;
+    di = 0x6632;
+    bx = 0x668d;
+loc_16c72:
+    si = 0x6616;
+    sub_16cb8();
+    if (flags.carry)
+        goto loc_16c84;
+    bx += 0x000b;
+    di += 0x0007;
+    if (--cx)
+        goto loc_16c72;
+    flags.carry = 0;
+    return;
+loc_16c84:
+    si = 0x6663;
+loc_16c87:
+    if (si == di)
+        goto loc_16c94;
+    al = memoryAGet(ds, si + 65535);
+    memoryASet(ds, si + 6, al);
+    si--;
+    goto loc_16c87;
+loc_16c94:
+    cx = 0x0007;
+    si = 0x6616;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    flags.carry = 1;
+}
+void sub_16cb8() // +returnCarry
+{
+    push(cx);
+    push(di);
+    cx = 0x0006;
+loc_16cbd:
+    al = memoryAGet(ds, si);
+    si++;
+    ah = memoryAGet(ds, di);
+    di++;
+    if ((char)al < (char)ah)
+        goto loc_16ccf;
+    if ((char)al > (char)ah)
+        goto loc_16cd3;
+    if (--cx)
+        goto loc_16cbd;
+    di = pop();
+    cx = pop();
+    flags.carry = 1;
+    return;
+loc_16ccf:
+    di = pop();
+    cx = pop();
+    flags.carry = 0;
+    return;
+loc_16cd3:
+    di = pop();
+    cx = pop();
+    flags.carry = 1;
+}
+void sub_16cd7()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    ax = 0x0008;
+    si = 0x9401;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0108;
+    si = 0x9421;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0208;
+    si = 0x9441;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    si = 0x668d;
+    ax = 0x0617;
+    cx = 0x0008;
+loc_16d02:
+    push(si);
+    push(ax);
+    push(cx);
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    cx = pop();
+    ax = pop();
+    si = pop();
+    si += 0x000b;
+    ah++;
+    ah++;
+    if (--cx)
+        goto loc_16d02;
+    si = 0x6632;
+    ax = 0x0607;
+    cx = 0x0008;
+loc_16d1e:
+    push(si);
+    push(ax);
+    push(cx);
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    cx = pop();
+    ax = pop();
+    si = pop();
+    si += 0x0007;
+    ah++;
+    ah++;
+    if (--cx)
+        goto loc_16d1e;
+    si = 0x6682;
+    ax = 0x060d;
+    cx = 0x0008;
+loc_16d3a:
+    push(si);
+    push(ax);
+    push(cx);
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    cx = pop();
+    ax = pop();
+    si = pop();
+    ah++;
+    ah++;
+    if (--cx)
+        goto loc_16d3a;
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    memoryASet(ds, 0x97da, 0x01);
+    cx = 0x01e0;
+loc_16d57:
+    push(cx);
+    sub_19b1c();
+    sub_19bdc();
+    if (al & 0x10)
+        goto loc_16d66;
+    cx = pop();
+    if (--cx)
+        goto loc_16d57;
+    return;
+loc_16d66:
+    goto loc_1c3b0;
+  // gap 10634 bytes
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 2017 bytes
+loc_19f12:
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0002;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    sub_19ee5();
+    sub_16d69();
+    sub_1a5e3();
+    sub_16cd7();
+    goto loc_1c359;
+  // gap 9250 bytes
+loc_1c359:
+    sp = memoryAGet16(ds, 0xc0df);
+    callIndirect(cs, memoryAGet16(ds, 0x000a));
+    sub_1a592();
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    memoryASet16(ds, 0xbdf2, 0x0003);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+    callIndirect(cs, memoryAGet16(ds, 0x0028));
+loc_1c378:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c378;
+    goto loc_1c398;
+  // gap 1 bytes
+loc_1c382:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c395;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c395:
+    sub_16b9b();
+loc_1c398:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c3ab;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c3ab:
+    sub_16cd7();
+    goto loc_1c382;
+loc_1c3b0:
+    memoryASet16(ds, 0x6614, 0x0006);
+    sub_199c8();
+    sp = memoryAGet16(ds, 0xc0df);
+    memoryASet16(ds, 0x6610, 0x0006);
+    memoryASet16(ds, 0x6612, 0x0006);
+    memoryASet16(ds, 0x7e00, 0x0000);
+    memoryASet16(ds, 0x762d, 0x0000);
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1a54a();
+    push(cs);
+    ds = pop();
+    sub_1a56b();
+    callIndirect(cs, memoryAGet16(ds, 0x0004));
+    callIndirect(cs, memoryAGet16(ds, 0x0006));
+    sub_1a45c();
+    sub_1c4e2();
+    callIndirect(cs, memoryAGet16(ds, 0x0042));
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    callIndirect(cs, memoryAGet16(ds, 0x003c));
+    callIndirect(cs, memoryAGet16(ds, 0x0048));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = memoryAGet16(ds, 0x8bec);
+    ax--;
+    ax += ax;
+    si = 0x2f69;
+    si += ax;
+    ax = memoryAGet16(ds, si);
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0000;
+    sub_1a257();
+    sub_1a5f0();
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    sub_19420();
+    memoryASet16(ds, 0x973c, 0x3245);
+    memoryASet16(ds, 0x973e, 0x5432);
+loc_1c439:
+    memoryASet16(ds, 0x7e16, 0x0000);
+    memoryASet16(ds, 0x7e18, 0x0000);
+loc_1c445:
+    sub_16b3b();
+    if (memoryAGet16(ds, 0x7e18) != 0x0001)
+        goto loc_1c467;
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1618f();
+    sub_19462();
+    if (memoryAGet16(ds, 0x6614) != 0x0000)
+        goto loc_1c465;
+    goto loc_19f12;
+loc_1c465:
+    goto loc_1c439;
+loc_1c467:
+    sub_19bac();
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+    sub_169e3();
+    sub_168e4();
+    sub_17205();
+    sub_18351();
+    sub_18cbe();
+    sub_18d28();
+    sub_1705d();
+    callIndirect(cs, memoryAGet16(ds, 0x001e));
+    callIndirect(cs, memoryAGet16(ds, 0x0024));
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    sub_19af6();
+    callIndirect(cs, memoryAGet16(ds, 0x0038));
+    sub_194c4();
+    if (memoryAGet(ds, 0xb888) != 0x10)
+        goto loc_1c4b3;
+    sub_19f8a();
+    if (!flags.carry)
+        goto loc_1c4b3;
+    goto loc_1c359;
+loc_1c4b3:
+    if (memoryAGet(ds, 0xb888) != 0x01)
+        goto loc_1c445;
+    goto loc_196f3;
+}
+void sub_16d69()
+{
+    sub_16c69();
+    if (!flags.carry)
+        return;
+    push(bx);
+    sub_16eb2();
+    bx = pop();
+    cx = 0x000a;
+    si = 0x6671;
+    di = bx;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+}
+void sub_16e16()
+{
+    ax = 0;
+    dx = memoryAGet16(ds, 0x69f0);
+    al = dh;
+    al -= 0x08;
+    ax &= 0xfffe;
+    bx = ax;
+    ax <<= 1;
+    bx += ax;
+    dh = 0;
+    dx -= 0x000e;
+    dx >>= 1;
+    bx += dx;
+    bx += 0x69f8;
+    al = memoryAGet(ds, bx);
+}
+void sub_16e39()
+{
+    ax = memoryAGet16(ds, 0x69f2);
+    si = 0x69ee;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = memoryAGet16(ds, 0x69f0);
+    si = 0x69ec;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    ax = memoryAGet16(ds, 0x69f2);
+    si = 0x69ee;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = memoryAGet16(ds, 0x69f0);
+    si = 0x69ec;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+}
+void sub_16e66()
+{
+    ax = memoryAGet16(ds, 0x69f0);
+    memoryASet16(ds, 0x69f2, ax);
+    memoryASet16(ds, 0x69f0, dx);
+    sub_16e39();
+}
+void sub_16e74()
+{
+    ax = memoryAGet16(ds, 0x69f6);
+    si = 0x69ee;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = memoryAGet16(ds, 0x69f4);
+    si = 0x69ec;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    ax = memoryAGet16(ds, 0x69f6);
+    si = 0x69ee;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    ax = memoryAGet16(ds, 0x69f4);
+    si = 0x69ec;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+}
+void sub_16ea1()
+{
+    ax = memoryAGet16(ds, 0x69f4);
+    memoryASet16(ds, 0x69f6, ax);
+    memoryASet16(ds, 0x69f4, dx);
+    sub_16e74();
+}
+void sub_16eb2()
+{
+    ax = 0x090e;
+    memoryASet16(ds, 0x69f0, ax);
+    memoryASet16(ds, 0x69f2, ax);
+    ax = 0x150e;
+    memoryASet16(ds, 0x69f4, ax);
+    memoryASet16(ds, 0x69f6, ax);
+    di = 0x6671;
+    cx = 0x000a;
+    al = 0x0e;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    memoryASet16(ds, 0x6ab0, 0x6671);
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    ax = 0x0005;
+    si = 0x93a1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0105;
+    si = 0x93c1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0205;
+    si = 0x93e1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    bx = 0x69de;
+    sub_19c43();
+    ax = 0x140e;
+    si = 0x6671;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    ax = 0x0005;
+    si = 0x93a1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0105;
+    si = 0x93c1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0205;
+    si = 0x93e1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    bx = 0x69de;
+    sub_19c43();
+    ax = 0x140e;
+    si = 0x6671;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    sub_16e39();
+    sub_16e74();
+loc_16f3e:
+    ax = 0x140e;
+    si = 0x6671;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    ax = 0x140e;
+    si = 0x6671;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    cx = 0x0006;
+loc_16f59:
+    sub_19b1c();
+    if (--cx)
+        goto loc_16f59;
+    sub_1c4ca();
+    if (memoryAGet(ds, 0x6aaf) != 0x01)
+        goto loc_16f71;
+    if (al & 0x10)
+        goto loc_16f71;
+    memoryASet(ds, 0x6aaf, 0x00);
+loc_16f71:
+    dx = memoryAGet16(ds, 0x69f0);
+    if (!(al & 0x08))
+        goto loc_16f7c;
+    dh -= 0x02;
+loc_16f7c:
+    if (!(al & 0x04))
+        goto loc_16f83;
+    dh += 0x02;
+loc_16f83:
+    if (!(al & 0x01))
+        goto loc_16f8a;
+    dl += 0x02;
+loc_16f8a:
+    if (!(al & 0x02))
+        goto loc_16f91;
+    dl -= 0x02;
+loc_16f91:
+    if (al & 0x10)
+        goto loc_16fbc;
+    if (dl != 0x0c)
+        goto loc_16f9f;
+    dl = 0x0e;
+    goto loc_16fa6;
+  // gap 1 bytes
+loc_16f9f:
+    if (dl != 0x1a)
+        goto loc_16fa6;
+    dl = 0x18;
+loc_16fa6:
+    if (dh != 0x07)
+        goto loc_16fb0;
+    dh = 0x09;
+    goto loc_16fb7;
+  // gap 1 bytes
+loc_16fb0:
+    if (dh != 0x13)
+        goto loc_16fb7;
+    dh = 0x11;
+loc_16fb7:
+    sub_16e66();
+    goto loc_16f3e;
+loc_16fbc:
+    if (memoryAGet(ds, 0x6aaf) != 0x01)
+        goto loc_16fc6;
+    goto loc_16f3e;
+loc_16fc6:
+    sub_16e16();
+    memoryASet(ds, 0x6aaf, 0x01);
+    if (al == 0x11)
+        goto loc_16fe2;
+    if (al != 0x10)
+        goto loc_16fdc;
+    sub_16ff5();
+    goto loc_16f3e;
+loc_16fdc:
+    sub_17018();
+    goto loc_16f3e;
+loc_16fe2:
+    si = 0x6671;
+    cx = 0x000a;
+loc_16fe8:
+    al = memoryAGet(ds, si);
+    if (al != 0x0e)
+        goto loc_16ff1;
+    memoryASet(ds, si, 0x20);
+loc_16ff1:
+    si++;
+    if (--cx)
+        goto loc_16fe8;
+}
+void sub_16ff5()
+{
+    di = memoryAGet16(ds, 0x6ab0);
+    di--;
+    if (di == 0x6670)
+        return;
+    memoryASet(ds, di, 0x0e);
+    memoryASet16(ds, 0x6ab0, di);
+    dx = memoryAGet16(ds, 0x6ab0);
+    dx -= 0x6671;
+    dh = 0x15;
+    dl += 0x0e;
+    sub_16ea1();
+}
+void sub_17018()
+{
+    di = memoryAGet16(ds, 0x6ab0);
+    if (di == 0x667b)
+        goto loc_17029;
+    memoryASet(ds, di, al);
+    di++;
+    memoryASet16(ds, 0x6ab0, di);
+loc_17029:
+    dx = memoryAGet16(ds, 0x6ab0);
+    dx -= 0x6671;
+    dh = 0x15;
+    if (dl != 0x0a)
+        goto loc_1703a;
+    dl = 0x09;
+loc_1703a:
+    dl += 0x0e;
+    push(ax);
+    sub_16ea1();
+    ax = pop();
+}
+void sub_17047()
+{
+    memoryASet16(ds, 0x6c43, 0x0000);
+    ax = memoryAGet16(ds, 0x8bf0);
+    memoryASet16(ds, 0x6c45, ax);
+    memoryASet16(ds, 0x6c45, memoryAGet16(ds, 0x6c45) & 0x0007);
+    callIndirect(cs, memoryAGet16(ds, 0x0012));
+}
+void sub_1705d()
+{
+    if (memoryAGet16(ds, 0x7e16) != 0x0001)
+        goto loc_17065;
+    return;
+loc_17065:
+    ax = memoryAGet16(ds, 0x8bf0);
+    ax &= 0x0007;
+    dx = memoryAGet16(ds, 0x0b20);
+    dx -= ax;
+    if ((short)dx >= (short)0x009b)
+        goto loc_17082;
+    bx = memoryAGet16(ds, 0x6c43);
+    if ((short)bx < 0)
+        goto loc_17099;
+    return;
+  // gap 1 bytes
+loc_17082:
+    if ((short)dx < (short)0x0086)
+        return;
+    bx = memoryAGet16(ds, 0x6c43);
+    if (!bx)
+        return;
+    if ((short)bx >= 0)
+        goto loc_17095;
+    return;
+  // gap 1 bytes
+loc_17095:
+    sub_170e6();
+    return;
+loc_17099:
+    sub_1709d();
+}
+void sub_1709d()
+{
+    ax = memoryAGet16(ds, 0x8bf0);
+    dx = ax;
+    ax += memoryAGet16(ds, 0x6c43);
+    if ((short)ax >= (short)memoryAGet16(ds, 0x8bf2))
+        goto loc_170bb;
+    cx = memoryAGet16(ds, 0x8bf2);
+    cx -= memoryAGet16(ds, 0x8bf0);
+    memoryASet16(ds, 0x6c43, cx);
+    ax = memoryAGet16(ds, 0x8bf2);
+loc_170bb:
+    memoryASet16(ds, 0x8bf0, ax);
+    if (dx == ax)
+        return;
+    dx &= 0x0007;
+    dx += memoryAGet16(ds, 0x6c43);
+    if ((short)dx >= 0)
+        goto loc_170e2;
+    sub_195ea();
+    sub_1930a();
+    callIndirect(cs, memoryAGet16(ds, 0x0014));
+    sub_17180();
+    dx = 0x0008;
+    sub_17132();
+    sub_15fe4();
+loc_170e1:
+    return;
+loc_170e2:
+    sub_17180();
+}
+void sub_170e6()
+{
+    ax = memoryAGet16(ds, 0x8bf0);
+    dx = ax;
+    ax += memoryAGet16(ds, 0x6c43);
+    if ((short)ax <= (short)memoryAGet16(ds, 0x8bf4))
+        goto loc_17104;
+    cx = memoryAGet16(ds, 0x8bf4);
+    cx -= memoryAGet16(ds, 0x8bf0);
+    memoryASet16(ds, 0x6c43, cx);
+    ax = memoryAGet16(ds, 0x8bf4);
+loc_17104:
+    memoryASet16(ds, 0x8bf0, ax);
+    if (dx == ax)
+        return;
+    dx &= 0x0007;
+    dx += memoryAGet16(ds, 0x6c43);
+    if ((short)dx <= (short)0x0007)
+        goto loc_1712e;
+    sub_1961d();
+    sub_192da();
+    callIndirect(cs, memoryAGet16(ds, 0x0016));
+    sub_17180();
+    dx = 0xfff8;
+    sub_17132();
+    sub_15fe4();
+loc_1712d:
+    return;
+loc_1712e:
+    sub_17180();
+}
+void sub_17132()
+{
+    si = 0x0b00;
+loc_17135:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        goto loc_17145;
+    if (!ax)
+        goto loc_17140;
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + dx);
+loc_17140:
+    si += 0x001c;
+    goto loc_17135;
+loc_17145:
+    si = 0x0c28;
+loc_17148:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        goto loc_17162;
+    if (!(al & 0x01))
+        goto loc_1715d;
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + dx);
+    sub_1613c();
+    if (!flags.carry)
+        goto loc_1715d;
+    sub_1615f();
+loc_1715d:
+    si += 0x0034;
+    goto loc_17148;
+loc_17162:
+    si = 0x0b56;
+loc_17165:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        return;
+    if (!(al & 0x01))
+        goto loc_1717a;
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + dx);
+    sub_1613c();
+    if (!flags.carry)
+        goto loc_1717a;
+    sub_1615f();
+loc_1717a:
+    si += 0x0034;
+    goto loc_17165;
+}
+void sub_17180()
+{
+    ax = memoryAGet16(ds, 0x6c45);
+    ax += memoryAGet16(ds, 0x6c43);
+    ax &= 0x00ff;
+    memoryASet16(ds, 0x6c45, ax);
+}
+void sub_1718e()
+{
+    if (memoryAGet16(ds, si) & 0xffff)
+        goto loc_17196;
+    flags.carry = 0;
+    return;
+loc_17196:
+    if (!(memoryAGet16(ds, si + 24) & 0xffff))
+        goto loc_171a2;
+    memoryASet16(ds, si + 24, memoryAGet16(ds, si + 24) - 1);
+    flags.carry = 0;
+    return;
+loc_171a2:
+    push(ax);
+    push(bx);
+    push(dx);
+    dx = 0;
+    bx = memoryAGet16(ds, si + 22);
+loc_171aa:
+    ax = memoryAGet16(ds, bx);
+    if ((short)ax < 0)
+        goto loc_171bb;
+    memoryASet16(ds, si + 10, ax);
+    bx++;
+    bx++;
+    memoryASet16(ds, si + 22, bx);
+    goto loc_171f5;
+  // gap 1 bytes
+loc_171bb:
+    if (ax != 0xffff)
+        goto loc_171cd;
+    ax = memoryAGet16(ds, bx + 2);
+    bx += ax;
+    memoryASet16(ds, si + 22, si);
+    dx = 0xffff;
+    goto loc_171aa;
+loc_171cd:
+    if (ax != 0xfffd)
+        goto loc_171e0;
+    ax = memoryAGet16(ds, bx + 2);
+    sub_1aecd();
+    bx += 0x0004;
+    memoryASet16(ds, si + 22, bx);
+    goto loc_171aa;
+loc_171e0:
+    ax = memoryAGet16(ds, bx + 2);
+    memoryASet16(ds, si + 24, ax);
+    memoryASet16(ds, si + 24, memoryAGet16(ds, si + 24) - 1);
+    ax = memoryAGet16(ds, bx + 4);
+    memoryASet16(ds, si + 10, ax);
+    bx += 0x0006;
+    memoryASet16(ds, si + 22, bx);
+loc_171f5:
+    if (dx)
+        goto loc_171fe;
+    dx = pop();
+    bx = pop();
+    ax = pop();
+    flags.carry = 0;
+    return;
+loc_171fe:
+    dx = pop();
+    bx = pop();
+    ax = pop();
+    flags.carry = 1;
+}
+void sub_17205()
+{
+    sub_177fb();
+    si = 0x0b56;
+loc_1720b:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        return;
+    if (!(al & 0x01))
+        goto loc_1721a;
+    push(si);
+    sub_17222();
+    si = pop();
+loc_1721a:
+    si += 0x0034;
+    goto loc_1720b;
+}
+void sub_17222()
+{
+    bool temp_cf;
+    bool temp_cf1;
+    bool temp_cf2;
+    bool temp_cf3;
+  goto loc_17222;
+loc_168a8:
+    ax = 0x000b;
+    sub_1aecd();
+    memoryASet16(ds, 0x7e16, 0x0001);
+    memoryASet16(ds, 0x0b24, 0xfb00);
+    ax = memoryAGet16(ds, 0x0b1e);
+    if ((short)ax < (short)0x0080)
+        goto loc_168cb;
+    memoryASet16(ds, 0x7e1c, 0xfffe);
+    goto loc_168d1;
+  // gap 1 bytes
+loc_168cb:
+    memoryASet16(ds, 0x7e1c, 0x0002);
+loc_168d1:
+    ax = memoryAGet16(ds, 0x6614);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        return;
+    memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
+loc_168e3:
+    return;
+  // gap 2366 bytes
+loc_17222:
+    memoryASet16(ds, 0x6e20, 0x0000);
+    memoryASet16(ds, 0x6e03, 0x0000);
+    if (memoryAGet16(ds, si + 24) == 0x0000)
+        goto loc_17246;
+    memoryASet16(ds, si + 24, memoryAGet16(ds, si + 24) - 1);
+    if (memoryAGet16(ds, si + 22) != 0x0001)
+        goto loc_17240;
+    goto loc_176a0;
+loc_17240:
+    memoryASet16(ds, 0x6e20, 0x0001);
+loc_17246:
+    memoryASet16(ds, si + 44, 0x0000);
+    memoryASet16(ds, si + 46, 0x0000);
+    if (memoryAGet16(ds, si + 22) != 0x0001)
+        goto loc_17259;
+    goto loc_176a0;
+loc_17259:
+    if (memoryAGet16(ds, si + 42) != 0x0001)
+        goto loc_17262;
+    goto loc_17644;
+loc_17262:
+    memoryASet16(ds, si + 44, 0x0000);
+    memoryASet16(ds, si + 46, 0x0000);
+    memoryASet16(ds, si + 34, 0x0000);
+    memoryASet16(ds, si + 36, 0x0000);
+    memoryASet16(ds, si + 38, 0x0000);
+    memoryASet16(ds, si + 40, 0x0000);
+    memoryASet(ds, 0x796b, 0x01);
+    memoryASet16(ds, 0x6e03, 0x0000);
+    dx = memoryAGet16(ds, si + 8);
+    dx += 0x0080;
+    if ((short)dx <= (short)0x0800)
+        goto loc_1729c;
+    dx = 0x0800;
+loc_1729c:
+    memoryASet16(ds, si + 8, dx);
+    memoryASet16(ds, 0x7961, dx);
+    if ((short)dx < 0)
+        goto loc_172ac;
+    ch = 0;
+    goto loc_172ae;
+  // gap 1 bytes
+loc_172ac:
+    ch = 0xff;
+loc_172ae:
+    ax = memoryAGet16(ds, si + 4);
+    cl = memoryAGet(ds, si + 6);
+    temp_cf2 = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf3 = (al + dh + temp_cf2) >= 0x100;
+    al += dh + temp_cf2;
+    ah += ch + temp_cf3;
+    memoryASet16(ds, 0x795f, ax);
+    dx = memoryAGet16(ds, si + 2);
+    memoryASet16(ds, 0x795d, dx);
+    memoryASet(ds, 0x796b, 0x01);
+    sub_17dfb();
+loc_172cd:
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_172da;
+    goto loc_17674;
+loc_172da:
+    if (!(ch & 0x40))
+        goto loc_1733d;
+    ax = memoryAGet16(ds, 0x7964);
+    cl = 0;
+    ax -= 0x0015;
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, si + 4, ax);
+    memoryASet(ds, si + 6, 0x00);
+    memoryASet16(ds, si + 34, 0x0001);
+    push(ax);
+    ax = memoryAGet16(ds, 0x7966);
+    memoryASet16(ds, si + 44, ax);
+    ax = pop();
+    memoryASet(ds, 0x796b, 0x00);
+    sub_17dfb();
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_17315;
+    goto loc_17674;
+loc_17315:
+    ch &= 0x06;
+    if (!ch)
+        goto loc_17321;
+    ch = memoryAGet(ds, 0x7963);
+    goto loc_1735c;
+  // gap 1 bytes
+loc_17321:
+    bp = memoryAGet16(cs, si + 44);
+    bp |= memoryAGet16(cs, si + 46);
+    if (!bp)
+        goto loc_17333;
+    memoryASet16(ds, 0x6e03, 0x0001);
+loc_17333:
+    ch = memoryAGet(ds, 0x7963);
+    dx = 0x0100;
+    goto loc_173e4;
+loc_1733d:
+    if (!(ch & 0x20))
+        goto loc_17346;
+    goto loc_17674;
+loc_17346:
+    if (ch & 0x04)
+        goto loc_1736d;
+    if (ch & 0x02)
+        goto loc_17355;
+    goto loc_1740e;
+loc_17355:
+    bp = memoryAGet16(ds, si + 8);
+    if ((short)bp >= 0)
+        goto loc_1736d;
+loc_1735c:
+    ax |= 0x0007;
+    ax++;
+    cl = 0;
+    memoryASet16(ds, si + 8, 0x0100);
+    dx = 0x0100;
+    goto loc_1740e;
+loc_1736d:
+    if (memoryAGet16(ds, si + 48) != 0x0003)
+        goto loc_17394;
+    if (!(ch & 0x10))
+        goto loc_17394;
+    sub_176f4();
+    if (flags.carry)
+        goto loc_17394;
+    bx = memoryAGet16(ds, si + 2);
+    bx &= 0x001f;
+    if (bx != 0x0004)
+        goto loc_17394;
+    memoryASet16(ds, si + 42, 0x0001);
+    goto loc_1740e;
+  // gap 1 bytes
+loc_17394:
+    memoryASet16(ds, si + 42, 0x0000);
+    memoryASet16(ds, si + 34, 0x0001);
+    ax += 0x000c;
+    ax |= 0x0007;
+    ax -= 0x0014;
+    cl = 0;
+    memoryASet16(ds, si + 4, ax);
+    memoryASet(ds, si + 6, cl);
+    dx = 0x0100;
+    if (!(ch & 0x01))
+        goto loc_173e4;
+    if (memoryAGet16(ds, 0x8bec) != 0x0003)
+        goto loc_173e4;
+    dx = memoryAGet16(ds, si + 8);
+    if ((short)dx < (short)0x0200)
+        goto loc_173d8;
+    dx = -dx;
+    dx += 0x0060;
+    memoryASet16(ds, si + 8, dx);
+    dx = 0xf781;
+    goto loc_1740e;
+  // gap 1 bytes
+loc_173d8:
+    memoryASet16(ds, si + 8, 0x0100);
+    dx = 0xfa00;
+    goto loc_1740e;
+  // gap 1 bytes
+loc_173e4:
+    memoryASet16(ds, si + 8, dx);
+    dx = 0xfa00;
+    if (!(ch & 0x01))
+        goto loc_1740e;
+    if (memoryAGet16(ds, 0x8bec) != 0x0001)
+        goto loc_173ff;
+    dx = 0xfe00;
+    goto loc_1740e;
+  // gap 1 bytes
+loc_173ff:
+    if (memoryAGet16(ds, 0x8bec) != 0x0005)
+        goto loc_1740e;
+    memoryASet16(ds, si + 8, 0xf781);
+    goto loc_1743b;
+  // gap 1 bytes
+loc_1740e:
+    memoryASet16(ds, si + 4, ax);
+    memoryASet(ds, si + 6, cl);
+    if (memoryAGet16(ds, si + 48) != 0x0003)
+        goto loc_1743b;
+    if (!(ch & 0x08))
+        goto loc_1743b;
+    if (ch & 0x10)
+        goto loc_1743b;
+    sub_176f4();
+    if (!flags.carry)
+        goto loc_1743b;
+    bx = memoryAGet16(ds, si + 2);
+    bx &= 0x001f;
+    if (bx != 0x0004)
+        goto loc_1743b;
+    memoryASet16(ds, si + 42, 0x0001);
+loc_1743b:
+    if (memoryAGet16(ds, 0x6e03) != 0x0001)
+        goto loc_1744d;
+    dx = memoryAGet16(ds, si + 44);
+    bx = memoryAGet16(ds, si + 2);
+    bx += dx;
+    goto loc_17573;
+loc_1744d:
+    bp = memoryAGet16(cs, si + 8);
+    if ((short)bp < 0)
+        goto loc_1745e;
+    if (memoryAGet16(ds, si + 34) == 0x0001)
+        goto loc_1745e;
+    goto loc_1746a;
+  // gap 1 bytes
+loc_1745e:
+    if (memoryAGet16(ds, si + 48) != 0x0003)
+        goto loc_17473;
+    if (memoryAGet16(ds, si + 42) != 0x0001)
+        goto loc_17473;
+loc_1746a:
+    dx = 0x0000;
+    bx = memoryAGet16(ds, si + 2);
+    goto loc_17573;
+loc_17473:
+    dx = memoryAGet16(ds, si + 16);
+    if (!(ch & 0x01))
+        goto loc_174a3;
+    if (memoryAGet16(ds, 0x8bec) == 0x0002)
+        goto loc_1749e;
+    if (memoryAGet16(ds, 0x8bec) != 0x0004)
+        goto loc_174a3;
+    memoryASet16(ds, si + 38, 0x0001);
+    dx = 0x0001;
+    if (!(memoryAGet16(ds, si + 16) & 0x8000))
+        goto loc_174a3;
+    dx = -dx;
+    goto loc_174a3;
+  // gap 1 bytes
+loc_1749e:
+    memoryASet16(ds, si + 40, 0x0001);
+loc_174a3:
+    if (memoryAGet16(ds, si + 48) != 0x0001)
+        goto loc_174be;
+    memoryASet16(ds, si + 20, memoryAGet16(ds, si + 20) + 1);
+    ax = memoryAGet16(ds, si + 18);
+    if (ax != memoryAGet16(ds, si + 20))
+        goto loc_174f8;
+    ax = 0;
+    memoryASet16(ds, si + 20, ax);
+    dx = -dx;
+    goto loc_174f8;
+  // gap 1 bytes
+loc_174be:
+    if (memoryAGet16(ds, si + 48) != 0x0002)
+        goto loc_174e0;
+    ax = memoryAGet16(ds, si + 2);
+    ax &= 0x000f;
+    if (ax != 0x0004)
+        goto loc_174f8;
+    sub_19b40();
+    if (memoryAGet(ds, 0x973f) & 0x01)
+        goto loc_174f8;
+    sub_176e6();
+    goto loc_174f8;
+  // gap 1 bytes
+loc_174e0:
+    ax = memoryAGet16(ds, si + 2);
+    ax &= 0x000f;
+    if (ax != 0x0004)
+        goto loc_174f8;
+    sub_19b40();
+    if (memoryAGet(ds, 0x973f) & 0x01)
+        goto loc_174f8;
+    dx = -dx;
+loc_174f8:
+    dx += memoryAGet16(ds, si + 44);
+    bx = memoryAGet16(ds, si + 2);
+    bx += dx;
+    if (!dx)
+        goto loc_1751e;
+    if ((short)dx >= 0)
+        goto loc_17513;
+    if ((short)bx >= (short)0x0000)
+        goto loc_1751e;
+    bx = 0x0000;
+    dx = -dx;
+    goto loc_1751e;
+  // gap 1 bytes
+loc_17513:
+    if ((short)bx < (short)0x00e8)
+        goto loc_1751e;
+    bx = 0x00e8;
+    dx = -dx;
+loc_1751e:
+    ax = memoryAGet16(ds, si + 4);
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x7961, 0xffff);
+    memoryASet16(ds, 0x795d, bx);
+    memoryASet(ds, 0x796b, 0x01);
+    sub_17dfb();
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_17544;
+    goto loc_17674;
+loc_17544:
+    if (!(ch & 0x02))
+        goto loc_17573;
+    if ((short)dx >= 0)
+        goto loc_17562;
+    bx += 0x000c;
+    bx &= 0x00f8;
+    bx -= 0x0004;
+    dx = -dx;
+    memoryASet16(ds, si + 20, 0x0000);
+    goto loc_17573;
+  // gap 1 bytes
+loc_17562:
+    bx += 0x0003;
+    bx &= 0x00f8;
+    bx -= 0x0004;
+    dx = -dx;
+    memoryASet16(ds, si + 20, 0x0000);
+loc_17573:
+    if (memoryAGet16(ds, 0x6e20) == 0x0001)
+        goto loc_17584;
+    memoryASet16(ds, si + 2, bx);
+    if (!dx)
+        goto loc_17584;
+    memoryASet16(ds, si + 16, dx);
+loc_17584:
+    if (memoryAGet16(ds, si + 48) != 0x0003)
+        goto loc_17595;
+    if (ch & 0x08)
+        goto loc_17595;
+    memoryASet16(ds, si + 42, 0x0000);
+loc_17595:
+    if (memoryAGet16(ds, 0x6e03) == 0x0001)
+        goto loc_175a6;
+    if (memoryAGet16(ds, 0x6e20) == 0x0001)
+        goto loc_175a6;
+    sub_17723();
+loc_175a6:
+    if (memoryAGet16(ds, 0x7ecc) != 0x0001)
+        goto loc_175c6;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    sub_1646e();
+    if (!flags.carry)
+        goto loc_175c6;
+    memoryASet16(ds, si + 24, 0x0028);
+    goto loc_175de;
+  // gap 1 bytes
+loc_175c6:
+    bx = memoryAGet16(ds, si + 4);
+    bx += 0x0004;
+    dh = memoryAGet(ds, si + 2);
+    dh += 0x04;
+    dl = 0x10;
+    ah = 0x15;
+    sub_16407();
+    if (!flags.carry)
+        goto loc_175de;
+    goto loc_168a8;
+loc_175de:
+    if (memoryAGet16(ds, 0x0b00) != 0x0001)
+        goto loc_175ff;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    sub_164a0();
+    if (!flags.carry)
+        goto loc_175ff;
+    memoryASet16(ds, 0x0b00, 0x0000);
+    goto loc_17674;
+  // gap 1 bytes
+loc_175ff:
+    if (memoryAGet16(ds, 0x0b38) != 0x0002)
+        return;
+    al = memoryAGet(ds, 0x0b4a);
+    if ((char)al <= (char)0x01)
+        return;
+    if ((char)al > (char)0x04)
+        return;
+    bx = memoryAGet16(ds, si + 4);
+    dh = memoryAGet(ds, si + 2);
+    dl = memoryAGet(ds, si + 30);
+    ah = memoryAGet(ds, si + 32);
+    if (dh >= 0x0f)
+        goto loc_17627;
+    dh = 0;
+    goto loc_1762a;
+  // gap 1 bytes
+loc_17627:
+    dh -= 0x10;
+loc_1762a:
+    bx -= 0x000e;
+    dl += 0x20;
+    ah += 0x1d;
+    sub_164e1();
+    if (!flags.carry)
+        return;
+    push(si);
+    si = 0x670b;
+    sub_16bc7();
+    si = pop();
+    goto loc_17674;
+  // gap 1 bytes
+loc_17643:
+    return;
+loc_17644:
+    ax = memoryAGet16(ds, si + 4);
+    cl = 0;
+    bp = memoryAGet16(ds, 0x0b20);
+    bp++;
+    bp &= 0x00fe;
+    ax &= 0x00fe;
+    sub_17702();
+    memoryASet16(ds, 0x7961, bp);
+    ax = memoryAGet16(ds, si + 4);
+    ax += bp;
+    memoryASet16(ds, si + 8, bp);
+    memoryASet16(ds, 0x795f, ax);
+    bx = memoryAGet16(ds, si + 2);
+    memoryASet16(ds, 0x795d, bx);
+    sub_17dfb();
+    goto loc_172cd;
+loc_17674:
+    push(si);
+    si = 0x670b;
+    sub_16bc7();
+    si = pop();
+    memoryASet16(ds, si + 22, 0x0001);
+    memoryASet16(ds, si + 8, 0xfb00);
+    ax = 0x000c;
+    sub_1aecd();
+    ax = memoryAGet16(ds, si + 2);
+    if ((short)ax < (short)0x0080)
+        goto loc_1769a;
+    memoryASet16(ds, si + 16, 0xfffe);
+    return;
+loc_1769a:
+    memoryASet16(ds, si + 16, 0x0002);
+    return;
+loc_176a0:
+    dx = memoryAGet16(ds, si + 8);
+    dx += 0x0080;
+    memoryASet16(ds, si + 8, dx);
+    if ((short)dx < 0)
+        goto loc_176b3;
+    ch = 0;
+    goto loc_176b5;
+  // gap 1 bytes
+loc_176b3:
+    ch = 0xff;
+loc_176b5:
+    ax = memoryAGet16(ds, si + 4);
+    cl = memoryAGet(ds, si + 6);
+    temp_cf = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf1 = (al + dh + temp_cf) >= 0x100;
+    al += dh + temp_cf;
+    ah += ch + temp_cf1;
+    if ((short)ax <= (short)0x0110)
+        goto loc_176ca;
+    sub_16174();
+    return;
+loc_176ca:
+    memoryASet16(ds, si + 4, ax);
+    memoryASet(ds, si + 6, cl);
+    ax = memoryAGet16(ds, 0x73ef);
+    ax += 0x0006;
+    ax += memoryAGet16(ds, si + 50);
+    memoryASet16(ds, si + 10, ax);
+    ax = memoryAGet16(ds, si + 16);
+    ax += memoryAGet16(ds, si + 2);
+    memoryASet16(ds, si + 2, ax);
+}
+void sub_17674()
+{
+    push(si);
+    si = 0x670b;
+    sub_16bc7();
+    si = pop();
+    memoryASet16(ds, si + 22, 0x0001);
+    memoryASet16(ds, si + 8, 0xfb00);
+    ax = 0x000c;
+    sub_1aecd();
+    ax = memoryAGet16(ds, si + 2);
+    if ((short)ax < (short)0x0080)
+        goto loc_1769a;
+    memoryASet16(ds, si + 16, 0xfffe);
+    return;
+loc_1769a:
+    memoryASet16(ds, si + 16, 0x0002);
+}
+void sub_176e6()
+{
+    if ((short)bx <= (short)memoryAGet16(ds, 0x0b1e))
+        goto loc_176f0;
+    dx = 0xfffe;
+    return;
+loc_176f0:
+    dx = 0x0002;
+}
+void sub_176f4() // +returnCarry
+{
+    if ((short)ax < (short)memoryAGet16(ds, 0x0b20))
+        goto loc_176fe;
+    if (ax == memoryAGet16(ds, 0x0b20))
+        goto loc_17700;
+    flags.carry = 1;
+    return;
+loc_176fe:
+    flags.carry = 0;
+    return;
+loc_17700:
+    flags.carry = 0;
+}
+void sub_17702()
+{
+    if (memoryAGet16(ds, 0x6e20) != 0x0001)
+        goto loc_1770e;
+    flags.carry = 0;
+    bp = 0x0000;
+    return;
+loc_1770e:
+    if ((short)ax < (short)bp)
+        goto loc_17719;
+    if (ax == bp)
+        goto loc_1771e;
+    bp = 0xfffe;
+    flags.carry = 1;
+    return;
+loc_17719:
+    bp = 0x0002;
+    flags.carry = 0;
+    return;
+loc_1771e:
+    bp = 0x0000;
+    flags.carry = 0;
+}
+void sub_17723()
+{
+    if (memoryAGet16(ds, si + 42) == 0x0001)
+        goto loc_17756;
+    if (memoryAGet16(ds, si + 38) == 0x0001)
+        goto loc_17770;
+    if (memoryAGet16(ds, si + 40) == 0x0001)
+        goto loc_1778b;
+    if (memoryAGet16(ds, si + 34) != 0x0001)
+        return;
+    ax = memoryAGet16(ds, si + 16);
+    if ((short)ax < 0)
+        goto loc_17748;
+    ax = 0x0000;
+    goto loc_1774b;
+  // gap 1 bytes
+loc_17748:
+    ax = 0x0003;
+loc_1774b:
+    ax += memoryAGet16(ds, 0x73e7);
+    ax += memoryAGet16(ds, si + 50);
+    memoryASet16(ds, si + 10, ax);
+    return;
+loc_17756:
+    if (memoryAGet16(ds, si + 42) != 0x0001)
+        goto loc_17770;
+    ax = 0x0008;
+    if (memoryAGet16(ds, si + 8) == 0x0000)
+        goto loc_17769;
+    ax += memoryAGet16(ds, 0x73ed);
+loc_17769:
+    ax += memoryAGet16(ds, si + 50);
+    memoryASet16(ds, si + 10, ax);
+    return;
+loc_17770:
+    ax = memoryAGet16(ds, si + 16);
+    if ((short)ax < 0)
+        goto loc_1777d;
+    ax = 0x0000;
+    goto loc_17780;
+  // gap 1 bytes
+loc_1777d:
+    ax = 0x0003;
+loc_17780:
+    ax += memoryAGet16(ds, 0x73e9);
+    ax += memoryAGet16(ds, si + 50);
+    memoryASet16(ds, si + 10, ax);
+    return;
+loc_1778b:
+    ax = memoryAGet16(ds, si + 16);
+    if ((short)ax < 0)
+        goto loc_17798;
+    ax = 0x0000;
+    goto loc_1779b;
+  // gap 1 bytes
+loc_17798:
+    ax = 0x0003;
+loc_1779b:
+    ax += memoryAGet16(ds, 0x73eb);
+    ax += memoryAGet16(ds, si + 50);
+    memoryASet16(ds, si + 10, ax);
+    return;
+}
+void sub_177fb()
+{
+    ax = memoryAGet16(ds, 0x73f1);
+loc_177fe:
+    bx = 0x73a7;
+    bx += ax;
+    dx = memoryAGet16(ds, bx);
+    if (dx != 0x00ff)
+        goto loc_17810;
+    ax = 0x0000;
+    goto loc_177fe;
+loc_17810:
+    memoryASet16(ds, 0x73e7, dx);
+    ax++;
+    ax++;
+    memoryASet16(ds, 0x73f1, ax);
+    ax = memoryAGet16(ds, 0x73f3);
+loc_1781c:
+    bx = 0x73b5;
+    bx += ax;
+    dx = memoryAGet16(ds, bx);
+    if (dx != 0x00ff)
+        goto loc_1782e;
+    ax = 0x0000;
+    goto loc_1781c;
+loc_1782e:
+    memoryASet16(ds, 0x73e9, dx);
+    ax++;
+    ax++;
+    memoryASet16(ds, 0x73f3, ax);
+    ax = memoryAGet16(ds, 0x73f5);
+loc_1783a:
+    bx = 0x73cf;
+    bx += ax;
+    dx = memoryAGet16(ds, bx);
+    if (dx != 0x00ff)
+        goto loc_1784c;
+    ax = 0x0000;
+    goto loc_1783a;
+loc_1784c:
+    memoryASet16(ds, 0x73eb, dx);
+    ax++;
+    ax++;
+    memoryASet16(ds, 0x73f5, ax);
+    ax = memoryAGet16(ds, 0x73f7);
+loc_17858:
+    bx = 0x73d7;
+    bx += ax;
+    dx = memoryAGet16(ds, bx);
+    if (dx != 0x00ff)
+        goto loc_1786a;
+    ax = 0x0000;
+    goto loc_17858;
+loc_1786a:
+    memoryASet16(ds, 0x73ed, dx);
+    ax++;
+    ax++;
+    memoryASet16(ds, 0x73f7, ax);
+    ax = memoryAGet16(ds, 0x73f9);
+loc_17876:
+    bx = 0x73e1;
+    bx += ax;
+    dx = memoryAGet16(ds, bx);
+    if (dx != 0x00ff)
+        goto loc_17888;
+    ax = 0x0000;
+    goto loc_17876;
+loc_17888:
+    memoryASet16(ds, 0x73ef, dx);
+    ax++;
+    ax++;
+    memoryASet16(ds, 0x73f9, ax);
+}
+void sub_17896()
+{
+    bx = memoryAGet16(ds, si + 16);
+    al = memoryAGet(ds, bx);
+    if (al != 0x00)
+        goto loc_178a5;
+    bx++;
+    bx = memoryAGet16(ds, bx);
+    memoryASet16(ds, si + 16, bx);
+loc_178a5:
+    bx++;
+    al = memoryAGet(ds, bx);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    if (al != 0x07)
+        goto loc_178b6;
+    al++;
+loc_178b6:
+    true ? cbw() : cwde();
+    memoryASet16(ds, 0x7492, ax);
+    al = memoryAGet(ds, bx);
+    al &= 0x0f;
+    if (!(al & 0x08))
+        goto loc_178c4;
+    al |= 0xf0;
+loc_178c4:
+    if (al != 0x07)
+        goto loc_178ca;
+    al++;
+loc_178ca:
+    true ? cbw() : cwde();
+    memoryASet16(ds, 0x7494, ax);
+    bx--;
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 18, memoryAGet16(ds, si + 18) + 1);
+    if (ax == memoryAGet16(ds, si + 18))
+        goto loc_178dc;
+    if (ax >= memoryAGet16(ds, si + 18))
+        goto loc_178e6;
+loc_178dc:
+    memoryASet16(ds, si + 18, 0x0000);
+    bx++;
+    bx++;
+    memoryASet16(ds, si + 16, bx);
+loc_178e6:
+    ax = memoryAGet16(ds, 0x7492);
+    dx = memoryAGet16(ds, 0x7494);
+}
+void sub_17a31()
+{
+    memoryASet16(ds, 0x7629, 0x0014);
+    di = 0x0c28;
+    si = 0x74ee;
+    cx = 0x0005;
+loc_17a40:
+    memoryASet16(ds, di, 0x0001);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 2, ax);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 4, ax);
+    ax = 0;
+    memoryASet16(ds, di + 14, ax);
+    memoryASet16(ds, di + 12, ax);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 22, ax);
+    ax = 0;
+    memoryASet16(ds, di + 24, ax);
+    push(si);
+    push(di);
+    push(cx);
+    si = di;
+    sub_1718e();
+    cx = pop();
+    di = pop();
+    si = pop();
+    ax = 0;
+    memoryASet16(ds, di + 24, ax);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 16, ax);
+    ax = 0;
+    memoryASet16(ds, di + 18, ax);
+    memoryASet16(ds, di + 20, ax);
+    di += 0x0034;
+    if (--cx)
+        goto loc_17a40;
+    memoryASet16(ds, 0x0d2c, ax);
+    memoryASet16(ds, 0x762b, ax);
+    memoryASet16(ds, 0x762f, 0x0001);
+}
+void sub_17a8b()
+{
+    if (memoryAGet16(ds, 0x762d) != 0x0001)
+        return;
+    if (memoryAGet16(ds, 0x762f) == 0x0001)
+        goto loc_17a9d;
+loc_17a9c:
+    return;
+loc_17a9d:
+    si = 0x0c28;
+    sub_17896();
+    cx = 0x0005;
+loc_17aa6:
+    push(cx);
+    memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + ax);
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + dx);
+    push(ax);
+    push(dx);
+    sub_1718e();
+    dx = pop();
+    ax = pop();
+    si += 0x0034;
+    cx = pop();
+    if (--cx)
+        goto loc_17aa6;
+    dh = memoryAGet(ds, 0x0c2a);
+    bx = memoryAGet16(ds, 0x0c2c);
+    dl = 0x1c;
+    ah = 0x40;
+    sub_16407();
+    if (!flags.carry)
+        goto loc_17ad1;
+    sub_168a8();
+    goto loc_17aeb;
+  // gap 1 bytes
+loc_17ad1:
+    dh = memoryAGet(ds, 0x0c2a);
+    dh += 0xec;
+    bx = memoryAGet16(ds, 0x0c2c);
+    bx += 0x0018;
+    dl = 0x14;
+    ah = 0x20;
+    sub_16407();
+    if (!flags.carry)
+        goto loc_17aeb;
+    sub_168a8();
+loc_17aeb:
+    dh = memoryAGet(ds, 0x0c2a);
+    bx = memoryAGet16(ds, 0x0c2c);
+    dl = 0x1c;
+    ah = 0x40;
+    sub_164a0();
+    if (!flags.carry)
+        goto loc_17b0d;
+    memoryASet16(ds, 0x0b00, 0x0000);
+    sub_17d53();
+    if (!flags.carry)
+        goto loc_17b0a;
+    goto loc_17ba5;
+loc_17b0a:
+    goto loc_17b2f;
+  // gap 1 bytes
+loc_17b0d:
+    dh = memoryAGet(ds, 0x0c2a);
+    dh += 0xec;
+    bx = memoryAGet16(ds, 0x0c2c);
+    bx += 0x0018;
+    dl = 0x14;
+    ah = 0x20;
+    sub_164a0();
+    if (!flags.carry)
+        goto loc_17b2f;
+    memoryASet16(ds, 0x0b00, 0x0000);
+    sub_17d53();
+    if (flags.carry)
+        goto loc_17ba5;
+loc_17b2f:
+    dh = memoryAGet(ds, 0x0c2a);
+    bx = memoryAGet16(ds, 0x0c2c);
+    dl = 0x1c;
+    ah = 0x40;
+    dh -= 0x10;
+    bx -= 0x000e;
+    dl += 0x20;
+    ah += 0x1d;
+    if (memoryAGet16(ds, 0x0b38) != 0x0002)
+        goto loc_17b96;
+    if ((short)memoryAGet16(ds, 0x0b4a) > (short)0x0004)
+        goto loc_17b96;
+    if ((short)memoryAGet16(ds, 0x0b4a) <= (short)0x0001)
+        goto loc_17b96;
+    sub_164e1();
+    if (!flags.carry)
+        goto loc_17b6e;
+    sub_17d53();
+    if (flags.carry)
+        goto loc_17ba5;
+    sub_17d53();
+    if (flags.carry)
+        goto loc_17ba5;
+    goto loc_17b96;
+  // gap 1 bytes
+loc_17b6e:
+    dh = memoryAGet(ds, 0x0c2a);
+    dh += 0xec;
+    bx = memoryAGet16(ds, 0x0c2c);
+    bx += 0x0018;
+    dl = 0x14;
+    ah = 0x20;
+    dh -= 0x10;
+    bx -= 0x000e;
+    dl += 0x20;
+    ah += 0x1d;
+    sub_164e1();
+    if (!flags.carry)
+        goto loc_17b96;
+    sub_17d53();
+    if (flags.carry)
+        goto loc_17ba5;
+loc_17b96:
+    if (memoryAGet16(ds, 0x0d2c) == 0x0001)
+        goto loc_17ba1;
+    sub_17c64();
+    return;
+loc_17ba1:
+    sub_17cf4();
+    return;
+loc_17ba5:
+    memoryASet16(ds, 0x762d, 0x0000);
+    memoryASet16(ds, 0x762f, 0x0000);
+    memoryASet(ds, 0x5b3e, 0x01);
+    cx = 0x0005;
+    si = 0x758b;
+    di = 0x0c28;
+loc_17bbf:
+    memoryASet16(ds, di, 0x0011);
+    memoryASet16(ds, di + 50, 0x0060);
+    memoryASet16(ds, di + 28, 0x0000);
+    memoryASet16(ds, di + 24, 0x0000);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 22, ax);
+    memoryASet16(ds, di + 18, 0x0000);
+    memoryASet16(ds, di + 20, 0x0000);
+    ax = lodsw<DS_SI>();
+    memoryASet16(ds, di + 16, ax);
+    di += 0x0034;
+    if (--cx)
+        goto loc_17bbf;
+    di = 0x0b56;
+    memoryASet16(ds, di, 0x0001);
+    ax = memoryAGet16(ds, 0x0c2a);
+    memoryASet16(ds, di + 2, ax);
+    ax = memoryAGet16(ds, 0x0c2c);
+    memoryASet16(ds, di + 4, ax);
+    memoryASet16(ds, di + 50, 0x0034);
+    memoryASet16(ds, di + 22, 0x0001);
+    memoryASet16(ds, di + 24, 0x0000);
+    memoryASet16(ds, di + 6, 0x0000);
+    memoryASet16(ds, di + 8, 0xfb00);
+    memoryASet16(ds, di + 16, 0xfffe);
+    memoryASet16(ds, di + 28, 0x0000);
+    memoryASet16(ds, 0x0d2c, 0x0000);
+    if (memoryAGet16(ds, 0x8bee) != 0x0001)
+        return;
+    cx = memoryAGet16(ds, 0x6610);
+    if (!cx)
+        goto loc_17c3e;
+loc_17c34:
+    si = 0x6729;
+    push(cx);
+    sub_16bc7();
+    cx = pop();
+    if (--cx)
+        goto loc_17c34;
+loc_17c3e:
+    cx = memoryAGet16(ds, 0x6612);
+    if (!cx)
+        goto loc_17c50;
+loc_17c46:
+    si = 0x672f;
+    push(cx);
+    sub_16bc7();
+    cx = pop();
+    if (--cx)
+        goto loc_17c46;
+loc_17c50:
+    cx = memoryAGet16(ds, 0x6614);
+    cx++;
+    if (!cx)
+        return;
+loc_17c59:
+    si = 0x6735;
+    push(cx);
+    sub_16bc7();
+    cx = pop();
+    if (--cx)
+        goto loc_17c59;
+}
+void sub_17c64()
+{
+    if (!(memoryAGet16(ds, 0x762b) & 0xffff))
+        goto loc_17c71;
+    memoryASet16(ds, 0x762b, memoryAGet16(ds, 0x762b) - 1);
+    return;
+loc_17c71:
+    ax = 0x000d;
+    sub_1aecd();
+    memoryASet16(ds, 0x762b, 0x0032);
+    memoryASet16(ds, 0x0d2c, 0x0001);
+    memoryASet16(ds, 0x0d36, 0x0055);
+    ax = memoryAGet16(ds, 0x0b1e);
+    ax += 0x000c;
+    bx = memoryAGet16(ds, 0x0b20);
+    bx += 0x000a;
+    cx = memoryAGet16(ds, 0x0c2a);
+    cx += 0xffe4;
+    memoryASet16(ds, 0x0d2e, cx);
+    dx = memoryAGet16(ds, 0x0c2c);
+    dx += 0x002c;
+    memoryASet16(ds, 0x0d30, dx);
+    ax -= cx;
+    cx = ax;
+    bx -= dx;
+    dx = bx;
+loc_17cb4:
+    if ((short)ax > (short)0x0004)
+        goto loc_17ccb;
+    if ((short)ax < (short)0xfffc)
+        goto loc_17ccb;
+    if ((short)bx > (short)0x0004)
+        goto loc_17ccb;
+    if ((short)bx < (short)0xfffc)
+        goto loc_17ccb;
+    goto loc_17cec;
+  // gap 1 bytes
+loc_17ccb:
+    ax = sar16(ax, 0x0001);
+    bx = sar16(bx, 0x0001);
+    if (ax != 0x0000)
+        goto loc_17cb4;
+    if (bx != 0x0000)
+        goto loc_17cb4;
+    ax = 0x0004;
+    bx = ax;
+    if ((short)cx >= (short)0x0000)
+        goto loc_17ce5;
+    ax = -ax;
+loc_17ce5:
+    if ((short)dx >= (short)0x0000)
+        goto loc_17ce5;
+    bx = -bx;
+loc_17cec:
+    memoryASet16(ds, 0x0d3c, ax);
+    memoryASet16(ds, 0x0d34, bx);
+}
+void sub_17cf4()
+{
+    memoryASet16(ds, 0x762b, memoryAGet16(ds, 0x762b) - 1);
+    if ((short)memoryAGet16(ds, 0x762b) >= 0)
+        goto loc_17d00;
+    memoryASet16(ds, 0x762b, 0x0000);
+loc_17d00:
+    ax = memoryAGet16(ds, 0x0d2e);
+    ax += memoryAGet16(ds, 0x0d3c);
+    memoryASet16(ds, 0x0d2e, ax);
+    dx = memoryAGet16(ds, 0x0d30);
+    dx += memoryAGet16(ds, 0x0d34);
+    memoryASet16(ds, 0x0d30, dx);
+    ax += 0x0004;
+    if ((short)ax <= (short)0x0004)
+        goto loc_17d4c;
+    if ((short)ax >= (short)0x00fc)
+        goto loc_17d4c;
+    dx += 0x0004;
+    memoryASet16(ds, 0x795d, ax);
+    memoryASet16(ds, 0x795f, dx);
+    sub_18014();
+    ch = memoryAGet(ds, 0x7963);
+    if (ch & 0x02)
+        goto loc_17d4c;
+    ax--;
+    ax--;
+    bx = dx;
+    dh = al;
+    dl = 0x04;
+    ah = 0x04;
+    sub_16407();
+    if (!flags.carry)
+        return;
+    sub_168a8();
+loc_17d4c:
+    memoryASet16(ds, 0x0d2c, 0x0000);
+}
+void sub_17d53() // +returnCarry
+{
+    memoryASet16(ds, 0x7629, memoryAGet16(ds, 0x7629) - 1);
+    if (!memoryAGet16(ds, 0x7629))
+        goto loc_17d5b;
+    flags.carry = 0;
+    return;
+loc_17d5b:
+    flags.carry = 1;
+}
+void sub_17d70()
+{
+    push(si);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    memoryASet16(ds, 0x796c, 0x0005);
+    memoryASet16(ds, 0x796e, 0x0010);
+    memoryASet16(ds, 0x7964, 0x7fff);
+    memoryASet16(ds, 0x7e02, 0x0000);
+    cx = 0x0003;
+    dx = memoryAGet16(ds, 0x795f);
+    dx &= 0x0007;
+    if ((short)dx >= (short)0x0004)
+        goto loc_17d9f;
+    cx = 0x0002;
+loc_17d9f:
+    memoryASet(ds, 0x796a, 0x00);
+    bp = 0x0004;
+    sub_17ff3();
+    dx &= 0x0007;
+    if (!dx)
+        goto loc_17dd7;
+    ax = 0;
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001d;
+    bl &= 0x02;
+    if (!bl)
+        goto loc_17e2f;
+    memoryASet16(ds, 0x7e02, 0x0001);
+    goto loc_17e2f;
+  // gap 1 bytes
+loc_17dd7:
+    ax = 0;
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001e;
+    bl &= 0x02;
+    if (bl)
+        goto loc_17df2;
+    goto loc_17e8a;
+loc_17df2:
+    memoryASet16(ds, 0x7e02, 0x0001);
+    goto loc_17e8a;
+  // gap 52 bytes
+loc_17e2f:
+    bx = 0;
+    ax = 0;
+    goto loc_17e4e;
+  // gap 1 bytes
+loc_17e36:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bh |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001d;
+loc_17e4e:
+    if (--cx)
+        goto loc_17e36;
+    bl &= 0x22;
+    bh &= 0x2a;
+    memoryASet(ds, 0x796a, bl);
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bh);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bh = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    bl &= 0x27;
+    bh &= 0x7f;
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bl);
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bh);
+    al = memoryAGet(ds, 0x796a);
+    memoryASet(ds, 0x7963, al);
+    goto loc_17ec9;
+  // gap 1 bytes
+loc_17e8a:
+    bx = 0;
+    ax = 0;
+    goto loc_17ea2;
+  // gap 1 bytes
+loc_17e91:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001e;
+loc_17ea2:
+    if (--cx)
+        goto loc_17e91;
+    bl &= 0x2a;
+    memoryASet(ds, 0x796a, bl);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    bl &= 0x7f;
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bl);
+    al = memoryAGet(ds, 0x796a);
+    memoryASet(ds, 0x7963, al);
+    goto loc_17ec9;
+  // gap 1 bytes
+loc_17ec9:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax >= 0)
+        goto loc_17ed8;
+    al = memoryAGet(ds, 0x7963);
+    al &= 0xfb;
+    memoryASet(ds, 0x7963, al);
+loc_17ed8:
+    if (memoryAGet(ds, 0x796b) == 0x01)
+        goto loc_17ee2;
+    goto loc_17fb9;
+loc_17ee2:
+    si = 0x0c28;
+loc_17ee5:
+    ax = memoryAGet16(ds, si);
+    if (ax != 0xffff)
+        goto loc_17eef;
+    goto loc_17fb9;
+loc_17eef:
+    if (al)
+        goto loc_17ef6;
+    goto loc_17fb3;
+loc_17ef6:
+    if (al & 0x80)
+        goto loc_17efd;
+    goto loc_17fb3;
+loc_17efd:
+    if (!(al & 0x40))
+        goto loc_17f68;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, si + 32);
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x04;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += memoryAGet16(ds, 0x796c);
+    dh = 0x10;
+    bh = memoryAGet(ds, 0x796e);
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (flags.carry)
+        goto loc_17f2f;
+    goto loc_17fb3;
+loc_17f2f:
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x02);
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_17f65;
+    bx = memoryAGet16(ds, 0x795f);
+    bx += 0x0014;
+    ax = 0;
+    al = memoryAGet(ds, 0x7962);
+    true ? cbw() : cwde();
+    ax += 0x0008;
+    ax += di;
+    if ((short)bx > (short)ax)
+        goto loc_17f65;
+    memoryASet16(ds, 0x7964, di);
+    memoryASet16(ds, 0x7966, 0x0000);
+    memoryASet16(ds, 0x7968, 0x0000);
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+loc_17f65:
+    goto loc_17fb3;
+  // gap 1 bytes
+loc_17f68:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax < 0)
+        goto loc_17fb3;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, 0x7962);
+    bl += 0x08;
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x04;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += 0x0014;
+    dh = 0x10;
+    bh = 0x01;
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (!flags.carry)
+        goto loc_17fb3;
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_17fb3;
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+    memoryASet16(ds, 0x7964, di);
+    ax = memoryAGet16(ds, si + 46);
+    memoryASet16(ds, 0x7966, ax);
+    ax = memoryAGet16(ds, si + 48);
+    memoryASet16(ds, 0x7968, ax);
+loc_17fb3:
+    si += 0x0034;
+    goto loc_17ee5;
+loc_17fb9:
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    si = pop();
+}
+void sub_17dfb()
+{
+    push(si);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    memoryASet16(ds, 0x796c, 0x0000);
+    memoryASet16(ds, 0x796e, 0x0015);
+    memoryASet16(ds, 0x7964, 0x7fff);
+    cx = 0x0004;
+    dx = memoryAGet16(ds, 0x795f);
+    dx &= 0x0007;
+    if ((short)dx >= (short)0x0004)
+        goto loc_17e24;
+    cx = 0x0003;
+loc_17e24:
+    bp = 0x0004;
+    sub_17ff3();
+    dx &= 0x0007;
+    if (!dx)
+        goto loc_17e8a;
+    bx = 0;
+    ax = 0;
+    goto loc_17e4e;
+  // gap 1 bytes
+loc_17e36:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bh |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001d;
+loc_17e4e:
+    if (--cx)
+        goto loc_17e36;
+    bl &= 0x22;
+    bh &= 0x2a;
+    memoryASet(ds, 0x796a, bl);
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bh);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bh = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    bl &= 0x27;
+    bh &= 0x7f;
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bl);
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bh);
+    al = memoryAGet(ds, 0x796a);
+    memoryASet(ds, 0x7963, al);
+    goto loc_17ec9;
+  // gap 1 bytes
+loc_17e8a:
+    bx = 0;
+    ax = 0;
+    goto loc_17ea2;
+  // gap 1 bytes
+loc_17e91:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001e;
+loc_17ea2:
+    if (--cx)
+        goto loc_17e91;
+    bl &= 0x2a;
+    memoryASet(ds, 0x796a, bl);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    bl &= 0x7f;
+    memoryASet(ds, 0x796a, memoryAGet(ds, 0x796a) | bl);
+    al = memoryAGet(ds, 0x796a);
+    memoryASet(ds, 0x7963, al);
+    goto loc_17ec9;
+  // gap 1 bytes
+loc_17ec9:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax >= 0)
+        goto loc_17ed8;
+    al = memoryAGet(ds, 0x7963);
+    al &= 0xfb;
+    memoryASet(ds, 0x7963, al);
+loc_17ed8:
+    if (memoryAGet(ds, 0x796b) == 0x01)
+        goto loc_17ee2;
+    goto loc_17fb9;
+loc_17ee2:
+    si = 0x0c28;
+loc_17ee5:
+    ax = memoryAGet16(ds, si);
+    if (ax != 0xffff)
+        goto loc_17eef;
+    goto loc_17fb9;
+loc_17eef:
+    if (al)
+        goto loc_17ef6;
+    goto loc_17fb3;
+loc_17ef6:
+    if (al & 0x80)
+        goto loc_17efd;
+    goto loc_17fb3;
+loc_17efd:
+    if (!(al & 0x40))
+        goto loc_17f68;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, si + 32);
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x04;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += memoryAGet16(ds, 0x796c);
+    dh = 0x10;
+    bh = memoryAGet(ds, 0x796e);
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (flags.carry)
+        goto loc_17f2f;
+    goto loc_17fb3;
+loc_17f2f:
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x02);
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_17f65;
+    bx = memoryAGet16(ds, 0x795f);
+    bx += 0x0014;
+    ax = 0;
+    al = memoryAGet(ds, 0x7962);
+    true ? cbw() : cwde();
+    ax += 0x0008;
+    ax += di;
+    if ((short)bx > (short)ax)
+        goto loc_17f65;
+    memoryASet16(ds, 0x7964, di);
+    memoryASet16(ds, 0x7966, 0x0000);
+    memoryASet16(ds, 0x7968, 0x0000);
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+loc_17f65:
+    goto loc_17fb3;
+  // gap 1 bytes
+loc_17f68:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax < 0)
+        goto loc_17fb3;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, 0x7962);
+    bl += 0x08;
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x04;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += 0x0014;
+    dh = 0x10;
+    bh = 0x01;
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (!flags.carry)
+        goto loc_17fb3;
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_17fb3;
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+    memoryASet16(ds, 0x7964, di);
+    ax = memoryAGet16(ds, si + 46);
+    memoryASet16(ds, 0x7966, ax);
+    ax = memoryAGet16(ds, si + 48);
+    memoryASet16(ds, 0x7968, ax);
+loc_17fb3:
+    si += 0x0034;
+    goto loc_17ee5;
+loc_17fb9:
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    si = pop();
+}
+void sub_17fbf() // +returnCarry
+{
+    ax = 0;
+    al = ch;
+    si = ax;
+    al = dh;
+    si += ax;
+    al = cl;
+    if ((short)si <= (short)ax)
+        goto loc_17ff1;
+    si = ax;
+    al = dl;
+    si += ax;
+    al = ch;
+    if ((short)si <= (short)ax)
+        goto loc_17ff1;
+    cx = 0;
+    cl = bh;
+    cx += bp;
+    if ((short)cx <= (short)di)
+        goto loc_17ff1;
+    ax = 0;
+    al = bl;
+    ax += di;
+    if ((short)ax <= (short)bp)
+        goto loc_17ff1;
+    flags.carry = 1;
+    return;
+loc_17ff1:
+    flags.carry = 0;
+}
+void sub_17ff3()
+{
+    si = 0x563c;
+    dx = memoryAGet16(ds, 0x795f);
+    dx &= 0xfff8;
+    dx <<= 1;
+    dx <<= 1;
+    si += dx;
+    dx = memoryAGet16(ds, 0x795d);
+    dx += bp;
+    bp = dx;
+    bp >>= 1;
+    bp >>= 1;
+    bp >>= 1;
+    si += bp;
+}
+void sub_18014()
+{
+    push(ax);
+    push(dx);
+    bp = 0;
+    sub_17ff3();
+    ax = 0;
+    al = lodsb<DS_SI>();
+    di = ax;
+    al = memoryAGet(ds, di + 21492);
+    memoryASet(ds, 0x7963, al);
+    sub_181c6();
+    dx = pop();
+    ax = pop();
+}
+void sub_1802d()
+{
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    cx = 0x0002;
+    ax = memoryAGet16(ds, 0x795f);
+    ax &= 0x0007;
+    if (!ax)
+        goto loc_1803f;
+    cx = 0x0003;
+loc_1803f:
+    bp = 0x0008;
+    sub_17ff3();
+    dx &= 0x0007;
+    if (!dx)
+        goto loc_18083;
+    bx = 0;
+    ax = 0;
+    goto loc_18062;
+  // gap 1 bytes
+loc_18051:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001e;
+loc_18062:
+    if (--cx)
+        goto loc_18051;
+    bl &= 0x23;
+    bh = bl;
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    bl &= 0x27;
+    bh |= bl;
+    memoryASet(ds, 0x7963, bh);
+    goto loc_180ae;
+  // gap 1 bytes
+loc_18083:
+    bx = 0;
+    ax = 0;
+    goto loc_18094;
+  // gap 1 bytes
+loc_1808a:
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl |= memoryAGet(ds, di + 21492);
+    si += 0x001f;
+loc_18094:
+    if (--cx)
+        goto loc_1808a;
+    bl &= 0x2b;
+    bh = bl;
+    al = lodsb<DS_SI>();
+    di = ax;
+    bl = memoryAGet(ds, di + 21492);
+    bl &= 0x27;
+    bh |= bl;
+    memoryASet(ds, 0x7963, bh);
+    goto loc_180ae;
+  // gap 1 bytes
+loc_180ae:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax >= 0)
+        goto loc_180c0;
+    bh = memoryAGet(ds, 0x7963);
+    bh &= 0xfb;
+    memoryASet(ds, 0x7963, bh);
+loc_180c0:
+    if (memoryAGet(ds, 0x796b) == 0x01)
+        goto loc_180ca;
+    goto loc_1819f;
+loc_180ca:
+    si = 0x0c28;
+loc_180cd:
+    ax = memoryAGet16(ds, si);
+    if (ax != 0xffff)
+        goto loc_180d7;
+    goto loc_1819f;
+loc_180d7:
+    if (al)
+        goto loc_180de;
+    goto loc_18199;
+loc_180de:
+    if (al & 0x80)
+        goto loc_180e5;
+    goto loc_18199;
+loc_180e5:
+    if (!(al & 0x40))
+        goto loc_1814e;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, si + 32);
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x08;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += memoryAGet16(ds, 0x796c);
+    dh = 0x08;
+    bh = 0x10;
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (flags.carry)
+        goto loc_18115;
+    goto loc_18199;
+loc_18115:
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x02);
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_1814b;
+    bx = memoryAGet16(ds, 0x795f);
+    bx += 0x0010;
+    ax = 0;
+    al = memoryAGet(ds, 0x7962);
+    true ? cbw() : cwde();
+    ax += 0x0008;
+    ax += di;
+    if ((short)bx > (short)ax)
+        goto loc_1814b;
+    memoryASet16(ds, 0x7964, di);
+    memoryASet16(ds, 0x7966, 0x0000);
+    memoryASet16(ds, 0x7968, 0x0000);
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+loc_1814b:
+    goto loc_18199;
+  // gap 1 bytes
+loc_1814e:
+    ax = memoryAGet16(ds, 0x7961);
+    if ((short)ax < 0)
+        goto loc_18199;
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = memoryAGet(ds, si + 30);
+    bl = memoryAGet(ds, 0x7962);
+    bl += 0x08;
+    ch = memoryAGet(ds, 0x795d);
+    ch += 0x08;
+    bp = memoryAGet16(ds, 0x795f);
+    bp += 0x000f;
+    dh = 0x08;
+    bh = 0x01;
+    push(si);
+    sub_17fbf();
+    si = pop();
+    if (!flags.carry)
+        goto loc_18199;
+    if ((short)di > (short)memoryAGet16(ds, 0x7964))
+        goto loc_18199;
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+    memoryASet16(ds, 0x7964, di);
+    ax = memoryAGet16(ds, si + 46);
+    memoryASet16(ds, 0x7966, ax);
+    ax = memoryAGet16(ds, si + 48);
+    memoryASet16(ds, 0x7968, ax);
+loc_18199:
+    si += 0x0034;
+    goto loc_180cd;
+loc_1819f:
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+}
+void sub_181a4()
+{
+    al = ch;
+    ah = 0;
+    ch = 0;
+    if ((short)ax < (short)cx)
+        goto loc_181c4;
+    dh = 0;
+    cx += dx;
+    if ((short)ax > (short)cx)
+        goto loc_181c4;
+    if ((short)bp < (short)di)
+        goto loc_181c4;
+    bh = 0;
+    di += bx;
+    if ((short)bp > (short)di)
+        goto loc_181c4;
+    flags.carry = 1;
+    return;
+loc_181c4:
+    flags.carry = 0;
+}
+void sub_181c6()
+{
+    si = 0x0c28;
+loc_181c9:
+    ax = memoryAGet16(ds, si);
+    if (ax == 0xffff)
+        return;
+    if (!al)
+        goto loc_181f8;
+    if (!(al & 0x80))
+        goto loc_181f8;
+    if (!(al & 0x40))
+        goto loc_181f8;
+    ch = memoryAGet(ds, 0x795d);
+    bp = memoryAGet16(ds, 0x795f);
+    cl = memoryAGet(ds, si + 2);
+    di = memoryAGet16(ds, si + 4);
+    dl = 0x18;
+    bl = 0x15;
+    sub_181a4();
+    if (!flags.carry)
+        goto loc_181f8;
+    memoryASet(ds, 0x7963, memoryAGet(ds, 0x7963) | 0x40);
+loc_181f8:
+    si += 0x0034;
+    goto loc_181c9;
+}
+void sub_18351()
+{
+    bool temp_cf;
+    bool temp_cf1;
+    bool temp_cf2;
+    bool temp_cf3;
+    bool temp_cf4;
+    bool temp_cf5;
+  goto loc_18351;
+loc_168a8:
+    ax = 0x000b;
+    sub_1aecd();
+    memoryASet16(ds, 0x7e16, 0x0001);
+    memoryASet16(ds, 0x0b24, 0xfb00);
+    ax = memoryAGet16(ds, 0x0b1e);
+    if ((short)ax < (short)0x0080)
+        goto loc_168cb;
+    memoryASet16(ds, 0x7e1c, 0xfffe);
+    goto loc_168d1;
+  // gap 1 bytes
+loc_168cb:
+    memoryASet16(ds, 0x7e1c, 0x0002);
+loc_168d1:
+    ax = memoryAGet16(ds, 0x6614);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        return;
+    memoryASet16(ds, 0x6614, memoryAGet16(ds, 0x6614) - 1);
+loc_168e3:
+    return;
+  // gap 6765 bytes
+loc_18351:
+    if (memoryAGet16(ds, 0x7e16) != 0x0001)
+        goto loc_1835b;
+    goto loc_18f9a;
+loc_1835b:
+    sub_19c05();
+    ax = memoryAGet16(ds, 0x0b20);
+    memoryASet16(ds, 0x7dfe, ax);
+    memoryASet(ds, 0x90c2, 0x00);
+    memoryASet16(ds, 0x7e1a, 0x0000);
+    sub_1c4ca();
+    if (!(memoryAGet16(ds, 0x7ed2) & 0x00ff))
+        goto loc_1837f;
+    memoryASet16(ds, 0x7ed2, memoryAGet16(ds, 0x7ed2) - 1);
+loc_1837f:
+    if (al == memoryAGet(ds, 0x7eca))
+        goto loc_18396;
+    memoryASet(ds, 0x7eca, 0x00);
+    memoryASet16(ds, 0x7ecc, 0x0000);
+    memoryASet16(ds, 0x7ed2, 0x0000);
+loc_18396:
+    if (memoryAGet16(ds, 0x7e00) != 0x0001)
+        goto loc_183a0;
+    goto loc_18b03;
+loc_183a0:
+    ax = memoryAGet16(ds, 0x7e06);
+    if (!ax)
+        goto loc_183aa;
+    goto loc_18987;
+loc_183aa:
+    memoryASet16(ds, 0x7e08, 0x0000);
+    memoryASet16(ds, 0x7e0a, 0x0000);
+    memoryASet16(ds, 0x7e0c, 0x0000);
+    memoryASet16(ds, 0x7e0e, 0x0000);
+    memoryASet16(ds, 0x7e10, 0x0000);
+    memoryASet16(ds, 0x7e14, 0x0000);
+    memoryASet(ds, 0x796b, 0x01);
+    dx = memoryAGet16(ds, 0x0b24);
+    dx += 0x0080;
+    if ((short)dx <= (short)0x0800)
+        goto loc_183e4;
+    dx = 0x0800;
+loc_183e4:
+    memoryASet16(ds, 0x0b24, dx);
+    memoryASet16(ds, 0x7961, dx);
+    if ((short)dx < 0)
+        goto loc_183f5;
+    ch = 0;
+    goto loc_183f7;
+  // gap 1 bytes
+loc_183f5:
+    ch = 0xff;
+loc_183f7:
+    ax = memoryAGet16(ds, 0x0b20);
+    cl = memoryAGet(ds, 0x0b22);
+    temp_cf2 = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf3 = (al + dh + temp_cf2) >= 0x100;
+    al += dh + temp_cf2;
+    ah += ch + temp_cf3;
+    memoryASet16(ds, 0x795f, ax);
+    dx = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x795d, dx);
+    memoryASet(ds, 0x796b, 0x01);
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_18421;
+    sub_17d70();
+    goto loc_18424;
+  // gap 1 bytes
+loc_18421:
+    sub_17dfb();
+loc_18424:
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x40))
+        goto loc_18485;
+    ax = memoryAGet16(ds, 0x7964);
+    cl = 0;
+    ax -= 0x0015;
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x0b20, ax);
+    memoryASet(ds, 0x0b22, 0x00);
+    memoryASet16(ds, 0x7e08, 0x0001);
+    push(ax);
+    ax = memoryAGet16(ds, 0x7966);
+    memoryASet16(ds, 0x7e1a, ax);
+    ax = pop();
+    memoryASet(ds, 0x796b, 0x00);
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_18460;
+    sub_17d70();
+    goto loc_18463;
+  // gap 1 bytes
+loc_18460:
+    sub_17dfb();
+loc_18463:
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_1846f;
+    goto loc_168a8;
+loc_1846f:
+    ch &= 0x06;
+    if (!ch)
+        goto loc_1847b;
+    ch = memoryAGet(ds, 0x7963);
+    goto loc_184a3;
+  // gap 1 bytes
+loc_1847b:
+    ch = memoryAGet(ds, 0x7963);
+    dx = 0x0100;
+    goto loc_1857c;
+loc_18485:
+    if (!(ch & 0x20))
+        goto loc_1848d;
+    goto loc_168a8;
+loc_1848d:
+    if (ch & 0x04)
+        goto loc_184da;
+    if (ch & 0x02)
+        goto loc_1849a;
+    goto loc_186a8;
+loc_1849a:
+    bp = memoryAGet16(cs, 0x0b24);
+    if ((short)bp >= 0)
+        goto loc_184da;
+loc_184a3:
+    if (memoryAGet16(ds, 0x7e06) != 0x0001)
+        goto loc_184c8;
+    bp = memoryAGet16(cs, 0x0b1e);
+    bp &= 0x001f;
+    if ((short)bp >= (short)0x000a)
+        goto loc_184c8;
+    bp = memoryAGet16(cs, 0x0b1e);
+    bp &= 0x00f0;
+    bp |= 0x0004;
+    memoryASet16(cs, 0x0b1e, bp);
+loc_184c8:
+    ax |= 0x0007;
+    ax++;
+    cl = 0;
+    memoryASet16(ds, 0x0b24, 0x0100);
+    dx = 0x0100;
+    goto loc_186a8;
+loc_184da:
+    if (!(ch & 0x10))
+        goto loc_18524;
+    if (memoryAGet(ds, 0xb884) & 0x10)
+        goto loc_18524;
+    if (memoryAGet16(ds, 0x7e04) == 0x0001)
+        goto loc_18524;
+    if (memoryAGet16(ds, 0x7e06) != 0x0001)
+        goto loc_184f8;
+    goto loc_186a8;
+loc_184f8:
+    if (!(memoryAGet(ds, 0xb884) & 0x04))
+        goto loc_18524;
+    bx = memoryAGet16(ds, 0x0b1e);
+    bx &= 0x001f;
+    if ((short)bx >= (short)0x000a)
+        goto loc_18524;
+    bx = memoryAGet16(ds, 0x0b1e);
+    bx &= 0x00f0;
+    bx |= 0x0004;
+    memoryASet16(ds, 0x0b1e, bx);
+    memoryASet16(ds, 0x7e06, 0x0001);
+    goto loc_186a8;
+loc_18524:
+    memoryASet16(ds, 0x7e06, 0x0000);
+    memoryASet16(ds, 0x7e08, 0x0001);
+    ax += 0x000c;
+    ax |= 0x0007;
+    ax -= 0x0014;
+    cl = 0;
+    memoryASet16(ds, 0x0b20, ax);
+    memoryASet(ds, 0x0b22, cl);
+    dx = 0x0100;
+    if (!(ch & 0x01))
+        goto loc_1857c;
+    if (memoryAGet16(ds, 0x8bec) != 0x0003)
+        goto loc_1857c;
+    dx = memoryAGet16(ds, 0x0b24);
+    if ((short)dx < (short)0x0200)
+        goto loc_18570;
+    dx = -dx;
+    dx += 0x0060;
+    memoryASet16(ds, 0x0b24, dx);
+    dx = 0xf781;
+    ax = 0x0016;
+    sub_1aecd();
+    goto loc_185ab;
+  // gap 1 bytes
+loc_18570:
+    memoryASet16(ds, 0x0b24, 0x0100);
+    dx = 0xfa00;
+    goto loc_185ab;
+  // gap 1 bytes
+loc_1857c:
+    memoryASet16(ds, 0x0b24, dx);
+    dx = 0xfa00;
+    if (!(ch & 0x01))
+        goto loc_185ab;
+    if (memoryAGet16(ds, 0x8bec) != 0x0001)
+        goto loc_18595;
+    dx = 0xfe00;
+    goto loc_185ab;
+  // gap 1 bytes
+loc_18595:
+    if (memoryAGet16(ds, 0x8bec) != 0x0005)
+        goto loc_185ab;
+    ax = 0x0017;
+    sub_1aecd();
+    memoryASet16(ds, 0x0b24, 0xf781);
+    goto loc_186c1;
+loc_185ab:
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_185c5;
+    if (memoryAGet16(ds, 0x7e02) != 0x0001)
+        goto loc_185bc;
+    goto loc_186c1;
+loc_185bc:
+    memoryASet16(ds, 0x7e04, 0x0000);
+    goto loc_185f2;
+  // gap 1 bytes
+loc_185c5:
+    if (memoryAGet(ds, 0xb884) & 0x10)
+        goto loc_18606;
+    if (!(memoryAGet(ds, 0xb884) & 0x08))
+        goto loc_185f2;
+    memoryASet16(ds, 0x0b24, dx);
+    if (!(ch & 0x10))
+        goto loc_185e1;
+    goto loc_186c1;
+loc_185e1:
+    if (ch & 0x08)
+        goto loc_185e9;
+    goto loc_186c1;
+loc_185e9:
+    memoryASet16(ds, 0x7e06, 0x0001);
+    goto loc_186c1;
+loc_185f2:
+    if (memoryAGet(ds, 0xb884) & 0x04)
+        goto loc_185fd;
+    goto loc_186c1;
+loc_185fd:
+    memoryASet16(ds, 0x7e04, 0x0001);
+    goto loc_186c1;
+loc_18606:
+    if (!(memoryAGet(ds, 0xb884) & 0x08))
+        goto loc_18611;
+    goto loc_189c2;
+loc_18611:
+    memoryASet16(ds, 0x7e12, 0x0001);
+    if (!(memoryAGet(ds, 0xb884) & 0x04))
+        goto loc_18622;
+    goto loc_189ff;
+loc_18622:
+    push(ax);
+    al = memoryAGet(ds, 0xb884);
+    if (al != memoryAGet(ds, 0x7eca))
+        goto loc_18630;
+    ax = pop();
+    goto loc_189de;
+loc_18630:
+    ax = pop();
+    if (!(memoryAGet(ds, 0xb884) & 0x02))
+        goto loc_1866a;
+    memoryASet16(ds, 0x0b36, 0x0001);
+    bx = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x7ece, bx);
+    memoryASet16(ds, 0x7ed0, ax);
+    memoryASet16(ds, 0x7ed0, memoryAGet16(ds, 0x7ed0) + 0x0008);
+    memoryASet16(ds, 0x7ecc, 0x0001);
+    memoryASet16(ds, 0x7ed2, 0x000a);
+    al = memoryAGet(ds, 0xb884);
+    memoryASet(ds, 0x7eca, al);
+    ax = 0x0022;
+    sub_1aecd();
+    goto loc_189de;
+loc_1866a:
+    if (!(memoryAGet(ds, 0xb884) & 0x01))
+        goto loc_186c1;
+    memoryASet16(ds, 0x0b36, 0x0000);
+    bx = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x7ece, bx);
+    memoryASet16(ds, 0x7ece, memoryAGet16(ds, 0x7ece) + 0x0018);
+    memoryASet16(ds, 0x7ed0, ax);
+    memoryASet16(ds, 0x7ed0, memoryAGet16(ds, 0x7ed0) + 0x0008);
+    memoryASet16(ds, 0x7ecc, 0x0001);
+    memoryASet16(ds, 0x7ed2, 0x000a);
+    al = memoryAGet(ds, 0xb884);
+    memoryASet(ds, 0x7eca, al);
+    ax = 0x0022;
+    sub_1aecd();
+    goto loc_189de;
+loc_186a8:
+    memoryASet16(ds, 0x0b20, ax);
+    memoryASet(ds, 0x0b22, cl);
+    al = memoryAGet(ds, 0xb884);
+    al &= 0x0c;
+    if (!al)
+        goto loc_186c1;
+    if (!(ch & 0x08))
+        goto loc_186c1;
+    memoryASet16(ds, 0x7e06, 0x0001);
+loc_186c1:
+    if (memoryAGet16(ds, 0x7e06) != 0x0001)
+        goto loc_186e2;
+    if (ch & 0x08)
+        goto loc_186e2;
+    memoryASet16(ds, 0x7e06, 0x0000);
+    bp = memoryAGet16(cs, 0x0b24);
+    if ((short)bp >= 0)
+        goto loc_186e2;
+    memoryASet16(ds, 0x0b24, 0xfe00);
+loc_186e2:
+    if (!(memoryAGet(ds, 0xb884) & 0x02))
+        goto loc_1871e;
+    memoryASet16(ds, 0x0b36, 0x0001);
+    dx = 0xfffe;
+    if (ch & 0x01)
+        goto loc_186fb;
+    goto loc_1878a;
+loc_186fb:
+    if (memoryAGet16(ds, 0x8bec) != 0x0004)
+        goto loc_1870e;
+    dx = 0xffff;
+    memoryASet16(ds, 0x7e0c, 0x0001);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_1870e:
+    if (memoryAGet16(ds, 0x8bec) != 0x0002)
+        goto loc_1878a;
+    memoryASet16(ds, 0x7e0e, 0x0001);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_1871e:
+    if (!(memoryAGet(ds, 0xb884) & 0x01))
+        goto loc_18757;
+    memoryASet16(ds, 0x0b36, 0x0000);
+    dx = 0x0002;
+    if (!(ch & 0x01))
+        goto loc_1878a;
+    if (memoryAGet16(ds, 0x8bec) != 0x0004)
+        goto loc_18747;
+    dx = 0x0001;
+    memoryASet16(ds, 0x7e0c, 0x0001);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_18747:
+    if (memoryAGet16(ds, 0x8bec) != 0x0002)
+        goto loc_1878a;
+    memoryASet16(ds, 0x7e0e, 0x0001);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_18757:
+    dx = 0;
+    if (ch & 0x01)
+        goto loc_18767;
+    memoryASet16(ds, 0x0b34, 0xffff);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_18767:
+    if (memoryAGet16(ds, 0x8bec) == 0x0002)
+        goto loc_18777;
+    memoryASet16(ds, 0x0b34, 0xffff);
+    goto loc_1878a;
+  // gap 1 bytes
+loc_18777:
+    memoryASet16(ds, 0x7e0a, 0x0001);
+    dx = 0x0002;
+    if (memoryAGet16(ds, 0x0b36) == 0x0000)
+        goto loc_1878a;
+    dx = 0xfffe;
+loc_1878a:
+    dx += memoryAGet16(ds, 0x7e1a);
+    bx = memoryAGet16(ds, 0x0b1e);
+    bx += dx;
+    if (!dx)
+        goto loc_187b9;
+    if ((short)dx >= 0)
+        goto loc_187aa;
+    if ((short)bx >= (short)0x0000)
+        goto loc_187b9;
+    bx = 0;
+    memoryASet(ds, 0x90c2, 0x01);
+    goto loc_187b9;
+  // gap 1 bytes
+loc_187aa:
+    if ((short)bx < (short)0x00e8)
+        goto loc_187b9;
+    bx = 0x00e8;
+    memoryASet(ds, 0x90c2, 0x02);
+loc_187b9:
+    ax = memoryAGet16(ds, 0x0b20);
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x7961, 0xffff);
+    memoryASet16(ds, 0x795d, bx);
+    memoryASet(ds, 0x796b, 0x01);
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_187db;
+    sub_17d70();
+    goto loc_187de;
+  // gap 1 bytes
+loc_187db:
+    sub_17dfb();
+loc_187de:
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_187ea;
+    goto loc_168a8;
+loc_187ea:
+    if (!(ch & 0x02))
+        goto loc_18815;
+    if ((short)dx >= 0)
+        goto loc_18804;
+    bx += 0x000c;
+    bx &= 0x00f8;
+    bx -= 0x0004;
+    memoryASet16(ds, 0x0b1e, bx);
+    goto loc_1882b;
+  // gap 1 bytes
+loc_18804:
+    bx += 0x0003;
+    bx &= 0x00f8;
+    bx -= 0x0004;
+    memoryASet16(ds, 0x0b1e, bx);
+    goto loc_1882b;
+  // gap 1 bytes
+loc_18815:
+    memoryASet16(ds, 0x0b1e, bx);
+    if (memoryAGet16(ds, 0x7e06) != 0x0001)
+        goto loc_1882b;
+    if (ch & 0x08)
+        goto loc_1882b;
+    memoryASet16(ds, 0x7e06, 0x0000);
+loc_1882b:
+    if (memoryAGet16(ds, 0x7e00) != 0x0001)
+        goto loc_1883e;
+    memoryASet16(ds, 0x0b26, 0x000c);
+    sub_18c83();
+    goto loc_18975;
+loc_1883e:
+    if (memoryAGet16(ds, 0x7e06) != 0x0001)
+        goto loc_18865;
+    memoryASet16(ds, 0x0b26, 0x001a);
+    bx = memoryAGet16(ds, 0x0b1e);
+    ax = memoryAGet16(ds, 0x0b20);
+    ax ^= bx;
+    ax &= 0x0004;
+    if (ax)
+        goto loc_1885c;
+    goto loc_18a8f;
+loc_1885c:
+    memoryASet16(ds, 0x0b26, 0x001b);
+    goto loc_18a8f;
+loc_18865:
+    if (memoryAGet16(ds, 0x7e08) == 0x0001)
+        goto loc_18875;
+    memoryASet16(ds, 0x0b26, 0x0008);
+    goto loc_18975;
+loc_18875:
+    if (!(memoryAGet16(ds, 0x7ed2) & 0x00ff))
+        goto loc_18886;
+    memoryASet16(ds, 0x0b26, 0x000a);
+    goto loc_18975;
+loc_18886:
+    if (memoryAGet16(ds, 0x7e10) != 0x0001)
+        goto loc_18896;
+    memoryASet16(ds, 0x0b26, 0x0009);
+    goto loc_18975;
+loc_18896:
+    if (memoryAGet16(ds, 0x7e14) != 0x0001)
+        goto loc_188b6;
+    memoryASet16(ds, 0x0b26, 0x0000);
+    if (memoryAGet16(ds, 0x0b52) != 0x0000)
+        goto loc_188ad;
+    goto loc_18975;
+loc_188ad:
+    memoryASet16(ds, 0x0b26, 0x000b);
+    goto loc_18975;
+loc_188b6:
+    if (memoryAGet16(ds, 0x7e0a) != 0x0001)
+        goto loc_188d6;
+    memoryASet16(ds, 0x0b26, 0x0006);
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_188cd;
+    goto loc_18975;
+loc_188cd:
+    memoryASet16(ds, 0x0b26, 0x0000);
+    goto loc_18975;
+loc_188d6:
+    if (!(memoryAGet(ds, 0x7eca) & 0xff))
+        goto loc_188e6;
+    memoryASet16(ds, 0x0b26, 0x0000);
+    goto loc_18975;
+loc_188e6:
+    si = 0x7e2c;
+    memoryASet16(ds, 0x0b26, 0x0006);
+    if (memoryAGet16(ds, 0x7e04) == 0x0001)
+        goto loc_188ff;
+    si = 0x7e22;
+    memoryASet16(ds, 0x0b26, 0x0000);
+loc_188ff:
+    if (memoryAGet16(ds, 0x0b34) != 0xffff)
+        goto loc_1890f;
+    memoryASet16(ds, 0x0b34, 0x0000);
+    goto loc_18975;
+  // gap 1 bytes
+loc_1890f:
+    ax = 0x0001;
+    if (memoryAGet16(ds, 0x7e0c) == 0x0001)
+        goto loc_18926;
+    ax = 0x0004;
+    if (memoryAGet16(ds, 0x7e0e) == 0x0001)
+        goto loc_18926;
+    ax = 0x0002;
+loc_18926:
+    ax += memoryAGet16(ds, 0x0b34);
+    if ((short)ax < (short)0x0028)
+        goto loc_18932;
+    ax -= 0x0028;
+loc_18932:
+    memoryASet16(ds, 0x0b34, ax);
+    ax >>= 1;
+    ax >>= 1;
+    if (memoryAGet16(ds, 0x7e04) != 0x0001)
+        goto loc_18950;
+    if (!(ax & 0x0001))
+        goto loc_1896c;
+    push(ax);
+    ax = 0x0026;
+    sub_1aecd();
+    ax = pop();
+    goto loc_1896c;
+  // gap 1 bytes
+loc_18950:
+    if (ax == 0x0002)
+        goto loc_18964;
+    if (ax == 0x0005)
+        goto loc_18964;
+    if (ax == 0x0007)
+        goto loc_18964;
+    if (ax != 0x0000)
+        goto loc_1896c;
+loc_18964:
+    push(ax);
+    ax = 0x0025;
+    sub_1aecd();
+    ax = pop();
+loc_1896c:
+    si += ax;
+    ax = 0;
+    al = memoryAGet(ds, si);
+    memoryASet16(ds, 0x0b26, ax);
+loc_18975:
+    if (memoryAGet16(ds, 0x0b36) != 0x0000)
+        goto loc_1897f;
+    goto loc_18a8f;
+loc_1897f:
+    memoryASet16(ds, 0x0b26, memoryAGet16(ds, 0x0b26) + 0x000d);
+    goto loc_18a8f;
+loc_18987:
+    ax = memoryAGet16(ds, 0x0b20);
+    cl = 0;
+    dx = 0;
+    if (!(memoryAGet(ds, 0xb884) & 0x08))
+        goto loc_1899c;
+    dx = 0xfffe;
+    goto loc_189a7;
+  // gap 1 bytes
+loc_1899c:
+    if (!(memoryAGet(ds, 0xb884) & 0x04))
+        goto loc_189a7;
+    dx = 0x0002;
+loc_189a7:
+    memoryASet16(ds, 0x0b24, dx);
+    ax += dx;
+    memoryASet16(ds, 0x7961, dx);
+    memoryASet16(ds, 0x795f, ax);
+    bx = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x795d, bx);
+    sub_17dfb();
+    goto loc_18424;
+loc_189c2:
+    memoryASet16(ds, 0x7e10, 0x0001);
+    if (memoryAGet16(ds, 0x7e12) == 0x0000)
+        goto loc_189de;
+    if (!(memoryAGet16(ds, 0x6610) & 0x00ff))
+        goto loc_189de;
+    if (memoryAGet16(ds, 0x0b00) != 0x0001)
+        goto loc_189f9;
+loc_189de:
+    if (ch & 0x01)
+        goto loc_189e6;
+    goto loc_1882b;
+loc_189e6:
+    if (memoryAGet16(ds, 0x8bec) == 0x0002)
+        goto loc_189f0;
+    goto loc_1882b;
+loc_189f0:
+    memoryASet16(ds, 0x7e0a, 0x0001);
+    goto loc_186c1;
+loc_189f9:
+    sub_18a9a();
+    goto loc_1882b;
+loc_189ff:
+    memoryASet16(ds, 0x7e14, 0x0001);
+    if ((short)memoryAGet16(ds, 0x0b38) >= (short)0x0001)
+        goto loc_189de;
+    ax = memoryAGet16(ds, 0x6612);
+    if (ax)
+        goto loc_18a16;
+    goto loc_1882b;
+loc_18a16:
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        goto loc_18a21;
+    memoryASet16(ds, 0x6612, memoryAGet16(ds, 0x6612) - 1);
+loc_18a21:
+    memoryASet16(ds, 0x0b38, 0x0001);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b3a, ax);
+    memoryASet(ds, 0x0b3f, 0x00);
+    ax = memoryAGet16(ds, 0x0b20);
+    ax += 0x0005;
+    memoryASet16(ds, 0x0b3c, ax);
+    memoryASet(ds, 0x0b3e, 0x00);
+    memoryASet16(ds, 0x0b4a, 0x0000);
+    memoryASet16(ds, 0x0b50, 0x0000);
+    memoryASet16(ds, 0x0b52, 0x0000);
+    memoryASet16(ds, 0x0b40, 0x0100);
+    memoryASet16(ds, 0x0b4e, 0x7e36);
+    if (!(memoryAGet(ds, 0xb884) & 0x02))
+        goto loc_18a75;
+    memoryASet16(ds, 0x0b36, 0x0001);
+    memoryASet16(ds, 0x0b52, 0xfe00);
+    goto loc_1882b;
+loc_18a75:
+    if (memoryAGet(ds, 0xb884) & 0x01)
+        goto loc_18a80;
+    goto loc_1882b;
+loc_18a80:
+    memoryASet16(ds, 0x0b36, 0x0000);
+    memoryASet16(ds, 0x0b52, 0x0200);
+    goto loc_1882b;
+loc_18a8f:
+    ax = memoryAGet16(ds, 0x0b20);
+    ax -= memoryAGet16(ds, 0x7dfe);
+    memoryASet16(ds, 0x6c43, ax);
+    return;
+  // gap 105 bytes
+loc_18b03:
+    memoryASet16(ds, 0x7e08, 0x0000);
+    memoryASet16(ds, 0x7e0a, 0x0000);
+    memoryASet16(ds, 0x7e0c, 0x0000);
+    memoryASet16(ds, 0x7e0e, 0x0000);
+    memoryASet16(ds, 0x7e10, 0x0000);
+    memoryASet16(ds, 0x7e14, 0x0000);
+    memoryASet16(ds, 0x7e06, 0x0000);
+    dx = memoryAGet16(ds, 0x0b24);
+    dx += 0x0040;
+    if ((short)dx <= (short)0x0400)
+        goto loc_18b40;
+    dx = 0x0400;
+loc_18b40:
+    if (!(memoryAGet(ds, 0xb884) & 0x08))
+        goto loc_18b5e;
+    dx += 0xff40;
+    if ((short)dx >= (short)0xfc00)
+        goto loc_18b79;
+    dx = 0xfc00;
+    goto loc_18b79;
+  // gap 1 bytes
+loc_18b5e:
+    if (!(memoryAGet(ds, 0xb884) & 0x04))
+        goto loc_18b79;
+    dx += 0x0080;
+    if ((short)dx <= (short)0x0400)
+        goto loc_18b79;
+    dx = 0x0400;
+loc_18b79:
+    memoryASet16(ds, 0x0b24, dx);
+    memoryASet16(ds, 0x7961, dx);
+    if ((short)dx < 0)
+        goto loc_18b8d;
+    ch = 0;
+    goto loc_18b8f;
+  // gap 1 bytes
+loc_18b8d:
+    ch = 0xff;
+loc_18b8f:
+    ax = memoryAGet16(ds, 0x0b20);
+    cl = memoryAGet(ds, 0x0b22);
+    temp_cf4 = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf5 = (al + dh + temp_cf4) >= 0x100;
+    al += dh + temp_cf4;
+    ah += ch + temp_cf5;
+    memoryASet16(ds, 0x795f, ax);
+    dx = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x795d, dx);
+    memoryASet(ds, 0x796b, 0x01);
+    sub_17dfb();
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x20))
+        goto loc_18bbe;
+    goto loc_168a8;
+loc_18bbe:
+    if (ch & 0x04)
+        goto loc_18beb;
+    if (!(ch & 0x02))
+        goto loc_18c00;
+    bp = memoryAGet16(cs, 0x0b24);
+    if ((short)bp >= 0)
+        goto loc_18beb;
+    ax |= 0x0007;
+    ax++;
+    dx = 0;
+    cl = 0;
+    memoryASet16(ds, 0x0b24, 0x0000);
+    goto loc_18c00;
+  // gap 1 bytes
+loc_18beb:
+    ax += 0x000c;
+    ax |= 0x0007;
+    ax -= 0x0014;
+    cl = 0;
+    dx = 0;
+    cl = 0;
+    memoryASet16(ds, 0x0b24, 0x0000);
+loc_18c00:
+    memoryASet16(ds, 0x0b20, ax);
+    bp = 0x0000;
+    if (!(memoryAGet(ds, 0xb884) & 0x02))
+        goto loc_18c1d;
+    bp = 0xfffc;
+    memoryASet16(ds, 0x0b36, 0x0001);
+    goto loc_18c31;
+  // gap 1 bytes
+loc_18c1d:
+    if (!(memoryAGet(ds, 0xb884) & 0x01))
+        goto loc_18c31;
+    bp = 0x0004;
+    memoryASet16(ds, 0x0b36, 0x0000);
+loc_18c31:
+    bx = memoryAGet16(ds, 0x0b1e);
+    bx += bp;
+    if (!bp)
+        goto loc_18c69;
+    if ((short)bp >= 0)
+        goto loc_18c57;
+    if ((short)bx >= (short)0x0000)
+        goto loc_18c69;
+    bx = 0x0000;
+    memoryASet(ds, 0x90c2, 0x01);
+    goto loc_18c69;
+  // gap 1 bytes
+loc_18c57:
+    if ((short)bx < (short)0x00e8)
+        goto loc_18c69;
+    bx = 0x00e8;
+    memoryASet(ds, 0x90c2, 0x02);
+loc_18c69:
+    ax = memoryAGet16(ds, 0x0b20);
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x7961, 0xffff);
+    memoryASet(ds, 0x796b, 0x01);
+    memoryASet16(ds, 0x795d, bx);
+    dx = bp;
+    goto loc_187db;
+  // gap 791 bytes
+loc_18f9a:
+    dx = memoryAGet16(ds, 0x0b24);
+    dx += 0x0080;
+    memoryASet16(ds, 0x0b24, dx);
+    if ((short)dx < 0)
+        goto loc_18faf;
+    ch = 0;
+    goto loc_18fb1;
+  // gap 1 bytes
+loc_18faf:
+    ch = 0xff;
+loc_18fb1:
+    ax = memoryAGet16(ds, 0x0b20);
+    cl = memoryAGet(ds, 0x0b22);
+    temp_cf = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf1 = (al + dh + temp_cf) >= 0x100;
+    al += dh + temp_cf;
+    ah += ch + temp_cf1;
+    if ((short)ax <= (short)0x0110)
+        goto loc_18fca;
+    memoryASet16(ds, 0x7e18, 0x0001);
+    return;
+loc_18fca:
+    memoryASet16(ds, 0x0b20, ax);
+    memoryASet(ds, 0x0b22, cl);
+    al = memoryAGet(ds, 0x8b98);
+    al = ~al;
+    memoryASet(ds, 0x8b98, al);
+    al &= 0x01;
+    ax += 0x001c;
+    memoryASet16(ds, 0x0b26, ax);
+    ax = memoryAGet16(ds, 0x7e1c);
+    ax += memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b1e, ax);
+}
+void sub_18a9a()
+{
+    ax = memoryAGet16(ds, 0x6610);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        goto loc_18ab2;
+    memoryASet16(ds, 0x6610, memoryAGet16(ds, 0x6610) - 1);
+loc_18ab2:
+    ax = 0x000d;
+    sub_1aecd();
+    memoryASet16(ds, 0x0b00, 0x0001);
+    ax = memoryAGet16(ds, 0x0b20);
+    ax += 0x0007;
+    memoryASet16(ds, 0x0b04, ax);
+    if (memoryAGet16(ds, 0x0b36) != 0x0000)
+        goto loc_18aea;
+    memoryASet16(ds, 0x0b1a, 0x0008);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b02, ax);
+    memoryASet16(ds, 0x0b0a, 0x001f);
+    memoryASet16(ds, 0x7e12, 0x0000);
+loc_18ae9:
+    return;
+loc_18aea:
+    memoryASet16(ds, 0x0b1a, 0xfff8);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b02, ax);
+    memoryASet16(ds, 0x0b0a, 0x001e);
+    memoryASet16(ds, 0x7e12, 0x0000);
+}
+void sub_18c83()
+{
+  goto loc_18c83;
+loc_18a9a:
+    ax = memoryAGet16(ds, 0x6610);
+    if (!ax)
+        return;
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        goto loc_18ab2;
+    memoryASet16(ds, 0x6610, memoryAGet16(ds, 0x6610) - 1);
+loc_18ab2:
+    ax = 0x000d;
+    sub_1aecd();
+    memoryASet16(ds, 0x0b00, 0x0001);
+    ax = memoryAGet16(ds, 0x0b20);
+    ax += 0x0007;
+    memoryASet16(ds, 0x0b04, ax);
+    if (memoryAGet16(ds, 0x0b36) != 0x0000)
+        goto loc_18aea;
+    memoryASet16(ds, 0x0b1a, 0x0008);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b02, ax);
+    memoryASet16(ds, 0x0b0a, 0x001f);
+    memoryASet16(ds, 0x7e12, 0x0000);
+loc_18ae9:
+    return;
+loc_18aea:
+    memoryASet16(ds, 0x0b1a, 0xfff8);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x0b02, ax);
+    memoryASet16(ds, 0x0b0a, 0x001e);
+    memoryASet16(ds, 0x7e12, 0x0000);
+    return;
+  // gap 384 bytes
+loc_18c83:
+    if (memoryAGet(ds, 0xb884) & 0x10)
+        goto loc_18c95;
+    memoryASet16(ds, 0x7e12, 0x0001);
+    return;
+loc_18c95:
+    memoryASet16(ds, 0x7e10, 0x0001);
+    if (memoryAGet16(ds, 0x7e12) == 0x0000)
+        return;
+    if (!(memoryAGet16(ds, 0x6610) & 0x00ff))
+        return;
+    if (memoryAGet16(ds, 0x0b00) == 0x0001)
+        return;
+    goto loc_18a9a;
+}
+void sub_18cbe()
+{
+    if (memoryAGet16(ds, 0x0b00) == 0x0001)
+        goto loc_18cc9;
+    return;
+loc_18cc9:
+    dx = 0x0004;
+    ax = memoryAGet16(ds, 0x0b1a);
+    if ((short)ax < 0)
+        goto loc_18cd9;
+    dx = 0x0014;
+loc_18cd9:
+    ax += memoryAGet16(ds, 0x0b02);
+    dx += ax;
+    if ((short)dx < (short)0x0003)
+        goto loc_18d21;
+    if ((short)dx > (short)0x00fc)
+        goto loc_18d21;
+    memoryASet16(ds, 0x795d, dx);
+    cx = memoryAGet16(ds, 0x0b04);
+    memoryASet16(ds, 0x795f, cx);
+    memoryASet16(ds, 0x795f, memoryAGet16(ds, 0x795f) + 0x0004);
+    sub_18014();
+    push(ax);
+    sub_181c6();
+    ax = pop();
+    ch = memoryAGet(ds, 0x7963);
+    if (ch & 0x02)
+        goto loc_18d21;
+    if (ch & 0x40)
+        goto loc_18d21;
+    memoryASet16(ds, 0x0b02, ax);
+    return;
+loc_18d21:
+    memoryASet16(ds, 0x0b00, 0x0000);
+}
+void sub_18d28()
+{
+    bool temp_cf;
+    bool temp_cf1;
+    bool temp_cf2;
+    bool temp_cf3;
+    memoryASet16(ds, 0x7e1e, 0x0000);
+    if ((short)memoryAGet16(ds, 0x0b38) >= (short)0x0001)
+        goto loc_18d39;
+    return;
+loc_18d39:
+    if ((short)memoryAGet16(ds, 0x0b38) <= (short)0x0001)
+        goto loc_18d3e;
+    goto loc_18f57;
+loc_18d3e:
+    si = 0x0b38;
+    sub_1718e();
+    if (!flags.carry)
+        goto loc_18d49;
+    goto loc_18f3a;
+loc_18d49:
+    dx = memoryAGet16(ds, 0x0b40);
+    dx += 0x0080;
+    if ((short)dx <= (short)0x0800)
+        goto loc_18d5a;
+    dx = 0x0800;
+loc_18d5a:
+    memoryASet16(ds, 0x0b40, dx);
+    memoryASet16(ds, 0x7961, dx);
+    if ((short)dx < 0)
+        goto loc_18d6b;
+    ch = 0;
+    goto loc_18d6d;
+  // gap 1 bytes
+loc_18d6b:
+    ch = 0xff;
+loc_18d6d:
+    ax = memoryAGet16(ds, 0x0b3c);
+    cl = memoryAGet(ds, 0x0b3e);
+    temp_cf = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf1 = (al + dh + temp_cf) >= 0x100;
+    al += dh + temp_cf;
+    ah += ch + temp_cf1;
+    dx = ax;
+    if ((short)dx <= (short)0x0171)
+        goto loc_18d85;
+    goto loc_18f91;
+loc_18d85:
+    if ((short)dx >= (short)0x0000)
+        goto loc_18d8d;
+    goto loc_18f91;
+loc_18d8d:
+    memoryASet16(ds, 0x795f, dx);
+    ax = memoryAGet16(ds, 0x0b3a);
+    memoryASet16(ds, 0x795d, ax);
+    memoryASet(ds, 0x796b, 0x01);
+    sub_1802d();
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x40))
+        goto loc_18dec;
+    dx = 0;
+    ax = memoryAGet16(ds, 0x7964);
+    cl = 0;
+    ax -= 0x0010;
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x0b3c, ax);
+    memoryASet(ds, 0x0b3e, 0x00);
+    push(ax);
+    ax = memoryAGet16(ds, 0x7966);
+    memoryASet16(ds, 0x7e1e, ax);
+    ax = pop();
+    memoryASet(ds, 0x796b, 0x00);
+    sub_1802d();
+    ch = memoryAGet(ds, 0x7963);
+    if (ch & 0x20)
+        goto loc_18de4;
+    if (ch & 0x06)
+        goto loc_18e08;
+    memoryASet16(ds, 0x0b40, 0x0100);
+    goto loc_18e5a;
+  // gap 1 bytes
+loc_18de4:
+    if (!(ch & 0x20))
+        goto loc_18dec;
+    goto loc_18f3a;
+loc_18dec:
+    if (ch & 0x04)
+        goto loc_18e11;
+    if (ch & 0x02)
+        goto loc_18e01;
+    memoryASet16(ds, 0x0b3c, dx);
+    memoryASet(ds, 0x0b3e, cl);
+    goto loc_18e5a;
+  // gap 1 bytes
+loc_18e01:
+    ax = memoryAGet16(ds, 0x0b40);
+    if ((short)ax >= 0)
+        goto loc_18e11;
+loc_18e08:
+    dx |= 0x0007;
+    dx++;
+    cl = 0;
+    goto loc_18e18;
+  // gap 1 bytes
+loc_18e11:
+    dx--;
+    dx &= 0x0ff8;
+    cl = 0;
+loc_18e18:
+    memoryASet16(ds, 0x0b3c, dx);
+    memoryASet(ds, 0x0b3e, cl);
+    if (!(ch & 0x20))
+        goto loc_18e28;
+    goto loc_18f3a;
+loc_18e28:
+    if (!(ch & 0x01))
+        goto loc_18e54;
+    if (memoryAGet16(ds, 0x8bec) != 0x0003)
+        goto loc_18e47;
+    ax = memoryAGet16(ds, 0x0b40);
+    if ((short)ax < (short)0x0200)
+        goto loc_18e54;
+    ax = -ax;
+    ax += 0x0060;
+    memoryASet16(ds, 0x0b40, ax);
+    goto loc_18e5a;
+  // gap 1 bytes
+loc_18e47:
+    if (memoryAGet16(ds, 0x8bec) != 0x0005)
+        goto loc_18e54;
+    ax = 0xf781;
+    goto loc_18e57;
+  // gap 1 bytes
+loc_18e54:
+    ax = 0x0100;
+loc_18e57:
+    memoryASet16(ds, 0x0b40, ax);
+loc_18e5a:
+    dx = memoryAGet16(ds, 0x0b52);
+    bx = 0x0008;
+    if (!(ch & 0x01))
+        goto loc_18e7e;
+    if (memoryAGet16(ds, 0x8bec) == 0x0001)
+        goto loc_18e92;
+    if (memoryAGet16(ds, 0x8bec) == 0x0002)
+        goto loc_18ead;
+    if (memoryAGet16(ds, 0x8bec) != 0x0004)
+        goto loc_18e7e;
+    bx = 0x0010;
+loc_18e7e:
+    bp = memoryAGet16(cs, 0x0b52);
+    if ((short)bp < 0)
+        goto loc_18e8e;
+    dx -= bx;
+    if ((short)dx >= 0)
+        goto loc_18e94;
+    goto loc_18e92;
+  // gap 1 bytes
+loc_18e8e:
+    dx += bx;
+    if ((short)dx < 0)
+        goto loc_18e94;
+loc_18e92:
+    dx = 0;
+loc_18e94:
+    memoryASet16(ds, 0x0b52, dx);
+    ax = memoryAGet16(ds, 0x7e1e);
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    dx += ax;
+loc_18ead:
+    bx = memoryAGet16(ds, 0x0b3a);
+    cl = memoryAGet(ds, 0x0b3f);
+    ax = memoryAGet16(ds, 0x0b3c);
+    memoryASet16(ds, 0x795f, ax);
+    memoryASet16(ds, 0x7961, 0xffff);
+    if ((short)dx < 0)
+        goto loc_18eca;
+    ch = 0;
+    goto loc_18ecc;
+  // gap 1 bytes
+loc_18eca:
+    ch = 0xff;
+loc_18ecc:
+    bx = memoryAGet16(ds, 0x0b3a);
+    cl = memoryAGet(ds, 0x0b3f);
+    temp_cf2 = (cl + dl) >= 0x100;
+    cl += dl;
+    temp_cf3 = (bl + dh + temp_cf2) >= 0x100;
+    bl += dh + temp_cf2;
+    bh += ch + temp_cf3;
+    if ((short)bx < (short)0x00e8)
+        goto loc_18eee;
+    cl = 0;
+    bx = 0x00e8;
+    memoryASet16(ds, 0x0b52, 0x0000);
+    goto loc_18efd;
+  // gap 1 bytes
+loc_18eee:
+    if ((short)bx >= (short)0x0000)
+        goto loc_18efd;
+    cl = 0;
+    bx = 0;
+    memoryASet16(ds, 0x0b52, 0x0000);
+loc_18efd:
+    memoryASet16(ds, 0x795d, bx);
+    memoryASet(ds, 0x796b, 0x01);
+    sub_1802d();
+    ch = memoryAGet(ds, 0x7963);
+    if (!(ch & 0x02))
+        goto loc_18f2c;
+    cl = 0;
+    bp = memoryAGet16(ds, 0x0b52);
+    bp += memoryAGet16(ds, 0x7e1e);
+    if ((short)bp >= 0)
+        goto loc_18f27;
+    bx |= 0x0007;
+    bx++;
+    goto loc_18f2c;
+  // gap 1 bytes
+loc_18f27:
+    bx--;
+    bx &= 0x00f8;
+loc_18f2c:
+    memoryASet16(ds, 0x0b3a, bx);
+    memoryASet(ds, 0x0b3f, cl);
+    if (ch & 0x20)
+        goto loc_18f3a;
+    return;
+loc_18f3a:
+    memoryASet16(ds, 0x0b38, 0x0002);
+    memoryASet16(ds, 0x0b50, 0x0000);
+    memoryASet16(ds, 0x0b4e, 0x7eb2);
+    memoryASet16(ds, 0x0b3c, memoryAGet16(ds, 0x0b3c) - 0x0005);
+    memoryASet16(ds, 0x0b4a, 0x0000);
+loc_18f57:
+    si = 0x0b38;
+    memoryASet16(ds, 0x0b4a, memoryAGet16(ds, 0x0b4a) + 1);
+    if ((char)memoryAGet(ds, 0x0b4a) <= (char)0x01)
+        goto loc_18f8c;
+    if ((char)memoryAGet(ds, 0x0b4a) > (char)0x04)
+        goto loc_18f8c;
+    dx = memoryAGet16(ds, 0x0b3a);
+    dx -= 0x0004;
+    if ((short)dx >= 0)
+        goto loc_18f77;
+    dx = 0;
+loc_18f77:
+    tl = dh; dh = dl; dl = tl;
+    bx = memoryAGet16(ds, 0x0b3c);
+    bx -= 0x0004;
+    dl = 0x20;
+    ah = 0x1c;
+    sub_16407();
+    if (!flags.carry)
+        goto loc_18f8c;
+    sub_168a8();
+loc_18f8c:
+    sub_1718e();
+    if (!flags.carry)
+        return;
+loc_18f91:
+    memoryASet16(ds, 0x0b38, 0x0000);
+}
+void sub_19214()
+{
+    bx = memoryAGet16(ds, 0x8bf6);
+    di = 0x563c;
+    cx = 0x000a;
+    dx = memoryAGet16(ds, 0x8bf0);
+    dx &= 0xfff8;
+    dx >>= 1;
+    dx >>= 1;
+    dx >>= 1;
+    ax = dx;
+    dx &= 0xfffc;
+    dx >>= 1;
+    dx >>= 1;
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    bx += dx;
+    memoryASet16(ds, 0x8bf8, bx);
+    ax &= 0x0003;
+    memoryASet16(ds, 0x8bfa, ax);
+    if (!ax)
+        goto loc_19257;
+    dx = 0x0004;
+    dx -= ax;
+    push(cx);
+    sub_1926d();
+    cx = pop();
+    goto loc_1925c;
+  // gap 1 bytes
+loc_19257:
+    push(cx);
+    sub_192ae();
+    cx = pop();
+loc_1925c:
+    if (--cx)
+        goto loc_19257;
+    dx = memoryAGet16(ds, 0x8bfa);
+    if (!dx)
+        return;
+    ax = 0x0000;
+    sub_1926d();
+}
+void sub_1926d()
+{
+    push(di);
+    push(dx);
+    ax <<= 1;
+    ax <<= 1;
+    cx = 0x0008;
+loc_19276:
+    push(cx);
+    push(ax);
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    ax <<= 1;
+    si = 0x8c14;
+    si += ax;
+    ax = pop();
+    si = memoryAGet16(ds, si);
+    si += ax;
+    bp = di;
+    push(dx);
+loc_1928c:
+    cx = 0x0004;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    di += 0x001c;
+    dx--;
+    if (dx)
+        goto loc_1928c;
+    dx = pop();
+    di = bp;
+    di += 0x0004;
+    cx = pop();
+    if (--cx)
+        goto loc_19276;
+    dx = pop();
+    di = pop();
+    dx--;
+    dx &= 0x0003;
+    dx++;
+    cl = 0x05;
+    dx <<= cl;
+    di += dx;
+}
+void sub_192ae()
+{
+    cx = 0x0008;
+loc_192b1:
+    bp = cx;
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    ax <<= 1;
+    si = 0x8c14;
+    si += ax;
+    si = memoryAGet16(ds, si);
+    dx = 0x0004;
+loc_192c4:
+    cx = 0x0004;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    di += 0x001c;
+    dx--;
+    if (dx)
+        goto loc_192c4;
+    di += 0xff84;
+    cx = bp;
+    if (--cx)
+        goto loc_192b1;
+    di += 0x0060;
+}
+void sub_192da()
+{
+    di = 0x563c;
+    si = 0x565c;
+    cx = 0x0270;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    ax = memoryAGet16(ds, 0x8bfa);
+    dx = 0x0001;
+    bx = memoryAGet16(ds, 0x8bf8);
+    bx += 0x0050;
+    di = 0x5b1c;
+    sub_1926d();
+    memoryASet16(ds, 0x8bfa, memoryAGet16(ds, 0x8bfa) + 0x0001);
+    memoryASet16(ds, 0x8bfa, memoryAGet16(ds, 0x8bfa) & 0x0003);
+    if (memoryAGet16(ds, 0x8bfa))
+        return;
+    memoryASet16(ds, 0x8bf8, memoryAGet16(ds, 0x8bf8) + 0x0008);
+}
+void sub_1930a()
+{
+    si = 0x5b1a;
+    di = 0x5b3a;
+    flags.direction = 1;
+    cx = 0x0270;
+    for (; cx != 0; --cx) movsw<ES_DI, DS_SI>();
+    flags.direction = 0;
+    bx = memoryAGet16(ds, 0x8bf8);
+    memoryASet16(ds, 0x8bfa, memoryAGet16(ds, 0x8bfa) - 1);
+    memoryASet16(ds, 0x8bfa, memoryAGet16(ds, 0x8bfa) & 0x0003);
+    if (memoryAGet16(ds, 0x8bfa) != 0x0003)
+        goto loc_19332;
+    bx -= 0x0008;
+    memoryASet16(ds, 0x8bf8, bx);
+loc_19332:
+    di = 0x563c;
+    ax = memoryAGet16(ds, 0x8bfa);
+    dx = 0x0001;
+    sub_1926d();
+}
+void sub_1933f()
+{
+    ax = 0x3c74;
+    di = 0x8c14;
+    dx = 0x0010;
+    cx = 0x0100;
+loc_1934b:
+    stosw<ES_DI>(ax);
+    ax += dx;
+    if (--cx)
+        goto loc_1934b;
+}
+void sub_19351()
+{
+    memoryASet16(ds, 0x0b00, 0x0000);
+    memoryASet16(ds, 0x0b38, 0x0000);
+    push(ax);
+    ax = memoryAGet16(ds, 0x0b1e);
+    memoryASet16(ds, 0x8c00, ax);
+    ax = memoryAGet16(ds, 0x0b20);
+    memoryASet16(ds, 0x8c02, ax);
+    ax = memoryAGet16(ds, 0x0b24);
+    memoryASet16(ds, 0x8c08, ax);
+    al = memoryAGet(ds, 0x0b22);
+    memoryASet(ds, 0x8c12, al);
+    ax = memoryAGet16(ds, 0x7e02);
+    memoryASet16(ds, 0x8c0a, ax);
+    ax = memoryAGet16(ds, 0x7e04);
+    memoryASet16(ds, 0x8c0c, ax);
+    ax = memoryAGet16(ds, 0x0b36);
+    memoryASet16(ds, 0x8c0e, ax);
+    ax = memoryAGet16(ds, 0x7e00);
+    memoryASet16(ds, 0x8c10, ax);
+    ax = pop();
+    memoryASet16(ds, 0x8c04, ax);
+    memoryASet16(ds, 0x8c06, dx);
+    si = 0x4c74;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    si += ax;
+    ax = 0;
+    ax += memoryAGet16(ds, si);
+    si++;
+    si++;
+    tl = ah; ah = al; al = tl;
+    ax += 0x3374;
+    memoryASet16(ds, 0x8bf6, ax);
+    memoryASet16(ds, 0x8bf2, 0x0000);
+    ax = memoryAGet16(ds, si);
+    si++;
+    si++;
+    tl = ah; ah = al; al = tl;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    memoryASet16(ds, 0x8bf4, ax);
+    ax = memoryAGet16(ds, si);
+    si++;
+    si++;
+    tl = ah; ah = al; al = tl;
+    ax += 0x4c74;
+    memoryASet16(ds, 0x8bfe, ax);
+    ax = memoryAGet16(ds, si);
+    si++;
+    si++;
+    tl = ah; ah = al; al = tl;
+    ax += 0x4c74;
+    memoryASet16(ds, 0x8bfc, ax);
+    memoryASet16(ds, 0x8bf0, dx);
+    sub_19577();
+}
+void sub_19420()
+{
+    si = 0x8fe4;
+    ax = memoryAGet16(ds, 0x8bec);
+    ax--;
+    ax <<= 1;
+    si += ax;
+    si = memoryAGet16(ds, si);
+    ax = memoryAGet16(ds, si);
+    memoryASet16(ds, 0x0b1e, ax);
+    ax = memoryAGet16(ds, si + 2);
+    memoryASet16(ds, 0x0b20, ax);
+    ax = memoryAGet16(ds, si + 4);
+    dx = memoryAGet16(ds, si + 6);
+    cx = memoryAGet16(ds, si + 8);
+    memoryASet16(ds, 0x0b36, cx);
+    sub_19351();
+    sub_19214();
+    sub_19577();
+    sub_17047();
+    sub_15fe4();
+    memoryASet(ds, 0x5b3e, 0x01);
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+}
+void sub_19462()
+{
+    ax = memoryAGet16(ds, 0x8c00);
+    memoryASet16(ds, 0x0b1e, ax);
+    ax = memoryAGet16(ds, 0x8c02);
+    memoryASet16(ds, 0x0b20, ax);
+    ax = memoryAGet16(ds, 0x8c08);
+    memoryASet16(ds, 0x0b24, ax);
+    al = memoryAGet(ds, 0x8c12);
+    memoryASet(ds, 0x0b22, al);
+    ax = memoryAGet16(ds, 0x8c0a);
+    memoryASet16(ds, 0x7e02, ax);
+    ax = memoryAGet16(ds, 0x8c0c);
+    memoryASet16(ds, 0x7e04, ax);
+    ax = memoryAGet16(ds, 0x8c0e);
+    memoryASet16(ds, 0x0b36, ax);
+    ax = memoryAGet16(ds, 0x8c10);
+    memoryASet16(ds, 0x7e00, ax);
+    ax = memoryAGet16(ds, 0x8c04);
+    dx = memoryAGet16(ds, 0x8c06);
+    sub_19351();
+    sub_19214();
+    sub_19577();
+    sub_17047();
+    memoryASet16(ds, 0x6612, 0x0006);
+    memoryASet16(ds, 0x6610, 0x0006);
+    sub_15fe4();
+    memoryASet(ds, 0x5b3e, 0x01);
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+}
+void sub_194c4()
+{
+    assert(0);
+    al = memoryAGet(ds, 0x90c2);
+    if (al)
+        goto loc_194cc;
+    return;
+loc_194cc:
+    si = memoryAGet16(ds, 0x8bfe);
+loc_194d0:
+    al = memoryAGet(ds, si);
+    if (!al)
+        return;
+    al &= 0x03;
+    if (al != memoryAGet(ds, 0x90c2))
+        goto loc_194f6;
+    ax = memoryAGet16(ds, 0x8bf0);
+    ax &= 0xfff8;
+    ax += memoryAGet16(ds, 0x0b20);
+    ax += 0x0014;
+    ax >>= 1;
+    ax >>= 1;
+    ax >>= 1;
+    if (al == memoryAGet(ds, si + 1))
+        goto loc_194fb;
+loc_194f6:
+    si += 0x0004;
+    goto loc_194d0;
+loc_194fb:
+    al = memoryAGet(ds, si);
+    ah = al;
+    ah &= 0x90;
+    if (ah != 0x90)
+        goto loc_1950a;
+    goto loc_19650;
+loc_1950a:
+    if (!(al & 0x40))
+        goto loc_19514;
+    memoryASet16(ds, 0x762d, 0x0001);
+loc_19514:
+    if (!(al & 0x20))
+        goto loc_19521;
+    memoryASet16(ds, 0x7e00, 0x0001);
+    goto loc_19527;
+  // gap 1 bytes
+loc_19521:
+    memoryASet16(ds, 0x7e00, 0x0000);
+loc_19527:
+    cx = 0;
+    al = memoryAGet(ds, si + 2);
+    dx = 0;
+    dl = memoryAGet(ds, si + 3);
+    dx <<= 1;
+    dx <<= 1;
+    dx <<= 1;
+    cx = memoryAGet16(ds, 0x0b20);
+    cx += 0x0014;
+    cx &= 0xfff8;
+    dx -= cx;
+    cx = memoryAGet16(ds, 0x8bf0);
+    cx &= 0x0007;
+    dx &= 0xfff8;
+    dx |= cx;
+    sub_19553();
+loc_19552:
+    return;
+  // gap 253 bytes
+loc_19650:
+    callIndirect(cs, memoryAGet16(ds, 0x003c));
+    ax = memoryAGet16(ds, 0x8bec);
+    if (ax != 0x0004)
+        goto loc_19687;
+    if (memoryAGet16(ds, 0x95c4) == 0x0001)
+        goto loc_19673;
+    if (memoryAGet16(ds, 0x8bee) == 0x0001)
+        goto loc_19673;
+    ax = 0x0001;
+    sub_1a257();
+    goto loc_19f12;
+loc_19673:
+    memoryASet16(ds, 0x8bec, memoryAGet16(ds, 0x8bec) + 1);
+    if (memoryAGet16(ds, 0x8bec) != 0x0005)
+        goto loc_19684;
+    memoryASet16(ds, 0x95c4, 0x0001);
+loc_19684:
+    goto loc_1c3b9;
+loc_19687:
+    if (memoryAGet16(ds, 0x8bec) != 0x0005)
+        goto loc_196a7;
+    if (memoryAGet16(ds, 0x8bee) != 0x0001)
+        goto loc_19698;
+    goto loc_19f37;
+loc_19698:
+    memoryASet16(ds, 0x95c4, 0x0001);
+    ax = 0x0001;
+    sub_1a257();
+    goto loc_19f12;
+loc_196a7:
+    memoryASet16(ds, 0x8bec, memoryAGet16(ds, 0x8bec) + 1);
+    goto loc_1c3b9;
+  // gap 69 bytes
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 2017 bytes
+loc_19f12:
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0002;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    sub_19ee5();
+    sub_16d69();
+    sub_1a5e3();
+    sub_16cd7();
+    goto loc_1c359;
+loc_19f37:
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0006;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0002;
+    sub_1a257();
+    sub_16d69();
+    sub_1a5e3();
+    sub_16cd7();
+    goto loc_1c359;
+  // gap 9210 bytes
+loc_1c359:
+    sp = memoryAGet16(ds, 0xc0df);
+    callIndirect(cs, memoryAGet16(ds, 0x000a));
+    sub_1a592();
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    memoryASet16(ds, 0xbdf2, 0x0003);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+    callIndirect(cs, memoryAGet16(ds, 0x0028));
+loc_1c378:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c378;
+    goto loc_1c398;
+  // gap 1 bytes
+loc_1c382:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c395;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c395:
+    sub_16b9b();
+loc_1c398:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c3ab;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c3ab:
+    sub_16cd7();
+    goto loc_1c382;
+  // gap 9 bytes
+loc_1c3b9:
+    sp = memoryAGet16(ds, 0xc0df);
+    memoryASet16(ds, 0x6610, 0x0006);
+    memoryASet16(ds, 0x6612, 0x0006);
+    memoryASet16(ds, 0x7e00, 0x0000);
+    memoryASet16(ds, 0x762d, 0x0000);
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1a54a();
+    push(cs);
+    ds = pop();
+    sub_1a56b();
+    callIndirect(cs, memoryAGet16(ds, 0x0004));
+    callIndirect(cs, memoryAGet16(ds, 0x0006));
+    sub_1a45c();
+    sub_1c4e2();
+    callIndirect(cs, memoryAGet16(ds, 0x0042));
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    callIndirect(cs, memoryAGet16(ds, 0x003c));
+    callIndirect(cs, memoryAGet16(ds, 0x0048));
+    ax = 0x0004;
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = memoryAGet16(ds, 0x8bec);
+    ax--;
+    ax += ax;
+    si = 0x2f69;
+    si += ax;
+    ax = memoryAGet16(ds, si);
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    ax = 0x0000;
+    sub_1a257();
+    sub_1a5f0();
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    sub_19420();
+    memoryASet16(ds, 0x973c, 0x3245);
+    memoryASet16(ds, 0x973e, 0x5432);
+loc_1c439:
+    memoryASet16(ds, 0x7e16, 0x0000);
+    memoryASet16(ds, 0x7e18, 0x0000);
+loc_1c445:
+    sub_16b3b();
+    if (memoryAGet16(ds, 0x7e18) != 0x0001)
+        goto loc_1c467;
+    memoryASet16(ds, 0x762f, 0x0000);
+    sub_1618f();
+    sub_19462();
+    if (memoryAGet16(ds, 0x6614) != 0x0000)
+        goto loc_1c465;
+    goto loc_19f12;
+loc_1c465:
+    goto loc_1c439;
+loc_1c467:
+    sub_19bac();
+    sub_15f40();
+    memoryASet(ds, 0x5b3e, 0x00);
+    sub_169e3();
+    sub_168e4();
+    sub_17205();
+    sub_18351();
+    sub_18cbe();
+    sub_18d28();
+    sub_1705d();
+    callIndirect(cs, memoryAGet16(ds, 0x001e));
+    callIndirect(cs, memoryAGet16(ds, 0x0024));
+    callIndirect(cs, memoryAGet16(ds, 0x003e));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    sub_19af6();
+    callIndirect(cs, memoryAGet16(ds, 0x0038));
+    sub_194c4();
+    if (memoryAGet(ds, 0xb888) != 0x10)
+        goto loc_1c4b3;
+    sub_19f8a();
+    if (!flags.carry)
+        goto loc_1c4b3;
+    goto loc_1c359;
+loc_1c4b3:
+    if (memoryAGet(ds, 0xb888) != 0x01)
+        goto loc_1c445;
+    goto loc_196f3;
+}
+void sub_19553()
+{
+    bx = memoryAGet16(ds, 0x0b1e);
+    if (bx)
+        goto loc_19568;
+    memoryASet16(ds, 0x0b1e, 0x00e8);
+    callIndirect(cs, memoryAGet16(ds, 0x0020));
+    return;
+  // gap 1 bytes
+loc_19568:
+    memoryASet16(ds, 0x0b1e, 0x0000);
+    callIndirect(cs, memoryAGet16(ds, 0x0022));
+}
+void sub_19577()
+{
+    memoryASet16(ds, 0x9173, 0x0000);
+    si = 0x54fa;
+    memoryASet16(ds, 0x9175, si);
+loc_19584:
+    al = memoryAGet(ds, si);
+    if ((char)al < 0)
+        return;
+    memoryASet(ds, si, 0x00);
+    si += 0x0008;
+    goto loc_19584;
+}
+void sub_19593()
+{
+    push(ds);
+    push(es);
+    push(di);
+    push(ax);
+    push(cs);
+    ds = pop();
+    if ((short)memoryAGet16(ds, 0x9173) < (short)0x0028)
+        goto loc_195a5;
+    ax = pop();
+    di = pop();
+    es = pop();
+    ds = pop();
+    return;
+loc_195a5:
+    dx = 0;
+    dl = al;
+    dx -= 0x00f8;
+    dx += dx;
+    dx += dx;
+    ax = 0;
+    sub_19b40();
+    al = memoryAGet(ds, 0x973f);
+    true ? cbw() : cwde();
+    al &= 0x03;
+    dx += ax;
+    ax = 0;
+    si = 0x54fa;
+loc_195c3:
+    al = memoryAGet(ds, si);
+    if ((char)al < 0)
+        goto loc_195e0;
+    if (al)
+        goto loc_195e5;
+    memoryASet(ds, si, 0x01);
+    si++;
+    memoryASet(ds, si, dl);
+    si++;
+    memoryASet16(ds, si, bx);
+    si++;
+    si++;
+    memoryASet16(ds, si, di);
+    si++;
+    si++;
+    memoryASet16(ds, si, bp);
+    memoryASet16(ds, 0x9173, memoryAGet16(ds, 0x9173) + 1);
+loc_195e0:
+    ax = pop();
+    di = pop();
+    es = pop();
+    ds = pop();
+    return;
+loc_195e5:
+    si += 0x0008;
+    goto loc_195c3;
+}
+void sub_195ea()
+{
+    if (memoryAGet16(ds, 0x9173) != 0x0000)
+        goto loc_195f2;
+    return;
+loc_195f2:
+    si = 0x54fa;
+loc_195f5:
+    al = memoryAGet(ds, si);
+    if (!al)
+        goto loc_19617;
+    if ((char)al < 0)
+        return;
+    ax = memoryAGet16(ds, si + 2);
+    ax += 0x0020;
+    if ((short)ax < (short)0x5a7c)
+        goto loc_19614;
+    memoryASet(ds, si, 0x00);
+    memoryASet16(ds, 0x9173, memoryAGet16(ds, 0x9173) - 1);
+    si += 0x0008;
+    goto loc_195f5;
+loc_19614:
+    memoryASet16(ds, si + 2, ax);
+loc_19617:
+    si += 0x0008;
+    goto loc_195f5;
+}
+void sub_1961d()
+{
+    if (memoryAGet16(ds, 0x9173) != 0x0000)
+        goto loc_19625;
+    return;
+loc_19625:
+    si = 0x54fa;
+loc_19628:
+    al = memoryAGet(ds, si);
+    if (!al)
+        goto loc_1964a;
+    if ((char)al < 0)
+        return;
+    ax = memoryAGet16(ds, si + 2);
+    ax -= 0x0020;
+    if ((short)ax >= (short)0x573c)
+        goto loc_19647;
+    memoryASet(ds, si, 0x00);
+    memoryASet16(ds, 0x9173, memoryAGet16(ds, 0x9173) - 1);
+    si += 0x0008;
+    goto loc_19628;
+loc_19647:
+    memoryASet16(ds, si + 2, ax);
+loc_1964a:
+    si += 0x0008;
+    goto loc_19628;
+}
+void sub_196dd()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x0000));
+    sub_1933f();
+    callIndirect(cs, memoryAGet16(ds, 0x0010));
+    callIndirect(cs, memoryAGet16(ds, 0x0018));
+    sub_1adcb();
+    sub_1bc92();
+}
+void sub_199c8()
+{
+    memoryASet(ds, 0x95ad, 0x01);
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    ax = 0x0706;
+    memoryASet16(ds, 0x69f0, ax);
+    memoryASet16(ds, 0x69f2, ax);
+    sub_16e39();
+    ax = 0x0008;
+    si = 0x9461;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0108;
+    si = 0x9481;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0208;
+    si = 0x94a1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    bx = 0x95b5;
+    sub_19c43();
+    push(cs);
+    ds = pop();
+    if (memoryAGet16(ds, 0x95c4) != 0x0001)
+        goto loc_19a10;
+    bx = 0x95bf;
+    sub_19c43();
+loc_19a10:
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    ax = 0x0008;
+    si = 0x9461;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0108;
+    si = 0x9481;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0208;
+    si = 0x94a1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    bx = 0x95b5;
+    sub_19c43();
+    if (memoryAGet16(ds, 0x95c4) != 0x0001)
+        goto loc_19a45;
+    bx = 0x95bf;
+    sub_19c43();
+loc_19a45:
+    memoryASet(ds, 0x97da, 0x01);
+loc_19a4b:
+    sub_19bdc();
+    if (!(al & 0x10))
+        goto loc_19a55;
+    goto loc_19ae0;
+loc_19a55:
+    if (al == memoryAGet(ds, 0x95c3))
+        goto loc_19a4b;
+    memoryASet(ds, 0x95c3, al);
+    if (!(al & 0x08))
+        goto loc_19a9e;
+    dx = memoryAGet16(ds, 0x69f0);
+    dh--;
+    dh--;
+    dh--;
+    if (memoryAGet16(ds, 0x95c4) == 0x0001)
+        goto loc_19a84;
+    if (dh != 0x04)
+        goto loc_19a95;
+    dh = 0x10;
+    memoryASet(ds, 0x95ad, 0x04);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19a84:
+    if (dh != 0x04)
+        goto loc_19a95;
+    dh = 0x13;
+    memoryASet(ds, 0x95ad, 0x05);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19a95:
+    memoryASet(ds, 0x95ad, memoryAGet(ds, 0x95ad) - 1);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19a9e:
+    if (!(al & 0x04))
+        goto loc_19a4b;
+    dx = memoryAGet16(ds, 0x69f0);
+    dh++;
+    dh++;
+    dh++;
+    if (memoryAGet16(ds, 0x95c4) == 0x0001)
+        goto loc_19ac4;
+    if (dh != 0x13)
+        goto loc_19ad6;
+    dh = 0x07;
+    memoryASet(ds, 0x95ad, 0x01);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19ac4:
+    if (dh != 0x16)
+        goto loc_19ad6;
+    dh = 0x07;
+    memoryASet(ds, 0x95ad, 0x01);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19ad6:
+    memoryASet(ds, 0x95ad, memoryAGet(ds, 0x95ad) + 1);
+    sub_16e66();
+    goto loc_19a4b;
+loc_19ae0:
+    al = memoryAGet(ds, 0x95ad);
+    true ? cbw() : cwde();
+    ax--;
+    si = 0x95af;
+    si += ax;
+    al = memoryAGet(ds, si);
+    true ? cbw() : cwde();
+    memoryASet16(ds, 0x8bec, ax);
+    memoryASet16(ds, 0x8bee, ax);
+}
+void sub_19af6()
+{
+    push(dx);
+    push(ax);
+    ax = memoryAGet16(ds, 0x96f4);
+loc_19afb:
+    push(ax);
+    push(es);
+    dx = 0x0040;
+    es = dx;
+    dx = memoryAGet16(es, 0x0063);
+    es = pop();
+    dl += 0x06;
+loc_19b0b:
+    al = in8(dx);
+    al &= 0x08;
+    if (al)
+        goto loc_19b0b;
+loc_19b10:
+    al = in8(dx);
+    al &= 0x08;
+    if (!al)
+        goto loc_19b10;
+    ax = pop();
+    ax--;
+    if (ax)
+        goto loc_19afb;
+    ax = pop();
+    dx = pop();
+}
+void sub_19b1c()
+{
+    push(dx);
+    push(ax);
+    push(ax);
+    push(es);
+    dx = 0x0040;
+    es = dx;
+    dx = memoryAGet16(es, 0x0063);
+    es = pop();
+    dl += 0x06;
+loc_19b2e:
+    al = in8(dx);
+    al &= 0x08;
+    if (al)
+        goto loc_19b2e;
+loc_19b33:
+    al = in8(dx);
+    al &= 0x08;
+    if (!al)
+        goto loc_19b33;
+    ax = pop();
+    ax = pop();
+    dx = pop();
+}
+void sub_19b40()
+{
+    push(ax);
+    push(dx);
+    ax = memoryAGet16(ds, 0x973c);
+    dx = memoryAGet16(ds, 0x973e);
+    tx = dx; dx = ax; ax = tx;
+    dx = rol16(dx, 0x0001);
+    dx = rol16(dx, 0x0001);
+    dx = rol16(dx, 0x0001);
+    dx -= 0x0007;
+    dx ^= ax;
+    memoryASet16(ds, 0x973c, ax);
+    memoryASet16(ds, 0x973e, dx);
+    dx = pop();
+    ax = pop();
+}
+void sub_19bac()
+{
+    al = 0x11;
+    if (memoryAGet(ds, 0x97ab) == 0x01)
+        goto loc_19bce;
+    if (memoryAGet(ds, 0xb888) == al)
+        goto loc_19bbc;
+    return;
+loc_19bbc:
+    if (memoryAGet(ds, 0xb888) == al)
+        goto loc_19bbc;
+loc_19bc2:
+    if (memoryAGet(ds, 0xb888) != al)
+        goto loc_19bc2;
+    memoryASet(ds, 0x97ab, 0x01);
+    return;
+loc_19bce:
+    if (al == memoryAGet(ds, 0xb888))
+        return;
+    memoryASet(ds, 0x97ab, 0x00);
+}
+void sub_19bdc()
+{
+    sub_1c4ca();
+    if (!(al & 0x10))
+        goto loc_19bf0;
+    if (memoryAGet(ds, 0x97da) == 0x01)
+        goto loc_19bf5;
+    memoryASet(ds, 0x97da, 0x01);
+    return;
+loc_19bf0:
+    memoryASet(ds, 0x97da, 0x00);
+loc_19bf5:
+    al &= 0xef;
+}
+void sub_19c05()
+{
+    push(flagAsReg());
+    push(si);
+    push(ax);
+    if (memoryAGet(ds, 0x9804) == 0x01)
+        goto loc_19c3f;
+    si = memoryAGet16(ds, 0x97f8);
+    al = memoryAGet(ds, 0xb888);
+    if (al & 0x80)
+        goto loc_19c39;
+    if (!al)
+        goto loc_19c39;
+    ah = memoryAGet(ds, si);
+    if (al != ah)
+        goto loc_19c33;
+    si++;
+    memoryASet16(ds, 0x97f8, si);
+    if (memoryAGet(ds, si) != 0xff)
+        goto loc_19c39;
+    memoryASet(ds, 0x9804, 0x01);
+loc_19c33:
+    memoryASet16(ds, 0x97f8, 0x97fa);
+loc_19c39:
+    memoryASet(ds, 0xb888, 0x00);
+loc_19c3f:
+    ax = pop();
+    si = pop();
+    flagsFromReg(pop());
+}
+void sub_19c43()
+{
+loc_19c43:
+    si = memoryAGet16(ds, bx);
+    if (!si)
+        return;
+    al = memoryAGet(ds, si);
+    si++;
+    ah = memoryAGet(ds, si);
+    si++;
+    push(bx);
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    bx = pop();
+    bx++;
+    bx++;
+    goto loc_19c43;
+}
+void sub_19e18()
+{
+    memoryASet(cs, 0xbda2, 0xc3);
+    flags.carry = false;
+    return; // gabo skip joystick
+
+    memoryASet16(ds, 0x9a16, 0x0000);
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+loc_19e22:
+    sub_19ebb();
+    bx = 0x99b3;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    bx = 0x99b3;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    memoryASet(ds, 0xb888, 0x00);
+    ax = memoryAGet16(ds, 0x9a16);
+    ax <<= 1;
+    di = 0x9a0c;
+    di += ax;
+    di = memoryAGet16(ds, di);
+loc_19e4b:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (bx)
+        goto loc_19e6a;
+    ah = memoryAGet(ds, 0xb888);
+    if ((char)ah < 0)
+        goto loc_19e4b;
+    if (!ah)
+        goto loc_19e4b;
+    if (ah != 0x01)
+        goto loc_19e6c;
+    memoryASet(cs, 0xbda2, 0xc3);
+    flags.carry = 0;
+    return;
+loc_19e6a:
+    flags.carry = 1;
+    return;
+loc_19e6c:
+    if (ah != 0x1c)
+        goto loc_19e7d;
+    sub_19ed0();
+    si = 0x9a06;
+    sub_19eb5();
+    goto loc_19e9b;
+  // gap 1 bytes
+loc_19e7d:
+    si = 0x99e5;
+loc_19e80:
+    al = lodsb<DS_SI>();
+    if (al == 0xff)
+        goto loc_19eb2;
+    if (al != ah)
+        goto loc_19e80;
+    sub_19ed0();
+    si--;
+    si -= 0x001a;
+    al = memoryAGet(ds, si);
+    memoryASet(ds, 0x9a00, al);
+    si = 0x9a00;
+    sub_19eb5();
+loc_19e9b:
+    memoryASet16(ds, 0x9a16, memoryAGet16(ds, 0x9a16) + 1);
+    if (memoryAGet16(ds, 0x9a16) != 0x0005)
+        goto loc_19eaf;
+    memoryASet16(ds, 0x9a16, 0x0000);
+    goto loc_19e22;
+loc_19eaf:
+    goto loc_19e22;
+loc_19eb2:
+    goto loc_19e22;
+}
+void sub_19eb5()
+{
+    cx = 0x0006;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+}
+void sub_19ebb()
+{
+    ax = memoryAGet16(ds, 0x9a16);
+    ax <<= 1;
+    si = 0x99a9;
+    si += ax;
+    si = memoryAGet16(ds, si);
+    di = 0x9958;
+    cx = 0x0005;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+}
+void sub_19ed0()
+{
+    bx = 0xb874;
+    cx = memoryAGet16(ds, 0x9a16);
+    bx += cx;
+    memoryASet(ds, bx, ah);
+}
+void sub_19ee5()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    sub_16b3b();
+    ax = 0x0c0f;
+    si = 0x9adc;
+    callIndirect(cs, memoryAGet16(ds, 0x000c));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    cx = 0x01e0;
+loc_19f01:
+    push(cx);
+    sub_19b1c();
+    sub_19bdc();
+    if (al & 0x10)
+        goto loc_19f10;
+    cx = pop();
+    if (--cx)
+        goto loc_19f01;
+    return;
+loc_19f10:
+    cx = pop();
+}
+void sub_19f8a() // +returnCarry
+{
+    push(ds);
+    push(es);
+    ax = 0x0c05;
+    si = 0x9b5f;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    ax = 0x0d0e;
+    si = 0x9b7d;
+    callIndirect(cs, memoryAGet16(ds, 0x000e));
+    callIndirect(cs, memoryAGet16(ds, 0x0038));
+loc_19fa4:
+    al = memoryAGet(cs, 0xb888);
+    if (al != 0x15)
+        goto loc_19fb0;
+    flags.carry = 1;
+    goto loc_19fb5;
+  // gap 1 bytes
+loc_19fb0:
+    if (al != 0x31)
+        goto loc_19fa4;
+    flags.carry = 0;
+loc_19fb5:
+    es = pop();
+    ds = pop();
+}
+void sub_1a102()
+{
+    di = 0x9ca8;
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    ax <<= 1;
+    di += ax;
+    di = memoryAGet16(ds, di);
+}
+void sub_1a111()
+{
+    di = 0x9cfa;
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    ax <<= 1;
+    di += ax;
+    di = memoryAGet16(ds, di);
+}
+void sub_1a120()
+{
+}
+void sub_1a121()
+{
+    sub_1a102();
+    memoryASet16(ds, di, 0x0001);
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 2, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 4, ax);
+}
+void sub_1a137()
+{
+    sub_1a102();
+    memoryASet16(ds, di, 0x0000);
+}
+void sub_1a13f()
+{
+    sub_1a102();
+    memoryASet16(ds, di, 0x0002);
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 18, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 20, ax);
+}
+void sub_1a155()
+{
+    sub_1a102();
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    ax += 0x2314;
+    memoryASet16(ds, di + 22, ax);
+    ax = 0;
+    memoryASet16(ds, di + 24, ax);
+}
+void sub_1a168()
+{
+    al = memoryAGet(ds, bx);
+    bx++;
+    if (al)
+        goto loc_1a174;
+    callIndirect(cs, memoryAGet16(ds, 0x0030));
+    return;
+loc_1a174:
+    ah = 0;
+    ax--;
+    ax <<= 1;
+    si = 0x2314;
+    si = memoryAGet16(ds, si);
+    si += 0x2314;
+    si += ax;
+    si = memoryAGet16(ds, si);
+    si += 0x2314;
+    si += 0x0008;
+    al = memoryAGet(ds, bx);
+    bx++;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    callIndirect(cs, memoryAGet16(ds, 0x002c));
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    si += ax;
+    al = memoryAGet(ds, bx);
+    bx++;
+    cl = 0x05;
+    ax <<= cl;
+    si += ax;
+    cl = memoryAGet(ds, bx);
+    bx++;
+    ch = memoryAGet(ds, bx);
+    bx++;
+    push(ax);
+    push(bx);
+    push(cx);
+    push(di);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x002e));
+    si = pop();
+    di = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+}
+void sub_1a1bc()
+{
+    al = memoryAGet(ds, bx);
+    bx++;
+    ah = memoryAGet(ds, bx);
+    bx++;
+    si = bx;
+    push(ax);
+    push(bx);
+    push(si);
+    callIndirect(cs, memoryAGet16(ds, 0x0032));
+    si = pop();
+    bx = pop();
+    ax = pop();
+loc_1a1ce:
+    al = memoryAGet(ds, bx);
+    bx++;
+    if (al != 0xff)
+        goto loc_1a1ce;
+}
+void sub_1a1d7()
+{
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    bx++;
+    push(bx);
+    memoryASet16(ds, 0xbdf2, ax);
+    sub_1aecd();
+    bx = pop();
+}
+void sub_1a1e4()
+{
+    bx++;
+}
+void sub_1a1e6()
+{
+    sub_1a102();
+    memoryASet16(ds, di, 0x0003);
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    ax += 0x2314;
+    memoryASet16(ds, di + 6, ax);
+    ax = 0;
+    memoryASet16(ds, di + 8, ax);
+}
+void sub_1a1fd()
+{
+    sub_1a111();
+    memoryASet16(ds, di, 0x0001);
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 2, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 4, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 6, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 8, ax);
+    al = memoryAGet(ds, bx);
+    bx++;
+    memoryASet16(ds, di + 10, ax);
+    memoryASet16(ds, di + 12, 0x0000);
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    ax += 0x2314;
+    memoryASet16(ds, di + 14, ax);
+}
+void sub_1a234()
+{
+    sub_1a111();
+    memoryASet16(ds, di, 0x0000);
+}
+void sub_1a23e()
+{
+    ax = memoryAGet16(ds, bx);
+    bx++;
+    bx++;
+    ax += 0x2314;
+    memoryASet16(ds, 0x9e3c, bx);
+    bx = ax;
+}
+void sub_1a24c()
+{
+    bx = memoryAGet16(ds, 0x9e3c);
+}
+void sub_1a257()
+{
+    memoryASet16(ds, 0x9e51, sp);
+    memoryASet16(ds, 0x8bf0, 0x0000);
+    memoryASet16(ds, 0x9e55, ax);
+    memoryASet16(ds, 0x9e53, 0x0000);
+    sub_1c4ca();
+    if (!(al & 0x10))
+        goto loc_1a277;
+    memoryASet16(ds, 0x9e53, 0x0001);
+loc_1a277:
+    sub_16b3b();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    sub_16b3b();
+    ax = memoryAGet16(ds, 0x9e55);
+    ax <<= 1;
+    bx = 0x2316;
+    bx += ax;
+    bx = memoryAGet16(ds, bx);
+    bx += 0x2314;
+    di = 0x9bd6;
+    cx = 0x0008;
+loc_1a297:
+    memoryASet16(ds, di, 0x0000);
+    di += 0x001a;
+    if (--cx)
+        goto loc_1a297;
+    di = 0x9cb8;
+    cx = 0x0004;
+loc_1a2a6:
+    memoryASet16(ds, di, 0x0000);
+    di += 0x0010;
+    if (--cx)
+        goto loc_1a2a6;
+loc_1a2af:
+    ax = 0;
+    al = memoryAGet(ds, bx);
+    bx++;
+    if (al == 0x00)
+        return;
+    ax <<= 1;
+    si = 0x9bb8;
+    si += ax;
+    callIndirect(cs, memoryAGet16(ds, si));
+    goto loc_1a2af;
+}
+void sub_1a2c4()
+{
+    push(bx);
+    sub_1c4ca();
+    bx = pop();
+    dx = memoryAGet16(ds, 0x9e55);
+    if (dx != 0x0000)
+        goto loc_1a2d3;
+    return;
+loc_1a2d3:
+    if (dx != 0x0001)
+        goto loc_1a2f1;
+    if (!(al & 0x10))
+        goto loc_1a2e8;
+    if (memoryAGet16(ds, 0x9e53) == 0x0001)
+        goto loc_1a2ee;
+    sp = memoryAGet16(ds, 0x9e51);
+    return;
+loc_1a2e8:
+    memoryASet16(ds, 0x9e53, 0x0000);
+loc_1a2ee:
+    al &= 0xef;
+    return;
+loc_1a2f1:
+    al &= 0xef;
+}
+void sub_1a2f6()
+{
+    sub_16b3b();
+    memoryASet16(ds, 0x9ef4, 0x0000);
+    cx = 0;
+    cl = memoryAGet(ds, bx);
+    bx++;
+loc_1a304:
+    push(cx);
+    memoryASet16(ds, 0x9ef4, memoryAGet16(ds, 0x9ef4) + 1);
+    if (memoryAGet16(ds, 0x9ef4) != 0x0007)
+        goto loc_1a316;
+    memoryASet16(ds, 0x9ef4, 0x0000);
+loc_1a316:
+    sub_1a389();
+    sub_1a437();
+    sub_1a2c4();
+    if (!(al & 0x10))
+        goto loc_1a32a;
+    if (memoryAGet16(ds, 0x9ef4) != 0x0000)
+        goto loc_1a33d;
+loc_1a32a:
+    callIndirect(cs, memoryAGet16(ds, 0x0034));
+    callIndirect(cs, memoryAGet16(ds, 0x0044));
+    sub_19b1c();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    callIndirect(cs, memoryAGet16(ds, 0x0038));
+loc_1a33d:
+    cx = pop();
+    if (--cx)
+        goto loc_1a304;
+}
+void sub_1a389()
+{
+    si = 0x9bd6;
+loc_1a38c:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        return;
+    if (!ax)
+        goto loc_1a3c9;
+    if (ax == 0x0001)
+        goto loc_1a3c9;
+    if (ax != 0x0002)
+        goto loc_1a3c2;
+    ax = memoryAGet16(ds, si + 18);
+    memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + ax);
+    if ((short)memoryAGet16(ds, si + 2) < (short)0x00e8)
+        goto loc_1a3af;
+    memoryASet16(ds, si, 0x0000);
+loc_1a3af:
+    if ((short)memoryAGet16(ds, si + 2) >= (short)0x0000)
+        goto loc_1a3b9;
+    memoryASet16(ds, si, 0x0000);
+loc_1a3b9:
+    ax = memoryAGet16(ds, si + 20);
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + ax);
+    goto loc_1a3c9;
+  // gap 1 bytes
+loc_1a3c2:
+    push(bx);
+    push(si);
+    sub_1a3cf();
+    si = pop();
+    bx = pop();
+loc_1a3c9:
+    si += 0x001a;
+    goto loc_1a38c;
+}
+void sub_1a3cf()
+{
+    push(bx);
+    bx = memoryAGet16(ds, si + 6);
+    al = memoryAGet(ds, bx);
+    if (al != 0x00)
+        goto loc_1a3df;
+    bx++;
+    bx = memoryAGet16(ds, bx);
+    memoryASet16(ds, si + 6, bx);
+loc_1a3df:
+    bx++;
+    al = memoryAGet(ds, bx);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    al = sar8(al, 0x01);
+    if (al != 0x07)
+        goto loc_1a3f0;
+    al++;
+loc_1a3f0:
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + ax);
+    if ((short)memoryAGet16(ds, si + 2) < (short)0x00e8)
+        goto loc_1a3ff;
+    memoryASet16(ds, si, 0x0000);
+loc_1a3ff:
+    if ((short)memoryAGet16(ds, si + 2) >= (short)0x0000)
+        goto loc_1a409;
+    memoryASet16(ds, si, 0x0000);
+loc_1a409:
+    al = memoryAGet(ds, bx);
+    al &= 0x0f;
+    if (!(al & 0x08))
+        goto loc_1a413;
+    al |= 0xf0;
+loc_1a413:
+    if (al != 0x07)
+        goto loc_1a419;
+    al++;
+loc_1a419:
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 4, memoryAGet16(ds, si + 4) + ax);
+    bx--;
+    al = memoryAGet(ds, bx);
+    true ? cbw() : cwde();
+    memoryASet16(ds, si + 8, memoryAGet16(ds, si + 8) + 1);
+    if (ax == memoryAGet16(ds, si + 8))
+        goto loc_1a42b;
+    if (ax >= memoryAGet16(ds, si + 8))
+        goto loc_1a435;
+loc_1a42b:
+    memoryASet16(ds, si + 8, 0x0000);
+    bx++;
+    bx++;
+    memoryASet16(ds, si + 6, bx);
+loc_1a435:
+    bx = pop();
+}
+void sub_1a437()
+{
+    si = 0x9bd6;
+loc_1a43a:
+    ax = memoryAGet16(ds, si);
+    if ((short)ax < 0)
+        return;
+    if (!ax)
+        goto loc_1a449;
+    push(bx);
+    push(si);
+    sub_1718e();
+    si = pop();
+    bx = pop();
+loc_1a449:
+    si += 0x001a;
+    goto loc_1a43a;
+}
+void sub_1a44f()
+{
+    ax = memoryAGet16(ds, 0x0062);
+    cx = 0x0000;
+    dx = 0x00c1;
+    sub_1a65b();
+}
+void sub_1a45c()
+{
+    ax = 0x1040;
+    cx = 0x3374;
+    dx = 0x006b;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x3974;
+    dx = 0x0077;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x3c74;
+    dx = 0x0084;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x4c74;
+    dx = 0x0091;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x53f4;
+    dx = 0x009d;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x1180;
+    dx = 0x00aa;
+    sub_1a65b();
+    ax = 0x1040;
+    cx = 0x2314;
+    dx = 0x00b6;
+    sub_1a65b();
+}
+void sub_1a54a()
+{
+    si = 0x006b;
+    ax = memoryAGet16(ds, 0x8bec);
+    ax--;
+    ax += 0x0031;
+loc_1a554:
+    ah = memoryAGet(ds, si);
+    if (ah == 0xff)
+        return;
+    if ((char)ah < (char)0x31)
+        goto loc_1a567;
+    if ((char)ah > (char)0x35)
+        goto loc_1a567;
+    memoryASet(ds, si, al);
+loc_1a567:
+    si++;
+    goto loc_1a554;
+}
+void sub_1a56b()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    ax = 0x0a0c;
+    si = 0x94c1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0b0c;
+    si = 0x94e1;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    ax = 0x0c0c;
+    si = 0x9501;
+    callIndirect(cs, memoryAGet16(ds, 0x0046));
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+}
+void sub_1a592()
+{
+    push(cs);
+    ds = pop();
+    di = 0x66f6;
+    cx = 0x0006;
+    al = 0x0a;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    memoryASet16(ds, 0x6610, 0x0006);
+    di = 0x66fd;
+    cx = 0x0006;
+    al = 0x0b;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    memoryASet16(ds, 0x6612, 0x0006);
+    di = 0x6704;
+    cx = 0x0006;
+    al = 0x0c;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+    memoryASet16(ds, 0x6614, 0x0006);
+    sub_1a5f0();
+    callIndirect(cs, memoryAGet16(ds, 0x001a));
+    memoryASet16(ds, 0x8bec, 0x0001);
+    memoryASet16(ds, 0x7e16, 0x0000);
+    memoryASet16(ds, 0x7e18, 0x0000);
+    memoryASet16(ds, 0x7e00, 0x0000);
+    push(cs);
+    ds = pop();
+    di = 0x6616;
+    cx = 0x0006;
+    al = 0;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+}
+void sub_1a5e3()
+{
+    push(cs);
+    ds = pop();
+    di = 0x6616;
+    cx = 0x0006;
+    al = 0;
+    for (; cx != 0; --cx) stosb<ES_DI>(al);
+}
+void sub_1a5f0()
+{
+    ax = 0;
+    memoryASet16(ds, 0x0b00, ax);
+    memoryASet16(ds, 0x0b38, ax);
+    ax++;
+    memoryASet16(ds, 0x0b1c, ax);
+    ax--;
+    di = 0x0b56;
+loc_1a600:
+    dx = memoryAGet16(ds, di);
+    if ((short)dx < 0)
+        goto loc_1a60c;
+    stosw<ES_DI>(ax);
+    di += 0x0032;
+    goto loc_1a600;
+loc_1a60c:
+    di = 0x0c28;
+loc_1a60f:
+    dx = memoryAGet16(ds, di);
+    if ((short)dx < 0)
+        return;
+    stosw<ES_DI>(ax);
+    di += 0x0032;
+    goto loc_1a60f;
+}
+void sub_1a65b()
+{
+    memoryASet16(ds, 0xa255, ax);
+    memoryASet16(ds, 0xa257, cx);
+    sub_1a67b();
+    push(ds);
+    bx = memoryAGet16(ds, 0xa259);
+    ax = memoryAGet16(ds, 0xa255);
+    dx = memoryAGet16(ds, 0xa257);
+    ds = ax;
+    sub_1a693();
+    ds = pop();
+    sub_1a69d();
+}
+void sub_1a67b()
+{
+  goto loc_1a67b;
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 3914 bytes
+loc_1a67b:
+    ah = 0x3d;
+    al = 0x00;
+    interrupt(0x21);
+    if (flags.carry)
+        goto loc_1a6fb;
+    push(ds);
+    push(ax);
+    ax = 0x1040;
+    ds = ax;
+    ax = pop();
+    memoryASet16(ds, 0xa259, ax);
+    ds = pop();
+    return;
+  // gap 104 bytes
+loc_1a6fb:
+    push(ds);
+    ax = 0x0003;
+    interrupt(0x10);
+    ax = 0x1040;
+    ds = ax;
+    dx = 0xa21c;
+    ah = 0x09;
+    interrupt(0x21);
+    ds = pop();
+    ax = 0x1040;
+    ds = ax;
+    memoryASet(ds, 0xb888, 0x00);
+loc_1a719:
+    al = memoryAGet(ds, 0xb888);
+    if (al == 0x00)
+        goto loc_1a719;
+    goto loc_196f3;
+}
+void sub_1a693()
+{
+  goto loc_1a693;
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 3938 bytes
+loc_1a693:
+    ah = 0x3f;
+    cx = 0xffff;
+    interrupt(0x21);
+    if (flags.carry)
+        goto loc_1a6fb;
+    return;
+  // gap 94 bytes
+loc_1a6fb:
+    push(ds);
+    ax = 0x0003;
+    interrupt(0x10);
+    ax = 0x1040;
+    ds = ax;
+    dx = 0xa21c;
+    ah = 0x09;
+    interrupt(0x21);
+    ds = pop();
+    ax = 0x1040;
+    ds = ax;
+    memoryASet(ds, 0xb888, 0x00);
+loc_1a719:
+    al = memoryAGet(ds, 0xb888);
+    if (al == 0x00)
+        goto loc_1a719;
+    goto loc_196f3;
+}
+void sub_1a69d()
+{
+  goto loc_1a69d;
+loc_196f3:
+    flags.interrupts = 0;
+    sub_1ae03();
+    sub_1bcb7();
+    flags.interrupts = 1;
+    al = memoryAGet(ds, 0x006a);
+    ah = 0;
+    interrupt(0x10);
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1970f;
+    sub_1adb0();
+    goto loc_1972d;
+  // gap 1 bytes
+loc_1970f:
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 3948 bytes
+loc_1a69d:
+    ah = 0x3e;
+    bx = memoryAGet16(ds, 0xa259);
+    interrupt(0x21);
+    if (flags.carry)
+        goto loc_1a6fb;
+    return;
+  // gap 83 bytes
+loc_1a6fb:
+    push(ds);
+    ax = 0x0003;
+    interrupt(0x10);
+    ax = 0x1040;
+    ds = ax;
+    dx = 0xa21c;
+    ah = 0x09;
+    interrupt(0x21);
+    ds = pop();
+    ax = 0x1040;
+    ds = ax;
+    memoryASet(ds, 0xb888, 0x00);
+loc_1a719:
+    al = memoryAGet(ds, 0xb888);
+    if (al == 0x00)
+        goto loc_1a719;
+    goto loc_196f3;
+}
+void sub_1ad6e()
+{
+    ah = 0;
+    ax <<= 1;
+    bx = ax;
+    ax <<= 1;
+    ax += bx;
+    bx = 0xa64d;
+    bx += ax;
+    bx = memoryAGet16(ds, bx);
+    memoryASet16(ds, 0xa854, bx);
+    memoryASet(ds, 0xa852, 0x01);
+    memoryASet(ds, 0xa84e, 0x00);
+    memoryASet16(ds, 0xa850, 0x0001);
+    memoryASet16(ds, 0xa856, 0x0000);
+    memoryASet16(ds, 0xa858, 0x0000);
+    memoryASet(ds, 0xa85a, 0x00);
+    memoryASet16(ds, 0xa85c, 0x0000);
+    memoryASet(ds, 0xa85e, 0xff);
+}
+void sub_1adb0()
+{
     al = in8(0x61);
-    al &= 0xfc;
+    al &= 0xfd;
     out8(0x61, al);
 }
-void sub_139b8()
+void sub_1adcb()
 {
-    memoryASet(ds, 0x9561, 0x00);
-    memoryASet16(ds, 0x955f, 0x0000);
-    memoryASet(ds, 0x955e, 0x01);
-    al = memoryAGet(ds, 0x9546);
-    if (al != 0x00)
-        goto loc_139d4;
-    ax = 0x8dec;
-    goto loc_139d7;
-loc_139d4:
-    ax = 0x8d4c;
-loc_139d7:
-    memoryASet16(ds, 0x9562, ax);
+    push(ds);
+    push(es);
+    ah = 0x35;
+    al = 0x08;
+    interrupt(0x21);
+    push(ax);
+    ax = 0x1040;
+    ds = ax;
+    ax = pop();
+    memoryASet16(ds, 0xb88e, es);
+    memoryASet16(cs, 0xaa7b, es);
+    memoryASet16(ds, 0xb890, bx);
+    memoryASet16(cs, 0xaa79, bx);
+    ah = 0x25;
+    al = 0x08;
+    push(cs);
+    ds = pop();
+    dx = 0xaa28;
+    interrupt(0x21);
+    ax = 0x4000;
+    out8(0x40, al);
+    al = ah;
+    out8(0x40, al);
+    es = pop();
+    ds = pop();
+}
+void sub_1ae03()
+{
+    push(ds);
+    push(ax);
+    ax = 0x0000;
+    out8(0x40, al);
+    al = ah;
+    out8(0x40, al);
+    ax = 0x1040;
+    ds = ax;
+    dx = memoryAGet16(ds, 0xb890);
+    ds = memoryAGet16(ds, 0xb88e);
+    ah = 0x25;
+    al = 0x08;
+    interrupt(0x21);
+    ax = pop();
+    ds = pop();
+}
+void sub_1ae81()
+{
+    bool temp_cf;
+    bool temp_cf1;
+    bool temp_cf2;
+    al = memoryAGet(ds, 0xaa26);
+loc_1ae84:
+    if (al == memoryAGet(ds, 0xaa26))
+        goto loc_1ae84;
+    al = memoryAGet(ds, 0xaa26);
+loc_1ae8d:
+    temp_cf = (memoryAGet(ds, 0xaa7d) + 0x01) >= 0x100;
+    memoryASet(ds, 0xaa7d, memoryAGet(ds, 0xaa7d) + 0x01);
+    temp_cf1 = (memoryAGet(ds, 0xaa7e) + 0x00 + temp_cf) >= 0x100;
+    memoryASet(ds, 0xaa7e, memoryAGet(ds, 0xaa7e) + (0x00 + temp_cf));
+    temp_cf2 = (memoryAGet(ds, 0xaa7f) + 0x00 + temp_cf1) >= 0x100;
+    memoryASet(ds, 0xaa7f, memoryAGet(ds, 0xaa7f) + (0x00 + temp_cf1));
+    memoryASet(ds, 0xaa80, memoryAGet(ds, 0xaa80) + (0x00 + temp_cf2));
+    if (al == memoryAGet(ds, 0xaa26))
+        goto loc_1ae8d;
+    ax = memoryAGet16(ds, 0xaa7d);
+    if ((short)ax < (short)0x0b00)
+        goto loc_1aeb6;
+    memoryASet16(ds, 0x96f4, 0x0003);
+    return;
+loc_1aeb6:
+    if ((short)ax < (short)0x0700)
+        goto loc_1aec2;
+    memoryASet16(ds, 0x96f4, 0x0002);
+    return;
+loc_1aec2:
+    memoryASet16(ds, 0x96f4, 0x0001);
+    callIndirect(cs, memoryAGet16(ds, 0x004a));
+}
+void sub_1aecd()
+{
+    if ((short)ax < (short)0x000b)
+        goto loc_1aed5;
+    goto loc_1bb82;
+loc_1aed5:
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1aee0;
+    sub_1ad6e();
+    return;
+loc_1aee0:
+    bx = ax;
+    sub_1b95d();
+    return;
+  // gap 3228 bytes
+loc_1bb82:
+    push(si);
+    push(di);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    ds = bx;
+    es = bx;
+    ax -= 0x000b;
+    if (memoryAGet16(ds, 0xab2b) == 0x0001)
+        goto loc_1bb9e;
+    goto loc_1bc4a;
+loc_1bb9e:
+    if (memoryAGet(ds, 0xa85e) != 0xff)
+        goto loc_1bba8;
+    goto loc_1bc40;
+loc_1bba8:
+    ax += ax;
+    ax += ax;
+    si = 0xb181;
+    si += ax;
+    ax = memoryAGet16(ds, 0xab27);
+    ax--;
+    if ((short)ax >= 0)
+        goto loc_1bbba;
+    ax = 0x0005;
+loc_1bbba:
+    memoryASet16(ds, 0xab27, ax);
+    ax = memoryAGet16(ds, si + 2);
+    push(ax);
+    si = memoryAGet16(ds, si);
+    push(si);
+    ax = memoryAGet16(ds, 0xab27);
+    memoryASet16(ds, 0xb3a7, ax);
+    si++;
+    si++;
+    memoryASet16(ds, 0xb3a9, si);
+    memoryASet16(ds, 0xb3ab, ds);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0015;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    ax = memoryAGet16(ds, 0xab27);
+    memoryASet16(ds, 0xb3a7, ax);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0014;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    ax = memoryAGet16(ds, 0xab27);
+    memoryASet16(ds, 0xb3a7, ax);
+    si = pop();
+    ax = pop();
+    true ? cbw() : cwde();
+    memoryASet16(ds, 0xb3a9, ax);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0013;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1bc40:
+    es = pop();
+    ds = pop();
+    bp = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    di = pop();
+    si = pop();
+    return;
+loc_1bc4a:
+    if (memoryAGet(ds, 0xa85e) != 0xff)
+        goto loc_1bc53;
+    goto loc_1bc40;
+loc_1bc53:
+    dx = memoryAGet16(ds, 0xab29);
+    if (!dx)
+        goto loc_1bc65;
+    if (ax == 0x001a)
+        goto loc_1bc40;
+    if (ax == 0x001b)
+        goto loc_1bc40;
+loc_1bc65:
+    ax += ax;
+    si = 0xb32d;
+    si += ax;
+    si = memoryAGet16(ds, si);
+    memoryASet16(ds, 0xab29, si);
+    goto loc_1bc40;
+}
+void sub_1b95d()
+{
+    ax = cs;
+    ds = ax;
+    memoryASet16(ds, 0xb55b, 0x0001);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0000;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    memoryASet16(ds, 0xb3a7, 0x0001);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0006;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    bx += bx;
+    ax = bx;
+    bx += bx;
+    bx += ax;
+    bx += 0xa64d;
+    di = 0xb369;
+    memoryASet16(ds, di, 0x00ff);
+    ax = memoryAGet16(ds, bx);
+    memoryASet16(ds, di + 2, ax);
+    ax = 0;
+    memoryASet16(ds, di + 16, ax);
+    memoryASet16(ds, di + 12, ax);
+    memoryASet16(ds, di + 18, ax);
+    push(bx);
+    sub_1bb3f();
+    bx = pop();
+    bx++;
+    bx++;
+    di = 0xb37d;
+    memoryASet16(ds, di, 0x00ff);
+    ax = memoryAGet16(ds, bx);
+    memoryASet16(ds, di + 2, ax);
+    ax = 0;
+    memoryASet16(ds, di + 16, ax);
+    ax = 0x0001;
+    memoryASet16(ds, di + 12, ax);
+    memoryASet16(ds, di + 18, ax);
+    push(bx);
+    sub_1bb3f();
+    bx = pop();
+    bx++;
+    bx++;
+    di = 0xb391;
+    memoryASet16(ds, di, 0x00ff);
+    ax = memoryAGet16(ds, bx);
+    memoryASet16(ds, di + 2, ax);
+    ax = 0;
+    memoryASet16(ds, di + 16, ax);
+    ax = 0x0002;
+    memoryASet16(ds, di + 12, ax);
+    memoryASet16(ds, di + 18, ax);
+    sub_1bb3f();
+    memoryASet16(ds, 0xb55b, 0x0000);
+}
+void sub_1bb3f()
+{
+  goto loc_1bb3f;
+loc_1ba58:
+    al = memoryAGet(ds, si);
+    if ((char)al >= 0)
+        goto loc_1bac7;
+    if (al != 0xff)
+        goto loc_1ba72;
+    memoryASet16(ds, di + 10, memoryAGet16(ds, di + 10) - 1);
+    if (memoryAGet16(ds, di + 10))
+        goto loc_1ba6a;
+    goto loc_1bb3f;
+loc_1ba6a:
+    si = memoryAGet16(ds, di + 4);
+    memoryASet16(ds, di + 6, si);
+    goto loc_1ba58;
+loc_1ba72:
+    al &= 0x7f;
+    al--;
+    al += al;
+    ah = 0;
+    bx = ax;
+    bx += 0xb3b3;
+    bx = memoryAGet16(ds, bx);
+    al = memoryAGet(ds, bx);
+    if (!al)
+        goto loc_1ba90;
+    al = memoryAGet(ds, bx + 1);
+    ah = 0;
+    memoryASet16(ds, di + 18, ax);
+loc_1ba90:
+    bx += 0x0002;
+    memoryASet16(ds, 0xb3a9, bx);
+    ax = cs;
+    memoryASet16(ds, 0xb3ab, ax);
+    ax = memoryAGet16(ds, di + 18);
+    memoryASet16(ds, 0xb3a7, ax);
+    push(di);
+    push(si);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0015;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    si = pop();
+    di = pop();
+    si++;
+    goto loc_1ba58;
+loc_1bac7:
+    memoryASet16(ds, di + 8, 0x0000);
+    memoryASet16(ds, di + 6, si);
+    al -= 0x20;
+    true ? cbw() : cwde();
+    ax += memoryAGet16(ds, di + 16);
+    memoryASet16(ds, 0xb3a9, ax);
+    ax = memoryAGet16(ds, di + 14);
+    memoryASet16(ds, 0xb3a7, ax);
+    ax = cs;
+    es = ax;
+    bx = 0xb3a7;
+    push(di);
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0014;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+    di = pop();
+    ax = memoryAGet16(ds, 0xb3a9);
+    ax -= memoryAGet16(ds, di + 16);
+    if (ax == 0x001d)
+        return;
+    ax = memoryAGet16(ds, di + 18);
+    memoryASet16(ds, di + 14, ax);
+    memoryASet16(ds, 0xb3a7, ax);
+    ax = cs;
+    es = ax;
+    bx = 0xb3a7;
+    push(ax);
+    push(bx);
+    push(cx);
+    push(dx);
+    push(si);
+    push(di);
+    push(bp);
+    push(ds);
+    push(es);
+    bx = cs;
+    es = bx;
+    si = 0x0013;
+    bx = 0xb3a7;
+    interrupt(0x65);
+    es = pop();
+    ds = pop();
+    bp = pop();
+    di = pop();
+    si = pop();
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = pop();
+loc_1bb3e:
+    return;
+loc_1bb3f:
+    memoryASet16(ds, di + 10, 0x0001);
+    si = memoryAGet16(ds, di + 2);
+loc_1bb47:
+    al = memoryAGet(ds, si);
+    if (al != 0xff)
+        goto loc_1bb52;
+    memoryASet16(ds, di, 0x0000);
+    return;
+loc_1bb52:
+    if ((char)al >= 0)
+        goto loc_1bb6c;
+    if (al != 0xc0)
+        goto loc_1bb64;
+    si++;
+    al = memoryAGet(ds, si);
+    true ? cbw() : cwde();
+    memoryASet16(ds, di + 16, ax);
+    si++;
+    goto loc_1bb47;
+loc_1bb64:
+    al &= 0x7f;
+    memoryASet(ds, di + 10, al);
+    si++;
+    goto loc_1bb47;
+loc_1bb6c:
+    si++;
+    memoryASet16(ds, di + 2, si);
+    ah = 0;
+    ax += ax;
+    bx = ax;
+    bx += 0xa5e1;
+    si = memoryAGet16(ds, bx);
+    memoryASet16(ds, di + 4, si);
+    goto loc_1ba58;
+}
+void sub_1bc92()
+{
+    push(ds);
+    push(es);
+    ah = 0x35;
+    al = 0x09;
+    interrupt(0x21);
+    ax = 0x1040;
+    ds = ax;
+    memoryASet16(ds, 0xb88a, es);
+    memoryASet16(ds, 0xb88c, bx);
+    ah = 0x25;
+    al = 0x09;
+    dx = cs;
+    ds = dx;
+    dx = 0xb8cd;
+    interrupt(0x21);
+    es = pop();
+    ds = pop();
+}
+void sub_1bcb7()
+{
+    push(ds);
+    ax = 0x1040;
+    ds = ax;
+    dx = memoryAGet16(ds, 0xb88c);
+    ds = memoryAGet16(ds, 0xb88a);
+    ah = 0x25;
+    al = 0x09;
+    interrupt(0x21);
+    ds = pop();
+}
+void sub_1bf7c()
+{
+    dx = 0x0201;
+    ax = 0;
+    cx = 0;
+    al = in8(dx);
+    ax &= 0x0030;
+    if (ax == 0x0030)
+        goto loc_1bf8f;
+    cx = 0xffff;
+loc_1bf8f:
+    push(cx);
+    bl = 0x01;
+    sub_1bfa0();
+    push(cx);
+    bl = 0x02;
+    sub_1bfa0();
+    dx = cx;
+    cx = pop();
+    bx = pop();
+}
+void sub_1bfa0()
+{
+    push(dx);
+    flags.interrupts = 0;
+    al = 0x00;
+    out8(0x43, al);
+    goto loc_1bfa8;
+loc_1bfa8:
+    al = in8(0x40);
+    ah = al;
+    goto loc_1bfae;
+loc_1bfae:
+    al = in8(0x40);
+    tl = al; al = ah; ah = tl;
+    push(ax);
+    cx = 0x04ff;
+    out8(dx, al);
+    goto loc_1bfb9;
+loc_1bfb9:
+    al = in8(dx);
+    if (--cx && bl & al)
+        goto loc_1bfb9;
+    cx = pop();
+    if (cx != 0x0000)
+        goto loc_1bfc9;
+    cx = 0;
+    goto loc_1bff7;
+  // gap 1 bytes
+loc_1bfc9:
+    al = 0x00;
+    out8(0x43, al);
+    goto loc_1bfcf;
+loc_1bfcf:
+    al = in8(0x40);
+    ah = al;
+    goto loc_1bfd5;
+loc_1bfd5:
+    al = in8(0x40);
+    tl = al; al = ah; ah = tl;
+    if (cx >= ax)
+        goto loc_1bfe9;
+    push(dx);
+    dx = 0xffff;
+    dx -= ax;
+    cx += dx;
+    dx = pop();
+    goto loc_1bfeb;
+  // gap 1 bytes
+loc_1bfe9:
+    cx -= ax;
+loc_1bfeb:
+    cx &= 0x1ff0;
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+    cx >>= 1;
+loc_1bff7:
+    flags.interrupts = 1;
+    dx = 0x0201;
+    push(cx);
+    push(ax);
+    cx = 0x04ff;
+loc_1c000:
+    al = in8(dx);
+    if (--cx && al & 0x0f)
+        goto loc_1c000;
+    ax = pop();
+    cx = pop();
+    dx = pop();
+}
+void sub_1c0a8()
+{
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    bx = 0xbc80;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    bx = 0xbc80;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+loc_1c0c0:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (bx)
+        goto loc_1c0c0;
+loc_1c0c8:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (!bx)
+        goto loc_1c0c8;
+    memoryASet16(ds, 0xbc98, cx);
+    memoryASet16(ds, 0xbc9a, dx);
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    bx = 0xbc88;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    bx = 0xbc88;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+loc_1c0f0:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (bx)
+        goto loc_1c0f0;
+loc_1c0f8:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (!bx)
+        goto loc_1c0f8;
+    memoryASet16(ds, 0xbc9c, cx);
+    memoryASet16(ds, 0xbc9e, dx);
+    callIndirect(cs, memoryAGet16(ds, 0x0026));
+    bx = 0xbc90;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+    bx = 0xbc90;
+    sub_19c43();
+    callIndirect(cs, memoryAGet16(ds, 0x001c));
+loc_1c120:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (bx)
+        goto loc_1c120;
+loc_1c128:
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (!bx)
+        goto loc_1c128;
+    memoryASet16(ds, 0xbca0, cx);
+    memoryASet16(ds, 0xbca2, dx);
+    ax = memoryAGet16(ds, 0xbc9c);
+    ax -= memoryAGet16(ds, 0xbc98);
+    bx = memoryAGet16(ds, 0xbc9e);
+    bx -= memoryAGet16(ds, 0xbc9a);
+    dl = 0x06;
+    idiv8(dl);
+    ax &= 0x00ff;
+    true ? cbw() : cwde();
+    push(ax);
+    ax = bx;
+    dl = 0x06;
+    idiv8(dl);
+    al &= 0xff;
+    true ? cbw() : cwde();
+    bx = ax;
+    ax = pop();
+    memoryASet16(ds, 0xbca4, ax);
+    memoryASet16(ds, 0xbca6, bx);
+}
+void sub_1c164()
+{
+    sub_1c0a8();
+    sub_1bf7c();
+    cx |= dx;
+    if (cx)
+        goto loc_1c175;
+    memoryASet(cs, 0xbda2, 0xc3);
+    return;
+loc_1c175:
+    ax = memoryAGet16(ds, 0xbca0);
+    dx = memoryAGet16(ds, 0xbca4);
+    ax += dx;
+    memoryASet16(ds, 0xb87e, ax);
+    ax = memoryAGet16(ds, 0xbca0);
+    dx = -dx;
+    ax += dx;
+    memoryASet16(ds, 0xb880, ax);
+    ax = memoryAGet16(ds, 0xbca2);
+    dx = memoryAGet16(ds, 0xbca6);
+    ax += dx;
+    memoryASet16(ds, 0xb87c, ax);
+    ax = memoryAGet16(ds, 0xbca2);
+    dx = -dx;
+    ax += dx;
+    memoryASet16(ds, 0xb87a, ax);
+}
+void sub_1c1a2()
+{
+    ax = 0x1040;
+    ds = ax;
+    sub_1bf7c();
+    bx &= 0x0003;
+    if (!bx)
+        goto loc_1c1b7;
+    bx = 0;
+    bl |= 0x10;
+    goto loc_1c1b9;
+  // gap 1 bytes
+loc_1c1b7:
+    bx = 0;
+loc_1c1b9:
+    if (cx < memoryAGet16(ds, 0xb87e))
+        goto loc_1c1c5;
+    bl |= 0x01;
+    goto loc_1c1ce;
+  // gap 1 bytes
+loc_1c1c5:
+    if (cx >= memoryAGet16(ds, 0xb880))
+        goto loc_1c1ce;
+    bl |= 0x02;
+loc_1c1ce:
+    if (dx >= memoryAGet16(ds, 0xb87a))
+        goto loc_1c1da;
+    bl |= 0x08;
+    goto loc_1c1e3;
+  // gap 1 bytes
+loc_1c1da:
+    if (dx < memoryAGet16(ds, 0xb87c))
+        goto loc_1c1e3;
+    bl |= 0x04;
+loc_1c1e3:
+    memoryASet(ds, 0xb882, bl);
+    bh = memoryAGet(ds, 0xb886);
+    bl |= bh;
+    memoryASet(ds, 0xb884, bl);
+}
+void sub_1c276()
+{
+  goto loc_1c276;
+loc_19731:
+    ah = 0x09;
+    dx = 0x1040;
+    ds = dx;
+    dx = 0x92b1;
+    interrupt(0x21);
+    ah = 0x4c;
+    interrupt(0x21);
+    stop();
+  // gap 11061 bytes
+loc_1c276:
+    flags.direction = 0;
+    ah = 0x4a;
+    bx = 0x0e00;
+    interrupt(0x21);
+    if (!flags.carry)
+        goto loc_1c283;
+    goto loc_19731;
+loc_1c283:
+    ax = cs;
+    es = ax;
+    si = 0x0080;
+    di = 0x1040;
+    es = di;
+    di = 0xbdf6;
+    cl = memoryAGet(ds, si);
+    ch = 0;
+    cx++;
+    flags.direction = 0;
+    for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
+    push(es);
+    ds = pop();
+    si = 0xbdf6;
+    cx = 0x0080;
+loc_1c2a2:
+    al = memoryAGet(ds, si);
+    si++;
+    if (al == 0x2f)
+        goto loc_1c2ae;
+loc_1c2a9:
+    if (--cx)
+        goto loc_1c2a2;
+    goto loc_1c2e2;
+  // gap 1 bytes
+loc_1c2ae:
+    al = memoryAGet(ds, si);
+    if (al == 0x63)
+        goto loc_1c2d3;
+    if (al == 0x43)
+        goto loc_1c2d3;
+    if (al == 0x65)
+        goto loc_1c2ca;
+    if (al == 0x45)
+        goto loc_1c2ca;
+    if (al == 0x74)
+        goto loc_1c2e5;
+    if (al == 0x54)
+        goto loc_1c2e5;
+    goto loc_1c2a9;
+loc_1c2ca:
+    memoryASet16(ds, 0x2f67, 0x2f4f);
+    goto loc_1c2e2;
+  // gap 1 bytes
+loc_1c2d3:
+    memoryASet16(ds, 0x2f67, 0x2f57);
+    goto loc_1c2e2;
+  // gap 7 bytes
+loc_1c2e2:
+//    sub_1c4bd();
+loc_1c2e5:
+    callIndirect(cs, memoryAGet16(ds, 0x0002));
+    si = 0xbdf6;
+    cx = 0x0080;
+loc_1c2ef:
+    al = memoryAGet(ds, si);
+    si++;
+    if (al == 0x2f)
+        goto loc_1c308;
+    if (--cx)
+        goto loc_1c2ef;
+    push(ds);
+    ax = 0x1040;
+    ds = ax;
+    memoryASet16(ds, 0xab2b, 0x0000);
+    ds = pop();
+    goto loc_1c31f;
+  // gap 1 bytes
+loc_1c308:
+    al = memoryAGet(ds, si);
+    if (al == 0x61)
+        goto loc_1c312;
+    if (al != 0x41)
+        goto loc_1c31f;
+loc_1c312:
+    ax = 0x1040;
+    ds = ax;
+    es = ax;
+    memoryASet16(ds, 0xab2b, 0x0001);
+loc_1c31f:
+    sub_196dd();
+//    sub_1ae81();
+    memoryASet(ds, 0xa860, 0x01);
+    sub_1c4e1();
+    callIndirect(cs, memoryAGet16(ds, 0x002a));
+    callIndirect(cs, memoryAGet16(ds, 0x0008));
+    sub_1a44f();
+    callIndirect(cs, memoryAGet16(ds, 0x000a));
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    sub_1a592();
+    sub_19e18();
+    if (!flags.carry)
+        goto loc_1c34b;
+    sub_1c164();
+loc_1c34b:
+    memoryASet16(ds, 0x95c4, 0x0000);
+    callIndirect(cs, memoryAGet16(ds, 0x003c));
+    memoryASet16(ds, 0xc0df, sp);
+    sp = memoryAGet16(ds, 0xc0df);
+    callIndirect(cs, memoryAGet16(ds, 0x000a));
+    sub_1a592();
+    callIndirect(cs, memoryAGet16(ds, 0x003a));
+    memoryASet16(ds, 0xbdf2, 0x0003);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+    callIndirect(cs, memoryAGet16(ds, 0x0028));
+loc_1c378:
+    sync();
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c378;
+    goto loc_1c398;
+  // gap 1 bytes
+loc_1c382:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c395;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c395:
+    sub_16b9b();
+loc_1c398:
+    if (memoryAGet(ds, 0xa85e) == 0xff)
+        goto loc_1c3ab;
+    memoryASet16(ds, 0xbdf2, 0x0000);
+    ax = memoryAGet16(ds, 0xbdf2);
+    sub_1aecd();
+loc_1c3ab:
+    sub_16cd7();
+    goto loc_1c382;
+}
+void sub_1c4bd()
+{
+    ax = cs;
+    cx = 0x0000;
+    dx = memoryAGet16(ds, 0x2f67);
+    sub_1a65b();
+}
+void sub_1c4ca()
+{
+    sub_1c1a2();
+    al = memoryAGet(ds, 0xb884);
+}
+void sub_1c4e1()
+{
+}
+void sub_1c4e2()
+{
+    ax = memoryAGet16(ds, 0x6614);
+    ax++;
+    if ((short)ax > (short)0x0006)
+        return;
+    memoryASet16(ds, 0x6614, ax);
 }
