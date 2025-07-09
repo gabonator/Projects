@@ -68,7 +68,7 @@ void callIndirect(int, int);
 
 int sar16(int a, int b)
 {
-    int16_t sa = (short)a;
+    int16_t sa = (int16_t)a;
     sa >>= b;
     return sa;
 }

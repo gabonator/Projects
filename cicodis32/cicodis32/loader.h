@@ -105,7 +105,8 @@ public:
         assert(size >= 1024 && size < 1024*1024);
         file.seekg(0, std::ios::beg);
         
-        buffer.resize(size);
+        buffer.resize(size+16);
+        memset(&buffer[0], 0, size+16);
         if (!file.read(reinterpret_cast<char*>(buffer.data()), size))
         {
             file.close();
@@ -116,6 +117,7 @@ public:
         assert(header->id[0] == 'M' && header->id[1] == 'Z');
         
         _linearToFileOffset = _loadBase - header->headerSize16*0x10;
+        Relocate();
         return true;
     }
     
@@ -126,7 +128,7 @@ public:
     virtual const uint8_t* GetBufferAt(address_t addr) override
     {
         int rel = addr.linearOffset() - _linearToFileOffset;
-        assert(rel >= 0x0 && rel+16 <= buffer.size());
+        assert(rel >= 0x0 && rel+16   <= buffer.size());
         return &buffer[rel];
     }
     
@@ -175,18 +177,12 @@ public:
             MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
             int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
             uint16_t* addr = (uint16_t*)&buffer[linearOffset];
-            if (_dumpReloc)
-            {
-//                strReloc += format("    memory16(0x%04x + seg, 0x%04x) += seg; // %04x -> %04x\n",
-//                       reloc->segment, reloc->offset, *addr, *addr + _loadBase);
-                if (reloc->segment == 0)
-                    strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x\n",
-                           reloc->offset, reloc->offset, *addr, *addr + _loadBase/16);
-                else
-                    strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x\n",
-                       reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr, *addr + _loadBase/16);
-            }
-            *addr += _loadBase/16; // TODO: move
+            if (reloc->segment == 0)
+                strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x\n",
+                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr);
+            else
+                strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x\n",
+                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr);
         }
 
         strReloc += "}";
@@ -194,5 +190,16 @@ public:
         std::string strForward = format("void fixReloc(uint16_t seg);\nvoid sub_%x();\n\n", (_loadBase/16+header->cs)*16+header->ip);
         
         return strForward + strMain + "\n" + strReloc + "\n";
+    }
+    
+    void Relocate()
+    {
+        for (int i=0; i<header->relocations; i++)
+        {
+            MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
+            int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
+            uint16_t* addr = (uint16_t*)&buffer[linearOffset];
+            *addr += _loadBase/16;
+        }
     }
 };

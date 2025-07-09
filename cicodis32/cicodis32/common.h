@@ -99,6 +99,13 @@ struct jumpTable_t {
     }
 };
 
+enum class procRequest_t
+{
+    returnNone = 0,
+    returnCarry = 1,
+    returnZero = 2
+};
+
 class Options {
 public:
     //-jumptable 1000:104e 1000:105a 35 callwords bx"
@@ -110,7 +117,13 @@ public:
 //        int entries;
 //        char index[32];
 //    };
+    const char loader[32];
+    const char exec[1024];
     bool recursive{true};
+    bool start{true};
+    bool relocations{true};
+    int loadAddress{0x10000};
+    std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
@@ -121,3 +134,8 @@ public:
     }
 };
 
+template<typename T, typename U> T check(T o, U end)
+{
+    assert (o != end);
+    return o;
+}

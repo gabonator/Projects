@@ -4,6 +4,7 @@
  build phases -> link binary with libraries: /opt/homebrew/lib/libcapstone.dylib
  
  */
+// TODO: bool CheckCodeAddress(int seg, int ofs), inf loop
 #include <capstone/platform.h>
 #include <capstone/capstone.h>
 #include <stdint.h>
@@ -22,66 +23,208 @@
 #include "converter.h"
 
 int main(int argc, char **argv) {
-    //shared<LoaderSnapshot> loader(new LoaderSnapshot);
-    shared<Loader> loader(new LoaderMz);
-    if (!loader->LoadFile("GOOSE.EXE", 0x1000*16))
+    Options optionsRick2 = {
+        .loader = "LoaderMz",
+        .exec = "RICK2.EXE",
+        //        .recursive = false, .start = false, .procList = {{0x1000, 0x6222}}
+        .jumpTables = {
+            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = address_t(0x1040, 0xffff),
+                .table = address_t(0x1040, 0x0000),
+                .type = jumpTable_t::CallWords,
+                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37},
+                .selector = "indirect",
+            }),
+            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = address_t(0x1040, 0xffff),
+                .table = address_t(0x1040, 0x9bb8),
+                .type = jumpTable_t::CallWords,
+                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
+                .selector = "indirect",
+            }),
+        }
+    };
+    
+    Options optionsGoose = {
+        .loader = "LoaderMz",
+        .exec = "GOOSE.EXE",
+        .jumpTables = {
+            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = address_t(0x1000, 0x104e),
+                .table = address_t(0x1000, 0x105a),
+                .type = jumpTable_t::CallWords,
+                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34},
+                .selector = "bx",
+            })}
+    };
+    Options optionsRick1 = {
+        .loader = "LoaderMz",
+        .exec = "rick1.exe",
+        .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x34442- 0x341b0}},
+        //sub_34442
+        .jumpTables = {
+            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = address_t(0x341b, 0x228a),
+                .table = address_t(0x1040, 0x80bf),
+                .type = jumpTable_t::JumpWords,
+                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                23},
+                .selector = "di",
+            })}
+    };
+
+    Options options = optionsGoose;
+
+    shared<Loader> loader;
+    if (strcmp(options.loader, "LoaderMz") == 0)
+        loader.reset(new LoaderMz);
+    else if (strcmp(options.loader, "LoaderSnapshot") == 0)
+        loader.reset(new LoaderSnapshot);
+    else
+        assert(0);
+    
+    if (!loader->LoadFile(options.exec, options.loadAddress))
         return 1;
     // BP 160:15e390
     // memdumpbin 169:15e000 40000
-//    if (!loader->LoadFile("MEMDUMP.BIN", 0x15e000))
-//        return 1;
+    //    if (!loader->LoadFile("MEMDUMP.BIN", 0x15e000))
+    //        return 1;
     Capstone->Set(loader);
 
-    //address_t(0, 0x15e390)
-        
-    Options options;
-//    options.recursive = false;
-    options.jumpTables.push_back(std::shared_ptr<jumpTable_t>(new jumpTable_t{
-        .instruction = address_t(0x1000, 0x104e),
-        .table = address_t(0x1000, 0x105a),
-        .type = jumpTable_t::CallWords,
-        .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34},
-        .selector = "bx",
-        .baseptr = loader->GetBufferAt(address_t(0x1000, 0x105a))
-    }));
     
-    address_t entry{loader->GetEntry()};
-//    entry = {0x1000, 0x1c0a};
-    std::set<address_t, cmp_adress_t> process{entry};
-    std::set<address_t, cmp_adress_t> processed;
-    std::vector<address_t> startEntries{entry};
+    bool anyIndirectTable = false;
+    for (auto t : options.jumpTables)
+    {
+        t->baseptr = loader->GetBufferAt(t->table);
+        if (strcmp(t->selector, "indirect") == 0)
+            anyIndirectTable = true;
+    }
+
+    std::vector<address_t> startEntries;
     
+    if (options.start)
+        startEntries.push_back(loader->GetEntry());
+    for (address_t p : options.procList)
+        startEntries.push_back(p);
     for (shared<jumpTable_t> j : options.jumpTables)
         for (int i=0; i<j->GetSize(); i++)
             startEntries.push_back(j->GetTarget(i));
-        
+    
     printf("#include \"cico32.h\"\n\n");
-    printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
+    
+    if (options.relocations)
+        printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
+    
+    if (anyIndirectTable)
+    {
+        printf("void callIndirect(int seg, int ofs)\n{\n");
+        for (auto table : options.jumpTables)
+            if (strcmp(table->selector, "indirect") == 0)
+            {
+                std::set<int> used;
+                printf("    if (seg == 0x%04x)\n    {\n", table->instruction.segment);
+                printf("        switch (ofs)\n");
+                printf("        {\n");
+                for (int i : table->elements)
+                {
+                    int v = table->GetTarget(i).offset;
+                    if (used.find(v) != used.end())
+                        continue;
+                    used.insert(v);
+                    printf("            case 0x%x: sub_%x(); return;\n", table->GetTarget(i).offset, table->GetTarget(i).linearOffset());
+                }
+                
+                printf("        }\n");
+                printf("    }\n");
+                
+            }
+        printf("}\n\n");
+    }
+    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
+    
+    Analyser analyser(options);
+    if (options.recursive)
+    {
+        analyser.RecursiveScan(startEntries);
+    } else {
+        for (address_t p : options.procList)
+            analyser.Scan(p);
+    }
 
-    Analyser analyser;
-    analyser.RecursiveScan(startEntries);
 
     for (std::pair<address_t, std::shared_ptr<CTracer>> proc : analyser.mMethods)
         printf("void sub_%x();\n", proc.first.linearOffset());
     printf("\n");
-    while (!process.empty())
-    {
-        address_t proc = *process.begin();
-        process.erase(proc);
-        processed.insert(proc);
+//    while (!process.empty())
+//    {
+//        address_t proc = *process.begin(); // TODO: remove, fixed iteration
+//        process.erase(proc);
+//        processed.insert(proc);
         
-        analyser.AnalyseProc(proc);
+//    std::set<address_t, cmp_adress_t> process;
+//    std::set<address_t, cmp_adress_t> processed;
+    std::set<address_t, cmp_adress_t> processNew;
+//    std::set<address_t, cmp_adress_t> processAll;
+
+//    if (options.recursive)
+//    {
+//        for (std::pair<address_t, std::shared_ptr<CTracer>> procpair : analyser.mMethods)
+//            processAll.insert(procpair.first);
+//    }
+//    else
+//    {
+//        for (address_t p : options.procList)
+//            process.insert(p);
+//    }
+    
+    processNew = analyser.AllMethods();
+    
+    while (!processNew.empty())
+    {
+        std::set<address_t, cmp_adress_t> process = processNew;
+        processNew.clear();
+        
+        for (address_t proc : process)
+        {
+            procRequest_t modifier = procRequest_t::returnNone;
+            if (procModifiers.find(proc) != procModifiers.end())
+                modifier = procModifiers.find(proc)->second;
+            
+            analyser.AnalyseProc(proc, modifier);
+            //std::map<address_t, procRequest_t, cmp_adress_t> reqs = analyser.GetRequests(proc);
+            for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
+            {
+                procRequest_t oldModifier = procRequest_t::returnNone;
+                if (procModifiers.find(req.first) != procModifiers.end())
+                    oldModifier = procModifiers.find(proc)->second;
+                
+                if (oldModifier != req.second)
+                {
+                    procModifiers.insert(req);
+                    //printf("// Redo sub_%x()\n", req.first.linearOffset());
+                    processNew.insert(req.first);
+//                    processed.erase(req.first);
+                }
+            }
+//            if (options.recursive)
+//            {
+//                for (address_t call : analyser.GetCalls(proc))
+//                {
+//                    if (process.find(call) == process.end() && processed.find(call) == processed.end())
+//                        processNew.insert(call);
+//                    processAll.insert(call);
+//                }
+//            }
+        }
+    }
+    
+    for (address_t proc : analyser.AllMethods())
+    {
         Convert convert(analyser, options);
         convert.SetOffsetMask(0xffff); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
-        if (options.recursive)
-        {
-            for (address_t call : convert.GetCalls())
-                if (process.find(call) == process.end() && processed.find(call) == processed.end())
-                    process.insert(call);
-        }
     }
     
     return 0;

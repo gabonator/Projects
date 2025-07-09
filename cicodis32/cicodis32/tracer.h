@@ -13,6 +13,8 @@ struct instruction_t
     bool calls{false};
     bool visibleFlags{false};
     int stack{0};
+    bool conditional{false};
+    bool unconditional{false};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
@@ -21,27 +23,30 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_JMP] = {
         .continuous = false,
         .simpleJump = true,
+        .unconditional = true
     },
-    [X86_INS_JAE] = { .simpleJump = true },
-    [X86_INS_JA] = { .simpleJump = true },
-    [X86_INS_JBE] = { .simpleJump = true },
-    [X86_INS_JB] = { .simpleJump = true },
-    [X86_INS_JCXZ] = { .simpleJump = true },
-    [X86_INS_JECXZ] = { .simpleJump = true },
-    [X86_INS_JE] = { .simpleJump = true },
-    [X86_INS_JGE] = { .simpleJump = true },
-    [X86_INS_JG] = { .simpleJump = true },
-    [X86_INS_JLE] = { .simpleJump = true },
-    [X86_INS_JL] = { .simpleJump = true },
-    [X86_INS_JNE] = { .simpleJump = true },
-    [X86_INS_JNO] = { .simpleJump = true },
-    [X86_INS_JNP] = { .simpleJump = true },
-    [X86_INS_JNS] = { .simpleJump = true },
-    [X86_INS_JO] = { .simpleJump = true },
-    [X86_INS_JP] = { .simpleJump = true },
-    [X86_INS_JRCXZ] = { .simpleJump = true },
-    [X86_INS_JS] = { .simpleJump = true },
+    [X86_INS_JAE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JA] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JBE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JB] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JCXZ] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JECXZ] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JGE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JG] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JLE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JL] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JNE] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JNO] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JNP] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JNS] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JO] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JP] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JRCXZ] = { .conditional = true, .simpleJump = true },
+    [X86_INS_JS] = { .conditional = true, .simpleJump = true },
     [X86_INS_LOOP] = { .simpleJump = true },
+    [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
+    [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
     [X86_INS_CALL] = { .calls = true},
     
     [X86_INS_PUSH] = { .stack = +2 },
@@ -73,8 +78,8 @@ public:
     address_t mAddress;
 
     //
-    std::vector<address_t> mNext;
-    std::vector<address_t> mPrev;
+    std::set<address_t, cmp_adress_t> mNext;
+    std::set<address_t, cmp_adress_t> mPrev;
     instruction_t mTemplate;
     bool isLabel{false};
     bool isTerminating{false};
@@ -100,22 +105,36 @@ public:
         assert(mDetail.op_count == 1);
         return mDetail.operands[0].type != X86_OP_IMM;
     }
+    bool IsIndirectJump()
+    {
+        if (mId != X86_INS_JMP)
+            return false;
+        assert(mDetail.op_count == 1);
+        return mDetail.operands[0].type != X86_OP_IMM;
+    }
     address_t CallTarget()
     {
         assert(mId == X86_INS_CALL);
         assert(mDetail.op_count == 1);
         assert(mDetail.operands[0].type == X86_OP_IMM);
         assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
+        if (mDetail.operands[0].size == 2)
+            return {mAddress.segment, (int)mDetail.operands[0].imm & 0xffff};
         return {mAddress.segment, (int)mDetail.operands[0].imm};
     }
-    bool IsDirectJump()
+    
+    bool IsDirectJump() // TODO: conditional direct
     {
-        if (mId != X86_INS_JMP)
+        if (!mTemplate.simpleJump)
             return false;
         assert(mDetail.op_count == 1);
         return mDetail.operands[0].type == X86_OP_IMM;
     }
     bool IsJump()
+    {
+        return mTemplate.simpleJump;
+    }
+    bool HasJumpTarget()
     {
         return mTemplate.simpleJump;
     }
@@ -125,6 +144,8 @@ public:
         assert(mDetail.op_count == 1);
         assert(mDetail.operands[0].type == X86_OP_IMM);
         assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
+        if (mDetail.operands[0].size == 2)
+            return {mAddress.segment, (int)mDetail.operands[0].imm & 0xffff};
         return {mAddress.segment, (int)mDetail.operands[0].imm};
     }
 
@@ -245,14 +266,17 @@ void CapInstr::Populate()
     mTemplate = templ;
     if (templ.continuous)
     {
-        mNext.push_back({mAddress.segment, mAddress.offset + mSize});
+        mNext.insert({mAddress.segment, mAddress.offset + mSize});
     }
     if (templ.simpleJump)
     {
         assert(mDetail.op_count == 1 &&
                (mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4));
-        if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
-            mNext.push_back({mAddress.segment, (int)mDetail.operands[0].imm});
+        //if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
+        if (mDetail.operands[0].size == 2)
+            mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm & 0xffff});
+        else
+            mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm});
     }
 }
 
@@ -383,13 +407,17 @@ public:
         assert(0);
         return false;
     }
-
+    virtual const uint8_t* GetBufferAt(address_t addr) // TODO: remove?
+    {
+        return mLoader->GetBufferAt(addr);
+    }
 };
 
 std::unique_ptr<CCapstone> Capstone{new CCapstone};
 
 class CTracer {
 public:
+    const Options& mOptions;
     typedef std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> code_t;
     
 private:
@@ -398,6 +426,10 @@ private:
     //funcInfo_t info;
     
 public:
+    CTracer(const Options& options) : mOptions(options)
+    {
+    }
+    
     void Trace(address_t a)
     {
         const bool verbose = false;
@@ -426,13 +458,13 @@ public:
                     instr->mNext.clear();
                 }
                 if (addr.first)
-                    instr->mPrev.push_back(addr.first);
+                    instr->mPrev.insert(addr.first);
                 if (verbose)
                     printf("(+%d) %s %s\n", instr->mSize, instr->mMnemonic, instr->mOperands);
                 if (instr->AsString() == "int 0x21")
                 {
                     assert(instr->mPrev.size() == 1);
-                    std::string prev = code.find(instr->mPrev[0])->second->AsString();
+                    std::string prev = code.find(*instr->mPrev.begin())->second->AsString();
                     if (prev.find("mov ax, 0x4c") != std::string::npos)
                     {
                         instr->mNext.clear();
@@ -444,14 +476,24 @@ public:
                         instr->isTerminating = true;
                     }
                 }
+                if (instr->IsIndirectJump())
+                {
+                    shared<jumpTable_t> jt = mOptions.GetJumpTable(instr->mAddress);
+                    if (jt)
+                    {
+                        for (int i=0; i<jt->GetSize(); i++)
+                            instr->mNext.insert(jt->GetTarget(i));
+                    }
+                }
+
                 code.insert(std::pair<address_t, std::shared_ptr<CapInstr>>(addr.second, instr));
+                // TODO: include jumptable labels!
                 for (address_t cont : instr->mNext)
                 {
-//                    code.find(cont)->second->mPrev.push_back(addr);
                     if (code.find(cont) == code.end())
                         newQueue.push_back(std::pair<address_t, address_t>(addr.second, cont));
                     else
-                        code.find(cont)->second->mPrev.push_back(addr.second);
+                        code.find(cont)->second->mPrev.insert(addr.second);
                 }
             }
             queue = newQueue;
@@ -459,8 +501,7 @@ public:
         // set labels
         for (const auto& p : code)
         {
-            //if (p.second->IsDirectJump())
-            if (p.second->IsJump())
+            if (p.second->HasJumpTarget() && p.second->IsDirectJump())
             {
                 address_t target = p.second->JumpTarget();
                 if (target != stub)
@@ -487,23 +528,23 @@ public:
         printf("sub_%x ends\n\n", address.linearOffset());
     }
 
-    std::set<address_t, cmp_adress_t> GetCalls()
-    {
-        std::set<address_t, cmp_adress_t> aux;
-        if (code.size() == 1 && code.begin()->second->IsDirectJump())
-        {
-            // stub jump
-            aux.insert(code.begin()->second->JumpTarget());
-        }
-        for (const auto& p : code)
-        {
-            if (p.second->mTemplate.calls && p.second->IsDirectCall())
-            {
-                aux.insert(p.second->CallTarget());
-            }
-        }
-        return aux;
-    }
+//    std::set<address_t, cmp_adress_t> GetCalls()
+//    {
+//        std::set<address_t, cmp_adress_t> aux;
+//        if (code.size() == 1 && code.begin()->second->IsDirectJump())
+//        {
+//            // stub jump
+//            aux.insert(code.begin()->second->JumpTarget());
+//        }
+//        for (const auto& p : code)
+//        {
+//            if (p.second->mTemplate.calls && p.second->IsDirectCall())
+//            {
+//                aux.insert(p.second->CallTarget());
+//            }
+//        }
+//        return aux;
+//    }
     
     address_t Address()
     {

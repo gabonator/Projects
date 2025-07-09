@@ -416,6 +416,21 @@ public:
                         assert(0);
                 }
             }
+            if (strcmp(tok, "overflow0") == 0)
+            {
+                assert(x86.op_count >= 1);
+                switch (x86.operands[0].size)
+                {
+                    case 1:
+                        strcpy(replace, "0x100");
+                        break;
+                    case 2:
+                        strcpy(replace, "0x10000");
+                        break;
+                    default:
+                        assert(0);
+                }
+            }
             if (strcmp(tok, "tmp0") == 0)
             {
                 assert(x86.op_count >= 1);
@@ -439,17 +454,28 @@ public:
             if (strcmp(tok, "goto_target") == 0)
             {
                 assert(x86.op_count == 1);
-                assert(x86.operands[0].type == X86_OP_IMM);
-                if (info->jumpsToRet)
+                if (x86.operands[0].type != X86_OP_IMM)
+                {
+                    snprintf(replace, 64, "indirectJump(cs, %s);", iformat(instr, info, "$rd0").c_str());
+                }
+                else if (info->jumpsToRet)
                     strncpy(replace, "return", 64);
                 else
-                    snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                {
+                    if (x86.operands[0].size == 2)
+                        snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
+                    else
+                        snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                }
             }
             if (strcmp(tok, "method") == 0)
             {
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                if (x86.operands[0].size == 2)
+                    snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
+                else
+                    snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
             }
             if (strcmp(tok, "width0") == 0)
             {
