@@ -91,6 +91,9 @@ public:
                         case instrInfo_t::callConvSimpleStackFar:
                             strcat(offset, " - 4");
                             break;
+                        case instrInfo_t::callConvShiftStackNear:
+                        case instrInfo_t::callConvShiftStackFar:
+                            break;
                         default:
                             strcat(offset, " - stop(\"simple stack\")");
                             break;

@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
         .loader = "LoaderMz",
         .exec = "RICK2.EXE",
         //        .recursive = false, .start = false, .procList = {{0x1000, 0x6222}}
+//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x1a257 - 0x10400}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1040, 0xffff),
@@ -42,7 +43,22 @@ int main(int argc, char **argv) {
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
                 .selector = "indirect",
             }),
-        }
+        },
+            .isolateLabels = {address_t(0x1040, 0x168a8-0x10400),
+//                address_t(0x1040, 0x17e36-0x10400),
+                address_t(0x1040, 0x196f3-0x10400),
+                address_t(0x1040, 0x1c359-0x10400),
+                address_t(0x1040, 0x19f12-0x10400),
+                address_t(0x1040, 0x19731-0x10400)
+            }
+        /*
+            .isolateLabels = {address_t(0x1040, 0x196f3-0x10400),
+                address_t{0x1040, 0x1c359-0x10400},
+                address_t{0x1040, 0x168a8-0x10400},
+                address_t{0x1040, 0x1615f-0x10400},
+                address_t{0x1040, 0x16174-0x10400}
+                }
+         */
     };
     
     Options optionsGoose = {
@@ -107,6 +123,8 @@ int main(int argc, char **argv) {
         startEntries.push_back(loader->GetEntry());
     for (address_t p : options.procList)
         startEntries.push_back(p);
+    for (address_t p : options.isolateLabels)
+        startEntries.push_back(p);
     for (shared<jumpTable_t> j : options.jumpTables)
         for (int i=0; i<j->GetSize(); i++)
             startEntries.push_back(j->GetTarget(i));
@@ -116,6 +134,24 @@ int main(int argc, char **argv) {
     if (options.relocations)
         printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
     
+    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
+    
+    Analyser analyser(options);
+    if (options.recursive)
+    {
+        analyser.RecursiveScan(startEntries);
+    } else {
+        for (address_t p : options.procList)
+            analyser.Scan(p);
+    }
+
+    if (options.declarations)
+    {
+        for (std::pair<address_t, std::shared_ptr<CTracer>> proc : analyser.mMethods)
+            printf("void sub_%x();\n", proc.first.linearOffset());
+        printf("\n");
+    }
+
     if (anyIndirectTable)
     {
         printf("void callIndirect(int seg, int ofs)\n{\n");
@@ -141,43 +177,8 @@ int main(int argc, char **argv) {
             }
         printf("}\n\n");
     }
-    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
     
-    Analyser analyser(options);
-    if (options.recursive)
-    {
-        analyser.RecursiveScan(startEntries);
-    } else {
-        for (address_t p : options.procList)
-            analyser.Scan(p);
-    }
-
-
-    for (std::pair<address_t, std::shared_ptr<CTracer>> proc : analyser.mMethods)
-        printf("void sub_%x();\n", proc.first.linearOffset());
-    printf("\n");
-//    while (!process.empty())
-//    {
-//        address_t proc = *process.begin(); // TODO: remove, fixed iteration
-//        process.erase(proc);
-//        processed.insert(proc);
-        
-//    std::set<address_t, cmp_adress_t> process;
-//    std::set<address_t, cmp_adress_t> processed;
     std::set<address_t, cmp_adress_t> processNew;
-//    std::set<address_t, cmp_adress_t> processAll;
-
-//    if (options.recursive)
-//    {
-//        for (std::pair<address_t, std::shared_ptr<CTracer>> procpair : analyser.mMethods)
-//            processAll.insert(procpair.first);
-//    }
-//    else
-//    {
-//        for (address_t p : options.procList)
-//            process.insert(p);
-//    }
-    
     processNew = analyser.AllMethods();
     
     while (!processNew.empty())
@@ -202,23 +203,23 @@ int main(int argc, char **argv) {
                 if (oldModifier != req.second)
                 {
                     procModifiers.insert(req);
-                    //printf("// Redo sub_%x()\n", req.first.linearOffset());
                     processNew.insert(req.first);
-//                    processed.erase(req.first);
                 }
             }
-//            if (options.recursive)
-//            {
-//                for (address_t call : analyser.GetCalls(proc))
-//                {
-//                    if (process.find(call) == process.end() && processed.find(call) == processed.end())
-//                        processNew.insert(call);
-//                    processAll.insert(call);
-//                }
-//            }
         }
     }
-    
+    std::map<address_t, int, cmp_adress_t> hits;
+    for (address_t proc : analyser.AllMethods())
+    {
+        for (address_t label : analyser.GetGapLabels(proc))
+        {
+            if (hits.find(label) != hits.end())
+                hits.find(label)->second++;
+            else
+                hits.insert(std::pair<address_t, int>(label, 1));
+        }
+    }
+
     for (address_t proc : analyser.AllMethods())
     {
         Convert convert(analyser, options);
@@ -226,7 +227,14 @@ int main(int argc, char **argv) {
         convert.ConvertProc(proc);
         convert.Dump();
     }
-    
+
+    for (std::pair<address_t, int> p : hits)
+    {
+        if (p.second > 1)
+            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
+    }
+
+
     return 0;
 }
 

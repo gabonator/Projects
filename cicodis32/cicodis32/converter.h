@@ -104,19 +104,17 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--cx && $cond)\n        $goto_target;"; } },
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
-        if (info->isLast /*&& !instr->isLabel*/)
-        {
-//            instr->isLabel = false; // TODO: read only!
-            if (instr->Imm() == 0)
-                return "";
-            else
-                return "sp += $immd0;";
-        }
-        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
-            return "sp += $immd0;\n  return;";
-        else
-            return "return;";
-        } },
+        std::vector<std::string> aux;
+        if (info->callConv == instrInfo_t::callConvShiftStackNear)
+            aux.push_back("sp += 2;");
+        if (info->callConv == instrInfo_t::callConvShiftStackFar)
+            aux.push_back("sp += 4;");
+        if (instr->Imm() != 0)
+            aux.push_back("sp += $immd0;");
+        if (!(info->isLast && !instr->isLabel))
+            aux.push_back("return;");
+        return utils::join(aux, "\n    ");
+    } },
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -259,7 +257,7 @@ convert_t convert[X86_INS_ENDING] = {
         return "";
     } },
     [X86_INS_OUT] = {.convert = [](convert_args){ return "out$width1($rd0, $rd1);"; } },
-    [X86_INS_INT3] = {.convert = [](convert_args){ return "stop();"; } },
+    [X86_INS_INT3] = {.convert = [](convert_args){ return "stop(\"breakpoint\");"; } },
     [X86_INS_NOT] = {.convert = [](convert_args){ return "$wr0 = ~$rd0;"; } },
     [X86_INS_DIV] = {.convert = [](convert_args){ return "div$width0($rd0);"; } },
     [X86_INS_IDIV] = {.convert = [](convert_args){ return "idiv$width0($rd0);"; } },
@@ -327,8 +325,8 @@ convert_t convert[X86_INS_ENDING] = {
                 assert(info->flagCarry.variableRead[0]);
                 return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead); },
     },
-    [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg())"; } },
-    [X86_INS_POPF] = {.convert = [](convert_args){ return "flagsFromReg(pop())"; } },
+    [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg());"; } },
+    [X86_INS_POPF] = {.convert = [](convert_args){ return "flagsFromReg(pop());"; } },
     [X86_INS_CMC] = {.convert = [](convert_args){ return "flags.carry = !flags.carry;"; } },
 
 };
@@ -356,7 +354,7 @@ public:
         for (const auto& p : code)
         {
             if (verbose)
-                printf("%x %s %s\n", p.second->mAddress.linearOffset(), p.second->mMnemonic, p.second->mOperands);
+                printf("%s%x %x:%x %s %s\n", p.second->isLabel ? "loc_" : "    ", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
         }
 
         if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
@@ -382,7 +380,7 @@ public:
 
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));
-        
+
         struct tempFlag_t {
             char flag = ' ';
             address_t addr;
@@ -414,8 +412,14 @@ public:
             mCode.push_back("\n");
 
         assert(!code.empty());
+
+        if (info->code.find(proc)->second->callConv == instrInfo_t::callConvShiftStackNear)
+            mCode.push_back("    sp -= 2;\n");
+        if (info->code.find(proc)->second->callConv == instrInfo_t::callConvShiftStackFar)
+            mCode.push_back("    sp -= 4;\n");
+
         if (code.begin()->first != proc)
-            mCode.push_back(format("  goto loc_%x;\n", proc.linearOffset()));
+            mCode.push_back(format("    goto loc_%x;\n", proc.linearOffset()));
 
         address_t next;
         for (const auto& p : code)
@@ -436,7 +440,7 @@ public:
             shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
             if (verbose)
                 printf("/*%x %s %s*/\n", p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
-            if (pinstr->isLabel && !pinfo->isLast)
+            if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
                 mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
             // TODO: cmp between label and jump
             //if (std::find(pinstr->mNext.begin(), pinstr->mNext.end(), pinstr->mAddress) != pinstr->mNext.end())
@@ -469,6 +473,18 @@ public:
 
             }
 
+            if (pinfo->infiniteLoop)
+            {
+                bool memOp = false;
+                for (int i=0; i<pinstr->mDetail.op_count; i++)
+                    if (pinstr->mDetail.operands[i].type == X86_OP_MEM)
+                        memOp = true;
+                    
+                if (memOp)
+                    mCode.push_back("    sync();\n");
+                else
+                    mCode.push_back("    stop(\"infinite loop\");\n");
+            }
             if (pinstr->IsIndirectCall() && mOptions.GetJumpTable(pinstr->mAddress))
             {
                 DumpIndirectTable(mOptions.GetJumpTable(pinstr->mAddress));
@@ -494,8 +510,10 @@ public:
             }
 
             if (pinstr->isTerminating)
-                mCode.push_back("    stop();\n");
-                
+                mCode.push_back("    stop(\"terminating\");\n");
+            if (pinstr->isReturning)
+                mCode.push_back("    return;\n");
+
             next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
         }
         mCode.push_back("}\n");

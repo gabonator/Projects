@@ -17,6 +17,17 @@ namespace utils {
         va_end(args);
         return std::string(buf);
     }
+    std::string join(std::vector<std::string> tokens, std::string spacer)
+    {
+        std::string aux;
+        for (std::string t : tokens)
+        {
+            if (!aux.empty())
+                aux += spacer;
+            aux += t;
+        }
+        return aux;
+    }
 };
 
 using namespace utils;
@@ -122,9 +133,11 @@ public:
     bool recursive{true};
     bool start{true};
     bool relocations{true};
+    bool declarations{true};
     int loadAddress{0x10000};
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
+    std::set<address_t, cmp_adress_t> isolateLabels;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
         for (auto jt : jumpTables)

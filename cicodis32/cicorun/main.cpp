@@ -290,7 +290,7 @@ void interrupt(int i)
     if (i == 0x21 && ah == 0x48)
     {
 //        flags.carry = true;
-        ax = endAddress+0x100;
+        ax = endAddress+0x100+0x4000-0x1d80;
         printf("malloc %d bytes -> %04x:0000\n", bx, ax);
         endAddress += bx + 1;
         flags.carry = false;
@@ -321,13 +321,23 @@ void out8(int port, int data)
 }
 int in8(int port)
 {
-    if (port == 0x201 || port == 0x40)
+    if (port == 0x201 || port == 0x40 || port == 0x61)
         return 0;
     return video.PortRead8(port);
 }
 
-int main()
+//#ifdef __APPLE__
+void SuppressAppleEvents();
+//#endif
+
+//int main()
+int main(int argc, char* argv[])
 {
+//#ifdef __APPLE__
+    SuppressAppleEvents();
+//#endif
+
+//    NSApplicationMain(); // NSDocumentRevisionsDebugMode
     sdl.Init();
     start();
     sdl.Deinit();
@@ -342,9 +352,11 @@ std::vector<uint8_t> readFileFromZip(const std::string& zipPath, std::string fil
     FILE* f = fopen(zipPath.c_str(), "rb");
     if (!f)
     {
+        printf("GABO-ERROR cant open '%s'\n", zipPath.c_str());
         assert(0);
         return {};
     }
+    
 
     fseek(f, 0, SEEK_END);
     size_t zipSize = ftell(f);

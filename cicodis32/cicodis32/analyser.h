@@ -25,7 +25,9 @@ struct instrInfo_t {
     enum callConv_t {
         callConvUnknown = 0,
         callConvSimpleStackNear = 1,
-        callConvSimpleStackFar = 2
+        callConvSimpleStackFar = 2,
+        callConvShiftStackNear = 3,
+        callConvShiftStackFar = 4
     } callConv{callConvUnknown}; // TODO: move to func info!
     
     struct instrInfoReg_t
@@ -40,6 +42,7 @@ struct instrInfo_t {
     std::string stop;
     procRequest_t procRequest{procRequest_t::returnNone};
     address_t procTarget;
+    bool infiniteLoop{false};
 
     struct instrInfoFlag_t {
         char type = 0;
@@ -345,15 +348,18 @@ public:
                 shared<instrInfo_t> newInfo(new instrInfo_t);
                 newInfo->CopyFrom(*prevInfo.get());
             again:
-                if (instr->IsDirectJump())
-                {
-                    shared<CapInstr> target = code.find(instr->JumpTarget())->second;
-                    if (target->mId == X86_INS_RET || target->mId == X86_INS_RETF)
-                    {
-                        assert(target->Imm() == 0);
-                        newInfo->jumpsToRet = true;
-                    }
-                }
+                //TODO goto ret
+//                if (instr->IsDirectJump())
+//                {
+//                    shared<CapInstr> target = code.find(instr->JumpTarget())->second;
+//                    if ((target->mId == X86_INS_RET || target->mId == X86_INS_RETF) &&
+//                        newInfo->callConv != instrInfo_t::callConvShiftStackNear &&
+//                        newInfo->callConv != instrInfo_t::callConvShiftStackFar)
+//                    {
+//                        assert(target->Imm() == 0);
+//                        newInfo->jumpsToRet = true;
+//                    }
+//                }
                 
                 auto ClearChildren = [&](address_t addr) {
                     shared<CapInstr> destructed = code.find(addr)->second;
@@ -494,7 +500,7 @@ public:
                             shared<instrInfo_t> setZeroInfo = info->code.find(setZeroAddr)->second;
                             if (!setZeroInfo->flagZero.save)
                             {
-                                strcpy(newInfo->flagZero.variableRead, "flag.zero");
+                                strcpy(newInfo->flagZero.variableRead, "flags.zero");
                                 strcpy(setZeroInfo->flagZero.variableWrite, newInfo->flagZero.variableRead);
                                 setZeroInfo->flagZero.save = true;
                                 setZeroInfo->flagZero.savedFor = instr->mAddress;
@@ -714,6 +720,7 @@ public:
         std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
         info->code[code.rbegin()->first]->isLast = true;
 
+        FindInfiniteLoops(tracer, info);
         if (req == procRequest_t::returnNone)
             return;
         
@@ -787,9 +794,46 @@ public:
         return calls;
     }
     
+    std::set<address_t, cmp_adress_t> GetGapLabels(address_t proc)
+    {
+        std::set<address_t, cmp_adress_t> labels;
+        
+        CTracer::code_t& code = mMethods.find(proc)->second->GetCode();
+/*
+        if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
+            return {};
+
+        for (const auto& p : code)
+        {
+            shared<CapInstr> pinstr = p.second;
+            if (pinstr->HasJumpTarget())
+                labels.insert(pinstr->JumpTarget());
+        }*/
+        
+        address_t next;
+        for (const auto& p : code)
+        {
+            if (next && p.first != next)
+            {
+                shared<CapInstr> pinstr = p.second;
+//                printf("gap %d bytes\n", p.first.offset - next.offset);
+                //if (pinstr->HasJumpTarget())
+                
+                //    labels.insert(pinstr->JumpTarget());
+                if (pinstr->isLabel)
+                    labels.insert(pinstr->mAddress);
+            }
+            next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
+        }
+
+        return labels;
+    }
+
     instrInfo_t::callConv_t GetCallConvention(const CTracer::code_t& code)
     {
         int retFar = 0, retNear = 0;
+        bool stack = UsesStack(code);
+        
         for (const auto& p : code)
         {
             if (p.second->mId == X86_INS_RETF)
@@ -801,13 +845,51 @@ public:
         if (retFar > 0)
         {
             assert(retNear == 0);
-            return instrInfo_t::callConvSimpleStackFar;
+            return stack ? instrInfo_t::callConvShiftStackFar : instrInfo_t::callConvSimpleStackFar;
         }
         if (retNear > 0)
         {
             assert(retFar == 0);
-            return instrInfo_t::callConvSimpleStackNear;
+            return stack ? instrInfo_t::callConvShiftStackNear : instrInfo_t::callConvSimpleStackNear;
         }
         return instrInfo_t::callConvUnknown;
     }
+    
+    bool UsesStack(const CTracer::code_t& code)
+    {
+        cs_x86_op regsp = {.type=X86_OP_REG, .reg = X86_REG_SP};
+        
+        for (const auto& p : code)
+        {
+            for (int i=0; i<p.second->mDetail.op_count; i++)
+                //if (p.second->mDetail.operands[i].access & CS_AC_READ)
+                    if (Capstone->Intersects(p.second->mDetail.operands[i], regsp))
+                        return true;
+        }
+        
+        return false;
+    }
+    
+    void FindInfiniteLoops(shared<CTracer> tracer, shared<info_t> info)
+    {
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+        // post process
+        for (const auto& p : code)
+        {
+            shared<CapInstr> pinstr = p.second;
+            if (!pinstr->IsConditionalJump())
+                continue;
+            if (pinstr->mPrev.size() != 1)
+                continue;
+            shared<CapInstr> prev = code.find(*pinstr->mPrev.begin())->second;
+            if (!prev->isLabel)
+                continue;
+            if (prev->mId != X86_INS_CMP && prev->mId != X86_INS_TEST)
+                continue;
+            if (prev->mAddress != pinstr->JumpTarget())
+                continue;
+            info->code.find(prev->mAddress)->second->infiniteLoop = true;
+        }
+    }
+
 };

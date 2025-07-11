@@ -83,7 +83,8 @@ public:
     instruction_t mTemplate;
     bool isLabel{false};
     bool isTerminating{false};
-
+    bool isReturning{false};
+    
     // debug
     char mMnemonic[64];
     char mOperands[64];
@@ -133,6 +134,10 @@ public:
     bool IsJump()
     {
         return mTemplate.simpleJump;
+    }
+    bool IsConditionalJump()
+    {
+        return mTemplate.conditional;
     }
     bool HasJumpTarget()
     {
@@ -394,13 +399,14 @@ public:
         // check if operand A becomes invalidated after writing to operand B
         if (a.type == X86_OP_INVALID || b.type == X86_OP_IMM)
             return false;
+        if (a.type == X86_OP_IMM || b.type == X86_OP_IMM)
+            return false;
         if (a.type == X86_OP_REG && b.type == X86_OP_REG)
-            return mRegMap[a.reg][b.reg] || mRegMap[b.reg][a.reg];
+            return a.reg == b.reg || mRegMap[a.reg][b.reg] || mRegMap[b.reg][a.reg];
         if (a.type == X86_OP_MEM && b.type == X86_OP_REG)
             return a.mem.index == b.reg || a.mem.segment == b.reg || a.mem.base == b.reg;
         if (a.type == X86_OP_MEM && b.type == X86_OP_MEM)
-            return a.mem.segment == b.mem.segment && a.mem.base == b.mem.base && a.mem.index == b.mem.index &&
-            a.mem.scale == b.mem.scale && a.mem.disp == b.mem.disp;
+            return a.mem.segment == b.mem.segment && a.mem.base == b.mem.base && a.mem.index == b.mem.index && a.mem.scale == b.mem.scale && a.mem.disp == b.mem.disp;
         if (a.type == X86_OP_REG && b.type == X86_OP_MEM)
             return false;
 
@@ -456,6 +462,15 @@ public:
                     // dont trace stubs
                     stub = *instr->mNext.begin();
                     instr->mNext.clear();
+                }
+                if (instr->HasJumpTarget() && mOptions.isolateLabels.find(instr->JumpTarget()) != mOptions.isolateLabels.end())
+                {
+                    // TODO: jb - after int 0x21, fs error handler, instr->isolateBranch = true
+                    assert(instr->mId == X86_INS_JMP);
+                    instr->mId = X86_INS_CALL;
+                    instr->mTemplate = Instructions[instr->mId];
+                    instr->mNext.clear();
+                    instr->isReturning = true;
                 }
                 if (addr.first)
                     instr->mPrev.insert(addr.first);
@@ -528,24 +543,6 @@ public:
         printf("sub_%x ends\n\n", address.linearOffset());
     }
 
-//    std::set<address_t, cmp_adress_t> GetCalls()
-//    {
-//        std::set<address_t, cmp_adress_t> aux;
-//        if (code.size() == 1 && code.begin()->second->IsDirectJump())
-//        {
-//            // stub jump
-//            aux.insert(code.begin()->second->JumpTarget());
-//        }
-//        for (const auto& p : code)
-//        {
-//            if (p.second->mTemplate.calls && p.second->IsDirectCall())
-//            {
-//                aux.insert(p.second->CallTarget());
-//            }
-//        }
-//        return aux;
-//    }
-    
     address_t Address()
     {
         return address;
