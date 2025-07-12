@@ -209,8 +209,12 @@ struct instrInfo_t {
         
         stop += o->stop;
         procRequest = (procRequest_t)((int)procRequest | (int)o->procRequest);
-        assert(o->savePrecondition.size() == 0);
-        assert(o->readPrecondition.size() == 0);
+        if (o->readPrecondition.size() != 0)
+        {
+            assert(readPrecondition.size() == o->readPrecondition.size());
+            for (int i=0; i<readPrecondition.size(); i++)
+                assert(readPrecondition[i] == o->readPrecondition[i]);
+        }
         
         return changed;
     }
@@ -296,29 +300,39 @@ public:
         return aux;
     }
     
+    std::string TempVarFor(std::map<address_t, int, cmp_adress_t>& table, std::string prefix, address_t addr)
+    {
+        if (table.find(addr) == table.end())
+            table.insert(std::pair<address_t, int>(addr, table.size()));
+
+        int index = table.find(addr)->second;
+        return index == 0 ? prefix : format("%s%d", prefix.c_str(), index);
+    }
+    
     void AnalyseProc(address_t proc, procRequest_t req)
     {
-        const bool verbose{false}; // TODO: dual tracing !!!
+        const bool verbose{true}; // TODO: dual tracing !!!
         shared<CTracer> tracer = check(mMethods.find(proc), mMethods.end())->second;
         std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
         shared<info_t> info(new info_t);
         info->request = req;
         std::vector<std::pair<address_t, address_t>> head({{address_t(), tracer->Address()}});
         funcInfo_t funcInfo;
-        int tempIndexCf{0}, tempIndexZf{0}, tempIndexSf{0}, tempIndexPrecond{0}; //, tempIndexOf{0};
+        int tempIndexCf{0}, tempIndexSf{0};
+        std::map<address_t, int, cmp_adress_t> tempIndexPrecond, tempIndexZf; //, tempIndexOf{0};
         
         instrInfo_t::callConv_t callConv = GetCallConvention(code);
         
         if (verbose)
         {
-            printf("    %x proc %x\n", proc.offset, proc.linearOffset());
+            printf("    %x %x:%x proc %x\n", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
             for (const auto& p : code)
             {
                 if (p.second->isLabel)
                     printf("loc_");
                 else
                     printf("    ");
-                printf("%x %s %s\n", p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+                printf("%x %x:%x %s %s\n", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
             }
         }
 
@@ -332,7 +346,7 @@ public:
                 
                 shared<CapInstr> instr = code.find(link.second)->second;
                 if (verbose)
-                    printf("    instr: %s\n", instr->AsString().c_str());
+                    printf("    instr: %s", instr->AsString().c_str());
                 
                 shared<instrInfo_t> prevInfo;
                 if (link.first)
@@ -376,7 +390,23 @@ public:
                 bool needsZf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF);
                 bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
                 bool needsSf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF);
-                
+
+                // RET
+                if (instr->mId == X86_INS_RETF || instr->mId == X86_INS_RET)
+                {
+                    switch (req)
+                    {
+                        case procRequest_t::returnNone:
+                            break;
+                        case procRequest_t::returnZero:
+                            needsZf = true;
+                            break;
+                        case procRequest_t::returnCarry:
+                            needsCf = true;
+                            break;
+                    }
+                }
+
                 if (needsCf + needsZf + needsOf + needsSf > 1)
                 {
                     std::map<address_t, x86_insn, cmp_adress_t> dest;
@@ -411,23 +441,23 @@ public:
                         x86_insn set = dest.begin()->second;
                         x86_insn cond = instr->mId;
                         shared<instrInfo_t> destructive = info->code.find(addr)->second;
-                        char variable[32];
-                        if (tempIndexCf == 0)
-                            snprintf(variable, sizeof(newInfo->flagCarry.variableRead), "temp_cond");
-                        else
-                            snprintf(variable, sizeof(newInfo->flagCarry.variableRead), "temp_cond%d", tempIndexPrecond);
-                        tempIndexPrecond++;
-                        
-                        destructive->savePrecondition.push_back({
-                            .needs = (instrInfo_t::flagMask_t)(
-                                                               (int)(needsCf ? instrInfo_t::flagMask_t::carry : instrInfo_t::flagMask_t::none) |
-                                                               (int)(needsZf ? instrInfo_t::flagMask_t::zero : instrInfo_t::flagMask_t::none) |
-                                                               (int)(needsOf ? instrInfo_t::flagMask_t::overflow : instrInfo_t::flagMask_t::none) |
-                                                               (int)(needsSf ? instrInfo_t::flagMask_t::sign : instrInfo_t::flagMask_t::none)),
+                        std::string variable = TempVarFor(tempIndexPrecond, "temp_cond", instr->mAddress);
+                        instrInfo_t::flagMask_t needs = (instrInfo_t::flagMask_t)(
+                             (int)(needsCf ? instrInfo_t::flagMask_t::carry : instrInfo_t::flagMask_t::none) |
+                             (int)(needsZf ? instrInfo_t::flagMask_t::zero : instrInfo_t::flagMask_t::none) |
+                             (int)(needsOf ? instrInfo_t::flagMask_t::overflow : instrInfo_t::flagMask_t::none) |
+                              (int)(needsSf ? instrInfo_t::flagMask_t::sign : instrInfo_t::flagMask_t::none));
+
+                        if (destructive->savePrecondition.size() == 0 || destructive->savePrecondition[0].needs != needs || destructive->savePrecondition[0].writeOp != set || destructive->savePrecondition[0].readOp != cond || destructive->savePrecondition[0].variable != variable)
+                        {
+                            destructive->savePrecondition.push_back({
+                                .needs = needs,
                                 .writeOp = set,
                                 .readOp = cond,
                                 .variable = variable
-                        });
+                            });
+                        }
+                        assert(newInfo->readPrecondition.size() == 0);
                         newInfo->readPrecondition.push_back(variable);
                         
                         needsCf = needsZf = needsOf = needsSf = 0;
@@ -519,11 +549,9 @@ public:
                     
                     if (newInfo->flagZero.lastSet.size() > 1)
                     {
-                        if (tempIndexZf == 0)
-                            snprintf(newInfo->flagZero.variableRead, sizeof(newInfo->flagZero.variableRead), "temp_zf");
-                        else
-                            snprintf(newInfo->flagZero.variableRead, sizeof(newInfo->flagZero.variableRead), "temp_zf%d", tempIndexZf);
-                        tempIndexZf++;
+                        std::string variable = TempVarFor(tempIndexZf, "temp_zf", instr->mAddress);
+
+                        strcpy(newInfo->flagZero.variableRead, variable.c_str());
                         
                         for (address_t setZeroAddr : newInfo->flagZero.lastSet)
                         {
@@ -577,6 +605,9 @@ public:
                     // TODO: interrupt could also update some flags
                     if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & modifyMask))
                     {
+                        if (verbose)
+                            printf("(set %cf) ", type);
+
                         flag.type = type;
                         flag.wasWritten = true;
                         flag.lastSet = {instr->mAddress}; // gabo!
@@ -659,6 +690,9 @@ public:
                         break;
                 }
                 
+                if (verbose)
+                    printf("\n");
+
                 newInfo->stackDepth = prevInfo->stackDepth + instr->mTemplate.stack;
                 // update info, store
                 bool forceScan = false;
@@ -666,21 +700,28 @@ public:
                 auto mergeInfoIt = info->code.find(link.second);
                 if (mergeInfoIt != info->code.end())
                 {
-                    //printf("--merge %x -> %x\n", link.first.linearOffset(), link.second.linearOffset());
-                    //                    printf("\nmerging ============= OLD\n");
-                    //                    info->code.find(link.second)->second->Dump();
-                    //                    printf("\nmerging ============= NEW\n");
-                    //                    newInfo->Dump();
-                    assert(!newInfo->flagCarry.save && !mergeInfoIt->second->flagCarry.save);
+                    if (verbose)
+                        printf("* merge %x->%x: ",link.first.linearOffset(), link.second.linearOffset());
+
+                    // TODO: why?
+//                    assert(!newInfo->flagCarry.save && !mergeInfoIt->second->flagCarry.save);
                     if (mergeInfoIt->second->MergeMultiFlag(newInfo))
                     {
+                        if (verbose)
+                            printf("* multi flag\n");
+
                         //printf("--- multi flag\n");
                         //forceAgain = true;
                         newInfo = mergeInfoIt->second;
                         goto again;
                     } else
+                        if (verbose)
+                            printf("* no multi flag, ");
+
                         if (mergeInfoIt->second->Merge(newInfo))
                         {
+                            if (verbose)
+                                printf("* force scan\n");
                             //printf("--- regular\n");
                             // invalidate current?
                             //                        newHead.push_back(std::pair<address_t, address_t>(address_t(), link.second));
@@ -692,6 +733,8 @@ public:
                             //TODO: mess!
                             
                         }
+                    if (verbose)
+                        printf("* ok\n");
                 } else
                     info->code.insert(std::pair<address_t, shared<instrInfo_t>>(link.second, newInfo));
                 
@@ -738,13 +781,16 @@ public:
                     case procRequest_t::returnNone:
                         break;
                     case procRequest_t::returnZero:
+                        /*
                         assert(infoRet->flagZero.lastSet.size() == 1);
                         infoSet = info->code.find(*infoRet->flagZero.lastSet.begin())->second;
                         // TODO: advance 1 instruction, .update / .dump = true or .postSave = true
                         infoSet->flagZero.save = true;
                         strncpy(infoSet->flagZero.variableWrite, "flags.zero", sizeof(infoSet->flagZero.variableWrite));
+                         */
                         break;
                     case procRequest_t::returnCarry:
+                        
                         assert(infoRet->flagCarry.lastSet.size() == 1);
                         instrSet = code.find(*infoRet->flagCarry.lastSet.begin())->second;
                         if (instrSet->mId != X86_INS_STC && instrSet->mId != X86_INS_CLC)

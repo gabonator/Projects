@@ -89,8 +89,20 @@ int main(int argc, char **argv) {
                 .selector = "di",
             })}
     };
+    Options optionsFox = {
+        .loader = "LoaderMz",
+        .exec = "fox.exe",
+//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1bb6}},
+//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
+        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
+        //1020:40fa
+        //sub_34442
+        .jumpTables = {
+            
+        }
+    };
 
-    Options options = optionsGoose;
+    Options options = optionsFox;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)

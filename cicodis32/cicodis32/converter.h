@@ -52,6 +52,8 @@ std::string ConvertStringopName(shared<CapInstr> instr)
         repeat = "for (; cx != 0; --cx) ";
         templ = templ.substr(4);
     }
+    if (args[0] == "al")
+        return repeat + templ + "_inv<" + argToTemplate(args[1]) + ">("+args[0]+");";
     if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
         return repeat + templ + "<" + argToTemplate(args[0]) + ">("+args[1]+");";
     else
@@ -165,7 +167,7 @@ convert_t convert[X86_INS_ENDING] = {
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
     },
-    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -flags.carry;" : "$wr0 -= $rd1 + flags.carry;"; } },
+    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -flags.carry;" : "$wr0 = $rd0 - $rd1 - flags.carry /* ggg3 */;"; } }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return "!$rd0"; },
@@ -238,7 +240,9 @@ convert_t convert[X86_INS_ENDING] = {
     } },
     [X86_INS_ROL] = {.convert = [](convert_args){
         return "$wr0 = rol$width0($rd0, $rd1);";
-    } },
+    },
+            .cf = [](convert_args){ return "flags.carry /* ggg4 */"; },
+    },
     [X86_INS_ROR] = {.convert = [](convert_args){
         return "$wr0 = ror$width0($rd0, $rd1);";
     } },
@@ -264,7 +268,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_MUL] = {.convert = [](convert_args){
         return "mul$width0($rd0);";
     } },
-    [X86_INS_SAR] = {.convert = [](convert_args){ return "$wr0 = sar$width0($rd0, $rd1);"; } },
+    [X86_INS_SAR] = {.convert = [](convert_args){ return "$wr0 = sar$width0($rd0, $rd1);"; },
+        .zf = [](convert_args){ return "!$rd0";},},
     [X86_INS_IN] = {.convert = [](convert_args){ return "$wr0 = in$width0($rd1);"; } },
     // float
     [X86_INS_FLD] = {.convert = [](convert_args){ return "fld$width0($rd0);"; } },
@@ -324,11 +329,13 @@ convert_t convert[X86_INS_ENDING] = {
             .savecf = [](convert_args){
                 assert(info->flagCarry.variableRead[0]);
                 return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead); },
+            .zf = [](convert_args){ return "!$rd0 /*ggg*/"; },
+            .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
     [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg());"; } },
     [X86_INS_POPF] = {.convert = [](convert_args){ return "flagsFromReg(pop());"; } },
     [X86_INS_CMC] = {.convert = [](convert_args){ return "flags.carry = !flags.carry;"; } },
-
+    [X86_INS_XLATB] = {.convert = [](convert_args){ return "al = memoryAGet($prefix, bx+al);"; } },
 };
 
 class Convert : public Formatter
@@ -346,7 +353,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{false};
+        const bool verbose{true};
         
         mTracer = mAnal.mMethods.find(proc)->second;
         CTracer::code_t& code = mTracer->GetCode();
@@ -535,6 +542,14 @@ public:
         x86_insn set = instr->mId;
         if (set == X86_INS_ADD && cond == X86_INS_JG)
             return "($sig0)$rd0 + ($sig0)$rd1 > 0";
+        if (set == X86_INS_ADD && cond == X86_INS_JL)
+            return "($sig0)$rd0 + ($sig0)$rd1 < 0";
+        if (set == X86_INS_ADD && cond == X86_INS_JLE)
+            return "($sig0)$rd0 + ($sig0)$rd1 <= 0";
+        if (set == X86_INS_SUB && cond == X86_INS_JG)
+            return "($sig0)$rd0 - ($sig0)$rd1 > 0";
+        if (set == X86_INS_SUB && cond == X86_INS_JLE)
+            return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
         assert(0);
         return "";
     }
@@ -561,6 +576,8 @@ public:
             return "($sig0)$rd0 >= ($sig1)$rd1";
         if (cond == "!$rd0 /* gabo-3 */")
             return "$rd0 /* gabo-3 */";
+        if (cond.starts_with("flags."))
+            return "!"+cond;
         assert(0);
         return "!(" + cond + ")";
     }

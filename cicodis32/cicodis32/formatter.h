@@ -41,6 +41,7 @@ public:
         {
             if (op.mem.base != X86_REG_BP)
             {
+                // TODO: mask!
                 if ((op.mem.disp & 0xffff) > negativeoffset)
                     snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 65536-((int)op.mem.disp & 0xffff));
                 else
@@ -63,11 +64,12 @@ public:
             snprintf(offset, 32, "%s + %s", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index));
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp != 0)
         {
-            assert(0);
-            if ((op.mem.disp & 0xffff) > negativeoffset)
-                snprintf(offset, 32, "%s + %s - %d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), 65536-((int)op.mem.disp & 0xffff) );
-            else
-                snprintf(offset, 32, "%s + %s + %d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), (int)op.mem.disp & 0xffff);
+//            assert(0);
+//            if ((op.mem.disp & 0xffff) > negativeoffset)
+//                snprintf(offset, 32, "%s + %s - %d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), 65536-((int)op.mem.disp & 0xffff) );
+//            else
+//                snprintf(offset, 32, "%s + %s + %d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), (int)op.mem.disp & 0xffff);
+            snprintf(offset, 32, "%s + %s + %d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), (int)op.mem.disp);
         }
         else if (op.mem.base != X86_REG_INVALID && op.mem.index != X86_REG_INVALID && op.mem.scale != 1 && op.mem.disp == 0)
         {
@@ -453,6 +455,18 @@ public:
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
                 snprintf(replace, 64, "loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+            }
+            if (strcmp(tok, "prefix") == 0)
+            {
+                // TODO: prefix?
+                switch (instr->mDetail.prefix[1])
+                {
+                    case 0:
+                    case X86_PREFIX_DS: strncpy(replace, "ds", 64); break;
+                    case X86_PREFIX_CS: strncpy(replace, "cs", 64); break;
+                    case X86_PREFIX_ES: strncpy(replace, "es", 64); break;
+                    case X86_PREFIX_SS: strncpy(replace, "ss", 64); break;
+                }
             }
             if (strcmp(tok, "goto_target") == 0)
             {

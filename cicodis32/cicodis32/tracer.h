@@ -256,6 +256,21 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
     assert(addr.segment != -1);
     memcpy(&mDetail, &p->detail->x86, sizeof(cs_x86));
     mId = (x86_insn)p->id;
+    if (mId == X86_INS_TEST)
+    {
+        if (mDetail.eflags == 0)
+        {
+            assert(mDetail.eflags == 0); // 84 25 52 4e test byte ptr [di], ah
+            //errata?
+            mDetail.eflags = X86_EFLAGS_RESET_CF | X86_EFLAGS_RESET_OF | X86_EFLAGS_MODIFY_SF | X86_EFLAGS_MODIFY_ZF;
+        }
+    }
+    if (mId == X86_INS_RCL && mDetail.op_count == 2 && mDetail.operands[1].type == X86_OP_IMM && mDetail.operands[1].size == 0 && mDetail.operands[1].imm == 1)
+    {
+        mDetail.operands[1].size = 1;
+    }
+        
+
     mAddress = addr;
     mSize = p->size;
     assert(mSize < 24);
