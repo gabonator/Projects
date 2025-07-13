@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
     Options optionsGoose = {
         .loader = "LoaderMz",
         .exec = "GOOSE.EXE",
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0x541}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1000, 0x104e),
@@ -94,7 +95,9 @@ int main(int argc, char **argv) {
         .exec = "fox.exe",
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1bb6}},
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
-        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
+//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
+        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x4ae9}},
+        
         //1020:40fa
         //sub_34442
         .jumpTables = {
@@ -102,7 +105,8 @@ int main(int argc, char **argv) {
         }
     };
 
-    Options options = optionsFox;
+    Options options = optionsGoose;
+    //Options options = optionsFox;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)

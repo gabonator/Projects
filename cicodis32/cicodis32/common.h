@@ -145,6 +145,7 @@ public:
                 return jt;
         return nullptr;
     }
+    bool verbose{false};
 };
 
 template<typename T, typename U> T check(T o, U end)

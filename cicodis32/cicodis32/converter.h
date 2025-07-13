@@ -73,6 +73,8 @@ struct convert_t
     std::function<std::string(convert_args)> savezf;
     std::function<std::string(convert_args)> saveof;
     std::function<std::string(convert_args)> savesf;
+    std::string flagCondition;
+    
 };
 
 convert_t convert[X86_INS_ENDING] = {
@@ -83,27 +85,36 @@ convert_t convert[X86_INS_ENDING] = {
             return "$wr0 = 0;";
         else
             return "$wr0 ^= $rd1;";
-    } },
+    },
+        .zf = [](convert_args){ return "!$rd0"; },
+    },
     [X86_INS_MOV] = {.convert = [](convert_args){ return "$wr0 = $rd1;"; } },
     [X86_INS_MOVZX] = {.convert = [](convert_args){
         return "$wr0 = $rd1;"; } },
-    [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "$zero"},
+    [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "!$zero"},
     [X86_INS_JLE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JL] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JAE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JAE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "!$carry"},
     [X86_INS_JA] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JB] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JB] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "$carry"},
     [X86_INS_JBE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JG] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JGE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JNP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JNS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JNS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "!$sign"},
+    [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        .flagCondition = "$sign"},
     [X86_INS_JMP] = {.convert = [](convert_args){ return "$goto_target;"; } },
     [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx)\n        $goto_target;"; } },
-    [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--cx && $cond)\n        $goto_target;"; } },
+    [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--cx && $cond)\n        $goto_target;"; },
+        .flagCondition = "!$zero"},
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
@@ -232,6 +243,7 @@ convert_t convert[X86_INS_ENDING] = {
             return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
         },
         .zf = [](convert_args){ return "!$rd0"; },
+        .cf = [](convert_args){ return "$carry"; }, // TODO: saved index
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
         .savecf = [](convert_args){ assert(instr->mDetail.operands[1].type == X86_OP_IMM && instr->mDetail.operands[1].imm == 1); return "$rd0 & 1"; },
     },
@@ -311,6 +323,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_CMPSB] = {.convert = [](convert_args){ return ConvertStringopName(instr); },
         .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CWDE] = {.convert = [](convert_args){ return "$realmode ? cbw() : cwde();"; } }, // CBW/CWDE
+    [X86_INS_CDQ] = {.convert = [](convert_args){ return "if ($realmode)\n        dx = ax & 0x8000 ? 0xffff : 0x0000\n    else\n        stop(\"cdq\");"; } }, // CWD/CWDE
     [X86_INS_NOP] = {.convert = [](convert_args){ return ""; } },
     [X86_INS_XCHG] = {.convert = [](convert_args){
         switch (instr->mDetail.operands[0].size)
@@ -325,10 +338,10 @@ convert_t convert[X86_INS_ENDING] = {
     } },
     [X86_INS_ADC] = {.convert = [](convert_args){
         assert(info->flagCarry.variableRead[0]);
-        return format("$rw0 += $rd1 + %s;", info->flagCarry.variableRead); },
+        return format("$rw0 += $rd1 + %s;", info->flagCarry.variableRead.c_str()); },
             .savecf = [](convert_args){
                 assert(info->flagCarry.variableRead[0]);
-                return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead); },
+                return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead.c_str()); },
             .zf = [](convert_args){ return "!$rd0 /*ggg*/"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
@@ -353,7 +366,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{true};
+        const bool verbose{mOptions.verbose};
         
         mTracer = mAnal.mMethods.find(proc)->second;
         CTracer::code_t& code = mTracer->GetCode();
@@ -550,6 +563,22 @@ public:
             return "($sig0)$rd0 - ($sig0)$rd1 > 0";
         if (set == X86_INS_SUB && cond == X86_INS_JLE)
             return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
+        if (set == X86_INS_SUB && cond == X86_INS_JA)
+            return "$rd0 - $rd1 > 0";
+        
+        // simple
+        if (set == X86_INS_CMP && cond == X86_INS_JGE)
+            return "($sig0)$rd0 >= ($sig0)$rd1";
+        if (set == X86_INS_CMP && cond == X86_INS_JLE)
+            return "($sig0)$rd0 <= ($sig0)$rd1";
+        if (set == X86_INS_CMP && cond == X86_INS_JA)
+            return "$rd0 > $rd1";
+        if (set == X86_INS_CMP && cond == X86_INS_JG)
+            return "($sig0)$rd0 > ($sig0)$rd1";
+        if (set == X86_INS_CMP && cond == X86_INS_JL)
+            return "($sig0)$rd0 < ($sig0)$rd1";
+        if (set == X86_INS_CMP && cond == X86_INS_JBE)
+            return "$rd0 <= $rd1";
         assert(0);
         return "";
     }
@@ -588,6 +617,103 @@ public:
             assert(info->readPrecondition.size() == 1);
             return info->readPrecondition[0];
         }
+        
+        bool dirty = false;
+        std::set<address_t, cmp_adress_t> lastSet;
+        int needFlags = info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
+        char needFlag = 0;
+        
+        if (info->flagZero.needed)
+        {
+            dirty |= info->flagZero.dirty[0] | info->flagZero.dirty[1] | info->flagZero.dirty[2];
+            lastSet.insert(info->flagZero.lastSet.begin(), info->flagZero.lastSet.end());
+            needFlag = info->flagZero.type;
+        }
+        if (info->flagCarry.needed)
+        {
+            dirty |= info->flagCarry.dirty[0] | info->flagCarry.dirty[1] | info->flagCarry.dirty[2];
+            lastSet.insert(info->flagCarry.lastSet.begin(), info->flagCarry.lastSet.end());
+            needFlag = info->flagCarry.type;
+        }
+        if (info->flagSign.needed)
+        {
+            dirty |= info->flagSign.dirty[0] | info->flagSign.dirty[1] | info->flagSign.dirty[2];
+            lastSet.insert(info->flagSign.lastSet.begin(), info->flagSign.lastSet.end());
+            needFlag = info->flagSign.type;
+        }
+        if (info->flagOverflow.needed)
+        {
+            dirty |= info->flagOverflow.dirty[0] | info->flagOverflow.dirty[1] | info->flagOverflow.dirty[2];
+            lastSet.insert(info->flagOverflow.lastSet.begin(), info->flagOverflow.lastSet.end());
+            needFlag = info->flagOverflow.type;
+        }
+        
+        if (!dirty && needFlags == 1 && lastSet.size() == 1)
+        {
+            // single flag needed
+            shared<CapInstr> lastSetInstr = mTracer->GetCode().find(*lastSet.begin())->second;
+            convert_t templ = convert[lastSetInstr->mId];
+            convert_t cond = convert[instr->mId];
+            std::string flagCondition = cond.flagCondition;
+            
+            if (info->flagZero.needed)
+            {
+                assert(templ.zf);
+                std::string condition = !info->flagZero.variableRead.empty() ? info->flagZero.variableRead : templ.zf(lastSetInstr, info);
+                if (flagCondition == "$zero")
+                    return iformat(lastSetInstr, info, condition);
+                else if (flagCondition == "!$zero")
+                    return iformat(lastSetInstr, info, InvertCondition(condition));
+                else
+                    assert(0);
+            }
+            if (info->flagCarry.needed)
+            {
+                assert(templ.cf);
+                std::string condition = !info->flagCarry.variableRead.empty() ? info->flagCarry.variableRead : templ.cf(lastSetInstr, info);
+                if (flagCondition == "$carry")
+                    return iformat(lastSetInstr, info, condition);
+                else if (flagCondition == "!$carry")
+                    return iformat(lastSetInstr, info, InvertCondition(condition));
+                else
+                    assert(0);
+            }
+            if (info->flagSign.needed)
+            {
+                assert(templ.sf);
+                std::string condition = !info->flagSign.variableRead.empty() ? info->flagSign.variableRead : templ.sf(lastSetInstr, info);
+                if (flagCondition == "$sign")
+                    return iformat(lastSetInstr, info, condition);
+                else if (flagCondition == "!$sign")
+                    return iformat(lastSetInstr, info, InvertCondition(condition));
+                else
+                    assert(0);
+            }
+            assert(0);
+        }
+        
+        if ((dirty || lastSet.size() > 1) && needFlags == 1 && !info->GetFlag(needFlag).variableRead.empty())
+        {
+            convert_t cond = convert[instr->mId];
+            std::string flagCondition = cond.flagCondition;
+            if (flagCondition[1] == needFlag) // $carry
+                return info->GetFlag(needFlag).variableRead;
+            else if (flagCondition[0] == '!' && flagCondition[2] == needFlag) // !$carry
+                return InvertCondition(info->GetFlag(needFlag).variableRead);
+            else
+                assert(0);
+        }
+        
+        if (!dirty && needFlags > 1)
+        {
+            assert(lastSet.size() == 1);
+            shared<CapInstr> lastSetInstr = mTracer->GetCode().find(*lastSet.begin())->second;
+            shared<instrInfo_t> lastSetInfo = info; // TODO: NOT REAL!!
+            return iformat(lastSetInstr, lastSetInfo, precondition(lastSetInstr, instr->mId));
+        }
+        assert(0);
+        return "";
+/*
         convert_t czf = convert[info->flagZero.lastSetInsn];
         convert_t csf = convert[info->flagSign.lastSetInsn];
         convert_t ccf = convert[info->flagCarry.lastSetInsn];
@@ -604,6 +730,24 @@ public:
         if (info->flagSign.lastSet.size() == 1)
             refsf = mTracer->GetCode().find(*info->flagSign.lastSet.begin())->second;
         
+        if (instr->mId == X86_INS_JE)
+            return info->flagZero.variableRead;
+        if (instr->mId == X86_INS_JNE)
+            return InvertCondition(info->flagZero.variableRead);
+        if (instr->mId == X86_INS_JB)
+            return info->flagCarry.variableRead;
+        if (instr->mId == X86_INS_JAE)
+            return InvertCondition(info->flagCarry.variableRead);
+        if (instr->mId == X86_INS_JS)
+            return info->flagSign.variableRead;
+        if (instr->mId == X86_INS_JNS)
+            return InvertCondition(info->flagSign.variableRead);
+
+        // combined request,
+//        precondition(instr, )
+        assert(0);
+        // TODO: cleanup
+        if (0)
         switch (instr->mId)
         {
             case X86_INS_JE:
@@ -756,6 +900,7 @@ public:
                 assert(0);
         }
         return "";
+ */
     }
     
     void Dump()

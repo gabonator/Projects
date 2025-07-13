@@ -449,6 +449,7 @@ public:
             if (strcmp(tok, "cond") == 0)
             {
                 strcpy(replace, BuildCondition(instr, info, false).c_str());
+                assert(replace[0]);
             }
             if (strcmp(tok, "target") == 0)
             {
@@ -510,6 +511,11 @@ public:
                     strncpy(replace, "false", 64);
                 else
                     strncpy(replace, "true", 64);
+            }
+            if (strcmp(tok, "carry") == 0)
+            {
+                assert(!info->flagCarry.variableRead.empty());
+                strncpy(replace, info->flagCarry.variableRead.c_str(), 64);
             }
 
             assert(replace[0] > 0);
