@@ -97,9 +97,9 @@ int main(int argc, char **argv) {
         }
     };
 
-    //Options options = optionsGoose;
+    Options options = optionsGoose;
     //Options options = optionsFox;
-    Options options = optionsRick1;
+//    Options options = optionsRick1;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -218,17 +218,17 @@ int main(int argc, char **argv) {
                 }
         }
     }
-    std::map<address_t, int, cmp_adress_t> hits;
-    for (address_t proc : analyser.AllMethods())
-    {
-        for (address_t label : analyser.GetGapLabels(proc))
-        {
-            if (hits.find(label) != hits.end())
-                hits.find(label)->second++;
-            else
-                hits.insert(std::pair<address_t, int>(label, 1));
-        }
-    }
+//    std::map<address_t, int, cmp_adress_t> hits;
+//    for (address_t proc : analyser.AllMethods())
+//    {
+//        for (address_t label : analyser.GetGapLabels(proc))
+//        {
+//            if (hits.find(label) != hits.end())
+//                hits.find(label)->second++;
+//            else
+//                hits.insert(std::pair<address_t, int>(label, 1));
+//        }
+//    }
 
     for (address_t proc : analyser.AllMethods())
     {
@@ -238,11 +238,11 @@ int main(int argc, char **argv) {
         convert.Dump();
     }
 
-    for (std::pair<address_t, int> p : hits)
-    {
-        if (p.second > 1)
-            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
-    }
+//    for (std::pair<address_t, int> p : hits)
+//    {
+//        if (p.second > 1)
+//            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
+//    }
 
 
     return 0;

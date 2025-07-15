@@ -46,12 +46,12 @@ public:
         shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
         
         std::string extraInfo = "";
-        if (info->request != procRequest_t::returnNone)
+        if (info->func.request != procRequest_t::returnNone)
         {
             extraInfo += " //";
-            if ((int)info->request & (int)procRequest_t::returnCarry)
+            if ((int)info->func.request & (int)procRequest_t::returnCarry)
                 extraInfo += " +returnCarry";
-            if ((int)info->request & (int)procRequest_t::returnZero)
+            if ((int)info->func.request & (int)procRequest_t::returnZero)
                 extraInfo += " +returnZero";
 
         }
@@ -68,9 +68,9 @@ public:
         if (anyTemp)
             mCode.push_back("\n");
 
-        if (info->code.find(proc)->second->callConv == instrInfo_t::callConvShiftStackNear)
+        if (info->func.callConv == callConv_t::callConvShiftStackNear)
             mCode.push_back("    sp -= 2;\n");
-        if (info->code.find(proc)->second->callConv == instrInfo_t::callConvShiftStackFar)
+        if (info->func.callConv == callConv_t::callConvShiftStackFar)
             mCode.push_back("    sp -= 4;\n");
 
         if (code.begin()->first != proc)
@@ -107,14 +107,14 @@ public:
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
                     assert(save);
-                    mCode.push_back("    " + std::string(flag->variableWrite) + " = " + iformat(pinstr, pinfo, save(p.second, pinfo)) + ";\n");
+                    mCode.push_back("    " + std::string(flag->variableWrite) + " = " + iformat(pinstr, pinfo, info->func, save(p.second, pinfo, info->func)) + ";\n");
                 }
             }
             
             if (pinfo->savePrecondition.size())
             {
                 assert(pinfo->savePrecondition.size()==1);
-                mCode.push_back("    " + pinfo->savePrecondition[0].variable + " = " + iformat(pinstr, pinfo, precondition(pinstr, pinfo->savePrecondition[0].readOp)) + ";\n");
+                mCode.push_back("    " + pinfo->savePrecondition[0].variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, pinfo->savePrecondition[0].readOp)) + ";\n");
             }
 
             if (pinfo->infiniteLoop)
@@ -137,7 +137,7 @@ public:
             } else
             if (convert[pinstr->mId].convert)
             {
-                std::string command = iformat(pinstr, pinfo, convert[pinstr->mId].convert(p.second, pinfo));
+                std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(p.second, pinfo, info->func));
                 if (command.size())
                     mCode.push_back("    " + command + "\n");
             }
@@ -165,14 +165,10 @@ public:
         for (const auto& p : code)
         {
             shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
-            if (pinfo->flagSign.variableWrite[0])
-                tempNames.insert(pinfo->flagSign.variableWrite);
-            if (pinfo->flagCarry.variableWrite[0])
-                tempNames.insert(pinfo->flagCarry.variableWrite);
-            if (pinfo->flagZero.variableWrite[0])
-                tempNames.insert(pinfo->flagZero.variableWrite);
-            if (pinfo->flagOverflow.variableWrite[0])
-                tempNames.insert(pinfo->flagOverflow.variableWrite);
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                if (!flag->variableWrite.empty())
+                    tempNames.insert(flag->variableWrite);
+            
             if (!pinfo->savePrecondition.empty())
                 tempNames.insert(pinfo->savePrecondition[0].variable);
         }
@@ -251,7 +247,7 @@ public:
         return "!(" + cond+ ")";
     }
     
-    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info) override
+    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) override
     {
         if (!info->readPrecondition.empty())
         {
@@ -261,12 +257,13 @@ public:
         
         bool dirty = false;
         std::set<address_t, cmp_adress_t> lastSet;
-        int needFlags = info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
+        int needFlags = 0; //info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
         char needFlag = 0;
         
         for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             if (flag->needed)
             {
+                needFlags++;
                 dirty |= flag->dirty[0] | flag->dirty[1] | flag->dirty[2];
                 lastSet.insert(flag->lastSet.begin(), flag->lastSet.end());
                 needFlag = flag->type;
@@ -290,18 +287,18 @@ public:
                     {
                         switch (flag->type)
                         {
-                            case 'c': value = templ.cf(lastSetInstr, info); break;
-                            case 'z': value = templ.zf(lastSetInstr, info); break;
-                            case 's': value = templ.sf(lastSetInstr, info); break;
+                            case 'c': value = templ.cf(lastSetInstr, info, func); break;
+                            case 'z': value = templ.zf(lastSetInstr, info, func); break;
+                            case 's': value = templ.sf(lastSetInstr, info, func); break;
                         }
                         assert(!value.empty());
                     }
                     
                     // needs to be inverted?
                     if (flagCondition[0] == '$' && flagCondition[1] == flag->type)
-                        return iformat(lastSetInstr, info, value);
+                        return iformat(lastSetInstr, info, func, value);
                     else if (flagCondition[0] == '!' && flagCondition[1] == '$' && flagCondition[2] == flag->type)
-                        return iformat(lastSetInstr, info, InvertCondition(value));
+                        return iformat(lastSetInstr, info, func, InvertCondition(value));
                     else
                         assert(0);
                 }
@@ -326,7 +323,7 @@ public:
             assert(lastSet.size() == 1);
             shared<CapInstr> lastSetInstr = mTracer->GetCode().find(*lastSet.begin())->second;
             shared<instrInfo_t> lastSetInfo = info; // TODO: NOT REAL!!
-            return iformat(lastSetInstr, lastSetInfo, precondition(lastSetInstr, instr->mId));
+            return iformat(lastSetInstr, lastSetInfo, func, precondition(lastSetInstr, instr->mId));
         }
         assert(0);
         return "";

@@ -9,7 +9,7 @@ class Formatter {
     uint64_t mOffsetMask{-1ul};
     
 public:
-    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info) = 0;
+    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) = 0;
     virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) = 0;
     
     void SetOffsetMask(uint64_t mask)
@@ -30,7 +30,7 @@ public:
                 return "";
         }
     }
-    void GetOpAddress(const cs_x86_op& op, char* segment, char* offset, shared<instrInfo_t> info)
+    void GetOpAddress(const cs_x86_op& op, char* segment, char* offset, shared<instrInfo_t> info, funcInfo_t func)
     {
         const int negativeoffset = 65536;
         strcpy(offset, "");
@@ -87,16 +87,16 @@ public:
                 strcpy(segment, op.mem.base == X86_REG_BP ? "ss" : "ds");
                 if (op.mem.base == X86_REG_BP)
                 {
-                    switch (info->callConv)
+                    switch (func.callConv)
                     {
-                        case instrInfo_t::callConvSimpleStackNear:
+                        case callConv_t::callConvSimpleStackNear:
                             strcat(offset, " - 2");
                             break;
-                        case instrInfo_t::callConvSimpleStackFar:
+                        case callConv_t::callConvSimpleStackFar:
                             strcat(offset, " - 4");
                             break;
-                        case instrInfo_t::callConvShiftStackNear:
-                        case instrInfo_t::callConvShiftStackFar:
+                        case callConv_t::callConvShiftStackNear:
+                        case callConv_t::callConvShiftStackFar:
                             break;
                         default:
                             strcat(offset, " - stop(\"simple stack\")");
@@ -109,7 +109,7 @@ public:
         }
     }
     
-    std::string ToCString(const cs_x86_op& op, shared<instrInfo_t> info)
+    std::string ToCString(const cs_x86_op& op, shared<instrInfo_t> info, const funcInfo_t& func)
     {
         if (op.type == X86_OP_REG)
             return Capstone->ToString(op.reg);
@@ -141,7 +141,7 @@ public:
         if (op.type == X86_OP_MEM)
         {
             char segment[32], offset[32], tmp[64];
-            GetOpAddress(op, segment, offset, info);
+            GetOpAddress(op, segment, offset, info, func);
             snprintf(tmp, 32, "memory%s(%s, %s)", memorySuffix(op.size), segment, offset);
             return tmp;
         }
@@ -170,7 +170,7 @@ public:
     }
     
     //std::string format(const cs_x86& x86, std::string fmt_)
-    std::string iformat(shared<CapInstr> instr, shared<instrInfo_t> info, std::string fmt_)
+    std::string iformat(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func, std::string fmt_)
     {
         if (fmt_ == "$string")
             return BuildStringOp(instr, info);
@@ -231,16 +231,16 @@ public:
                     assert(rvalue[strlen(rvalue)-1] == ';');
                     rvalue[strlen(rvalue)-1] = 0;
                     
-                    std::string rvalue_formatted = iformat(instr, info, rvalue);
+                    std::string rvalue_formatted = iformat(instr, info, func, rvalue);
                     
                     char segment[32], offset[32], tmp[128];
-                    GetOpAddress(op, segment, offset, info);
+                    GetOpAddress(op, segment, offset, info, func);
                     snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);", memorySuffix(x86.operands[index].size), segment, offset, rvalue_formatted.c_str());
                     return tmp;
                 } else {
                     char tmp[128];
                     //assert(0);
-                    strcpy(tmp, ToCString(op, info).c_str());
+                    strcpy(tmp, ToCString(op, info, func).c_str());
                     strcat(tmp, fmt+4);
                     strcpy(fmt, tmp);
                 }
@@ -266,12 +266,12 @@ public:
             if (strcmp(tok, "reg0") == 0)
             {
                 assert(x86.op_count >= 1 /*&& x86.operands[0].type == X86_OP_REG*/);
-                strcpy(replace, ToCString(x86.operands[0], info).c_str());
+                strcpy(replace, ToCString(x86.operands[0], info, func).c_str());
             }
             if (strcmp(tok, "reg1") == 0)
             {
                 assert(x86.op_count == 2 && x86.operands[1].type == X86_OP_REG);
-                strcpy(replace, ToCString(x86.operands[1], info).c_str());
+                strcpy(replace, ToCString(x86.operands[1], info, func).c_str());
             }
             if (strcmp(tok, "immd0") == 0)
             {
@@ -303,7 +303,7 @@ public:
                     if (getset && x86.operands[0].type == X86_OP_MEM)
                     {
                         char segment[32], offset[32];
-                        GetOpAddress(x86.operands[0], segment, offset, info);
+                        GetOpAddress(x86.operands[0], segment, offset, info, func);
                         switch (x86.operands[0].size)
                         {
                             case 1:
@@ -325,7 +325,7 @@ public:
                                 assert(0);
                         }
                     } else
-                        strcpy(replace, ToCString(x86.operands[0], info).c_str());
+                        strcpy(replace, ToCString(x86.operands[0], info, func).c_str());
                 }
             }
             if (strcmp(tok, "rns0") == 0)
@@ -335,7 +335,7 @@ public:
                 {
                     assert(x86.operands[0].size == 4);
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[0], segment, offset, info);
+                    GetOpAddress(x86.operands[0], segment, offset, info, func);
                     snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
                 } else
                     assert(0);
@@ -346,7 +346,7 @@ public:
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[1], segment, offset, info);
+                    GetOpAddress(x86.operands[1], segment, offset, info, func);
                     strcpy(replace, offset);
                 } else
                     assert(0);
@@ -358,7 +358,7 @@ public:
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
                     char segment[32], offset[32];
-                    GetOpAddress(x86.operands[1], segment, offset, info);
+                    GetOpAddress(x86.operands[1], segment, offset, info, func);
                     snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
                              memorySuffix(x86.operands[1].size), segment, offset);
                 } else
@@ -376,11 +376,11 @@ public:
                         if (getset && x86.operands[1].type == X86_OP_MEM)
                         {
                             char segment[32], offset[32];
-                            GetOpAddress(x86.operands[1], segment, offset, info);
+                            GetOpAddress(x86.operands[1], segment, offset, info, func);
                             snprintf(replace, 64, "memoryAGet%s(%s, %s)",
                                      memorySuffix(x86.operands[1].size), segment, offset);
                         } else
-                            strcpy(replace, ToCString(x86.operands[1], info).c_str());
+                            strcpy(replace, ToCString(x86.operands[1], info, func).c_str());
                     } else {
                         // capstone 5
                         if (x86.opcode[0] == 0xd0 || x86.opcode[0] == 0xd1 || x86.opcode[0] == 0xfe) // RCL, INC
@@ -396,7 +396,7 @@ public:
             if (strcmp(tok, "rd2") == 0)
             {
                 assert(x86.op_count >= 3);
-                strcpy(replace, ToCString(x86.operands[2], info).c_str());
+                strcpy(replace, ToCString(x86.operands[2], info, func).c_str());
             }
             if (strcmp(tok, "sig0") == 0)
             {
@@ -453,7 +453,7 @@ public:
             }
             if (strcmp(tok, "cond") == 0)
             {
-                strcpy(replace, BuildCondition(instr, info).c_str());
+                strcpy(replace, BuildCondition(instr, info, func).c_str());
                 assert(replace[0]);
             }
             if (strcmp(tok, "target") == 0)
@@ -479,11 +479,11 @@ public:
                 assert(x86.op_count == 1);
                 if (x86.operands[0].type != X86_OP_IMM)
                 {
-                    snprintf(replace, 64, "indirectJump(cs, %s);", iformat(instr, info, "$rd0").c_str());
+                    snprintf(replace, 64, "indirectJump(cs, %s);", iformat(instr, info, func, "$rd0").c_str());
                 }
-                else if (info->jumpsToRet)
-                    strncpy(replace, "return", 64);
-                else
+//                else if (info->jumpsToRet)
+//                    strncpy(replace, "return", 64);
+//                else
                 {
                     if (x86.operands[0].size == 2)
                         snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
@@ -517,11 +517,11 @@ public:
                 else
                     strncpy(replace, "true", 64);
             }
-            if (strcmp(tok, "carry") == 0)
-            {
-                assert(!info->flagCarry.variableRead.empty());
-                strncpy(replace, info->flagCarry.variableRead.c_str(), 64);
-            }
+//            if (strcmp(tok, "carry") == 0)
+//            {
+//                assert(!info->flagCarry.variableRead.empty());
+//                strncpy(replace, info->flagCarry.variableRead.c_str(), 64);
+//            }
 
             assert(replace[0] > 0);
             char temp[128];

@@ -5,7 +5,7 @@
 //  Created by Gabriel Valky on 14/07/2025.
 //
 
-#define convert_args shared<CapInstr> instr, shared<instrInfo_t> info
+#define convert_args shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func
 struct convert_t
 {
     std::function<std::string(convert_args)> convert;
@@ -63,13 +63,13 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
-        if (info->callConv == instrInfo_t::callConvShiftStackNear)
+        if (func.callConv == callConv_t::callConvShiftStackNear)
             aux.push_back("sp += 2;");
-        if (info->callConv == instrInfo_t::callConvShiftStackFar)
+        if (func.callConv == callConv_t::callConvShiftStackFar)
             aux.push_back("sp += 4;");
         if (instr->Imm() != 0)
             aux.push_back("sp += $immd0;");
-        if (!(info->isLast && !instr->isLabel))
+        if (!(instr->isLast && !instr->isLabel))
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
     } },
@@ -282,12 +282,15 @@ convert_t convert[X86_INS_ENDING] = {
         }
     } },
     [X86_INS_ADC] = {.convert = [](convert_args){
+        assert(0);
+        return "";
+        /*
         assert(!info->flagCarry.variableRead.empty());
         return format("$rw0 += $rd1 + %s;", info->flagCarry.variableRead.c_str()); },
             .savecf = [](convert_args){
                 assert(info->flagCarry.variableRead[0]);
-                return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead.c_str()); },
-            .zf = [](convert_args){ return "!$rd0 /*ggg*/"; },
+                return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead.c_str());*/ },
+            .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
     [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg());"; } },

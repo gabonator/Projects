@@ -1,4 +1,4 @@
- //
+//
 //  tracer.h
 //  cicodis32
 //
@@ -86,6 +86,7 @@ public:
     bool isLabel{false};
     bool isTerminating{false};
     bool isReturning{false};
+    bool isLast{false};
     
     // debug
     char mMnemonic[64];
@@ -542,6 +543,7 @@ public:
         }
         if (code.begin()->first != a)
             code.find(a)->second->isLabel = true;
+        code.rbegin()->second->isLast = true;
     }
 
     void Dump()

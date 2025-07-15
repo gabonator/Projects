@@ -5,6 +5,890 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 
+// TODO: add stack depth
+
+enum class flagMask_t {
+    none = 0,
+    zero = 1,
+    carry = 2,
+    overflow = 4,
+    sign = 8
+};
+
+enum callConv_t {
+    callConvUnknown = 0,
+    callConvSimpleStackNear = 1,
+    callConvSimpleStackFar = 2,
+    callConvShiftStackNear = 3,
+    callConvShiftStackFar = 4
+};
+
+struct funcInfo_t {
+    procRequest_t request;
+    callConv_t callConv{callConvUnknown};
+};
+
+struct instrInfo_t {
+    struct instrInfoFlag_t {
+        char type{0};
+        bool save{false};
+        std::string variableWrite;
+        std::string variableRead;
+        bool needed;
+        bool dirty[3];
+        std::set<address_t, cmp_adress_t> lastSet;
+        x86_insn lastSetInsn{X86_INS_INVALID};
+                
+        // private:
+        bool isDestructive{false};
+        bool savedVisibly{false};
+        cs_x86_op depends[2];
+        std::set<address_t, cmp_adress_t> willSet;
+        x86_insn willSetInsn{X86_INS_INVALID};
+        bool saved{false};
+
+        void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
+    } cf, zf, sf, of;
+
+    instrInfo_t()
+    {
+        cf.type = 'c';
+        zf.type = 'z';
+        sf.type = 's';
+        of.type = 'o';
+    }
+    
+    std::vector<instrInfoFlag_t*> Flags()
+    {
+        return {&cf, &zf, &sf, &of};
+    }
+    
+    instrInfoFlag_t& GetFlag(char c)
+    {
+        for (instrInfoFlag_t* f : Flags())
+        {
+            if (f->type == c)
+                return *f;
+        }
+        assert(0);
+        return *Flags()[0];
+    }
+    
+    struct precondition_t {
+        flagMask_t needs{flagMask_t::none};
+        x86_insn writeOp{X86_INS_INVALID};
+        x86_insn readOp{X86_INS_INVALID};
+        std::string variable;
+    };
+    
+    std::vector<precondition_t> savePrecondition;
+    std::vector<std::string> readPrecondition;
+    bool infiniteLoop{false};
+    std::string stop;
+    
+    // private:
+    procRequest_t procRequest{procRequest_t::returnNone};
+    address_t procTarget;
+
+    void CopyFrom(shared<instrInfo_t> o);
+    bool MergeMultiFlag(shared<instrInfo_t> o);
+    bool Merge(shared<instrInfo_t> o);
+};
+
+void instrInfo_t::instrInfoFlag_t::CopyFrom(instrInfo_t::instrInfoFlag_t& o)
+{
+    type = o.type;
+    save = false;
+    saved = o.saved | o.save;
+    //savedFor = o.savedFor;
+    
+    lastSet = o.willSet.empty() ? o.lastSet : o.willSet;
+    lastSetInsn = o.willSet.empty() ? o.lastSetInsn : o.willSetInsn;
+    dirty[0] = o.dirty[0];
+    dirty[1] = o.dirty[1];
+    dirty[2] = o.dirty[2];
+    depends[0] = o.depends[0];
+    depends[1] = o.depends[1];
+    savedVisibly = o.savedVisibly;
+}
+
+void instrInfo_t::CopyFrom(shared<instrInfo_t> o)
+{
+    std::vector<instrInfoFlag_t*> flags = Flags();
+    std::vector<instrInfoFlag_t*> flagsO = Flags();
+    
+    for (int i=0; i<flags.size(); i++)
+        flags[i]->CopyFrom(*flagsO[i]);
+}
+
+bool instrInfo_t::MergeMultiFlag(shared<instrInfo_t> o)
+{
+    bool changed = false;
+    char types[] = "zcos";
+    for (int i=0; types[i]; i++)
+    {
+        instrInfoFlag_t& thisFlag = GetFlag(types[i]);
+        instrInfoFlag_t& thatFlag = o->GetFlag(types[i]);
+        
+        for (const auto& ls : thatFlag.lastSet)
+            if (thisFlag.lastSet.find(ls) == thisFlag.lastSet.end())
+            {
+                thisFlag.lastSet.insert(ls);
+                if (!thisFlag.variableRead.empty())
+                    thisFlag.variableRead = "obsolete:" + thisFlag.variableRead; // TODO
+                if (!thatFlag.variableRead.empty())
+                    thatFlag.variableRead = "obsolete:" + thatFlag.variableRead;
+                changed =  true;
+            }
+    }
+    return changed;
+}
+
+bool instrInfo_t::Merge(shared<instrInfo_t> o)
+{
+    bool changed = false;
+    for (instrInfoFlag_t* p : Flags())
+    {
+        if (p->saved != o->GetFlag(p->type).saved)
+        {
+            p->saved |= o->GetFlag(p->type).saved;
+            changed = true;
+        }
+    }
+
+    auto CopyVar = [](instrInfoFlag_t& a, instrInfoFlag_t& b)
+    {
+        if (a.variableRead != b.variableRead)
+        {
+            if (a.variableRead.empty())
+                a.variableRead = b.variableRead;
+            else if (b.variableRead.empty())
+                b.variableRead = a.variableRead;
+            else {
+                //printf("varRead=%s (%d) / %s (%d)\n", a.variableRead.c_str(), a.lastSet.size(), b.variableRead.c_str(), b.lastSet.size());
+                assert(a.lastSet.size() != b.lastSet.size());
+                if (a.lastSet.size() > b.lastSet.size())
+                    b.variableRead = a.variableRead;
+                else
+                    a.variableRead = b.variableRead;
+            }
+        }
+        if (a.variableWrite != b.variableWrite)
+        {
+            //printf("varRead=%s (%d) / %s (%d)\n", a.variableRead.c_str(), a.lastSet.size(), b.variableRead.c_str(), b.lastSet.size());
+            assert(0);
+        }
+    };
+    
+    for (instrInfoFlag_t* p : Flags())
+        CopyVar(*p, o->GetFlag(p->type));
+    
+    stop += o->stop;
+    procRequest = (procRequest_t)((int)procRequest | (int)o->procRequest);
+    if (o->readPrecondition.size() != 0)
+    {
+        assert(readPrecondition.size() == o->readPrecondition.size());
+        for (int i=0; i<readPrecondition.size(); i++)
+            assert(readPrecondition[i] == o->readPrecondition[i]);
+    }
+    
+    return changed;
+}
+
+// PathAnalyser - keep whole decoded application in memory
+class ProgramAnalyser {
+public:
+    const Options& mOptions;
+        std::map<address_t, std::shared_ptr<CTracer>, cmp_adress_t> mMethods;
+        struct info_t {
+            std::map<address_t, shared<instrInfo_t>, cmp_adress_t> code;
+            funcInfo_t func;
+        };
+        std::map<address_t, std::shared_ptr<info_t>, cmp_adress_t> mInfos;
+    
+public:
+    ProgramAnalyser(Options& options) : mOptions(options)
+    {
+    }
+    
+    void Scan(address_t method)
+    {
+        std::shared_ptr<CTracer> tracer(new CTracer(mOptions));
+        tracer->Trace(method);
+        mMethods.insert(std::pair<address_t, std::shared_ptr<CTracer>>(method, tracer));
+    }
+    
+    void RecursiveScan(std::vector<address_t> methodsToProcess)
+    {
+        std::set<address_t, cmp_adress_t> methodsProcessed;
+        while (!methodsToProcess.empty())
+        {
+            std::vector<address_t> newMethodsToProcess;
+            for (address_t methodToProcess : methodsToProcess)
+            {
+                methodsProcessed.insert(methodToProcess);
+
+                Scan(methodToProcess);
+                
+                for (address_t newCallTarget : GetCalls(methodToProcess))
+                    if (methodsProcessed.find(newCallTarget) == methodsProcessed.end() &&
+                        std::find(methodsToProcess.begin(), methodsToProcess.end(), newCallTarget) == methodsToProcess.end() &&
+                        std::find(newMethodsToProcess.begin(), newMethodsToProcess.end(), newCallTarget) ==  newMethodsToProcess.end())
+                    {
+                        newMethodsToProcess.push_back(newCallTarget);
+                    }
+            }
+            methodsToProcess = newMethodsToProcess;
+        }
+    }
+    std::set<address_t, cmp_adress_t> AllMethods()
+    {
+        std::set<address_t, cmp_adress_t> methods;
+        for (std::pair<address_t, std::shared_ptr<CTracer>> procpair : mMethods)
+            methods.insert(procpair.first);
+        return methods;
+    }
+    
+    void AddProcRequest(shared<instrInfo_t> info, address_t target, procRequest_t req)
+    {
+        assert(0);
+//        info->procRequest = (procRequest_t)((int)info->procRequest | (int)req);
+//        info->procTarget = target;
+    }
+    virtual void AnalyseProc(address_t proc, procRequest_t req) = 0;
+    
+    std::map<address_t, procRequest_t, cmp_adress_t> GetRequests(address_t proc)
+    {
+        std::map<address_t, procRequest_t, cmp_adress_t> aux;
+        shared<info_t> info = check(mInfos.find(proc), mInfos.end())->second;
+        for (auto i : info->code)
+        {
+            if (i.second->procRequest != procRequest_t::returnNone)
+            {
+                if (aux.find(i.second->procTarget) == aux.end())
+                {
+                    aux.insert(std::pair<address_t, procRequest_t>(i.second->procTarget, i.second->procRequest));
+                } else {
+                    aux.find(i.second->procTarget)->second = (procRequest_t)((int)aux.find(i.second->procTarget)->second | (int)i.second->procRequest);
+                }
+            }
+        }
+        return aux;
+    }
+
+    std::set<address_t, cmp_adress_t> GetCalls(address_t proc)
+    {
+        std::set<address_t, cmp_adress_t> calls;
+        
+        CTracer::code_t& code = mMethods.find(proc)->second->GetCode();
+
+        if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
+        {
+            // stub
+            calls.insert(code.begin()->second->JumpTarget());
+            return calls;
+        }
+        for (const auto& p : code)
+        {
+            shared<CapInstr> pinstr = p.second;
+            if (pinstr->mId == X86_INS_CALL)
+            {
+                assert(pinstr->mDetail.op_count == 1);
+                if (pinstr->mDetail.operands[0].type == X86_OP_IMM)
+                    calls.insert(pinstr->CallTarget());
+            }
+            shared<jumpTable_t> jt;
+            if (pinstr->IsIndirectCall())
+            {
+                jt = mOptions.GetJumpTable(pinstr->mAddress);
+                if (jt)
+                {
+                    for (int i=0; i<jt->GetSize(); i++)
+                        calls.insert(jt->GetTarget(i));
+                }
+            }
+        }
+        return calls;
+    }
+
+};
+
+// FunctionAnalyser - traversing single function code and filling in instrInfo structure
+class FunctionAnalyser : public ProgramAnalyser {
+protected:
+    std::map<address_t, int, cmp_adress_t> tempIndexPrecond, tempIndexZf, tempIndexCf, tempIndexSf, tempIndexOf;
+    bool verbose{false}; // TODO: dual tracing !!!
+
+public:
+    FunctionAnalyser(Options& options) : ProgramAnalyser(options)
+    {
+        verbose = mOptions.verbose;
+    }
+
+    virtual void AnalyseInstruction(shared<instrInfo_t> info, shared<CapInstr> instr, const funcInfo_t& func, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& code, std::map<address_t, shared<CapInstr>, cmp_adress_t>& instructions) = 0;
+    
+    virtual void AnalyseProc(address_t proc, procRequest_t req)
+    {
+        shared<CTracer> tracer = check(mMethods.find(proc), mMethods.end())->second;
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+        std::vector<std::pair<address_t, address_t>> head({{address_t(), tracer->Address()}});
+        //std::map<address_t, int, cmp_adress_t> tempIndexPrecond, tempIndexZf, tempIndexCf, tempIndexSf, tempIndexOf;
+        tempIndexPrecond.clear();
+        tempIndexZf.clear();
+        tempIndexCf.clear();
+        tempIndexSf.clear();
+        tempIndexOf.clear();
+
+        shared<info_t> info(new info_t);
+        info->func.request = req;
+        info->func.callConv = GetCallConvention(code);
+        
+        if (verbose)
+            DumpCode(proc, code);
+
+        while (head.size())
+        {
+            std::vector<std::pair<address_t, address_t>> newHead;
+
+            for (std::pair<address_t, address_t> link : head)
+            {
+                if (verbose)
+                    printf("%x->%x: ", link.first.offset, link.second.offset);
+                
+                shared<CapInstr> instr = code.find(link.second)->second;
+                if (verbose)
+                    printf("    instr: %s", instr->AsString().c_str());
+
+                shared<instrInfo_t> prevInfo;
+                if (link.first)
+                {
+                    assert(info->code.find(link.first) != info->code.end());
+                    prevInfo = info->code.find(link.first)->second;
+                    assert(prevInfo);
+                } else {
+                    prevInfo = shared<instrInfo_t>(new instrInfo_t);
+                }
+                
+                shared<instrInfo_t> newInfo(new instrInfo_t);
+                newInfo->CopyFrom(prevInfo);
+                
+            again:
+                AnalyseInstruction(newInfo, instr, info->func, info->code, code);
+                
+                // update info, store
+                bool forceScan = false;
+                auto mergeInfoIt = info->code.find(link.second);
+                if (mergeInfoIt != info->code.end())
+                {
+                    if (verbose)
+                        printf("* merge %x->%x: ",link.first.linearOffset(), link.second.linearOffset());
+
+                    if (mergeInfoIt->second->MergeMultiFlag(newInfo))
+                    {
+                        if (verbose)
+                            printf("* multi flag\n");
+
+                        // .save attribute is saved, but next pass will clear it!!
+                        newInfo = mergeInfoIt->second;
+                        goto again;
+                    } else
+                        if (verbose)
+                            printf("* no multi flag, ");
+
+                        if (mergeInfoIt->second->Merge(newInfo))
+                        {
+                            if (verbose)
+                                printf("* force scan\n");
+                            forceScan = true;
+                        }
+                    if (verbose)
+                        printf("* ok\n");
+                } else
+                    info->code.insert(std::pair<address_t, shared<instrInfo_t>>(link.second, newInfo));
+                
+                // TODO: HIGH not working when going backward with new flag last set
+                for (address_t next : instr->mNext)
+                {
+                    if (forceScan || info->code.find(next) == info->code.end())
+                        newHead.push_back(std::pair<address_t, address_t>(link.second, next));
+                }
+            }
+            head = newHead;
+        }
+
+        // BAD, collect all RET, and merge
+        PostProcess(tracer, info, req);
+        mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
+    }
+    
+    void PostProcess(shared<CTracer> tracer, shared<info_t> info, procRequest_t req)
+    {
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+//        info->code[code.rbegin()->first]->isLast = true;
+
+        FindInfiniteLoops(tracer, info);
+    }
+    
+    void FindInfiniteLoops(shared<CTracer> tracer, shared<info_t> info)
+    {
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+        for (const auto& p : code)
+        {
+            shared<CapInstr> pinstr = p.second;
+            if (!pinstr->IsConditionalJump())
+                continue;
+            if (pinstr->mPrev.size() != 1)
+                continue;
+            shared<CapInstr> prev = code.find(*pinstr->mPrev.begin())->second;
+            if (!prev->isLabel)
+                continue;
+            if (prev->mId != X86_INS_CMP && prev->mId != X86_INS_TEST)
+                continue;
+            if (prev->mAddress != pinstr->JumpTarget())
+                continue;
+            info->code.find(prev->mAddress)->second->infiniteLoop = true;
+        }
+    }
+
+    /*
+     auto ClearChildren = [&](std::set<address_t, cmp_adress_t> addrs) {
+         for (address_t addr : addrs)
+         {
+             shared<CapInstr> destructed = code.find(addr)->second;
+             // spread the flag
+             for (address_t next : destructed->mNext) // TODO: not twice!
+             {
+                 newHead.push_back(std::pair<address_t, address_t>(destructed->mAddress, next));
+             }
+         }
+     };
+
+
+     */
+    void DumpCode(address_t proc, std::map<address_t, shared<CapInstr>, cmp_adress_t>& code)
+    {
+        printf("    %x %x:%x proc %x\n", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
+        for (const auto& p : code)
+        {
+            if (p.second->isLabel)
+                printf("loc_");
+            else
+                printf("    ");
+            printf("%x %x:%x %s %s\n", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+        }
+    }
+
+    callConv_t GetCallConvention(const CTracer::code_t& code)
+    {
+        int retFar = 0, retNear = 0;
+        bool stack = UsesStack(code);
+        
+        for (const auto& p : code)
+        {
+            if (p.second->mId == X86_INS_RETF)
+                retFar++;
+            if (p.second->mId == X86_INS_RET)
+                retNear++;
+        }
+        
+        if (retFar > 0)
+        {
+            assert(retNear == 0);
+            return stack ? callConv_t::callConvShiftStackFar : callConv_t::callConvSimpleStackFar;
+        }
+        if (retNear > 0)
+        {
+            assert(retFar == 0);
+            return stack ? callConv_t::callConvShiftStackNear : callConv_t::callConvSimpleStackNear;
+        }
+        return callConv_t::callConvUnknown;
+    }
+    
+    bool UsesStack(const CTracer::code_t& code)
+    {
+        cs_x86_op regsp = {.type=X86_OP_REG, .reg = X86_REG_SP};
+        
+        for (const auto& p : code)
+        {
+            for (int i=0; i<p.second->mDetail.op_count; i++)
+                //if (p.second->mDetail.operands[i].access & CS_AC_READ)
+                    if (Capstone->Intersects(p.second->mDetail.operands[i], regsp))
+                        return true;
+        }
+        
+        return false;
+    }
+
+    std::string TempVarFor(std::map<address_t, int, cmp_adress_t>& table, std::string prefix, address_t addr)
+    {
+        if (table.find(addr) == table.end())
+            table.insert(std::pair<address_t, int>(addr, table.size()));
+
+        int index = table.find(addr)->second;
+        return index == 0 ? prefix : format("%s%d", prefix.c_str(), index);
+    }
+    
+};
+
+
+// InstructionAnalyser - fill in instrInfo based on x86 instruction
+class InstructionAnalyser : public FunctionAnalyser {
+public:
+    InstructionAnalyser(Options& options) : FunctionAnalyser(options)
+    {
+    }
+    
+    virtual void AnalyseInstruction(shared<instrInfo_t> info, shared<CapInstr> instr, const funcInfo_t& func, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& code, std::map<address_t, shared<CapInstr>, cmp_adress_t>& instructions) override
+    {
+        //TODO goto ret
+        
+        std::set<x86_reg> reads = instr->ReadsRegisters();
+        std::set<x86_reg> writes = instr->WritesRegisters();
+        bool forceSave = false;
+        bool needsCf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF);
+        bool needsZf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF);
+        bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
+        bool needsSf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF);
+        
+        info->GetFlag('c').needed = needsCf;
+        info->GetFlag('z').needed = needsZf;
+        info->GetFlag('o').needed = needsOf;
+        info->GetFlag('s').needed = needsSf;
+        
+        // RET
+        if (instr->mId == X86_INS_RETF || instr->mId == X86_INS_RET)
+        {
+            switch (func.request)
+            {
+                case procRequest_t::returnNone:
+                    break;
+                case procRequest_t::returnZero:
+                    forceSave = true;
+                    needsZf = true;
+                    break;
+                case procRequest_t::returnCarry:
+                    forceSave = true;
+                    needsCf = true;
+                    break;
+            }
+        }
+        
+        if (needsCf + needsZf + needsOf + needsSf > 1)
+        {
+            std::map<address_t, x86_insn, cmp_adress_t> dest;
+            for (address_t ls : info->GetFlag('c').lastSet)
+            {
+                shared<instrInfo_t> instrSet = code.find(ls)->second;
+                if (instrSet->GetFlag('c').isDestructive)
+                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+            }
+            for (address_t ls : info->GetFlag('z').lastSet)
+            {
+                shared<instrInfo_t> instrSet = code.find(ls)->second;
+                if (instrSet->GetFlag('z').isDestructive)
+                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+            }
+            for (address_t ls : info->GetFlag('o').lastSet)
+            {
+                shared<instrInfo_t> instrSet = code.find(ls)->second;
+                if (instrSet->GetFlag('o').isDestructive)
+                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+            }
+            for (address_t ls : info->GetFlag('s').lastSet)
+            {
+                shared<instrInfo_t> instrSet = code.find(ls)->second;
+                if (instrSet->GetFlag('s').isDestructive)
+                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+            }
+            if (dest.size())
+            {
+                assert(dest.size() == 1);
+                address_t addr = dest.begin()->first;
+                x86_insn set = dest.begin()->second;
+                x86_insn cond = instr->mId;
+                shared<instrInfo_t> destructive = code.find(addr)->second;
+                std::string variable = TempVarFor(tempIndexPrecond, "temp_cond", instr->mAddress);
+                flagMask_t needs = flagMask_t(
+                      (int)(needsCf ? flagMask_t::carry : flagMask_t::none) |
+                      (int)(needsZf ? flagMask_t::zero : flagMask_t::none) |
+                      (int)(needsOf ? flagMask_t::overflow : flagMask_t::none) |
+                      (int)(needsSf ? flagMask_t::sign : flagMask_t::none));
+                
+                if (destructive->savePrecondition.size() == 0 || destructive->savePrecondition[0].needs != needs || destructive->savePrecondition[0].writeOp != set || destructive->savePrecondition[0].readOp != cond || destructive->savePrecondition[0].variable != variable)
+                {
+                    destructive->savePrecondition.push_back({
+                        .needs = needs,
+                        .writeOp = set,
+                        .readOp = cond,
+                        .variable = variable
+                    });
+                }
+                assert(info->readPrecondition.size() == 0);
+                info->readPrecondition.push_back(variable);
+                
+                needsCf = needsZf = needsOf = needsSf = 0;
+                // condition covered, do not use simple flow
+            }
+        }
+        
+        std::set<address_t, cmp_adress_t> clear;
+        if (needsCf)
+        {
+            NeedsFlag(clear, instructions, code, info, info->GetFlag('c'), instr, tempIndexCf, forceSave);
+            if (verbose)
+                printf("(cf=%s) ", info->GetFlag('c').variableRead.c_str());
+        }
+        if (needsZf)
+        {
+            NeedsFlag(clear, instructions, code, info, info->GetFlag('z'), instr, tempIndexZf, forceSave);
+            if (verbose)
+                printf("(zf=%s) ", info->GetFlag('z').variableRead.c_str());
+        }
+        if (needsSf)
+            NeedsFlag(clear, instructions, code, info, info->GetFlag('s'), instr, tempIndexSf, forceSave);
+        if (needsOf)
+            NeedsFlag(clear, instructions, code, info, info->GetFlag('o'), instr, tempIndexOf, forceSave);
+        
+        for (int i=0; i<instr->mDetail.op_count; i++)
+        {
+            if (instr->mDetail.operands[i].access & CS_AC_WRITE)
+            {
+                checkDirtyFlags(info->GetFlag('c'), instr->mDetail.operands[i]);
+                checkDirtyFlags(info->GetFlag('z'), instr->mDetail.operands[i]);
+                checkDirtyFlags(info->GetFlag('o'), instr->mDetail.operands[i]);
+                checkDirtyFlags(info->GetFlag('s'), instr->mDetail.operands[i]);
+            }
+        }
+                
+        // TODO: save flag is lost in second pass!!!
+        applyFlags(instr, 'c', X86_EFLAGS_MODIFY_CF, X86_EFLAGS_RESET_CF | X86_EFLAGS_SET_CF, info->GetFlag('c'));
+        applyFlags(instr, 'z', X86_EFLAGS_MODIFY_ZF, X86_EFLAGS_RESET_ZF | X86_EFLAGS_SET_ZF, info->GetFlag('z'));
+        applyFlags(instr, 'o', X86_EFLAGS_MODIFY_OF, X86_EFLAGS_RESET_OF | X86_EFLAGS_SET_OF, info->GetFlag('o'));
+        applyFlags(instr, 's', X86_EFLAGS_MODIFY_SF, X86_EFLAGS_RESET_SF | X86_EFLAGS_SET_SF, info->GetFlag('s'));
+        
+        switch (instr->mId)
+        {
+            case X86_INS_STC:
+            case X86_INS_CLC:
+            case X86_INS_CMC:
+                info->GetFlag('c').savedVisibly = true;
+                break;
+            case X86_INS_SHL:
+            case X86_INS_SHR:
+            case X86_INS_ADD:
+            case X86_INS_ADC:
+            case X86_INS_SUB:
+            case X86_INS_SBB:
+                info->GetFlag('c').isDestructive = true;
+                info->GetFlag('c').dirty[2] = true;
+                break;
+            default:
+                //                        newInfo->flagCarry.isDestructive = false;
+                break;
+        }
+        
+        if (verbose)
+            printf("\n");
+        
+        
+//        info->stackDepth = prevInfo->stackDepth + instr->mTemplate.stack;
+        assert(clear.empty());
+//        for (address_t addr : clear)
+//        {
+//             shared<CapInstr> destructed = instructions.find(addr)->second;
+//             // spread the flag
+//             for (address_t next : destructed->mNext) // TODO: not twice!
+//                 newHead.push_back(std::pair<address_t, address_t>(destructed->mAddress, next));
+//         }
+//
+    }
+
+    void checkDirtyFlags(instrInfo_t::instrInfoFlag_t& flag, cs_x86_op change)
+    {
+        if (Capstone->Intersects(flag.depends[0], change))
+            flag.dirty[0] = true;
+        if (Capstone->Intersects(flag.depends[1], change))
+            flag.dirty[1] = true;
+    };
+
+    void applyFlags(shared<CapInstr> instr, char type, uint64_t modifyMask, uint64_t setMask, instrInfo_t::instrInfoFlag_t& flag)
+    {
+        // TODO: Temp workaround, CALL sets all flags!
+        // TODO: interrupt could also update some flags
+        if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & (modifyMask | setMask)))
+        {
+            if (verbose)
+                printf("(set %cf) ", type);
+            
+            flag.type = type;
+            flag.willSet = {instr->mAddress}; // gabo!
+            flag.willSetInsn = instr->mId;
+            
+            flag.depends[0].type = X86_OP_INVALID;
+            flag.depends[1].type = X86_OP_INVALID;
+            flag.dirty[0] = false;
+            flag.dirty[1] = false;
+            flag.dirty[2] = false;
+            
+            flag.isDestructive = false;
+            flag.saved = false;
+                        
+            // scasb sets the flag directly
+            if (flag.lastSetInsn == X86_INS_SCASB)
+                return;
+            
+            int j = 0;
+            if (instr->mDetail.op_count == 3)
+            {
+                assert(instr->mDetail.operands[2].type == X86_OP_IMM);
+            } else {
+                assert(instr->mDetail.op_count <= 2);
+            }
+            for (int i=0; i<instr->mDetail.op_count; i++)
+                if (instr->mDetail.operands[i].access & CS_AC_READ)
+                    flag.depends[j++] = instr->mDetail.operands[i];
+        }
+    };
+
+    void NeedsFlag(std::set<address_t, cmp_adress_t>& clearChildren, std::map<address_t, shared<CapInstr>, cmp_adress_t>& code, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& info, shared<instrInfo_t> newInfo, instrInfo_t::instrInfoFlag_t& flag, shared<CapInstr> instr, std::map<address_t, int, cmp_adress_t>& tempIndex, bool forceSave)
+    {
+        std::string defaultFlag;
+        switch (flag.type)
+        {
+            case 'z': defaultFlag = "flags.zero"; break;
+            case 'c': defaultFlag = "flags.carry"; break;
+            case 's': defaultFlag = "flags.sign"; break;
+            case 'o': defaultFlag = "flags.overflow"; break;
+            default:
+                assert(0);
+        }
+
+        std::string defaultPrefix;
+        switch (flag.type)
+        {
+            case 'z': defaultPrefix = "temp_zf"; break;
+            case 'c': defaultPrefix = "temp_cf"; break;
+            case 's': defaultPrefix = "temp_sf"; break;
+            case 'o': defaultPrefix = "temp_of"; break;
+            default:
+                assert(0);
+        }
+
+        for (address_t o : flag.lastSet)
+        {
+            shared<CapInstr> oi = code.find(o)->second;
+            if (oi->mId == X86_INS_CALL)
+            {
+                switch (flag.type)
+                {
+                    case 'z':
+                        if (oi->IsDirectCall())
+                            AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnZero);
+                        else
+                            newInfo->stop = "callee must return zero";
+                        break;
+                    case 'c':
+                        if (oi->IsDirectCall())
+                            AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnCarry);
+                        else
+                            newInfo->stop = "callee must return carry";
+                        break;
+                    default:
+                        assert(0);
+                }
+
+            }
+        }
+        
+        if (flag.saved)
+        {
+            assert(flag.lastSet.size() == 1);
+            address_t setflag = *flag.lastSet.begin();
+            shared<instrInfo_t> setflaginfo = info.find(setflag)->second;
+            flag.variableRead = setflaginfo->GetFlag(flag.type).variableWrite;
+        }
+        
+        if (flag.lastSet.size() == 1)
+        {
+            if (flag.dirty[0] || flag.dirty[1])
+            {
+                address_t setFlagAddr = *flag.lastSet.begin();
+                shared<instrInfo_t> setFlagInfo = info.find(setFlagAddr)->second;
+                if (!setFlagInfo->GetFlag(flag.type).save)
+                {
+                    flag.variableRead = defaultFlag;
+                    setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
+                    setFlagInfo->GetFlag(flag.type).save = true;
+                    clearChildren.insert(setFlagAddr);
+                }
+            }
+            
+            address_t ls = *flag.lastSet.begin();
+            shared<instrInfo_t> destructive = info.find(ls)->second;
+            if (destructive->GetFlag(flag.type).isDestructive)
+            {
+                if (!destructive->GetFlag(flag.type).save)
+                {
+                    flag.variableRead = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
+                    destructive->GetFlag(flag.type).variableWrite = flag.variableRead;
+                    destructive->GetFlag(flag.type).save = true;
+                    clearChildren.insert(ls);
+                }
+            } else if (forceSave)
+            {
+                if (!destructive->GetFlag(flag.type).savedVisibly)
+                {
+                    destructive->GetFlag(flag.type).variableWrite = defaultFlag;
+                    destructive->GetFlag(flag.type).save = true;
+                }
+            }
+        }
+        
+        if (flag.lastSet.size() > 1)
+        {
+            std::string variable = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
+            flag.variableRead = variable;
+            
+            for (address_t setFlagAddr : flag.lastSet)
+            {
+                shared<instrInfo_t> setFlagInfo = info.find(setFlagAddr)->second;
+                if (!setFlagInfo->GetFlag(flag.type).save)
+                {
+                    setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
+                    setFlagInfo->GetFlag(flag.type).save = true;
+                    clearChildren.insert(setFlagAddr);
+                }
+            }
+        }
+    }
+    
+};
+
+typedef InstructionAnalyser Analyser;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 struct instrInfo_t {
     enum callConv_t {
         callConvUnknown = 0,
@@ -220,6 +1104,36 @@ struct instrInfo_t {
         
         return changed;
     }
+    
+    void PostProcess(shared<CTracer> tracer, shared<info_t> info, procRequest_t req)
+    {
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+//        info->code[code.rbegin()->first]->isLast = true;
+
+        FindInfiniteLoops(tracer, info);
+    }
+
+    void FindInfiniteLoops(shared<CTracer> tracer, shared<info_t> info)
+    {
+        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
+        for (const auto& p : code)
+        {
+            shared<CapInstr> pinstr = p.second;
+            if (!pinstr->IsConditionalJump())
+                continue;
+            if (pinstr->mPrev.size() != 1)
+                continue;
+            shared<CapInstr> prev = code.find(*pinstr->mPrev.begin())->second;
+            if (!prev->isLabel)
+                continue;
+            if (prev->mId != X86_INS_CMP && prev->mId != X86_INS_TEST)
+                continue;
+            if (prev->mAddress != pinstr->JumpTarget())
+                continue;
+            info->code.find(prev->mAddress)->second->infiniteLoop = true;
+        }
+    }
+
 };
 
 class Analyser {
@@ -751,10 +1665,19 @@ public:
         return clearChildren;
     }
 
+    std::string TempVarFor(std::map<address_t, int, cmp_adress_t>& table, std::string prefix, address_t addr)
+    {
+        if (table.find(addr) == table.end())
+            table.insert(std::pair<address_t, int>(addr, table.size()));
+
+        int index = table.find(addr)->second;
+        return index == 0 ? prefix : format("%s%d", prefix.c_str(), index);
+    }
+
     void PostProcess(shared<CTracer> tracer, shared<info_t> info, procRequest_t req)
     {
         std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
-        info->code[code.rbegin()->first]->isLast = true;
+//        info->code[code.rbegin()->first]->isLast = true;
 
         FindInfiniteLoops(tracer, info);
     }
@@ -877,3 +1800,4 @@ public:
         }
     }
 };
+#endif
