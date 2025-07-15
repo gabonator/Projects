@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
         .exec = "RICK2.EXE",
         //        .recursive = false, .start = false, .procList = {{0x1000, 0x6222}}
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x1a257 - 0x10400}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x16222 - 0x10400}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1040, 0xffff),
@@ -45,20 +46,11 @@ int main(int argc, char **argv) {
             }),
         },
             .isolateLabels = {address_t(0x1040, 0x168a8-0x10400),
-//                address_t(0x1040, 0x17e36-0x10400),
                 address_t(0x1040, 0x196f3-0x10400),
                 address_t(0x1040, 0x1c359-0x10400),
                 address_t(0x1040, 0x19f12-0x10400),
                 address_t(0x1040, 0x19731-0x10400)
             }
-        /*
-            .isolateLabels = {address_t(0x1040, 0x196f3-0x10400),
-                address_t{0x1040, 0x1c359-0x10400},
-                address_t{0x1040, 0x168a8-0x10400},
-                address_t{0x1040, 0x1615f-0x10400},
-                address_t{0x1040, 0x16174-0x10400}
-                }
-         */
     };
     
     Options optionsGoose = {
@@ -78,17 +70,17 @@ int main(int argc, char **argv) {
     Options optionsRick1 = {
         .loader = "LoaderMz",
         .exec = "rick1.exe",
-        .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x34442- 0x341b0}},
+        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x34442- 0x341b0}},
         //sub_34442
-        .jumpTables = {
-            std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = address_t(0x341b, 0x228a),
-                .table = address_t(0x1040, 0x80bf),
-                .type = jumpTable_t::JumpWords,
-                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                23},
-                .selector = "di",
-            })}
+//        .jumpTables = {
+//            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+//                .instruction = address_t(0x341b, 0x228a),
+//                .table = address_t(0x1040, 0x80bf),
+//                .type = jumpTable_t::JumpWords,
+//                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+//                23},
+//                .selector = "di",
+//            })}
     };
     Options optionsFox = {
         .loader = "LoaderMz",
@@ -105,8 +97,9 @@ int main(int argc, char **argv) {
         }
     };
 
-    Options options = optionsGoose;
+    //Options options = optionsGoose;
     //Options options = optionsFox;
+    Options options = optionsRick1;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -151,6 +144,7 @@ int main(int argc, char **argv) {
         printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
     
     std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
+//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
     
     Analyser analyser(options);
     if (options.recursive)
@@ -209,19 +203,19 @@ int main(int argc, char **argv) {
                 modifier = procModifiers.find(proc)->second;
             
             analyser.AnalyseProc(proc, modifier);
-            //std::map<address_t, procRequest_t, cmp_adress_t> reqs = analyser.GetRequests(proc);
-            for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
-            {
-                procRequest_t oldModifier = procRequest_t::returnNone;
-                if (procModifiers.find(req.first) != procModifiers.end())
-                    oldModifier = procModifiers.find(proc)->second;
-                
-                if (oldModifier != req.second)
+            if (options.recursive)
+                for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
                 {
-                    procModifiers.insert(req);
-                    processNew.insert(req.first);
+                    procRequest_t oldModifier = procRequest_t::returnNone;
+                    if (procModifiers.find(req.first) != procModifiers.end())
+                        oldModifier = procModifiers.find(proc)->second;
+                    
+                    if (oldModifier != req.second)
+                    {
+                        procModifiers.insert(req);
+                        processNew.insert(req.first);
+                    }
                 }
-            }
         }
     }
     std::map<address_t, int, cmp_adress_t> hits;

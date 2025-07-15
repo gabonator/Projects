@@ -9,7 +9,9 @@ class Formatter {
     uint64_t mOffsetMask{-1ul};
     
 public:
-    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, bool invert) = 0;
+    virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info) = 0;
+    virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) = 0;
+    
     void SetOffsetMask(uint64_t mask)
     {
         mOffsetMask = mask;
@@ -170,6 +172,9 @@ public:
     //std::string format(const cs_x86& x86, std::string fmt_)
     std::string iformat(shared<CapInstr> instr, shared<instrInfo_t> info, std::string fmt_)
     {
+        if (fmt_ == "$string")
+            return BuildStringOp(instr, info);
+        
         const cs_x86& x86 = instr->mDetail;
         assert(fmt_.length() < 128);
         
@@ -448,7 +453,7 @@ public:
             }
             if (strcmp(tok, "cond") == 0)
             {
-                strcpy(replace, BuildCondition(instr, info, false).c_str());
+                strcpy(replace, BuildCondition(instr, info).c_str());
                 assert(replace[0]);
             }
             if (strcmp(tok, "target") == 0)

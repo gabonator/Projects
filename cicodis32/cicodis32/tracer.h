@@ -1,4 +1,4 @@
-//
+ //
 //  tracer.h
 //  cicodis32
 //
@@ -67,6 +67,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_CMP] = { },
     [X86_INS_ADD] = { },
     [X86_INS_MOVZX] = { },
+//    [X86_INS_CLC] = { .savesFlagVisibly = {"flags.carry"}},
+//    [X86_INS_STC] = { .savesFlagVisibly = {"flags.carry"}},
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

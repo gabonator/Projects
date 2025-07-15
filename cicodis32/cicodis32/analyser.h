@@ -40,6 +40,7 @@ struct instrInfo_t {
         address_t savedFor;
         std::string variableRead;
         std::string variableWrite;
+        bool savedVisibly{false};
 
         std::set<address_t, cmp_adress_t> lastSet;
         x86_insn lastSetInsn{X86_INS_INVALID};
@@ -65,8 +66,16 @@ struct instrInfo_t {
             dirty[0] = o.dirty[0];
             dirty[1] = o.dirty[1];
             dirty[2] = o.dirty[2];
+            depends[0] = o.depends[0];
+            depends[1] = o.depends[1];
+            savedVisibly = o.savedVisibly;
         }
     } flagZero, flagCarry, flagOverflow, flagSign;
+    
+    std::vector<instrInfoFlag_t*> Flags()
+    {
+        return {&flagZero, &flagCarry, &flagOverflow, &flagSign};
+    }
     
     instrInfoFlag_t& GetFlag(char c)
     {
@@ -90,9 +99,6 @@ struct instrInfo_t {
     };
     struct precondition_t {
         flagMask_t needs{flagMask_t::none};
-        
-        //address_t writeAddr;
-        //address_t readAddr;
         x86_insn writeOp{X86_INS_INVALID};
         x86_insn readOp{X86_INS_INVALID};
         std::string variable;
@@ -189,10 +195,6 @@ struct instrInfo_t {
                         b.variableRead = a.variableRead;
                     else
                         a.variableRead = b.variableRead;
-                    //                if (a.variableRead.empty() && !b.variableRead.empty())
-                    //                    a.variableRead = b.variableRead;
-                    //                if (b.variableRead.empty() && !a.variableRead.empty())
-                    //                    b.variableRead = a.variableRead;
                 }
             }
             if (a.variableWrite != b.variableWrite)
@@ -200,19 +202,6 @@ struct instrInfo_t {
                 //printf("varRead=%s (%d) / %s (%d)\n", a.variableRead.c_str(), a.lastSet.size(), b.variableRead.c_str(), b.lastSet.size());
                 assert(0);
             }
-            
-//                if (!b.variableRead.empty())
-//            {
-//                if (a.variableRead.empty())
-//                    a.variableRead = b.variableRead;
-//                assert(a.variableRead == b.variableRead);
-//            }
-//            if (!b.variableWrite.empty())
-//            {
-//                if (a.variableWrite.empty())
-//                    a.variableWrite = b.variableWrite;
-//                assert(a.variableWrite == b.variableWrite);
-//            }
         };
         
         CopyVar(flagSign, o->flagSign);
@@ -368,10 +357,7 @@ public:
                 shared<CapInstr> instr = code.find(link.second)->second;
                 if (verbose)
                     printf("    instr: %s", instr->AsString().c_str());
-                if (instr->mAddress.offset == 0x557)
-                {
-                    int f=9;
-                }
+
                 shared<instrInfo_t> prevInfo;
                 if (link.first)
                 {
@@ -386,26 +372,18 @@ public:
                 
                 shared<instrInfo_t> newInfo(new instrInfo_t);
                 newInfo->CopyFrom(*prevInfo.get());
+                
             again:
                 //TODO goto ret
-//                if (instr->IsDirectJump())
-//                {
-//                    shared<CapInstr> target = code.find(instr->JumpTarget())->second;
-//                    if ((target->mId == X86_INS_RET || target->mId == X86_INS_RETF) &&
-//                        newInfo->callConv != instrInfo_t::callConvShiftStackNear &&
-//                        newInfo->callConv != instrInfo_t::callConvShiftStackFar)
-//                    {
-//                        assert(target->Imm() == 0);
-//                        newInfo->jumpsToRet = true;
-//                    }
-//                }
-                                
+                
                 std::set<x86_reg> reads = instr->ReadsRegisters();
                 std::set<x86_reg> writes = instr->WritesRegisters();
+                bool forceSave = false;
                 bool needsCf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF);
                 bool needsZf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF);
                 bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
                 bool needsSf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF);
+                
                 newInfo->flagCarry.needed = needsCf;
                 newInfo->flagZero.needed = needsZf;
                 newInfo->flagOverflow.needed = needsOf;
@@ -419,9 +397,11 @@ public:
                         case procRequest_t::returnNone:
                             break;
                         case procRequest_t::returnZero:
+                            forceSave = true;
                             needsZf = true;
                             break;
                         case procRequest_t::returnCarry:
+                            forceSave = true;
                             needsCf = true;
                             break;
                     }
@@ -481,31 +461,31 @@ public:
                         newInfo->readPrecondition.push_back(variable);
                         
                         needsCf = needsZf = needsOf = needsSf = 0;
-                        // do not use simple flow
+                        // condition covered, do not use simple flow
                     }
                 }
                 if (needsCf)
                 {
-                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagCarry, instr, tempIndexCf));
+                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagCarry, instr, tempIndexCf, forceSave));
                     if (verbose)
                         printf("(cf=%s) ", newInfo->flagCarry.variableRead.c_str());
                 }
                 if (needsZf)
                 {
-                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagZero, instr, tempIndexZf));
+                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagZero, instr, tempIndexZf, forceSave));
                     if (verbose)
                         printf("(zf=%s) ", newInfo->flagZero.variableRead.c_str());
                 }
                 if (needsSf)
-                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagSign, instr, tempIndexSf));
+                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagSign, instr, tempIndexSf, forceSave));
                 if (needsOf)
-                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagOverflow, instr, tempIndexOf));
+                    ClearChildren(NeedsFlag(code, info->code, newInfo, newInfo->flagOverflow, instr, tempIndexOf, forceSave));
                 
-                auto applyFlags = [&](char type, uint64_t modifyMask, instrInfo_t::instrInfoFlag_t& flag)
+                auto applyFlags = [&](char type, uint64_t modifyMask, uint64_t setMask, instrInfo_t::instrInfoFlag_t& flag)
                 {
                     // TODO: Temp workaround, CALL sets all flags!
                     // TODO: interrupt could also update some flags
-                    if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & modifyMask))
+                    if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & (modifyMask | setMask)))
                     {
                         if (verbose)
                             printf("(set %cf) ", type);
@@ -570,13 +550,18 @@ public:
                     newInfo->reg[r].wasWritten = true;
                 
                 // TODO: save flag is lost in second pass!!!
-                applyFlags('c', X86_EFLAGS_MODIFY_CF | X86_EFLAGS_RESET_CF | X86_EFLAGS_SET_CF, newInfo->flagCarry);
-                applyFlags('z', X86_EFLAGS_MODIFY_ZF | X86_EFLAGS_RESET_ZF | X86_EFLAGS_SET_ZF, newInfo->flagZero);
-                applyFlags('o', X86_EFLAGS_MODIFY_OF | X86_EFLAGS_RESET_OF | X86_EFLAGS_SET_OF, newInfo->flagOverflow);
-                applyFlags('s', X86_EFLAGS_MODIFY_SF | X86_EFLAGS_RESET_SF | X86_EFLAGS_SET_SF, newInfo->flagSign);
+                applyFlags('c', X86_EFLAGS_MODIFY_CF, X86_EFLAGS_RESET_CF | X86_EFLAGS_SET_CF, newInfo->flagCarry);
+                applyFlags('z', X86_EFLAGS_MODIFY_ZF, X86_EFLAGS_RESET_ZF | X86_EFLAGS_SET_ZF, newInfo->flagZero);
+                applyFlags('o', X86_EFLAGS_MODIFY_OF, X86_EFLAGS_RESET_OF | X86_EFLAGS_SET_OF, newInfo->flagOverflow);
+                applyFlags('s', X86_EFLAGS_MODIFY_SF, X86_EFLAGS_RESET_SF | X86_EFLAGS_SET_SF, newInfo->flagSign);
                 
                 switch (instr->mId)
                 {
+                    case X86_INS_STC:
+                    case X86_INS_CLC:
+                    case X86_INS_CMC:
+                        newInfo->flagCarry.savedVisibly = true;
+                        break;
                     case X86_INS_SHL:
                     case X86_INS_SHR:
                     case X86_INS_ADD:
@@ -614,7 +599,7 @@ public:
                             printf("* multi flag\n");
 
                         // .save attribute is saved, but next pass will clear it!!
-                        newInfo = mergeInfoIt->second; //  TODO: gabo WHY??
+                        newInfo = mergeInfoIt->second;
                         goto again;
                     } else
                         if (verbose)
@@ -624,22 +609,14 @@ public:
                         {
                             if (verbose)
                                 printf("* force scan\n");
-                            //printf("--- regular\n");
-                            // invalidate current?
-                            //                        newHead.push_back(std::pair<address_t, address_t>(address_t(), link.second));
-                            //                        newHead.push_back(link);
-                            // invalidate all paths
                             forceScan = true;
-                            // TODO: if multiple flag source -> force scan only current, do not spread
-                            
-                            //TODO: mess!
-                            
                         }
                     if (verbose)
                         printf("* ok\n");
                 } else
                     info->code.insert(std::pair<address_t, shared<instrInfo_t>>(link.second, newInfo));
                 
+                // TODO: HIGH not working when going backward with new flag last set
                 for (address_t next : instr->mNext)
                 {
                     if (forceScan || info->code.find(next) == info->code.end())
@@ -654,7 +631,7 @@ public:
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
     }
     
-    std::set<address_t, cmp_adress_t> NeedsFlag(std::map<address_t, shared<CapInstr>, cmp_adress_t>& code, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& info, shared<instrInfo_t> newInfo, instrInfo_t::instrInfoFlag_t& flag, shared<CapInstr> instr, std::map<address_t, int, cmp_adress_t>& tempIndex)
+    std::set<address_t, cmp_adress_t> NeedsFlag(std::map<address_t, shared<CapInstr>, cmp_adress_t>& code, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& info, shared<instrInfo_t> newInfo, instrInfo_t::instrInfoFlag_t& flag, shared<CapInstr> instr, std::map<address_t, int, cmp_adress_t>& tempIndex, bool forceSave)
     {
         std::set<address_t, cmp_adress_t> clearChildren;
         std::string defaultFlag;
@@ -741,8 +718,15 @@ public:
                     destructive->GetFlag(flag.type).savedFor = instr->mAddress;
                     clearChildren.insert(ls);
                 }
-            }// else
-            //    flag.variableRead = defaultFlag; // TODO: BAD!! NOT SAVED REALLY!
+            } else if (forceSave)
+            {
+                if (!destructive->GetFlag(flag.type).savedVisibly)
+                {
+                    destructive->GetFlag(flag.type).variableWrite = defaultFlag;
+                    destructive->GetFlag(flag.type).save = true;
+                    destructive->GetFlag(flag.type).savedFor = instr->mAddress;
+                }
+            }
         }
         
         if (flag.lastSet.size() > 1)
@@ -773,47 +757,8 @@ public:
         info->code[code.rbegin()->first]->isLast = true;
 
         FindInfiniteLoops(tracer, info);
-        if (req == procRequest_t::returnNone)
-            return;
-        
-        // post process
-        for (const auto& p : code)
-        {
-            if (p.second->mId == X86_INS_RETF || p.second->mId == X86_INS_RET)
-            {
-                shared<instrInfo_t> infoRet = info->code.find(p.first)->second;
-                shared<instrInfo_t> infoSet;
-                shared<CapInstr> instrSet;
-                
-                switch (req)
-                {
-                    case procRequest_t::returnNone:
-                        break;
-                    case procRequest_t::returnZero:
-                        /*
-                        assert(infoRet->flagZero.lastSet.size() == 1);
-                        infoSet = info->code.find(*infoRet->flagZero.lastSet.begin())->second;
-                        // TODO: advance 1 instruction, .update / .dump = true or .postSave = true
-                        infoSet->flagZero.save = true;
-                        strncpy(infoSet->flagZero.variableWrite, "flags.zero", sizeof(infoSet->flagZero.variableWrite));
-                         */
-                        break;
-                    case procRequest_t::returnCarry:
-                        /*
-                        assert(infoRet->flagCarry.lastSet.size() == 1);
-                        instrSet = code.find(*infoRet->flagCarry.lastSet.begin())->second;
-                        if (instrSet->mId != X86_INS_STC && instrSet->mId != X86_INS_CLC)
-                        {
-                            infoSet = info->code.find(*infoRet->flagCarry.lastSet.begin())->second;
-                            infoSet->flagCarry.save = true;
-                            infoSet->flagCarry.variableWrite  "flags.carry", sizeof(infoSet->flagCarry.variableWrite));
-                        }*/
-                        break;
-                }
-                
-            }
-        }
     }
+    
     std::set<address_t, cmp_adress_t> GetCalls(address_t proc)
     {
         std::set<address_t, cmp_adress_t> calls;
@@ -854,16 +799,6 @@ public:
         std::set<address_t, cmp_adress_t> labels;
         
         CTracer::code_t& code = mMethods.find(proc)->second->GetCode();
-/*
-        if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
-            return {};
-
-        for (const auto& p : code)
-        {
-            shared<CapInstr> pinstr = p.second;
-            if (pinstr->HasJumpTarget())
-                labels.insert(pinstr->JumpTarget());
-        }*/
         
         address_t next;
         for (const auto& p : code)
@@ -871,10 +806,6 @@ public:
             if (next && p.first != next)
             {
                 shared<CapInstr> pinstr = p.second;
-//                printf("gap %d bytes\n", p.first.offset - next.offset);
-                //if (pinstr->HasJumpTarget())
-                
-                //    labels.insert(pinstr->JumpTarget());
                 if (pinstr->isLabel)
                     labels.insert(pinstr->mAddress);
             }
@@ -928,7 +859,6 @@ public:
     void FindInfiniteLoops(shared<CTracer> tracer, shared<info_t> info)
     {
         std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
-        // post process
         for (const auto& p : code)
         {
             shared<CapInstr> pinstr = p.second;
@@ -946,163 +876,4 @@ public:
             info->code.find(prev->mAddress)->second->infiniteLoop = true;
         }
     }
-
 };
-
-
-
-
-
-
-
-
-/*
-// TODO: check dirty flags
-if (needsCf)
-{
-    for (address_t o : newInfo->flagCarry.lastSet)
-    {
-        shared<CapInstr> oi = code.find(o)->second;
-        if (oi->mId == X86_INS_CALL)
-        {
-            if (oi->IsDirectCall())
-                AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnCarry);
-            else
-                newInfo->stop = "callee must return carry"; // TODO: function metadata runtime
-        }
-    }
-    
-    assert(newInfo->flagCarry.lastSet.size() == 1);
-    address_t ls = *newInfo->flagCarry.lastSet.begin();
-    shared<instrInfo_t> destructive = info->code.find(ls)->second;
-
-    if (newInfo->flagCarry.dirty[0] || newInfo->flagCarry.dirty[1])
-    {
-        assert(!destructive->flagCarry.isDestructive);
-        address_t setCarryAddr = *newInfo->flagCarry.lastSet.begin();
-        shared<instrInfo_t> setCarryInfo = info->code.find(setCarryAddr)->second;
-        if (!setCarryInfo->flagCarry.save)
-        {
-            newInfo->flagCarry.variableRead = "flags.carry";
-            setCarryInfo->flagCarry.variableWrite = newInfo->flagCarry.variableRead;
-            setCarryInfo->flagCarry.save = true;
-            setCarryInfo->flagCarry.savedFor = instr->mAddress;
-            ClearChildren(setCarryAddr);
-        }
-        // TODO: destructive - else
-    }
-
-
-    if (destructive->flagCarry.isDestructive)
-    {
-        if (!destructive->flagCarry.save)
-        {
-            newInfo->flagCarry.variableRead = TempVarFor(tempIndexCf, "temp_cf", instr->mAddress);
-            destructive->flagCarry.variableWrite = newInfo->flagCarry.variableRead;
-            destructive->flagCarry.save = true;
-            destructive->flagCarry.savedFor = instr->mAddress;
-            ClearChildren(ls);
-        }
-    } else
-        newInfo->flagCarry.variableRead = "flags.carry";
-    newInfo->flagCarry.wasRead = true;
-}
-if (needsZf)
-{
-    for (address_t o : newInfo->flagZero.lastSet)
-    {
-        shared<CapInstr> oi = code.find(o)->second;
-        if (oi->mId == X86_INS_CALL)
-        {
-            if (oi->IsDirectCall())
-                AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnZero);
-            else
-                newInfo->stop = "callee must return zero";
-        }
-    }
-    
-    if (newInfo->flagZero.saved)
-    {
-        address_t setflag = *newInfo->flagZero.lastSet.begin();
-        shared<instrInfo_t> setflaginfo = info->code.find(setflag)->second;
-        strncpy(newInfo->flagZero.variableRead,
-                setflaginfo->flagZero.variableWrite, sizeof(newInfo->flagZero.variableRead));
-    }
-    
-    if (newInfo->flagZero.lastSet.size() == 1)
-    {
-        if (newInfo->flagZero.dirty[0] || newInfo->flagZero.dirty[1])
-        {
-            address_t setZeroAddr = *newInfo->flagZero.lastSet.begin();
-            shared<instrInfo_t> setZeroInfo = info->code.find(setZeroAddr)->second;
-            if (!setZeroInfo->flagZero.save)
-            {
-                strcpy(newInfo->flagZero.variableRead, "flags.zero");
-                strcpy(setZeroInfo->flagZero.variableWrite, newInfo->flagZero.variableRead);
-                setZeroInfo->flagZero.save = true;
-                setZeroInfo->flagZero.savedFor = instr->mAddress;
-                ClearChildren(setZeroAddr);
-            }
-            
-        }
-        
-        address_t ls = *newInfo->flagZero.lastSet.begin();
-        shared<instrInfo_t> destructive = info->code.find(ls)->second;
-        if (destructive->flagZero.isDestructive)
-        {
-            assert(0);
-        }
-    }
-    
-    if (newInfo->flagZero.lastSet.size() > 1)
-    {
-        std::string variable = TempVarFor(tempIndexZf, "temp_zf", instr->mAddress);
-
-        strcpy(newInfo->flagZero.variableRead, variable.c_str());
-        
-        for (address_t setZeroAddr : newInfo->flagZero.lastSet)
-        {
-            shared<instrInfo_t> setZeroInfo = info->code.find(setZeroAddr)->second;
-            if (!setZeroInfo->flagZero.save)
-            {
-                strcpy(setZeroInfo->flagZero.variableWrite, newInfo->flagZero.variableRead);
-                setZeroInfo->flagZero.save = true;
-                setZeroInfo->flagZero.savedFor = instr->mAddress;
-                ClearChildren(setZeroAddr);
-            }
-        }
-    }
-    newInfo->flagZero.wasRead = true;
-}
-if (needsOf)
-{
-    if (instr->mId == X86_INS_CALL)
-        assert(0);
-    
-    assert(newInfo->flagOverflow.lastSet.size() == 1);
-    newInfo->flagOverflow.wasRead = true;
-}
-if (needsSf)
-{
-    if (instr->mId == X86_INS_CALL)
-        assert(0);
-    
-    if (newInfo->flagSign.lastSet.size() > 1)
-    {
-        snprintf(newInfo->flagZero.variableRead, sizeof(newInfo->flagZero.variableRead), "temp_sf%d", tempIndexSf++);
-        
-        for (address_t setSignAddr : newInfo->flagSign.lastSet)
-        {
-            shared<instrInfo_t> setSignInfo = info->code.find(setSignAddr)->second;
-            if (!setSignInfo->flagSign.save)
-            {
-                strcpy(setSignInfo->flagZero.variableWrite, newInfo->flagZero.variableRead);
-                setSignInfo->flagSign.save = true;
-                setSignInfo->flagSign.savedFor = instr->mAddress;
-                ClearChildren(setSignAddr);
-            }
-        }
-    }
-    newInfo->flagSign.wasRead = true;
-}
-*/
