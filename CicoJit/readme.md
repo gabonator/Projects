@@ -5,6 +5,7 @@
 # CicoJit
 
 Cicojit was an experimental project which translates MSDOS binaries into C++ code on the fly during the program execution while building a source code of complete application. Similar to QEMU or Rosetta, but instead of translating basic blocks (sequence of instruction between branches), CicoJit tries to translate whole methods to produce human readable code. Cruical part is the CicoDis disassembler which uses Capstone to turn sequence of instructions into human readable C code. CicoJit was extremely slow and later I focused on improving the CicoDis component, running CicoDis with recursive mode enabled converts most of the application in single run and it does it very quickly. Command line interface was extended to help CicoJit to process indirect jumps. CLI also allows setting the base address to debug the application side by side with DosBox. 
+Early version of this project is called [Cicoparser](https://github.com/gabonator/Education/tree/master/2021/CicoParser) (check the link, it nicely explains how it was done with IDA disassembler + video is included)
 
 # CicoDis
 
