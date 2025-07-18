@@ -154,7 +154,12 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_CLD] = {.convert = [](convert_args){ return "flags.direction = 0;"; } },
     [X86_INS_STD] = {.convert = [](convert_args){ return "flags.direction = 1;"; } },
-    [X86_INS_CLC] = {.convert = [](convert_args){ return "flags.carry = 0;"; } },
+    [X86_INS_CLC] = {.convert = [](convert_args){
+        return "flags.carry = 0;";
+        //return "$wrcarry = 0;";
+    },
+            .savecf = [](convert_args){ return "0"; },
+    },
     [X86_INS_STC] = {.convert = [](convert_args){ return "flags.carry = 1;"; } },
     [X86_INS_CLI] = {.convert = [](convert_args){ return "flags.interrupts = 0;"; } },
     [X86_INS_STI] = {.convert = [](convert_args){ return "flags.interrupts = 1;"; } },
@@ -188,7 +193,7 @@ convert_t convert[X86_INS_ENDING] = {
             return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
         },
         .zf = [](convert_args){ return "!$rd0"; },
-        .cf = [](convert_args){ return "$carry"; }, // TODO: saved index
+        .cf = [](convert_args){ return "$rdcarry"; }, // TODO: saved index
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
         .savecf = [](convert_args){ assert(instr->mDetail.operands[1].type == X86_OP_IMM && instr->mDetail.operands[1].imm == 1); return "$rd0 & 1"; },
     },
@@ -282,19 +287,20 @@ convert_t convert[X86_INS_ENDING] = {
         }
     } },
     [X86_INS_ADC] = {.convert = [](convert_args){
-        assert(0);
-        return "";
-        /*
-        assert(!info->flagCarry.variableRead.empty());
-        return format("$rw0 += $rd1 + %s;", info->flagCarry.variableRead.c_str()); },
+            assert(!info->GetFlag('c').variableRead.empty());
+            return format("$rw0 += $rd1 + %s;", info->GetFlag('c').variableRead.c_str());
+        },
             .savecf = [](convert_args){
-                assert(info->flagCarry.variableRead[0]);
-                return format("($rd0 + $rd1 + %s) >= $overflow0", info->flagCarry.variableRead.c_str());*/ },
+                assert(!info->GetFlag('c').variableRead.empty());
+                return format("($rd0 + $rd1 + %s) >= $overflow0", info->GetFlag('c').variableRead.c_str());
+            },
             .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
     },
     [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg());"; } },
     [X86_INS_POPF] = {.convert = [](convert_args){ return "flagsFromReg(pop());"; } },
-    [X86_INS_CMC] = {.convert = [](convert_args){ return "flags.carry = !flags.carry;"; } },
+    [X86_INS_CMC] = {.convert = [](convert_args){
+        return info->GetFlag('c').save ? "" : "flags.carry = !flags.carry /*invert*/;"; },
+        .savecf = [](convert_args){ return "!$rdcarry /*gabo!!*/"; },},
     [X86_INS_XLATB] = {.convert = [](convert_args){ return "al = memoryAGet($prefix, bx+al);"; } },
 };

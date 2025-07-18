@@ -31,7 +31,10 @@ public:
         for (const auto& p : code)
         {
             if (verbose)
-                printf("%s%x %x:%x %s %s\n", p.second->isLabel ? "loc_" : "    ", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+            {
+                printf("%s%x %x:%x %s %s", p.second->isLabel ? "loc_" : "    ", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+                shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
+            }
         }
 
         if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
@@ -263,6 +266,7 @@ public:
         for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             if (flag->needed)
             {
+                assert(!flag->lastSet.empty());
                 needFlags++;
                 dirty |= flag->dirty[0] | flag->dirty[1] | flag->dirty[2];
                 lastSet.insert(flag->lastSet.begin(), flag->lastSet.end());

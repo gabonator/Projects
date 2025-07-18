@@ -19,6 +19,8 @@
 #include "loader.h"
 #include "tracer.h"
 #include "analyser.h"
+#include "analyserFunction.h"
+#include "analyserInstruction.h"
 #include "formatter.h"
 #include "converter.h"
 
@@ -26,9 +28,6 @@ int main(int argc, char **argv) {
     Options optionsRick2 = {
         .loader = "LoaderMz",
         .exec = "RICK2.EXE",
-        //        .recursive = false, .start = false, .procList = {{0x1000, 0x6222}}
-//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x1a257 - 0x10400}},
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x16222 - 0x10400}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1040, 0xffff),
@@ -45,18 +44,19 @@ int main(int argc, char **argv) {
                 .selector = "indirect",
             }),
         },
-            .isolateLabels = {address_t(0x1040, 0x168a8-0x10400),
-                address_t(0x1040, 0x196f3-0x10400),
-                address_t(0x1040, 0x1c359-0x10400),
-                address_t(0x1040, 0x19f12-0x10400),
-                address_t(0x1040, 0x19731-0x10400)
-            }
+        .isolateLabels = {address_t(0x1040, 0x168a8-0x10400),
+            address_t(0x1040, 0x196f3-0x10400),
+            address_t(0x1040, 0x1c359-0x10400),
+            address_t(0x1040, 0x19f12-0x10400),
+            address_t(0x1040, 0x19731-0x10400)
+        }
     };
     
     Options optionsGoose = {
         .loader = "LoaderMz",
         .exec = "GOOSE.EXE",
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0x541}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0x101ad- 0x10000}},
+
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1000, 0x104e),
@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
         }
     };
 
-    Options options = optionsGoose;
+//    Options options = optionsGoose;
+    Options options = optionsRick2;
     //Options options = optionsFox;
 //    Options options = optionsRick1;
 

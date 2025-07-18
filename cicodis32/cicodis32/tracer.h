@@ -11,7 +11,7 @@ struct instruction_t
     bool continuous{true};
     bool simpleJump{false};
     bool calls{false};
-    bool visibleFlags{false};
+//    bool visibleFlags{false};
     int stack{0};
     bool conditional{false};
     bool unconditional{false};
@@ -54,7 +54,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
 
     [X86_INS_LEA] = {  },
     [X86_INS_MOV] = {  },
-    [X86_INS_SAHF] = { /*.reads = instruction_t::regAh,*/ .visibleFlags = true },
+    //[X86_INS_SAHF] = { /*.reads = instruction_t::regAh,*/ .visibleFlags = true },
     [X86_INS_XOR] = {},
     [X86_INS_TEST] = {},
     
@@ -67,8 +67,6 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_CMP] = { },
     [X86_INS_ADD] = { },
     [X86_INS_MOVZX] = { },
-//    [X86_INS_CLC] = { .savesFlagVisibly = {"flags.carry"}},
-//    [X86_INS_STC] = { .savesFlagVisibly = {"flags.carry"}},
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>
@@ -268,6 +266,12 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
             mDetail.eflags = X86_EFLAGS_RESET_CF | X86_EFLAGS_RESET_OF | X86_EFLAGS_MODIFY_SF | X86_EFLAGS_MODIFY_ZF;
         }
     }
+    if (mId == X86_INS_CMC)
+    {
+        // errata
+        mDetail.eflags = X86_EFLAGS_MODIFY_CF | X86_EFLAGS_TEST_CF;
+    }
+    
     if (mId == X86_INS_RCL && mDetail.op_count == 2 && mDetail.operands[1].type == X86_OP_IMM && mDetail.operands[1].size == 0 && mDetail.operands[1].imm == 1)
     {
         mDetail.operands[1].size = 1;

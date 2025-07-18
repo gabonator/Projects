@@ -187,11 +187,12 @@ public:
         
         if (getset)
         {
-            bool firstWr = memcmp(fmt, "$wr", 3) == 0;
-            bool firstRdWr = memcmp(fmt, "$rw", 3) == 0;
+            bool firstWr = memcmp(fmt, "$wr", 3) == 0 && fmt[3] >= '0' && fmt[3] <= '5';
+            bool firstRdWr = memcmp(fmt, "$rw", 3) == 0 && fmt[3] >= '0' && fmt[3] <= '5';
             if (firstWr || firstRdWr)
             {
                 int index = fmt[3] - '0';
+                assert(index >= 0 && index <= 5);
                 if (x86.op_count < index+1)
                     return "PROBLEM-11d";
                 
@@ -517,11 +518,16 @@ public:
                 else
                     strncpy(replace, "true", 64);
             }
-//            if (strcmp(tok, "carry") == 0)
-//            {
-//                assert(!info->flagCarry.variableRead.empty());
-//                strncpy(replace, info->flagCarry.variableRead.c_str(), 64);
-//            }
+            if (strcmp(tok, "rdcarry") == 0)
+            {
+                assert(!info->GetFlag('c').variableRead.empty());
+                strncpy(replace, info->GetFlag('c').variableRead.c_str(), 64);
+            }
+            if (strcmp(tok, "wrcarry") == 0)
+            {
+                assert(!info->GetFlag('c').variableWrite.empty());
+                strncpy(replace, info->GetFlag('c').variableWrite.c_str(), 64);
+            }
 
             assert(replace[0] > 0);
             char temp[128];
