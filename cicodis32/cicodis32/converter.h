@@ -12,7 +12,8 @@ class Convert : public Formatter
 {
     const Analyser& mAnal;
     const Options& mOptions;
-    shared<CTracer> mTracer;
+    shared <Analyser::info_t> mInfo;
+//    shared<CTracer> mTracer;
     std::vector<std::string> mCode;
     
 public:
@@ -22,26 +23,27 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{mOptions.verbose};
-        
-        mTracer = mAnal.mMethods.find(proc)->second;
-        CTracer::code_t& code = mTracer->GetCode();
+        const bool verbose{true}; //mOptions.verbose};
+        mInfo = mAnal.mInfos.find(proc)->second;
+        Analyser::code_t& code = mInfo->code;
         assert(!code.empty());
 
-        for (const auto& p : code)
+        for (const auto& [addr, pi] : code)
         {
             if (verbose)
             {
-                printf("%s%x %x:%x %s %s", p.second->isLabel ? "loc_" : "    ", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+                shared<CapInstr> p = pi->instr;
+                printf("%s%x %x:%x %s %s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, p->mMnemonic, p->mOperands);
                 shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
             }
         }
 
-        if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
+        // TODO: bStub!
+        if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
         {
             // stub
             mCode.push_back(format("void sub_%x()\n{\n", proc.linearOffset()));
-            mCode.push_back(format("  sub_%x();\n", code.begin()->second->JumpTarget().linearOffset()));
+            mCode.push_back(format("  sub_%x();\n", code.begin()->second->instr->JumpTarget().linearOffset()));
             mCode.push_back("}\n\n");
             return;
         }
@@ -86,13 +88,13 @@ public:
             {
                 mCode.push_back(format("  // gap %d bytes\n", p.first.offset - next.offset));
             }
-            shared<CapInstr> pinstr = p.second;
+            shared<CapInstr> pinstr = p.second->instr;
             auto codeit = info->code.find(p.first);
             assert(codeit != info->code.end());
             shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
             
             if (verbose)
-                printf("/*%x %s %s*/\n", p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+                printf("/*%x %s %s*/\n", p.second->instr->mAddress.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
 
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
                 mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
@@ -110,7 +112,7 @@ public:
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
                     assert(save);
-                    mCode.push_back("    " + std::string(flag->variableWrite) + " = " + iformat(pinstr, pinfo, info->func, save(p.second, pinfo, info->func)) + ";\n");
+                    mCode.push_back("    " + std::string(flag->variableWrite) + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
                 }
             }
             
@@ -133,6 +135,14 @@ public:
                     mCode.push_back("    stop(\"infinite loop\");\n");
             }
             
+            if (pinstr->mId == X86_INS_RET || pinstr->mId == X86_INS_IRET)
+            {
+                if (!pinfo->GetFlag('c').variableRead.empty() && pinfo->GetFlag('c').variableRead != "flags.carry")
+                    mCode.push_back("    flags.carry = " + pinfo->GetFlag('c').variableRead + ";\n");
+                if (!pinfo->GetFlag('z').variableRead.empty() && pinfo->GetFlag('z').variableRead != "flags.zero")
+                    mCode.push_back("    flags.zero = " + pinfo->GetFlag('z').variableRead + ";\n");
+            }
+            
             if (mOptions.GetJumpTable(pinstr->mAddress))
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
@@ -140,7 +150,7 @@ public:
             } else
             if (convert[pinstr->mId].convert)
             {
-                std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(p.second, pinfo, info->func));
+                std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
                 if (command.size())
                     mCode.push_back("    " + command + "\n");
             }
@@ -157,12 +167,12 @@ public:
             if (pinstr->isReturning)
                 mCode.push_back("    return;\n");
 
-            next = {p.second->mAddress.segment, p.second->mAddress.offset + p.second->mSize};
+            next = {p.first.segment, p.first.offset + p.second->instr->mSize};
         }
         mCode.push_back("}\n");
     }
     
-    std::set<std::string> GetTempVariables(CTracer::code_t& code, shared<Analyser::info_t> info)
+    std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
     {
         std::set<std::string> tempNames;
         for (const auto& p : code)
@@ -268,7 +278,7 @@ public:
             {
                 assert(!flag->lastSet.empty());
                 needFlags++;
-                dirty |= flag->dirty[0] | flag->dirty[1] | flag->dirty[2];
+                dirty |= flag->dirty;
                 lastSet.insert(flag->lastSet.begin(), flag->lastSet.end());
                 needFlag = flag->type;
             }
@@ -276,7 +286,7 @@ public:
         if (!dirty && needFlags == 1 && lastSet.size() == 1)
         {
             // single flag needed
-            shared<CapInstr> lastSetInstr = mTracer->GetCode().find(*lastSet.begin())->second;
+            shared<CapInstr> lastSetInstr = mInfo->code.find(*lastSet.begin())->second->instr;
             convert_t templ = convert[lastSetInstr->mId];
             convert_t cond = convert[instr->mId];
             std::string flagCondition = cond.flagCondition;
@@ -325,9 +335,8 @@ public:
         if (!dirty && needFlags > 1)
         {
             assert(lastSet.size() == 1);
-            shared<CapInstr> lastSetInstr = mTracer->GetCode().find(*lastSet.begin())->second;
-            shared<instrInfo_t> lastSetInfo = info; // TODO: NOT REAL!!
-            return iformat(lastSetInstr, lastSetInfo, func, precondition(lastSetInstr, instr->mId));
+            shared<instrInfo_t> lastSetInfo = mInfo->code.find(*lastSet.begin())->second;
+            return iformat(lastSetInfo->instr, lastSetInfo, func, precondition(lastSetInfo->instr, instr->mId));
         }
         assert(0);
         return "";

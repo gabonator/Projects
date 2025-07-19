@@ -416,7 +416,25 @@ public:
         }
     }
 
-    bool Intersects(cs_x86_op a, cs_x86_op b)
+    bool Equals(const cs_x86_op& a, const cs_x86_op& b)
+    {
+        if (a.type != b.type)
+            return false;
+        switch (a.type)
+        {
+            case X86_OP_INVALID:
+                return true;
+            case X86_OP_IMM:
+                return a.imm == b.imm;
+            case X86_OP_REG:
+                return a.reg == b.reg;
+            case X86_OP_MEM:
+                return a.mem.segment == b.mem.segment && a.mem.base == b.mem.base && a.mem.index == b.mem.index && a.mem.scale == b.mem.scale && a.mem.disp == b.mem.disp;
+            default:
+                assert(0);
+        }
+    }
+    bool Intersects(const cs_x86_op& a, const cs_x86_op& b)
     {
         // check if operand A becomes invalidated after writing to operand B
         if (a.type == X86_OP_INVALID || b.type == X86_OP_IMM)

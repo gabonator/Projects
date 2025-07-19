@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     Options optionsRick2 = {
         .loader = "LoaderMz",
         .exec = "RICK2.EXE",
+        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x5e22}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1040, 0xffff),
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
         .loader = "LoaderMz",
         .exec = "GOOSE.EXE",
 //        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0x101ad- 0x10000}},
+//                .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0x541}},
 
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -145,7 +147,7 @@ int main(int argc, char **argv) {
         printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
     
     std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
-//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
+    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
     
     Analyser analyser(options);
     if (options.recursive)
@@ -158,8 +160,8 @@ int main(int argc, char **argv) {
 
     if (options.declarations)
     {
-        for (std::pair<address_t, std::shared_ptr<CTracer>> proc : analyser.mMethods)
-            printf("void sub_%x();\n", proc.first.linearOffset());
+        for (address_t proc : analyser.AllMethods())
+            printf("void sub_%x();\n", proc.linearOffset());
         printf("\n");
     }
 

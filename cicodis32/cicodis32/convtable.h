@@ -88,6 +88,7 @@ convert_t convert[X86_INS_ENDING] = {
     },
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
+        .savecf = [](convert_args){ return "0 /* gabo-bad */"; },
     },
     [X86_INS_ADD] = {.convert = [](convert_args){ return "$rw0 += $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },

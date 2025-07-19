@@ -14,16 +14,18 @@ protected:
 public:
     FunctionAnalyser(Options& options) : ProgramAnalyser(options)
     {
-        verbose = mOptions.verbose;
+        verbose = mOptions.verbose | 0;
     }
 
-    virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> info, shared<CapInstr> instr, const funcInfo_t& func, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& code, std::map<address_t, shared<CapInstr>, cmp_adress_t>& instructions) = 0;
+    virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
     
     virtual void AnalyseProc(address_t proc, procRequest_t req)
     {
-        shared<CTracer> tracer = check(mMethods.find(proc), mMethods.end())->second;
-        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
-        std::vector<std::pair<address_t, address_t>> head({{address_t(), tracer->Address()}});
+        //auto& [addr, info] = *mInfos.find(proc);
+        shared<info_t> info = mInfos.find(proc)->second;
+        code_t& code = info->code;
+        //code_t code = info->code;
+        std::vector<std::pair<address_t, address_t>> head({{address_t(), proc}});
 
         tempIndexPrecond.clear();
         tempIndexZf.clear();
@@ -31,7 +33,6 @@ public:
         tempIndexSf.clear();
         tempIndexOf.clear();
 
-        shared<info_t> info(new info_t);
         info->func.request = req;
         info->func.callConv = GetCallConvention(code);
         
@@ -47,157 +48,175 @@ public:
                 if (verbose)
                     printf("%x->%x: ", link.first.offset, link.second.offset);
                 
-                shared<CapInstr> instr = code.find(link.second)->second;
+                shared<CapInstr> instr = code.find(link.second)->second->instr;
+
                 if (verbose)
                     printf("    instr: %s", instr->AsString().c_str());
+                
+                if (link.first.offset == 0x54d && link.second.offset == 0x54f) // 55b ok
+                {
+                    int f =9;
+                }
 
-                shared<instrInfo_t> prevInfo;
+                shared<instrInfo_t> prevInfo = std::make_shared<instrInfo_t>();
                 if (link.first)
                 {
                     assert(info->code.find(link.first) != info->code.end());
-                    prevInfo = info->code.find(link.first)->second;
-                    assert(prevInfo);
-                } else {
-                    prevInfo = shared<instrInfo_t>(new instrInfo_t);
+                    *prevInfo = *info->code.find(link.first)->second;
+                    /*
+                    // TODO: Advance()
+                    for (instrInfo_t::instrInfoFlag_t* p : prevInfo->Flags())
+                    {
+                        if (!p->willSet.empty())
+                        {
+                            p->lastSet = p->willSet;
+                            p->willSet.clear();
+                        }
+                        p->save = false;
+                        p->variableRead.clear();
+                        p->variableWrite.clear();
+                    }*/
+                    
+
+//                    *prevInfo = *tempInfo;
+//                    for ()
+                    // Advance! (move willSet -> lastSet)
+//                    prevInfo->CopyFrom(tempInfo);
                 }
                 
-                shared<instrInfo_t> newInfo(new instrInfo_t);
-                newInfo->CopyFrom(prevInfo);
+                shared<instrInfo_t> newInfo = code.find(link.second)->second;
+
+                // TODO: copyfrom should merge
+//                if (newInfo->Equals(prevInfo))
+//                {
+//                    if (verbose)
+//                        printf(" equals\n");
+//                    continue;
+//                }
+                //newInfo->MergeMultiFlag(prevInfo);
+                if (!newInfo->AdvanceAndMerge(prevInfo) && newInfo->processed)
+                {
+                    if (verbose)
+                        printf(" no merge\n");
+                    continue;
+                }
                 
+//                printf("{{zfrefs=%d/%x}}", newInfo->zf.lastSet.size(), newInfo->zf.lastSet.size() ? newInfo->zf.lastSet.begin()->offset : 0);
+                
+
+                std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, info);
+                newInfo->processed = true;
+
+                if (verbose)
+                    printf("\n");
+
+                for (address_t clear : clearInsns)
+                    for (address_t child : info->code.find(clear)->second->instr->mNext)
+                        newHead.push_back(std::pair<address_t, address_t>(clear, child));
+
+                for (address_t next : instr->mNext)
+                    newHead.push_back(std::pair<address_t, address_t>(link.second, next));
+
+                /*
             again:
-                std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, instr, info->func, info->code, code);
+                std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, info);
                 
                 for (address_t addr : clearInsns)
                 {
-                     shared<CapInstr> destructed = code.find(addr)->second;
+                     shared<CapInstr> destructed = code.find(addr)->second->instr;
                      // spread the flag
                      for (address_t next : destructed->mNext) // TODO: not twice!
                          newHead.push_back(std::pair<address_t, address_t>(destructed->mAddress, next));
-                 }
-        
+                }
 
                 // update info, store
-                bool forceScan = false;
-                bool skipScan = false;
                 auto mergeInfoIt = info->code.find(link.second);
-                if (mergeInfoIt != info->code.end())
+                assert(mergeInfoIt != info->code.end());
+
+                if (verbose)
+                    printf("* merge %x->%x: ",link.first.offset, link.second.offset);
+
+                // no need to add this info, just update old one
+                if (mergeInfoIt->second->MergeMultiFlag(newInfo))
                 {
                     if (verbose)
-                        printf("* merge %x->%x: ",link.first.offset, link.second.offset);
+                        printf("* multi flag\n");
 
-                    // no need to add this info, just update old one
-                    if (mergeInfoIt->second->MergeMultiFlag(newInfo))
-                    {
-                        if (verbose)
-                            printf("* multi flag\n");
-
-                        // .save attribute is saved, but next pass will clear it!!
-                        newInfo = mergeInfoIt->second;
-                        goto again;
-                    } else
-                        if (verbose)
-                            printf("* no multi flag, ");
-
-                        if (mergeInfoIt->second->Merge(newInfo))
-                        {
-                            if (verbose)
-                                printf("* force scan\n");
-                            forceScan = true;
-                        } else {
-                            // identical
-//                            skipScan = true;
-//                            printf("* skip scan ");
-                        }
+                    // .save attribute is saved, but next pass will clear it!!
+                    newInfo = mergeInfoIt->second;
+                    goto again;
+                } else
                     if (verbose)
-                        printf("* ok\n");
-                } else  // TODO: remove, create dummy entries and merge all!
-                    info->code.insert(std::pair<address_t, shared<instrInfo_t>>(link.second, newInfo));
-                
-                if (skipScan)
-                    continue;
-                
-                // TODO: HIGH not working when going backward with new flag last set
-                for (address_t next : instr->mNext)
-                {
-                    if (forceScan)
-                        newHead.push_back(std::pair<address_t, address_t>(link.second, next));
-                    else if (info->code.find(next) == info->code.end())
-                        newHead.push_back(std::pair<address_t, address_t>(link.second, next));
-                    else
-                    {
-//                        newHead.push_back(std::pair<address_t, address_t>(link.second, next));
-                        /*
-                        shared<instrInfo_t> advanceInfo(new instrInfo_t);
-                        advanceInfo->CopyFrom(newInfo); // willset->lastset
+                        printf("* no multi flag, ");
 
-                        auto mergeInfoIt = info->code.find(next);
-                        printf("Existing target %x >", next.offset);
-                        if (mergeInfoIt->second->MergeMultiFlag(advanceInfo))
-                            newHead.push_back(std::pair<address_t, address_t>(link.second, next));
-                         */
+                    if (mergeInfoIt->second->Merge(newInfo))
+                    {
+                        if (verbose)
+                            printf("* force scan\n");
                     }
-                    
-                    //mergeInfoIt->second->MergeMultiFlag(newInfo)
-                }
+                if (verbose)
+                    printf("* ok\n");
+                                
+                for (address_t next : instr->mNext)
+                    newHead.push_back(std::pair<address_t, address_t>(link.second, next));
+                 */
             }
             head = newHead;
         }
 
         // BAD, collect all RET, and merge
-        PostProcess(tracer, info, req);
+        PostProcess(info);
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
     }
     
-    void PostProcess(shared<CTracer> tracer, shared<info_t> info, procRequest_t req)
+    void PostProcess(shared<info_t> info)
     {
-        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
-        FindInfiniteLoops(tracer, info);
+        FindInfiniteLoops(info->code);
     }
     
-    void FindInfiniteLoops(shared<CTracer> tracer, shared<info_t> info)
+    void FindInfiniteLoops(code_t& code)
     {
-        std::map<address_t, shared<CapInstr>, cmp_adress_t> code = tracer->GetCode();
         for (const auto& p : code)
         {
-            shared<CapInstr> pinstr = p.second;
+            shared<CapInstr> pinstr = p.second->instr;
             if (!pinstr->IsConditionalJump())
                 continue;
             if (pinstr->mPrev.size() != 1)
                 continue;
-            shared<CapInstr> prev = code.find(*pinstr->mPrev.begin())->second;
+            shared<CapInstr> prev = code.find(*pinstr->mPrev.begin())->second->instr;
             if (!prev->isLabel)
                 continue;
             if (prev->mId != X86_INS_CMP && prev->mId != X86_INS_TEST)
                 continue;
             if (prev->mAddress != pinstr->JumpTarget())
                 continue;
-            info->code.find(prev->mAddress)->second->infiniteLoop = true;
+            code.find(prev->mAddress)->second->infiniteLoop = true;
         }
     }
 
-    void DumpCode(address_t proc, std::map<address_t, shared<CapInstr>, cmp_adress_t>& code)
+    void DumpCode(address_t proc, code_t& code)
     {
         printf("    %x %x:%x proc %x\n", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
         for (const auto& p : code)
         {
-            if (p.second->isLabel)
+            if (p.second->instr->isLabel)
                 printf("loc_");
             else
                 printf("    ");
-            printf("%x %x:%x %s %s\n", p.second->mAddress.linearOffset(), p.second->mAddress.segment, p.second->mAddress.offset, p.second->mMnemonic, p.second->mOperands);
+            printf("%x %x:%x %s %s\n", p.first.linearOffset(), p.first.segment, p.first.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
         }
     }
 
-    callConv_t GetCallConvention(const CTracer::code_t& code)
+    callConv_t GetCallConvention(const code_t& code)
     {
         int retFar = 0, retNear = 0;
         bool stack = UsesStack(code);
         
         for (const auto& p : code)
         {
-            if (p.second->mId == X86_INS_RETF)
+            if (p.second->instr->mId == X86_INS_RETF)
                 retFar++;
-            if (p.second->mId == X86_INS_RET)
+            if (p.second->instr->mId == X86_INS_RET)
                 retNear++;
         }
         
@@ -214,15 +233,15 @@ public:
         return callConv_t::callConvUnknown;
     }
     
-    bool UsesStack(const CTracer::code_t& code)
+    bool UsesStack(const code_t& code)
     {
         cs_x86_op regsp = {.type=X86_OP_REG, .reg = X86_REG_SP};
         
         for (const auto& p : code)
         {
-            for (int i=0; i<p.second->mDetail.op_count; i++)
+            for (int i=0; i<p.second->instr->mDetail.op_count; i++)
                 //if (p.second->mDetail.operands[i].access & CS_AC_READ)
-                    if (Capstone->Intersects(p.second->mDetail.operands[i], regsp))
+                    if (Capstone->Intersects(p.second->instr->mDetail.operands[i], regsp))
                         return true;
         }
         

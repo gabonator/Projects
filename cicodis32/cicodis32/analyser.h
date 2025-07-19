@@ -29,25 +29,27 @@ struct funcInfo_t {
 };
 
 struct instrInfo_t {
+    bool processed{false};
+    shared<CapInstr> instr;
+    
     struct instrInfoFlag_t {
         char type{0};
-        bool save{false};
+        bool save{false}; // TODO: redundant, remove
         std::string variableWrite;
         std::string variableRead;
-        bool needed;
-        bool dirty[3];
+        bool needed{false};
+        bool dirty{false};
         std::set<address_t, cmp_adress_t> lastSet;
-        x86_insn lastSetInsn{X86_INS_INVALID};
                 
         // private:
         bool isDestructive{false};
         bool savedVisibly{false};
-        cs_x86_op depends[2];
         std::set<address_t, cmp_adress_t> willSet;
-        x86_insn willSetInsn{X86_INS_INVALID};
         bool saved{false};
 
         void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
+        bool Equals(instrInfo_t::instrInfoFlag_t& o);
+        bool Merge(instrInfo_t::instrInfoFlag_t& o);
     } cf, zf, sf, of;
 
     instrInfo_t()
@@ -79,6 +81,11 @@ struct instrInfo_t {
         x86_insn writeOp{X86_INS_INVALID};
         x86_insn readOp{X86_INS_INVALID};
         std::string variable;
+        
+        bool operator==(const precondition_t& other) const {
+            return needs == other.needs && writeOp == other.writeOp &&
+                readOp == other.readOp && variable == other.variable;
+        }
     };
     
     std::vector<precondition_t> savePrecondition;
@@ -91,24 +98,63 @@ struct instrInfo_t {
     address_t procTarget;
 
     void CopyFrom(shared<instrInfo_t> o);
+    bool Equals(shared<instrInfo_t> o);
     bool MergeMultiFlag(shared<instrInfo_t> o);
-    bool Merge(shared<instrInfo_t> o);
+    bool AdvanceAndMerge(shared<instrInfo_t> o);
 };
+
+bool instrInfo_t::Equals(shared<instrInfo_t> o)
+{
+//    if (!o)
+//        return false;
+    if (instr || !o->instr)
+        return false;
+    if (instr->mId != o->instr->mId)
+        return false;
+    for (instrInfoFlag_t* p : Flags())
+        if (!p->Equals(o->GetFlag(p->type)))
+            return false;
+    return true;
+
+//    if (savePrecondition.size() != o->savePrecondition.size())
+//        return false;
+//    if (readPrecondition != o->readPrecondition)
+//        return false;
+//    if (readPrecondition != o->readPrecondition)
+//        return false;
+}
+
+bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
+{
+    if (type != o.type || save != o.save || variableWrite != o.variableWrite ||
+        variableRead != o.variableRead || needed != o.needed ||
+        dirty != o.dirty ||
+        lastSet != o.lastSet)
+        return false;
+    if (isDestructive != o.isDestructive || savedVisibly != o.savedVisibly ||
+        //!Capstone->Equals(depends[0], o.depends[0]) ||
+        //!Capstone->Equals(depends[1], o.depends[1]) ||
+        willSet != o.willSet ||
+        saved != o.saved)
+        return false;
+    return true;
+}
 
 void instrInfo_t::instrInfoFlag_t::CopyFrom(instrInfo_t::instrInfoFlag_t& o)
 {
+    assert(0);
     type = o.type;
     save = false;
     saved = o.saved | o.save;
     //savedFor = o.savedFor;
     
     lastSet = o.willSet.empty() ? o.lastSet : o.willSet;
-    lastSetInsn = o.willSet.empty() ? o.lastSetInsn : o.willSetInsn;
-    dirty[0] = o.dirty[0];
-    dirty[1] = o.dirty[1];
-    dirty[2] = o.dirty[2];
-    depends[0] = o.depends[0];
-    depends[1] = o.depends[1];
+    //lastSetInsn = o.willSet.empty() ? o.lastSetInsn : o.willSetInsn;
+//    dirty[0] = o.dirty[0];
+//    dirty[1] = o.dirty[1];
+//    dirty[2] = o.dirty[2];
+//    depends[0] = o.depends[0];
+//    depends[1] = o.depends[1];
     savedVisibly = o.savedVisibly;
 }
 
@@ -120,6 +166,7 @@ void instrInfo_t::CopyFrom(shared<instrInfo_t> o)
 
 bool instrInfo_t::MergeMultiFlag(shared<instrInfo_t> o)
 {
+    assert(0);
     bool changed = false;
     for (instrInfoFlag_t* p : Flags())
     {
@@ -158,8 +205,132 @@ bool instrInfo_t::MergeMultiFlag(shared<instrInfo_t> o)
     return changed;
 }
 
-bool instrInfo_t::Merge(shared<instrInfo_t> o)
+bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
 {
+    bool changed = false;
+    assert(type == o.type);
+//    save |= o.save;
+    //assert(save == o.save); // warning! warning!
+//    if (variableWrite != o.variableWrite)
+//    {
+//        if (variableWrite.empty() && !o.variableWrite.empty())
+//            variableWrite = o.variableWrite;
+//        else
+//            assert(0);
+//    }
+//    assert(variableWrite == o.variableWrite);
+//    if (variableRead != o.variableRead)
+//    {
+//        if (variableRead.empty() && !o.variableRead.empty())
+//            variableRead = o.variableRead;
+//        else
+//            assert(0);
+//    }
+//    assert(variableRead == o.variableRead);
+    if (dirty != o.dirty)
+    {
+        dirty |= o.dirty;
+        changed = true;
+    }
+//    assert(needed == o.needed); // should not propagate
+//    if (!(dirty[0] == o.dirty[0] && dirty[1] == o.dirty[1] && dirty[2] == o.dirty[2]))
+//    {
+//        assert(lastSet.empty());
+//        assert(dirty[0] == false && dirty[1] == false && dirty[2] == false);
+//        dirty[0] = o.dirty[0];
+//        dirty[1] = o.dirty[1];
+//        dirty[2] = o.dirty[2];
+//        assert(depends[0].type == X86_OP_INVALID && depends[1].type == X86_OP_INVALID);
+//        depends[0] = o.depends[0];
+//        depends[1] = o.depends[1];
+//        changed = true;
+//    }
+    if (lastSet != o.lastSet)
+    {
+        lastSet.insert(o.lastSet.begin(), o.lastSet.end());
+        changed = true;
+    }
+    //
+    //assert(isDestructive == o.isDestructive); // do not spread
+//    assert(savedVisibly == o.savedVisibly);
+//    assert(Capstone->Equals(depends[0], o.depends[0]) && Capstone->Equals(depends[1], o.depends[1])); // TODO?
+    if (willSet != o.willSet)
+    {
+        willSet.insert(o.willSet.begin(), o.willSet.end());
+        changed = true;
+    }
+//    assert(saved == o.saved);
+    return changed;
+ /*
+  char type{0};
+  bool save{false};
+  std::string variableWrite;
+  std::string variableRead;
+  bool needed;
+  bool dirty[3];
+  std::set<address_t, cmp_adress_t> lastSet;
+//        x86_insn lastSetInsn{X86_INS_INVALID};
+          
+  // private:
+  bool isDestructive{false};
+  bool savedVisibly{false};
+  cs_x86_op depends[2] = {{.type = X86_OP_INVALID}, {.type = X86_OP_INVALID}};
+  std::set<address_t, cmp_adress_t> willSet;
+  x86_insn willSetInsn{X86_INS_INVALID};
+  bool saved{false};
+
+  void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
+  bool Equals(instrInfo_t::instrInfoFlag_t& o);
+  void Merge(instrInfo_t::instrInfoFlag_t& o);
+
+  */
+}
+
+bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
+{
+    // Should not merge mId from previous instruction!
+//    if (!o->instr)
+//    {
+//        // initial dummy record
+//        return false;
+//    }
+//    if (!instr)
+//        instr = o->instr;
+//    assert(instr->mId == o->instr->mId);
+//    assert(savePrecondition == o->savePrecondition);
+//    assert(readPrecondition == o->readPrecondition);
+//    assert(infiniteLoop == o->infiniteLoop);
+//    assert(stop == o->stop);
+//    assert(procRequest == o->procRequest);
+//    assert(procTarget == o->procTarget);
+    bool changed = false;
+    for (instrInfoFlag_t* p : Flags())
+    {
+        instrInfoFlag_t& other = o->GetFlag(p->type);
+        instrInfoFlag_t copy;
+        copy.type = other.type;
+        copy.lastSet = !other.willSet.empty() ? other.willSet : other.lastSet;
+        copy.dirty = !other.willSet.empty() ? false : other.dirty; // TODO: check?
+        changed |= p->Merge(copy);
+    }
+
+    return changed;
+    // private:
+
+    /*
+     std::vector<precondition_t> savePrecondition;
+     std::vector<std::string> readPrecondition;
+     bool infiniteLoop{false};
+     std::string stop;
+     
+     // private:
+     procRequest_t procRequest{procRequest_t::returnNone};
+     address_t procTarget;
+
+     */
+    
+    return false;
+    /*
     bool changed = false;
     for (instrInfoFlag_t* p : Flags())
     {
@@ -214,18 +385,20 @@ bool instrInfo_t::Merge(shared<instrInfo_t> o)
     }
     
     return changed;
+     */
 }
 
 // PathAnalyser - keep whole decoded application in memory
 class ProgramAnalyser {
 public:
+    typedef std::map<address_t, shared<instrInfo_t>, cmp_adress_t> code_t;
     const Options& mOptions;
-        std::map<address_t, std::shared_ptr<CTracer>, cmp_adress_t> mMethods;
+//        std::map<address_t, std::shared_ptr<CTracer>, cmp_adress_t> mMethods;
         struct info_t {
-            std::map<address_t, shared<instrInfo_t>, cmp_adress_t> code;
+            code_t code;
             funcInfo_t func;
         };
-        std::map<address_t, std::shared_ptr<info_t>, cmp_adress_t> mInfos;
+        std::map<address_t, shared<info_t>, cmp_adress_t> mInfos;
     
 public:
     ProgramAnalyser(Options& options) : mOptions(options)
@@ -236,7 +409,16 @@ public:
     {
         std::shared_ptr<CTracer> tracer(new CTracer(mOptions));
         tracer->Trace(method);
-        mMethods.insert(std::pair<address_t, std::shared_ptr<CTracer>>(method, tracer));
+        std::shared_ptr<info_t> newInfo = std::make_shared<info_t>();
+        for (const auto& [addr, instr] : tracer->GetCode())
+        {
+            shared<instrInfo_t> info = std::make_shared<instrInfo_t>();
+            info->instr = instr;
+            newInfo->code.insert({addr, info});
+        }
+        mInfos.insert({method, newInfo});
+        
+//        mMethods.insert(std::pair<address_t, std::shared_ptr<CTracer>>(method, tracer));
     }
     
     void RecursiveScan(std::vector<address_t> methodsToProcess)
@@ -265,8 +447,8 @@ public:
     std::set<address_t, cmp_adress_t> AllMethods()
     {
         std::set<address_t, cmp_adress_t> methods;
-        for (std::pair<address_t, std::shared_ptr<CTracer>> procpair : mMethods)
-            methods.insert(procpair.first);
+        for (const auto& [addr, instr] : mInfos)
+            methods.insert(addr);
         return methods;
     }
     
@@ -301,17 +483,17 @@ public:
     {
         std::set<address_t, cmp_adress_t> calls;
         
-        CTracer::code_t& code = mMethods.find(proc)->second->GetCode();
+        code_t& code = mInfos.find(proc)->second->code;
 
-        if (code.size() == 1 && code.begin()->second->mId == X86_INS_JMP)
+        if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
         {
             // stub
-            calls.insert(code.begin()->second->JumpTarget());
+            calls.insert(code.begin()->second->instr->JumpTarget());
             return calls;
         }
         for (const auto& p : code)
         {
-            shared<CapInstr> pinstr = p.second;
+            shared<CapInstr> pinstr = p.second->instr;
             if (pinstr->mId == X86_INS_CALL)
             {
                 assert(pinstr->mDetail.op_count == 1);

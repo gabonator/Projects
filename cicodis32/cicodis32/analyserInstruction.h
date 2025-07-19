@@ -11,15 +11,12 @@ public:
     InstructionAnalyser(Options& options) : FunctionAnalyser(options)
     {
     }
-    
-    virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> info, shared<CapInstr> instr, const funcInfo_t& func, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& code, std::map<address_t, shared<CapInstr>, cmp_adress_t>& instructions) override
+
+    virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> info, shared<info_t> info_) override
     {
-        //TODO goto ret
+        code_t& code = info_->code;
+        shared<CapInstr> instr = info->instr;
         
-        if (instr->mId == X86_INS_CMC)
-        {
-            int f = 9;
-        }
         std::set<x86_reg> reads = instr->ReadsRegisters();
         std::set<x86_reg> writes = instr->WritesRegisters();
         bool forceSave = false;
@@ -28,15 +25,15 @@ public:
         bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
         bool needsSf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF);
         
-        info->GetFlag('c').needed = needsCf;
-        info->GetFlag('z').needed = needsZf;
-        info->GetFlag('o').needed = needsOf;
-        info->GetFlag('s').needed = needsSf;
+        info->GetFlag('c').needed |= needsCf;
+        info->GetFlag('z').needed |= needsZf;
+        info->GetFlag('o').needed |= needsOf;
+        info->GetFlag('s').needed |= needsSf;
         
         // RET
         if (instr->mId == X86_INS_RETF || instr->mId == X86_INS_RET)
         {
-            switch (func.request)
+            switch (info_->func.request)
             {
                 case procRequest_t::returnNone:
                     break;
@@ -58,25 +55,25 @@ public:
             {
                 shared<instrInfo_t> instrSet = code.find(ls)->second;
                 if (instrSet->GetFlag('c').isDestructive)
-                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+                    dest.insert(std::pair<address_t, x86_insn>(ls, code.find(ls)->second->instr->mId));
             }
             for (address_t ls : info->GetFlag('z').lastSet)
             {
                 shared<instrInfo_t> instrSet = code.find(ls)->second;
                 if (instrSet->GetFlag('z').isDestructive)
-                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+                    dest.insert(std::pair<address_t, x86_insn>(ls, code.find(ls)->second->instr->mId));
             }
             for (address_t ls : info->GetFlag('o').lastSet)
             {
                 shared<instrInfo_t> instrSet = code.find(ls)->second;
                 if (instrSet->GetFlag('o').isDestructive)
-                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+                    dest.insert(std::pair<address_t, x86_insn>(ls, code.find(ls)->second->instr->mId));
             }
             for (address_t ls : info->GetFlag('s').lastSet)
             {
                 shared<instrInfo_t> instrSet = code.find(ls)->second;
                 if (instrSet->GetFlag('s').isDestructive)
-                    dest.insert(std::pair<address_t, x86_insn>(ls, instructions.find(ls)->second->mId));
+                    dest.insert(std::pair<address_t, x86_insn>(ls, code.find(ls)->second->instr->mId));
             }
             if (dest.size())
             {
@@ -94,6 +91,8 @@ public:
                 
                 if (destructive->savePrecondition.size() == 0 || destructive->savePrecondition[0].needs != needs || destructive->savePrecondition[0].writeOp != set || destructive->savePrecondition[0].readOp != cond || destructive->savePrecondition[0].variable != variable)
                 {
+                    assert(destructive->savePrecondition.size() == 0);
+//                    assert(0); // check dupl
                     destructive->savePrecondition.push_back({
                         .needs = needs,
                         .writeOp = set,
@@ -112,29 +111,29 @@ public:
         std::set<address_t, cmp_adress_t> clear;
         if (needsCf)
         {
-            NeedsFlag(clear, instructions, code, info, info->GetFlag('c'), instr, tempIndexCf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('c'), tempIndexCf, forceSave);
             if (verbose)
                 printf("(cf=%s) ", info->GetFlag('c').variableRead.c_str());
         }
         if (needsZf)
         {
-            NeedsFlag(clear, instructions, code, info, info->GetFlag('z'), instr, tempIndexZf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('z'), tempIndexZf, forceSave);
             if (verbose)
                 printf("(zf=%s) ", info->GetFlag('z').variableRead.c_str());
         }
         if (needsSf)
-            NeedsFlag(clear, instructions, code, info, info->GetFlag('s'), instr, tempIndexSf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('s'), tempIndexSf, forceSave);
         if (needsOf)
-            NeedsFlag(clear, instructions, code, info, info->GetFlag('o'), instr, tempIndexOf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('o'), tempIndexOf, forceSave);
         
         for (int i=0; i<instr->mDetail.op_count; i++)
         {
             if (instr->mDetail.operands[i].access & CS_AC_WRITE)
             {
-                checkDirtyFlags(info->GetFlag('c'), instr->mDetail.operands[i]);
-                checkDirtyFlags(info->GetFlag('z'), instr->mDetail.operands[i]);
-                checkDirtyFlags(info->GetFlag('o'), instr->mDetail.operands[i]);
-                checkDirtyFlags(info->GetFlag('s'), instr->mDetail.operands[i]);
+                checkDirtyFlags(code, info->GetFlag('c'), instr->mDetail.operands[i]);
+                checkDirtyFlags(code, info->GetFlag('z'), instr->mDetail.operands[i]);
+                checkDirtyFlags(code, info->GetFlag('o'), instr->mDetail.operands[i]);
+                checkDirtyFlags(code, info->GetFlag('s'), instr->mDetail.operands[i]);
             }
         }
                 
@@ -149,7 +148,7 @@ public:
             case X86_INS_STC:
             case X86_INS_CLC:
             case X86_INS_CMC:
-                info->GetFlag('c').savedVisibly = true;
+                info->GetFlag('c').savedVisibly |= true;
                 break;
             case X86_INS_SHL:
             case X86_INS_SHR:
@@ -157,11 +156,10 @@ public:
             case X86_INS_ADC:
             case X86_INS_SUB:
             case X86_INS_SBB:
-                info->GetFlag('c').isDestructive = true;
-                info->GetFlag('c').dirty[2] = true;
+                info->GetFlag('c').isDestructive |= true;
+                info->GetFlag('c').dirty |= true;
                 break;
             default:
-                //                        newInfo->flagCarry.isDestructive = false;
                 break;
         }
         
@@ -172,12 +170,21 @@ public:
         return clear;
     }
 
-    void checkDirtyFlags(instrInfo_t::instrInfoFlag_t& flag, cs_x86_op change)
+    void checkDirtyFlags(code_t& code, instrInfo_t::instrInfoFlag_t& flag, cs_x86_op change)
     {
-        if (Capstone->Intersects(flag.depends[0], change))
-            flag.dirty[0] = true;
-        if (Capstone->Intersects(flag.depends[1], change))
-            flag.dirty[1] = true;
+        if (flag.dirty)
+            return;
+        
+        for (address_t addr : flag.lastSet)
+        {
+            shared<CapInstr> dep = code.find(addr)->second->instr;
+            for (int i=0; i<dep->mDetail.op_count; i++)
+                if (Capstone->Intersects(dep->mDetail.operands[i], change))
+                {
+                    flag.dirty = true;
+                    return;
+                }
+        }
     };
 
     void applyFlags(shared<CapInstr> instr, char type, uint64_t modifyMask, uint64_t setMask, instrInfo_t::instrInfoFlag_t& flag)
@@ -189,38 +196,20 @@ public:
             if (verbose)
                 printf("(set %cf) ", type);
             
-            flag.type = type;
+//            flag.type = type;
             flag.willSet = {instr->mAddress}; // gabo!
-            flag.willSetInsn = instr->mId;
             
-            flag.depends[0].type = X86_OP_INVALID;
-            flag.depends[1].type = X86_OP_INVALID;
-            flag.dirty[0] = false;
-            flag.dirty[1] = false;
-            flag.dirty[2] = false;
+//            flag.dirty = false;
             
             flag.isDestructive = false;
-            flag.saved = false;
-                        
-            // scasb sets the flag directly
-            if (flag.lastSetInsn == X86_INS_SCASB)
-                return;
-            
-            int j = 0;
-            if (instr->mDetail.op_count == 3)
-            {
-                assert(instr->mDetail.operands[2].type == X86_OP_IMM);
-            } else {
-                assert(instr->mDetail.op_count <= 2);
-            }
-            for (int i=0; i<instr->mDetail.op_count; i++)
-                if (instr->mDetail.operands[i].access & CS_AC_READ)
-                    flag.depends[j++] = instr->mDetail.operands[i];
+//            flag.saved = false;
         }
     };
 
-    void NeedsFlag(std::set<address_t, cmp_adress_t>& clearChildren, std::map<address_t, shared<CapInstr>, cmp_adress_t>& code, std::map<address_t, shared<instrInfo_t>, cmp_adress_t>& info, shared<instrInfo_t> newInfo, instrInfo_t::instrInfoFlag_t& flag, shared<CapInstr> instr, std::map<address_t, int, cmp_adress_t>& tempIndex, bool forceSave)
+    void NeedsFlag(std::set<address_t, cmp_adress_t>& clearChildren, shared<info_t> info, shared<instrInfo_t> newInfo, instrInfo_t::instrInfoFlag_t& flag, std::map<address_t, int, cmp_adress_t>& tempIndex, bool forceSave)
     {
+        shared<CapInstr> instr = newInfo->instr;
+        
         std::string defaultFlag;
         switch (flag.type)
         {
@@ -245,7 +234,7 @@ public:
 
         for (address_t o : flag.lastSet)
         {
-            shared<CapInstr> oi = code.find(o)->second;
+            shared<CapInstr> oi = info->code.find(o)->second->instr;
             if (oi->mId == X86_INS_CALL)
             {
                 switch (flag.type)
@@ -279,7 +268,7 @@ public:
             std::set<std::string> variableRead;
             for (address_t a : flag.lastSet)
             {
-                shared<instrInfo_t> setflaginfo = info.find(a)->second;
+                shared<instrInfo_t> setflaginfo = info->code.find(a)->second;
                 variableRead.insert(setflaginfo->GetFlag(flag.type).variableWrite);
             }
             assert(variableRead.size() == 1);
@@ -288,10 +277,10 @@ public:
         
         if (flag.lastSet.size() == 1)
         {
-            if (flag.dirty[0] || flag.dirty[1])
+            if (flag.dirty)
             {
                 address_t setFlagAddr = *flag.lastSet.begin();
-                shared<instrInfo_t> setFlagInfo = info.find(setFlagAddr)->second;
+                shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
                 if (!setFlagInfo->GetFlag(flag.type).save)
                 {
                     flag.variableRead = defaultFlag;
@@ -303,7 +292,7 @@ public:
             }
             
             address_t ls = *flag.lastSet.begin();
-            shared<instrInfo_t> destructive = info.find(ls)->second;
+            shared<instrInfo_t> destructive = info->code.find(ls)->second;
             if (destructive->GetFlag(flag.type).isDestructive)
             {
                 if (!destructive->GetFlag(flag.type).save)
@@ -338,7 +327,7 @@ public:
             
             for (address_t setFlagAddr : flag.lastSet)
             {
-                shared<instrInfo_t> setFlagInfo = info.find(setFlagAddr)->second;
+                shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
                 if (!setFlagInfo->GetFlag(flag.type).save)
                 {
                     setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
