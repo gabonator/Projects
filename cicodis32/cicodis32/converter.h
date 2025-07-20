@@ -23,7 +23,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{true}; //mOptions.verbose};
+        const bool verbose{mOptions.verbose};
         mInfo = mAnal.mInfos.find(proc)->second;
         Analyser::code_t& code = mInfo->code;
         assert(!code.empty());

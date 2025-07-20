@@ -283,6 +283,8 @@ public:
                 shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
                 if (!setFlagInfo->GetFlag(flag.type).save)
                 {
+                    assert(setFlagInfo->instr->mId != X86_INS_STC);
+
                     flag.variableRead = defaultFlag;
                     setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
                     setFlagInfo->GetFlag(flag.type).save = true;
@@ -297,6 +299,8 @@ public:
             {
                 if (!destructive->GetFlag(flag.type).save)
                 {
+                    assert(destructive->instr->mId != X86_INS_STC);
+
                     flag.variableRead = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
                     destructive->GetFlag(flag.type).variableWrite = flag.variableRead;
                     destructive->GetFlag(flag.type).save = true;
@@ -307,6 +311,7 @@ public:
             {
                 if (!destructive->GetFlag(flag.type).savedVisibly)
                 {
+                    assert(destructive->instr->mId != X86_INS_STC);
                     flag.variableRead = defaultFlag;
                     destructive->GetFlag(flag.type).variableWrite = defaultFlag;
                     destructive->GetFlag(flag.type).save = true;
@@ -322,6 +327,74 @@ public:
         
         if (flag.lastSet.size() > 1)
         {
+            // not always through temp; CLC (flags.zero) -> ret, AND (can use flags.zero) -> ret
+            // rick2 sub_16222
+            if (forceSave)
+            {
+                // try saving as default
+                for (address_t setFlagAddr : flag.lastSet)
+                {
+                    shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
+                    if (setFlagInfo->GetFlag(flag.type).savedVisibly)
+                    {
+                        // nothing needs to be done
+                    }
+                    else if (setFlagInfo->GetFlag(flag.type).save)
+                    {
+                        assert(setFlagInfo->GetFlag(flag.type).variableWrite == defaultFlag);
+                    } else
+                    {
+                        assert(setFlagInfo->instr->mId != X86_INS_STC);
+
+                        setFlagInfo->GetFlag(flag.type).variableWrite = defaultFlag;
+                        setFlagInfo->GetFlag(flag.type).save = true;
+                        clearChildren.insert(setFlagAddr);
+                    }
+                }
+                return;
+            }
+            /*
+            assert(0);
+            bool simpleSave = true;
+            
+            for (address_t setFlagAddr : flag.lastSet)
+            {
+                switch (flag.type)
+                {
+                    case 'c':
+                    {
+                        static const bool simpleSaveInsns[X86_INS_ENDING] = {
+                            [X86_INS_STC] = true,
+                            [X86_INS_CLC] = true,
+                            [X86_INS_AND] = true,
+                            [X86_INS_OR] = true
+                        };
+                        simpleSave &= simpleSaveInsns[info->code.find(setFlagAddr)->second->instr->mId];
+                    }
+                    default:
+                        assert(0);
+                }
+            }
+            
+            if (simpleSave)
+            {
+                for (address_t setFlagAddr : flag.lastSet)
+                {
+                    shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
+                    if (!setFlagInfo->GetFlag(flag.type).save)
+                    {
+                        setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
+                        setFlagInfo->GetFlag(flag.type).save = true;
+                        clearChildren.insert(setFlagAddr);
+                    }
+                }
+                return;
+            }
+            if (!simpleSave)
+            {
+                assert(0);
+            }
+             */
             std::string variable = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
             flag.variableRead = variable;
             

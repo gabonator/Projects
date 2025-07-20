@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     Options optionsRick2 = {
         .loader = "LoaderMz",
         .exec = "RICK2.EXE",
-        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x5e22}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x5e22}},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1040, 0xffff),

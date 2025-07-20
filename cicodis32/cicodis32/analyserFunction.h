@@ -53,7 +53,8 @@ public:
                 if (verbose)
                     printf("    instr: %s", instr->AsString().c_str());
                 
-                if (link.first.offset == 0x54d && link.second.offset == 0x54f) // 55b ok
+//                if (link.first.offset == 0x54d && link.second.offset == 0x54f) // 55b ok
+                if (link.second.offset == 0x6006)
                 {
                     int f =9;
                 }
