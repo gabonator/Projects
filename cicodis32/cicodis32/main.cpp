@@ -100,9 +100,9 @@ int main(int argc, char **argv) {
     };
 
 //    Options options = optionsGoose;
-    Options options = optionsRick2;
+//    Options options = optionsRick2;
     //Options options = optionsFox;
-//    Options options = optionsRick1;
+    Options options = optionsRick1;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)

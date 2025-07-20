@@ -288,8 +288,8 @@ convert_t convert[X86_INS_ENDING] = {
         }
     } },
     [X86_INS_ADC] = {.convert = [](convert_args){
-            assert(!info->GetFlag('c').variableRead.empty());
-            return format("$rw0 += $rd1 + %s;", info->GetFlag('c').variableRead.c_str());
+            assert(!info->GetFlag('c').variableRead.empty()); // TODO
+                return format("$rw0 += $rd1 + %s;", info->GetFlag('c').variableRead.c_str());
         },
             .savecf = [](convert_args){
                 assert(!info->GetFlag('c').variableRead.empty());

@@ -319,6 +319,19 @@ public:
                     flag.variableRead = defaultFlag;
                 }
             } else {
+                if (newInfo->instr->mId == X86_INS_ADC)
+                {
+                    if (destructive->instr->mId == X86_INS_CMC)
+                    {
+                        flag.variableRead = destructive->GetFlag(flag.type).variableWrite;
+                        if (flag.variableRead.empty())
+                            flag.variableRead = defaultFlag;
+//                        assert(destructive->GetFlag(flag.type).variableWrite.empty() ||
+//                               destructive->GetFlag(flag.type).variableWrite == defaultFlag);
+                    }
+//                    destructive->GetFlag(flag.type).variableWrite = "flags.zero";
+//                    destructive->GetFlag(flag.type).save = true;
+                }
                 //flag.variableRead = defaultFlag; // TODO: gabo removed! simple condition
             }
             //assert(!flag.variableRead.empty()); // TODO: simple cmp condition without
