@@ -503,7 +503,7 @@ public:
                     stub = *instr->mNext.begin();
                     instr->mNext.clear();
                 }
-                if (instr->HasJumpTarget() && mOptions.isolateLabels.find(instr->JumpTarget()) != mOptions.isolateLabels.end())
+                if (instr->HasJumpTarget() && instr->IsDirectJump() && mOptions.isolateLabels.find(instr->JumpTarget()) != mOptions.isolateLabels.end())
                 {
                     // TODO: jb - after int 0x21, fs error handler, instr->isolateBranch = true
                     assert(instr->mId == X86_INS_JMP);

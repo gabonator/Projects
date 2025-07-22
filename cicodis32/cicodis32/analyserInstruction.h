@@ -17,6 +17,21 @@ public:
         code_t& code = info_->code;
         shared<CapInstr> instr = info->instr;
         
+        if (instr->mAddress.offset == 0x65ad)
+        {
+            int f=9;
+            /*
+             167a3 1020:65a3 sub ah, byte ptr es:[bx - 0xffe]
+             167a8 1020:65a8 ror ax, cl
+             167aa 1020:65aa mov cx, 8
+         loc_167ad 1020:65ad adc ax, word ptr es:[si] <<<<<<< DEPENDS ON ITSELF
+             167b0 1020:65b0 inc si
+             167b1 1020:65b1 inc si
+             167b2 1020:65b2 loop 0x65ad
+             167b4 1020:65b4 mov cl, bl
+             167b6 1020:65b6 rol ax, cl
+             */
+        }
         std::set<x86_reg> reads = instr->ReadsRegisters();
         std::set<x86_reg> writes = instr->WritesRegisters();
         bool forceSave = false;
@@ -92,7 +107,6 @@ public:
                 if (destructive->savePrecondition.size() == 0 || destructive->savePrecondition[0].needs != needs || destructive->savePrecondition[0].writeOp != set || destructive->savePrecondition[0].readOp != cond || destructive->savePrecondition[0].variable != variable)
                 {
                     assert(destructive->savePrecondition.size() == 0);
-//                    assert(0); // check dupl
                     destructive->savePrecondition.push_back({
                         .needs = needs,
                         .writeOp = set,
@@ -189,20 +203,12 @@ public:
 
     void applyFlags(shared<CapInstr> instr, char type, uint64_t modifyMask, uint64_t setMask, instrInfo_t::instrInfoFlag_t& flag)
     {
-        // TODO: Temp workaround, CALL sets all flags!
-        // TODO: interrupt could also update some flags
         if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & (modifyMask | setMask)))
         {
             if (verbose)
                 printf("(set %cf) ", type);
-            
-//            flag.type = type;
-            flag.willSet = {instr->mAddress}; // gabo!
-            
-//            flag.dirty = false;
-            
+            flag.willSet = {instr->mAddress};
             flag.isDestructive = false;
-//            flag.saved = false;
         }
     };
 
@@ -234,20 +240,21 @@ public:
 
         for (address_t o : flag.lastSet)
         {
-            shared<CapInstr> oi = info->code.find(o)->second->instr;
-            if (oi->mId == X86_INS_CALL)
+            shared<instrInfo_t> oi = info->code.find(o)->second;
+            if (oi->instr->mId == X86_INS_CALL && flag.needed)
             {
+                oi->GetFlag(flag.type).savedVisibly = true;
                 switch (flag.type)
                 {
                     case 'z':
-                        if (oi->IsDirectCall())
-                            AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnZero);
+                        if (oi->instr->IsDirectCall())
+                            AddProcRequest(newInfo, oi->instr->CallTarget(), procRequest_t::returnZero);
                         else
                             newInfo->stop = "callee must return zero";
                         break;
                     case 'c':
-                        if (oi->IsDirectCall())
-                            AddProcRequest(newInfo, oi->CallTarget(), procRequest_t::returnCarry);
+                        if (oi->instr->IsDirectCall())
+                            AddProcRequest(newInfo, oi->instr->CallTarget(), procRequest_t::returnCarry);
                         else
                             newInfo->stop = "callee must return carry";
                         break;
@@ -261,10 +268,6 @@ public:
         if (flag.saved)
         {
             assert(flag.lastSet.size() < 3);
-            if (flag.lastSet.size() >= 2)
-            {
-                int f = 9;
-            }
             std::set<std::string> variableRead;
             for (address_t a : flag.lastSet)
             {
@@ -279,7 +282,7 @@ public:
         {
             if (flag.dirty)
             {
-                address_t setFlagAddr = *flag.lastSet.begin();
+                address_t setFlagAddr = *flag.lastSet.begin(); // TODO: ROR bad!
                 shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
                 if (!setFlagInfo->GetFlag(flag.type).save)
                 {
@@ -319,6 +322,21 @@ public:
                     flag.variableRead = defaultFlag;
                 }
             } else {
+                // TODO: more general rules, remove
+                if (newInfo->instr->mId == X86_INS_CALL)
+                {
+                    flag.variableRead = defaultFlag;
+                }
+                if (newInfo->instr->mId == X86_INS_CMC && destructive->instr->mId == X86_INS_CMP)
+                {
+                    if (!destructive->GetFlag(flag.type).save)
+                    {
+                        flag.variableRead = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
+                        destructive->GetFlag(flag.type).variableWrite = flag.variableRead;
+                        destructive->GetFlag(flag.type).save = true;
+                    }
+                }
+
                 if (newInfo->instr->mId == X86_INS_ADC)
                 {
                     if (destructive->instr->mId == X86_INS_CMC)
@@ -326,15 +344,19 @@ public:
                         flag.variableRead = destructive->GetFlag(flag.type).variableWrite;
                         if (flag.variableRead.empty())
                             flag.variableRead = defaultFlag;
-//                        assert(destructive->GetFlag(flag.type).variableWrite.empty() ||
-//                               destructive->GetFlag(flag.type).variableWrite == defaultFlag);
                     }
-//                    destructive->GetFlag(flag.type).variableWrite = "flags.zero";
-//                    destructive->GetFlag(flag.type).save = true;
+                    if (destructive->instr->mId == X86_INS_CMP)
+                    {
+                        if (!destructive->GetFlag(flag.type).save)
+                        {
+                            flag.variableRead = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
+                            destructive->GetFlag(flag.type).variableWrite = flag.variableRead;
+                            destructive->GetFlag(flag.type).save = true;
+                        }
+                    }
                 }
                 //flag.variableRead = defaultFlag; // TODO: gabo removed! simple condition
             }
-            //assert(!flag.variableRead.empty()); // TODO: simple cmp condition without
             return;
         }
         
@@ -366,48 +388,6 @@ public:
                 }
                 return;
             }
-            /*
-            assert(0);
-            bool simpleSave = true;
-            
-            for (address_t setFlagAddr : flag.lastSet)
-            {
-                switch (flag.type)
-                {
-                    case 'c':
-                    {
-                        static const bool simpleSaveInsns[X86_INS_ENDING] = {
-                            [X86_INS_STC] = true,
-                            [X86_INS_CLC] = true,
-                            [X86_INS_AND] = true,
-                            [X86_INS_OR] = true
-                        };
-                        simpleSave &= simpleSaveInsns[info->code.find(setFlagAddr)->second->instr->mId];
-                    }
-                    default:
-                        assert(0);
-                }
-            }
-            
-            if (simpleSave)
-            {
-                for (address_t setFlagAddr : flag.lastSet)
-                {
-                    shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
-                    if (!setFlagInfo->GetFlag(flag.type).save)
-                    {
-                        setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
-                        setFlagInfo->GetFlag(flag.type).save = true;
-                        clearChildren.insert(setFlagAddr);
-                    }
-                }
-                return;
-            }
-            if (!simpleSave)
-            {
-                assert(0);
-            }
-             */
             std::string variable = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
             flag.variableRead = variable;
             
@@ -419,6 +399,10 @@ public:
                     setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
                     setFlagInfo->GetFlag(flag.type).save = true;
                     clearChildren.insert(setFlagAddr);
+                } else {
+                    if (setFlagInfo->GetFlag(flag.type).variableWrite != flag.variableRead)
+                        setFlagInfo->GetFlag(flag.type).variableWrite += " / problem9 / " + flag.variableRead;
+//                    assert(setFlagInfo->GetFlag(flag.type).variableWrite == flag.variableRead);
                 }
             }
             return;

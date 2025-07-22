@@ -72,17 +72,17 @@ int main(int argc, char **argv) {
     Options optionsRick1 = {
         .loader = "LoaderMz",
         .exec = "rick1.exe",
-        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x34442- 0x341b0}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x34442- 0x341b0}},
         //sub_34442
-//        .jumpTables = {
-//            std::shared_ptr<jumpTable_t>(new jumpTable_t{
-//                .instruction = address_t(0x341b, 0x228a),
-//                .table = address_t(0x1040, 0x80bf),
-//                .type = jumpTable_t::JumpWords,
-//                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-//                23},
-//                .selector = "di",
-//            })}
+        .jumpTables = {
+            std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = address_t(0x341b, 0x228a),
+                .table = address_t(0x1040, 0x80bf),
+                .type = jumpTable_t::JumpWords,
+                .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                23},
+                .selector = "di",
+            })}
     };
     Options optionsFox = {
         .loader = "LoaderMz",
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1bb6}},
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
-        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x4ae9}},
+//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x4ae9}},
         
         //1020:40fa
         //sub_34442
@@ -101,8 +101,8 @@ int main(int argc, char **argv) {
 
 //    Options options = optionsGoose;
 //    Options options = optionsRick2;
-    //Options options = optionsFox;
-    Options options = optionsRick1;
+    Options options = optionsFox;
+//    Options options = optionsRick1;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
         printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
     
     std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
-    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
+//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
     
     Analyser analyser(options);
     if (options.recursive)

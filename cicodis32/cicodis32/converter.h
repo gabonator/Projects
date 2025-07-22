@@ -23,7 +23,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{mOptions.verbose};
+        const bool verbose{true}; //{mOptions.verbose | true};
         mInfo = mAnal.mInfos.find(proc)->second;
         Analyser::code_t& code = mInfo->code;
         assert(!code.empty());
@@ -101,7 +101,7 @@ public:
                 
             for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
             {
-                if (flag->save)
+                if (flag->save && !flag->savedVisibly)
                 {
                     std::function<std::string(convert_args)> save;
                     switch (flag->type)

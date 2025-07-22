@@ -525,8 +525,13 @@ public:
             }
             if (strcmp(tok, "wrcarry") == 0)
             {
-                assert(!info->GetFlag('c').variableWrite.empty());
-                strncpy(replace, info->GetFlag('c').variableWrite.c_str(), 64);
+                if (info->GetFlag('c').variableWrite.empty()) // TODO: should be always set?
+                    strncpy(replace, "flags.carry", 64);
+                else
+                {
+                    assert(!info->GetFlag('c').variableWrite.empty());
+                    strncpy(replace, info->GetFlag('c').variableWrite.c_str(), 64);
+                }
             }
 
             assert(replace[0] > 0);

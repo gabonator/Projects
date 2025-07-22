@@ -105,8 +105,6 @@ struct instrInfo_t {
 
 bool instrInfo_t::Equals(shared<instrInfo_t> o)
 {
-//    if (!o)
-//        return false;
     if (instr || !o->instr)
         return false;
     if (instr->mId != o->instr->mId)
@@ -115,13 +113,6 @@ bool instrInfo_t::Equals(shared<instrInfo_t> o)
         if (!p->Equals(o->GetFlag(p->type)))
             return false;
     return true;
-
-//    if (savePrecondition.size() != o->savePrecondition.size())
-//        return false;
-//    if (readPrecondition != o->readPrecondition)
-//        return false;
-//    if (readPrecondition != o->readPrecondition)
-//        return false;
 }
 
 bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
@@ -140,169 +131,30 @@ bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
     return true;
 }
 
-void instrInfo_t::instrInfoFlag_t::CopyFrom(instrInfo_t::instrInfoFlag_t& o)
-{
-    assert(0);
-    type = o.type;
-    save = false;
-    saved = o.saved | o.save;
-    //savedFor = o.savedFor;
-    
-    lastSet = o.willSet.empty() ? o.lastSet : o.willSet;
-    //lastSetInsn = o.willSet.empty() ? o.lastSetInsn : o.willSetInsn;
-//    dirty[0] = o.dirty[0];
-//    dirty[1] = o.dirty[1];
-//    dirty[2] = o.dirty[2];
-//    depends[0] = o.depends[0];
-//    depends[1] = o.depends[1];
-    savedVisibly = o.savedVisibly;
-}
-
-void instrInfo_t::CopyFrom(shared<instrInfo_t> o)
-{
-    for (instrInfoFlag_t* p : Flags())
-        p->CopyFrom(o->GetFlag(p->type));
-}
-
-bool instrInfo_t::MergeMultiFlag(shared<instrInfo_t> o)
-{
-    assert(0);
-    bool changed = false;
-    for (instrInfoFlag_t* p : Flags())
-    {
-        instrInfoFlag_t& thisFlag = *p;
-        instrInfoFlag_t& thatFlag = o->GetFlag(p->type);
-        
-        std::set<address_t, cmp_adress_t> thatSet = thatFlag.willSet.empty() ?
-            thatFlag.lastSet : thatFlag.willSet;
-        thatSet = thatFlag.lastSet;
-//        if (p->type == 'c')
-//        {
-//            printf("cur deps: THIS(");
-//            for (const auto& ls : thisFlag.lastSet)
-//                printf("%x ", ls.offset);
-//            printf(") THAT(");
-//            for (const auto& ls : thatSet)
-//                printf("%x ", ls.offset);
-//            printf(")\n");
-//        }
-
-        for (const auto& ls : thatSet)
-        {
-            if (thisFlag.lastSet.find(ls) == thisFlag.lastSet.end())
-            {
-                thisFlag.lastSet.insert(ls);
-                ///assert(thisFlag.lastSet.size() < 3);
-                
-                if (!thisFlag.variableRead.empty())
-                    thisFlag.variableRead = "obsolete:" + thisFlag.variableRead; // TODO
-                if (!thatFlag.variableRead.empty())
-                    thatFlag.variableRead = "obsolete:" + thatFlag.variableRead;
-                changed =  true;
-            }
-        }
-    }
-    return changed;
-}
-
 bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
 {
     bool changed = false;
     assert(type == o.type);
-//    save |= o.save;
-    //assert(save == o.save); // warning! warning!
-//    if (variableWrite != o.variableWrite)
-//    {
-//        if (variableWrite.empty() && !o.variableWrite.empty())
-//            variableWrite = o.variableWrite;
-//        else
-//            assert(0);
-//    }
-//    assert(variableWrite == o.variableWrite);
-//    if (variableRead != o.variableRead)
-//    {
-//        if (variableRead.empty() && !o.variableRead.empty())
-//            variableRead = o.variableRead;
-//        else
-//            assert(0);
-//    }
-//    assert(variableRead == o.variableRead);
     if (dirty != o.dirty)
     {
         dirty |= o.dirty;
         changed = true;
     }
-//    assert(needed == o.needed); // should not propagate
-//    if (!(dirty[0] == o.dirty[0] && dirty[1] == o.dirty[1] && dirty[2] == o.dirty[2]))
-//    {
-//        assert(lastSet.empty());
-//        assert(dirty[0] == false && dirty[1] == false && dirty[2] == false);
-//        dirty[0] = o.dirty[0];
-//        dirty[1] = o.dirty[1];
-//        dirty[2] = o.dirty[2];
-//        assert(depends[0].type == X86_OP_INVALID && depends[1].type == X86_OP_INVALID);
-//        depends[0] = o.depends[0];
-//        depends[1] = o.depends[1];
-//        changed = true;
-//    }
     if (lastSet != o.lastSet)
     {
         lastSet.insert(o.lastSet.begin(), o.lastSet.end());
         changed = true;
     }
-    //
-    //assert(isDestructive == o.isDestructive); // do not spread
-//    assert(savedVisibly == o.savedVisibly);
-//    assert(Capstone->Equals(depends[0], o.depends[0]) && Capstone->Equals(depends[1], o.depends[1])); // TODO?
     if (willSet != o.willSet)
     {
         willSet.insert(o.willSet.begin(), o.willSet.end());
         changed = true;
     }
-//    assert(saved == o.saved);
     return changed;
- /*
-  char type{0};
-  bool save{false};
-  std::string variableWrite;
-  std::string variableRead;
-  bool needed;
-  bool dirty[3];
-  std::set<address_t, cmp_adress_t> lastSet;
-//        x86_insn lastSetInsn{X86_INS_INVALID};
-          
-  // private:
-  bool isDestructive{false};
-  bool savedVisibly{false};
-  cs_x86_op depends[2] = {{.type = X86_OP_INVALID}, {.type = X86_OP_INVALID}};
-  std::set<address_t, cmp_adress_t> willSet;
-  x86_insn willSetInsn{X86_INS_INVALID};
-  bool saved{false};
-
-  void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
-  bool Equals(instrInfo_t::instrInfoFlag_t& o);
-  void Merge(instrInfo_t::instrInfoFlag_t& o);
-
-  */
 }
 
 bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
 {
-    // Should not merge mId from previous instruction!
-//    if (!o->instr)
-//    {
-//        // initial dummy record
-//        return false;
-//    }
-//    if (!instr)
-//        instr = o->instr;
-//    assert(instr->mId == o->instr->mId);
-//    assert(savePrecondition == o->savePrecondition);
-//    assert(readPrecondition == o->readPrecondition);
-//    assert(infiniteLoop == o->infiniteLoop);
-//    assert(stop == o->stop);
-//    assert(procRequest == o->procRequest);
-//    assert(procTarget == o->procTarget);
     bool changed = false;
     for (instrInfoFlag_t* p : Flags())
     {
@@ -315,77 +167,6 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
     }
 
     return changed;
-    // private:
-
-    /*
-     std::vector<precondition_t> savePrecondition;
-     std::vector<std::string> readPrecondition;
-     bool infiniteLoop{false};
-     std::string stop;
-     
-     // private:
-     procRequest_t procRequest{procRequest_t::returnNone};
-     address_t procTarget;
-
-     */
-    
-    return false;
-    /*
-    bool changed = false;
-    for (instrInfoFlag_t* p : Flags())
-    {
-        if (p->saved != o->GetFlag(p->type).saved)
-        {
-            p->saved |= o->GetFlag(p->type).saved;
-            changed = true;
-        }
-    }
-
-    auto CopyVar = [](instrInfoFlag_t& a, instrInfoFlag_t& b)
-    {
-//        printf("debug-copyvar %s/%s\n", a.variableRead.c_str(), b.variableRead.c_str());
-        if (a.variableRead != b.variableRead)
-        {
-            // TODO: baaad
-            if (a.variableRead == "obsolete:flags.carry" && b.variableRead == "temp_cf")
-            {
-                a.variableRead = b.variableRead;
-            } else
-            if (a.variableRead.empty())
-                a.variableRead = b.variableRead;
-            else if (b.variableRead.empty())
-                b.variableRead = a.variableRead;
-            else {
-                //printf("varRead=%s (%d) / %s (%d)\n", a.variableRead.c_str(), a.lastSet.size(), b.variableRead.c_str(), b.lastSet.size());
-                // TODO: not sufficient
-                assert(a.lastSet.size() != b.lastSet.size());
-                if (a.lastSet.size() > b.lastSet.size())
-                    b.variableRead = a.variableRead;
-                else
-                    a.variableRead = b.variableRead;
-            }
-        }
-        if (a.variableWrite != b.variableWrite)
-        {
-            //printf("varRead=%s (%d) / %s (%d)\n", a.variableRead.c_str(), a.lastSet.size(), b.variableRead.c_str(), b.lastSet.size());
-            assert(0);
-        }
-    };
-    
-    for (instrInfoFlag_t* p : Flags())
-        CopyVar(*p, o->GetFlag(p->type));
-    
-    stop += o->stop;
-    procRequest = (procRequest_t)((int)procRequest | (int)o->procRequest);
-    if (o->readPrecondition.size() != 0)
-    {
-        assert(readPrecondition.size() == o->readPrecondition.size());
-        for (int i=0; i<readPrecondition.size(); i++)
-            assert(readPrecondition[i] == o->readPrecondition[i]);
-    }
-    
-    return changed;
-     */
 }
 
 // PathAnalyser - keep whole decoded application in memory

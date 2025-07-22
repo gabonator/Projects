@@ -14,7 +14,7 @@ protected:
 public:
     FunctionAnalyser(Options& options) : ProgramAnalyser(options)
     {
-        verbose = mOptions.verbose | 0;
+        verbose = mOptions.verbose | 1;
     }
 
     virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
@@ -37,7 +37,7 @@ public:
         info->func.callConv = GetCallConvention(code);
         
         if (verbose)
-            DumpCode(proc, code);
+            DumpCode(proc, code, req);
 
         while (head.size())
         {
@@ -64,37 +64,10 @@ public:
                 {
                     assert(info->code.find(link.first) != info->code.end());
                     *prevInfo = *info->code.find(link.first)->second;
-                    /*
-                    // TODO: Advance()
-                    for (instrInfo_t::instrInfoFlag_t* p : prevInfo->Flags())
-                    {
-                        if (!p->willSet.empty())
-                        {
-                            p->lastSet = p->willSet;
-                            p->willSet.clear();
-                        }
-                        p->save = false;
-                        p->variableRead.clear();
-                        p->variableWrite.clear();
-                    }*/
-                    
-
-//                    *prevInfo = *tempInfo;
-//                    for ()
-                    // Advance! (move willSet -> lastSet)
-//                    prevInfo->CopyFrom(tempInfo);
                 }
                 
                 shared<instrInfo_t> newInfo = code.find(link.second)->second;
 
-                // TODO: copyfrom should merge
-//                if (newInfo->Equals(prevInfo))
-//                {
-//                    if (verbose)
-//                        printf(" equals\n");
-//                    continue;
-//                }
-                //newInfo->MergeMultiFlag(prevInfo);
                 if (!newInfo->AdvanceAndMerge(prevInfo) && newInfo->processed)
                 {
                     if (verbose)
@@ -102,9 +75,6 @@ public:
                     continue;
                 }
                 
-//                printf("{{zfrefs=%d/%x}}", newInfo->zf.lastSet.size(), newInfo->zf.lastSet.size() ? newInfo->zf.lastSet.begin()->offset : 0);
-                
-
                 std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, info);
                 newInfo->processed = true;
 
@@ -118,54 +88,11 @@ public:
                 for (address_t next : instr->mNext)
                     newHead.push_back(std::pair<address_t, address_t>(link.second, next));
 
-                /*
-            again:
-                std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, info);
-                
-                for (address_t addr : clearInsns)
-                {
-                     shared<CapInstr> destructed = code.find(addr)->second->instr;
-                     // spread the flag
-                     for (address_t next : destructed->mNext) // TODO: not twice!
-                         newHead.push_back(std::pair<address_t, address_t>(destructed->mAddress, next));
-                }
-
-                // update info, store
-                auto mergeInfoIt = info->code.find(link.second);
-                assert(mergeInfoIt != info->code.end());
-
-                if (verbose)
-                    printf("* merge %x->%x: ",link.first.offset, link.second.offset);
-
-                // no need to add this info, just update old one
-                if (mergeInfoIt->second->MergeMultiFlag(newInfo))
-                {
-                    if (verbose)
-                        printf("* multi flag\n");
-
-                    // .save attribute is saved, but next pass will clear it!!
-                    newInfo = mergeInfoIt->second;
-                    goto again;
-                } else
-                    if (verbose)
-                        printf("* no multi flag, ");
-
-                    if (mergeInfoIt->second->Merge(newInfo))
-                    {
-                        if (verbose)
-                            printf("* force scan\n");
-                    }
-                if (verbose)
-                    printf("* ok\n");
-                                
-                for (address_t next : instr->mNext)
-                    newHead.push_back(std::pair<address_t, address_t>(link.second, next));
-                 */
             }
             head = newHead;
         }
 
-        // BAD, collect all RET, and merge
+        // TODO: BAD, collect all RET, and merge
         PostProcess(info);
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
     }
@@ -195,9 +122,18 @@ public:
         }
     }
 
-    void DumpCode(address_t proc, code_t& code)
+    void DumpCode(address_t proc, code_t& code, procRequest_t req)
     {
-        printf("    %x %x:%x proc %x\n", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
+        printf("    %x %x:%x proc %x", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
+        switch (req)
+        {
+            case procRequest_t::returnNone: printf("\n"); break;
+            case procRequest_t::returnCarry: printf(" +carry\n"); break;
+            case procRequest_t::returnZero: printf(" +zero\n"); break;
+            default:
+                assert(0);
+        }
+
         for (const auto& p : code)
         {
             if (p.second->instr->isLabel)
