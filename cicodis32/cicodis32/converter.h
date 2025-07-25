@@ -23,7 +23,7 @@ public:
 
     void ConvertProc(address_t proc)
     {
-        const bool verbose{true}; //{mOptions.verbose | true};
+        const bool verbose{mOptions.verbose};
         mInfo = mAnal.mInfos.find(proc)->second;
         Analyser::code_t& code = mInfo->code;
         assert(!code.empty());
@@ -33,7 +33,26 @@ public:
             if (verbose)
             {
                 shared<CapInstr> p = pi->instr;
-                printf("%s%x %x:%x %s %s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, p->mMnemonic, p->mOperands);
+                char disasm[40];
+                char depends[120] = {0};
+                char provides[120] = {0};
+                for (instrInfo_t::instrInfoFlag_t* f : pi->Flags())
+                {
+                    for (const auto addr : f->depends)
+                    {
+                        char temp[120];
+                        snprintf(temp, sizeof(temp), "r%cf: %x ", f->type, addr.offset);
+                        strncat(depends, temp, sizeof(depends)-1);
+                    }
+                    for (const auto addr : f->provides)
+                    {
+                        char temp[120];
+                        snprintf(temp, sizeof(temp), "w%cf: %x ", f->type, addr.offset);
+                        strncat(provides, temp, sizeof(provides)-1);
+                    }
+                }
+                snprintf(disasm, sizeof(disasm), "%s %s", p->mMnemonic, p->mOperands);
+                printf("%s%x %x:%x %-30s %s%s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, disasm, depends, provides);
                 shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
             }
         }
@@ -99,10 +118,17 @@ public:
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
                 mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
                 
+            std::string postSave;
             for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
             {
                 if (flag->save && !flag->savedVisibly)
                 {
+                    std::string variableWrite = flag->variableWrite;
+                    if (flag->isDestructive && flag->variableRead == flag->variableWrite)
+                    {
+                        postSave = "    " + variableWrite + " = " + variableWrite + "t;\n";
+                        variableWrite += "t";
+                    }
                     std::function<std::string(convert_args)> save;
                     switch (flag->type)
                     {
@@ -112,7 +138,10 @@ public:
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
                     assert(save);
-                    mCode.push_back("    " + std::string(flag->variableWrite) + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
+                    if (postSave.empty())
+                        mCode.push_back("    " + variableWrite + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
+                    else
+                        mCode.push_back("    bool " + variableWrite + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
                 }
             }
             
@@ -122,6 +151,12 @@ public:
                 mCode.push_back("    " + pinfo->savePrecondition[0].variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, pinfo->savePrecondition[0].readOp)) + ";\n");
             }
 
+            if (pinfo->cf.usesInternal && !pinfo->cf.variableRead.empty() && pinfo->cf.variableRead != "flags.carry")
+                mCode.push_back("    flags.carry = " + pinfo->cf.variableRead + " /*ggg6*/;\n");
+            if (pinfo->zf.usesInternal && !pinfo->zf.variableRead.empty() && pinfo->zf.variableRead != "flags.zero")
+                mCode.push_back("    flags.zero = " + pinfo->cf.variableRead + " /*ggg6*/;\n");
+            assert(!pinfo->sf.usesInternal && !pinfo->of.usesInternal);
+            
             if (pinfo->infiniteLoop)
             {
                 bool memOp = false;
@@ -139,8 +174,13 @@ public:
             {
                 if (!pinfo->GetFlag('c').variableRead.empty() && pinfo->GetFlag('c').variableRead != "flags.carry")
                     mCode.push_back("    flags.carry = " + pinfo->GetFlag('c').variableRead + ";\n");
+                else if (pinfo->GetFlag('c').needed)
+                    mCode.push_back("    flags.carry = " + BuildCondition(pinstr, pinfo, mInfo->func) + ";\n");
+                
                 if (!pinfo->GetFlag('z').variableRead.empty() && pinfo->GetFlag('z').variableRead != "flags.zero")
                     mCode.push_back("    flags.zero = " + pinfo->GetFlag('z').variableRead + ";\n");
+                else if (pinfo->GetFlag('z').needed)
+                    mCode.push_back("    flags.zero = " + BuildCondition(pinstr, pinfo, mInfo->func) + ";\n");
             }
             
             if (mOptions.GetJumpTable(pinstr->mAddress))
@@ -160,12 +200,17 @@ public:
                 assert(0);
             }
             
+            if (!postSave.empty())
+                mCode.push_back(postSave);
             if (!pinfo->stop.empty())
                 mCode.push_back("    stop("  + pinfo->stop + ");\n;");
             if (pinstr->isTerminating)
                 mCode.push_back("    stop(\"terminating\");\n");
             if (pinstr->isReturning)
+            {
+                // return flags?
                 mCode.push_back("    return;\n");
+            }
 
             next = {p.first.segment, p.first.offset + p.second->instr->mSize};
         }
@@ -313,6 +358,8 @@ public:
                         return iformat(lastSetInstr, info, func, value);
                     else if (flagCondition[0] == '!' && flagCondition[1] == '$' && flagCondition[2] == flag->type)
                         return iformat(lastSetInstr, info, func, InvertCondition(value));
+                    else if (flagCondition == "$ret")
+                        return iformat(lastSetInstr, info, func, value);
                     else
                         assert(0);
                 }

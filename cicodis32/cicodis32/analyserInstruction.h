@@ -16,8 +16,12 @@ public:
     {
         code_t& code = info_->code;
         shared<CapInstr> instr = info->instr;
-        
-        if (instr->mAddress.offset == 0x65ad)
+        if (instr->mAddress.offset == 0x6619) // ror
+        {
+            int f=9;
+        }
+
+        if (instr->mAddress.offset == 0x65ad) // adc
         {
             int f=9;
             /*
@@ -39,12 +43,7 @@ public:
         bool needsZf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF);
         bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
         bool needsSf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_SF | X86_EFLAGS_TEST_SF);
-        
-        info->GetFlag('c').needed |= needsCf;
-        info->GetFlag('z').needed |= needsZf;
-        info->GetFlag('o').needed |= needsOf;
-        info->GetFlag('s').needed |= needsSf;
-        
+                
         // RET
         if (instr->mId == X86_INS_RETF || instr->mId == X86_INS_RET)
         {
@@ -53,16 +52,21 @@ public:
                 case procRequest_t::returnNone:
                     break;
                 case procRequest_t::returnZero:
-                    forceSave = true;
+//                    forceSave = true;
                     needsZf = true;
                     break;
                 case procRequest_t::returnCarry:
-                    forceSave = true;
+//                    forceSave = true;
                     needsCf = true;
                     break;
             }
         }
-        
+
+        info->GetFlag('c').needed |= needsCf;
+        info->GetFlag('z').needed |= needsZf;
+        info->GetFlag('o').needed |= needsOf;
+        info->GetFlag('s').needed |= needsSf;
+
         if (needsCf + needsZf + needsOf + needsSf > 1)
         {
             std::map<address_t, x86_insn, cmp_adress_t> dest;
@@ -173,6 +177,11 @@ public:
                 info->GetFlag('c').isDestructive |= true;
                 info->GetFlag('c').dirty |= true;
                 break;
+            case X86_INS_ROL:
+            case X86_INS_ROR:
+            case X86_INS_RCL:
+            case X86_INS_RCR:
+                info->GetFlag('c').usesInternal = true;
             default:
                 break;
         }
@@ -241,6 +250,12 @@ public:
         for (address_t o : flag.lastSet)
         {
             shared<instrInfo_t> oi = info->code.find(o)->second;
+            if (flag.needed)
+            {
+                oi->GetFlag(flag.type).provides.insert(newInfo->instr->mAddress);
+                flag.depends.insert(o);
+            }
+            
             if (oi->instr->mId == X86_INS_CALL && flag.needed)
             {
                 oi->GetFlag(flag.type).savedVisibly = true;
@@ -288,7 +303,8 @@ public:
                 {
                     assert(setFlagInfo->instr->mId != X86_INS_STC);
 
-                    flag.variableRead = defaultFlag;
+                    //flag.variableRead = defaultFlag;
+                    flag.variableRead = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
                     setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;
                     setFlagInfo->GetFlag(flag.type).save = true;
                     clearChildren.insert(setFlagAddr);
@@ -327,6 +343,10 @@ public:
                 {
                     flag.variableRead = defaultFlag;
                 }
+//                if (newInfo->instr->mId == X86_INS_RET)
+//                {
+//                    flag.variableRead = defaultFlag;
+//                }
                 if (newInfo->instr->mId == X86_INS_CMC && destructive->instr->mId == X86_INS_CMP)
                 {
                     if (!destructive->GetFlag(flag.type).save)

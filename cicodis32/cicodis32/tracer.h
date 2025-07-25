@@ -271,7 +271,12 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
         // errata
         mDetail.eflags = X86_EFLAGS_MODIFY_CF | X86_EFLAGS_TEST_CF;
     }
-    
+    if (mId == X86_INS_RCL || mId == X86_INS_RCR)
+    {
+        // errata
+        mDetail.eflags |= X86_EFLAGS_TEST_CF;
+    }
+
     if (mId == X86_INS_RCL && mDetail.op_count == 2 && mDetail.operands[1].type == X86_OP_IMM && mDetail.operands[1].size == 0 && mDetail.operands[1].imm == 1)
     {
         mDetail.operands[1].size = 1;

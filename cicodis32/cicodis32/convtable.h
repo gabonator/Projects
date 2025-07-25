@@ -73,7 +73,9 @@ convert_t convert[X86_INS_ENDING] = {
         if (!(instr->isLast && !instr->isLabel))
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
-    } },
+    },
+        .flagCondition = "$ret",
+    },
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -131,7 +133,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$rdcarry;" : "$wr0 = $rd0 - $rd1 - $rdcarry;"; } }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
-            .zf = [](convert_args){ return "!$rd0"; },
+            .zf = [](convert_args){ return instr->ArgsEqual() ? "1" : "!$rd0"; },
             .savezf = [](convert_args){ return "$rd0 == $rd1"; },
             .savesf = [](convert_args){ return "($rd0 - $rd1) & $msb0"; },
             .savecf = [](convert_args){ return "$rd0 < $rd1"; },
@@ -155,6 +157,7 @@ convert_t convert[X86_INS_ENDING] = {
         .signedNumeric = [](convert_args){ return "$rd0"; }, //[](convert_args){ return "(sig0)$rd0"; },
         .savezf = [](convert_args){
             return "!($rd0 & $rd1)"; },
+        .savecf = [](convert_args){ return "0"; },
 
     },
     [X86_INS_NEG] = {.convert = [](convert_args){ return "$wr0 = -$rd0;"; },
@@ -195,6 +198,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_INC] = {
         .convert = [](convert_args){ return "$rw0++;"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0";},
+        .zf = [](convert_args){ return "!$rd0";},
         .savezf = [](convert_args){ return "!$rd0 /*gabo-BADBADBAD*/"; }, // TODO:
     },
     [X86_INS_SHR] = {.convert = [](convert_args) {
@@ -207,7 +211,9 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_SHL] = {.convert = [](convert_args){
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
-    } },
+    },
+            .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0) /*ggg5*/"; },
+    },
     [X86_INS_ROL] = {.convert = [](convert_args){
         return "$wr0 = rol$width0($rd0, $rd1);";
     },
@@ -217,7 +223,7 @@ convert_t convert[X86_INS_ENDING] = {
         return "$wr0 = ror$width0($rd0, $rd1);";
     },
             .savecf = [](convert_args){
-                return "$rd0 & 1 /*ggg - TODO BAD!*/";
+                return "!!($rd0 & (1 << ($rd1-1))) /*ggg - TODO BAD!*/";
             },
     },
     [X86_INS_RCR] = {.convert = [](convert_args){

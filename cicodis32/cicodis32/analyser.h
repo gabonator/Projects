@@ -32,18 +32,39 @@ struct instrInfo_t {
     bool processed{false};
     shared<CapInstr> instr;
     
+//    struct instrInfoDepends_t {
+//        char type{0};
+//        std::set<address_t, cmp_adress_t> depends;
+//        std::set<address_t, cmp_adress_t> provides;
+//        std::set<address_t, cmp_adress_t> willSet;
+//    } cd, zd, sd, od;
+    
     struct instrInfoFlag_t {
         char type{0};
         bool save{false}; // TODO: redundant, remove
         std::string variableWrite;
         std::string variableRead;
+        
+        // this instruction requireds this flag for operation
         bool needed{false};
+        // lastSet instructions were altered, so flag value extraction is not possible anymore
         bool dirty{false};
+        // set of all instruction which modify any flags for this instruction
         std::set<address_t, cmp_adress_t> lastSet;
+        // set of instruction having an effect on this instruction (lastSet && needed)
+        std::set<address_t, cmp_adress_t> depends;
+        // this instruction modifies flag for following set of instructions
+        std::set<address_t, cmp_adress_t> provides;
                 
         // private:
+        // flag value cannnot be recovered from input operand after instruction evaluation
+        // e.g. `cmp ax, bx` - flags can be fully recovered
+        // e.g. `shl ax, 1` - carry flag is lost
         bool isDestructive{false};
+        // instruction implementation internally saves default flag (e.g. flags.zero, flags.carry)
         bool savedVisibly{false};
+        // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
+        bool usesInternal{false};
         std::set<address_t, cmp_adress_t> willSet;
         bool saved{false};
 
@@ -54,17 +75,37 @@ struct instrInfo_t {
 
     instrInfo_t()
     {
+//        cf.type = cd.type = 'c';
+//        zf.type = zd.type = 'z';
+//        sf.type = sd.type = 's';
+//        of.type = od.type = 'o';
         cf.type = 'c';
-        zf.type = 'z';
-        sf.type = 's';
-        of.type = 'o';
+        zf.type  = 'z';
+        sf.type  = 's';
+        of.type  = 'o';
     }
-    
+
+//    std::vector<instrInfoDepends_t*> Deps()
+//    {
+//        return {&cd, &zd, &sd, &od};
+//    }
+
     std::vector<instrInfoFlag_t*> Flags()
     {
         return {&cf, &zf, &sf, &of};
     }
     
+//    instrInfoDepends_t& GetDeps(char c)
+//    {
+//        for (instrInfoDepends_t* f : Deps())
+//        {
+//            if (f->type == c)
+//                return *f;
+//        }
+//        assert(0);
+//        return *Deps()[0];
+//    }
+
     instrInfoFlag_t& GetFlag(char c)
     {
         for (instrInfoFlag_t* f : Flags())

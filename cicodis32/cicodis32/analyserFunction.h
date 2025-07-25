@@ -14,13 +14,18 @@ protected:
 public:
     FunctionAnalyser(Options& options) : ProgramAnalyser(options)
     {
-        verbose = mOptions.verbose | 1;
+        verbose = mOptions.verbose;
     }
 
     virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
     
     virtual void AnalyseProc(address_t proc, procRequest_t req)
     {
+        if (proc.offset == 0x354c7- 0x341b0)
+        {
+            int f=9;
+        }
+
         //auto& [addr, info] = *mInfos.find(proc);
         shared<info_t> info = mInfos.find(proc)->second;
         code_t& code = info->code;
@@ -33,6 +38,12 @@ public:
         tempIndexSf.clear();
         tempIndexOf.clear();
 
+        if (info->func.request != req)
+        {
+            // second iterat
+            for (const auto& [addr, p] : info->code)
+                p->processed = false;
+        }
         info->func.request = req;
         info->func.callConv = GetCallConvention(code);
         
