@@ -291,7 +291,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_CMPSB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CWDE] = {.convert = [](convert_args){ return "$realmode ? cbw() : cwde();"; } }, // CBW/CWDE
-    [X86_INS_CDQ] = {.convert = [](convert_args){ return "if ($realmode)\n        dx = ax & 0x8000 ? 0xffff : 0x0000\n    else\n        stop(\"cdq\");"; } }, // CWD/CWDE
+    [X86_INS_CDQ] = {.convert = [](convert_args){ return "if ($realmode)\n        dx = ax & 0x8000 ? 0xffff : 0x0000;\n    else\n        stop(\"cdq\");"; } }, // CWD/CWDE
     [X86_INS_NOP] = {.convert = [](convert_args){ return ""; } },
     [X86_INS_XCHG] = {.convert = [](convert_args){
         switch (instr->mDetail.operands[0].size)

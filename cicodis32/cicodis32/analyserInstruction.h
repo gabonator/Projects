@@ -14,31 +14,15 @@ public:
 
     virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> info, shared<info_t> info_) override
     {
+        if (info->instr->mAddress.offset == 0x2a04)
+        {
+            int f = 9;
+        }
         code_t& code = info_->code;
         shared<CapInstr> instr = info->instr;
-        if (instr->mAddress.offset == 0x6619) // ror
-        {
-            int f=9;
-        }
-
-        if (instr->mAddress.offset == 0x65ad) // adc
-        {
-            int f=9;
-            /*
-             167a3 1020:65a3 sub ah, byte ptr es:[bx - 0xffe]
-             167a8 1020:65a8 ror ax, cl
-             167aa 1020:65aa mov cx, 8
-         loc_167ad 1020:65ad adc ax, word ptr es:[si] <<<<<<< DEPENDS ON ITSELF
-             167b0 1020:65b0 inc si
-             167b1 1020:65b1 inc si
-             167b2 1020:65b2 loop 0x65ad
-             167b4 1020:65b4 mov cl, bl
-             167b6 1020:65b6 rol ax, cl
-             */
-        }
         std::set<x86_reg> reads = instr->ReadsRegisters();
         std::set<x86_reg> writes = instr->WritesRegisters();
-        bool forceSave = false;
+
         bool needsCf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF);
         bool needsZf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_ZF | X86_EFLAGS_TEST_ZF);
         bool needsOf = instr->mDetail.eflags & (X86_EFLAGS_PRIOR_OF | X86_EFLAGS_TEST_OF);
@@ -52,11 +36,9 @@ public:
                 case procRequest_t::returnNone:
                     break;
                 case procRequest_t::returnZero:
-//                    forceSave = true;
                     needsZf = true;
                     break;
                 case procRequest_t::returnCarry:
-//                    forceSave = true;
                     needsCf = true;
                     break;
             }
@@ -129,20 +111,20 @@ public:
         std::set<address_t, cmp_adress_t> clear;
         if (needsCf)
         {
-            NeedsFlag(clear, info_, info, info->GetFlag('c'), tempIndexCf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('c'), tempIndexCf, false);
             if (verbose)
                 printf("(cf=%s) ", info->GetFlag('c').variableRead.c_str());
         }
         if (needsZf)
         {
-            NeedsFlag(clear, info_, info, info->GetFlag('z'), tempIndexZf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('z'), tempIndexZf, false);
             if (verbose)
                 printf("(zf=%s) ", info->GetFlag('z').variableRead.c_str());
         }
         if (needsSf)
-            NeedsFlag(clear, info_, info, info->GetFlag('s'), tempIndexSf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('s'), tempIndexSf, false);
         if (needsOf)
-            NeedsFlag(clear, info_, info, info->GetFlag('o'), tempIndexOf, forceSave);
+            NeedsFlag(clear, info_, info, info->GetFlag('o'), tempIndexOf, false);
         
         for (int i=0; i<instr->mDetail.op_count; i++)
         {
@@ -186,8 +168,8 @@ public:
                 break;
         }
         
-        if (verbose)
-            printf("\n");
+//        if (verbose)
+//            printf("\n");
         
         
         return clear;
@@ -380,8 +362,8 @@ public:
             return;
         }
         
-        if (flag.lastSet.size() > 1)
-        {
+        if (flag.lastSet.size() > 1) // depends?
+        {// if all visible?
             // not always through temp; CLC (flags.zero) -> ret, AND (can use flags.zero) -> ret
             // rick2 sub_16222
             if (forceSave)
@@ -408,12 +390,35 @@ public:
                 }
                 return;
             }
-            std::string variable = TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
+            int savedVisibly = 0, savedInvisibly = 0;
+            for (address_t setFlagAddr : flag.lastSet)
+            {
+                shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
+                if (setFlagInfo->GetFlag(flag.type).savedVisibly)
+                    savedVisibly++;
+                else
+                    savedInvisibly++;
+            }
+            if (savedVisibly > 0 && savedInvisibly == 0)
+            {
+                flag.variableRead = defaultFlag;
+                return;
+            }
+            bool mixed = (savedVisibly > 0 && savedInvisibly > 0);
+            if (mixed)
+            {
+                int f=9;
+            }
+            std::string variable = mixed ? defaultFlag : TempVarFor(tempIndex, defaultPrefix, instr->mAddress);
             flag.variableRead = variable;
             
             for (address_t setFlagAddr : flag.lastSet)
             {
                 shared<instrInfo_t> setFlagInfo = info->code.find(setFlagAddr)->second;
+                if (setFlagInfo->GetFlag(flag.type).savedVisibly)
+                {
+                    assert(setFlagInfo->GetFlag(flag.type).variableWrite.empty());
+                } else
                 if (!setFlagInfo->GetFlag(flag.type).save)
                 {
                     setFlagInfo->GetFlag(flag.type).variableWrite = flag.variableRead;

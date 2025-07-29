@@ -28,6 +28,34 @@ namespace utils {
         }
         return aux;
     }
+
+    std::vector<std::string> split(const std::string& input, const std::string& delimiter) {
+        std::vector<std::string> result;
+        
+        if (delimiter.empty()) {
+            result.push_back(input); // or throw std::invalid_argument
+            return result;
+        }
+        
+        size_t start = 0;
+        size_t end;
+        
+        while ((end = input.find(delimiter, start)) != std::string::npos) {
+            result.push_back(input.substr(start, end - start));
+            start = end + delimiter.length();
+        }
+        
+        result.push_back(input.substr(start)); // Add the last segment
+        return result;
+    }
+    std::string trim(const std::string& str) {
+        size_t first = str.find_first_not_of(' ');
+        if (first == std::string::npos)
+            return ""; // all spaces
+
+        size_t last = str.find_last_not_of(' ');
+        return str.substr(first, last - first + 1);
+    }
 };
 
 using namespace utils;

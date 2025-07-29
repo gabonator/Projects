@@ -172,6 +172,19 @@ public:
     //std::string format(const cs_x86& x86, std::string fmt_)
     std::string iformat(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func, std::string fmt_)
     {
+        if (fmt_.find("; ") != std::string::npos)
+        {
+            assert(fmt_.substr(fmt_.size()-1, 1) == ";");
+            std::vector<std::string> parts = utils::split(fmt_.substr(0, fmt_.size()-1), ";");
+            std::vector<std::string> newParts;
+            std::string aux;
+            for (std::string part : parts)
+                aux += iformat(instr, info, func, utils::trim(part)+";") + " ";
+            return utils::trim(aux);
+        }
+        
+        if (fmt_ == "")
+            return "";
         if (fmt_ == "$string")
             return BuildStringOp(instr, info);
         

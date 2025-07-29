@@ -52,6 +52,7 @@ public:
                     }
                 }
                 snprintf(disasm, sizeof(disasm), "%s %s", p->mMnemonic, p->mOperands);
+                printf("%3d ", pi->stack);
                 printf("%s%x %x:%x %-30s %s%s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, disasm, depends, provides);
                 shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
             }
@@ -174,13 +175,21 @@ public:
             {
                 if (!pinfo->GetFlag('c').variableRead.empty() && pinfo->GetFlag('c').variableRead != "flags.carry")
                     mCode.push_back("    flags.carry = " + pinfo->GetFlag('c').variableRead + ";\n");
-                else if (pinfo->GetFlag('c').needed)
-                    mCode.push_back("    flags.carry = " + BuildCondition(pinstr, pinfo, mInfo->func) + ";\n");
+                else if (pinfo->GetFlag('c').needed && !pinfo->GetFlag('c').visible)
+                {
+                    std::string carry = BuildCondition(pinstr, pinfo, mInfo->func);
+                    if (carry != "flags.carry")
+                        mCode.push_back("    flags.carry = " + carry + ";\n");
+                }
                 
                 if (!pinfo->GetFlag('z').variableRead.empty() && pinfo->GetFlag('z').variableRead != "flags.zero")
                     mCode.push_back("    flags.zero = " + pinfo->GetFlag('z').variableRead + ";\n");
-                else if (pinfo->GetFlag('z').needed)
-                    mCode.push_back("    flags.zero = " + BuildCondition(pinstr, pinfo, mInfo->func) + ";\n");
+                else if (pinfo->GetFlag('z').needed && !pinfo->GetFlag('z').visible)
+                {
+                    std::string zero = BuildCondition(pinstr, pinfo, mInfo->func);
+                    if (zero != "flags.zero")
+                        mCode.push_back("    flags.zero = " + zero + ";\n");
+                }
             }
             
             if (mOptions.GetJumpTable(pinstr->mAddress))
@@ -203,7 +212,7 @@ public:
             if (!postSave.empty())
                 mCode.push_back(postSave);
             if (!pinfo->stop.empty())
-                mCode.push_back("    stop("  + pinfo->stop + ");\n;");
+                mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
             if (pinstr->isTerminating)
                 mCode.push_back("    stop(\"terminating\");\n");
             if (pinstr->isReturning)
@@ -316,8 +325,9 @@ public:
         bool dirty = false;
         std::set<address_t, cmp_adress_t> lastSet;
         int needFlags = 0; //info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
-        char needFlag = 0;
+        std::set<char> needType;
         
+        bool allVisible = false;
         for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             if (flag->needed)
             {
@@ -325,14 +335,46 @@ public:
                 needFlags++;
                 dirty |= flag->dirty;
                 lastSet.insert(flag->lastSet.begin(), flag->lastSet.end());
-                needFlag = flag->type;
+                needType.insert(flag->type);
             }
+        
+        if (needType.size() == 1)
+        {
+            allVisible = true;
+            for (address_t adr : lastSet)
+            {
+                shared<instrInfo_t> lastSetInstr = mInfo->code.find(adr)->second;
+                allVisible &= lastSetInstr->GetFlag(*needType.begin()).savedVisibly;
+            }
+        }
+        if (allVisible)
+        {
+            convert_t cond = convert[instr->mId];
+            std::string flagCondition = cond.flagCondition;
+            char needFlag = *needType.begin();
+
+            std::string value;
+            switch (needFlag)
+            {
+                case 'c': value = "flags.carry"; break;
+                case 'z': value = "flags.zero"; break;
+                default:
+                    assert(0);
+            }
+            if (flagCondition[0] == '$' && flagCondition[1] == needFlag)
+                return iformat(instr, info, func, value);
+            else if (flagCondition[0] == '!' && flagCondition[1] == '$' && flagCondition[2] == needFlag)
+                return iformat(instr, info, func, InvertCondition(value));
+            else if (flagCondition == "$ret")
+                return iformat(instr, info, func, value);
+            assert(0);
+        }
         
         if (!dirty && needFlags == 1 && lastSet.size() == 1)
         {
             // single flag needed
-            shared<CapInstr> lastSetInstr = mInfo->code.find(*lastSet.begin())->second->instr;
-            convert_t templ = convert[lastSetInstr->mId];
+            shared<instrInfo_t> lastSetInstr = mInfo->code.find(*lastSet.begin())->second;
+            convert_t templ = convert[lastSetInstr->instr->mId];
             convert_t cond = convert[instr->mId];
             std::string flagCondition = cond.flagCondition;
             
@@ -341,25 +383,37 @@ public:
                 if (flag->needed)
                 {
                     // expression to recover flag value
-                    std::string value = flag->variableRead;
+                    std::string value;
+                    if (flag->visible)
+                    {
+                        switch (flag->type)
+                        {
+                            case 'c': value = "flags.carry"; break;
+                            case 'z': value = "flags.zero"; break;
+                            default:
+                                assert(0);
+                        }
+                    }
+                    if (value.empty())
+                        value = flag->variableRead;
                     if (value.empty())
                     {
                         switch (flag->type)
                         {
-                            case 'c': value = templ.cf(lastSetInstr, info, func); break;
-                            case 'z': value = templ.zf(lastSetInstr, info, func); break;
-                            case 's': value = templ.sf(lastSetInstr, info, func); break;
+                            case 'c': value = templ.cf(lastSetInstr->instr, info, func); break;
+                            case 'z': value = templ.zf(lastSetInstr->instr, info, func); break;
+                            case 's': value = templ.sf(lastSetInstr->instr, info, func); break;
                         }
                         assert(!value.empty());
                     }
                     
                     // needs to be inverted?
                     if (flagCondition[0] == '$' && flagCondition[1] == flag->type)
-                        return iformat(lastSetInstr, info, func, value);
+                        return iformat(lastSetInstr->instr, info, func, value);
                     else if (flagCondition[0] == '!' && flagCondition[1] == '$' && flagCondition[2] == flag->type)
-                        return iformat(lastSetInstr, info, func, InvertCondition(value));
+                        return iformat(lastSetInstr->instr, info, func, InvertCondition(value));
                     else if (flagCondition == "$ret")
-                        return iformat(lastSetInstr, info, func, value);
+                        return iformat(lastSetInstr->instr, info, func, value);
                     else
                         assert(0);
                 }
@@ -367,8 +421,9 @@ public:
             assert(0);
         }
         
-        if ((dirty || lastSet.size() > 1) && needFlags == 1 && !info->GetFlag(needFlag).variableRead.empty())
+        if ((dirty || lastSet.size() > 1) && needFlags == 1 && needType.size() == 1 && !info->GetFlag(*needType.begin()).variableRead.empty())
         {
+            char needFlag = *needType.begin();
             convert_t cond = convert[instr->mId];
             std::string flagCondition = cond.flagCondition;
             if (flagCondition[1] == needFlag) // "$carry"
@@ -432,6 +487,11 @@ public:
         if (templ.starts_with("rep_"))
         {
             repeat = "for (; cx != 0; --cx) ";
+            templ = templ.substr(4);
+        }
+        if (templ.starts_with("repne_"))
+        {
+            repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx) ";
             templ = templ.substr(4);
         }
         if (args[0] == "al")

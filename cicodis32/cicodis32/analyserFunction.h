@@ -21,12 +21,6 @@ public:
     
     virtual void AnalyseProc(address_t proc, procRequest_t req)
     {
-        if (proc.offset == 0x354c7- 0x341b0)
-        {
-            int f=9;
-        }
-
-        //auto& [addr, info] = *mInfos.find(proc);
         shared<info_t> info = mInfos.find(proc)->second;
         code_t& code = info->code;
         //code_t code = info->code;
@@ -75,6 +69,8 @@ public:
                 {
                     assert(info->code.find(link.first) != info->code.end());
                     *prevInfo = *info->code.find(link.first)->second;
+                } else {
+                    prevInfo->stack = 0; // TODO: long call?
                 }
                 
                 shared<instrInfo_t> newInfo = code.find(link.second)->second;
@@ -111,6 +107,26 @@ public:
     void PostProcess(shared<info_t> info)
     {
         FindInfiniteLoops(info->code);
+        bool stackGood = true;
+        for (const auto& [a, p] : info->code)
+        {
+            if (p->stack < 0)
+            {
+                if (stackGood)
+                {
+                    p->stop = "stack_below";
+                    stackGood = false;
+                    continue;
+                }
+            }
+            if (p->stack >= 0)
+                stackGood = true;
+            if (p->instr->mId == X86_INS_RET || p->instr->mId == X86_INS_RETF)
+            {
+                if (p->stack != 0)
+                    p->stop = "stack_unbalanced";
+            }
+        }
     }
     
     void FindInfiniteLoops(code_t& code)

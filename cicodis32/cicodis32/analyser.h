@@ -63,6 +63,7 @@ struct instrInfo_t {
         bool isDestructive{false};
         // instruction implementation internally saves default flag (e.g. flags.zero, flags.carry)
         bool savedVisibly{false};
+        bool visible{false};
         // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
         bool usesInternal{false};
         std::set<address_t, cmp_adress_t> willSet;
@@ -133,6 +134,7 @@ struct instrInfo_t {
     std::vector<std::string> readPrecondition;
     bool infiniteLoop{false};
     std::string stop;
+    int stack{-9999};
     
     // private:
     procRequest_t procRequest{procRequest_t::returnNone};
@@ -164,6 +166,7 @@ bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
         lastSet != o.lastSet)
         return false;
     if (isDestructive != o.isDestructive || savedVisibly != o.savedVisibly ||
+        visible != o.visible ||
         //!Capstone->Equals(depends[0], o.depends[0]) ||
         //!Capstone->Equals(depends[1], o.depends[1]) ||
         willSet != o.willSet ||
@@ -191,6 +194,11 @@ bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
         willSet.insert(o.willSet.begin(), o.willSet.end());
         changed = true;
     }
+    if (visible != o.visible) // TODO: needed?
+    {
+        visible = o.visible;
+        changed = true;
+    }
     return changed;
 }
 
@@ -204,9 +212,29 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         copy.type = other.type;
         copy.lastSet = !other.willSet.empty() ? other.willSet : other.lastSet;
         copy.dirty = !other.willSet.empty() ? false : other.dirty; // TODO: check?
+        copy.visible |= other.savedVisibly;
         changed |= p->Merge(copy);
     }
-
+    
+    int stackChange = instr->mTemplate.stack;
+    if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
+        stackChange -= instr->Imm();
+    if (instr->mDetail.op_count >= 1 && instr->mDetail.operands[0].type == X86_OP_REG &&
+        instr->mDetail.operands[0].reg == X86_REG_SP)
+    {
+        switch (instr->mId)
+        {
+            default:
+                assert(0);
+        }
+    }
+    if (!processed)
+        stack = o->stack + stackChange;
+    else
+    {
+        if (stack != o->stack + stackChange)
+            stop = "stack_bad";
+    }
     return changed;
 }
 

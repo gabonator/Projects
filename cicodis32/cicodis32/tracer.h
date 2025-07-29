@@ -11,7 +11,6 @@ struct instruction_t
     bool continuous{true};
     bool simpleJump{false};
     bool calls{false};
-//    bool visibleFlags{false};
     int stack{0};
     bool conditional{false};
     bool unconditional{false};
@@ -567,6 +566,19 @@ public:
                 if (target != stub)
                     code.find(target)->second->isLabel = true;
             }
+            if (p.second->IsIndirectJump()) // use mNext?
+            {
+                shared<jumpTable_t> jt = mOptions.GetJumpTable(p.first);
+                if (jt)
+                {
+                    for (int i=0; i<jt->GetSize(); i++)
+                    {
+                        address_t target = jt->GetTarget(i);
+                        code.find(target)->second->isLabel = true;
+                    }
+                }
+            }
+
         }
         if (code.begin()->first != a)
             code.find(a)->second->isLabel = true;

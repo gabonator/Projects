@@ -72,8 +72,8 @@ int main(int argc, char **argv) {
     Options optionsRick1 = {
         .loader = "LoaderMz",
         .exec = "rick1.exe",
-        .verbose = true, // .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x354c7- 0x341b0}},
-        .verbose = true, // .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x354c7- 0x341b0}},
+//        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x36413- 0x341b0}},
+//        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x354c7- 0x341b0}},
         //sub_34442
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -88,21 +88,23 @@ int main(int argc, char **argv) {
     Options optionsFox = {
         .loader = "LoaderMz",
         .exec = "fox.exe",
+//        .verbose =true,
 //        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x6582}},
 //        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x65be}},
 
         
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
-//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x4ae9}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x12b94 - 0x10200}},
         
+        //sub_1434b
         //1020:40fa
         //sub_34442
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x42e6),
                 .table = address_t(0x168f, 0x6efb),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
                 23, 24, 25, 26, 27, 28, 29},
                 .selector = "bx",
@@ -110,42 +112,42 @@ int main(int argc, char **argv) {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x45a0),
                 .table = address_t(0x168f, 0x727d),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x45cf),
                 .table = address_t(0x168f, 0x7299),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58},
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x4629),
                 .table = address_t(0x168f, 0x726f),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x5961),
                 .table = address_t(0x168f, 0x8eb5),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37},
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x464b),
                 .table = address_t(0x168f, 0x726F),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25},
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x57e4),
                 .table = address_t(0x168f, 0x8EDB),
-                .type = jumpTable_t::JumpWords,
+                .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
                 .selector = "bx",
             }),
@@ -154,8 +156,8 @@ int main(int argc, char **argv) {
 
 //    Options options = optionsGoose;
 //    Options options = optionsRick2;
-//    Options options = optionsFox;
-    Options options = optionsRick1;
+    Options options = optionsFox;
+//    Options options = optionsRick1;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -202,6 +204,7 @@ int main(int argc, char **argv) {
     std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
 //    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
 //    procModifiers.insert(std::pair<address_t, procRequest_t>({0x341b, 0x354c7- 0x341b0}, procRequest_t::returnZero)); // rick1 - ignored in final listing TODO!
+//        procModifiers.insert(std::pair<address_t, procRequest_t>({0x1020, 0x12b94 - 0x10200}, procRequest_t::returnCarry)); // rick1 - ignored in final listing TODO!
 
     Analyser analyser(options);
     if (options.recursive)
