@@ -95,11 +95,12 @@ int main(int argc, char **argv) {
         
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
 //        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x12b94 - 0x10200}},
+//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x10cbe - 0x10200}},
         
         //sub_1434b
         //1020:40fa
         //sub_34442
+        .procModifiers {std::pair<address_t, procRequest_t>({0x1020, 0x5133}, procRequest_t::stackDrop16)},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x42e6),
@@ -107,6 +108,7 @@ int main(int argc, char **argv) {
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
                 23, 24, 25, 26, 27, 28, 29},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -114,6 +116,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x727d),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -121,6 +124,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x7299),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -128,6 +132,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x726f),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -135,6 +140,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x8eb5),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -142,6 +148,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x726F),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25},
+                .minaddr = 1,
                 .selector = "bx",
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -149,6 +156,7 @@ int main(int argc, char **argv) {
                 .table = address_t(0x168f, 0x8EDB),
                 .type = jumpTable_t::CallWords,
                 .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
+                .minaddr = 1,
                 .selector = "bx",
             }),
         }
@@ -194,17 +202,21 @@ int main(int argc, char **argv) {
         startEntries.push_back(p);
     for (shared<jumpTable_t> j : options.jumpTables)
         for (int i=0; i<j->GetSize(); i++)
-            startEntries.push_back(j->GetTarget(i));
+            if (j->IsValid(i))
+                startEntries.push_back(j->GetTarget(i));
     
     printf("#include \"cico32.h\"\n\n");
     
     if (options.relocations)
         printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
     
-    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
+//    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
 //    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
 //    procModifiers.insert(std::pair<address_t, procRequest_t>({0x341b, 0x354c7- 0x341b0}, procRequest_t::returnZero)); // rick1 - ignored in final listing TODO!
 //        procModifiers.insert(std::pair<address_t, procRequest_t>({0x1020, 0x12b94 - 0x10200}, procRequest_t::returnCarry)); // rick1 - ignored in final listing TODO!
+
+//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1020, 0x15333 - 0x10200}, procRequest_t::stackDrop16)); // fox  sub_15333
+
 
     Analyser analyser(options);
     if (options.recursive)
@@ -234,6 +246,8 @@ int main(int argc, char **argv) {
                 printf("        {\n");
                 for (int i : table->elements)
                 {
+                    if (!table->IsValid(i))
+                        continue;
                     int v = table->GetTarget(i).offset;
                     if (used.find(v) != used.end())
                         continue;
@@ -259,23 +273,29 @@ int main(int argc, char **argv) {
         for (address_t proc : process)
         {
             procRequest_t modifier = procRequest_t::returnNone;
-            if (procModifiers.find(proc) != procModifiers.end())
-                modifier = procModifiers.find(proc)->second;
+            if (options.procModifiers.find(proc) != options.procModifiers.end())
+                modifier = options.procModifiers.find(proc)->second;
             
             analyser.AnalyseProc(proc, modifier);
             if (options.recursive)
+            {
                 for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
                 {
                     procRequest_t oldModifier = procRequest_t::returnNone;
-                    if (procModifiers.find(req.first) != procModifiers.end())
-                        oldModifier = procModifiers.find(proc)->second;
+                    if (options.procModifiers.find(req.first) != options.procModifiers.end())
+                        oldModifier = options.procModifiers.find(req.first)->second;
                     
                     if (oldModifier != req.second)
                     {
-                        procModifiers.insert(req);
+                        req.second = (procRequest_t)((int)req.second | (int)oldModifier);
+                        if (options.procModifiers.find(req.first) != options.procModifiers.end())
+                            options.procModifiers.find(req.first)->second = req.second;
+                        else
+                            options.procModifiers.insert(req);
                         processNew.insert(req.first);
                     }
                 }
+            }
         }
     }
 //    std::map<address_t, int, cmp_adress_t> hits;

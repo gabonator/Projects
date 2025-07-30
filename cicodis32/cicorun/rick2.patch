@@ -1,0 +1,65 @@
+diff --git a/cicodis32/cicorun/rick2.cpp b/cicodis32/cicorun/rick2.cpp
+index e4ea6c1..4c317b6 100644
+--- a/cicodis32/cicorun/rick2.cpp
++++ b/cicodis32/cicorun/rick2.cpp
+@@ -3776,6 +3776,7 @@ loc_16d3a:
+     memoryASet(ds, 0x97da, 0x01);
+     cx = 0x01e0;
+ loc_16d57:
++    sync();
+     push(cx);
+     sub_19b1c();
+     sub_19bdc();
+@@ -8102,6 +8103,7 @@ loc_19a10:
+ loc_19a45:
+     memoryASet(ds, 0x97da, 0x01);
+ loc_19a4b:
++    sync();
+     sub_19bdc();
+     if (!(al & 0x10))
+         goto loc_19a55;
+@@ -8334,6 +8336,10 @@ loc_19c59:
+ }
+ void sub_19e18()
+ {
++    memoryASet(cs, 0xbda2, 0xc3); // patch!
++    flags.carry = false;
++    return;
++
+     memoryASet16(ds, 0x9a16, 0x0000);
+     callIndirect(cs, memoryAGet16(ds, 0x0026));
+ loc_19e22:
+@@ -9773,6 +9779,7 @@ loc_1bf8f:
+ }
+ void sub_1bfa0()
+ {
++    return; // patch
+     push(dx);
+     flags.interrupts = 0;
+     al = 0x00;
+@@ -9949,6 +9956,7 @@ loc_1c175:
+ }
+ void sub_1c1a2()
+ {
++    return; // patch TODO: overwrite code
+     ax = 0x1040;
+     ds = ax;
+     sub_1bf7c();
+@@ -10058,7 +10066,7 @@ loc_1c2d3:
+     goto loc_1c2e2;
+   // gap 7 bytes
+ loc_1c2e2:
+-    sub_1c4bd();
++    //sub_1c4bd(); CGA - patch
+ loc_1c2e5:
+     callIndirect(cs, memoryAGet16(ds, 0x0002));
+     si = 0xbdf6;
+@@ -10090,7 +10098,7 @@ loc_1c312:
+     memoryASet16(ds, 0xab2b, 0x0001);
+ loc_1c31f:
+     sub_196dd();
+-    sub_1ae81();
++//    sub_1ae81(); // patch
+     memoryASet(ds, 0xa860, 0x01);
+     sub_1c4e1();
+     callIndirect(cs, memoryAGet16(ds, 0x002a));

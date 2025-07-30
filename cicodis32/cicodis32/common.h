@@ -85,6 +85,7 @@ struct jumpTable_t {
     
     char selector[64];
     const uint8_t* baseptr{nullptr};
+    int minaddr{0};
     
     address_t GetBaseAddress() const
     {
@@ -112,8 +113,17 @@ struct jumpTable_t {
         uint16_t* parts = (uint16_t*)baseptr;
         return address_t{instruction.segment, parts[elements[i]]};
     }
+    bool IsValid(int i) const
+    {
+        if (minaddr == 0)
+            return true;
+        assert(type == CallWords);
+        uint16_t* parts = (uint16_t*)baseptr;
+        return parts[elements[i]] >= minaddr;
+    }
     std::string GetCase(int i) const
     {
+        assert(IsValid(i));
         switch (type)
         {
             case CallWords:
@@ -142,7 +152,8 @@ enum class procRequest_t
 {
     returnNone = 0,
     returnCarry = 1,
-    returnZero = 2
+    returnZero = 2,
+    stackDrop16 = 4
 };
 
 class Options {
@@ -166,6 +177,7 @@ public:
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
     std::set<address_t, cmp_adress_t> isolateLabels;
+    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
         for (auto jt : jumpTables)

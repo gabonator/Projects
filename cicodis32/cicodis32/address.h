@@ -54,9 +54,12 @@ struct address_t {
     }
 };
 
-struct cmp_adress_t {
+struct cmp_adress_t { // TODO: remove!
     bool operator()(const address_t& a, const address_t& b) const {
-        return a.segment*0x10+a.offset < b.segment*0x10+b.offset;
+        if (a.segment != b.segment)
+            return a.segment < b.segment;
+        return a.offset < b.offset;
+        //return a.segment*0x10+a.offset < b.segment*0x10+b.offset;
     }
 };
 

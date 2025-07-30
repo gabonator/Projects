@@ -100,9 +100,25 @@ uint8_t sar8(uint8_t a, uint8_t b)
     sa >>= b;
     return sa;
 }
+
 uint16_t rol16(uint16_t r, int l)
 {
     return (r<<l) | (r>>(16-l));
+}
+
+uint16_t ror16(uint16_t r, int l)
+{
+    return (r>>l) | (r<<(16-l));
+}
+
+uint8_t ror8(uint8_t r, int l)
+{
+    return (r>>l) | (r<<(8-l));
+}
+
+uint8_t rol8(uint8_t r, int l)
+{
+    return (r<<l) | (r>>(8-l));
 }
 
 void div8(uint8_t r)
@@ -113,6 +129,15 @@ void div8(uint8_t r)
     ah = remain;
 }
 
+void div16(uint16_t r)
+{
+    uint16_t result = ax / r;
+    uint16_t remain = ax % r;
+    ax = result;
+    dx = remain;
+}
+
+
 void idiv8(uint8_t r)
 {
     int32_t dw = (dx << 16) | ax;
@@ -121,6 +146,51 @@ void idiv8(uint8_t r)
     ax = result;
     dx = remainder;
 }
+
+
+uint16_t rcl16(uint16_t r, int i)
+{
+    while (i > 0)
+    {
+        int newCarry = !!(r & 0x8000);
+        r <<= 1;
+        r |= flags.carry ? 0x0001 : 0x0000;
+        flags.carry = newCarry;
+        i--;
+    }
+    return r;
+}
+
+uint16_t rcr16(uint16_t r, int i)
+{
+    while (i > 0)
+    {
+        int newCarry = !!(r & 0x0001);
+        r >>= 1;
+        r |= flags.carry ? 0x8000 : 0x0000;
+        flags.carry = newCarry;
+        i--;
+    }
+    return r;
+}
+
+uint8_t rcl8(uint8_t r, int i)
+{
+    assert(i == 1);
+    int newCarry = !!(r & 0x80);
+    r <<= 1;
+    r |= flags.carry;
+    flags.carry = newCarry;
+    return r;
+}
+
+
+void mul8(uint8_t r)
+{
+    int v = r * al;
+    ax = v & 0xffff;
+}
+
 
 
 int flagAsReg()
@@ -140,6 +210,7 @@ struct DS_SI {
 };
 
 struct ES_DI { 
+  static uint8_t Get8() { return memoryAGet(es, di); }
   static void Set8(uint8_t v) { return memoryASet(es, di, v); }
   static void Set16(uint16_t v) { return memoryASet16(es, di, v); }
   static void Advance(int n) { di += flags.direction ? -n : n; }
@@ -185,3 +256,29 @@ template <typename dst, typename src> void movsb()
   src::Advance(1);
 }
 
+template <class dst, class src> void cmpsb()
+{
+    // TODO: should set carry?
+    flags.zero = src::Get8() == dst::Get8();
+    dst::Advance(1);
+    src::Advance(1);
+}
+
+template <typename src> void scasb_inv(uint8_t b)
+{
+    // TODO: should set carry?
+    flags.zero = src::Get8() == b;
+    src::Advance(1);
+}
+
+//template <class SRC> void repne_scasb)nv(uint8_t value)
+//{
+//    assert(flags.direction == 0);
+//    flags.zero = 0;
+//    while (cx != 0 && flags.zero == 0 )
+//    {
+//        flags.zero = value - SRC::Get8(es, di) == 0;
+//        DIR::Move(di);
+//        cx--;
+//    }
+//}

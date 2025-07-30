@@ -135,7 +135,8 @@ struct instrInfo_t {
     bool infiniteLoop{false};
     std::string stop;
     int stack{-9999};
-    
+    int stackDelta{0};
+
     // private:
     procRequest_t procRequest{procRequest_t::returnNone};
     address_t procTarget;
@@ -215,24 +216,11 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         copy.visible |= other.savedVisibly;
         changed |= p->Merge(copy);
     }
-    
-    int stackChange = instr->mTemplate.stack;
-    if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
-        stackChange -= instr->Imm();
-    if (instr->mDetail.op_count >= 1 && instr->mDetail.operands[0].type == X86_OP_REG &&
-        instr->mDetail.operands[0].reg == X86_REG_SP)
-    {
-        switch (instr->mId)
-        {
-            default:
-                assert(0);
-        }
-    }
     if (!processed)
-        stack = o->stack + stackChange;
+        stack = o->stack + stackDelta;
     else
     {
-        if (stack != o->stack + stackChange)
+        if (stack != o->stack + stackDelta)
             stop = "stack_bad";
     }
     return changed;
@@ -302,6 +290,36 @@ public:
         return methods;
     }
     
+    int GetStackChange(shared<CapInstr> instr)
+    {
+        int stackChange = instr->mTemplate.stack;
+        if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
+            stackChange -= instr->Imm();
+        if (instr->mDetail.op_count >= 1 && instr->mDetail.operands[0].type == X86_OP_REG &&
+            instr->mDetail.operands[0].reg == X86_REG_SP)
+        {
+            switch (instr->mId)
+            {
+                default:
+                    assert(0);
+            }
+        }
+        if (instr->mId == X86_INS_CALL)
+        {
+            procRequest_t req = mOptions.procModifiers.find(instr->mAddress)->second;
+            if ((int)req & (int)procRequest_t::stackDrop16)
+                stackChange -= 2;
+        }
+
+        /*
+        if (mOptions.procModifiers.find(addr) != mOptions.procModifiers.end())
+        {
+            procRequest_t req = mOptions.procModifiers.find(addr)->second;
+            if ((int)req & (int)procRequest_t::stackDrop16)
+                return -2;
+        }*/
+        return stackChange;
+    }
     void AddProcRequest(shared<instrInfo_t> info, address_t target, procRequest_t req)
     {
         info->procRequest = (procRequest_t)((int)info->procRequest | (int)req);
@@ -357,7 +375,8 @@ public:
                 if (jt)
                 {
                     for (int i=0; i<jt->GetSize(); i++)
-                        calls.insert(jt->GetTarget(i));
+                        if (jt->IsValid(i))
+                            calls.insert(jt->GetTarget(i));
                 }
             }
         }

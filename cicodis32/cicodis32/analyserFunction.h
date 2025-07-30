@@ -32,9 +32,12 @@ public:
         tempIndexSf.clear();
         tempIndexOf.clear();
 
+        for (const auto& [addr, p] : info->code)
+            p->stackDelta = GetStackChange(p->instr);
+
         if (info->func.request != req)
         {
-            // second iterat
+            // second iteration
             for (const auto& [addr, p] : info->code)
                 p->processed = false;
         }
@@ -114,7 +117,10 @@ public:
             {
                 if (stackGood)
                 {
-                    p->stop = "stack_below";
+                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & (int)procRequest_t::stackDrop16))
+                    {
+                        p->stop = "stack_below";
+                    }
                     stackGood = false;
                     continue;
                 }
@@ -152,14 +158,13 @@ public:
     void DumpCode(address_t proc, code_t& code, procRequest_t req)
     {
         printf("    %x %x:%x proc %x", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
-        switch (req)
-        {
-            case procRequest_t::returnNone: printf("\n"); break;
-            case procRequest_t::returnCarry: printf(" +carry\n"); break;
-            case procRequest_t::returnZero: printf(" +zero\n"); break;
-            default:
-                assert(0);
-        }
+        if ((int)req & (int)procRequest_t::returnCarry)
+            printf(" +carry");
+        if ((int)req & (int)procRequest_t::returnZero)
+            printf(" +zero");
+        if ((int)req & (int)procRequest_t::stackDrop16)
+            printf(" +stackDrop16");
+        printf("\n");
 
         for (const auto& p : code)
         {

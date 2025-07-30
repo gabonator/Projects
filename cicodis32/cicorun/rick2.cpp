@@ -195,6 +195,7 @@ void sub_195ea();
 void sub_1961d();
 void sub_196dd();
 void sub_196f3();
+void sub_19731();
 void sub_199c8();
 void sub_19af6();
 void sub_19b1c();
@@ -349,7 +350,8 @@ void sub_10533()
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1053f;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1053f:
     memoryASet16(ds, 0x004c, ax);
     ah = 0x48;
@@ -357,7 +359,8 @@ loc_1053f:
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1054e;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1054e:
     memoryASet16(ds, 0x0062, ax);
     ah = 0x48;
@@ -365,7 +368,8 @@ loc_1054e:
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1055d;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1055d:
     memoryASet16(ds, 0x0064, ax);
     ah = 0x48;
@@ -373,7 +377,8 @@ loc_1055d:
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1056c;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1056c:
     memoryASet16(ds, 0x0066, ax);
     ah = 0x48;
@@ -381,7 +386,8 @@ loc_1056c:
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1057b;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1057b:
     memoryASet16(ds, 0x0068, ax);
     ah = 0x48;
@@ -389,21 +395,11 @@ loc_1057b:
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1058a;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1058a:
     memoryASet16(ds, 0x0052, ax);
     memoryASet16(ds, 0x0056, 0xa400);
-    return;
-  // gap 37277 bytes
-loc_19731:
-    ah = 0x09;
-    dx = 0x1040;
-    ds = dx;
-    dx = 0x92b1;
-    interrupt(0x21);
-    ah = 0x4c;
-    interrupt(0x21);
-    stop("terminating");
 }
 void sub_10594()
 {
@@ -1690,6 +1686,7 @@ loc_111d8:
 void sub_111f1()
 {
     bool temp_cond;
+    bool temp_cond1;
     bp = 0;
     ax = memoryAGet16(ds, si + 4);
     ax -= 0x0038;
@@ -1723,9 +1720,9 @@ loc_1122c:
         goto loc_11241;
     cx = 0x00b3;
     cx -= ax;
-    temp_cond = (short)cx + (short)0x0015 > 0;
+    temp_cond1 = (short)cx + (short)0x0015 > 0;
     cx += 0x0015;
-    if (temp_cond)
+    if (temp_cond1)
         goto loc_1123e;
     goto loc_112d5;
 loc_1123e:
@@ -2322,7 +2319,7 @@ loc_161ca:
 }
 void sub_16205()
 {
-  goto loc_16205;
+    goto loc_16205;
 loc_161ce:
     memoryASet(ds, si, memoryAGet(ds, si) | 0x80);
     memoryASet16(ds, 0x5dcc, 0x0001);
@@ -2849,7 +2846,7 @@ void sub_16591()
 {
     bool temp_cf;
     bool temp_cf1;
-  goto loc_16591;
+    goto loc_16591;
 loc_1615f:
     if (!(memoryAGet16(ds, si) & 0x0001))
         goto loc_16173;
@@ -7016,7 +7013,7 @@ loc_18aea:
 }
 void sub_18c83()
 {
-  goto loc_18c83;
+    goto loc_18c83;
 loc_18a9a:
     ax = memoryAGet16(ds, 0x6610);
     if (!ax)
@@ -8055,6 +8052,17 @@ loc_1970f:
     bx = pop();
     ax = pop();
 loc_1972d:
+    ah = 0x4c;
+    interrupt(0x21);
+    stop("terminating");
+}
+void sub_19731()
+{
+    ah = 0x09;
+    dx = 0x1040;
+    ds = dx;
+    dx = 0x92b1;
+    interrupt(0x21);
     ah = 0x4c;
     interrupt(0x21);
     stop("terminating");
@@ -9552,7 +9560,7 @@ void sub_1b95d()
 }
 void sub_1bb3f()
 {
-  goto loc_1bb3f;
+    goto loc_1bb3f;
 loc_1ba58:
     al = memoryAGet(ds, si);
     if ((char)al >= 0)
@@ -9998,25 +10006,14 @@ loc_1c1e3:
 }
 void sub_1c276()
 {
-  goto loc_1c276;
-loc_19731:
-    ah = 0x09;
-    dx = 0x1040;
-    ds = dx;
-    dx = 0x92b1;
-    interrupt(0x21);
-    ah = 0x4c;
-    interrupt(0x21);
-    stop("terminating");
-  // gap 11061 bytes
-loc_1c276:
     flags.direction = 0;
     ah = 0x4a;
     bx = 0x0e00;
     interrupt(0x21);
     if (!flags.carry)
         goto loc_1c283;
-    goto loc_19731;
+    sub_19731();
+    return;
 loc_1c283:
     ax = cs;
     es = ax;

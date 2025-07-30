@@ -541,7 +541,8 @@ public:
                     if (jt)
                     {
                         for (int i=0; i<jt->GetSize(); i++)
-                            instr->mNext.insert(jt->GetTarget(i));
+                            if (jt->IsValid(i))
+                                instr->mNext.insert(jt->GetTarget(i));
                     }
                 }
 
@@ -573,8 +574,11 @@ public:
                 {
                     for (int i=0; i<jt->GetSize(); i++)
                     {
-                        address_t target = jt->GetTarget(i);
-                        code.find(target)->second->isLabel = true;
+                        if (jt->IsValid(i))
+                        {
+                            address_t target = jt->GetTarget(i);
+                            code.find(target)->second->isLabel = true;
+                        }
                     }
                 }
             }

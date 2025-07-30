@@ -217,7 +217,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_ROL] = {.convert = [](convert_args){
         return "$wr0 = rol$width0($rd0, $rd1);";
     },
-            .cf = [](convert_args){ return "flags.carry /* ggg4 */"; },
+            .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0)"; },
+//            .cf = [](convert_args){ return "flags.carry /* ggg4 */"; },
     },
     [X86_INS_ROR] = {.convert = [](convert_args){
         return "$wr0 = ror$width0($rd0, $rd1);";

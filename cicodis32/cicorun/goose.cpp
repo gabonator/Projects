@@ -1,3 +1,4 @@
+#if 1
 #include "cico32.h"
 
 void fixReloc(uint16_t seg);
@@ -7459,3 +7460,4 @@ loc_139d4:
 loc_139d7:
     memoryASet16(ds, 0x9562, ax);
 }
+#endif

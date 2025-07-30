@@ -14,10 +14,6 @@ public:
 
     virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> info, shared<info_t> info_) override
     {
-        if (info->instr->mAddress.offset == 0x2a04)
-        {
-            int f = 9;
-        }
         code_t& code = info_->code;
         shared<CapInstr> instr = info->instr;
         std::set<x86_reg> reads = instr->ReadsRegisters();
@@ -31,17 +27,10 @@ public:
         // RET
         if (instr->mId == X86_INS_RETF || instr->mId == X86_INS_RET)
         {
-            switch (info_->func.request)
-            {
-                case procRequest_t::returnNone:
-                    break;
-                case procRequest_t::returnZero:
-                    needsZf = true;
-                    break;
-                case procRequest_t::returnCarry:
-                    needsCf = true;
-                    break;
-            }
+            if ((int)info_->func.request & (int)procRequest_t::returnZero)
+                needsZf = true;
+            if ((int)info_->func.request & (int)procRequest_t::returnCarry)
+                needsCf = true;
         }
 
         info->GetFlag('c').needed |= needsCf;
@@ -161,16 +150,15 @@ public:
                 break;
             case X86_INS_ROL:
             case X86_INS_ROR:
+                info->GetFlag('c').isDestructive |= true;
+                info->GetFlag('c').dirty |= true;
+                break;
             case X86_INS_RCL:
             case X86_INS_RCR:
                 info->GetFlag('c').usesInternal = true;
             default:
                 break;
         }
-        
-//        if (verbose)
-//            printf("\n");
-        
         
         return clear;
     }

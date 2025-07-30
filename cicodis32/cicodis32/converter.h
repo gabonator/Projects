@@ -74,11 +74,23 @@ public:
         if (info->func.request != procRequest_t::returnNone)
         {
             extraInfo += " //";
-            if ((int)info->func.request & (int)procRequest_t::returnCarry)
+            int temp = (int)info->func.request;
+            if (temp & (int)procRequest_t::returnCarry)
+            {
                 extraInfo += " +returnCarry";
-            if ((int)info->func.request & (int)procRequest_t::returnZero)
+                temp ^= (int)procRequest_t::returnCarry;
+            }
+            if (temp & (int)procRequest_t::returnZero)
+            {
                 extraInfo += " +returnZero";
-
+                temp ^= (int)procRequest_t::returnZero;
+            }
+            if (temp & (int)procRequest_t::stackDrop16)
+            {
+                extraInfo += " +stackDrop16";
+                temp ^= (int)procRequest_t::stackDrop16;
+            }
+            assert(temp == 0);
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));
 
@@ -247,7 +259,8 @@ public:
         mCode.push_back(format("    switch (%s)\n", jt->selector));
         mCode.push_back(format("    {\n"));
         for (int i=0; i<jt->GetSize(); i++)
-            mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
+            if (jt->IsValid(i))
+                mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
         mCode.push_back(format("        default:\n"));
         mCode.push_back(format("            stop();\n"));
         mCode.push_back(format("    }\n"));
@@ -492,7 +505,7 @@ public:
         if (templ.starts_with("repne_"))
         {
             repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx) ";
-            templ = templ.substr(4);
+            templ = templ.substr(6);
         }
         if (args[0] == "al")
             return repeat + templ + "_inv<" + argToTemplate(args[1]) + ">("+args[0]+");";

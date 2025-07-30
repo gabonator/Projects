@@ -1,0 +1,230 @@
+diff --git a/fox.clean b/fox.cpp
+index 60a8b08..8d1cf6e 100644
+--- a/fox.clean
++++ b/fox.cpp
+@@ -147,7 +147,7 @@ void sub_10901();
+ void sub_109b0();
+ void sub_10a05();
+ void sub_10b7b();
+-void sub_10cbe();
++bool sub_10cbe();
+ void sub_10e1e();
+ void sub_10e30();
+ void sub_10eeb();
+@@ -831,12 +831,14 @@ void sub_105f2()
+     ax = 0x168f;
+     ds = ax;
+ loc_105f7:
++    sync();
+     sub_10a05();
+     al = memoryAGet(ds, 0x047e);
+     al |= memoryAGet(ds, 0x042b);
+     if (!al)
+         goto loc_105f7;
+ loc_10603:
++    sync();
+     sub_10a05();
+     al = memoryAGet(ds, 0x042b);
+     al |= memoryAGet(ds, 0x047e);
+@@ -1639,7 +1641,8 @@ loc_10c08:
+     di = 0;
+ loc_10c17:
+     bx = 0;
+-    sub_10cbe();
++    if (sub_10cbe())
++        return;
+     if (!bh)
+         goto loc_10c66;
+     if (bl < 0x02)
+@@ -1808,10 +1811,9 @@ loc_10e02:
+     ds = ax;
+     ax = memoryAGet16(cs, 0x0af4);
+ }
+-void sub_10cbe()
++bool sub_10cbe()
+ {
+     bool temp_cf;
+-    bool temp_cf1;
+ 
+     goto loc_10cbe;
+ loc_10afd:
+@@ -1855,9 +1857,9 @@ loc_10ca1:
+     bx = pop();
+     if (!ax)
+         goto loc_10cd3;
+-    temp_cf1 = ax & 1;
++    temp_cf = ax & 1;
+     ax >>= 1;
+-    memoryASet16(ds, 0x0000, memoryAGet16(ds, 0x0000) + (0x0000 + temp_cf1));
++    memoryASet16(ds, 0x0000, memoryAGet16(ds, 0x0000) + (0x0000 + temp_cf));
+     si = 0x041a;
+ loc_10cb9:
+     ax = lodsw<DS_SI>();
+@@ -1867,9 +1869,9 @@ loc_10cbe:
+     dl--;
+     if (!dl)
+         goto loc_10c7e;
+-    temp_cf = !!(ax & 0x8000);
++    flags.carry = !!(ax & 0x8000);
+     ax = rol16(ax, 0x0001);
+-    if (!temp_cf)
++    if (!flags.carry /* ggg4 */)
+         goto loc_10cc8;
+     bx++;
+     bx++;
+@@ -1878,10 +1880,10 @@ loc_10cc8:
+     if ((char)bh >= 0)
+         goto loc_10cbe;
+     bh &= 0x7f;
+-    return;
++    return false;
+ loc_10cd3:
+-    ax = pop();
+-    stop("stack_below");
++//    ax = pop();
++//    stop("stack_below");
+     memoryASet(cs, 0x6bb3, 0x01);
+     bx = memoryAGet16(cs, 0x0af2);
+     ah = 0x3e;
+@@ -1890,7 +1892,8 @@ loc_10cd3:
+     ax = 0x168f;
+     ds = ax;
+     ax = memoryAGet16(cs, 0x0af4);
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
++    return true;
+ }
+ void sub_10e1e()
+ {
+@@ -2063,7 +2066,7 @@ void sub_1127d()
+     memoryASet(cs, 0x0004, 0x00);
+     goto loc_112c5;
+ loc_112b1:
+-    eax = 0;
++    ax = 0;
+     memoryASet(cs, 0x0004, 0x03);
+     goto loc_112c5;
+   // gap 9 bytes
+@@ -2079,18 +2082,18 @@ void sub_112d3()
+     ax = 0x168f;
+     ds = ax;
+     memoryASet(ds, 0x651a, 0x00);
+-loc_112dd:
+-    ax = memoryAGet16(ds, 0x0431);
+-    ax -= memoryAGet16(cs, 0x16e0);
+-    if ((short)ax >= 0)
+-        goto loc_112e9;
+-    ax = -ax;
+-loc_112e9:
+-    if (ax < 0x0002)
+-        goto loc_112dd;
+-    if (ax > 0x0002)
+-        goto loc_112f7;
+-    sub_13443();
++//loc_112dd:
++//    ax = memoryAGet16(ds, 0x0431);
++//    ax -= memoryAGet16(cs, 0x16e0);
++//    if ((short)ax >= 0)
++//        goto loc_112e9;
++//    ax = -ax;
++//loc_112e9:
++//    if (ax < 0x0002)
++//        goto loc_112dd;
++//    if (ax > 0x0002)
++//        goto loc_112f7;
++//    sub_13443();
+     memoryASet(ds, 0x651a, memoryAGet(ds, 0x651a) + 1);
+ loc_112f7:
+     ax = memoryAGet16(cs, 0x16e0);
+@@ -2464,6 +2467,8 @@ loc_1185e:
+ }
+ void sub_119eb()
+ {
++    sync();
++    return;
+ loc_119eb:
+     al = memoryAGet(cs, 0x16e4);
+     al &= 0x03;
+@@ -3762,7 +3767,9 @@ loc_124f4:
+         goto loc_12554;
+     ch = 0;
+ loc_124fb:
+-    al = lodsb<DS_SI>();
++    al = lodsb<DS_SI>(); // 23fc:0796
++//    assert(ax == 0xa007); gggggggggg
++//    assert(0);
+     al = ~al;
+     scasb_inv<ES_DI>(al);
+     di--;
+@@ -5938,6 +5945,10 @@ loc_13439:
+ }
+ void sub_13443()
+ {
++    static int counter=0;
++    if (counter++%4==0)
++        sync();
++    return;
+     push(ax);
+     push(dx);
+     if (memoryAGet(cs, 0x0001) == 0x00)
+@@ -7002,7 +7013,7 @@ loc_13f37:
+     memoryASet16(ds, si + 2, memoryAGet16(ds, si + 2) + 0x0010);
+ loc_13f3f:
+     memoryASet(ds, 0x6511, 0x04);
+-    stop("stack_bad");
++//    stop("stack_bad");
+     memoryASet16(ds, si + 12, 0x0000);
+     ax = memoryAGet16(ds, si + 14);
+     ax = -ax;
+@@ -7016,7 +7027,7 @@ loc_13f55:
+     goto loc_13f8a;
+ loc_13f5a:
+     dl = 0x0f;
+-    stop("stack_bad");
++//    stop("stack_bad");
+     bx = memoryAGet16(ds, si + 4);
+     bh &= 0x1f;
+     if (bl >= 0x65)
+@@ -7041,7 +7052,7 @@ loc_13f87:
+     sub_13f97();
+ loc_13f8a:
+     si += 0x0012;
+-    stop("stack_bad");
++    //stop("stack_bad");
+     memoryASet16(ds, 0x64eb, memoryAGet16(ds, 0x64eb) - 1);
+     if (!memoryAGet16(ds, 0x64eb))
+         goto loc_13f96;
+@@ -9476,7 +9487,7 @@ loc_151fd:
+     goto loc_1523b;
+ loc_15229:
+     ax = memoryAGet16(ds, di + 14);
+-    stop("stack_bad");
++//    stop("stack_bad");
+     if (!ax)
+         goto loc_15238;
+     memoryASet16(ds, 0x528a, ax);
+@@ -9486,7 +9497,7 @@ loc_15238:
+     sub_14ef0();
+ loc_1523b:
+     bp = pop();
+-    stop("stack_bad");
++//    stop("stack_bad");
+     es = pop();
+     ds = pop();
+     si = pop();
+@@ -9726,6 +9737,7 @@ loc_153d9:
+     sub_155c8();
+     goto loc_153d4;
+ loc_153f1:
++    sync();
+     sub_10a05();
+     if (memoryAGet(ds, 0x042d) == 0x00)
+         goto loc_1540b;
+@@ -9758,6 +9770,7 @@ loc_1543a:
+     memoryASet(ds, 0x87d4, 0x00);
+     goto loc_153d9;
+ loc_15444:
++    sync();
+     sub_10a05();
+     if (memoryAGet(ds, 0x042b) != 0x00)
+         goto loc_15444;
