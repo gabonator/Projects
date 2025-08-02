@@ -8,7 +8,7 @@
 // FunctionAnalyser - traversing single function code and filling in instrInfo structure
 class FunctionAnalyser : public ProgramAnalyser {
 protected:
-    std::map<address_t, int, cmp_adress_t> tempIndexPrecond, tempIndexZf, tempIndexCf, tempIndexSf, tempIndexOf;
+    std::map<address_t, int> tempIndexPrecond, tempIndexZf, tempIndexCf, tempIndexSf, tempIndexOf;
     bool verbose{false};
 
 public:
@@ -17,7 +17,7 @@ public:
         verbose = mOptions.verbose;
     }
 
-    virtual std::set<address_t, cmp_adress_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
+    virtual std::set<address_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
     
     virtual void AnalyseProc(address_t proc, procRequest_t req)
     {
@@ -33,7 +33,7 @@ public:
         tempIndexOf.clear();
 
         for (const auto& [addr, p] : info->code)
-            p->stackDelta = GetStackChange(p->instr);
+            GetStackChange(p, info->code);
 
         if (info->func.request != req)
         {
@@ -42,7 +42,7 @@ public:
                 p->processed = false;
         }
         info->func.request = req;
-        info->func.callConv = GetCallConvention(code);
+        info->func.callConv = GetCallConvention(info);
         
         if (verbose)
             DumpCode(proc, code, req);
@@ -61,12 +61,6 @@ public:
                 if (verbose)
                     printf("    instr: %s", instr->AsString().c_str());
                 
-//                if (link.first.offset == 0x54d && link.second.offset == 0x54f) // 55b ok
-                if (link.second.offset == 0x2b9)
-                {
-                    int f =9;
-                }
-
                 shared<instrInfo_t> prevInfo = std::make_shared<instrInfo_t>();
                 if (link.first)
                 {
@@ -85,7 +79,7 @@ public:
                     continue;
                 }
                 
-                std::set<address_t, cmp_adress_t> clearInsns = AnalyseInstruction(newInfo, info);
+                std::set<address_t> clearInsns = AnalyseInstruction(newInfo, info);
                 newInfo->processed = true;
 
                 if (verbose)
@@ -117,7 +111,7 @@ public:
             {
                 if (stackGood)
                 {
-                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & (int)procRequest_t::stackDrop16))
+                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & ((int)procRequest_t::stackDrop2 | (int)procRequest_t::stackDrop4 | (int)procRequest_t::stackDrop6 | (int)procRequest_t::stackDrop8)))
                     {
                         p->stop = "stack_below";
                     }
@@ -162,8 +156,14 @@ public:
             printf(" +carry");
         if ((int)req & (int)procRequest_t::returnZero)
             printf(" +zero");
-        if ((int)req & (int)procRequest_t::stackDrop16)
-            printf(" +stackDrop16");
+        if ((int)req & (int)procRequest_t::stackDrop2)
+            printf(" +stackDrop2");
+        if ((int)req & (int)procRequest_t::stackDrop4)
+            printf(" +stackDrop4");
+        if ((int)req & (int)procRequest_t::stackDrop6)
+            printf(" +stackDrop6");
+        if ((int)req & (int)procRequest_t::stackDrop8)
+            printf(" +stackDrop8");
         printf("\n");
 
         for (const auto& p : code)
@@ -176,30 +176,20 @@ public:
         }
     }
 
-    callConv_t GetCallConvention(const code_t& code)
+    callConv_t GetCallConvention(shared<info_t> info) // TODO: should be merged with procrequest?
     {
-        int retFar = 0, retNear = 0;
-        bool stack = UsesStack(code);
+        bool stack = UsesStack(info->code);
+        procRequest_t req = mOptions.procModifiers.find(info->proc)->second;
         
-        for (const auto& p : code)
-        {
-            if (p.second->instr->mId == X86_INS_RETF)
-                retFar++;
-            if (p.second->instr->mId == X86_INS_RET)
-                retNear++;
-        }
-        
-        if (retFar > 0)
-        {
-            assert(retNear == 0);
+        if ((int)req & (int)procRequest_t::callFar)
             return stack ? callConv_t::callConvShiftStackFar : callConv_t::callConvSimpleStackFar;
-        }
-        if (retNear > 0)
-        {
-            assert(retFar == 0);
+        else if ((int)req & (int)procRequest_t::callNear)
             return stack ? callConv_t::callConvShiftStackNear : callConv_t::callConvSimpleStackNear;
+        else
+        {
+            assert(0);
+            return callConv_t::callConvUnknown;
         }
-        return callConv_t::callConvUnknown;
     }
     
     bool UsesStack(const code_t& code)
@@ -217,7 +207,7 @@ public:
         return false;
     }
 
-    std::string TempVarFor(std::map<address_t, int, cmp_adress_t>& table, std::string prefix, address_t addr)
+    std::string TempVarFor(std::map<address_t, int>& table, std::string prefix, address_t addr)
     {
         if (table.find(addr) == table.end())
             table.insert(std::pair<address_t, int>(addr, table.size()));

@@ -71,10 +71,26 @@ public:
         shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
         
         std::string extraInfo = "";
-        if (info->func.request != procRequest_t::returnNone)
+        if (info->func.request != procRequest_t::none && info->func.request != procRequest_t::callNear)
         {
             extraInfo += " //";
             int temp = (int)info->func.request;
+            if (temp & (int)procRequest_t::callNear && temp & (int)procRequest_t::callFar)
+            {
+                extraInfo += " +nearfar";
+                temp ^= (int)procRequest_t::callNear;
+                temp ^= (int)procRequest_t::callFar;
+            } else {
+                if (temp & (int)procRequest_t::callNear)
+                {
+                    temp ^= (int)procRequest_t::callNear;
+                }
+                if (temp & (int)procRequest_t::callFar)
+                {
+                    extraInfo += " +far";
+                    temp ^= (int)procRequest_t::callFar;
+                }
+            }
             if (temp & (int)procRequest_t::returnCarry)
             {
                 extraInfo += " +returnCarry";
@@ -85,10 +101,25 @@ public:
                 extraInfo += " +returnZero";
                 temp ^= (int)procRequest_t::returnZero;
             }
-            if (temp & (int)procRequest_t::stackDrop16)
+            if (temp & (int)procRequest_t::stackDrop2)
             {
-                extraInfo += " +stackDrop16";
-                temp ^= (int)procRequest_t::stackDrop16;
+                extraInfo += " +stackDrop2";
+                temp ^= (int)procRequest_t::stackDrop2;
+            }
+            if (temp & (int)procRequest_t::stackDrop4)
+            {
+                extraInfo += " +stackDrop4";
+                temp ^= (int)procRequest_t::stackDrop4;
+            }
+            if (temp & (int)procRequest_t::stackDrop6)
+            {
+                extraInfo += " +stackDrop6";
+                temp ^= (int)procRequest_t::stackDrop6;
+            }
+            if (temp & (int)procRequest_t::stackDrop8)
+            {
+                extraInfo += " +stackDrop8";
+                temp ^= (int)procRequest_t::stackDrop8;
             }
             assert(temp == 0);
         }
@@ -165,9 +196,9 @@ public:
             }
 
             if (pinfo->cf.usesInternal && !pinfo->cf.variableRead.empty() && pinfo->cf.variableRead != "flags.carry")
-                mCode.push_back("    flags.carry = " + pinfo->cf.variableRead + " /*ggg6*/;\n");
+                mCode.push_back("    flags.carry = " + pinfo->cf.variableRead + ";\n");
             if (pinfo->zf.usesInternal && !pinfo->zf.variableRead.empty() && pinfo->zf.variableRead != "flags.zero")
-                mCode.push_back("    flags.zero = " + pinfo->cf.variableRead + " /*ggg6*/;\n");
+                mCode.push_back("    flags.zero = " + pinfo->cf.variableRead + ";\n");
             assert(!pinfo->sf.usesInternal && !pinfo->of.usesInternal);
             
             if (pinfo->infiniteLoop)
@@ -189,9 +220,12 @@ public:
                     mCode.push_back("    flags.carry = " + pinfo->GetFlag('c').variableRead + ";\n");
                 else if (pinfo->GetFlag('c').needed && !pinfo->GetFlag('c').visible)
                 {
-                    std::string carry = BuildCondition(pinstr, pinfo, mInfo->func);
-                    if (carry != "flags.carry")
-                        mCode.push_back("    flags.carry = " + carry + ";\n");
+                    if (pinfo->GetFlag('c').saved && pinfo->GetFlag('c').variableRead != "flags.carry")
+                    {
+                        std::string carry = BuildCondition(pinstr, pinfo, mInfo->func);
+                        if (carry != "flags.carry")
+                            mCode.push_back("    flags.carry = " + carry + ";\n");
+                    }
                 }
                 
                 if (!pinfo->GetFlag('z').variableRead.empty() && pinfo->GetFlag('z').variableRead != "flags.zero")
@@ -204,6 +238,9 @@ public:
                 }
             }
             
+            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
+                mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
+
             if (mOptions.GetJumpTable(pinstr->mAddress))
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
@@ -223,12 +260,13 @@ public:
             
             if (!postSave.empty())
                 mCode.push_back(postSave);
-            if (!pinfo->stop.empty())
+            if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret)
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
             if (pinstr->isTerminating)
                 mCode.push_back("    stop(\"terminating\");\n");
             if (pinstr->isReturning)
             {
+                assert(0); // TODO: insert stack correction!!
                 // return flags?
                 mCode.push_back("    return;\n");
             }
@@ -295,12 +333,28 @@ public:
             return "($sig0)$rd0 < ($sig0)$rd1";
         if (set == X86_INS_CMP && cond == X86_INS_JBE)
             return "$rd0 <= $rd1";
+        if (set == X86_INS_OR && cond == X86_INS_JA) // cf=0, zf=?, ja: !cf & !zf
+            return "!$rd0 /*ggg6*/";
+        if (set == X86_INS_OR && cond == X86_INS_JGE)
+            return "($sig0)$rd0 >= 0";
+        if (set == X86_INS_OR && cond == X86_INS_JLE)
+            return "($sig0)$rd0 <= 0";
+        if (set == X86_INS_OR && cond == X86_INS_JL)
+            return "($sig0)$rd0 < 0";
+        if (set == X86_INS_CALL && cond == X86_INS_JA)
+            return "!flags.carry && !flags.zero";
+        if (set == X86_INS_CALL && cond == X86_INS_JBE)
+            return "flags.carry || flags.zero";
+        if (set == X86_INS_OR && cond == X86_INS_JBE)
+            return "!$rd0";
         assert(0);
         return "";
     }
     
     std::string InvertCondition(std::string cond)
     {
+        if (cond.find("stop") != std::string::npos)
+            return "!" + cond;
         if (cond == "$rd0" || cond == "flags.carry" || cond == "flags.zero")
             return "!" + cond;
         if (cond == "$rd0 == $rd1")
@@ -336,7 +390,7 @@ public:
         }
         
         bool dirty = false;
-        std::set<address_t, cmp_adress_t> lastSet;
+        std::set<address_t> lastSet;
         int needFlags = 0; //info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
         std::set<char> needType;
         

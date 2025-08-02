@@ -150,10 +150,21 @@ struct jumpTable_t {
 
 enum class procRequest_t
 {
-    returnNone = 0,
+    none = 0,
     returnCarry = 1,
     returnZero = 2,
-    stackDrop16 = 4
+    stackDrop2 = 4,
+    callNear = 8,
+    callFar = 16,
+    stackDrop8 = 32,
+    stackDrop6 = 64,
+    stackDrop4 = 128,
+};
+
+enum class arch_t {
+    archNone = 0,
+    arch16 = 1,
+    arch32 = 2
 };
 
 class Options {
@@ -174,10 +185,12 @@ public:
     bool relocations{true};
     bool declarations{true};
     int loadAddress{0x10000};
+    arch_t arch{arch_t::archNone};
+    
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
-    std::set<address_t, cmp_adress_t> isolateLabels;
-    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
+    std::set<address_t> isolateLabels;
+    std::map<address_t, procRequest_t> procModifiers;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
         for (auto jt : jumpTables)

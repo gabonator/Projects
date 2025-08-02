@@ -26,18 +26,12 @@ enum callConv_t {
 struct funcInfo_t {
     procRequest_t request;
     callConv_t callConv{callConvUnknown};
+    arch_t arch;
 };
 
 struct instrInfo_t {
     bool processed{false};
     shared<CapInstr> instr;
-    
-//    struct instrInfoDepends_t {
-//        char type{0};
-//        std::set<address_t, cmp_adress_t> depends;
-//        std::set<address_t, cmp_adress_t> provides;
-//        std::set<address_t, cmp_adress_t> willSet;
-//    } cd, zd, sd, od;
     
     struct instrInfoFlag_t {
         char type{0};
@@ -50,11 +44,11 @@ struct instrInfo_t {
         // lastSet instructions were altered, so flag value extraction is not possible anymore
         bool dirty{false};
         // set of all instruction which modify any flags for this instruction
-        std::set<address_t, cmp_adress_t> lastSet;
+        std::set<address_t> lastSet;
         // set of instruction having an effect on this instruction (lastSet && needed)
-        std::set<address_t, cmp_adress_t> depends;
+        std::set<address_t> depends;
         // this instruction modifies flag for following set of instructions
-        std::set<address_t, cmp_adress_t> provides;
+        std::set<address_t> provides;
                 
         // private:
         // flag value cannnot be recovered from input operand after instruction evaluation
@@ -66,7 +60,7 @@ struct instrInfo_t {
         bool visible{false};
         // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
         bool usesInternal{false};
-        std::set<address_t, cmp_adress_t> willSet;
+        std::set<address_t> willSet;
         bool saved{false};
 
         void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
@@ -76,36 +70,16 @@ struct instrInfo_t {
 
     instrInfo_t()
     {
-//        cf.type = cd.type = 'c';
-//        zf.type = zd.type = 'z';
-//        sf.type = sd.type = 's';
-//        of.type = od.type = 'o';
         cf.type = 'c';
-        zf.type  = 'z';
-        sf.type  = 's';
-        of.type  = 'o';
+        zf.type = 'z';
+        sf.type = 's';
+        of.type = 'o';
     }
-
-//    std::vector<instrInfoDepends_t*> Deps()
-//    {
-//        return {&cd, &zd, &sd, &od};
-//    }
 
     std::vector<instrInfoFlag_t*> Flags()
     {
         return {&cf, &zf, &sf, &of};
     }
-    
-//    instrInfoDepends_t& GetDeps(char c)
-//    {
-//        for (instrInfoDepends_t* f : Deps())
-//        {
-//            if (f->type == c)
-//                return *f;
-//        }
-//        assert(0);
-//        return *Deps()[0];
-//    }
 
     instrInfoFlag_t& GetFlag(char c)
     {
@@ -135,10 +109,11 @@ struct instrInfo_t {
     bool infiniteLoop{false};
     std::string stop;
     int stack{-9999};
-    int stackDelta{0};
+    int stackRel{0};
+    int stackAbs{-9999};
 
     // private:
-    procRequest_t procRequest{procRequest_t::returnNone};
+    procRequest_t procRequest{procRequest_t::none};
     address_t procTarget;
 
     void CopyFrom(shared<instrInfo_t> o);
@@ -217,10 +192,12 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         changed |= p->Merge(copy);
     }
     if (!processed)
-        stack = o->stack + stackDelta;
+    {
+        stack = stackAbs == -9999 ? o->stack + stackRel : stackAbs;
+    }
     else
     {
-        if (stack != o->stack + stackDelta)
+        if (stack != (stackAbs == -9999 ? o->stack + stackRel : stackAbs))
             stop = "stack_bad";
     }
     return changed;
@@ -229,14 +206,15 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
 // PathAnalyser - keep whole decoded application in memory
 class ProgramAnalyser {
 public:
-    typedef std::map<address_t, shared<instrInfo_t>, cmp_adress_t> code_t;
-    const Options& mOptions;
-//        std::map<address_t, std::shared_ptr<CTracer>, cmp_adress_t> mMethods;
+    typedef std::map<address_t, shared<instrInfo_t>> code_t;
+    Options& mOptions;
+//        std::map<address_t, std::shared_ptr<CTracer>> mMethods;
         struct info_t {
+            address_t proc;
             code_t code;
             funcInfo_t func;
         };
-        std::map<address_t, shared<info_t>, cmp_adress_t> mInfos;
+        std::map<address_t, shared<info_t>> mInfos;
     
 public:
     ProgramAnalyser(Options& options) : mOptions(options)
@@ -248,6 +226,9 @@ public:
         std::shared_ptr<CTracer> tracer(new CTracer(mOptions));
         tracer->Trace(method);
         std::shared_ptr<info_t> newInfo = std::make_shared<info_t>();
+        newInfo->proc = method;
+        newInfo->func.arch = mOptions.arch;
+        
         for (const auto& [addr, instr] : tracer->GetCode())
         {
             shared<instrInfo_t> info = std::make_shared<instrInfo_t>();
@@ -255,13 +236,11 @@ public:
             newInfo->code.insert({addr, info});
         }
         mInfos.insert({method, newInfo});
-        
-//        mMethods.insert(std::pair<address_t, std::shared_ptr<CTracer>>(method, tracer));
     }
     
     void RecursiveScan(std::vector<address_t> methodsToProcess)
     {
-        std::set<address_t, cmp_adress_t> methodsProcessed;
+        std::set<address_t> methodsProcessed;
         while (!methodsToProcess.empty())
         {
             std::vector<address_t> newMethodsToProcess;
@@ -271,27 +250,39 @@ public:
 
                 Scan(methodToProcess);
                 
-                for (address_t newCallTarget : GetCalls(methodToProcess))
+                for (const auto& [newCallTarget, newCallConv] : GetCalls(methodToProcess))
+                {
+                    if (mOptions.procModifiers.find(newCallTarget) == mOptions.procModifiers.end())
+                    {
+                        mOptions.procModifiers.insert(std::pair<address_t, procRequest_t>{newCallTarget, newCallConv});
+                    } else {
+                        procRequest_t& req = mOptions.procModifiers.find(newCallTarget)->second;
+                        req = (procRequest_t)((int)req | (int)newCallConv);
+                    }
+                    
                     if (methodsProcessed.find(newCallTarget) == methodsProcessed.end() &&
                         std::find(methodsToProcess.begin(), methodsToProcess.end(), newCallTarget) == methodsToProcess.end() &&
                         std::find(newMethodsToProcess.begin(), newMethodsToProcess.end(), newCallTarget) ==  newMethodsToProcess.end())
                     {
                         newMethodsToProcess.push_back(newCallTarget);
                     }
+                }
             }
             methodsToProcess = newMethodsToProcess;
         }
     }
-    std::set<address_t, cmp_adress_t> AllMethods()
+    std::set<address_t> AllMethods()
     {
-        std::set<address_t, cmp_adress_t> methods;
+        std::set<address_t> methods;
         for (const auto& [addr, instr] : mInfos)
             methods.insert(addr);
         return methods;
     }
     
-    int GetStackChange(shared<CapInstr> instr)
+    void GetStackChange(shared<instrInfo_t> info, code_t& code)
     {
+        shared<CapInstr> instr = info->instr;
+        
         int stackChange = instr->mTemplate.stack;
         if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
             stackChange -= instr->Imm();
@@ -300,25 +291,77 @@ public:
         {
             switch (instr->mId)
             {
+                case X86_INS_MOV:
+                    stackChange = 111;
+                    if (instr->mDetail.operands[1].type == X86_OP_REG && instr->mDetail.operands[1].reg == X86_REG_BP)
+                    {
+                        bool saved = false;
+                        int sum = 0;
+                        for (const auto& [addr, i] : code)
+                        {
+                            if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "sp, bp") == 0)
+                            {
+                                assert(addr == instr->mAddress);
+                                break;
+                            }
+                            if (!saved)
+                                sum += i->stackRel;
+                            if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "bp, sp") == 0)
+                                saved = true;
+                            if (!saved)
+                            {
+                                std::set<x86_reg> wr = i->instr->WritesRegisters();
+                                if(wr.find(X86_REG_BP) != wr.end())
+                                {
+                                    int f = 9;
+                                    saved = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (saved)
+                            info->stackAbs = sum;
+                    }
+                    break;
+                case X86_INS_INC:
+                    stackChange--;
+                    break;
+                case X86_INS_DEC:
+                    stackChange++;
+                    break;
+                case X86_INS_ADD:
+                    if (instr->mDetail.operands[1].type == X86_OP_IMM)
+                        stackChange -= instr->Imm();
+                    else
+                        stackChange = 111;
+                    break;
+                case X86_INS_SUB:
+                    if (instr->mDetail.operands[1].type == X86_OP_IMM)
+                        stackChange += instr->Imm();
+                    else
+                        stackChange = 111;
+                    break;
                 default:
                     assert(0);
             }
         }
-        if (instr->mId == X86_INS_CALL)
+        if (instr->mId == X86_INS_CALL && instr->IsDirectCall())
         {
-            procRequest_t req = mOptions.procModifiers.find(instr->mAddress)->second;
-            if ((int)req & (int)procRequest_t::stackDrop16)
-                stackChange -= 2;
+            if (mOptions.procModifiers.find(instr->CallTarget()) != mOptions.procModifiers.end())
+            {
+                procRequest_t req = mOptions.procModifiers.find(instr->CallTarget())->second;
+                if ((int)req & (int)procRequest_t::stackDrop2)
+                    stackChange -= 2;
+                if ((int)req & (int)procRequest_t::stackDrop4)
+                    stackChange -= 4;
+                if ((int)req & (int)procRequest_t::stackDrop6)
+                    stackChange -= 6;
+                if ((int)req & (int)procRequest_t::stackDrop8)
+                    stackChange -= 8;
+            }
         }
-
-        /*
-        if (mOptions.procModifiers.find(addr) != mOptions.procModifiers.end())
-        {
-            procRequest_t req = mOptions.procModifiers.find(addr)->second;
-            if ((int)req & (int)procRequest_t::stackDrop16)
-                return -2;
-        }*/
-        return stackChange;
+        info->stackRel = stackChange;
+        //return stackChange;
     }
     void AddProcRequest(shared<instrInfo_t> info, address_t target, procRequest_t req)
     {
@@ -328,13 +371,13 @@ public:
     
     virtual void AnalyseProc(address_t proc, procRequest_t req) = 0;
     
-    std::map<address_t, procRequest_t, cmp_adress_t> GetRequests(address_t proc)
+    std::map<address_t, procRequest_t> GetRequests(address_t proc)
     {
-        std::map<address_t, procRequest_t, cmp_adress_t> aux;
+        std::map<address_t, procRequest_t> aux;
         shared<info_t> info = check(mInfos.find(proc), mInfos.end())->second;
         for (auto i : info->code)
         {
-            if (i.second->procRequest != procRequest_t::returnNone)
+            if (i.second->procRequest != procRequest_t::none)
             {
                 if (aux.find(i.second->procTarget) == aux.end())
                 {
@@ -347,16 +390,17 @@ public:
         return aux;
     }
 
-    std::set<address_t, cmp_adress_t> GetCalls(address_t proc)
+    std::vector<std::pair<address_t, procRequest_t>> GetCalls(address_t proc)
     {
-        std::set<address_t, cmp_adress_t> calls;
+        std::vector<std::pair<address_t, procRequest_t>> calls;
+        std::set<address_t> unique;
         
         code_t& code = mInfos.find(proc)->second->code;
 
         if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
         {
             // stub
-            calls.insert(code.begin()->second->instr->JumpTarget());
+            calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
             return calls;
         }
         for (const auto& p : code)
@@ -366,7 +410,13 @@ public:
             {
                 assert(pinstr->mDetail.op_count == 1);
                 if (pinstr->mDetail.operands[0].type == X86_OP_IMM)
-                    calls.insert(pinstr->CallTarget());
+                {
+                    if (unique.find(pinstr->CallTarget()) == unique.end())
+                    {
+                        unique.insert(pinstr->CallTarget());
+                        calls.push_back({pinstr->CallTarget(), procRequest_t::callNear});
+                    }
+                }
             }
             shared<jumpTable_t> jt;
             if (pinstr->IsIndirectCall())
@@ -376,7 +426,11 @@ public:
                 {
                     for (int i=0; i<jt->GetSize(); i++)
                         if (jt->IsValid(i))
-                            calls.insert(jt->GetTarget(i));
+                            if (unique.find(jt->GetTarget(i)) == unique.end())
+                            {
+                                unique.insert(jt->GetTarget(i));
+                                calls.push_back({jt->GetTarget(i), procRequest_t::callNear});
+                            }
                 }
             }
         }

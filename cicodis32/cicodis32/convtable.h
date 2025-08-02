@@ -6,6 +6,7 @@
 //
 
 #define convert_args shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func
+
 struct convert_t
 {
     std::function<std::string(convert_args)> convert;
@@ -64,10 +65,11 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
+        assert((int)func.request & (int)procRequest_t::callNear);
+        assert(func.callConv == callConv_t::callConvShiftStackNear ||
+               func.callConv == callConv_t::callConvSimpleStackNear);
         if (func.callConv == callConv_t::callConvShiftStackNear)
-            aux.push_back("sp += 2;");
-        if (func.callConv == callConv_t::callConvShiftStackFar)
-            aux.push_back("sp += 4;");
+            aux.push_back("sp += 2;"); // TODO: on all exit paths!!!
         if (instr->Imm() != 0)
             aux.push_back("sp += $immd0;");
         if (!(instr->isLast && !instr->isLabel))
@@ -76,6 +78,23 @@ convert_t convert[X86_INS_ENDING] = {
     },
         .flagCondition = "$ret",
     },
+    [X86_INS_RETF] = {.convert = [](convert_args){
+        std::vector<std::string> aux;
+        if (!((int)func.request & (int)procRequest_t::callFar))
+        {
+            aux.push_back("stop(\"near_proc_retf\");");
+            if (func.callConv == callConv_t::callConvShiftStackNear)
+                aux.push_back("sp += 4;"); // we expect pop,push,push at start
+
+        }
+        if (func.callConv == callConv_t::callConvShiftStackFar)
+            aux.push_back("sp += 4;");
+        if (instr->Imm() != 0)
+            aux.push_back("sp += $immd0;");
+        if (!(instr->isLast && !instr->isLabel))
+            aux.push_back("return;");
+        return utils::join(aux, "\n    ");
+    }},
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -93,8 +112,11 @@ convert_t convert[X86_INS_ENDING] = {
     },
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
-        .savecf = [](convert_args){ return "0 /* gabo-bad */"; },
-        .savezf = [](convert_args){ assert(instr->ArgsEqual()); return "!$rd0"; },
+        .cf = [](convert_args){ return "stop() /*ggg9*/"; },
+        .savecf = [](convert_args){ return "stop() /* gabo-bad */"; },
+        .savezf = [](convert_args){
+            return instr->ArgsEqual() ? "!$rd0" : "!($rd0 | $rd1)";
+        },
     },
     [X86_INS_ADD] = {.convert = [](convert_args){ return "$rw0 += $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
@@ -111,25 +133,36 @@ convert_t convert[X86_INS_ENDING] = {
         else
         {
             if (instr->mDetail.operands[0].size == 2)
-            {
-//                if (instr->mDetail.operands[0].type == X86_OP_MEM)
-//                {
-//                    uint16_t realOfs = *(uint16_t*)Capstone->GetBufferAt(instr->CallTarget());
-//                    address_t realCs(??);
-//                    return format("assert(cs == 0x%04x && memoryAGet16(cs, $rd0) == 0x%04x);\n    sub_%x();\n", realCs, realOfs, realCs*16 + realOfs);
-//                } else
-                    return "callIndirect(cs, $rd0);";
-            }
-            else
-            {
-                assert(0);
-                return "stop();";
-            }
+                return "callIndirect(cs, $rd0);";
+            assert(0);
+            return "stop();";
         }
     },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
     },
+    [X86_INS_LCALL] = {.convert = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
+            assert(0);//return "$method();";
+        if (instr->mDetail.op_count == 2)
+            return "push(cs); cs = $rd0; callIndirect($rd0, $rd1); assert(cs == $seg);";
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
+        {
+            cs_x86_op cs{.type = X86_OP_REG, .reg = X86_REG_CS};
+            assert(!Capstone->Intersects(instr->mDetail.operands[0], cs));
+            
+//            if (instr->mDetail.operands[0].size == 4)
+//                assert(0);
+//            else  if (instr->mDetail.operands[0].size == 2)
+            return "cs = $rns0; callIndirect(cs, $rd0); assert(cs == $seg); /*ggg3*/;";
+        }
+        assert(0);
+        return "stop();";
+    },
+            .cf = [](convert_args){ return "flags.carry"; },
+            .zf = [](convert_args){ return "flags.zero"; },
+    },
+
     [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$rdcarry;" : "$wr0 = $rd0 - $rd1 - $rdcarry;"; } }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
@@ -162,6 +195,7 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_NEG] = {.convert = [](convert_args){ return "$wr0 = -$rd0;"; },
             .zf = [](convert_args){ return "!$rd0"; },
+            .savecf = [](convert_args){ return "!$rd0"; }, // should be post
     },
     [X86_INS_CLD] = {.convert = [](convert_args){ return "flags.direction = 0;"; } },
     [X86_INS_STD] = {.convert = [](convert_args){ return "flags.direction = 1;"; } },
@@ -179,6 +213,10 @@ convert_t convert[X86_INS_ENDING] = {
             return "al = lodsb<DS_SI>();";
         else if (strcmp(instr->mOperands, "al, byte ptr [esi]") == 0)
             return "al = lodsb<DS_ESI>();";
+        else if (strcmp(instr->mOperands, "al, byte ptr es:[si]") == 0)
+            return "al = lodsb<ES_SI>();";
+        else if (strcmp(instr->mOperands, "al, byte ptr ss:[si]") == 0)
+            return "al = lodsb<SS_SI>();";
         assert(0);
         return "";
     } },
@@ -212,19 +250,18 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHL] = {.convert = [](convert_args){
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
     },
-            .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0) /*ggg5*/"; },
+            .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0)"; },
     },
     [X86_INS_ROL] = {.convert = [](convert_args){
         return "$wr0 = rol$width0($rd0, $rd1);";
     },
             .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0)"; },
-//            .cf = [](convert_args){ return "flags.carry /* ggg4 */"; },
     },
     [X86_INS_ROR] = {.convert = [](convert_args){
         return "$wr0 = ror$width0($rd0, $rd1);";
     },
             .savecf = [](convert_args){
-                return "!!($rd0 & (1 << ($rd1-1))) /*ggg - TODO BAD!*/";
+                return "!!($rd0 & (1 << ($rd1-1)))";
             },
     },
     [X86_INS_RCR] = {.convert = [](convert_args){
@@ -238,6 +275,8 @@ convert_t convert[X86_INS_ENDING] = {
             return "$wr0 = $rd1 * $rd2;";
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 1)
             return "ax = ((char)$rd0 * (short)ax) & 0xffff;";
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 2)
+            return "imul16($rd0);";
         assert(0);
         return "";
     } },
@@ -291,8 +330,9 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_STOSD] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_CMPSB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }},
-    [X86_INS_CWDE] = {.convert = [](convert_args){ return "$realmode ? cbw() : cwde();"; } }, // CBW/CWDE
-    [X86_INS_CDQ] = {.convert = [](convert_args){ return "if ($realmode)\n        dx = ax & 0x8000 ? 0xffff : 0x0000;\n    else\n        stop(\"cdq\");"; } }, // CWD/CWDE
+    [X86_INS_CWDE] = {.convert = [](convert_args){ return func.arch == arch_t::arch16 ? "cbw();" : "cwde();"; } }, // CBW/CWDE
+    [X86_INS_CDQ] = {.convert = [](convert_args){
+        return func.arch == arch_t::arch16 ? "dx = ax & 0x8000 ? 0xffff : 0x0000;" : "stop(\"cdq\");"; } }, // CWD/CWDE
     [X86_INS_NOP] = {.convert = [](convert_args){ return ""; } },
     [X86_INS_XCHG] = {.convert = [](convert_args){
         switch (instr->mDetail.operands[0].size)
@@ -323,4 +363,21 @@ convert_t convert[X86_INS_ENDING] = {
         //.savecf = [](convert_args){ return "!$rdcarry /*gabo!!*/"; },
     },
     [X86_INS_XLATB] = {.convert = [](convert_args){ return "al = memoryAGet($prefix, bx+al);"; } },
+    [X86_INS_LES] = {.convert = [](convert_args){
+        cs_x86_op es{.type = X86_OP_REG, .reg = X86_REG_ES};
+        // les bx, es:[bx]
+        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) || Capstone->Intersects(instr->mDetail.operands[1], es))
+        {
+            return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; es = tmp2; /*ggg2!!check*/};";
+            
+        }
+        assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
+        return "$wr0 = $rd1; es = $rn1; /*ggg2*/;";
+    } },
+    [X86_INS_LDS] = {.convert = [](convert_args){
+        cs_x86_op ds{.type = X86_OP_REG, .reg = X86_REG_DS};
+        assert(!Capstone->Intersects(instr->mDetail.operands[1], ds));
+        assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
+        return "$wr0 = $rd1; ds = $rn1; /*ggg2*/;";
+    } },
 };

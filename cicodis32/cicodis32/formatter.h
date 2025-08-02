@@ -366,6 +366,11 @@ public:
                     assert(0);
             }
             
+            if (strcmp(tok, "seg") == 0)
+            {
+                snprintf(replace, 64, "0x%04x", instr->mAddress.segment);
+            }
+
             if (strcmp(tok, "rn1") == 0)
             {
                 assert(x86.op_count >= 2);
@@ -373,7 +378,10 @@ public:
                 {
                     char segment[32], offset[32];
                     GetOpAddress(x86.operands[1], segment, offset, info, func);
-                    snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
+//                    if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
+//                        snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
+//                    else
+                        snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
                              memorySuffix(x86.operands[1].size), segment, offset);
                 } else
                     assert(0);
@@ -391,7 +399,10 @@ public:
                         {
                             char segment[32], offset[32];
                             GetOpAddress(x86.operands[1], segment, offset, info, func);
-                            snprintf(replace, 64, "memoryAGet%s(%s, %s)",
+                            if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
+                                snprintf(replace, 64, "memoryAGet16(%s, %s)", segment, offset);
+                            else
+                                snprintf(replace, 64, "memoryAGet%s(%s, %s)",
                                      memorySuffix(x86.operands[1].size), segment, offset);
                         } else
                             strcpy(replace, ToCString(x86.operands[1], info, func).c_str());

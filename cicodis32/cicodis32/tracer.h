@@ -14,11 +14,13 @@ struct instruction_t
     int stack{0};
     bool conditional{false};
     bool unconditional{false};
+    bool ret{false};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
-    [X86_INS_RET] = { .continuous = false },
-    [X86_INS_RETF] = { .continuous = false, },
+    [X86_INS_RET] = { .continuous = false, .ret = true },
+    [X86_INS_RETF] = { .continuous = false, .ret = true },
+    [X86_INS_IRET] = { .continuous = false, .ret = true },
     [X86_INS_JMP] = {
         .continuous = false,
         .simpleJump = true,
@@ -47,7 +49,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
     [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
     [X86_INS_CALL] = { .calls = true},
-    
+    [X86_INS_LCALL] = { .calls = true},
+
     [X86_INS_PUSH] = { .stack = +2 },
     [X86_INS_POP] = { .stack = -2 },
 
@@ -77,8 +80,8 @@ public:
     address_t mAddress;
 
     //
-    std::set<address_t, cmp_adress_t> mNext;
-    std::set<address_t, cmp_adress_t> mPrev;
+    std::set<address_t> mNext;
+    std::set<address_t> mPrev;
     instruction_t mTemplate;
     bool isLabel{false};
     bool isTerminating{false};
@@ -237,7 +240,7 @@ public:
     {
         if (mDetail.op_count == 0)
         {
-            assert(mId == X86_INS_RET);
+            assert(mId == X86_INS_RET || mId == X86_INS_RETF);
             return 0;
         }
         if (mDetail.op_count == 1)
@@ -304,10 +307,13 @@ void CapInstr::Populate()
         assert(mDetail.op_count == 1 &&
                (mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4));
         //if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
-        if (mDetail.operands[0].size == 2)
-            mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm & 0xffff});
-        else
-            mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm});
+        if (IsDirectJump())
+        {
+            if (mDetail.operands[0].size == 2)
+                mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm & 0xffff});
+            else
+                mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm});
+        }
     }
 }
 
@@ -322,13 +328,6 @@ public:
     CCapstone()
     {
 //        cs_err err = cs_open(CS_ARCH_X86, CS_MODE_32, &mHandle);
-        cs_err err = cs_open(CS_ARCH_X86, cs_mode(CS_MODE_16 | CS_MODE_32), &mHandle);
-        if (err) {
-            printf("Failed on cs_open() with error returned: %u\n", err);
-            abort();
-        }
-        cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
-        mInsn = cs_malloc(mHandle);
         //
         mRegMap[X86_REG_EAX][X86_REG_AX] = 1;
         mRegMap[X86_REG_EAX][X86_REG_AL] = 1;
@@ -358,9 +357,19 @@ public:
         cs_close(&mHandle);
     }
     
-    void Set(shared<Loader> loader)
+    void Set(shared<Loader> loader, Options& options)
     {
         mLoader = loader;
+        
+        cs_mode mode = options.arch == arch_t::arch16 ? CS_MODE_16 : cs_mode(CS_MODE_16 /*| CS_MODE_32*/);
+        cs_err err = cs_open(CS_ARCH_X86, mode, &mHandle);
+        if (err) {
+            printf("Failed on cs_open() with error returned: %u\n", err);
+            abort();
+        }
+        cs_option(mHandle, CS_OPT_DETAIL, CS_OPT_ON);
+        mInsn = cs_malloc(mHandle);
+
     }
         
     std::shared_ptr<CapInstr> Disasm(address_t addr)
@@ -468,7 +477,7 @@ std::unique_ptr<CCapstone> Capstone{new CCapstone};
 class CTracer {
 public:
     const Options& mOptions;
-    typedef std::map<address_t, std::shared_ptr<CapInstr>, cmp_adress_t> code_t;
+    typedef std::map<address_t, std::shared_ptr<CapInstr>> code_t;
     
 private:
     code_t code;
@@ -523,13 +532,16 @@ public:
                 if (instr->AsString() == "int 0x21")
                 {
                     assert(instr->mPrev.size() == 1);
-                    std::string prev = code.find(*instr->mPrev.begin())->second->AsString();
-                    if (prev.find("mov ax, 0x4c") != std::string::npos)
+                    address_t prevAddr = *instr->mPrev.begin();
+                    std::string prev = code.find(prevAddr)->second->AsString();
+                    address_t prevAddr1 = *code.find(prevAddr)->second->mPrev.begin();
+                    std::string prev1 = code.find(prevAddr1)->second->AsString();
+                    if (prev.find("mov ax, 0x4c") != std::string::npos || prev1.find("mov ax, 0x4c") != std::string::npos)
                     {
                         instr->mNext.clear();
                         instr->isTerminating = true;
                     }
-                    if (prev.find("mov ah, 0x4c") != std::string::npos)
+                    if (prev.find("mov ah, 0x4c") != std::string::npos || prev1.find("mov ah, 0x4c") != std::string::npos)
                     {
                         instr->mNext.clear();
                         instr->isTerminating = true;

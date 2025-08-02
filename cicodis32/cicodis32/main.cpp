@@ -88,19 +88,7 @@ int main(int argc, char **argv) {
     Options optionsFox = {
         .loader = "LoaderMz",
         .exec = "fox.exe",
-//        .verbose =true,
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x6582}},
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x65be}},
-
-        
-//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x1c61}},
-//        .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x40fa}},
-//        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1020, 0x10cbe - 0x10200}},
-        
-        //sub_1434b
-        //1020:40fa
-        //sub_34442
-        .procModifiers {std::pair<address_t, procRequest_t>({0x1020, 0x5133}, procRequest_t::stackDrop16)},
+        .procModifiers = {std::pair<address_t, procRequest_t>({0x1020, 0x5133}, procRequest_t::stackDrop2)},
         .jumpTables = {
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x1020, 0x42e6),
@@ -161,11 +149,48 @@ int main(int argc, char **argv) {
             }),
         }
     };
-
+    Options optionsBumpy = {
+        .loader = "LoaderMz",
+        .exec = "BUMPY.EXE",
+        .arch = arch_t::arch16,
+        .loadAddress = 0x01ed0,
+//        .verbose = true,
+        .relocations = false, .verbose = true, .recursive = false, .procList = {{0x01ed, 0x9f5e - 0x1ed0}},
+        .procModifiers = {
+            {{0x1ed, 0xa8ee}, procRequest_t::stackDrop8},
+            {{0x1ed, 0xa9f5}, procRequest_t::stackDrop8},
+            {{0x1ed, 0xa178}, procRequest_t::stackDrop2}, //1ed:a178
+            {{0x1ed, 0x98dd}, procRequest_t::stackDrop4}, //1ed:98dd
+            {{0x1ed, 0x9b14}, procRequest_t::stackDrop4}, //1ed:9b14
+            {{0x1ed, 0xa1ef}, procRequest_t::stackDrop6}, //1ed:a1ef
+            {{0x1ed, 0xa20a}, procRequest_t::stackDrop2}, //1ed:a20a
+//            {{0x01ed, 0xaa2b}, (procRequest_t)((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear)}
+        },
+            //.procList = {{0x1ed, 0x9c62}, {0x1ed, 0xaa4e}},
+            .jumpTables = {
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1ed, 0x1da),
+                    .table = address_t(0x1227, 0),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {1, 4},
+                    .selector = "es:[bx+2]",
+                })},
+        //1ed:aa2b
+        
+        //1ed:a8ee
+//        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xa9f5}},
+//        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xC7BE - 0x1ed0}},
+        
+    };
+/*
+ es:bx+2 = 1227:0002 = 9c62;  cs:x = sub_bb32
+ es:bx+2 = 1227:0008 = aa4e;  cs:x = sub_c91e
+ */
 //    Options options = optionsGoose;
 //    Options options = optionsRick2;
-    Options options = optionsFox;
+//    Options options = optionsFox;
 //    Options options = optionsRick1;
+    Options options = optionsBumpy;
 
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -176,12 +201,15 @@ int main(int argc, char **argv) {
         assert(0);
     
     if (!loader->LoadFile(options.exec, options.loadAddress))
+    {
+        printf("Cannot open file %s\n", options.exec);
         return 1;
+    }
     // BP 160:15e390
     // memdumpbin 169:15e000 40000
     //    if (!loader->LoadFile("MEMDUMP.BIN", 0x15e000))
     //        return 1;
-    Capstone->Set(loader);
+    Capstone->Set(loader, options);
 
     
     bool anyIndirectTable = false;
@@ -205,18 +233,16 @@ int main(int argc, char **argv) {
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
     
+    for (address_t p : startEntries)
+    {
+        if (options.procModifiers.find(p) == options.procModifiers.end())
+            options.procModifiers.insert({p, procRequest_t::callNear});
+    }
+
     printf("#include \"cico32.h\"\n\n");
     
     if (options.relocations)
-        printf("%s\n", loader->GetMain().c_str()); // TODO: updates relocations
-    
-//    std::map<address_t, procRequest_t, cmp_adress_t> procModifiers;
-//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1040, 0x5e22}, procRequest_t::returnCarry)); // rick2
-//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x341b, 0x354c7- 0x341b0}, procRequest_t::returnZero)); // rick1 - ignored in final listing TODO!
-//        procModifiers.insert(std::pair<address_t, procRequest_t>({0x1020, 0x12b94 - 0x10200}, procRequest_t::returnCarry)); // rick1 - ignored in final listing TODO!
-
-//    procModifiers.insert(std::pair<address_t, procRequest_t>({0x1020, 0x15333 - 0x10200}, procRequest_t::stackDrop16)); // fox  sub_15333
-
+        printf("%s\n", loader->GetMain().c_str());
 
     Analyser analyser(options);
     if (options.recursive)
@@ -262,17 +288,18 @@ int main(int argc, char **argv) {
         printf("}\n\n");
     }
     
-    std::set<address_t, cmp_adress_t> processNew;
+    std::set<address_t> processNew;
     processNew = analyser.AllMethods();
+    // TODO: call conv!
     
     while (!processNew.empty())
     {
-        std::set<address_t, cmp_adress_t> process = processNew;
+        std::set<address_t> process = processNew;
         processNew.clear();
         
         for (address_t proc : process)
         {
-            procRequest_t modifier = procRequest_t::returnNone;
+            procRequest_t modifier = procRequest_t::none;
             if (options.procModifiers.find(proc) != options.procModifiers.end())
                 modifier = options.procModifiers.find(proc)->second;
             
@@ -281,7 +308,7 @@ int main(int argc, char **argv) {
             {
                 for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
                 {
-                    procRequest_t oldModifier = procRequest_t::returnNone;
+                    procRequest_t oldModifier = procRequest_t::none;
                     if (options.procModifiers.find(req.first) != options.procModifiers.end())
                         oldModifier = options.procModifiers.find(req.first)->second;
                     
@@ -298,7 +325,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-//    std::map<address_t, int, cmp_adress_t> hits;
+//    std::map<address_t, int> hits;
 //    for (address_t proc : analyser.AllMethods())
 //    {
 //        for (address_t label : analyser.GetGapLabels(proc))

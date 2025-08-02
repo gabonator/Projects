@@ -52,14 +52,20 @@ struct address_t {
         assert(0);
         return {0, 0};
     }
-};
-
-struct cmp_adress_t { // TODO: remove!
-    bool operator()(const address_t& a, const address_t& b) const {
-        if (a.segment != b.segment)
-            return a.segment < b.segment;
-        return a.offset < b.offset;
-        //return a.segment*0x10+a.offset < b.segment*0x10+b.offset;
+    
+    bool operator<(const address_t& other) const {
+        if (segment != other.segment)
+            return segment < other.segment;
+        return offset < other.offset;
     }
 };
 
+//struct cmp_adress_t { // TODO: remove!
+//    bool operator()(const address_t& a, const address_t& b) const {
+//        if (a.segment != b.segment)
+//            return a.segment < b.segment;
+//        return a.offset < b.offset;
+//        //return a.segment*0x10+a.offset < b.segment*0x10+b.offset;
+//    }
+//};
+//
