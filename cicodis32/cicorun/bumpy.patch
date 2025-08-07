@@ -1,0 +1,420 @@
+diff --git a/bumpy.clean b/./bumpy.cpp
+index 888cec1..c3716af 100644
+--- a/bumpy.clean
++++ b/./bumpy.cpp
+@@ -12,13 +12,20 @@ void start()
+     ds = 0x01dd;
+     es = 0x01dd;
+     ss = 0x1c49;
+-    sp = 0x0080;
++    //sp = 0x0080;
++    sp = 0xeeee;
+     load("", "BUMPY.EXE", 112704);
+     fixReloc(cs);
++    sp = 0x0080;
+     sub_1ed0();
+ }
+ 
+ 
++void callIndirect(int s, int o)
++{
++    stop();
++}
++
+ void sub_1ed0();
+ void sub_1fc6();
+ void sub_1fcf();
+@@ -879,7 +886,7 @@ loc_208d:
+     ds = memoryAGet16(cs, 0x01ff);
+     if (temp_zf)
+         goto loc_20aa;
+-    push(cs); cs = memoryAGet16(es, bx + 2 + 2); callIndirect(cs, memoryAGet32(es, bx + 2)); assert(cs == 0x01ed); /*ggg8*/;
++    push(cs); cs = memoryAGet16(es, bx + 2 + 2); callIndirect(cs, memoryAGet16(es, bx + 2)); assert(cs == 0x01ed); /*ggg8*/;
+     ds = pop();
+     goto loc_206f;
+ loc_20aa:
+@@ -1341,6 +1348,8 @@ loc_2445:
+ }
+ void sub_24b7()
+ {
++    sync();
++    return;
+     sp -= 2;
+     push(bp);
+     bp = sp;
+@@ -2231,6 +2240,7 @@ loc_2e1c:
+     if (memoryAGet(ss, bp - 12) < 0x06)
+         goto loc_2de2;
+ loc_2e22:
++    sync();
+     al = 0x00;
+     push(ax);
+     sub_9472();
+@@ -7363,6 +7373,7 @@ loc_508d:
+     memoryASet(ds, 0x8244, 0x00);
+     goto loc_50a0;
+ loc_5094:
++    sync();
+     sub_3cae();
+     ax = memoryAGet16(ds, 0x119c);
+     ax += 0x0007;
+@@ -7431,6 +7442,7 @@ loc_50ba:
+ }
+ void sub_515f()
+ {
++    sync();
+     sp -= 2;
+     push(bp);
+     bp = sp;
+@@ -7441,6 +7453,7 @@ loc_516b:
+     memoryASet(ds, 0x8244, 0x00);
+     goto loc_5175;
+ loc_5172:
++    sync();
+     sub_3cae();
+ loc_5175:
+     al = memoryAGet(ds, 0x8244);
+@@ -7923,7 +7936,10 @@ loc_56cd:
+     sp++;
+     sp++;
+     if (al)
++    {
++        sync(); // sync while pressed
+         goto loc_56cd;
++    }
+ loc_56d9:
+     if (memoryAGet(ss, bp - 6) != 0xff)
+         goto loc_56e2;
+@@ -8117,6 +8133,7 @@ loc_580c:
+     sub_5958();
+     goto loc_5944;
+ loc_58ec:
++    sync();
+     sub_3cae();
+     if (!(memoryAGet(ds, 0x8244) & 0x01))
+         goto loc_58fb;
+@@ -15069,7 +15086,7 @@ loc_94f0:
+     ds = pop();
+ loc_94f1:
+     di = pop();
+-    stop("stack_bad");
++//    stop("stack_bad");
+     si = pop();
+     es = pop();
+     ds = pop();
+@@ -19755,7 +19772,8 @@ void sub_c865()
+     bool temp_cf2;
+ 
+     es = pop();
+-    stop("stack_below");
++//    stop("stack_below");
++    sp -= 2;
+     push(cs);
+     push(es);
+     if ((short)cx >= 0)
+@@ -19782,9 +19800,10 @@ loc_c880:
+     dx += ax;
+     al = ch;
+     ax &= 0x000f;
+-    stop("stack_unbalanced");
+-    stop("near_proc_retf");
+-    cs = pop();
++    //    stop("stack_unbalanced");
++    //    stop("near_proc_retf"); // TODO: CICO
++    sp += 2;
++    es = 0x99b0; sp += 2;
+     return;
+   // gap 19 bytes
+ loc_c8a7:
+@@ -19804,9 +19823,10 @@ loc_c8af:
+     dx += ax;
+     al = ch;
+     ax &= 0x000f;
+-    stop("stack_unbalanced");
+-    stop("near_proc_retf");
+-    cs = pop();
++    //    stop("stack_unbalanced");
++    //    stop("near_proc_retf");
++    //    cs = pop();
++    sp += 2;
+ }
+ void sub_c8c5() // +stackDrop8
+ {
+@@ -19814,7 +19834,7 @@ void sub_c8c5() // +stackDrop8
+ 
+     sp -= 2;
+     es = pop();
+-    stop("stack_below");
++//    stop("stack_below");
+     push(cs);
+     push(es);
+     push(bp);
+@@ -19834,10 +19854,11 @@ void sub_c8c5() // +stackDrop8
+     di = pop();
+     si = pop();
+     bp = pop();
+-    stop("stack_below");
+-    stop("near_proc_retf");
+-    sp += 4;
+-    cs = pop();
++//    stop("stack_below");
++//    stop("near_proc_retf");
++//    sp += 4;
++//    cs = pop();
++    sp += 2;
+     sp += 8;
+ }
+ void sub_c8e4()
+@@ -20071,12 +20092,10 @@ loc_ca0e:
+     memoryASet16(ds, 0x006d, ax);
+     ax = memoryAGet16(ds, 0x6bac);
+     memoryASet16(ds, 0x006b, ax);
+-    indirectJump(cs, memoryAGet16(ds, 0x6bb0));;
++//    indirectJump(cs, memoryAGet16(ds, 0x6bb0));;
+ }
+-void sub_c9ad() // +returnCarry +returnZero
++void sub_c9ad() // +returnCarry +returnZero TODO: CICO!!!!!!!!!! FLAGS PROBLEM!!!
+ {
+-    bool temp_zf;
+-
+     if (!ax)
+         goto loc_c9b8;
+     dx++;
+@@ -20086,7 +20105,7 @@ void sub_c9ad() // +returnCarry +returnZero
+     bx++;
+ loc_c9b8:
+     tl = al; al = ah; ah = tl;
+-    temp_zf = 0;
++    flags.zero = cx == 0;
+     al = 0;
+     flags.carry = 1;
+     if (cx==0)
+@@ -20094,22 +20113,23 @@ loc_c9b8:
+     al = lodsb<DS_SI>();
+     cx--;
+     flags.carry = al < 0x22;
+-    temp_zf = al == 0x22;
++    flags.zero = al == 0x22;
+     al -= 0x22;
+     if (!al)
+         goto loc_c9d4;
+     al += 0x22;
++    flags.zero = al == 0x5c;
+     if (al != 0x5c)
+         goto loc_c9d2;
++    flags.zero = memoryAGet(ds, si) == 0x22;
+     if (memoryAGet(ds, si) != 0x22)
+         goto loc_c9d2;
+     al = lodsb<DS_SI>();
+     cx--;
++    flags.zero = cx == 0;
+ loc_c9d2:
+-    flags.carry = stop() /* gabo-bad */;
+-    temp_zf = !si;
++    flags.carry = false;
+ loc_c9d4:
+-    flags.zero = temp_zf;
+     return;
+ }
+ void sub_ca53()
+@@ -20509,6 +20529,7 @@ loc_cd70:
+     if (--cx)
+         goto loc_cd5d;
+ loc_cd76:
++    sync();
+     al = 0x3c;
+     push(cs); cs = 0x01ed; sub_9aca(); assert(cs == 0x0ca6);
+     if (!flags.zero)
+@@ -21734,7 +21755,26 @@ loc_d6b8:
+     cx >>= 1;
+ loc_d6c0:
+     ax = memoryAGet16(ds, si);
+-    memoryASet16(es, di, memoryAGet16(es, di) & ax);
++    switch (memoryAGet(cs, 0x0c63))
++    {
++        // 26 21 05    and word ptr es:[di], ax
++        case 0x21:
++            memoryASet(es, di, memoryAGet(es, di) & al);
++            memoryASet(es, di+1, memoryAGet(es, di+1) & ah);
++            break;
++        // 26 09 05    or word ptr es:[di], ax
++        case 0x09:
++            memoryASet(es, di, memoryAGet(es, di) | al);
++            memoryASet(es, di+1, memoryAGet(es, di+1) | ah);
++            break;
++        // 26 31 05    xor word ptr es:[di], ax
++        case 0x31:
++            memoryASet(es, di, memoryAGet(es, di) ^ al);
++            memoryASet(es, di+1, memoryAGet(es, di+1) ^ ah);
++            break;
++        default:
++            assert(0);
++    }
+     si += 0x0002;
+     di += 0x0002;
+     if (--cx)
+@@ -22346,7 +22386,7 @@ void sub_dddb() // +far
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     cs = pop();
+ }
+ void sub_de1c() // +stackDrop2
+@@ -22386,7 +22426,6 @@ loc_de46:
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("near_proc_retf");
+     cs = pop();
+ }
+ void sub_de4c() // +far
+@@ -22488,7 +22527,7 @@ void sub_deb8()
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("near_proc_retf");
++//    stop("near_proc_retf");
+     cs = pop();
+ }
+ void sub_deee()
+@@ -23308,8 +23347,8 @@ loc_e527:
+         goto loc_e55b;
+     goto loc_e5fe;
+ loc_e55b:
+-    temp_zf = stop("post") && !memoryAGet(ds, 0x4e16);
+     memoryASet(ds, 0x4e16, memoryAGet(ds, 0x4e16) - 1);
++    temp_zf = !memoryAGet(ds, 0x4e16);
+     ds = bp;
+     if (!temp_zf)
+         goto loc_e527;
+@@ -24151,7 +24190,7 @@ loc_ecaf:
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     cs = pop();
+ }
+ void sub_ecb5() // +far
+@@ -24213,7 +24252,7 @@ loc_ecea:
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     cs = pop();
+ }
+ void sub_ecf9() // +nearfar
+@@ -24642,7 +24681,7 @@ loc_f25f:
+     di = ~di;
+ loc_f2ad:
+     ax = 0x0000;
+-    indirectJump(cs, ax);;
++    stop("indirectJump(cs, ax);;");
+ }
+ void sub_f9b4()
+ {
+@@ -25639,7 +25678,7 @@ loc_10ec9:
+     return;
+   // gap 1183 bytes
+ loc_11371:
+-    ax = 0x0000;
++    ax = memoryAGet16(cs, 0x25e2);
+     switch (ax)
+     {
+         case 0x2004: goto loc_10d94;
+@@ -26224,7 +26263,7 @@ loc_1189c:
+     bx = sar16(bx, 0x0001);
+     dl = memoryAGet(cs, bx + 13307);
+     memoryASet16(cs, 0x3211, cx);
+-    indirectJump(cs, ax);;
++    stop("indirectJump(cs, ax);;");
+   // gap 129 bytes
+ loc_1196f:
+     ds = pop();
+@@ -26241,7 +26280,7 @@ void sub_11a7b()
+ void sub_11a7c()
+ {
+ }
+-void sub_11a7d() // +far
++void sub_11a7d() // +far TODO:CICO
+ {
+     push(di);
+     push(si);
+@@ -26339,7 +26378,7 @@ void sub_11afd()
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("near_proc_retf");
++//    stop("near_proc_retf");
+     cs = pop();
+ }
+ void sub_11b38() // +far
+@@ -26422,7 +26461,7 @@ loc_11b90:
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("near_proc_retf");
++//    stop("near_proc_retf");
+     cs = pop();
+     return;
+ loc_11ba1:
+@@ -26888,7 +26927,7 @@ loc_11f41:
+ }
+ void sub_11f47() // +far
+ {
+-    sp -= 4;
++    sp -= 2;
+     push(di);
+     push(si);
+     push(bp);
+@@ -26933,8 +26972,7 @@ void sub_11f47() // +far
+     bp = pop();
+     si = pop();
+     di = pop();
+-    stop("stack_unbalanced");
+-    sp += 4;
++    sp += 2;
+     cs = pop();
+ }
+ void sub_12190() // +far
+@@ -26978,6 +27016,7 @@ loc_121d2:
+     if (--cx)
+         goto loc_121bf;
+ loc_121d8:
++    sync();
+     al = 0x3f;
+     push(cs); cs = 0x01ed; sub_b67a(); assert(cs == 0x1219);
+     if (!flags.zero)
+@@ -27045,6 +27084,7 @@ void sub_12230() // +far
+ }
+ void sub_12245()
+ {
++    sync();
+     dx = 0x03da;
+ loc_12248:
+     al = in8(dx);
+@@ -28118,6 +28158,11 @@ void fixReloc(uint16_t seg)
+ int GetProcAt(int seg, int ofs)
+ {
+     int map[] = {
++        0, 0x1ed, 0x1ff, 0x1ed, 0x201,
++        0, 0x1ed, 0x1b1, 0x1ed, 0x1b2,
++        0, 0x1ed, 0x1a0, 0x1ed, 0x1a1,
++        0, 0xed9, 0x25e2, 0xed9, 0x25e4,
++        0, 0xca6, 0xb81, 0xca6, 0xb83,
+         0x1ed0, 0x1ed, 0x0, 0x1ed, 0x126, 0x1ed0, 0x1ed, 0x1ea, 0x1ed, 0x258,
+         0x1fc6, 0x1ed, 0xf6, 0x1ed, 0x126, 0x1fcf, 0x1ed, 0xff, 0x1ed, 0x126,
+         0x1fe5, 0x1ed, 0x115, 0x1ed, 0x126, 0x1fff, 0x1ed, 0x12f, 0x1ed, 0x172,
+@@ -28430,7 +28475,7 @@ int GetProcAt(int seg, int ofs)
+         0x12253, 0x1223, 0x23, 0x1223, 0x24, 0x12254, 0x1223, 0x24, 0x1223, 0x25,
+     };
+     for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)
+-        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs <= map[i+3]*16 + map[i+4])
++        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs < map[i+3]*16 + map[i+4])
+             return map[i];
++    return 0;
+ }
+-Program ended with exit code: 0

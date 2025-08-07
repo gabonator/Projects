@@ -17,6 +17,7 @@ extern flags_t flags;
 
 extern int headerSize, loadAddress, endAddress;
 void start();
+int GetProcAt(int seg, int ofs);
 void memoryASet(int s, int o, int v);
 
 uint8_t* memory = nullptr; // 1000:0000
@@ -162,6 +163,26 @@ void onKey(int k, int p)
         }
         memoryASet(0x1040, 0x7e44, keys);
     }
+    
+    if (strstr(root, "bumpy."))
+    {
+        switch (k)
+        {
+            case SDL_SCANCODE_2: memoryASet(0x1228, 0x4d44 + 0x3c, p); break;
+            case SDL_SCANCODE_3: memoryASet(0x1228, 0x4d44 + 0x3d, p); break;
+            case SDL_SCANCODE_4: memoryASet(0x1228, 0x4d44 + 0x3e, p); break;
+            case SDL_SCANCODE_5: memoryASet(0x1228, 0x4d44 + 0x3f, p); break;
+            case SDL_SCANCODE_6: memoryASet(0x1228, 0x4d44 + 0x40, p); break;
+            case SDL_SCANCODE_7: memoryASet(0x1228, 0x4d44 + 0x41, p); break;
+            case SDL_SCANCODE_0: memoryASet(0x1228, 0x4d44 + 0x01, p); break;
+            case SDL_SCANCODE_UP: memoryASet(0x1228, 0x4d44 + 'H', p); break;
+            case SDL_SCANCODE_RIGHT: memoryASet(0x1228, 0x4d44 + 'M', p); break;
+            case SDL_SCANCODE_DOWN: memoryASet(0x1228, 0x4d44 + 'P', p); break;
+            case SDL_SCANCODE_LEFT: memoryASet(0x1228, 0x4d44 + 'K', p); break;
+            case SDL_SCANCODE_SPACE: memoryASet(0x1228, 0x4d44 + 0x1c, p); break;
+        }
+    }
+
 }
 /*
 void onKey(int k, int p)
@@ -227,6 +248,15 @@ void load(const char* path_, const char* file, int size)
 void memoryASet(int s, int o, int v)
 {
     assert(o <= 0xffff);
+    if (sp != 0xeeee)
+    {
+        int p = GetProcAt(s, o);
+        if (p)
+        {
+            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
+            assert(0);
+        }
+    }
     if (s >= 0xa000)
     {
         video->Write(s*16+o, v);
@@ -242,7 +272,23 @@ void memoryASet(int s, int o, int v)
 }
 void memoryASet16(int s, int o, int v)
 {
+    if (s==0x1228 && o == 0x6b)
+    {
+        int f = 9;
+    }
+    o &= 0xffff;
     assert(o <= 0xffff);
+    if (sp != 0xeeee)
+    {
+        int p = GetProcAt(s, o);
+        if (!p)
+            p = GetProcAt(s, o+1);
+        if (p)
+        {
+            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
+            assert(0);
+        }
+    }
     if (s >= 0xa000)
     {
         video->Write(s*16+o, v & 255);
@@ -267,6 +313,10 @@ void memoryASet16(int s, int o, int v)
         return;
     if (s == 0x0000 && o < 400)
         return;
+    if (s == 0x0040 && o == 0x001a)
+        return;
+    if (s == 0x0040 && o == 0x001c)
+        return;
 
     assert(0);
 }
@@ -274,16 +324,28 @@ uint8_t memoryAGet(int s, int o)
 {
     o &= 0xffff;
     assert(o <= 0xffff);
-    if (s==cs && o==1)
-    {
-        int f= 9;
-    }
     if (s >= 0xa000)
         return video->Read(s*16+o);
 
     int linear = (s-loadAddress)*16 + o;
     if (linear >= 0 && linear < memorySize)
         return memory[linear];
+    
+    if (s == loadAddress - 0x1a)
+    {
+        const char env[] = "PATH=Z:\\" "\x00" "COMSPEC=Z:\\COMMAND.COM" "\x00"
+          "BLASTER=A220 I7 D1 H5 T6" "\x00\x00\x01\x00" "C:\\BUM\\B.EXE"
+          "\x00\x00\x00\x00\x00\x00\x00";
+        if (o < sizeof(env))
+            return env[o];
+        assert(0);
+        return 0; // env
+    }
+    if (s == loadAddress - 0x10 && o == 0x80)
+        return 0;
+    if (s == loadAddress - 0x10 && o == 0x81)
+        return 0x0d;
+
     assert(0);
     return 0;
 }
@@ -306,6 +368,16 @@ uint16_t memoryAGet16(int s, int o)
         return 0;
     if (s == 0x0000 && o < 400)
         return 0;
+    if (s == loadAddress - 0x10 && o == 2)
+        return 0x9fff; // Segment of the first byte beyond the memory allocated to the program
+    if (s == loadAddress - 0x10 && o == 0x2c)
+        return loadAddress - 0x1a; // Segment of the first byte beyond the memory allocated to the program
+    if (s == loadAddress - 0x1a)
+    {
+        return memoryAGet(s, o) | (memoryAGet(s, o+1) << 8); // env
+    }
+    if (s == 0x0040 && o == 0x0080)
+        return 0x1e;
 
     assert(0);
     return 0;
@@ -422,6 +494,7 @@ void interrupt(int i)
             {
                 case 0x13: video = &vga; break;
                 case 0x0d: video = &ega; break;
+                case 0x02: video = &ega; break; // bumpy?
                 default:
                     assert(0);
             }
@@ -445,6 +518,16 @@ void interrupt(int i)
     }
     if (i == 0x21 && ah == 0x48)
     {
+        static int freeMem = 0x1D9E;
+        // _bx size
+        printf("malloc %d bytes -> %04x:0000\n", bx, freeMem);
+        ax = freeMem;
+        freeMem += bx;
+        freeMem ++;
+        flags.carry = false;
+        return;
+
+        return;
 //        flags.carry = true;
         ax = endAddress+0x100+0x4000-0x1d80;
         printf("malloc %d bytes -> %04x:0000\n", bx, ax);
@@ -464,7 +547,27 @@ void interrupt(int i)
     }
     if (i == 0x1a && ah == 0x04)
         return;
-
+    if (i == 0x21 && ah == 0x30)
+    {
+        ax = 0x0005;
+        bx = 0xff00;
+        cx = 0x0000;
+        return;
+    }
+    if (i == 0x1a && ah == 0)
+    {
+        printf("skip timer\n");
+        cx = 0;
+        dx = 0;
+        return;
+    }
+    if (i == 0x21 && ah == 0x44)
+    {
+        ax = 0x80d3;
+        //dx = 0x80d3;
+        flags.carry = 0;
+        return;
+    }
     assert(0);
 }
 
@@ -482,10 +585,15 @@ void out8(int port, int data)
 }
 int in8(int port)
 {
-    if (port == 0x201 || port == 0x40 || port == 0x61)
+    if (port == 0x201 || port == 0x61)
         return 0;
     if (port == 0x388) //audio
         return 0x60;
+    if (port == 0x40)
+    {
+        static int counter = 0;
+        return (counter++ & 2) ? 0xff:0x00;
+    }
 
     return video->PortRead8(port);
 }

@@ -251,6 +251,8 @@ public:
             {
             
             }
+            printf("Skip video write out %x, %x\n", port, data);
+            return true;
         }
         if ( port == 0x3d4 )
         {
@@ -338,14 +340,14 @@ public:
         }
         if ( port == 0x3ce )
         {
-assert(0);
+//assert(0);
             lastPort = 0x3ce;
             lastData = data;
             return true;
         }
         if (port == 0x3cf)
         {
-assert(0);
+//assert(0);
             return PortWrite16 ( lastPort, (data<<8)|lastData);
         }
         if (port == 0x3d4)
@@ -406,7 +408,7 @@ assert(0);
 //            }
 
             //data &= 63;
-            assert(data >= 0 && data < 64);
+//            assert(data >= 0 && data < 64);  // TODO: GABO9
 //            printf("set pal %d %d = %d\n", base, 2-ch, data);
             ((uint8_t*)palette)[base*4+2-ch] = data * 4;
             colorindex++;
@@ -461,6 +463,11 @@ assert(0);
             vgareadcolorindex++;
             return data;
         }
+        if (port == 0x3d5) // TODO: gabo9
+        {
+            return 0;
+        }
+
         assert(0);
         return 0;
     }
@@ -549,8 +556,6 @@ assert(0);
         
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
-        if (_videoMode != 0x0d)
-            return;
         modified = true;
         dwAddr -= 0xa000 * 16;
 
@@ -566,6 +571,8 @@ assert(0);
 
         uLatch.u32Data = pixels.u32Data;
         modified |= StoreLatch(dwAddr);
+//        nWriteMode = old;
+
 //        static int counter = 0;
 //        if (bWrite)
 //        {

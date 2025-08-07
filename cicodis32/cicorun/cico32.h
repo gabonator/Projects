@@ -57,9 +57,10 @@ void cwde()
 void out16(int, int);
 void out8(int, int);
 int in8(int);
-void stop(const char* msg = nullptr)
+bool stop(const char* msg = nullptr)
 {
-  assert(0);
+    assert(0);
+    return false;
 }
 void div8(int r)
 {
@@ -147,6 +148,19 @@ void idiv8(uint8_t r)
     dx = remainder;
 }
 
+void imul16(uint16_t r)
+{
+    int v = (int16_t)ax * (int16_t)r;
+    ax = v & 0xffff;
+    dx = v >> 16;
+}
+
+void idiv16(uint16_t r)
+{
+    int32_t n = (dx << 16) | ax;
+    ax = n / (int16_t)r;
+    dx = n % (int16_t)r;
+}
 
 uint16_t rcl16(uint16_t r, int i)
 {
@@ -215,6 +229,21 @@ struct ES_DI {
   static void Set16(uint16_t v) { return memoryASet16(es, di, v); }
   static void Advance(int n) { di += flags.direction ? -n : n; }
 };
+
+struct ES_SI {
+  static uint8_t Get8() { return memoryAGet(es, si); }
+  static void Set8(uint8_t v) { return memoryASet(es, si, v); }
+  static void Set16(uint16_t v) { return memoryASet16(es, si, v); }
+  static void Advance(int n) { si += flags.direction ? -n : n; }
+};
+
+struct SS_SI {
+    static uint8_t Get8() { return memoryAGet(ss, si); }
+  static void Set8(uint8_t v) { return memoryASet(ss, si, v); }
+  static void Set16(uint16_t v) { return memoryASet16(ss, si, v); }
+  static void Advance(int n) { si += flags.direction ? -n : n; }
+};
+
 
 template <typename src> int lodsb()
 {
