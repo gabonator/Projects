@@ -180,11 +180,28 @@ public:
     {
         bool stack = UsesStack(info->code);
         procRequest_t req = mOptions.procModifiers.find(info->proc)->second;
-        
+        // TODO: nearfar!?
+        if (((int)req & (int)procRequest_t::callNear) && ((int)req & (int)procRequest_t::callFar))
+        {
+            assert(!stack);
+            return callConv_t::callConvUnknown;
+        }
         if ((int)req & (int)procRequest_t::callFar)
-            return stack ? callConv_t::callConvShiftStackFar : callConv_t::callConvSimpleStackFar;
+        {
+            if (stack)
+                return callConv_t::callConvShiftStackFar;
+            if (info->func.simpleStack)
+                return callConv_t::callConvSimpleStackFar;
+            return callConv_t::callConvFar;
+        }
         else if ((int)req & (int)procRequest_t::callNear)
-            return stack ? callConv_t::callConvShiftStackNear : callConv_t::callConvSimpleStackNear;
+        {
+            if (stack)
+                return callConv_t::callConvShiftStackNear;
+            if (info->func.simpleStack)
+                return callConv_t::callConvSimpleStackNear;
+            return callConv_t::callConvNear;
+        }
         else
         {
             assert(0);

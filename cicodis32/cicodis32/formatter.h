@@ -97,6 +97,8 @@ public:
                             break;
                         case callConv_t::callConvShiftStackNear:
                         case callConv_t::callConvShiftStackFar:
+                        case callConv_t::callConvNear:
+                        case callConv_t::callConvFar:
                             break;
                         default:
                             strcat(offset, " - stop(\"simple stack\")");
@@ -365,10 +367,19 @@ public:
                 } else
                     assert(0);
             }
-            
+            if (strcmp(tok, "addr") == 0)
+            {
+                snprintf(replace, 64, "%04x:%04x", instr->mAddress.segment, instr->mAddress.offset);
+            }
             if (strcmp(tok, "seg") == 0)
             {
                 snprintf(replace, 64, "0x%04x", instr->mAddress.segment);
+            }
+            if (strcmp(tok, "ltarget") == 0)
+            {
+                // LCALL target
+                assert(instr->IsDirectCall());
+                snprintf(replace, 64, "sub_%x", instr->CallTarget().linearOffset());
             }
 
             if (strcmp(tok, "rn1") == 0)
@@ -505,10 +516,7 @@ public:
                 if (x86.operands[0].type != X86_OP_IMM)
                 {
                     snprintf(replace, 64, "indirectJump(cs, %s);", iformat(instr, info, func, "$rd0").c_str());
-                }
-//                else if (info->jumpsToRet)
-//                    strncpy(replace, "return", 64);
-//                else
+                } else
                 {
                     if (x86.operands[0].size == 2)
                         snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());

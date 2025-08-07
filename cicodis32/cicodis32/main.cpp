@@ -24,6 +24,18 @@
 #include "formatter.h"
 #include "converter.h"
 
+std::vector<int> sequence(const char* seq)
+{
+    std::vector<int> aux;
+    std::vector<std::string> parts = utils::split(seq, "-");
+    assert(parts.size() == 2);
+    int b = std::stoi(parts[0]);
+    int e = std::stoi(parts[1]);
+    for (int i=b; i<=e; i++)
+        aux.push_back(i);
+    return aux;
+}
+
 int main(int argc, char **argv) {
     Options optionsRick2 = {
         .loader = "LoaderMz",
@@ -155,7 +167,7 @@ int main(int argc, char **argv) {
         .arch = arch_t::arch16,
         .loadAddress = 0x01ed0,
 //        .verbose = true,
-        .relocations = false, .verbose = true, .recursive = false, .procList = {{0x01ed, 0x9f5e - 0x1ed0}},
+//        .relocations = false, .verbose = true, .recursive = false, .procList = {{0x0ca6, 0x1087}},
         .procModifiers = {
             {{0x1ed, 0xa8ee}, procRequest_t::stackDrop8},
             {{0x1ed, 0xa9f5}, procRequest_t::stackDrop8},
@@ -164,6 +176,8 @@ int main(int argc, char **argv) {
             {{0x1ed, 0x9b14}, procRequest_t::stackDrop4}, //1ed:9b14
             {{0x1ed, 0xa1ef}, procRequest_t::stackDrop6}, //1ed:a1ef
             {{0x1ed, 0xa20a}, procRequest_t::stackDrop2}, //1ed:a20a
+            {{0xca6, 0x13bc}, procRequest_t::stackDrop2},
+            //sub_dddb
 //            {{0x01ed, 0xaa2b}, (procRequest_t)((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear)}
         },
             //.procList = {{0x1ed, 0x9c62}, {0x1ed, 0xaa4e}},
@@ -173,8 +187,256 @@ int main(int argc, char **argv) {
                     .table = address_t(0x1227, 0),
                     .type = jumpTable_t::CallWords,
                     .elements = {1, 4},
-                    .selector = "es:[bx+2]",
-                })},
+                    .selector = "memoryAGet16(es, bx + 2)",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1ed, 0x46dc),
+                    .table = address_t(0x1ed, 0x4725),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1ed, 0x37db),
+                    .table = address_t(0x1ed, 0x384a),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1ed, 0x6e7e),
+                    .table = address_t(0x1ed, 0x70e7),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0264),
+                    .table = address_t(0x1228, 0x5469),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x020a),
+                    .table = address_t(0x1228, 0x545d),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0374),
+                    .table = address_t(0x1228, 0x5475),
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2},
+                    .selector = "bp",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0xca6, 0x1321),
+                    .table = address_t(0x1228, 0x6946),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0xed9, 0x2dbe),
+                    .table = address_t(0xed9, 0x2dc6),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "di",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1ed, 0x7284),
+                    .type = jumpTable_t::CallWords,
+                    .baseptr = (const uint8_t*)"\xae\xa3",
+                    .elements = {0},
+                    .selector = "memoryAGet16(ss, bp + 4)",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ed9, 0x2d01),
+                    .table = address_t(0xed9, 0x2d09),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "ax",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0e15, 0x005e),
+                    .table = address_t(0x1228, 0x4e37),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+                    .selector = "bp",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x01ed, 0x23b0),
+                    .table = address_t(0x1228, 0x43c0),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-1084"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x01ed, 0x1e32),
+                    .table = address_t(0x1228, 0x07ca),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-63"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x01a4),
+                    .table = address_t(0x1228, 0x4dda),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-6"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0028),
+                    .baseptr = (const uint8_t*)"\x2b\x00",
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0},
+                    .selector = "ax",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x1223, 0x000b),
+                    .table = address_t(0x1228, 0x6976),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-5"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x01f3),
+                    .table = address_t(0x1228, 0x5435),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-13"),
+                    .selector = "bp",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x02c3),
+                    .table = address_t(0x1228, 0x5441),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-5"),
+                    .selector = "bp",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0d9e),
+                    .table = address_t(0x1228, 0x555e),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-5"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0acd),
+                    .table = address_t(0x1228, 0x5550),
+                    //.baseptr = (const uint8_t*)"\xd0\x0a",
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-7"),
+                    .selector = "ax",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0a92),
+                    .table = address_t(0x1228, 0x5544),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-18"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x01ed, 0x4db9),
+                    .table = address_t(0x1228, 0x0870),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-11"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x01ed, 0x501f),
+                    .table = address_t(0x1228, 0x085c),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-20"),
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x129d),
+                    .table = address_t(0x1228, 0x56c2),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-5"),
+                    .selector = "si",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0820),
+                    .table = address_t(0x1228, 0x5536),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-25"),
+                    .selector = "ax",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x1084),
+                    .table = address_t(0x1228, 0x56b4),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5, 6, 7},
+                    .selector = "ax /*1*/",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ed9, 0x2d94),
+                    .table = address_t(0x0ed9, 0x2d9c),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "di",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x13e2),
+                    .table = address_t(0x1228, 0x6952),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "bx",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ed9, 0x2d2f),
+                    .table = address_t(0x0ed9, 0x2d37),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0, 1, 2, 3, 4, 5},
+                    .selector = "di",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ed9, 0x11d3),
+                    .table = address_t(0x0ed9, 0x210b),
+                    .type = jumpTable_t::JumpFix,
+                    .elements = {0},
+                    .selector = "ax",
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ed9, 0x25e4),
+                    .baseptr = (const uint8_t*)"\x04\x20\x63\x20\x46\x1f\xfa\x20",
+                    .type = jumpTable_t::JumpWords,
+                    .elements = {0, 1, 2, 3},
+                    .selector = "ax",
+                    .useCaseOffset = true
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x104e),
+                    .table = address_t(0x1228, 0x5698),
+                    .type = jumpTable_t::CallWords,
+                    .elements = sequence("0-5"),
+                    .selector = "bx"
+                }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                    .instruction = address_t(0x0ca6, 0x0ddd),
+                    .table = address_t(0x1228, 0x568a), // 0x0de0),
+                    .type = jumpTable_t::CallWords,
+                    .elements = {0},
+                    .selector = "bx"
+                }),
+
+                
+                // 0ca6:0ddd;  0ca6:0de0 bx
+                
+            },
+        
+        
         //1ed:aa2b
         
         //1ed:a8ee
@@ -215,7 +477,8 @@ int main(int argc, char **argv) {
     bool anyIndirectTable = false;
     for (auto t : options.jumpTables)
     {
-        t->baseptr = loader->GetBufferAt(t->table);
+        if (!t->baseptr)
+            t->baseptr = loader->GetBufferAt(t->table);
         if (strcmp(t->selector, "indirect") == 0)
             anyIndirectTable = true;
     }
@@ -229,6 +492,7 @@ int main(int argc, char **argv) {
     for (address_t p : options.isolateLabels)
         startEntries.push_back(p);
     for (shared<jumpTable_t> j : options.jumpTables)
+        if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords)
         for (int i=0; i<j->GetSize(); i++)
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
@@ -325,6 +589,49 @@ int main(int argc, char **argv) {
             }
         }
     }
+
+    for (address_t proc : analyser.AllMethods())
+    {
+        Convert convert(analyser, options);
+        convert.SetOffsetMask(0xffff); // 16 bit
+        convert.ConvertProc(proc);
+        convert.Dump();
+    }
+    
+    if (options.relocations)
+        printf("%s\n", loader->GetFooter().c_str());
+
+
+    std::vector<int> procMap;
+    for (address_t proc : analyser.AllMethods())
+    {
+        for (const auto& [begin, end] : analyser.GetProcRanges(proc))
+        {
+            procMap.push_back(proc.linearOffset());
+            procMap.push_back(begin.segment);
+            procMap.push_back(begin.offset);
+            procMap.push_back(end.segment);
+            procMap.push_back(end.offset);
+        }
+    }
+
+    printf("int GetProcAt(int seg, int ofs)\n");
+    printf("{\n");
+    printf("    int map[] = {\n");
+    for (int i=0; i<procMap.size(); i++)
+    {
+        if (i%10 == 0)
+            printf("        ");
+        printf("0x%x, ", procMap[i]);
+        if (i%10 == 9)
+            printf("\n");
+    }
+    printf("    };\n");
+    printf("    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)\n");
+    printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs <= map[i+3]*16 + map[i+4])\n");
+    printf("            return map[i];\n");
+    printf("}\n");
+
 //    std::map<address_t, int> hits;
 //    for (address_t proc : analyser.AllMethods())
 //    {
@@ -336,14 +643,6 @@ int main(int argc, char **argv) {
 //                hits.insert(std::pair<address_t, int>(label, 1));
 //        }
 //    }
-
-    for (address_t proc : analyser.AllMethods())
-    {
-        Convert convert(analyser, options);
-        convert.SetOffsetMask(0xffff); // 16 bit
-        convert.ConvertProc(proc);
-        convert.Dump();
-    }
 
 //    for (std::pair<address_t, int> p : hits)
 //    {

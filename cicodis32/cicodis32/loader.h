@@ -56,6 +56,10 @@ public:
     {
         return "";
     }
+    virtual std::string GetFooter() override
+    {
+        return "";
+    }
 };
 
 class LoaderMz : public Loader {
@@ -169,7 +173,14 @@ public:
                 execPath.c_str(), execName.c_str(), size,
                 _dumpReloc ? "fixReloc(cs);\n    " : "",
                 (_loadBase/16+header->cs)*16+header->ip);
+                
+        std::string strForward = format("void fixReloc(uint16_t seg);\nvoid sub_%x();\n\n", (_loadBase/16+header->cs)*16+header->ip);
         
+        return strForward + strMain + "\n"; //+ strReloc + "\n";
+    }
+    
+    virtual std::string GetFooter() override
+    {
         std::string strReloc = "void fixReloc(uint16_t seg)\n{\n";
         
         for (int i=0; i<header->relocations; i++)
@@ -185,12 +196,11 @@ public:
                    reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr);
         }
 
-        strReloc += "}";
+        strReloc += "}\n";
         
-        std::string strForward = format("void fixReloc(uint16_t seg);\nvoid sub_%x();\n\n", (_loadBase/16+header->cs)*16+header->ip);
-        
-        return strForward + strMain + "\n" + strReloc + "\n";
+        return strReloc;
     }
+
     
     void Relocate()
     {

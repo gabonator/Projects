@@ -20,13 +20,16 @@ enum callConv_t {
     callConvSimpleStackNear = 1,
     callConvSimpleStackFar = 2,
     callConvShiftStackNear = 3,
-    callConvShiftStackFar = 4
+    callConvShiftStackFar = 4,
+    callConvNear = 5,
+    callConvFar = 6,
 };
 
 struct funcInfo_t {
     procRequest_t request;
     callConv_t callConv{callConvUnknown};
     arch_t arch;
+    bool simpleStack{false};
 };
 
 struct instrInfo_t {
@@ -228,6 +231,7 @@ public:
         std::shared_ptr<info_t> newInfo = std::make_shared<info_t>();
         newInfo->proc = method;
         newInfo->func.arch = mOptions.arch;
+        newInfo->func.simpleStack = mOptions.simpleStack;
         
         for (const auto& [addr, instr] : tracer->GetCode())
         {
@@ -301,7 +305,8 @@ public:
                         {
                             if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "sp, bp") == 0)
                             {
-                                assert(addr == instr->mAddress);
+                                if (addr != instr->mAddress)
+                                    saved = false;
                                 break;
                             }
                             if (!saved)
@@ -345,7 +350,7 @@ public:
                     assert(0);
             }
         }
-        if (instr->mId == X86_INS_CALL && instr->IsDirectCall())
+        if ((instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL) && instr->IsDirectCall())
         {
             if (mOptions.procModifiers.find(instr->CallTarget()) != mOptions.procModifiers.end())
             {
@@ -418,6 +423,19 @@ public:
                     }
                 }
             }
+            
+            if (pinstr->mId == X86_INS_LCALL)
+            {
+                if (pinstr->mDetail.op_count == 2 && pinstr->mDetail.operands[0].type == X86_OP_IMM && pinstr->mDetail.operands[1].type == X86_OP_IMM)
+                {
+                    if (unique.find(pinstr->CallTarget()) == unique.end())
+                    {
+                        unique.insert(pinstr->CallTarget());
+                        calls.push_back({pinstr->CallTarget(), procRequest_t::callFar});
+                    }
+                }
+            }
+
             shared<jumpTable_t> jt;
             if (pinstr->IsIndirectCall())
             {
@@ -435,6 +453,40 @@ public:
             }
         }
         return calls;
+    }
+    std::vector<std::pair<address_t, address_t>> GetProcRanges(address_t proc)
+    {
+        std::vector<std::pair<address_t, procRequest_t>> calls;
+        std::set<address_t> unique;
+        
+        code_t& code = mInfos.find(proc)->second->code;
+
+        std::vector<std::pair<address_t, address_t>> ranges;
+        address_t first, last;
+        
+        for (const auto& [addr, info] : code)
+        {
+            if (info->instr->mSize == 0)
+                continue;
+            if (!info->stop.empty())
+                continue;
+            address_t instbegin = info->instr->mAddress;
+            address_t instend{instbegin.segment, instbegin.offset + info->instr->mSize};
+            if (!first.isValid() || instbegin != last)
+            {
+                if (first.isValid())
+                    ranges.push_back({first, last});
+                first = instbegin;
+                last = instend;
+            } else
+            {
+                assert (instbegin == last);
+                last = instend;
+            }
+        }
+        if (first.isValid())
+            ranges.push_back({first, last});
+        return ranges;
     }
 
 };

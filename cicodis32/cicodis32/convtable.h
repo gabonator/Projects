@@ -66,7 +66,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
         assert((int)func.request & (int)procRequest_t::callNear);
-        assert(func.callConv == callConv_t::callConvShiftStackNear ||
+        assert(func.callConv == callConv_t::callConvNear ||
+               func.callConv == callConv_t::callConvShiftStackNear ||
                func.callConv == callConv_t::callConvSimpleStackNear);
         if (func.callConv == callConv_t::callConvShiftStackNear)
             aux.push_back("sp += 2;"); // TODO: on all exit paths!!!
@@ -89,6 +90,7 @@ convert_t convert[X86_INS_ENDING] = {
         }
         if (func.callConv == callConv_t::callConvShiftStackFar)
             aux.push_back("sp += 4;");
+        aux.push_back("cs = pop();");
         if (instr->Imm() != 0)
             aux.push_back("sp += $immd0;");
         if (!(instr->isLast && !instr->isLabel))
@@ -133,7 +135,7 @@ convert_t convert[X86_INS_ENDING] = {
         else
         {
             if (instr->mDetail.operands[0].size == 2)
-                return "callIndirect(cs, $rd0);";
+                return "callIndirect(cs, $rd0); // $addr;";
             assert(0);
             return "stop();";
         }
@@ -142,20 +144,33 @@ convert_t convert[X86_INS_ENDING] = {
             .zf = [](convert_args){ return "flags.zero"; },
     },
     [X86_INS_LCALL] = {.convert = [](convert_args){
-        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
-            assert(0);//return "$method();";
-        if (instr->mDetail.op_count == 2)
-            return "push(cs); cs = $rd0; callIndirect($rd0, $rd1); assert(cs == $seg);";
+        if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_IMM && instr->mDetail.operands[1].type == X86_OP_IMM)
+        {
+            return "push(cs); cs = $rd0; $ltarget(); assert(cs == $seg);";
+        }
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
         {
-            cs_x86_op cs{.type = X86_OP_REG, .reg = X86_REG_CS};
-            assert(!Capstone->Intersects(instr->mDetail.operands[0], cs));
-            
-//            if (instr->mDetail.operands[0].size == 4)
-//                assert(0);
-//            else  if (instr->mDetail.operands[0].size == 2)
-            return "cs = $rns0; callIndirect(cs, $rd0); assert(cs == $seg); /*ggg3*/;";
+            return "push(cs); cs = $rns0; callIndirect(cs, $rd0); assert(cs == $seg); /*ggg8*/;";
         }
+        assert(0);
+        return "";
+
+//        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_IMM)
+//            assert(0);//return "$method();";
+//        if (instr->mDetail.op_count == 2)
+//        {
+//            return "push(cs); cs = $rd0; callIndirect($rd0, $rd1); assert(cs == $seg);";
+//        }
+//        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
+//        {
+//            cs_x86_op cs{.type = X86_OP_REG, .reg = X86_REG_CS};
+//            assert(!Capstone->Intersects(instr->mDetail.operands[0], cs));
+//            
+////            if (instr->mDetail.operands[0].size == 4)
+////                assert(0);
+////            else  if (instr->mDetail.operands[0].size == 2)
+//            return "cs = $rns0; callIndirect(cs, $rd0); assert(cs == $seg); /*ggg3*/;";
+//        }
         assert(0);
         return "stop();";
     },
@@ -191,6 +206,7 @@ convert_t convert[X86_INS_ENDING] = {
         .savezf = [](convert_args){
             return "!($rd0 & $rd1)"; },
         .savecf = [](convert_args){ return "0"; },
+        .sf = [](convert_args){ return instr->ArgsEqual() ? "!!($rd0 & $msb0)" : "!!($rd0 & $rd1 & $msb0)"; },
 
     },
     [X86_INS_NEG] = {.convert = [](convert_args){ return "$wr0 = -$rd0;"; },
@@ -231,13 +247,13 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_DEC] = {.convert = [](convert_args){ return "$rw0--;"; },
             .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
-            .savezf = [](convert_args){ return "!$rd0 /*gabo-BADBADBAD*/"; },
+            .savezf = [](convert_args){ return "stop(\"post\") && !$rd0"; }, // TODO: must be POST!!!!!!
     },
     [X86_INS_INC] = {
         .convert = [](convert_args){ return "$rw0++;"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0";},
         .zf = [](convert_args){ return "!$rd0";},
-        .savezf = [](convert_args){ return "!$rd0 /*gabo-BADBADBAD*/"; }, // TODO:
+        .savezf = [](convert_args){ return "!$rd0"; }, // TODO:
     },
     [X86_INS_SHR] = {.convert = [](convert_args) {
             return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
@@ -367,17 +383,15 @@ convert_t convert[X86_INS_ENDING] = {
         cs_x86_op es{.type = X86_OP_REG, .reg = X86_REG_ES};
         // les bx, es:[bx]
         if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) || Capstone->Intersects(instr->mDetail.operands[1], es))
-        {
             return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; es = tmp2; /*ggg2!!check*/};";
-            
-        }
         assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
         return "$wr0 = $rd1; es = $rn1; /*ggg2*/;";
     } },
     [X86_INS_LDS] = {.convert = [](convert_args){
         cs_x86_op ds{.type = X86_OP_REG, .reg = X86_REG_DS};
-        assert(!Capstone->Intersects(instr->mDetail.operands[1], ds));
-        assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
+//        assert(!Capstone->Intersects(instr->mDetail.operands[1], ds));
+        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]))
+            return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; ds = tmp2; /*ggg2!!check*/};";
         return "$wr0 = $rd1; ds = $rn1; /*ggg2*/;";
     } },
 };

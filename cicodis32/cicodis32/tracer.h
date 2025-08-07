@@ -10,7 +10,7 @@ struct instruction_t
 {
     bool continuous{true};
     bool simpleJump{false};
-    bool calls{false};
+//    bool calls{false};
     int stack{0};
     bool conditional{false};
     bool unconditional{false};
@@ -48,8 +48,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_LOOP] = { .simpleJump = true },
     [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
     [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
-    [X86_INS_CALL] = { .calls = true},
-    [X86_INS_LCALL] = { .calls = true},
+//    [X86_INS_CALL] = { .calls = true},
+//    [X86_INS_LCALL] = { .calls = true},
 
     [X86_INS_PUSH] = { .stack = +2 },
     [X86_INS_POP] = { .stack = -2 },
@@ -98,16 +98,38 @@ public:
     void Populate();
     bool IsDirectCall()
     {
-        assert(mId == X86_INS_CALL);
-        assert(mDetail.op_count == 1);
-        return mDetail.operands[0].type == X86_OP_IMM;
+        if(mId == X86_INS_CALL)
+        {
+            assert(mDetail.op_count == 1);
+            return mDetail.operands[0].type == X86_OP_IMM;
+        }
+        if(mId == X86_INS_LCALL)
+        {
+            if (mDetail.op_count == 2 && mDetail.operands[0].type == X86_OP_IMM && mDetail.operands[1].type == X86_OP_IMM)
+                return true;
+            if (mDetail.op_count == 1 && mDetail.operands[0].type == X86_OP_MEM)
+                return false;
+            assert(0);
+        }
+        assert(0);
+        return false;
     }
     bool IsIndirectCall()
     {
-        if (mId != X86_INS_CALL)
-            return false;
-        assert(mDetail.op_count == 1);
-        return mDetail.operands[0].type != X86_OP_IMM;
+        if (mId == X86_INS_CALL)
+        {
+            assert(mDetail.op_count == 1);
+            return mDetail.operands[0].type != X86_OP_IMM;
+        }
+        if (mId == X86_INS_LCALL)
+        {
+            if (mDetail.op_count == 1 && mDetail.operands[0].type == X86_OP_MEM)
+                return true;
+            if (mDetail.op_count == 2 && mDetail.operands[0].type == X86_OP_IMM && mDetail.operands[1].type == X86_OP_IMM)
+                return false;
+            assert(0);
+        }
+        return false;
     }
     bool IsIndirectJump()
     {
@@ -118,13 +140,27 @@ public:
     }
     address_t CallTarget()
     {
-        assert(mId == X86_INS_CALL);
-        assert(mDetail.op_count == 1);
-        assert(mDetail.operands[0].type == X86_OP_IMM);
-        assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
-        if (mDetail.operands[0].size == 2)
-            return {mAddress.segment, (int)mDetail.operands[0].imm & 0xffff};
-        return {mAddress.segment, (int)mDetail.operands[0].imm};
+        if(mId == X86_INS_CALL)
+        {
+            assert(mDetail.op_count == 1);
+            assert(mDetail.operands[0].type == X86_OP_IMM);
+            assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
+            if (mDetail.operands[0].size == 2)
+                return {mAddress.segment, (int)mDetail.operands[0].imm & 0xffff};
+            return {mAddress.segment, (int)mDetail.operands[0].imm};
+        }
+        if(mId == X86_INS_LCALL)
+        {
+            assert(mDetail.op_count == 2);
+            assert(mDetail.operands[0].type == X86_OP_IMM && mDetail.operands[1].type == X86_OP_IMM);
+            return {(int)mDetail.operands[0].imm, (int)mDetail.operands[1].imm};
+            
+            //assert(mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4);
+            //if (mDetail.operands[0].size == 2)
+            //    return {mAddress.segment, (int)mDetail.operands[0].imm & 0xffff};
+            //return {mAddress.segment, (int)mDetail.operands[0].imm};
+        }
+        assert(0);
     }
     
     bool IsDirectJump() // TODO: conditional direct
@@ -457,7 +493,11 @@ public:
         if (a.type == X86_OP_REG && b.type == X86_OP_REG)
             return a.reg == b.reg || mRegMap[a.reg][b.reg] || mRegMap[b.reg][a.reg];
         if (a.type == X86_OP_MEM && b.type == X86_OP_REG)
+        {
+            if (a.mem.segment == X86_REG_INVALID && b.reg == X86_REG_DS)
+                return true;
             return a.mem.index == b.reg || a.mem.segment == b.reg || a.mem.base == b.reg;
+        }
         if (a.type == X86_OP_MEM && b.type == X86_OP_MEM)
             return a.mem.segment == b.mem.segment && a.mem.base == b.mem.base && a.mem.index == b.mem.index && a.mem.scale == b.mem.scale && a.mem.disp == b.mem.disp;
         if (a.type == X86_OP_REG && b.type == X86_OP_MEM)
@@ -507,8 +547,6 @@ public:
                 if (verbose)
                     printf("disasm: %x->%x ", addr.first.offset, addr.second.offset);
                 std::shared_ptr<CapInstr> instr = Capstone->Disasm(addr.second);
-                //                if (instr->mTemplate.calls)
-                //                    calls.push_back(instr->CallTarget());
                 assert(instr);
                 if (instr->mAddress == a && instr->IsDirectJump())
                 {
@@ -529,6 +567,11 @@ public:
                     instr->mPrev.insert(addr.first);
                 if (verbose)
                     printf("(+%d) %s %s\n", instr->mSize, instr->mMnemonic, instr->mOperands);
+                if (instr->AsString() == "int 0x20")
+                {
+                    instr->mNext.clear();
+                    instr->isTerminating = true;
+                }
                 if (instr->AsString() == "int 0x21")
                 {
                     assert(instr->mPrev.size() == 1);

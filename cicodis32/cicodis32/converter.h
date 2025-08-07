@@ -294,11 +294,23 @@ public:
 
     void DumpIndirectTable(shared<jumpTable_t> jt)
     {
+        std::set<int> dupl;
+        
         mCode.push_back(format("    switch (%s)\n", jt->selector));
         mCode.push_back(format("    {\n"));
         for (int i=0; i<jt->GetSize(); i++)
             if (jt->IsValid(i))
+            {
+                if (jt->useCaseOffset)
+                {
+                    int addr = jt->GetTarget(i).linearOffset();
+                    if (dupl.find(addr) != dupl.end())
+                        continue;
+                    dupl.insert(addr);
+                }
+                
                 mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
+            }
         mCode.push_back(format("        default:\n"));
         mCode.push_back(format("            stop();\n"));
         mCode.push_back(format("    }\n"));

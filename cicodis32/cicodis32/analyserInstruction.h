@@ -14,7 +14,7 @@ public:
 
     virtual std::set<address_t> AnalyseInstruction(shared<instrInfo_t> info, shared<info_t> info_) override
     {
-        if (info->instr->mAddress.offset == 0xa931)
+        if (info->instr->mAddress.offset == 0x40f)
         {
             int f = 9;
         }
@@ -189,6 +189,7 @@ public:
             case X86_INS_RCL:
             case X86_INS_RCR:
                 info->GetFlag('c').usesInternal = true;
+                info->GetFlag('c').savedVisibly = true;
             default:
                 break;
         }
@@ -215,7 +216,7 @@ public:
 
     void applyFlags(shared<CapInstr> instr, char type, uint64_t modifyMask, uint64_t setMask, instrInfo_t::instrInfoFlag_t& flag)
     {
-        if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || (instr->mDetail.eflags & (modifyMask | setMask)))
+        if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL || (instr->mDetail.eflags & (modifyMask | setMask)))
         {
             if (verbose)
                 printf("(set %cf) ", type);
@@ -259,9 +260,9 @@ public:
                 flag.depends.insert(o);
             }
             
-            if (oi->instr->mId == X86_INS_CALL)
+            if (oi->instr->mId == X86_INS_CALL || oi->instr->mId == X86_INS_LCALL)
             {
-                procRequest_t r = procRequest_t::callNear;
+                procRequest_t r = oi->instr->mId == X86_INS_CALL ? procRequest_t::callNear : procRequest_t::callFar;
                 if (flag.needed)
                 {
                     oi->GetFlag(flag.type).savedVisibly = true;
@@ -335,7 +336,7 @@ public:
                 }
             } else {
                 // TODO: more general rules, remove
-                if (newInfo->instr->mId == X86_INS_CALL)
+                if (newInfo->instr->mId == X86_INS_CALL || newInfo->instr->mId == X86_INS_LCALL)
                 {
                     flag.variableRead = defaultFlag;
                 }

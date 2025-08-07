@@ -67,6 +67,7 @@ public:
     virtual bool InRange(address_t addr, int size = 0) = 0;
     virtual address_t GetEntry() = 0;
     virtual std::string GetMain() = 0;
+    virtual std::string GetFooter() = 0;
 };
 
 struct jumpTable_t {
@@ -80,12 +81,13 @@ struct jumpTable_t {
         JumpWords,
         JumpFix,
         Call,
-        CallWordsByOfs
+//        CallWordsByOfs
     } type{None};
     
     char selector[64];
     const uint8_t* baseptr{nullptr};
     int minaddr{0};
+    bool useCaseOffset{false};
     
     address_t GetBaseAddress() const
     {
@@ -127,15 +129,23 @@ struct jumpTable_t {
         switch (type)
         {
             case CallWords:
-                return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
+                if (useCaseOffset)
+                    return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
+                else
+                    return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
             case CallDwords:
                 return format("case %d: cs = 0x%04x; sub_%x(); break;", i*4, GetTarget(i).segment, GetTarget(i).linearOffset());
             case JumpWords:
-                return format("case %d: goto loc_%x;", i*2,  GetTarget(i).linearOffset());
+            {
+                if (useCaseOffset)
+                    return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset,  GetTarget(i).linearOffset());
+                else
+                    return format("case %d: goto loc_%x;", i*2,  GetTarget(i).linearOffset());
+            }
             case JumpFix:
                 return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());
             case Call:
-            case CallWordsByOfs:
+//            case CallWordsByOfs:
                 return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
             default:
                 assert(0);
@@ -186,6 +196,7 @@ public:
     bool declarations{true};
     int loadAddress{0x10000};
     arch_t arch{arch_t::archNone};
+    bool simpleStack{false};
     
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
