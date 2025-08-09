@@ -178,7 +178,7 @@ convert_t convert[X86_INS_ENDING] = {
             .zf = [](convert_args){ return "flags.zero"; },
     },
 
-    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$rdcarry;" : "$wr0 = $rd0 - $rd1 - $rdcarry;"; } }, // TODO: flags carry?
+    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; } }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return instr->ArgsEqual() ? "1" : "!$rd0"; },
@@ -217,7 +217,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_STD] = {.convert = [](convert_args){ return "flags.direction = 1;"; } },
     [X86_INS_CLC] = {.convert = [](convert_args){
 //        return "flags.carry = 0;";
-        return "$wrcarry = 0;";
+        return "$carry = 0;";
     },
 //            .savecf = [](convert_args){ return "0"; },
     },
@@ -259,7 +259,7 @@ convert_t convert[X86_INS_ENDING] = {
             return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
         },
         .zf = [](convert_args){ return "!$rd0"; },
-        .cf = [](convert_args){ return "$rdcarry"; }, // TODO: saved index
+        .cf = [](convert_args){ return "$carry"; }, // TODO: saved index
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
         .savecf = [](convert_args){ assert(instr->mDetail.operands[1].type == X86_OP_IMM && instr->mDetail.operands[1].imm == 1); return "$rd0 & 1"; },
     },
@@ -362,12 +362,13 @@ convert_t convert[X86_INS_ENDING] = {
         }
     } },
     [X86_INS_ADC] = {.convert = [](convert_args){
-            assert(!info->GetFlag('c').variableRead.empty()); // TODO
-                return format("$rw0 += $rd1 + %s;", info->GetFlag('c').variableRead.c_str());
+//            assert(!info->GetFlag('c').variableRead.empty()); // TODO
+//                return format("$rw0 += $rd1 + %s;", info->GetFlag('c').variableRead.c_str());
+            return "$rw0 += $rd1 + flags.carry;";
         },
             .savecf = [](convert_args){
                 //assert(!info->GetFlag('c').variableRead.empty());
-                return "($rd0 + $rd1 + $rdcarry) >= $overflow0"; //, info->GetFlag('c').variableRead.c_str());
+                return "($rd0 + $rd1 + $carry) >= $overflow0"; //, info->GetFlag('c').variableRead.c_str());
             },
             .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
@@ -375,7 +376,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_PUSHF] = {.convert = [](convert_args){ return "push(flagAsReg());"; } },
     [X86_INS_POPF] = {.convert = [](convert_args){ return "flagsFromReg(pop());"; } },
     [X86_INS_CMC] = {.convert = [](convert_args){
-        return "$wrcarry = !$rdcarry;"; },
+        return "$carry = !$carry;"; },
         //.savecf = [](convert_args){ return "!$rdcarry /*gabo!!*/"; },
     },
     [X86_INS_XLATB] = {.convert = [](convert_args){ return "al = memoryAGet($prefix, bx+al);"; } },

@@ -107,11 +107,16 @@ public:
         bool stackGood = true;
         for (const auto& [a, p] : info->code)
         {
+            if (a.offset ==0x7267)
+            {
+                int f = 9;
+            }
+            // static stack check
             if (p->stack < 0)
             {
                 if (stackGood)
                 {
-                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & ((int)procRequest_t::stackDrop2 | (int)procRequest_t::stackDrop4 | (int)procRequest_t::stackDrop6 | (int)procRequest_t::stackDrop8)))
+                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & ((int)procRequest_t::stackDrop2 | (int)procRequest_t::stackDrop4 | (int)procRequest_t::stackDrop6 | (int)procRequest_t::stackDrop8 | (int)procRequest_t::stackDrop10)))
                     {
                         p->stop = "stack_below";
                     }
@@ -125,6 +130,67 @@ public:
             {
                 if (p->stack != 0)
                     p->stop = "stack_unbalanced";
+            }
+            
+            // propagate call requests
+            if (p->instr->mId == X86_INS_CALL || p->instr->mId == X86_INS_LCALL)
+            {
+                procRequest_t r = p->instr->mId == X86_INS_CALL ? procRequest_t::callNear : procRequest_t::callFar;
+                
+                for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
+                {
+                    if (!flag->provides.empty())
+                    {
+                        switch (flag->type)
+                        {
+                            case 'z':
+                                if (p->instr->IsDirectCall())
+                                    r = (procRequest_t)((int)r | (int)procRequest_t::returnZero);
+                                else
+                                    p->stop = "callee must return zero";
+                                break;
+                            case 'c':
+                                if (p->instr->IsDirectCall())
+                                    r = (procRequest_t)((int)r | (int)procRequest_t::returnCarry);
+                                else
+                                    p->stop = "callee must return carry";
+                                break;
+                            default:
+                                assert(0);
+                        }
+                    }
+                }
+                if (p->instr->IsDirectCall())
+                    AddProcRequest(p, p->instr->CallTarget(), r);
+            }
+            
+            // save
+            for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
+            {
+                if (!flag->provides.empty())
+                {
+                    if (flag->type == 'c' && p->instr->mTemplate.destructiveCarry)
+                        flag->save = true;
+                    if (flag->type == 'c' && p->instr->mTemplate.savedVisiblyCarry)
+                        flag->visible = true;
+                }
+                
+                if (flag->depends.empty())
+                    continue;
+                
+                if (flag->dirty || flag->depends.size() > 1)
+                {
+                    // cannot calculate this flag value from input operands of lastSet
+                    for (address_t depAddr : flag->depends)
+                    {
+                        shared<instrInfo_t> dep = info->code.find(depAddr)->second;
+                        
+                        if (flag->type == 'c' && dep->instr->mTemplate.savedVisiblyCarry)
+                            continue;
+                        
+                        dep->GetFlag(flag->type).save = true;
+                    }
+                }
             }
         }
     }
@@ -164,6 +230,8 @@ public:
             printf(" +stackDrop6");
         if ((int)req & (int)procRequest_t::stackDrop8)
             printf(" +stackDrop8");
+        if ((int)req & (int)procRequest_t::stackDrop10)
+            printf(" +stackDrop10");
         printf("\n");
 
         for (const auto& p : code)
@@ -178,7 +246,9 @@ public:
 
     callConv_t GetCallConvention(shared<info_t> info) // TODO: should be merged with procrequest?
     {
-        bool stack = UsesStack(info->code);
+        bool stack = UsesReg(info->code, X86_REG_SP);
+        if (info->func.simpleStack)
+            stack |= UsesReg(info->code, X86_REG_BP);
         procRequest_t req = mOptions.procModifiers.find(info->proc)->second;
         // TODO: nearfar!?
         if (((int)req & (int)procRequest_t::callNear) && ((int)req & (int)procRequest_t::callFar))
@@ -189,17 +259,21 @@ public:
         if ((int)req & (int)procRequest_t::callFar)
         {
             if (stack)
+            {
+                if (info->func.simpleStack)
+                    return callConv_t::callConvSimpleStackFar;
                 return callConv_t::callConvShiftStackFar;
-            if (info->func.simpleStack)
-                return callConv_t::callConvSimpleStackFar;
+            }
             return callConv_t::callConvFar;
         }
         else if ((int)req & (int)procRequest_t::callNear)
         {
             if (stack)
+            {
+                if (info->func.simpleStack)
+                    return callConv_t::callConvSimpleStackNear;
                 return callConv_t::callConvShiftStackNear;
-            if (info->func.simpleStack)
-                return callConv_t::callConvSimpleStackNear;
+            }
             return callConv_t::callConvNear;
         }
         else
@@ -209,9 +283,9 @@ public:
         }
     }
     
-    bool UsesStack(const code_t& code)
+    bool UsesReg(const code_t& code, x86_reg reg)
     {
-        cs_x86_op regsp = {.type=X86_OP_REG, .reg = X86_REG_SP};
+        cs_x86_op regsp = {.type=X86_OP_REG, .reg = reg};
         
         for (const auto& p : code)
         {

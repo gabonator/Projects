@@ -38,9 +38,9 @@ struct instrInfo_t {
     
     struct instrInfoFlag_t {
         char type{0};
-        bool save{false}; // TODO: redundant, remove
-        std::string variableWrite;
-        std::string variableRead;
+//        bool save{false}; // TODO: redundant, remove
+//        std::string variableWrite;
+//        std::string variableRead;
         
         // this instruction requireds this flag for operation
         bool needed{false};
@@ -53,21 +53,28 @@ struct instrInfo_t {
         // this instruction modifies flag for following set of instructions
         std::set<address_t> provides;
                 
-        // private:
-        // flag value cannnot be recovered from input operand after instruction evaluation
-        // e.g. `cmp ax, bx` - flags can be fully recovered
-        // e.g. `shl ax, 1` - carry flag is lost
-        bool isDestructive{false};
-        // instruction implementation internally saves default flag (e.g. flags.zero, flags.carry)
-        bool savedVisibly{false};
-        bool visible{false};
-        // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
-        bool usesInternal{false};
-        std::set<address_t> willSet;
-        bool saved{false};
+//        // private:
+//        // flag value cannnot be recovered from input operand after instruction evaluation
+//        // e.g. `cmp ax, bx` - flags can be fully recovered
+//        // e.g. `shl ax, 1` - carry flag is lost
+//        bool isDestructive{false};
+//        // instruction implementation internally saves default flag (e.g. flags.zero, flags.carry)
+//        bool savedVisibly{false};
+//        bool visible{false};
+//        // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
+//        bool usesInternal{false};
+//        bool saved{false};
 
-        void CopyFrom(instrInfo_t::instrInfoFlag_t& o);
-        bool Equals(instrInfo_t::instrInfoFlag_t& o);
+        std::set<address_t> willSet;
+
+        
+        // second phase processing
+        // should update the flag visibly?
+        bool save{false};
+        // sets the flag value directly?
+        bool visible{false};
+
+//        bool Equals(instrInfo_t::instrInfoFlag_t& o);
         bool Merge(instrInfo_t::instrInfoFlag_t& o);
     } cf, zf, sf, of;
 
@@ -119,40 +126,39 @@ struct instrInfo_t {
     procRequest_t procRequest{procRequest_t::none};
     address_t procTarget;
 
-    void CopyFrom(shared<instrInfo_t> o);
-    bool Equals(shared<instrInfo_t> o);
+//    bool Equals(shared<instrInfo_t> o);
     bool MergeMultiFlag(shared<instrInfo_t> o);
     bool AdvanceAndMerge(shared<instrInfo_t> o);
 };
 
-bool instrInfo_t::Equals(shared<instrInfo_t> o)
-{
-    if (instr || !o->instr)
-        return false;
-    if (instr->mId != o->instr->mId)
-        return false;
-    for (instrInfoFlag_t* p : Flags())
-        if (!p->Equals(o->GetFlag(p->type)))
-            return false;
-    return true;
-}
+//bool instrInfo_t::Equals(shared<instrInfo_t> o)
+//{
+//    if (instr || !o->instr)
+//        return false;
+//    if (instr->mId != o->instr->mId)
+//        return false;
+//    for (instrInfoFlag_t* p : Flags())
+//        if (!p->Equals(o->GetFlag(p->type)))
+//            return false;
+//    return true;
+//}
 
-bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
-{
-    if (type != o.type || save != o.save || variableWrite != o.variableWrite ||
-        variableRead != o.variableRead || needed != o.needed ||
-        dirty != o.dirty ||
-        lastSet != o.lastSet)
-        return false;
-    if (isDestructive != o.isDestructive || savedVisibly != o.savedVisibly ||
-        visible != o.visible ||
-        //!Capstone->Equals(depends[0], o.depends[0]) ||
-        //!Capstone->Equals(depends[1], o.depends[1]) ||
-        willSet != o.willSet ||
-        saved != o.saved)
-        return false;
-    return true;
-}
+//bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
+//{
+//    if (type != o.type || save != o.save || variableWrite != o.variableWrite ||
+//        variableRead != o.variableRead || needed != o.needed ||
+//        dirty != o.dirty ||
+//        lastSet != o.lastSet)
+//        return false;
+//    if (isDestructive != o.isDestructive || savedVisibly != o.savedVisibly ||
+//        visible != o.visible ||
+//        //!Capstone->Equals(depends[0], o.depends[0]) ||
+//        //!Capstone->Equals(depends[1], o.depends[1]) ||
+//        willSet != o.willSet ||
+//        saved != o.saved)
+//        return false;
+//    return true;
+//}
 
 bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
 {
@@ -173,11 +179,11 @@ bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
         willSet.insert(o.willSet.begin(), o.willSet.end());
         changed = true;
     }
-    if (visible != o.visible) // TODO: needed?
-    {
-        visible = o.visible;
-        changed = true;
-    }
+//    if (visible != o.visible) // TODO: needed?
+//    {
+//        visible = o.visible;
+//        changed = true;
+//    }
     return changed;
 }
 
@@ -191,7 +197,7 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         copy.type = other.type;
         copy.lastSet = !other.willSet.empty() ? other.willSet : other.lastSet;
         copy.dirty = !other.willSet.empty() ? false : other.dirty; // TODO: check?
-        copy.visible |= other.savedVisibly;
+//        copy.visible |= other.savedVisibly;
         changed |= p->Merge(copy);
     }
     if (!processed)
@@ -363,6 +369,8 @@ public:
                     stackChange -= 6;
                 if ((int)req & (int)procRequest_t::stackDrop8)
                     stackChange -= 8;
+                if ((int)req & (int)procRequest_t::stackDrop10)
+                    stackChange -= 10;
             }
         }
         info->stackRel = stackChange;

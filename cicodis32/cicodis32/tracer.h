@@ -15,6 +15,8 @@ struct instruction_t
     bool conditional{false};
     bool unconditional{false};
     bool ret{false};
+    bool destructiveCarry{false};
+    bool savedVisiblyCarry{false};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
@@ -46,10 +48,10 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_JRCXZ] = { .conditional = true, .simpleJump = true },
     [X86_INS_JS] = { .conditional = true, .simpleJump = true },
     [X86_INS_LOOP] = { .simpleJump = true },
-    [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
-    [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true, .simpleJump = true },
-//    [X86_INS_CALL] = { .calls = true},
-//    [X86_INS_LCALL] = { .calls = true},
+    [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true },
+    [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true },
+    [X86_INS_CALL] = { .savedVisiblyCarry = true },
+    [X86_INS_LCALL] = { .savedVisiblyCarry = true },
 
     [X86_INS_PUSH] = { .stack = +2 },
     [X86_INS_POP] = { .stack = -2 },
@@ -64,11 +66,29 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_AND] = { },
     [X86_INS_PUSHFD] = { .stack = +4 },
     [X86_INS_POPFD] = { .stack = +4 },
-    [X86_INS_SBB] = { },
-    [X86_INS_SUB] = { },
     [X86_INS_CMP] = { },
-    [X86_INS_ADD] = { },
     [X86_INS_MOVZX] = { },
+    
+    [X86_INS_SHL] = { .destructiveCarry = true },
+    [X86_INS_SHR] = { .destructiveCarry = true },
+    [X86_INS_ADD] = { .destructiveCarry = true },
+    [X86_INS_ADC] = { .destructiveCarry = true },
+    [X86_INS_SUB] = { .destructiveCarry = true },
+    [X86_INS_SBB] = { .destructiveCarry = true },
+    [X86_INS_ROL] = { .destructiveCarry = true },
+    [X86_INS_ROR] = { .destructiveCarry = true },
+    [X86_INS_RCL] = { .savedVisiblyCarry = true },
+    [X86_INS_RCR] = { .savedVisiblyCarry = true },
+    [X86_INS_STC] = { .savedVisiblyCarry = true },
+    [X86_INS_CLC] = { .savedVisiblyCarry = true },
+    [X86_INS_CMC] = { .savedVisiblyCarry = true },
+
+    
+    //            case X86_INS_STC:
+    //            case X86_INS_CLC:
+    //            case X86_INS_CMC:
+    //                info->GetFlag('c').savedVisibly |= true;
+
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

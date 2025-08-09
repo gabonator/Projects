@@ -169,6 +169,7 @@ enum class procRequest_t
     stackDrop8 = 32,
     stackDrop6 = 64,
     stackDrop4 = 128,
+    stackDrop10 = 256,
 };
 
 enum class arch_t {

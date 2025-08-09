@@ -543,30 +543,34 @@ public:
                 assert(x86.op_count >= 2);
                 snprintf(replace, 64, "%d", x86.operands[1].size*8);
             }
-            if (strcmp(tok, "realmode") == 0)
+//            if (strcmp(tok, "realmode") == 0)
+//            {
+//                if (mOffsetMask == -1)
+//                    strncpy(replace, "false", 64);
+//                else
+//                    strncpy(replace, "true", 64);
+//            }
+//            if (strcmp(tok, "rdcarry") == 0)
+//            {
+//                assert(!info->GetFlag('c').variableRead.empty());
+//                strncpy(replace, info->GetFlag('c').variableRead.c_str(), 64);
+//            }
+//            if (strcmp(tok, "wrcarry") == 0)
+//            {
+//                if (info->GetFlag('c').variableWrite.empty()) // TODO: should be always set?
+//                    strncpy(replace, "flags.carry", 64);
+//                else
+//                {
+//                    assert(!info->GetFlag('c').variableWrite.empty());
+//                    strncpy(replace, info->GetFlag('c').variableWrite.c_str(), 64);
+//                }
+//            }
+            if (strcmp(tok, "carry") == 0)
             {
-                if (mOffsetMask == -1)
-                    strncpy(replace, "false", 64);
-                else
-                    strncpy(replace, "true", 64);
-            }
-            if (strcmp(tok, "rdcarry") == 0)
-            {
-                assert(!info->GetFlag('c').variableRead.empty());
-                strncpy(replace, info->GetFlag('c').variableRead.c_str(), 64);
-            }
-            if (strcmp(tok, "wrcarry") == 0)
-            {
-                if (info->GetFlag('c').variableWrite.empty()) // TODO: should be always set?
-                    strncpy(replace, "flags.carry", 64);
-                else
-                {
-                    assert(!info->GetFlag('c').variableWrite.empty());
-                    strncpy(replace, info->GetFlag('c').variableWrite.c_str(), 64);
-                }
+                strncpy(replace, "flags.carry", 64);
             }
 
-            assert(replace[0] > 0);
+            assert(replace[0]);
             char temp[128];
             memcpy(temp, fmt, (p-1)-fmt);
             temp[p-1-fmt] = 0;
