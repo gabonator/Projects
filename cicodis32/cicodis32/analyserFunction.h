@@ -105,13 +105,9 @@ public:
     {
         FindInfiniteLoops(info->code);
         bool stackGood = true;
+        // static stack check
         for (const auto& [a, p] : info->code)
         {
-            if (a.offset ==0x7267)
-            {
-                int f = 9;
-            }
-            // static stack check
             if (p->stack < 0)
             {
                 if (stackGood)
@@ -131,8 +127,11 @@ public:
                 if (p->stack != 0)
                     p->stop = "stack_unbalanced";
             }
-            
-            // propagate call requests
+        }
+        
+        // propagate call requests
+        for (const auto& [a, p] : info->code)
+        {
             if (p->instr->mId == X86_INS_CALL || p->instr->mId == X86_INS_LCALL)
             {
                 procRequest_t r = p->instr->mId == X86_INS_CALL ? procRequest_t::callNear : procRequest_t::callFar;
@@ -163,22 +162,58 @@ public:
                 if (p->instr->IsDirectCall())
                     AddProcRequest(p, p->instr->CallTarget(), r);
             }
-            
-            // save
+        }
+
+        int tempCounter = 0;
+        for (const auto& [a, p] : info->code)
+        {
+            // save full cond
+            int needed = 0;
+            bool anyDirty = false;
+            std::set<address_t> deps;
+            // check origin address of all flag sources/ mixed source??
             for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
             {
-                if (!flag->provides.empty())
+                if (flag->needed)
                 {
-                    if (flag->type == 'c' && p->instr->mTemplate.destructiveCarry)
-                        flag->save = true;
-                    if (flag->type == 'c' && p->instr->mTemplate.savedVisiblyCarry)
-                        flag->visible = true;
+                    needed++;
+                    deps.insert(flag->depends.begin(), flag->depends.end());
+                }
+                if (flag->needed && flag->dirty)
+                    anyDirty = true;
+            }
+            if (anyDirty && needed > 1)
+            {
+                assert(deps.size() == 1);
+                shared<instrInfo_t> destructive = info->code.find(*deps.begin())->second;
+                // save whole condition if couldnt be reconstructed by saving single flag
+                assert(destructive->savePrecondition.size() == 0);
+                destructive->savePrecondition.push_back({
+                    .writeOp = destructive->instr->mId,
+                    .readOp = p->instr->mId,
+                    .variable = utils::format("temp_cond%d", tempCounter)
+                });
+                assert(p->readPrecondition.size() == 0);
+                p->readPrecondition.push_back(utils::format("temp_cond%d", tempCounter));
+                tempCounter++;
+            }
+        }
+
+        // save single flag
+        for (const auto& [a, p] : info->code)
+        {
+            for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
+            {
+                if (p->readPrecondition.size())
+                {
+                    assert(flag->depends.size() <= 1);
+                    continue;
                 }
                 
                 if (flag->depends.empty())
                     continue;
                 
-                if (flag->dirty || flag->depends.size() > 1)
+                if (flag->dirty || flag->depends.size() > 1 || p->instr->mTemplate.ret)
                 {
                     // cannot calculate this flag value from input operands of lastSet
                     for (address_t depAddr : flag->depends)

@@ -115,7 +115,7 @@ convert_t convert[X86_INS_ENDING] = {
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
         .cf = [](convert_args){ return "stop() /*ggg9*/"; },
-        .savecf = [](convert_args){ return "stop() /* gabo-bad */"; },
+        .savecf = [](convert_args){ return "0 /*ggg1*/"; },
         .savezf = [](convert_args){
             return instr->ArgsEqual() ? "!$rd0" : "!($rd0 | $rd1)";
         },
@@ -135,7 +135,8 @@ convert_t convert[X86_INS_ENDING] = {
         else
         {
             if (instr->mDetail.operands[0].size == 2)
-                return "callIndirect(cs, $rd0); // $addr;";
+                return "callIndirect(cs, $rd0);";
+                //return "callIndirect(cs, $rd0); // $addr;";
             assert(0);
             return "stop();";
         }
@@ -182,7 +183,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return instr->ArgsEqual() ? "1" : "!$rd0"; },
-            .savezf = [](convert_args){ return "$rd0 == $rd1"; },
+            .savezf = [](convert_args){ return instr->ArgsEqual() ? "1" : "$rd0 == $rd1"; },
             .savesf = [](convert_args){ return "($rd0 - $rd1) & $msb0"; },
             .savecf = [](convert_args){ return "$rd0 < $rd1"; },
 

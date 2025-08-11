@@ -5,16 +5,6 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 
-// TODO: add stack depth
-
-enum class flagMask_t {
-    none = 0,
-    zero = 1,
-    carry = 2,
-    overflow = 4,
-    sign = 8
-};
-
 enum callConv_t {
     callConvUnknown = 0,
     callConvSimpleStackNear = 1,
@@ -38,10 +28,6 @@ struct instrInfo_t {
     
     struct instrInfoFlag_t {
         char type{0};
-//        bool save{false}; // TODO: redundant, remove
-//        std::string variableWrite;
-//        std::string variableRead;
-        
         // this instruction requireds this flag for operation
         bool needed{false};
         // lastSet instructions were altered, so flag value extraction is not possible anymore
@@ -66,6 +52,7 @@ struct instrInfo_t {
 //        bool saved{false};
 
         std::set<address_t> willSet;
+        bool willSetDirty{false};
 
         
         // second phase processing
@@ -74,7 +61,6 @@ struct instrInfo_t {
         // sets the flag value directly?
         bool visible{false};
 
-//        bool Equals(instrInfo_t::instrInfoFlag_t& o);
         bool Merge(instrInfo_t::instrInfoFlag_t& o);
     } cf, zf, sf, of;
 
@@ -103,15 +89,9 @@ struct instrInfo_t {
     }
     
     struct precondition_t {
-        flagMask_t needs{flagMask_t::none};
         x86_insn writeOp{X86_INS_INVALID};
         x86_insn readOp{X86_INS_INVALID};
         std::string variable;
-        
-        bool operator==(const precondition_t& other) const {
-            return needs == other.needs && writeOp == other.writeOp &&
-                readOp == other.readOp && variable == other.variable;
-        }
     };
     
     std::vector<precondition_t> savePrecondition;
@@ -126,39 +106,8 @@ struct instrInfo_t {
     procRequest_t procRequest{procRequest_t::none};
     address_t procTarget;
 
-//    bool Equals(shared<instrInfo_t> o);
-    bool MergeMultiFlag(shared<instrInfo_t> o);
     bool AdvanceAndMerge(shared<instrInfo_t> o);
 };
-
-//bool instrInfo_t::Equals(shared<instrInfo_t> o)
-//{
-//    if (instr || !o->instr)
-//        return false;
-//    if (instr->mId != o->instr->mId)
-//        return false;
-//    for (instrInfoFlag_t* p : Flags())
-//        if (!p->Equals(o->GetFlag(p->type)))
-//            return false;
-//    return true;
-//}
-
-//bool instrInfo_t::instrInfoFlag_t::Equals(instrInfo_t::instrInfoFlag_t& o)
-//{
-//    if (type != o.type || save != o.save || variableWrite != o.variableWrite ||
-//        variableRead != o.variableRead || needed != o.needed ||
-//        dirty != o.dirty ||
-//        lastSet != o.lastSet)
-//        return false;
-//    if (isDestructive != o.isDestructive || savedVisibly != o.savedVisibly ||
-//        visible != o.visible ||
-//        //!Capstone->Equals(depends[0], o.depends[0]) ||
-//        //!Capstone->Equals(depends[1], o.depends[1]) ||
-//        willSet != o.willSet ||
-//        saved != o.saved)
-//        return false;
-//    return true;
-//}
 
 bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
 {
@@ -179,11 +128,6 @@ bool instrInfo_t::instrInfoFlag_t::Merge(instrInfo_t::instrInfoFlag_t& o)
         willSet.insert(o.willSet.begin(), o.willSet.end());
         changed = true;
     }
-//    if (visible != o.visible) // TODO: needed?
-//    {
-//        visible = o.visible;
-//        changed = true;
-//    }
     return changed;
 }
 
@@ -196,7 +140,7 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         instrInfoFlag_t copy;
         copy.type = other.type;
         copy.lastSet = !other.willSet.empty() ? other.willSet : other.lastSet;
-        copy.dirty = !other.willSet.empty() ? false : other.dirty; // TODO: check?
+        copy.dirty = !other.willSet.empty() ? other.willSetDirty : other.dirty; // TODO: check?
 //        copy.visible |= other.savedVisibly;
         changed |= p->Merge(copy);
     }

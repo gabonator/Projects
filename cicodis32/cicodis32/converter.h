@@ -99,21 +99,26 @@ public:
                 extraInfo += " +stackDrop10";
                 temp ^= (int)procRequest_t::stackDrop10;
             }
+            if (temp & (int)procRequest_t::callIsolated)
+            {
+                extraInfo += " +isolate";
+                temp ^= (int)procRequest_t::callIsolated;
+            }
             assert(temp == 0);
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));
 
-//        bool anyTemp = false;
-//        for (std::string str : GetTempVariables(code, info))
-//            if (!str.starts_with("flags."))
-//            {
-//                mCode.push_back(format("    bool %s;\n", str.c_str()));
-//                anyTemp = true;
-//            }
-//
-//        if (anyTemp)
-//            mCode.push_back("\n");
-//
+        bool anyTemp = false;
+        for (std::string str : GetTempVariables(code, info))
+            if (!str.starts_with("flags."))
+            {
+                mCode.push_back(format("    bool %s;\n", str.c_str()));
+                anyTemp = true;
+            }
+
+        if (anyTemp)
+            mCode.push_back("\n");
+
         if (info->func.callConv == callConv_t::callConvShiftStackNear)
             mCode.push_back("    sp -= 2;\n");
         if (info->func.callConv == callConv_t::callConvShiftStackFar)
@@ -140,6 +145,11 @@ public:
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
                 mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
 
+            const auto& injectit = mOptions.inject.find(p.first);
+            if (injectit != mOptions.inject.end())
+                mCode.push_back(std::string("    ") + injectit->second + "\n");
+
+            std::vector<std::string> post;
             for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
             {
                 static const char* flagName[128] = {['c'] = "flags.carry",
@@ -156,51 +166,26 @@ public:
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
                     assert(save);
-// TODO: ADC SAVES & WRITES use temp
                     
-                    mCode.push_back(std::string("    ") + flagName[flag->type] + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
+                    std::string fName(flagName[flag->type]);
+                                        
+                    if (!flag->depends.empty())
+                    {
+                        std::string tempName = utils::format("temp_%cf", flag->type);
+                        post.push_back(std::string("    ") + fName + " = " + tempName + ";\n");
+                        fName = tempName;
+                    }
+                        
+                    mCode.push_back(std::string("    ") + fName + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
                 }
             }
 
-//            std::string postSave;
-//            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
-//            {
-//                if (flag->save && !flag->savedVisibly)
-//                {
-//                    std::string variableWrite = flag->variableWrite;
-//                    if (flag->isDestructive && flag->variableRead == flag->variableWrite)
-//                    {
-//                        postSave = "    " + variableWrite + " = " + variableWrite + "t;\n";
-//                        variableWrite += "t";
-//                    }
-//                    std::function<std::string(convert_args)> save;
-//                    switch (flag->type)
-//                    {
-//                        case 'c': save = convert[pinstr->mId].savecf; break;
-//                        case 'z': save = convert[pinstr->mId].savezf; break;
-//                        case 'o': save = convert[pinstr->mId].saveof; break;
-//                        case 's': save = convert[pinstr->mId].savesf; break;
-//                    }
-//                    assert(save);
-//                    if (postSave.empty())
-//                        mCode.push_back("    " + variableWrite + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
-//                    else
-//                        mCode.push_back("    bool " + variableWrite + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
-//                }
-//            }
-            
             if (pinfo->savePrecondition.size())
             {
                 assert(pinfo->savePrecondition.size()==1);
                 mCode.push_back("    " + pinfo->savePrecondition[0].variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, pinfo->savePrecondition[0].readOp)) + ";\n");
             }
 
-//            if (pinfo->cf.usesInternal && !pinfo->cf.variableRead.empty() && pinfo->cf.variableRead != "flags.carry")
-//                mCode.push_back("    flags.carry = " + pinfo->cf.variableRead + ";\n");
-//            if (pinfo->zf.usesInternal && !pinfo->zf.variableRead.empty() && pinfo->zf.variableRead != "flags.zero")
-//                mCode.push_back("    flags.zero = " + pinfo->cf.variableRead + ";\n");
-//            assert(!pinfo->sf.usesInternal && !pinfo->of.usesInternal);
-            
             if (pinfo->infiniteLoop)
             {
                 bool memOp = false;
@@ -214,29 +199,6 @@ public:
                     mCode.push_back("    stop(\"infinite loop\");\n");
             }
             
-//            if (pinstr->mId == X86_INS_RET || pinstr->mId == X86_INS_IRET)
-//            {
-//                if (!pinfo->GetFlag('c').variableRead.empty() && pinfo->GetFlag('c').variableRead != "flags.carry")
-//                    mCode.push_back("    flags.carry = " + pinfo->GetFlag('c').variableRead + ";\n");
-//                else if (pinfo->GetFlag('c').needed && !pinfo->GetFlag('c').visible)
-//                {
-//                    if (pinfo->GetFlag('c').saved && pinfo->GetFlag('c').variableRead != "flags.carry")
-//                    {
-//                        std::string carry = BuildCondition(pinstr, pinfo, mInfo->func);
-//                        if (carry != "flags.carry")
-//                            mCode.push_back("    flags.carry = " + carry + ";\n");
-//                    }
-//                }
-//                
-//                if (!pinfo->GetFlag('z').variableRead.empty() && pinfo->GetFlag('z').variableRead != "flags.zero")
-//                    mCode.push_back("    flags.zero = " + pinfo->GetFlag('z').variableRead + ";\n");
-//                else if (pinfo->GetFlag('z').needed && !pinfo->GetFlag('z').visible)
-//                {
-//                    std::string zero = BuildCondition(pinstr, pinfo, mInfo->func);
-//                    if (zero != "flags.zero")
-//                        mCode.push_back("    flags.zero = " + zero + ";\n");
-//                }
-//            }
             
             if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
@@ -258,15 +220,16 @@ public:
                 assert(0);
             }
             
-//            if (!postSave.empty())
-//                mCode.push_back(postSave);
+            mCode.insert(mCode.end(), post.begin(), post.end());
+
             if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret)
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
             if (pinstr->isTerminating)
                 mCode.push_back("    stop(\"terminating\");\n");
             if (pinstr->isReturning)
             {
-                assert(0); // TODO: insert stack correction!!
+//                mCode.push_back("    stop(\"TODO:stack_correction\");\n");
+//                assert(0); // TODO: insert stack correction!!
                 // return flags?
                 mCode.push_back("    return;\n");
             }
@@ -276,21 +239,22 @@ public:
         mCode.push_back("}\n");
     }
     
-//    std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
-//    {
-//        std::set<std::string> tempNames;
-//        for (const auto& p : code)
-//        {
-//            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
-//            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
-//                if (!flag->variableWrite.empty())
-//                    tempNames.insert(flag->variableWrite);
-//            
-//            if (!pinfo->savePrecondition.empty())
-//                tempNames.insert(pinfo->savePrecondition[0].variable);
-//        }
-//        return tempNames;
-//    }
+    std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
+    {
+        std::set<std::string> tempNames;
+        for (const auto& p : code)
+        {
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                if (flag->save && !flag->depends.empty())
+                    tempNames.insert(utils::format("temp_%cf", flag->type));
+
+            if (!pinfo->savePrecondition.empty())
+                tempNames.insert(pinfo->savePrecondition[0].variable);
+        }
+        return tempNames;
+    }
 
     void DumpIndirectTable(shared<jumpTable_t> jt)
     {
@@ -395,7 +359,7 @@ public:
     
     virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) override
     {
-        if (instr->mAddress.offset == 0x55f)
+        if (instr->mAddress.offset == 0xe13)
         {
             int f= 9;
         }
@@ -444,6 +408,7 @@ public:
             {
                 case 'c': value = "flags.carry"; break;
                 case 'z': value = "flags.zero"; break;
+                case 's': value = "flags.sign"; break;
                 default:
                     assert(0);
             }

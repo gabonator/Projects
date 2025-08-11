@@ -26,10 +26,10 @@
 #include "profiles.h"
 
 int main(int argc, char **argv) {
-    Options options = Profiles::optionsGoose;
-//    Options options = optionsRick2;
-//    Options options = optionsFox;
-//    Options options = optionsRick1;
+//    Options options = Profiles::optionsGoose;
+//    Options options = Profiles::optionsRick2;
+//    Options options = Profiles::optionsFox;
+    Options options = Profiles::optionsRick1;
     //Options options = Profiles::optionsBumpy;
 
 //    options.verbose = true;
@@ -70,7 +70,10 @@ int main(int argc, char **argv) {
     for (address_t p : options.procList)
         startEntries.push_back(p);
     for (address_t p : options.isolateLabels)
+    {
+        options.procModifiers.insert({p, procRequest_t::callIsolated});
         startEntries.push_back(p);
+    }
     for (shared<jumpTable_t> j : options.jumpTables)
         if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords)
         for (int i=0; i<j->GetSize(); i++)

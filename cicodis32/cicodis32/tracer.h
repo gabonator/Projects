@@ -580,6 +580,7 @@ public:
                     assert(instr->mId == X86_INS_JMP);
                     instr->mId = X86_INS_CALL;
                     instr->mTemplate = Instructions[instr->mId];
+                    // TODO: not a real function do not alter SP!!!
                     instr->mNext.clear();
                     instr->isReturning = true;
                 }

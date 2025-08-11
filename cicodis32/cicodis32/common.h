@@ -170,6 +170,7 @@ enum class procRequest_t
     stackDrop6 = 64,
     stackDrop4 = 128,
     stackDrop10 = 256,
+    callIsolated = 512
 };
 
 enum class arch_t {
@@ -203,6 +204,7 @@ public:
     std::vector<shared<jumpTable_t>> jumpTables;
     std::set<address_t> isolateLabels;
     std::map<address_t, procRequest_t> procModifiers;
+    std::map<address_t, std::string> inject;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
         for (auto jt : jumpTables)

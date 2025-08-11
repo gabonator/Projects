@@ -23,7 +23,14 @@ std::vector<int> sequence(const char* seq)
 Options optionsRick2 = {
     .loader = "LoaderMz",
     .exec = "RICK2.EXE",
-    //        .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, 0x5e22}},
+    .arch = arch_t::arch16,
+//    .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, /*0x5e22*/ 0x16222-0x10400}},
+//    .procModifiers = {{{0x1040, 0x16222-0x10400}, (procRequest_t)((int)procRequest_t::returnCarry | (int)procRequest_t::callNear)}},
+
+//            .verbose = true, .relocations = false, .recursive = false, .start = false, .procList = {{0x1040, /*0x5e22*/ 0x17222-0x10400}}, //    sub_111f1 - temp_cond 1040:e13 jg 0xe18
+    
+    //17222 - ADC 16222- flags, 1ae81, 1a1d7 - stack
+    // 1c359 - sp shift? 18d28, 18351
     .jumpTables = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{
             .instruction = address_t(0x1040, 0xffff),
@@ -45,6 +52,15 @@ Options optionsRick2 = {
             address_t(0x1040, 0x1c359-0x10400),
             address_t(0x1040, 0x19f12-0x10400),
             address_t(0x1040, 0x19731-0x10400)
+        },
+        .inject = {
+            {{0x1040, 0x16d57 - 0x10400}, "sync();"},
+            {{0x1040, 0x19a4b - 0x10400}, "sync();"},
+            {{0x1040, 0x19e18 - 0x10400}, "memoryASet(cs, 0xbda2, 0xc3); flags.carry = false; return;"},
+            {{0x1040, 0x1bfa0 - 0x10400}, "return;"},
+            {{0x1040, 0x1c1a2 - 0x10400}, "return;"},
+            {{0x1040, 0x1c2e2 - 0x10400}, "if (0)"},
+            {{0x1040, 0x1c31f+3 - 0x10400}, "if (0)"},
         }
 };
 
@@ -88,6 +104,7 @@ Options optionsRick1 = {
     //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x36413- 0x341b0}},
     //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x354c7- 0x341b0}},
     //sub_34442
+//    .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x341b, 0x345e3 - 0x341b0}},
     .jumpTables = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{
             .instruction = address_t(0x341b, 0x228a),
@@ -96,11 +113,25 @@ Options optionsRick1 = {
             .elements = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
                 23},
                 .selector = "di",
-        })}
+        })},
+        .inject = {
+            {{0x341b, 0x3430c - 0x341b0}, "sync();"},
+            {{0x341b, 0x345e3 - 0x341b0}, "sync();"},
+            {{0x341b, 0x3516e - 0x341b0}, "sync();"},
+            {{0x341b, 0x35cbd - 0x341b0}, "sync();"},
+            {{0x341b, 0x36122 - 0x341b0}, "sync(); return;"},
+            {{0x341b, 0x3430c - 0x341b0}, "sync();"},
+        },
+//        .procModifiers = {
+//            {{0x341b, 0x345e3 - 0x341b0}, procRequest_t{(int)procRequest_t::returnZero | (int)procRequest_t::callNear}},
+//        }
+
 };
+
 Options optionsFox = {
     .loader = "LoaderMz",
     .exec = "fox.exe",
+    .arch = arch_t::arch16,
     .procModifiers = {std::pair<address_t, procRequest_t>({0x1020, 0x5133}, procRequest_t::stackDrop2)},
     .jumpTables = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{
@@ -160,6 +191,19 @@ Options optionsFox = {
             .minaddr = 1,
             .selector = "bx",
         }),
+    },
+    .inject = {
+        {{0x1020, 0x105f7 - 0x10200}, "sync();"},
+        {{0x1020, 0x10603 - 0x10200}, "sync();"},
+        {{0x1020, 0x10cd2 - 0x10200}, "return false;"},
+        {{0x1020, 0x10cf1 - 0x10200}, "return true;"},
+        {{0x1020, 0x112dd - 0x10200}, "/*"},
+        {{0x1020, 0x112f3 - 0x10200}, "*/"},
+        {{0x1020, 0x119eb - 0x10200}, "sync(); return;"},
+        {{0x1020, 0x13443 - 0x10200}, "static int counter=0; if (counter++%4==0) sync(); return;"},
+        {{0x1020, 0x153f1 - 0x10200}, "sync();"},
+        {{0x1020, 0x15444 - 0x10200}, "sync();"},
+
     }
 };
 Options optionsBumpy = {
