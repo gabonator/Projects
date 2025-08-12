@@ -1,3 +1,4 @@
+#if 0
 #include "cico32.h"
 
 void fixReloc(uint16_t seg);
@@ -20105,7 +20106,7 @@ void sub_c9ad() // +returnCarry +returnZero TODO: CICO!!!!!!!!!! FLAGS PROBLEM!!
     bx++;
 loc_c9b8:
     tl = al; al = ah; ah = tl;
-    flags.zero = cx == 0;
+    flags.zero = cx == 0; // BAD!!!!!!!!!
     al = 0;
     flags.carry = 1;
     if (cx==0)
@@ -20126,7 +20127,7 @@ loc_c9b8:
         goto loc_c9d2;
     al = lodsb<DS_SI>();
     cx--;
-    flags.zero = cx == 0;
+    flags.zero = cx == 0; // SI?? BAD!!!!!!
 loc_c9d2:
     flags.carry = false;
 loc_c9d4:
@@ -28479,3 +28480,4 @@ int GetProcAt(int seg, int ofs)
             return map[i];
     return 0;
 }
+#endif

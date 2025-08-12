@@ -248,15 +248,15 @@ void load(const char* path_, const char* file, int size)
 void memoryASet(int s, int o, int v)
 {
     assert(o <= 0xffff);
-    if (sp != 0xeeee)
-    {
-        int p = GetProcAt(s, o);
-        if (p)
-        {
-            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
-            assert(0);
-        }
-    }
+//    if (sp != 0xeeee)
+//    {
+//        int p = GetProcAt(s, o);
+//        if (p)
+//        {
+//            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
+//            assert(0);
+//        }
+//    }
     if (s >= 0xa000)
     {
         video->Write(s*16+o, v);
@@ -272,23 +272,19 @@ void memoryASet(int s, int o, int v)
 }
 void memoryASet16(int s, int o, int v)
 {
-    if (s==0x1228 && o == 0x6b)
-    {
-        int f = 9;
-    }
     o &= 0xffff;
     assert(o <= 0xffff);
-    if (sp != 0xeeee)
-    {
-        int p = GetProcAt(s, o);
-        if (!p)
-            p = GetProcAt(s, o+1);
-        if (p)
-        {
-            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
-            assert(0);
-        }
-    }
+//    if (sp != 0xeeee)
+//    {
+//        int p = GetProcAt(s, o);
+//        if (!p)
+//            p = GetProcAt(s, o+1);
+//        if (p)
+//        {
+//            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
+//            assert(0);
+//        }
+//    }
     if (s >= 0xa000)
     {
         video->Write(s*16+o, v & 255);
@@ -518,7 +514,7 @@ void interrupt(int i)
     }
     if (i == 0x21 && ah == 0x48)
     {
-        static int freeMem = 0x1D9E;
+        static int freeMem = 0x4000; //0x1D9E;
         // _bx size
         printf("malloc %d bytes -> %04x:0000\n", bx, freeMem);
         ax = freeMem;

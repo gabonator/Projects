@@ -19,13 +19,6 @@ void start()
     sub_10010();
 }
 
-void fixReloc(uint16_t seg)
-{
-    memoryASet16(seg, 0x0011, memoryAGet16(seg, 0x0011) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x04d1, memoryAGet16(seg, 0x04d1) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x05d8, memoryAGet16(seg, 0x05d8) + seg); // 03a5 -> 13a5
-    memoryASet16(seg, 0x0b59, memoryAGet16(seg, 0x0b59) + seg); // 03a5 -> 13a5
-}
 
 void sub_10010();
 void sub_100a9();
@@ -776,7 +769,6 @@ loc_10535:
 }
 void sub_10541()
 {
-    bool temp_zf;
     cx = 0x4e20;
 loc_10544:
     si = 0x8e8a;
@@ -787,16 +779,16 @@ loc_1054a:
     if (al == 0x00)
         goto loc_10557;
     ah = 0x01;
-    temp_zf = si == memoryAGet16(ds, 0x8f0b);
-    if (!temp_zf)
+    flags.zero = si == memoryAGet16(ds, 0x8f0b);
+    if (!flags.zero)
         goto loc_1055f;
 loc_10557:
-    temp_zf = si == 0x8f0a;
-    if (temp_zf)
+    flags.zero = si == 0x8f0a;
+    if (flags.zero)
         goto loc_1055f;
     goto loc_1054a;
 loc_1055f:
-    if (temp_zf)
+    if (flags.zero)
         goto loc_10578;
     memoryASet16(ds, 0x8f0b, si);
     si -= 0x8e8b;
@@ -1092,7 +1084,7 @@ void sub_107af()
     al = memoryAGet(ds, bx + 1393);
     memoryASet(ds, 0x8f22, memoryAGet(ds, 0x8f22) + al);
     al = memoryAGet(ds, bx + 1351);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, 0x8f23);
     memoryASet16(ds, 0x027b, ax);
     if (bx < 0x0026)
@@ -1106,27 +1098,26 @@ loc_107f2:
     bx = memoryAGet16(ds, bx + 1519);
     memoryASet16(ds, 0x0283, bx);
 }
-void sub_107fd()
+void sub_107fd() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     sp -= 0x0008;
-    ax = memoryAGet16(ss, bp + 6);
+    ax = memoryAGet16(ss, bp + 6 - 2);
     ax += 0x0010;
     cl = 0x18;
     div8(cl);
     push(ax);
     ah = 0x00;
-    memoryASet16(ss, bp - 2, ax);
+    memoryASet16(ss, bp - 2 - 2, ax);
     ax = pop();
     al = ah;
     ah = 0x00;
     cl = 0x03;
     div8(cl);
     ah = 0x00;
-    memoryASet16(ss, bp - 4, ax);
-    ax = memoryAGet16(ss, bp + 4);
+    memoryASet16(ss, bp - 4 - 2, ax);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     ax &= 0x03ff;
     ax >>= 1;
     ax >>= 1;
@@ -1134,12 +1125,12 @@ void sub_107fd()
     ax >>= 1;
     ax = -ax;
     ax += 0x003f;
-    memoryASet16(ss, bp - 6, ax);
-    ax = memoryAGet16(ss, bp + 4);
+    memoryASet16(ss, bp - 6 - 2, ax);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     ax &= 0x000f;
     ax >>= 1;
-    memoryASet16(ss, bp - 8, ax);
-    ax = memoryAGet16(ss, bp - 6);
+    memoryASet16(ss, bp - 8 - 2, ax);
+    ax = memoryAGet16(ss, bp - 6 - 2);
     ax <<= 1;
     ax <<= 1;
     bx = ax;
@@ -1147,19 +1138,19 @@ void sub_107fd()
     bx += ax;
     bx += 0x8f29;
     si = bx;
-    bx += memoryAGet16(ss, bp - 2);
+    bx += memoryAGet16(ss, bp - 2 - 2);
     al = memoryAGet(ds, bx);
     ah = 0x00;
     push(ax);
     ax <<= 1;
     bx = ax;
     bx = memoryAGet16(ds, bx + 1603);
-    ax = memoryAGet16(ss, bp - 8);
+    ax = memoryAGet16(ss, bp - 8 - 2);
     ax <<= 1;
     ax <<= 1;
     ax <<= 1;
     bx += ax;
-    bx += memoryAGet16(ss, bp - 4);
+    bx += memoryAGet16(ss, bp - 4 - 2);
     cl = memoryAGet(ds, bx);
     push(cx);
     cl &= 0x1f;
@@ -1167,7 +1158,7 @@ void sub_107fd()
         goto loc_10881;
     cl |= 0xe0;
 loc_10881:
-    dx = memoryAGet16(ss, bp - 2);
+    dx = memoryAGet16(ss, bp - 2 - 2);
     flags.direction = 0;
 loc_10885:
     if (dx == 0x0000)
@@ -1180,7 +1171,7 @@ loc_10885:
     goto loc_10885;
 loc_10896:
     al = cl;
-    true ? cbw() : cwde();
+    cbw();
     cx = pop();
     bx = pop();
     if (cl & 0x80)
@@ -1191,21 +1182,18 @@ loc_108a6:
     bl = memoryAGet(ds, bx + 1477);
 loc_108aa:
     bh = 0x00;
-    cx = memoryAGet16(ss, bp - 6);
+    cx = memoryAGet16(ss, bp - 6 - 2);
     cx = -cx;
     cx += 0x003f;
     sp = bp;
     bp = pop();
-    sp += 2;
     sp += 4;
 }
-void sub_108ba()
+void sub_108ba() // +stackDrop2
 {
-    bool temp_cf;
-    sp -= 2;
     push(bp);
     bp = sp;
-    bx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 4 - 2);
     bx <<= 1;
     ax = memoryAGet16(ds, bx + 37417);
     if (ax == 0x0000)
@@ -1236,14 +1224,14 @@ loc_108f9:
     memoryASet16(ds, si + 15, ax);
 loc_10902:
     memoryASet(ds, si + 19, 0x0a);
-    ax = memoryAGet16(ss, bp + 4);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     memoryASet(ds, si + 20, al);
     ax = pop();
     cx = 0x000a;
 loc_10910:
-    temp_cf = ax & 1;
+    flags.carry = ax & 1;
     ax >>= 1;
-    if (!temp_cf)
+    if (!flags.carry)
         goto loc_10941;
     push(ax);
     push(cx);
@@ -1251,7 +1239,7 @@ loc_10910:
     al = memoryAGet(ds, si + 19);
     ah = 0x00;
     push(ax);
-    ax = memoryAGet16(ss, bp + 4);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     sub_109e9();
     if (ax == 0x0000)
@@ -1277,7 +1265,6 @@ loc_10941:
         goto loc_10910;
 loc_10946:
     bp = pop();
-    sp += 2;
     sp += 2;
 }
 void sub_1094a()
@@ -1335,17 +1322,16 @@ void sub_109a4()
     flags.direction = 0;
     for (; cx != 0; --cx) stosw<ES_DI>(ax);
 }
-void sub_109b5()
+void sub_109b5() // +stackDrop6
 {
-    sp -= 2;
     push(bp);
     bp = sp;
-    si = memoryAGet16(ss, bp + 8);
+    si = memoryAGet16(ss, bp + 8 - 2);
     sub_10a1b();
-    bx = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ss, bp + 6 - 2);
     bx <<= 1;
     cx = memoryAGet16(ds, bx + 3307);
-    bx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 4 - 2);
     bx <<= 1;
     al = memoryAGet(ds, 0x9502);
     if (al != 0x01)
@@ -1359,18 +1345,16 @@ loc_109d9:
 loc_109e1:
     memoryASet16(ds, bx + 37545, memoryAGet16(ds, bx + 37545) & cx);
     bp = pop();
-    sp += 2;
     sp += 6;
 }
-void sub_109e9()
+void sub_109e9() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
-    bx = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ss, bp + 6 - 2);
     bx <<= 1;
     cx = memoryAGet16(ds, bx + 3307);
-    bx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 4 - 2);
     bx <<= 1;
     al = memoryAGet(ds, 0x9502);
     if (al != 0x01)
@@ -1386,7 +1370,6 @@ loc_10a0f:
     ax = memoryAGet16(ds, bx + 37545);
     ax &= cx;
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_10a1b()
@@ -1413,7 +1396,6 @@ void sub_10a1b()
 }
 void sub_10a51()
 {
-    bool temp_cf;
     bl = memoryAGet(ds, 0x1b9e);
     bh = 0x00;
     bx <<= 1;
@@ -1446,9 +1428,9 @@ loc_10a70:
     bx = memoryAGet16(ds, bx + 756);
     cx = 0x000a;
 loc_10aa5:
-    temp_cf = ax & 1;
+    flags.carry = ax & 1;
     ax >>= 1;
-    if (!temp_cf)
+    if (!flags.carry)
         goto loc_10ac8;
     push(bx);
     bx -= dx;
@@ -1473,13 +1455,11 @@ loc_10ac8:
 loc_10ad1:
     ax = 0x0000;
 }
-void sub_10ad5()
+void sub_10ad5() // +stackDrop4
 {
-    bool temp_cf;
-    sp -= 2;
     push(bp);
     bp = sp;
-    bx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 4 - 2);
     bx <<= 1;
     si = bx;
     al = memoryAGet(ds, 0x9502);
@@ -1510,17 +1490,17 @@ loc_10af4:
     bx = memoryAGet16(ds, bx + 756);
     cx = 0x000a;
 loc_10b28:
-    temp_cf = ax & 1;
+    flags.carry = ax & 1;
     ax >>= 1;
-    if (!temp_cf)
+    if (!flags.carry)
         goto loc_10b48;
     push(bx);
     bx -= dx;
-    if ((short)bx > (short)memoryAGet16(ss, bp + 6))
+    if ((short)bx > (short)memoryAGet16(ss, bp + 6 - 2))
         goto loc_10b47;
     bx += dx;
     bx += dx;
-    if ((short)bx < (short)memoryAGet16(ss, bp + 6))
+    if ((short)bx < (short)memoryAGet16(ss, bp + 6 - 2))
         goto loc_10b47;
     ax = pop();
     ax = 0x0001;
@@ -1537,7 +1517,6 @@ loc_10b51:
     ax = 0x0000;
 loc_10b54:
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_10b58()
@@ -1616,13 +1595,13 @@ void sub_10bc5()
 void sub_10bdc()
 {
     al = memoryAGet(ds, si + 11);
-    true ? cbw() : cwde();
+    cbw();
     bx = memoryAGet16(ds, si + 5);
     bx -= ax;
     push(bx);
     al = memoryAGet(ds, si + 3);
     al += memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
+    cbw();
     ax = -ax;
     ax += memoryAGet16(ds, si + 7);
     push(ax);
@@ -1646,9 +1625,8 @@ void sub_10bdc()
     si = memoryAGet16(ds, si + 15);
     sub_10c24();
 }
-void sub_10c24()
+void sub_10c24() // +stackDrop8
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     ax = memoryAGet16(ds, 0x9430);
@@ -1656,22 +1634,22 @@ void sub_10c24()
         goto loc_10c32;
     goto loc_10cbc;
 loc_10c32:
-    ax = memoryAGet16(ss, bp + 8);
+    ax = memoryAGet16(ss, bp + 8 - 2);
     ax -= memoryAGet16(ds, 0x9528);
     ax &= 0x03ff;
     if (!(ax & 0x0200))
         goto loc_10c44;
     ax |= 0xfc00;
 loc_10c44:
-    memoryASet16(ss, bp + 8, ax);
+    memoryASet16(ss, bp + 8 - 2, ax);
     if ((short)ax >= (short)0x0000)
         goto loc_10c77;
-    memoryASet16(ss, bp + 4, memoryAGet16(ss, bp + 4) + ax);
-    if ((short)memoryAGet16(ss, bp + 4) >= 0)
+    memoryASet16(ss, bp + 4 - 2, memoryAGet16(ss, bp + 4 - 2) + ax);
+    if ((short)memoryAGet16(ss, bp + 4 - 2) >= 0)
         goto loc_10c54;
     goto loc_10d8f;
 loc_10c54:
-    if (memoryAGet16(ss, bp + 4))
+    if (memoryAGet16(ss, bp + 4 - 2))
         goto loc_10c59;
     goto loc_10d8f;
 loc_10c59:
@@ -1687,38 +1665,38 @@ loc_10c59:
     cx <<= 1;
     si += cx;
     ax = 0x0000;
-    memoryASet16(ss, bp + 8, ax);
+    memoryASet16(ss, bp + 8 - 2, ax);
     goto loc_10c8f;
 loc_10c77:
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     ax -= 0x00a0;
     if ((short)ax < 0)
         goto loc_10c8f;
     ax = -ax;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     if ((short)ax > (short)0x0000)
         goto loc_10c8c;
     goto loc_10d8f;
 loc_10c8c:
-    memoryASet16(ss, bp + 4, ax);
+    memoryASet16(ss, bp + 4 - 2, ax);
 loc_10c8f:
     ax = 0x0020;
-    memoryASet16(ss, bp + 10, memoryAGet16(ss, bp + 10) + ax);
+    memoryASet16(ss, bp + 10 - 2, memoryAGet16(ss, bp + 10 - 2) + ax);
     ax = 0x0008;
-    memoryASet16(ss, bp + 8, memoryAGet16(ss, bp + 8) + ax);
-    ax = memoryAGet16(ss, bp + 10);
+    memoryASet16(ss, bp + 8 - 2, memoryAGet16(ss, bp + 8 - 2) + ax);
+    ax = memoryAGet16(ss, bp + 10 - 2);
     if ((short)ax >= (short)0x0020)
         goto loc_10cab;
     ax = 0x0020;
-    memoryASet16(ss, bp + 10, ax);
+    memoryASet16(ss, bp + 10 - 2, ax);
     goto loc_10cbc;
 loc_10cab:
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     if ((short)ax <= (short)0x0120)
         goto loc_10cbc;
     ax = 0x0120;
-    ax -= memoryAGet16(ss, bp + 6);
-    memoryASet16(ss, bp + 10, ax);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
+    memoryASet16(ss, bp + 10 - 2, ax);
 loc_10cbc:
     push(ds);
     push(bx);
@@ -1727,8 +1705,8 @@ loc_10cbc:
     out16(dx, ax);
     ax = 0x0007;
     out16(dx, ax);
-    ax = memoryAGet16(ss, bp + 10);
-    bx = memoryAGet16(ss, bp + 8);
+    ax = memoryAGet16(ss, bp + 10 - 2);
+    bx = memoryAGet16(ss, bp + 8 - 2);
     push(cx);
     bx <<= 1;
     bx <<= 1;
@@ -1756,11 +1734,11 @@ loc_10ce7:
     bx = memoryAGet16(ds, 0x942e);
     es = bx;
     cx = pop();
-    cx = memoryAGet16(ss, bp + 6);
+    cx = memoryAGet16(ss, bp + 6 - 2);
     cx >>= 1;
     al = 0x08;
     ds = pop();
-    bx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 4 - 2);
 loc_10d13:
     push(ax);
     push(bx);
@@ -1844,7 +1822,6 @@ loc_10d6d:
     out16(dx, ax);
 loc_10d8f:
     bp = pop();
-    sp += 2;
     sp += 8;
 }
 void sub_10d98()
@@ -2176,7 +2153,7 @@ void sub_110a0()
     al = memoryAGet(ds, si + 10);
     al -= memoryAGet(ds, si + 3);
     al -= memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 7);
     ax &= 0x03ff;
     bx = memoryAGet16(ds, 0x9528);
@@ -2195,7 +2172,7 @@ void sub_110c6()
 {
     al = memoryAGet(ds, si + 3);
     al += memoryAGet(ds, si + 12);
-    true ? cbw() : cwde();
+    cbw();
     ax = -ax;
     ax += memoryAGet16(ds, si + 7);
     ax &= 0x03ff;
@@ -3612,13 +3589,12 @@ loc_11bdd:
 loc_11c09:
     return;
 }
-void sub_11c0a()
+void sub_11c0a() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
-    bx = memoryAGet16(ss, bp + 6);
-    cx = memoryAGet16(ss, bp + 4);
+    bx = memoryAGet16(ss, bp + 6 - 2);
+    cx = memoryAGet16(ss, bp + 4 - 2);
     si = 0x1b8a;
 loc_11c16:
     al = memoryAGet(ds, si);
@@ -3635,7 +3611,6 @@ loc_11c2a:
     goto loc_11c16;
 loc_11c2f:
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_11c33()
@@ -3747,7 +3722,7 @@ void sub_11d1e()
     al = memoryAGet(ds, bx + 5021);
     memoryASet(ds, si + 4, al);
     al = memoryAGet(ds, bx + 4981);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, 0x1b8f);
     memoryASet16(ds, si + 5, ax);
     ax = memoryAGet16(ds, 0x1b91);
@@ -3785,7 +3760,7 @@ void sub_11d1e()
     bl = memoryAGet(ds, 0x1b8e);
     bh = 0x00;
     al = memoryAGet(ds, bx + 4991);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, 0x1b8f);
     memoryASet16(ds, si + 5, ax);
     al = memoryAGet(ds, 0x1b8d);
@@ -3937,11 +3912,11 @@ void sub_11f0b()
     bl = memoryAGet(ds, si + 4);
     bh = 0x00;
     al = memoryAGet(ds, bx + 5129);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 5);
     memoryASet16(ds, di + 5, ax);
     al = memoryAGet(ds, bx + 5134);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 7);
     ax &= 0x03ff;
     memoryASet16(ds, di + 7, ax);
@@ -4006,11 +3981,11 @@ void sub_11fba()
     memoryASet(ds, di + 1, bl);
     bh = 0x00;
     al = memoryAGet(ds, bx + 4318);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 5);
     memoryASet16(ds, di + 5, ax);
     al = memoryAGet(ds, bx + 4323);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 7);
     ax &= 0x03ff;
     memoryASet16(ds, di + 7, ax);
@@ -4040,11 +4015,11 @@ void sub_12005()
     memoryASet(ds, di + 1, bl);
     bh = 0x00;
     al = memoryAGet(ds, bx + 5213);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 5);
     memoryASet16(ds, di + 5, ax);
     al = memoryAGet(ds, bx + 5218);
-    true ? cbw() : cwde();
+    cbw();
     ax += memoryAGet16(ds, si + 7);
     ax &= 0x03ff;
     memoryASet16(ds, di + 7, ax);
@@ -4962,23 +4937,22 @@ loc_125db:
     sub_125c6();
     memoryASet16(ds, 0x9542, memoryAGet16(ds, 0x9542) + 1);
 }
-void sub_125e3()
+void sub_125e3() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     ax = 0xa000;
     es = ax;
-    ax = memoryAGet16(ss, bp + 6);
+    ax = memoryAGet16(ss, bp + 6 - 2);
     ax >>= 1;
     ax >>= 1;
     ax >>= 1;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     di = ax;
     dx = 0x03ce;
     ax = 0x0805;
     out16(dx, ax);
-    cx = memoryAGet16(ss, bp + 6);
+    cx = memoryAGet16(ss, bp + 6 - 2);
     cx &= 0x0007;
     ah = 0x80;
     ah >>= cl;
@@ -5013,7 +4987,6 @@ loc_1262d:
     ax = 0x0000;
     out16(dx, ax);
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_1264a()
@@ -5063,13 +5036,12 @@ void sub_1268a()
     push(ax);
     sub_1269e();
 }
-void sub_1269e()
+void sub_1269e() // +stackDrop8
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     al = memoryAGet(ds, 0x94ae);
-    al += memoryAGet(ss, bp + 4);
+    al += memoryAGet(ss, bp + 4 - 2);
     if (al <= 0x09)
         goto loc_126b1;
     al -= 0x0a;
@@ -5077,7 +5049,7 @@ void sub_1269e()
 loc_126b1:
     memoryASet(ds, 0x94ae, al);
     al = memoryAGet(ds, 0x94ad);
-    al += memoryAGet(ss, bp + 6);
+    al += memoryAGet(ss, bp + 6 - 2);
     if (al <= 0x09)
         goto loc_126c4;
     al -= 0x0a;
@@ -5085,7 +5057,7 @@ loc_126b1:
 loc_126c4:
     memoryASet(ds, 0x94ad, al);
     al = memoryAGet(ds, 0x94ac);
-    al += memoryAGet(ss, bp + 8);
+    al += memoryAGet(ss, bp + 8 - 2);
     if (al <= 0x09)
         goto loc_126d7;
     al -= 0x0a;
@@ -5093,7 +5065,7 @@ loc_126c4:
 loc_126d7:
     memoryASet(ds, 0x94ac, al);
     al = memoryAGet(ds, 0x94ab);
-    al += memoryAGet(ss, bp + 10);
+    al += memoryAGet(ss, bp + 10 - 2);
     if (al <= 0x09)
         goto loc_126ea;
     al -= 0x0a;
@@ -5119,7 +5091,6 @@ loc_12701:
 loc_1270d:
     memoryASet(ds, 0x94a9, al);
     bp = pop();
-    sp += 2;
     sp += 8;
 }
 void sub_12714()
@@ -5523,19 +5494,18 @@ loc_129a0:
     if (--cx)
         goto loc_12975;
 }
-void sub_129ae()
+void sub_129ae() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     ax = memoryAGet16(ds, 0x94f0);
     es = ax;
     di = memoryAGet16(ds, 0x944e);
-    di += memoryAGet16(ss, bp + 4);
+    di += memoryAGet16(ss, bp + 4 - 2);
     ax = memoryAGet16(ds, 0x94ea);
     push(ds);
     ds = ax;
-    si = memoryAGet16(ss, bp + 6);
+    si = memoryAGet16(ss, bp + 6 - 2);
     cx = 0x000b;
 loc_129c9:
     movsw<ES_DI, DS_SI>();
@@ -5547,7 +5517,6 @@ loc_129c9:
         goto loc_129c9;
     ds = pop();
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_129db()
@@ -5937,17 +5906,16 @@ void sub_12cc7()
     push(ax);
     sub_12cea();
 }
-void sub_12cea()
+void sub_12cea() // +stackDrop10
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     ax = 0xa000;
     es = ax;
-    di = memoryAGet16(ss, bp + 10);
-    bx = memoryAGet16(ss, bp + 4);
+    di = memoryAGet16(ss, bp + 10 - 2);
+    bx = memoryAGet16(ss, bp + 4 - 2);
     bx = memoryAGet16(ds, bx + 38120);
-    si = memoryAGet16(ss, bp + 12);
+    si = memoryAGet16(ss, bp + 12 - 2);
     push(ds);
     push(bx);
     dx = 0x03ce;
@@ -5955,12 +5923,12 @@ void sub_12cea()
     out16(dx, ax);
     ax = 0x0007;
     out16(dx, ax);
-    cx = memoryAGet16(ss, bp + 8);
+    cx = memoryAGet16(ss, bp + 8 - 2);
     cx >>= 1;
     ah = 0x80;
     al = 0x08;
     ds = pop();
-    bx = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ss, bp + 6 - 2);
 loc_12d19:
     push(ax);
     push(bx);
@@ -6045,34 +6013,32 @@ loc_12d76:
     ax = 0x0f07;
     out16(dx, ax);
     bp = pop();
-    sp += 2;
     sp += 10;
 }
-void sub_12d9a()
+void sub_12d9a() // +stackDrop8
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     ax = 0xa000;
     es = ax;
-    di = memoryAGet16(ss, bp + 10);
+    di = memoryAGet16(ss, bp + 10 - 2);
     dx = 0x03ce;
-    ax = memoryAGet16(ss, bp + 4);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     ah = al;
     al = 0x00;
     out16(dx, ax);
     ax = 0x0f01;
     out16(dx, ax);
     flags.direction = 0;
-    bx = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ss, bp + 6 - 2);
 loc_12db8:
     push(di);
-    cx = memoryAGet16(ss, bp + 8);
+    cx = memoryAGet16(ss, bp + 8 - 2);
     for (; cx != 0; --cx) stosb<ES_DI>(al);
     di = pop();
     push(di);
     di += 0x2000;
-    cx = memoryAGet16(ss, bp + 8);
+    cx = memoryAGet16(ss, bp + 8 - 2);
     for (; cx != 0; --cx) stosb<ES_DI>(al);
     di = pop();
     di += 0x0028;
@@ -6084,7 +6050,6 @@ loc_12db8:
     al++;
     out16(dx, ax);
     bp = pop();
-    sp += 2;
     sp += 8;
 }
 void sub_12ddc()
@@ -6178,12 +6143,12 @@ loc_12e7c:
     ax &= 0x007f;
     bx = ax;
     al = memoryAGet(ds, bx + 5749);
-    true ? cbw() : cwde();
+    cbw();
     ax <<= 1;
     ax += 0x0080;
     memoryASet16(ds, si + 5, ax);
     al = memoryAGet(ds, bx + 5877);
-    true ? cbw() : cwde();
+    cbw();
     ax <<= 1;
     ax += 0x0080;
     push(bx);
@@ -6298,14 +6263,14 @@ loc_12f90:
     ax &= 0x007f;
     bx = ax;
     al = memoryAGet(ds, bx + 5749);
-    true ? cbw() : cwde();
+    cbw();
     cx = ax;
     cx = sar16(cx, 0x0001);
     ax += cx;
     ax += 0x0080;
     memoryASet16(ds, si + 5, ax);
     al = memoryAGet(ds, bx + 5877);
-    true ? cbw() : cwde();
+    cbw();
     cx = ax;
     cx = sar16(cx, 0x0001);
     ax += cx;
@@ -6653,15 +6618,14 @@ loc_13223:
 loc_1322b:
     return;
 }
-void sub_13291()
+void sub_13291() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
-    ax = memoryAGet16(ss, bp + 4);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     es = ax;
     di = 0x0144;
-    bx = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ss, bp + 6 - 2);
     si = 0x0144;
     dx = 0x03ce;
     ax = 0x0105;
@@ -6683,7 +6647,6 @@ loc_132b0:
     ax = 0x0005;
     out16(dx, ax);
     bp = pop();
-    sp += 2;
     sp += 4;
 }
 void sub_132fe()
@@ -7033,139 +6996,136 @@ loc_13527:
     push(ax);
     sub_136d4();
 }
-void sub_135bc()
+void sub_135bc() // +stackDrop4
 {
-    sp -= 2;
     push(bp);
     bp = sp;
 loc_135bf:
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     sub_136d4();
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     sub_136d4();
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     sub_136d4();
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     sub_136d4();
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     sub_136d4();
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 6);
+    ax += memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     sub_136d4();
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x0080;
-    ax += memoryAGet16(ss, bp + 4);
+    ax += memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     sub_136d4();
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 4);
+    ax -= memoryAGet16(ss, bp + 4 - 2);
     push(ax);
     ax = 0x007f;
-    ax -= memoryAGet16(ss, bp + 6);
+    ax -= memoryAGet16(ss, bp + 6 - 2);
     push(ax);
     sub_136d4();
-    ax = memoryAGet16(ss, bp + 6);
+    ax = memoryAGet16(ss, bp + 6 - 2);
     ax >>= 1;
     if (al <= memoryAGet(ds, 0x9549))
         goto loc_136d0;
-    memoryASet16(ss, bp + 6, ax);
-    ax = memoryAGet16(ss, bp + 4);
+    memoryASet16(ss, bp + 6 - 2, ax);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     ax >>= 1;
-    memoryASet16(ss, bp + 4, ax);
+    memoryASet16(ss, bp + 4 - 2, ax);
     goto loc_135bf;
 loc_136d0:
     bp = pop();
-    sp += 2;
     sp += 4;
 }
-void sub_136d4()
+void sub_136d4() // +stackDrop8
 {
-    sp -= 2;
     push(bp);
     bp = sp;
     sp -= 0x000a;
     ax = memoryAGet16(ds, 0x94f4);
     es = ax;
-    ax = memoryAGet16(ss, bp + 8);
+    ax = memoryAGet16(ss, bp + 8 - 2);
     if (ax == 0x0000)
         goto loc_136fa;
     bx = ax;
@@ -7178,8 +7138,8 @@ void sub_136d4()
     div8(bl);
     ah = 0x00;
 loc_136fa:
-    memoryASet16(ss, bp + 8, ax);
-    ax = memoryAGet16(ss, bp + 4);
+    memoryASet16(ss, bp + 8 - 2, ax);
+    ax = memoryAGet16(ss, bp + 4 - 2);
     if (ax == 0x0000)
         goto loc_13718;
     bx = ax;
@@ -7192,46 +7152,46 @@ loc_136fa:
     div8(bl);
     ah = 0x00;
 loc_13718:
-    memoryASet16(ss, bp + 4, ax);
-    ax = memoryAGet16(ss, bp + 10);
-    bx = memoryAGet16(ss, bp + 6);
+    memoryASet16(ss, bp + 4 - 2, ax);
+    ax = memoryAGet16(ss, bp + 10 - 2);
+    bx = memoryAGet16(ss, bp + 6 - 2);
     if (bx >= ax)
         goto loc_13737;
-    memoryASet16(ss, bp + 10, bx);
-    memoryASet16(ss, bp + 6, ax);
-    ax = memoryAGet16(ss, bp + 8);
-    bx = memoryAGet16(ss, bp + 4);
-    memoryASet16(ss, bp + 8, bx);
-    memoryASet16(ss, bp + 4, ax);
+    memoryASet16(ss, bp + 10 - 2, bx);
+    memoryASet16(ss, bp + 6 - 2, ax);
+    ax = memoryAGet16(ss, bp + 8 - 2);
+    bx = memoryAGet16(ss, bp + 4 - 2);
+    memoryASet16(ss, bp + 8 - 2, bx);
+    memoryASet16(ss, bp + 4 - 2, ax);
 loc_13737:
-    ax = memoryAGet16(ss, bp + 6);
-    ax -= memoryAGet16(ss, bp + 10);
-    memoryASet16(ss, bp - 2, ax);
-    ax = memoryAGet16(ss, bp + 4);
-    ax -= memoryAGet16(ss, bp + 8);
+    ax = memoryAGet16(ss, bp + 6 - 2);
+    ax -= memoryAGet16(ss, bp + 10 - 2);
+    memoryASet16(ss, bp - 2 - 2, ax);
+    ax = memoryAGet16(ss, bp + 4 - 2);
+    ax -= memoryAGet16(ss, bp + 8 - 2);
     if ((short)ax >= 0)
         goto loc_13751;
     ax = -ax;
-    memoryASet16(ss, bp - 10, 0xffe0);
+    memoryASet16(ss, bp - 10 - 2, 0xffe0);
     goto loc_13756;
 loc_13751:
-    memoryASet16(ss, bp - 10, 0x0020);
+    memoryASet16(ss, bp - 10 - 2, 0x0020);
 loc_13756:
-    memoryASet16(ss, bp - 4, ax);
-    cx = memoryAGet16(ss, bp - 2);
+    memoryASet16(ss, bp - 4 - 2, ax);
+    cx = memoryAGet16(ss, bp - 2 - 2);
     if (cx == 0x0000)
         goto loc_137db;
     if (ax != 0x0000)
         goto loc_13769;
     goto loc_137ed;
 loc_13769:
-    if (ax >= memoryAGet16(ss, bp - 2))
+    if (ax >= memoryAGet16(ss, bp - 2 - 2))
         goto loc_137a4;
-    ax = memoryAGet16(ss, bp - 2);
+    ax = memoryAGet16(ss, bp - 2 - 2);
     ax >>= 1;
-    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 6 - 2, ax);
     sub_13801();
-    cx = memoryAGet16(ss, bp - 2);
+    cx = memoryAGet16(ss, bp - 2 - 2);
 loc_1377c:
     al >>= 1;
     if (al)
@@ -7239,35 +7199,35 @@ loc_1377c:
     al = 0x80;
     di++;
 loc_13783:
-    bx = memoryAGet16(ss, bp - 6);
-    bx += memoryAGet16(ss, bp - 4);
-    memoryASet16(ss, bp - 6, bx);
-    if (bx <= memoryAGet16(ss, bp - 2))
+    bx = memoryAGet16(ss, bp - 6 - 2);
+    bx += memoryAGet16(ss, bp - 4 - 2);
+    memoryASet16(ss, bp - 6 - 2, bx);
+    if (bx <= memoryAGet16(ss, bp - 2 - 2))
         goto loc_1379d;
-    bx -= memoryAGet16(ss, bp - 2);
-    memoryASet16(ss, bp - 6, bx);
-    bx = memoryAGet16(ss, bp - 10);
-    di += memoryAGet16(ss, bp - 10);
+    bx -= memoryAGet16(ss, bp - 2 - 2);
+    memoryASet16(ss, bp - 6 - 2, bx);
+    bx = memoryAGet16(ss, bp - 10 - 2);
+    di += memoryAGet16(ss, bp - 10 - 2);
 loc_1379d:
     memoryASet(es, di, memoryAGet(es, di) | al);
     if (--cx)
         goto loc_1377c;
     goto loc_137d5;
 loc_137a4:
-    ax = memoryAGet16(ss, bp - 4);
+    ax = memoryAGet16(ss, bp - 4 - 2);
     ax >>= 1;
-    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 6 - 2, ax);
     sub_13801();
-    cx = memoryAGet16(ss, bp - 4);
+    cx = memoryAGet16(ss, bp - 4 - 2);
 loc_137b2:
-    di += memoryAGet16(ss, bp - 10);
-    bx = memoryAGet16(ss, bp - 6);
-    bx += memoryAGet16(ss, bp - 2);
-    memoryASet16(ss, bp - 6, bx);
-    if (bx <= memoryAGet16(ss, bp - 4))
+    di += memoryAGet16(ss, bp - 10 - 2);
+    bx = memoryAGet16(ss, bp - 6 - 2);
+    bx += memoryAGet16(ss, bp - 2 - 2);
+    memoryASet16(ss, bp - 6 - 2, bx);
+    if (bx <= memoryAGet16(ss, bp - 4 - 2))
         goto loc_137d0;
-    bx -= memoryAGet16(ss, bp - 4);
-    memoryASet16(ss, bp - 6, bx);
+    bx -= memoryAGet16(ss, bp - 4 - 2);
+    memoryASet16(ss, bp - 6 - 2, bx);
     al >>= 1;
     if (al)
         goto loc_137d0;
@@ -7280,23 +7240,22 @@ loc_137d0:
 loc_137d5:
     sp = bp;
     bp = pop();
-    sp += 2;
     sp += 8;
     return;
 loc_137db:
     sub_13801();
-    cx = memoryAGet16(ss, bp - 4);
+    cx = memoryAGet16(ss, bp - 4 - 2);
     if (cx==0)
         goto loc_137d5;
 loc_137e3:
-    di += memoryAGet16(ss, bp - 10);
+    di += memoryAGet16(ss, bp - 10 - 2);
     memoryASet(es, di, memoryAGet(es, di) | al);
     if (--cx)
         goto loc_137e3;
     goto loc_137d5;
 loc_137ed:
     sub_13801();
-    cx = memoryAGet16(ss, bp - 2);
+    cx = memoryAGet16(ss, bp - 2 - 2);
 loc_137f3:
     al >>= 1;
     if (al)
@@ -7460,4 +7419,121 @@ loc_139d4:
 loc_139d7:
     memoryASet16(ds, 0x9562, ax);
 }
+void fixReloc(uint16_t seg)
+{
+    memoryASet16(seg, 0x0011, memoryAGet16(seg, 0x0011) + seg); // 03a5 -> 13a5
+    memoryASet16(seg, 0x04d1, memoryAGet16(seg, 0x04d1) + seg); // 03a5 -> 13a5
+    memoryASet16(seg, 0x05d8, memoryAGet16(seg, 0x05d8) + seg); // 03a5 -> 13a5
+    memoryASet16(seg, 0x0b59, memoryAGet16(seg, 0x0b59) + seg); // 03a5 -> 13a5
+}
+
+int GetProcAt(int seg, int ofs)
+{
+    int map[] = {
+        0x10010, 0x1000, 0x10, 0x1000, 0x65, 0x10010, 0x1000, 0x67, 0x1000, 0x96,
+        0x100a9, 0x1000, 0xa9, 0x1000, 0xcf, 0x100cf, 0x1000, 0xcf, 0x1000, 0xfd,
+        0x100fd, 0x1000, 0xfd, 0x1000, 0x103, 0x10103, 0x1000, 0x103, 0x1000, 0x19d,
+        0x1019d, 0x1000, 0x19d, 0x1000, 0x1ad, 0x101ad, 0x1000, 0x1ad, 0x1000, 0x1c0,
+        0x101c0, 0x1000, 0x96, 0x1000, 0xa9, 0x101c0, 0x1000, 0x1c0, 0x1000, 0x33b,
+        0x1033b, 0x1000, 0x33b, 0x1000, 0x442, 0x10442, 0x1000, 0x442, 0x1000, 0x4a5,
+        0x104a5, 0x1000, 0x4a5, 0x1000, 0x4b7, 0x104f3, 0x1000, 0x4f3, 0x1000, 0x528,
+        0x10529, 0x1000, 0x529, 0x1000, 0x541, 0x10541, 0x1000, 0x541, 0x1000, 0x588,
+        0x10588, 0x1000, 0x588, 0x1000, 0x591, 0x10591, 0x1000, 0x591, 0x1000, 0x5bc,
+        0x105bc, 0x1000, 0x5bc, 0x1000, 0x5ce, 0x105ec, 0x1000, 0x5ec, 0x1000, 0x5fc,
+        0x10600, 0x1000, 0x600, 0x1000, 0x637, 0x10637, 0x1000, 0x637, 0x1000, 0x644,
+        0x10644, 0x1000, 0x644, 0x1000, 0x64d, 0x1064d, 0x1000, 0x64d, 0x1000, 0x674,
+        0x10674, 0x1000, 0x674, 0x1000, 0x69a, 0x1069a, 0x1000, 0x69a, 0x1000, 0x7af,
+        0x107af, 0x1000, 0x7af, 0x1000, 0x7fd, 0x107fd, 0x1000, 0x7fd, 0x1000, 0x8ba,
+        0x108ba, 0x1000, 0x8ba, 0x1000, 0x94a, 0x1094a, 0x1000, 0x94a, 0x1000, 0x9a4,
+        0x109a4, 0x1000, 0x9a4, 0x1000, 0x9b5, 0x109b5, 0x1000, 0x9b5, 0x1000, 0x9e9,
+        0x109e9, 0x1000, 0x9e9, 0x1000, 0xa1b, 0x10a1b, 0x1000, 0xa1b, 0x1000, 0xa51,
+        0x10a51, 0x1000, 0xa51, 0x1000, 0xad5, 0x10ad5, 0x1000, 0xad5, 0x1000, 0xb58,
+        0x10b58, 0x1000, 0xb58, 0x1000, 0xb7c, 0x10b7c, 0x1000, 0xb7c, 0x1000, 0xb8e,
+        0x10b8e, 0x1000, 0xb8e, 0x1000, 0xbc5, 0x10bc5, 0x1000, 0xbc5, 0x1000, 0xbdc,
+        0x10bdc, 0x1000, 0xbdc, 0x1000, 0xc24, 0x10c24, 0x1000, 0xc24, 0x1000, 0xd93,
+        0x10d98, 0x1000, 0xd98, 0x1000, 0xda7, 0x10da7, 0x1000, 0xda7, 0x1000, 0xdc0,
+        0x10dc0, 0x1000, 0xdc0, 0x1000, 0xe07, 0x10e07, 0x1000, 0xe07, 0x1000, 0xe3d,
+        0x10e3d, 0x1000, 0xe3d, 0x1000, 0xe84, 0x10e84, 0x1000, 0xe84, 0x1000, 0xf3c,
+        0x10f3c, 0x1000, 0xf3c, 0x1000, 0xf9d, 0x10f9d, 0x1000, 0xf9d, 0x1000, 0xfda,
+        0x10fda, 0x1000, 0xfda, 0x1000, 0x100c, 0x10fda, 0x1000, 0x100e, 0x1000, 0x105a,
+        0x110a0, 0x1000, 0x10a0, 0x1000, 0x10c6, 0x110c6, 0x1000, 0x10c6, 0x1000, 0x10f3,
+        0x110f3, 0x1000, 0x10f3, 0x1000, 0x1108, 0x11108, 0x1000, 0x1108, 0x1000, 0x12a7,
+        0x112a7, 0x1000, 0x12a7, 0x1000, 0x12cb, 0x112cb, 0x1000, 0x12cb, 0x1000, 0x12eb,
+        0x112eb, 0x1000, 0x12eb, 0x1000, 0x1384, 0x11384, 0x1000, 0x1384, 0x1000, 0x13a8,
+        0x113a8, 0x1000, 0x13a8, 0x1000, 0x1429, 0x11429, 0x1000, 0x1429, 0x1000, 0x14f0,
+        0x114f0, 0x1000, 0x14f0, 0x1000, 0x15fc, 0x115fc, 0x1000, 0x15fc, 0x1000, 0x16d6,
+        0x116d6, 0x1000, 0x16d6, 0x1000, 0x16df, 0x116df, 0x1000, 0x16df, 0x1000, 0x16fe,
+        0x116fe, 0x1000, 0x16fe, 0x1000, 0x171f, 0x1171f, 0x1000, 0x171f, 0x1000, 0x1740,
+        0x11740, 0x1000, 0x1740, 0x1000, 0x176c, 0x1176c, 0x1000, 0x176c, 0x1000, 0x1783,
+        0x11783, 0x1000, 0x1783, 0x1000, 0x17ac, 0x117ac, 0x1000, 0x17ac, 0x1000, 0x17d6,
+        0x117d6, 0x1000, 0x17d6, 0x1000, 0x17f4, 0x117f4, 0x1000, 0x17f4, 0x1000, 0x18a9,
+        0x118a9, 0x1000, 0x18a9, 0x1000, 0x18c7, 0x118c7, 0x1000, 0x18c7, 0x1000, 0x196f,
+        0x1196f, 0x1000, 0x196f, 0x1000, 0x1993, 0x11993, 0x1000, 0x1993, 0x1000, 0x19c2,
+        0x119c2, 0x1000, 0x19c2, 0x1000, 0x1a04, 0x11a04, 0x1000, 0x1a04, 0x1000, 0x1a9e,
+        0x11a9e, 0x1000, 0x1a9e, 0x1000, 0x1b09, 0x11b09, 0x1000, 0x1b09, 0x1000, 0x1b4a,
+        0x11b4a, 0x1000, 0x1b4a, 0x1000, 0x1b57, 0x11b57, 0x1000, 0x1b57, 0x1000, 0x1b80,
+        0x11b80, 0x1000, 0x1b80, 0x1000, 0x1bb9, 0x11bb9, 0x1000, 0x1bb9, 0x1000, 0x1c0a,
+        0x11c0a, 0x1000, 0x1c0a, 0x1000, 0x1c33, 0x11c33, 0x1000, 0x1c33, 0x1000, 0x1c56,
+        0x11c56, 0x1000, 0x1c56, 0x1000, 0x1c78, 0x11c78, 0x1000, 0x1c78, 0x1000, 0x1cd9,
+        0x11cd9, 0x1000, 0x1cd9, 0x1000, 0x1d1e, 0x11d1e, 0x1000, 0x1d1e, 0x1000, 0x1def,
+        0x11def, 0x1000, 0x1def, 0x1000, 0x1e7d, 0x11e7d, 0x1000, 0x1e7d, 0x1000, 0x1f0b,
+        0x11f0b, 0x1000, 0x1f0b, 0x1000, 0x1fba, 0x11fba, 0x1000, 0x1fba, 0x1000, 0x2005,
+        0x12005, 0x1000, 0x2005, 0x1000, 0x2047, 0x12047, 0x1000, 0x2047, 0x1000, 0x2092,
+        0x12092, 0x1000, 0x2092, 0x1000, 0x2099, 0x12099, 0x1000, 0x2099, 0x1000, 0x20a0,
+        0x120a0, 0x1000, 0x20a0, 0x1000, 0x20db, 0x120db, 0x1000, 0x20db, 0x1000, 0x20f0,
+        0x120f0, 0x1000, 0x20f0, 0x1000, 0x2121, 0x12121, 0x1000, 0x2121, 0x1000, 0x215b,
+        0x1215b, 0x1000, 0x215b, 0x1000, 0x21db, 0x121dc, 0x1000, 0x21dc, 0x1000, 0x2200,
+        0x12200, 0x1000, 0x2200, 0x1000, 0x220d, 0x1220d, 0x1000, 0x220d, 0x1000, 0x22b1,
+        0x122b1, 0x1000, 0x22b1, 0x1000, 0x22c1, 0x122c1, 0x1000, 0x22c1, 0x1000, 0x2329,
+        0x122e1, 0x1000, 0x22e1, 0x1000, 0x22f9, 0x122f9, 0x1000, 0x22f9, 0x1000, 0x2311,
+        0x12311, 0x1000, 0x2311, 0x1000, 0x2329, 0x12329, 0x1000, 0x2329, 0x1000, 0x237c,
+        0x1237c, 0x1000, 0x237c, 0x1000, 0x239b, 0x1239b, 0x1000, 0x239b, 0x1000, 0x2464,
+        0x123d4, 0x1000, 0x23d4, 0x1000, 0x23ec, 0x123ec, 0x1000, 0x23ec, 0x1000, 0x2404,
+        0x12404, 0x1000, 0x2404, 0x1000, 0x241c, 0x1241c, 0x1000, 0x241c, 0x1000, 0x2434,
+        0x12434, 0x1000, 0x2434, 0x1000, 0x244c, 0x1244c, 0x1000, 0x244c, 0x1000, 0x2464,
+        0x12464, 0x1000, 0x2464, 0x1000, 0x250b, 0x1250b, 0x1000, 0x250b, 0x1000, 0x252f,
+        0x1252f, 0x1000, 0x252f, 0x1000, 0x2542, 0x12536, 0x1000, 0x2536, 0x1000, 0x2542,
+        0x12542, 0x1000, 0x2542, 0x1000, 0x2553, 0x12553, 0x1000, 0x2553, 0x1000, 0x2577,
+        0x12577, 0x1000, 0x2577, 0x1000, 0x258a, 0x1257e, 0x1000, 0x257e, 0x1000, 0x258a,
+        0x1258a, 0x1000, 0x258a, 0x1000, 0x259b, 0x1259b, 0x1000, 0x259b, 0x1000, 0x25bf,
+        0x125bf, 0x1000, 0x25bf, 0x1000, 0x25d2, 0x125c6, 0x1000, 0x25c6, 0x1000, 0x25d2,
+        0x125d2, 0x1000, 0x25d2, 0x1000, 0x25e3, 0x125e3, 0x1000, 0x25e3, 0x1000, 0x264a,
+        0x1264a, 0x1000, 0x264a, 0x1000, 0x2662, 0x12662, 0x1000, 0x2662, 0x1000, 0x2676,
+        0x12676, 0x1000, 0x2676, 0x1000, 0x268a, 0x1268a, 0x1000, 0x268a, 0x1000, 0x269e,
+        0x1269e, 0x1000, 0x269e, 0x1000, 0x2714, 0x12714, 0x1000, 0x2714, 0x1000, 0x2762,
+        0x12762, 0x1000, 0x2762, 0x1000, 0x279f, 0x1279f, 0x1000, 0x279f, 0x1000, 0x2809,
+        0x12809, 0x1000, 0x2809, 0x1000, 0x2872, 0x12872, 0x1000, 0x2872, 0x1000, 0x28da,
+        0x128da, 0x1000, 0x28da, 0x1000, 0x2907, 0x12907, 0x1000, 0x2907, 0x1000, 0x2959,
+        0x12959, 0x1000, 0x2959, 0x1000, 0x29ae, 0x1296f, 0x1000, 0x296f, 0x1000, 0x29ae,
+        0x129ae, 0x1000, 0x29ae, 0x1000, 0x29db, 0x129db, 0x1000, 0x29db, 0x1000, 0x2a64,
+        0x12a64, 0x1000, 0x2a64, 0x1000, 0x2a7f, 0x12a7f, 0x1000, 0x2a7f, 0x1000, 0x2b28,
+        0x12b28, 0x1000, 0x2b28, 0x1000, 0x2c07, 0x12c07, 0x1000, 0x2c07, 0x1000, 0x2c45,
+        0x12c45, 0x1000, 0x2c45, 0x1000, 0x2c9a, 0x12c9a, 0x1000, 0x2c9a, 0x1000, 0x2cea,
+        0x12cc7, 0x1000, 0x2cc7, 0x1000, 0x2cea, 0x12cea, 0x1000, 0x2cea, 0x1000, 0x2d9a,
+        0x12d9a, 0x1000, 0x2d9a, 0x1000, 0x2ddb, 0x12ddc, 0x1000, 0x2ddc, 0x1000, 0x2df6,
+        0x12df6, 0x1000, 0x2df6, 0x1000, 0x2e02, 0x12e02, 0x1000, 0x2e02, 0x1000, 0x2f50,
+        0x12f50, 0x1000, 0x2f50, 0x1000, 0x2fe8, 0x12fe8, 0x1000, 0x2fe8, 0x1000, 0x300a,
+        0x1300a, 0x1000, 0x300a, 0x1000, 0x3059, 0x13059, 0x1000, 0x3059, 0x1000, 0x3084,
+        0x13084, 0x1000, 0x3084, 0x1000, 0x309d, 0x1309d, 0x1000, 0x309d, 0x1000, 0x3130,
+        0x13130, 0x1000, 0x3130, 0x1000, 0x31a4, 0x1315e, 0x1000, 0x315e, 0x1000, 0x3167,
+        0x13170, 0x1000, 0x3170, 0x1000, 0x3178, 0x13181, 0x1000, 0x3181, 0x1000, 0x3188,
+        0x13191, 0x1000, 0x3191, 0x1000, 0x319b, 0x131a4, 0x1000, 0x31a4, 0x1000, 0x31e7,
+        0x131e7, 0x1000, 0x31e7, 0x1000, 0x3209, 0x13209, 0x1000, 0x3209, 0x1000, 0x322c,
+        0x13291, 0x1000, 0x3291, 0x1000, 0x32c8, 0x132fe, 0x1000, 0x32fe, 0x1000, 0x333c,
+        0x1333c, 0x1000, 0x333c, 0x1000, 0x3383, 0x13383, 0x1000, 0x3383, 0x1000, 0x33b3,
+        0x133b3, 0x1000, 0x33b3, 0x1000, 0x33d7, 0x133d7, 0x1000, 0x33d7, 0x1000, 0x33e5,
+        0x133e5, 0x1000, 0x33e5, 0x1000, 0x3423, 0x13423, 0x1000, 0x3423, 0x1000, 0x3439,
+        0x13439, 0x1000, 0x3439, 0x1000, 0x3472, 0x13472, 0x1000, 0x3472, 0x1000, 0x3498,
+        0x13498, 0x1000, 0x3498, 0x1000, 0x34a7, 0x134a8, 0x1000, 0x34a8, 0x1000, 0x35bc,
+        0x135bc, 0x1000, 0x35bc, 0x1000, 0x36d4, 0x136d4, 0x1000, 0x36d4, 0x1000, 0x3801,
+        0x13801, 0x1000, 0x3801, 0x1000, 0x3829, 0x1382a, 0x1000, 0x382a, 0x1000, 0x3840,
+        0x13840, 0x1000, 0x3840, 0x1000, 0x387d, 0x13914, 0x1000, 0x3914, 0x1000, 0x39a3,
+        0x139a3, 0x1000, 0x39a3, 0x1000, 0x39b8, 0x139b8, 0x1000, 0x39b8, 0x1000, 0x39db,
+    };
+    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)
+        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs <= map[i+3]*16 + map[i+4])
+            return map[i];
+    return 0;
+}
+
 #endif

@@ -19,7 +19,7 @@ uint8_t& th = *(reinterpret_cast<uint8_t*>(&tx) + 1);
 uint16_t cs, ds, es, ss, sp, si, di, bp;
 
 struct flags_t {
-  bool carry, zero, interrupts, direction;
+  bool carry, zero, sign, interrupts, direction;
 };
 
 int headerSize, loadAddress, endAddress;
