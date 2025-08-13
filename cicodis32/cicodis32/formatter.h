@@ -265,7 +265,7 @@ public:
         
         while ((p = strstr(p, "$")) != nullptr)
         {
-            char replace[64];
+            char replace[128];
             p++;
             tok[0] = 0;
             for (int i=0; i<32; i++)
@@ -309,7 +309,7 @@ public:
                 assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
                 snprintf(replace, 64, "0x%x", (int)x86.operands[1].imm);
             }
-            if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0)
+            if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0 || strcmp(tok, "rm0") == 0)
             {
                 if (x86.op_count == 0)
                 {
@@ -320,7 +320,7 @@ public:
                     {
                         char segment[32], offset[32];
                         GetOpAddress(x86.operands[0], segment, offset, info, func);
-                        switch (x86.operands[0].size)
+                        switch (tok[1] == 'm' ? 2 : x86.operands[0].size)
                         {
                             case 1:
                                 snprintf(replace, 64, "memoryAGet(%s, %s)", segment, offset);
@@ -522,6 +522,21 @@ public:
                         snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
                     else
                         snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                }
+            }
+            if (strcmp(tok, "goto_ltarget") == 0)
+            {
+                assert(instr->mId == X86_INS_LJMP);
+                if (x86.op_count == 2)
+                {
+                    snprintf(replace, sizeof(replace), "indirectJump(%s, %s);",
+                             iformat(instr, info, func, "$rd0").c_str(),
+                             iformat(instr, info, func, "$rd1").c_str());
+                } else if (x86.op_count == 1)
+                {
+                    snprintf(replace, sizeof(replace), "cs = %s; indirectJump(cs, %s); stop();",
+                             iformat(instr, info, func, "$rns0").c_str(),
+                             iformat(instr, info, func, "$rm0").c_str());
                 }
             }
             if (strcmp(tok, "method") == 0)

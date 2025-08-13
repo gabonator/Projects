@@ -182,7 +182,7 @@ public:
                 if (flag->needed && flag->dirty)
                     anyDirty = true;
             }
-            if (anyDirty && needed > 1)
+            if (anyDirty && needed > 1 && deps.size() == 1)
             {
                 assert(deps.size() == 1);
                 shared<instrInfo_t> destructive = info->code.find(*deps.begin())->second;
@@ -220,6 +220,8 @@ public:
                     {
                         shared<instrInfo_t> dep = info->code.find(depAddr)->second;
                         
+                        if (dep->instr->mId == X86_INS_CALL)
+                            continue;
                         if (flag->type == 'c' && dep->instr->mTemplate.savedVisiblyCarry)
                             continue;
                         
@@ -288,7 +290,9 @@ public:
         // TODO: nearfar!?
         if (((int)req & (int)procRequest_t::callNear) && ((int)req & (int)procRequest_t::callFar))
         {
-            assert(!stack);
+            printf("Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
+                   info->proc.linearOffset());
+//            assert(!stack);
             return callConv_t::callConvUnknown;
         }
         if ((int)req & (int)procRequest_t::callFar)

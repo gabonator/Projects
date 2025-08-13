@@ -29,8 +29,9 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsGoose;
 //    Options options = Profiles::optionsRick2;
 //    Options options = Profiles::optionsFox;
-    Options options = Profiles::optionsRick1;
-    //Options options = Profiles::optionsBumpy;
+//    Options options = Profiles::optionsRick1;
+//    Options options = Profiles::optionsBumpy;
+    Options options = Profiles::optionsAv;
 
 //    options.verbose = true;
     

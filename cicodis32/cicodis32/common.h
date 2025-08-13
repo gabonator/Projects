@@ -106,7 +106,7 @@ struct jumpTable_t {
     {
         if (type == CallDwords)
         {
-            assert(0);
+//            assert(0);
             uint16_t* parts = (uint16_t*)baseptr;
             return address_t{parts[i*2+1], parts[i*2]};
         }
@@ -134,7 +134,10 @@ struct jumpTable_t {
                 else
                     return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
             case CallDwords:
-                return format("case %d: cs = 0x%04x; sub_%x(); break;", i*4, GetTarget(i).segment, GetTarget(i).linearOffset());
+                if (useCaseOffset)
+                    return format("case 0x%x: push(cs); cs = 0x%04x; sub_%x(); break;", (GetTarget(i).segment<<16) | GetTarget(i).offset, GetTarget(i).segment, GetTarget(i).linearOffset());
+                else
+                    return format("case %d: push(cs); cs = 0x%04x; sub_%x(); break;", i*4, GetTarget(i).segment, GetTarget(i).linearOffset());
             case JumpWords:
             {
                 if (useCaseOffset)

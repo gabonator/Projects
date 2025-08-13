@@ -122,7 +122,7 @@ public:
         if (info->func.callConv == callConv_t::callConvShiftStackNear)
             mCode.push_back("    sp -= 2;\n");
         if (info->func.callConv == callConv_t::callConvShiftStackFar)
-            mCode.push_back("    sp -= 4;\n");
+            mCode.push_back("    sp -= 2;\n"); // TODO!!!
 
         if (code.begin()->first != proc)
             mCode.push_back(format("    goto loc_%x;\n", proc.linearOffset()));
@@ -210,6 +210,10 @@ public:
             } else
             if (convert[pinstr->mId].convert)
             {
+                if (pinstr->mAddress.offset == 3953)
+                {
+                    int f = 9;
+                }
                 std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
                 if (command.size())
                     mCode.push_back("    " + command + "\n");
@@ -323,6 +327,9 @@ public:
             return "flags.carry || flags.zero";
         if (set == X86_INS_OR && cond == X86_INS_JBE)
             return "!$rd0";
+        if (set == X86_INS_DEC && cond == X86_INS_JG)
+            return "($sig0)$rd0 > 0 /*ggg7*/ && stop()"; // check unbalanced
+
         assert(0);
         return "";
     }
@@ -504,7 +511,7 @@ public:
             return iformat(lastSetInfo->instr, lastSetInfo, func, precondition(lastSetInfo->instr, instr->mId));
         }
         assert(0);
-        return "";
+        return "stop(\"build_condition_failed\")";
     }
     
     virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) override

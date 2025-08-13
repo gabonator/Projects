@@ -30,10 +30,11 @@ convert_t convert[X86_INS_ENDING] = {
         if (instr->ArgsEqual())
             return "$wr0 = 0;";
         else
-            return "$wr0 ^= $rd1;";
+            return "$rw0 ^= $rd1;";
     },
         .zf = [](convert_args){ return "!$rd0"; },
         .savezf = [](convert_args){ assert(instr->ArgsEqual()); return "0"; },
+        .savecf = [](convert_args){ return "0"; },
     },
     [X86_INS_MOV] = {.convert = [](convert_args){ return "$wr0 = $rd1;"; } },
     [X86_INS_MOVZX] = {.convert = [](convert_args){
@@ -59,6 +60,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
         .flagCondition = "$sign"},
     [X86_INS_JMP] = {.convert = [](convert_args){ return "$goto_target;"; } },
+    [X86_INS_LJMP] = {.convert = [](convert_args){ return "$goto_ltarget;"; } },
     [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx)\n        $goto_target;"; } },
     [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--cx && $cond)\n        $goto_target;"; },
         .flagCondition = "!$zero"},
@@ -85,11 +87,11 @@ convert_t convert[X86_INS_ENDING] = {
         {
             aux.push_back("stop(\"near_proc_retf\");");
             if (func.callConv == callConv_t::callConvShiftStackNear)
-                aux.push_back("sp += 4;"); // we expect pop,push,push at start
+                aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
 
         }
         if (func.callConv == callConv_t::callConvShiftStackFar)
-            aux.push_back("sp += 4;");
+            aux.push_back("sp += 2;");  // -- TODO POP CS????
         aux.push_back("cs = pop();");
         if (instr->Imm() != 0)
             aux.push_back("sp += $immd0;");
@@ -135,8 +137,8 @@ convert_t convert[X86_INS_ENDING] = {
         else
         {
             if (instr->mDetail.operands[0].size == 2)
-                return "callIndirect(cs, $rd0);";
-                //return "callIndirect(cs, $rd0); // $addr;";
+//                return "callIndirect(cs, $rd0);";
+                return "callIndirect(cs, $rd0); // $addr;";
             assert(0);
             return "stop();";
         }
@@ -151,7 +153,7 @@ convert_t convert[X86_INS_ENDING] = {
         }
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
         {
-            return "push(cs); cs = $rns0; callIndirect(cs, $rd0); assert(cs == $seg); /*ggg8*/;";
+            return "push(cs); cs = $rns0; callIndirect(cs, $rm0); assert(cs == $seg); // $addr;";
         }
         assert(0);
         return "";

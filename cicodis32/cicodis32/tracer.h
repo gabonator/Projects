@@ -28,6 +28,11 @@ instruction_t Instructions[X86_INS_ENDING] = {
         .simpleJump = true,
         .unconditional = true
     },
+    [X86_INS_LJMP] = {
+        .continuous = false,
+//        .simpleJump = true,
+        .unconditional = true
+    },
     [X86_INS_JAE] = { .conditional = true, .simpleJump = true },
     [X86_INS_JA] = { .conditional = true, .simpleJump = true },
     [X86_INS_JBE] = { .conditional = true, .simpleJump = true },
@@ -360,16 +365,32 @@ void CapInstr::Populate()
     }
     if (templ.simpleJump)
     {
-        assert(mDetail.op_count == 1 &&
-               (mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4));
-        //if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
-        if (IsDirectJump())
-        {
-            if (mDetail.operands[0].size == 2)
-                mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm & 0xffff});
-            else
-                mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm});
-        }
+//        if (mId == X86_INS_LJMP)
+//        {
+//            assert(mDetail.op_count == 2 &&
+//                   (mDetail.operands[0].size == 2 && mDetail.operands[1].size == 2) &&
+//                   mDetail.operands[0].type == X86_OP_IMM && mDetail.operands[1].type == X86_OP_IMM);
+//            
+//            if (IsDirectJump())
+//            {
+//                mNext.insert({(int)mDetail.operands[0].imm, (int)mDetail.operands[1].imm & 0xffff});
+//            } else {
+//                assert(0);
+//            }
+//        }
+//        if (mId == X86_INS_JMP)
+//        {
+            assert(mDetail.op_count == 1 &&
+                   (mDetail.operands[0].size == 2 || mDetail.operands[0].size == 4));
+            //if (mDetail.operands[0].imm != 0x15e6a6) // wtf!?  6a6 69c
+            if (IsDirectJump())
+            {
+                if (mDetail.operands[0].size == 2)
+                    mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm & 0xffff});
+                else
+                    mNext.insert({mAddress.segment, (int)mDetail.operands[0].imm});
+            }
+//        }
     }
 }
 
@@ -556,7 +577,10 @@ public:
         address = a;
         assert(code.empty());
         std::vector<std::pair<address_t, address_t>> queue;
-        
+
+        if (verbose)
+            printf("disasm: proc %04x:%04x sub_%x\n", a.segment, a.offset, a.linearOffset());
+
         queue.push_back({{},a});
         while (!queue.empty())
         {
@@ -598,8 +622,13 @@ public:
                     assert(instr->mPrev.size() == 1);
                     address_t prevAddr = *instr->mPrev.begin();
                     std::string prev = code.find(prevAddr)->second->AsString();
-                    address_t prevAddr1 = *code.find(prevAddr)->second->mPrev.begin();
-                    std::string prev1 = code.find(prevAddr1)->second->AsString();
+                    std::string prev1;
+                    
+                    if (code.find(prevAddr)->second->mPrev.size())
+                    {
+                        address_t prevAddr1 = *code.find(prevAddr)->second->mPrev.begin();
+                        prev1 = code.find(prevAddr1)->second->AsString();
+                    }
                     if (prev.find("mov ax, 0x4c") != std::string::npos || prev1.find("mov ax, 0x4c") != std::string::npos)
                     {
                         instr->mNext.clear();
@@ -641,7 +670,14 @@ public:
             {
                 address_t target = p.second->JumpTarget();
                 if (target != stub)
-                    code.find(target)->second->isLabel = true;
+                {
+                    auto t = code.find(target);
+                    if (t != code.end())
+                        t->second->isLabel = true;
+                    else {
+                        // jumping inside another instruction!?
+                    }
+                }
             }
             if (p.second->IsIndirectJump()) // use mNext?
             {

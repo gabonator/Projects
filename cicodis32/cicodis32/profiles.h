@@ -211,7 +211,7 @@ Options optionsBumpy = {
     .exec = "BUMPY.EXE",
     .arch = arch_t::arch16,
     .loadAddress = 0x01ed0,
-    .verbose = true,
+//    .verbose = true,
     //        .relocations = false, .verbose = true, .recursive = false, .procList = {{0x1ed, 0xaadd}},
     .procModifiers = {
         {{0x1ed, 0xa8ee}, procRequest_t::stackDrop8},
@@ -223,7 +223,7 @@ Options optionsBumpy = {
         {{0x1ed, 0xa20a}, procRequest_t::stackDrop2}, //1ed:a20a
         {{0xca6, 0x13bc}, procRequest_t::stackDrop2},
         //sub_c9ad not needed!,   sub_dddb
-        {{0x01ed, 0xaadd}, (procRequest_t)((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear)}
+//        {{0x01ed, 0xaadd}, (procRequest_t)((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear)}
     },
     //.procList = {{0x1ed, 0x9c62}, {0x1ed, 0xaa4e}},
         .jumpTables = {
@@ -488,6 +488,175 @@ Options optionsBumpy = {
     //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xa9f5}},
     //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xC7BE - 0x1ed0}},
     
+};
+
+Options optionsAv = {
+    .loader = "LoaderMz",
+    .exec = "av.exe",
+    .arch = arch_t::arch16,
+//    .verbose = true,
+    .loadAddress = 0x01ed0,
+    
+    .jumpTables = {
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x01ed, 0x007e),
+            .table = address_t(0x0a57, 0x0958),
+            .type = jumpTable_t::CallWords,
+            .elements = {0},
+            .selector = "memoryAGet16(ds, 0x0958)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x01ed, 0x00fe),
+            .table = address_t(0x0a57, 0x095c),
+            .type = jumpTable_t::CallWords,
+            .elements = {0},
+            .selector = "memoryAGet16(ds, 0x095c)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x01ed, 0x6710),
+            .baseptr = (const uint8_t*)"\x00\x00\xe6\x08",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0412)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x0004),
+            .table = address_t(0x08e6, 0x000f),
+            .type = jumpTable_t::CallWords,
+            .elements = sequence("0-28"),
+            .selector = "si"
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x043e, 0x0005),
+            .table = address_t(0x043e, 0x0016),
+            .type = jumpTable_t::CallWords,
+            .elements = sequence("0-28"),
+            .selector = "si"
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x01df),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x043e, 0x047a),
+            .baseptr = (const uint8_t*)"\x82\x04",
+            .type = jumpTable_t::CallWords,
+            .elements = {0},
+            .selector = "memoryAGet16(ds, bx + 8)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x0259),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x01ed, 0x695c),
+            .baseptr = (const uint8_t*)"\x00\x00\xe6\x08",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0412)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x11f5),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6744), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6796), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6821), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6833), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6850), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x687c), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6973), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6990), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x69d0), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6a33), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6a8f), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6aa2), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6b1c), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6b3b), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6bc4), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6c2a), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6c39), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6c56), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6c6f), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6cb5), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6cdb), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6d04), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x6da7), .baseptr = (const uint8_t*)"\x00\x00\xe6\x08", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(ds, 0x0412)", .useCaseOffset = true }),
+
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x043e, 0x08e4),
+            .baseptr = (const uint8_t*)"\xf1\x07",
+            .type = jumpTable_t::CallWords,
+            .elements = {0},
+            .selector = "memoryAGet16(cs, 0x07cf)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x043e, 0x0927),
+            .baseptr = (const uint8_t*)"\xf1\x07",
+            .type = jumpTable_t::CallWords,
+            .elements = {0},
+            .selector = "memoryAGet16(cs, 0x07cf)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x08ca), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0e66), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0e70), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0f3e), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0b18), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0b23), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+
+        
+        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0e66;
+        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0e70;
+        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0f3e;
+        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0b18;
+        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0b23;
+        
+        
+//        callIndirect(cs, memoryAGet16(ds, 0x051e)); // 043e:08ca; 43e:538
+
+//        callIndirect(cs, memoryAGet16(cs, 0x07cf)); // 043e:0927;
+
+//        callIndirect(cs, memoryAGet16(cs, 0x07cf)); // 043e:08e4; 43e:7f1
+
+        
+//        push(cs); cs = memoryAGet16(ds, 0x0412 + 2); callIndirect(cs, memoryAGet16(ds, 0x0412)); assert(cs == 0x01ed); // 01ed:695c; ds=a57 8e6:0
+
+        //    push(cs); cs = memoryAGet16(ds, 0x0049 + 2); callIndirect(cs, memoryAGet16(ds, 0x0049)); assert(cs == 0x08e6); // 08e6:0259; ds=8e6  43e:000 addx
+
+        //callIndirect(cs, memoryAGet16(ds, bx + 8)); // 043e:047a; ds=43e  43e:482 add
+
+        
+//        push(cs); cs = memoryAGet16(ds, 0x0049 + 2); callIndirect(cs, memoryAGet16(ds, 0x0049)); assert(cs == 0x08e6); // 08e6:01df; ds=8e6 43e:0
+
+//        -jumptable 08e6:0004 08e6:000f 0-28 callwords si
+        //push(cs); cs = memoryAGet16(ds, 0x0412 + 2); callIndirect(cs, memoryAGet16(ds, 0x0412)); assert(cs == 0x01ed); // 01ed:6710; ds=a57 ->8e6:0
+
+        //    callIndirect(cs, memoryAGet16(ds, 0x095c)); // 01ed:00fe;  0a57:095c   1ed:3e92
+
+    }
+
+    //    callIndirect(cs, memoryAGet16(ds, 0x0958)); // 01ed:007e;  1ed:17d
+
 };
 
 };
