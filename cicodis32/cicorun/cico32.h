@@ -32,6 +32,8 @@ void memoryASet(int s, int o, int v);
 void memoryASet16(int s, int o, int v);
 uint8_t memoryAGet(int s, int o);
 uint16_t memoryAGet16(int s, int o);
+uint32_t memoryAGet32(int s, int o);
+
 uint16_t pop()
 {
   assert(sp <= 0xffff);

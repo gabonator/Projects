@@ -25,6 +25,7 @@ int memorySize = 0;
 char root[1024] = "";
 
 #include "ega.h"
+#include "font.h"
 #include "sdl.h"
 
 CSdl sdl;
@@ -53,6 +54,19 @@ public:
         sdl.Loop();
     }
 } vga;
+
+class CCgaInstance : public CCga
+{
+public:
+    virtual uint8_t ReadMemory(int seg, int ofs) override { assert(0); return 0;}
+    virtual void sync() override
+    {
+        for (int y=0; y<200; y++)
+          for (int x=0; x<320; x++)
+            sdl.SetPixel(x, y, GetPixel(x, y));
+        sdl.Loop();
+    }
+} cga;
 
 CVideoAdapter* video = &ega;
 
@@ -268,6 +282,11 @@ void memoryASet(int s, int o, int v)
         memory[linear] = v;
         return;
     }
+    if (s == 0x40)
+    {
+        // ignore
+        return;
+    }
     assert(0);
 }
 void memoryASet16(int s, int o, int v)
@@ -320,6 +339,12 @@ uint8_t memoryAGet(int s, int o)
 {
     o &= 0xffff;
     assert(o <= 0xffff);
+    if (s >= 0xf000)
+    {
+        if (s == 0xf000 && o >= 0xfa6e && o < (0xfa6e + sizeof(cga_font)))
+            return cga_font[o-0xfa6e];
+        assert(0);
+    }
     if (s >= 0xa000)
         return video->Read(s*16+o);
 
@@ -341,6 +366,8 @@ uint8_t memoryAGet(int s, int o)
         return 0;
     if (s == loadAddress - 0x10 && o == 0x81)
         return 0x0d;
+    if (s == 0x0040 && o == 0x0010)
+        return 0x26;
 
     assert(0);
     return 0;
@@ -349,6 +376,14 @@ uint16_t memoryAGet16(int s, int o)
 {
     o &= 0xffff;
     assert(o <= 0xffff);
+    
+    if (s >= 0xf000)
+    {
+        if (s == 0xf000 && o >= 0xfa6e && o < (0xfa6e + sizeof(cga_font)))
+            return cga_font[o-0xfa6e] | (cga_font[o-0xfa6e + 1]<<8);
+        assert(0);
+    }
+
     if (s >= 0xa000)
         return video->Read(s*16+o) | (video->Read(s*16+o+1)<<8);
 
@@ -377,6 +412,14 @@ uint16_t memoryAGet16(int s, int o)
 
     assert(0);
     return 0;
+}
+uint32_t memoryAGet32(int s, int o)
+{
+    int a = memoryAGet16(s, o);
+    int b = memoryAGet16(s, o+2);
+    int c = a | (b<<16);
+    return c;
+    //return memoryAGet16(s, o) | (memoryAGet16(s, o+2)<<16);
 }
 
 void interrupt(int i)
@@ -491,10 +534,20 @@ void interrupt(int i)
                 case 0x13: video = &vga; break;
                 case 0x0d: video = &ega; break;
                 case 0x02: video = &ega; break; // bumpy?
+                case 0x04: video = &cga; break;
                 default:
                     assert(0);
             }
         }
+        if (ax == 0x1130 && (bx >> 8) == 0) //WTF
+        {
+            cx = 0x10;
+            dl = 0x18;
+            es = 0xc000;
+            bp = 0x500;
+            return;
+        }
+
         if (video->Interrupt())
             return;
     }
@@ -564,6 +617,18 @@ void interrupt(int i)
         flags.carry = 0;
         return;
     }
+    if (i == 0x11)
+    {
+        ax = 0;
+        return;
+    }
+    if (i == 0x21 && ah == 0x0b)
+    {
+        al = 0;
+        //ctx->a.r8.l = keyBuffer.empty() ? 0 : 0xff; // check key
+        return;
+    }
+
     assert(0);
 }
 

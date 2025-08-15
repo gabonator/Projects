@@ -774,3 +774,180 @@ public:
         return (palette[3*c]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c+2]*4)<<16);
     }
 };
+
+class CCga : public CVideoAdapter
+{
+    enum {
+        MemSize = 0x10000*2
+    };
+
+public:
+    uint8_t memory[MemSize];
+
+    uint32_t _cgaPalette[4];
+    uint32_t _cgaBackground;
+
+    CCga()
+    {
+        _cgaPalette[0] = 0x000000;
+        _cgaPalette[1] = 0x808080;
+        _cgaPalette[2] = 0xb0b0b0;
+        _cgaPalette[3] = 0xffffff;
+        
+        _cgaPalette[0] = 0x000000;
+        _cgaPalette[1] = 0x55ffff;
+        _cgaPalette[2] = 0xbb0000;
+        _cgaPalette[3] = 0xffffff;
+
+    }
+//    void SetPixel(int x, int y, int c)
+//    {
+//        bool _xor = c & 0x80;
+//        c &= 0x7f;
+//        
+//        if ((y&1) == 0)
+//        {
+//            y /= 2;
+//            uint8_t& pix4 = memory[y*80+x/4];
+//            int bit = 6-((x&3)*2);
+//            int mask = 3 << bit;
+//            if (_xor)
+//                pix4 = pix4 ^ (c << bit);
+//            else
+//                pix4 = (pix4 & ~mask) | (c << bit);
+//        } else
+//        {
+//            y /= 2;
+//            uint8_t& pix4 = memory[0x2000+y*80+x/4];
+//            int bit = 6-((x&3)*2);
+//            int mask = 3 << bit;
+//            if (_xor)
+//                pix4 = pix4 ^ (c << bit);
+//            else
+//                pix4 = (pix4 & ~mask) | (c << bit);
+//        }
+//        static int q=0;
+//        if (q++ > 100)
+//        {
+//            q = 0;
+//            sync();
+//        }
+//    }
+
+    virtual bool PortWrite8(int port, int data) override
+    {
+        assert(0);
+        return false;
+    }
+
+    virtual bool PortWrite16(int port, int data) override
+    {
+        assert(0);
+        return false;
+    }
+    virtual uint8_t PortRead8(int port) override
+    {
+        if (port == 0x3da)
+        {
+            static int retrace = 0;
+            retrace++;
+            return (retrace & 1) ? 9 : 0;
+        }
+
+        assert(0);
+        return 0;
+    }
+
+    virtual bool Interrupt() override
+    {
+        if (ax == 0x0004)
+            return true;
+        //if ( CTextMode::Interrupt( ah, al, bh, bl ) )
+//            return true;
+        if (ah == 0x02)
+            return true;
+
+        if ( ah == 0x0b )
+        {
+//            if ( ah == 0x00 )
+//            {
+//                _cgaBackground = bl;
+//                return true;
+//            }
+            int bh = bx >> 8;
+            int bl = bx & 255; 
+            if ( bh == 0x01 ) // WTF?
+            {
+                if (bl == 0x00)
+                {
+                    _cgaPalette[0] = 0x000000;
+                    _cgaPalette[1] = 0x55aa55;
+                    _cgaPalette[2] = 0xaa5555;
+                    _cgaPalette[3] = 0xaaaa55;
+                    return true;
+                }
+                if (bl == 0x01)
+                {
+                    _cgaPalette[0] = 0x000000;
+                    _cgaPalette[1] = 0x55ffff;
+                    _cgaPalette[2] = 0xff55ff;
+                    _cgaPalette[3] = 0xffffff;
+                    return true;
+                }
+            }
+        }
+        if (ah == 0x0c)
+        {
+            assert(0);
+//            SetPixel(ctx->c.r16, ctx->c.r16, ctx->a.r8.l);
+            return true;
+        }
+
+        printf("Ignore int ax=%04x\n", ax);
+        return true;
+        return false;
+    }
+
+    virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
+    {
+        assert(dwAddr >= 0xb800*16);
+        dwAddr -= 0xb800 * 16;
+        assert(dwAddr < MemSize);
+        assert(dwAddr < 17000);
+//        dwAddr %= 16000;
+        memory[dwAddr] = bWrite;
+        
+        static int t=0;
+        if (t++ > 800){
+            t = 0;
+            //sync();
+        }
+    }
+
+    virtual uint8_t Read(uint32_t dwAddr) override
+    {
+        assert(dwAddr >= 0xb800*16);
+        dwAddr -= 0xb800 * 16;
+        assert(dwAddr < MemSize);
+        return memory[dwAddr];
+    }
+
+
+    uint32_t GetPixel(int x, int y) override
+    {
+        if ((y&1) == 0)
+        {
+            y /= 2;
+            uint8_t pix4 = memory[y*80+x/4];
+            pix4 <<= (x&3)*2;
+            return _cgaPalette[pix4 >> 6];
+        } else
+        {
+            y /= 2;
+            uint8_t pix4 = memory[0x2000+y*80+x/4];
+            pix4 <<= (x&3)*2;
+            return _cgaPalette[pix4 >> 6];
+        }
+        return 0;
+    }
+};
