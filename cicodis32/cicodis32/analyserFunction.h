@@ -293,7 +293,7 @@ public:
             printf("Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
                    info->proc.linearOffset());
 //            assert(!stack);
-            return callConv_t::callConvUnknown;
+            return callConv_t::callConvShiftStackNearFar;
         }
         if ((int)req & (int)procRequest_t::callFar)
         {

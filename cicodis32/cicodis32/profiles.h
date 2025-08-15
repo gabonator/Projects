@@ -475,19 +475,7 @@ Options optionsBumpy = {
                 .elements = {0},
                 .selector = "bx"
             }),
-            
-            
-            // 0ca6:0ddd;  0ca6:0de0 bx
-            
         },
-    
-    
-    //1ed:aa2b
-    
-    //1ed:a8ee
-    //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xa9f5}},
-    //        .verbose = true,  .relocations = false, .recursive = false, .start = false, .procList = {{0x1000, 0xC7BE - 0x1ed0}},
-    
 };
 
 Options optionsAv = {
@@ -619,44 +607,108 @@ Options optionsAv = {
         }),
         std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x08ca), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
         std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0e66), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
-        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0e70), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0e70), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(cs, 0x051e)", .useCaseOffset = true }),
         std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0f3e), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
-        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0b18), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0b18), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(cs, 0x051e)", .useCaseOffset = true }),
         std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0b23), .baseptr = (const uint8_t*)"\x38\x05", .type = jumpTable_t::CallWords, .elements = {0}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{ .instruction = address_t(0x043e, 0x0726), .baseptr = (const uint8_t*)"\x38\x05\x48\x05", .type = jumpTable_t::CallWords, .elements = {0, 1}, .selector = "memoryAGet16(ds, 0x051e)", .useCaseOffset = true }),
 
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x03dc),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x1267),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{
+            .instruction = address_t(0x08e6, 0x1298),
+            .baseptr = (const uint8_t*)"\x00\x00\x3e\x04",
+            .type = jumpTable_t::CallDwords,
+            .elements = {0},
+            .selector = "memoryAGet32(ds, 0x0049)",
+            .useCaseOffset = true
+        }),
+
+    },
+
+    .procModifiers = {
+        {{0x01ed, 0x017d}, procRequest_t::popsCs},
+        {{0x01ed, 0x415d}, procRequest_t::popsCs},
+        {{0x01ed, 0x4169}, procRequest_t::popsCs},
+        {{0x01ed, 0x4175}, procRequest_t::popsCs},
+        {{0x01ed, 0x433d}, procRequest_t::popsCs},
+        {{0x01ed, 0x449f}, procRequest_t::popsCs},
+        {{0x01ed, 0x53b5}, procRequest_t::popsCs},
+        {{0x01ed, 0x547d}, procRequest_t::popsCs},
+        {{0x01ed, 0x5513}, procRequest_t::popsCs},
+        {{0x01ed, 0x566d}, procRequest_t::popsCs},
+        {{0x01ed, 0x59f2}, procRequest_t::popsCs},
+        {{0x01ed, 0x5cb6}, procRequest_t::popsCs},
+        {{0x01ed, 0x5d98}, procRequest_t::popsCs},
+        {{0x01ed, 0x5e9e}, procRequest_t::popsCs},
+        {{0x01ed, 0x5f8b}, procRequest_t::popsCs},
+        {{0x01ed, 0x608c}, procRequest_t::popsCs},
+        {{0x01ed, 0x6197}, procRequest_t::popsCs},
+        {{0x01ed, 0x62fa}, procRequest_t::popsCs},
+        {{0x01ed, 0x643d}, procRequest_t::popsCs},
+        {{0x01ed, 0x647d}, procRequest_t::popsCs},
+        {{0x01ed, 0x666c}, procRequest_t::popsCs},
+        {{0x01ed, 0x66bc}, procRequest_t::popsCs},
+        {{0x01ed, 0x66f1}, procRequest_t::popsCs},
+        {{0x01ed, 0x6721}, procRequest_t::popsCs},
+        {{0x01ed, 0x6781}, procRequest_t::popsCs},
+        {{0x01ed, 0x6809}, procRequest_t::popsCs},
+        {{0x01ed, 0x683c}, procRequest_t::popsCs},
+        {{0x01ed, 0x6859}, procRequest_t::popsCs},
+        {{0x01ed, 0x68ab}, procRequest_t::popsCs},
+        {{0x01ed, 0x6940}, procRequest_t::popsCs},
+        {{0x01ed, 0x6965}, procRequest_t::popsCs},
+        {{0x01ed, 0x697c}, procRequest_t::popsCs},
+        {{0x01ed, 0x69b6}, procRequest_t::popsCs},
+        {{0x01ed, 0x6a7b}, procRequest_t::popsCs},
+        {{0x01ed, 0x6b25}, procRequest_t::popsCs},
+        {{0x01ed, 0x6ba4}, procRequest_t::popsCs},
+        {{0x01ed, 0x6c12}, procRequest_t::popsCs},
+        {{0x01ed, 0x6c78}, procRequest_t::popsCs},
+        {{0x01ed, 0x6cbe}, procRequest_t::popsCs},
+        {{0x01ed, 0x6ce4}, procRequest_t::popsCs},
+        {{0x043e, 0x0000}, procRequest_t::popsCs},
+        {{0x08e6, 0x007a}, procRequest_t::popsCs},
+        {{0x08e6, 0x00ec}, procRequest_t::popsCs},
+        {{0x08e6, 0x0108}, procRequest_t::popsCs},
+        {{0x08e6, 0x0126}, procRequest_t::popsCs},
+        {{0x08e6, 0x0140}, procRequest_t::popsCs},
+        {{0x08e6, 0x0149}, procRequest_t::popsCs},
+        {{0x08e6, 0x0156}, procRequest_t::popsCs},
+        {{0x08e6, 0x01b4}, procRequest_t::popsCs},
+        {{0x08e6, 0x01ba}, procRequest_t::popsCs},
+        {{0x08e6, 0x01c8}, procRequest_t::popsCs},
+        {{0x08e6, 0x01d2}, procRequest_t::popsCs},
+        {{0x08e6, 0x0222}, procRequest_t::popsCs},
+        {{0x01ed, 0x42f2}, procRequest_t::stackDrop2},
+        //{{0x01ed, 0x464e}, procRequest_t::stackDrop2},
+        {{0x01ed, 0x3e4c}, procRequest_t::stackDrop6},
+        {{0x01ed, 0x5140}, procRequest_t::stackDrop8},
+        {{0x01ed, 0x6809}, procRequest_t::stackDrop2},
         
-        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0e66;
-        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0e70;
-        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0f3e;
-        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0b18;
-        //callIndirect(cs, memoryAGet16(cs, 0x051e)); // 043e:0b23;
-        
-        
-//        callIndirect(cs, memoryAGet16(ds, 0x051e)); // 043e:08ca; 43e:538
-
-//        callIndirect(cs, memoryAGet16(cs, 0x07cf)); // 043e:0927;
-
-//        callIndirect(cs, memoryAGet16(cs, 0x07cf)); // 043e:08e4; 43e:7f1
-
-        
-//        push(cs); cs = memoryAGet16(ds, 0x0412 + 2); callIndirect(cs, memoryAGet16(ds, 0x0412)); assert(cs == 0x01ed); // 01ed:695c; ds=a57 8e6:0
-
-        //    push(cs); cs = memoryAGet16(ds, 0x0049 + 2); callIndirect(cs, memoryAGet16(ds, 0x0049)); assert(cs == 0x08e6); // 08e6:0259; ds=8e6  43e:000 addx
-
-        //callIndirect(cs, memoryAGet16(ds, bx + 8)); // 043e:047a; ds=43e  43e:482 add
-
-        
-//        push(cs); cs = memoryAGet16(ds, 0x0049 + 2); callIndirect(cs, memoryAGet16(ds, 0x0049)); assert(cs == 0x08e6); // 08e6:01df; ds=8e6 43e:0
-
-//        -jumptable 08e6:0004 08e6:000f 0-28 callwords si
-        //push(cs); cs = memoryAGet16(ds, 0x0412 + 2); callIndirect(cs, memoryAGet16(ds, 0x0412)); assert(cs == 0x01ed); // 01ed:6710; ds=a57 ->8e6:0
-
-        //    callIndirect(cs, memoryAGet16(ds, 0x095c)); // 01ed:00fe;  0a57:095c   1ed:3e92
-
-    }
-
-    //    callIndirect(cs, memoryAGet16(ds, 0x0958)); // 01ed:007e;  1ed:17d
-
+        {{0x08e6, 0x0222}, procRequest_t::popsCs},
+    },
+    .inject = {
+        {{0x01ed, 0x0641}, "sync();"},
+    },
+        .isolateLabels = {
+            {0x8e6, 0x75}
+        }
+    //.procList = {{0x043e, 0x0072}}
 };
 
 };

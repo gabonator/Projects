@@ -34,6 +34,8 @@ int main(int argc, char **argv) {
     Options options = Profiles::optionsAv;
 
 //    options.verbose = true;
+//    options.printProcAddress = true;
+    //options.printLabelAddress = true;
     
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)

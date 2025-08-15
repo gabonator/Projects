@@ -135,9 +135,9 @@ struct jumpTable_t {
                     return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
             case CallDwords:
                 if (useCaseOffset)
-                    return format("case 0x%x: push(cs); cs = 0x%04x; sub_%x(); break;", (GetTarget(i).segment<<16) | GetTarget(i).offset, GetTarget(i).segment, GetTarget(i).linearOffset());
+                    return format("case 0x%x: push(cs); cs = 0x%04x; sub_%x(); assert(cs == 0x%04x); break;", (GetTarget(i).segment<<16) | GetTarget(i).offset, GetTarget(i).segment, GetTarget(i).linearOffset(), instruction.segment);
                 else
-                    return format("case %d: push(cs); cs = 0x%04x; sub_%x(); break;", i*4, GetTarget(i).segment, GetTarget(i).linearOffset());
+                    return format("case %d: push(cs); cs = 0x%04x; sub_%x(); assert(cs == 0x%04x); break;", i*4, GetTarget(i).segment, GetTarget(i).linearOffset(), instruction.segment);
             case JumpWords:
             {
                 if (useCaseOffset)
@@ -173,7 +173,8 @@ enum class procRequest_t
     stackDrop6 = 64,
     stackDrop4 = 128,
     stackDrop10 = 256,
-    callIsolated = 512
+    callIsolated = 512,
+    popsCs = 1024
 };
 
 enum class arch_t {
@@ -216,6 +217,8 @@ public:
         return nullptr;
     }
     bool verbose{false};
+    bool printProcAddress{false};
+    bool printLabelAddress{false};
 };
 
 template<typename T, typename U> T check(T o, U end)

@@ -44,9 +44,12 @@ public:
         shared<Analyser::info_t> info = mAnal.mInfos.find(proc)->second;
         
         std::string extraInfo = "";
-        if (info->func.request != procRequest_t::none && info->func.request != procRequest_t::callNear)
+        if ((info->func.request != procRequest_t::none && info->func.request != procRequest_t::callNear) || mOptions.printLabelAddress)
         {
             extraInfo += " //";
+            if (mOptions.printLabelAddress)
+                extraInfo += utils::format(" %04x:%04x", proc.segment, proc.offset);
+            
             int temp = (int)info->func.request;
             if (temp & (int)procRequest_t::callNear && temp & (int)procRequest_t::callFar)
             {
@@ -104,6 +107,11 @@ public:
                 extraInfo += " +isolate";
                 temp ^= (int)procRequest_t::callIsolated;
             }
+            if (temp & (int)procRequest_t::popsCs)
+            {
+                extraInfo += " +popsCs";
+                temp ^= (int)procRequest_t::popsCs;
+            }
             assert(temp == 0);
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));
@@ -123,6 +131,8 @@ public:
             mCode.push_back("    sp -= 2;\n");
         if (info->func.callConv == callConv_t::callConvShiftStackFar)
             mCode.push_back("    sp -= 2;\n"); // TODO!!!
+        if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
+            mCode.push_back("    sp -= 2;\n");
 
         if (code.begin()->first != proc)
             mCode.push_back(format("    goto loc_%x;\n", proc.linearOffset()));
@@ -143,7 +153,12 @@ public:
                 printf("/*%x %s %s*/\n", p.second->instr->mAddress.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
 
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
-                mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
+            {
+                if (mOptions.printProcAddress)
+                    mCode.push_back(format("loc_%x: // %04x:%04x\n", pinstr->mAddress.linearOffset(), pinstr->mAddress.segment, pinstr->mAddress.offset));
+                else
+                    mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
+            }
 
             const auto& injectit = mOptions.inject.find(p.first);
             if (injectit != mOptions.inject.end())
@@ -328,7 +343,7 @@ public:
         if (set == X86_INS_OR && cond == X86_INS_JBE)
             return "!$rd0";
         if (set == X86_INS_DEC && cond == X86_INS_JG)
-            return "($sig0)$rd0 > 0 /*ggg7*/ && stop()"; // check unbalanced
+            return "($sig0)$rd0 > 0"; // check unbalanced POST!
 
         assert(0);
         return "";

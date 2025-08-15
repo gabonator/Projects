@@ -13,6 +13,7 @@ enum callConv_t {
     callConvShiftStackFar = 4,
     callConvNear = 5,
     callConvFar = 6,
+    callConvShiftStackNearFar = 7,
 };
 
 struct funcInfo_t {
@@ -236,7 +237,10 @@ public:
     void GetStackChange(shared<instrInfo_t> info, code_t& code)
     {
         shared<CapInstr> instr = info->instr;
-        
+        if (instr->mAddress.offset == 0x433)
+        {
+            int f = 9;
+        }
         int stackChange = instr->mTemplate.stack;
         if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
             stackChange -= instr->Imm();
@@ -246,6 +250,7 @@ public:
             switch (instr->mId)
             {
                 case X86_INS_MOV:
+                    // TODO: not very smart
                     stackChange = 111;
                     if (instr->mDetail.operands[1].type == X86_OP_REG && instr->mDetail.operands[1].reg == X86_REG_BP)
                     {
@@ -255,8 +260,8 @@ public:
                         {
                             if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "sp, bp") == 0)
                             {
-                                if (addr != instr->mAddress)
-                                    saved = false;
+//                                if (addr != instr->mAddress)
+//                                    saved = false;
                                 break;
                             }
                             if (!saved)

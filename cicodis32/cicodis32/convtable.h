@@ -85,13 +85,15 @@ convert_t convert[X86_INS_ENDING] = {
         std::vector<std::string> aux;
         if (!((int)func.request & (int)procRequest_t::callFar))
         {
-            aux.push_back("stop(\"near_proc_retf\");");
+            if (!((int)func.request & (int)procRequest_t::popsCs))
+                aux.push_back("stop(\"near_proc_retf\");");
             if (func.callConv == callConv_t::callConvShiftStackNear)
                 aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
-
         }
         if (func.callConv == callConv_t::callConvShiftStackFar)
             aux.push_back("sp += 2;");  // -- TODO POP CS????
+        if (func.callConv == callConv_t::callConvShiftStackNearFar)
+            aux.push_back("sp += 2;");
         aux.push_back("cs = pop();");
         if (instr->Imm() != 0)
             aux.push_back("sp += $immd0;");

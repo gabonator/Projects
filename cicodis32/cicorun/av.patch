@@ -1,0 +1,396 @@
+diff --git a/av.clean b/av.cpp
+index 5008d35..fba6697 100644
+--- a/av.clean
++++ b/av.cpp
+@@ -18,6 +18,14 @@ void start()
+     sub_1ed0();
+ }
+ 
++void indirectJump(int s, int o)
++{
++    stop();
++}
++void callIndirect(int s, int o)
++{
++    stop();
++}
+ 
+ void sub_1ed0();
+ void sub_1fe5();
+@@ -178,7 +186,7 @@ void sub_8dba();
+ void sub_8ddb();
+ void sub_8dde();
+ void sub_8e10();
+-void sub_43e0();
++void sub_43e0(bool jump = false);
+ void sub_43f0();
+ void sub_43f5();
+ void sub_4430();
+@@ -308,16 +316,6 @@ void sub_a4b8();
+ void sub_a4c4();
+ void sub_a4f3();
+ 
+-Problem: 01ed:466c sub_653c - near&far&uses stack!
+-Problem: 01ed:6035 sub_7f05 - near&far&uses stack!
+-Problem: 01ed:6b04 sub_89d4 - near&far&uses stack!
+-Problem: 01ed:6c42 sub_8b12 - near&far&uses stack!
+-Problem: 01ed:466c sub_653c - near&far&uses stack!
+-Problem: 01ed:6035 sub_7f05 - near&far&uses stack!
+-Problem: 01ed:6b04 sub_89d4 - near&far&uses stack!
+-Problem: 01ed:6c42 sub_8b12 - near&far&uses stack!
+-Problem: 01ed:6035 sub_7f05 - near&far&uses stack!
+-Problem: 01ed:6b04 sub_89d4 - near&far&uses stack!
+ void sub_1ed0()
+ {
+     sp -= 2;
+@@ -4007,7 +4005,7 @@ void sub_5d53()
+     push(si);
+     push(di);
+     memoryASet16(ds, 0x0a92, bp);
+-    interrupt(0x10);
++    dl = 0x18; //interrupt(0x10);
+     bp = memoryAGet16(ds, 0x0a92);
+     di = pop();
+     si = pop();
+@@ -4562,7 +4560,15 @@ loc_6163:
+     si = memoryAGet16(ds, si + 8);
+     ds = pop();
+     es = pop();
+-    push(cs); cs = memoryAGet16(ss, bp - 14 + 2); callIndirect(cs, memoryAGet16(ss, bp - 14)); assert(cs == 0x01ed); // 01ed:42b1;
++//    push(cs); cs = memoryAGet16(ss, bp - 14 + 2); callIndirect(cs, memoryAGet16(ss, bp - 14)); assert(cs == 0x01ed); // 01ed:42b1;
++    if (memoryAGet16(ss, bp - 14 + 2) == 0x0a57 && memoryAGet16(ss, bp - 14) == 0xff9a)
++    {
++        //cs = pop(); // retf
++        ax = 0xffff;
++        bx = 3;
++//        return; //0A57:0000FF9A int 33
++    } else assert(0);
++
+     push(flagAsReg());
+     push(flagAsReg());
+     push(si);
+@@ -5097,7 +5103,7 @@ loc_6555:
+     di = pop();
+     si = pop();
+     bp = pop();
+-    stop("stack_below");
++//    stop("stack_below");
+     sp += 2;
+     cs = pop();
+     sp += 8;
+@@ -5737,7 +5743,7 @@ loc_21ca:
+   // gap 18166 bytes
+ loc_68c6:
+     memoryASet16(cs, 0x49f0, pop());
+-    stop("stack_below");
++//    stop("stack_below");
+     memoryASet16(cs, 0x49f2, ds);
+     flags.direction = 0;
+     es = memoryAGet16(ds, 0x0084);
+@@ -5841,7 +5847,7 @@ loc_699f:
+ loc_69a7:
+     ax = 0;
+     memoryASet16(ss, bp, ax);
+-    indirectJump(cs, memoryAGet16(cs, 0x49f0));;
++//    indirectJump(cs, memoryAGet16(cs, 0x49f0));;
+ }
+ void sub_694f() // +returnCarry +returnZero
+ {
+@@ -6363,7 +6369,7 @@ loc_7066:
+     bp = pop();
+     di = pop();
+     si = pop();
+-    stop("stack_below");
++//    stop("stack_below");
+     sp += 2;
+     sp += 12;
+ }
+@@ -6535,7 +6541,7 @@ loc_72c7:
+     ax--;
+ loc_72d7:
+     bp = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+ }
+ void sub_72d9()
+@@ -6598,7 +6604,7 @@ loc_7345:
+     bp = pop();
+     di = pop();
+     si = pop();
+-    stop("stack_below");
++//    stop("stack_below");
+     sp += 2;
+     sp += 10;
+ }
+@@ -6632,7 +6638,7 @@ loc_736b:
+     bx = memoryAGet16(ss, bp - 6); es = memoryAGet16(ss, bp - 6 + 2); /*ggg2*/;
+     ax = memoryAGet16(es, bx + 2);
+     memoryASet16(ss, bp - 2, ax);
+-    if (stop() /*ggg9*/)
++    if (memoryAGet(es, bx + 6) < 0x01) // TODO CICO!
+         goto loc_73ac;
+     if (ax <= 0x0005)
+         goto loc_739b;
+@@ -6816,18 +6822,30 @@ void sub_753d() // +popsCs
+         goto loc_75b8;
+     bx = ax;
+     bx <<= 1;
+-    indirectJump(cs, memoryAGet16(cs, bx + 22160));;
+-  // gap 88 bytes
+-loc_75b8:
++    //    indirectJump(cs, memoryAGet16(cs, bx + 22160));;
++        assert(bx == 0); // gabo??
++    loc_7574: // CICO ADD LABEL!
++        bx = memoryAGet16(ss, bp + 14);
++        es = memoryAGet16(ss, bp + 14 + 2);
++        memoryASet16(es, bx, 0x0004);
++        goto loc_75c8;
++
++    loc_75b8: // 01ed:56e8
+     bx = memoryAGet16(ss, bp + 10); es = memoryAGet16(ss, bp + 10 + 2); /*ggg2*/;
+     memoryASet16(es, bx, 0xffff);
+     bx = memoryAGet16(ss, bp + 14); es = memoryAGet16(ss, bp + 14 + 2); /*ggg2*/;
+     memoryASet16(es, bx, 0xffff);
++    bp = pop();
++    ds = pop();
++    sp += 2;
++    cs = pop();    
++loc_75c8:
+     bp = pop();
+     ds = pop();
+     sp += 2;
+     cs = pop();
+ }
++
+ void sub_75cb()
+ {
+     sp -= 2;
+@@ -6866,7 +6884,7 @@ loc_7610:
+ loc_7613:
+     sp = bp;
+     bp = pop();
+-    stop("stack_below");
++//    stop("stack_below");
+     sp += 2;
+     sp += 4;
+ }
+@@ -7042,12 +7060,12 @@ loc_77f6:
+     sub_7088();
+ loc_780b:
+     ax = 0x0001;
+-    stop("stack_bad");
++//    stop("stack_bad");
+ loc_780e:
+     bp = pop();
+-    stop("stack_bad");
++//    stop("stack_bad");
+     si = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     sp += 6;
+ }
+@@ -7101,7 +7119,7 @@ loc_78bb:
+     ax = si;
+     memoryASet(ds, 0x0b3e, al);
+     si = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+ }
+ void sub_78c2() // +popsCs
+ {
+@@ -7115,7 +7133,7 @@ void sub_78c2() // +popsCs
+     sub_7285();
+ loc_78d4:
+     ax = 0x0001;
+-    stop("stack_bad");
++//    stop("stack_bad");
+     push(ax);
+     push(memoryAGet16(ds, 0x0b2d));
+     push(memoryAGet16(ds, 0x0b2b));
+@@ -7135,7 +7153,7 @@ loc_78d4:
+     cx = pop();
+ loc_78fd:
+     memoryASet(ds, 0x060f, 0x00);
+-    stop("stack_bad");
++//    stop("stack_bad");
+     push(cs);
+     sub_81ca();
+     push(ax);
+@@ -7201,7 +7219,7 @@ loc_78fd:
+     cx = pop();
+     bp = pop();
+     ds = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+ }
+@@ -7295,7 +7313,7 @@ loc_7a08:
+     memoryASet(es, bx, 0x00);
+ loc_7a4e:
+     push(memoryAGet16(ds, 0x0b3c));
+-    stop("stack_bad");
++//    stop("stack_bad");
+     push(ds);
+     ax = 0x050e;
+     push(ax);
+@@ -7304,7 +7322,7 @@ loc_7a4e:
+         goto loc_7a6a;
+ loc_7a5e:
+     ax = memoryAGet16(ds, 0x0a9e);
+-    stop("stack_bad");
++//    stop("stack_bad");
+     bx = memoryAGet16(ss, bp + 12); es = memoryAGet16(ss, bp + 12 + 2); /*ggg2*/;
+     memoryASet16(es, bx, ax);
+     goto loc_7ac3;
+@@ -7489,7 +7507,7 @@ void sub_7c50() // +far
+     cx = pop();
+     bp = pop();
+     ds = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     cs = pop();
+ }
+ void sub_7c68() // +popsCs
+@@ -7730,11 +7748,11 @@ loc_7f78:
+     sp = bp;
+ loc_7fa9:
+     bp = pop();
+-    stop("stack_bad");
++//    stop("stack_bad");
+     di = pop();
+     si = pop();
+     ds = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+ }
+@@ -8211,13 +8229,33 @@ loc_8579:
+     sp += 2;
+     cs = pop();
+ }
+-void sub_858c() // +popsCs
++void sub_4452() // 043e:0072
+ {
+-    push(es);
+-    push(bx);
+-    stop("stack_unbalanced");
++    if (memoryAGet(cs, 0x010a) != 0x00)
++        goto loc_445e;
++    ax = 0x0002;
++    cs = pop();
++    return;
++loc_445e: // 043e:007e
++    ax = 0x0001;
+     cs = pop();
+ }
++void sub_858c()
++{
++    assert(es == 0x043e && bx == 0x0072);
++//    push(es);
++//    push(bx);
++    push(cs);
++    cs = es;
++    sub_4452();
++    cs = pop();
++
++//    push(es);
++//    push(bx);
++//    stop("stack_unbalanced");
++//    stop("near_proc_retf");
++//    cs = pop();
++}
+ void sub_858f()
+ {
+     if (memoryAGet(ds, 0x0955) != 0xff)
+@@ -8452,7 +8490,7 @@ loc_8776:
+     si = pop();
+     ds = pop();
+     bp = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+ }
+@@ -9195,8 +9233,12 @@ loc_8e31:
+ loc_8e3d:
+     ax = 0;
+ }
+-void sub_43e0() // +popsCs
++void sub_43e0(bool jump) // +popsCs
+ {
++    cs = 0x43e;
++    if (!jump)
++        sp -= 2;
++
+     push(ds);
+     push(cs);
+     ds = pop();
+@@ -9238,6 +9280,7 @@ void sub_43e0() // +popsCs
+     }
+     bp = pop();
+     ds = pop();
++    sp += 2;
+     cs = pop();
+ }
+ void sub_43f0()
+@@ -11481,10 +11524,12 @@ loc_5a72:
+ }
+ void sub_8e60()
+ {
++    sp -= 2;
+     push(ds);
+     push(cs);
+     ds = pop();
+     push(si);
++    int oldsp = sp;
+     switch (si)
+     {
+         case 0: sub_9032(); break;
+@@ -11519,19 +11564,32 @@ void sub_8e60()
+         default:
+             stop();
+     }
++    if (sp - oldsp != 0)
++    {
++        assert(sp - oldsp == 4);
++        sp += 2;
++        cs = pop();
++        return;
++    }
++
+     si = pop();
+     ds = pop();
+-    cs = memoryAGet16(cs, 0x0049 + 2); indirectJump(cs, memoryAGet16(cs, 0x0049)); stop();;
++    switch (memoryAGet16(cs, 0x49+2)*16+memoryAGet16(cs, 0x49))
++    {
++        case 0x43e0: sub_43e0(true); break;
++        default:
++            assert(0);
++    }
+ }
+ void sub_8ed5() // +isolate
+ {
+-    si = pop();
+-    stop("stack_below");
++//    si = pop();
++//    stop("stack_below");
+     si = pop();
+     ds = pop();
+-    stop("stack_unbalanced");
+-    stop("near_proc_retf");
+-    cs = pop();
++//    stop("stack_unbalanced");
++//    stop("near_proc_retf");
++//    cs = pop();
+ }
+ void sub_8ed9()
+ {
+@@ -12971,4 +13029,3 @@ int GetProcAt(int seg, int ofs)
+             return map[i];
+     return 0;
+ }
+-Program ended with exit code: 0

@@ -875,21 +875,21 @@ public:
 //                return true;
 //            }
             int bh = bx >> 8;
-            int bl = bx & 255; 
+            int bl = bx & 255;
             if ( bh == 0x01 ) // WTF?
             {
                 if (bl == 0x00)
                 {
                     _cgaPalette[0] = 0x000000;
                     _cgaPalette[1] = 0x55aa55;
-                    _cgaPalette[2] = 0xaa5555;
-                    _cgaPalette[3] = 0xaaaa55;
+                    _cgaPalette[2] = 0x5555aa;
+                    _cgaPalette[3] = 0x55aaaa;
                     return true;
                 }
                 if (bl == 0x01)
                 {
                     _cgaPalette[0] = 0x000000;
-                    _cgaPalette[1] = 0x55ffff;
+                    _cgaPalette[1] = 0xffff55;
                     _cgaPalette[2] = 0xff55ff;
                     _cgaPalette[3] = 0xffffff;
                     return true;

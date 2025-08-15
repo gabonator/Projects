@@ -97,6 +97,7 @@ public:
                             break;
                         case callConv_t::callConvShiftStackNear:
                         case callConv_t::callConvShiftStackFar:
+                        case callConv_t::callConvShiftStackNearFar:
                         case callConv_t::callConvNear:
                         case callConv_t::callConvFar:
                             break;
