@@ -1,3 +1,9 @@
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+#include <stdio.h>
+#include <vector>
+
 class Test
 {
     uint8_t al;
@@ -217,6 +223,7 @@ private:
 public:
     Test()
     {
+        memset(screen, 0, sizeof(screen));
         sub_15e010();
         printf("P3\n320 200\n64\n");
         for (int y=0; y<200; y++)
@@ -419,3 +426,10 @@ public:
     }
     
 };
+
+
+int main()
+{
+  Test t;
+  return 0;
+}
