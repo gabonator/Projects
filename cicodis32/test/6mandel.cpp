@@ -220,6 +220,11 @@ private:
     {
         flags.carry = ax & 0x100;
     }
+    bool stop(const char* msg)
+    {
+      printf("Failure: %s\n", msg);
+      return false;
+    }
 public:
     Test()
     {
@@ -291,6 +296,7 @@ public:
         edx = ecx;
         eax = 0x000003c8;
         sub_15e2d0();
+        //stop("propagate sign flag");
         memoryASet32(ds, esp + 124, ecx);
         fild32(memoryAGet32(ds, esp + 124));
         fmul64(memoryAGet64(ds, 0x17c004));
@@ -326,14 +332,14 @@ public:
         eax = 0x000003c9;
         sub_15e2d0();
         ecx++;
-        
-        if ((int32_t)ecx < (int32_t)0x00000100) goto loc_15e072;
+        if ((int32_t)ecx < (int32_t)0x00000100)
+            goto loc_15e072;
         ebx = 0;
         goto loc_15e140;
     loc_15e133:
         ebx++;
-        
-        if ((int32_t)ebx >= (int32_t)0x000000c8) goto loc_15e241;
+        if ((int32_t)ebx >= (int32_t)0x000000c8)
+            goto loc_15e241;
     loc_15e140:
         memoryASet32(ds, esp + 124, ebx);
         fild32(memoryAGet32(ds, esp + 124));
@@ -345,8 +351,8 @@ public:
         goto loc_15e210;
     loc_15e161:
         edx++;
-        
-        if (edx > 0x00000100) goto loc_15e1cf;
+        if (edx > 0x00000100)
+            goto loc_15e1cf;
     loc_15e16a:
         fld64(memoryAGet64(ds, esp + 92));
         fmul80(st(0));
@@ -376,10 +382,11 @@ public:
         fcomp64(memoryAGet64(ds, 0x17c044));
         ax = fnstsw();
         sahf();
-        if (flags.carry) goto loc_15e161;
+        if (flags.carry)
+            goto loc_15e161;
     loc_15e1cf:
-        
-        if (edx >= 0x00000100) goto loc_15e203;
+        if (edx >= 0x00000100)
+            goto loc_15e203;
         memoryASet32(ds, esp + 124, edx);
         fild32(memoryAGet32(ds, esp + 124));
         fmul64(memoryAGet64(ds, 0x17c04c));
@@ -392,8 +399,8 @@ public:
         memoryASet(ds, ecx + edx, al);
     loc_15e203:
         ecx++;
-        
-        if ((int32_t)ecx >= (int32_t)0x00000140) goto loc_15e133;
+        if ((int32_t)ecx >= (int32_t)0x00000140)
+            goto loc_15e133;
     loc_15e210:
         memoryASet32(ds, esp + 124, ecx);
         fild32(memoryAGet32(ds, esp + 124));
@@ -422,7 +429,7 @@ public:
         edx = pop32();
         ecx = pop32();
         ebx = pop32();
-        return;
+    //    stop("stack_unbalanced");
     }
     
 };
