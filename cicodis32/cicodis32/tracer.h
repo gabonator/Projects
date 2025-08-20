@@ -63,7 +63,6 @@ instruction_t Instructions[X86_INS_ENDING] = {
 
     [X86_INS_LEA] = {  },
     [X86_INS_MOV] = {  },
-    //[X86_INS_SAHF] = { /*.reads = instruction_t::regAh,*/ .visibleFlags = true },
     [X86_INS_XOR] = {},
     [X86_INS_TEST] = {},
     
@@ -88,7 +87,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_CLC] = { .savedVisiblyCarry = true },
     [X86_INS_CMC] = { .savedVisiblyCarry = true },
 
-    
+    [X86_INS_SAHF] = { .savedVisiblyCarry = true },
+
     //            case X86_INS_STC:
     //            case X86_INS_CLC:
     //            case X86_INS_CMC:
@@ -339,6 +339,10 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
         // errata
         mDetail.eflags |= X86_EFLAGS_TEST_CF;
     }
+    if (mId == X86_INS_FILD || mId == X86_INS_FMUL || mId == X86_INS_FDIV || mId == X86_INS_FADD || mId == X86_INS_FSTP ||
+        mId == X86_INS_FSUBP || mId == X86_INS_FLD  || mId == X86_INS_FILD || mId == X86_INS_FSUBR || mId == X86_INS_FSUB ||
+        mId == X86_INS_FISTP)
+        mDetail.eflags = 0;
 
     if (mId == X86_INS_RCL && mDetail.op_count == 2 && mDetail.operands[1].type == X86_OP_IMM && mDetail.operands[1].size == 0 && mDetail.operands[1].imm == 1)
     {
@@ -438,7 +442,7 @@ public:
     {
         mLoader = loader;
         
-        cs_mode mode = options.arch == arch_t::arch16 ? CS_MODE_16 : cs_mode(CS_MODE_16 /*| CS_MODE_32*/);
+        cs_mode mode = options.arch == arch_t::arch16 ? CS_MODE_16 : cs_mode(/*CS_MODE_16 |*/ CS_MODE_32);
         cs_err err = cs_open(CS_ARCH_X86, mode, &mHandle);
         if (err) {
             printf("Failed on cs_open() with error returned: %u\n", err);
@@ -572,7 +576,7 @@ public:
     
     void Trace(address_t a)
     {
-        const bool verbose = false;
+        const bool verbose = mOptions.verbose;
         address_t stub;
         address = a;
         assert(code.empty());

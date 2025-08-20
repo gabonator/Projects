@@ -130,10 +130,14 @@ convert_t convert[X86_INS_ENDING] = {
             .savecf = [](convert_args){ return "($rd0 + $rd1) >= $overflow0"; },
     },
     [X86_INS_LEA] = {.convert = [](convert_args){ return "$wr0 = $adr1;"; } },
-    [X86_INS_SAHF] = {.convert = [](convert_args){ return "sahf();"; } },
-    [X86_INS_PUSHFD] = {.convert = [](convert_args){ return "pushfd();"; } },
-    [X86_INS_POPFD] = {.convert = [](convert_args){ return "popfd();"; } },
+    [X86_INS_SAHF] = {.convert = [](convert_args){ return "sahf();"; },
+//            .cf = [](convert_args){ return "stop(\"sahf - carry\")"; },
+//            .savecf = [](convert_args){ return "stop(\"sahf - carry\")"; },
+    },
+    [X86_INS_PUSHFD] = {.convert = [](convert_args){ return "push32(flagAsReg32());"; } },
+    [X86_INS_POPFD] = {.convert = [](convert_args){ return "flagsFromReg32(pop32());"; } },
     [X86_INS_CALL] = {.convert = [](convert_args){
+        assert(instr->mDetail.op_count == 1);
         if (instr->mDetail.operands[0].type == X86_OP_IMM)
             return "$method();";
         else
@@ -141,6 +145,9 @@ convert_t convert[X86_INS_ENDING] = {
             if (instr->mDetail.operands[0].size == 2)
 //                return "callIndirect(cs, $rd0);";
                 return "callIndirect(cs, $rd0); // $addr;";
+            if (instr->mDetail.operands[0].size == 4)
+//                return "callIndirect(cs, $rd0);";
+                return "callIndirect(cs, $rd0); // CALL DWORD $addr;";
             assert(0);
             return "stop();";
         }

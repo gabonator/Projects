@@ -344,6 +344,8 @@ public:
             return "!$rd0";
         if (set == X86_INS_DEC && cond == X86_INS_JG)
             return "($sig0)$rd0 > 0"; // check unbalanced POST!
+        if (set == X86_INS_TEST && cond == X86_INS_JLE)
+            return "($sig0)($rd0 & $rd1) <= 0 /*test+jle check*/";
 
         assert(0);
         return "";
@@ -525,7 +527,7 @@ public:
             shared<instrInfo_t> lastSetInfo = mInfo->code.find(*lastSet.begin())->second;
             return iformat(lastSetInfo->instr, lastSetInfo, func, precondition(lastSetInfo->instr, instr->mId));
         }
-        assert(0);
+//        assert(0);
         return "stop(\"build_condition_failed\")";
     }
     
@@ -561,6 +563,8 @@ public:
             if (in == "word ptr [si]" || in == "byte ptr [si]")
                 return "DS_SI";
             if (in == "word ptr [esi]")
+                return "DS_ESI";
+            if (in == "byte ptr [esi]")
                 return "DS_ESI";
             assert(0);
             return "?";
@@ -599,13 +603,13 @@ public:
         {
             shared<CapInstr> p = pi->instr;
             char disasm[40];
-            char depends[120] = {0};
-            char provides[120] = {0};
+            char depends[1024] = {0};
+            char provides[1024] = {0};
             for (instrInfo_t::instrInfoFlag_t* f : pi->Flags())
             {
                 for (const auto addr : f->depends)
                 {
-                    char temp[120];
+                    char temp[1024];
                     snprintf(temp, sizeof(temp), "r%cf: %x ", f->type, addr.offset);
                     strncat(depends, temp, sizeof(depends)-1);
                     if (f->dirty)
@@ -613,7 +617,7 @@ public:
                 }
                 for (const auto addr : f->provides)
                 {
-                    char temp[120];
+                    char temp[1024];
                     snprintf(temp, sizeof(temp), "w%cf: %x ", f->type, addr.offset);
                     strncat(provides, temp, sizeof(provides)-1);
                     if (f->save)

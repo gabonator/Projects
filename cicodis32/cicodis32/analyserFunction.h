@@ -154,6 +154,9 @@ public:
                                 else
                                     p->stop = "callee must return carry";
                                 break;
+                            case 's':
+                                p->stop = "propagate sign flag";
+                                break;
                             default:
                                 assert(0);
                         }
@@ -224,7 +227,9 @@ public:
                             continue;
                         if (flag->type == 'c' && dep->instr->mTemplate.savedVisiblyCarry)
                             continue;
-                        
+                        if (flag->type == 'z' && dep->instr->mId == X86_INS_SCASB)
+                            continue;
+
                         dep->GetFlag(flag->type).save = true;
                     }
                 }
@@ -283,7 +288,7 @@ public:
 
     callConv_t GetCallConvention(shared<info_t> info) // TODO: should be merged with procrequest?
     {
-        bool stack = UsesReg(info->code, X86_REG_SP);
+        bool stack = UsesReg(info->code, X86_REG_SP) || UsesReg(info->code, X86_REG_ESP);
         if (info->func.simpleStack)
             stack |= UsesReg(info->code, X86_REG_BP);
         procRequest_t req = mOptions.procModifiers.find(info->proc)->second;

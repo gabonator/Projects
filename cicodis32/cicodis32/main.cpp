@@ -31,8 +31,19 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsFox;
 //    Options options = Profiles::optionsRick1;
 //    Options options = Profiles::optionsBumpy;
-    Options options = Profiles::optionsAv;
-
+//    Options options = Profiles::optionsAv;
+    Options options = {
+        // BP 160:15e390
+        // memdumpbin 169:15e000 40000
+//        .loader = "LoaderSnapshot",
+//        .exec = "MEMDUMP.BIN",
+        .loader = "LoaderLe",
+        .loadAddress = 0x15e000,
+        .exec = "MANDEL.EXE",
+        .procList = {{0, 0x15fba3}}
+//        .start = true,
+//        .verbose = true,
+    };
 //    options.verbose = true;
 //    options.printProcAddress = true;
     //options.printLabelAddress = true;
@@ -42,6 +53,8 @@ int main(int argc, char **argv) {
         loader.reset(new LoaderMz);
     else if (strcmp(options.loader, "LoaderSnapshot") == 0)
         loader.reset(new LoaderSnapshot);
+    else if (strcmp(options.loader, "LoaderLe") == 0)
+        loader.reset(new LoaderLe);
     else
         assert(0);
     
@@ -50,10 +63,6 @@ int main(int argc, char **argv) {
         printf("Cannot open file %s\n", options.exec);
         return 1;
     }
-    // BP 160:15e390
-    // memdumpbin 169:15e000 40000
-    //    if (!loader->LoadFile("MEMDUMP.BIN", 0x15e000))
-    //        return 1;
     Capstone->Set(loader, options);
 
     
@@ -179,7 +188,7 @@ int main(int argc, char **argv) {
     for (address_t proc : analyser.AllMethods())
     {
         Convert convert(analyser, options);
-        convert.SetOffsetMask(0xffff); // 16 bit
+        convert.SetOffsetMask(options.arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
     }

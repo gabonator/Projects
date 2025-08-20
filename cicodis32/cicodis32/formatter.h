@@ -41,25 +41,33 @@ public:
             snprintf(offset, 32, "%s", Capstone->ToString(op.mem.base));
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index == X86_REG_INVALID)
         {
-            if (op.mem.base != X86_REG_BP)
+            if (op.mem.base != X86_REG_BP && op.mem.base != X86_REG_EBP)
             {
-                // TODO: mask!
-                if ((op.mem.disp & 0xffff) > negativeoffset)
-                    snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 65536-((int)op.mem.disp & 0xffff));
-                else
-                    snprintf(offset, 32, "%s + %d", Capstone->ToString(op.mem.base), (int)op.mem.disp & 0xffff);
-            }
-            else
-            {
-                if ((op.mem.disp & 0xffff) < 60000)
+                if (func.arch == arch_t::arch16)
                 {
                     if ((op.mem.disp & 0xffff) > negativeoffset)
                         snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 65536-((int)op.mem.disp & 0xffff));
                     else
                         snprintf(offset, 32, "%s + %d", Capstone->ToString(op.mem.base), (int)op.mem.disp & 0xffff);
+                } else {
+                    snprintf(offset, 32, "%s + %d", Capstone->ToString(op.mem.base), (int)op.mem.disp);
                 }
-                else
-                    snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 0x10000-abs((int)op.mem.disp & 0xffff));
+            }
+            else
+            {
+                if (func.arch == arch_t::arch16)
+                {
+                    if ((op.mem.disp & 0xffff) < 60000)
+                    {
+                        if ((op.mem.disp & 0xffff) > negativeoffset)
+                            snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 65536-((int)op.mem.disp & 0xffff));
+                        else
+                            snprintf(offset, 32, "%s + %d", Capstone->ToString(op.mem.base), (int)op.mem.disp & 0xffff);
+                    }
+                    else
+                        snprintf(offset, 32, "%s - %d", Capstone->ToString(op.mem.base), 0x10000-abs((int)op.mem.disp & 0xffff));
+                } else
+                    snprintf(offset, 32, "%s + %d", Capstone->ToString(op.mem.base), (int)op.mem.disp);
             }
         }
         else if (op.mem.base != X86_REG_INVALID && op.mem.scale == 1 && op.mem.index != X86_REG_INVALID && op.mem.disp == 0)
@@ -84,8 +92,8 @@ public:
         switch (op.mem.segment)
         {
             case X86_REG_INVALID:
-                strcpy(segment, op.mem.base == X86_REG_BP ? "ss" : "ds");
-                if (op.mem.base == X86_REG_BP)
+                strcpy(segment, op.mem.base == X86_REG_BP || op.mem.base == X86_REG_EBP ? "ss" : "ds");
+                if (op.mem.base == X86_REG_BP || op.mem.base == X86_REG_EBP)
                 {
                     switch (func.callConv)
                     {

@@ -5,6 +5,8 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 #include <fstream>
+//#include <bit>
+#include <algorithm>
 
 class LoaderSnapshot : public Loader {
     uint8_t* mData{nullptr};
@@ -211,5 +213,280 @@ public:
             uint16_t* addr = (uint16_t*)&buffer[linearOffset];
             *addr += _loadBase/16;
         }
+    }
+};
+
+class LoaderLe : public Loader {
+#pragma pack(push, 1)
+    struct LEHeader_t {
+        char  magic[2];         // Magic number for LX/LE/LC
+        uint8_t  border;           // Byte ordering for EXE
+        uint8_t  worder;           // Word ordering for EXE
+        uint32_t level;            // EXE Format Level
+        uint16_t cpu;              // CPU
+        uint16_t os;               // OS
+        uint32_t ver;              // Version of the linear EXE module
+        uint32_t mflags;           // Flag bits for the module.
+        uint32_t mpages;           // # of physical pages in module
+        uint32_t startobj;         // Object # to which the Entry Address is relative.
+        uint32_t eip;              // Entry Address of module.
+        uint32_t stackobj;         // Object number to which ESP is relative
+        uint32_t esp;                  // Starting stack address of module.
+        uint32_t pagesize;              // The size of one page for this system.
+        uint32_t lastpagesize;     // Bytes on last page (only LE) / Page offset shift (LX)
+        uint32_t fixupsize;        // Total size of the fixup information in bytes.
+        uint32_t fixupsum;         // Checksum for fixup information.
+        uint32_t ldrsize;          // Flag bits for the module.
+        uint32_t ldrsum;           // Checksum for loader section.
+        uint32_t objtab;           // Object Table offset.
+        uint32_t objcnt;           // # of entries in Object Table.
+        uint32_t objmap;           // Object Page Table offset. (pageTableOffset)
+        uint32_t itermap;          // Object Iterated Pages offset.
+        uint32_t rsrctab;          // Resource Table offset.
+        uint32_t rsrccnt;          // # of entries in Resource Table.
+        uint32_t restab;           // Resident Name Table offset.
+        uint32_t enttab;           // Entry Table offset.
+        uint32_t dirtab;           // Module Format Directives Table offset.
+        uint32_t dircnt;           // # of Module Format Directives in the Table.
+        uint32_t fpagetab;         // Fixup Page Table offset.
+        uint32_t frectab;          // Fixup Record Table Offset.
+        uint32_t impmod;           // Import Module Name Table offset.
+        uint32_t impmodcnt;        // # of entries in the Import Module Name Table
+        uint32_t impproc;          // Import Procedure Name Table offset.
+        uint32_t pagesum;          // Per-Page Checksum Table offset.
+        uint32_t datapage;         // Data Pages Offset.
+        uint32_t preload;          // # of Preload pages for this module.
+        uint32_t nrestab;          // Non-Resident Name Table offset.
+        uint32_t cbnrestab;        // # of bytes in the Non-resident name table
+        uint32_t nressum;          // Non-Resident Name Table Checksum
+        uint32_t autodata;         // Auto Data Segment Object number.
+        uint32_t debuginfo;        // Debug Information offset.
+        uint32_t debuglen;         // Debug Information length
+        uint32_t instpreload;      // # of instance data pages found in the preload section.
+        uint32_t instdemand;      // # of instance data pages found in the demand section.
+        uint32_t heapsize;         // Heap size added to the Auto DS Object
+        uint32_t stacksize;        // Stack size
+        uint8_t  res3[8];          // reserved
+        uint32_t winresoff;        //
+        uint32_t winreslen;        //
+        uint16_t Dev386_Device_ID;     //
+        uint16_t Dev386_DDK_Version;   //
+    };
+    struct LEObject_t {
+        uint32_t size;
+        uint32_t base;
+        uint32_t flags;
+        uint32_t pageTableIndex;
+        uint32_t pageCount;
+        uint32_t __paddingCheckTodo;
+    };
+    struct LEFixup_t
+    {
+        uint8_t sourceType;
+        uint8_t targetFlags;
+        int16_t sourceOffset;
+        uint8_t objectNumber;
+        uint16_t targetOffset;
+    };
+
+#pragma pack(pop)
+    struct LEPage_t
+    {
+        uint32_t dataOffset;
+        uint8_t flags;
+        uint32_t size;
+    };
+    
+    struct MemoryObject_t
+    {
+        uint8_t* data;
+        uint32_t size;
+        uint32_t base;
+    };
+
+    uint8_t* mMzData{nullptr};
+    uint8_t* mLeData{nullptr};
+    LEHeader_t mHeader;
+    size_t mFileSize{0};
+    int mLoadAddress{0};
+    std::vector<LEObject_t> mObjects;
+    std::vector<LEPage_t> mPages;
+    std::vector<std::vector<LEFixup_t>> mFixups;
+    std::vector<MemoryObject_t> mMemoryObjects;
+    
+private:
+    uint32_t swap32(uint32_t val) {
+        return ((val >> 24) & 0x000000FF) |
+               ((val >> 8)  & 0x0000FF00) |
+               ((val << 8)  & 0x00FF0000) |
+               ((val << 24) & 0xFF000000);
+    }
+public:
+    ~LoaderLe()
+    {
+        if (mMzData)
+            free(mMzData);
+        mMzData = nullptr;
+        mLeData = nullptr;
+        
+        for (const MemoryObject_t& mo : mMemoryObjects)
+            free(mo.data);
+        mMemoryObjects.clear();
+    }
+    
+    virtual bool LoadFile(const char *filename, int loadAddress) override
+    {
+        mLoadAddress = loadAddress;
+        FILE *f = fopen(filename, "rb");
+        if (!f) {
+            perror("fopen");
+            return false;
+        }
+        
+        fseek(f, 0, SEEK_END);
+        mFileSize = ftell(f);
+        rewind(f);
+        
+        mMzData = (uint8_t*)malloc(mFileSize);
+        if (!mMzData) {
+            perror("malloc");
+            fclose(f);
+            return false;
+        }
+        
+        fread(mMzData, 1, mFileSize, f);
+        fclose(f);
+        assert(mMzData[0] == 'M' && mMzData[1] == 'Z');
+        
+        uint32_t new_header_offset = *((uint32_t*)(mMzData+0x3c));
+        assert(new_header_offset < mFileSize);
+        
+        mLeData = mMzData + new_header_offset;
+        memcpy(&mHeader, mLeData, sizeof(LEHeader_t));
+        
+        // Parse header
+        assert(mHeader.magic[0] == 'L' && mHeader.magic[1] == 'E');
+        //std::vector<uint32_t> bases{0x15e000, 0x15e000 + 0x1e000};
+        std::vector<uint32_t> bases;
+        bases.push_back(loadAddress);
+        bases.push_back(loadAddress + 0x1e000);
+        
+        for (int i=0; i<mHeader.objcnt; i++)
+        {
+            LEObject_t leObj = *((LEObject_t*)(mLeData + mHeader.objtab + i*sizeof(LEObject_t)));
+            leObj.base = bases[i];
+            mObjects.push_back(leObj);
+        }
+        for (int i=0; i<mHeader.mpages; i++)
+        {
+            uint32_t data = *(uint32_t*)(mLeData + mHeader.objmap + i*4);
+            data = swap32(data);
+            assert((data & 0xffff00ff) == 0);
+            mPages.push_back({data >> 8, (uint8_t)(data & 0xff), i == mHeader.mpages-1 ? mHeader.lastpagesize : mHeader.pagesize});
+        }
+        uint32_t* fixupOffsets = (uint32_t*)(mLeData + mHeader.fpagetab);
+        for (int i=0; i<mHeader.mpages; i++)
+        {
+            std::vector<LEFixup_t> pageFixups;
+            for (int o=fixupOffsets[i]; o<fixupOffsets[i+1];)
+            {
+                LEFixup_t fixup = *(LEFixup_t*)(mLeData + mHeader.frectab + o);
+                assert(fixup.sourceType == 7);
+                assert(sizeof(LEFixup_t) == 7);
+                o += sizeof(LEFixup_t);
+                pageFixups.push_back(fixup);
+            }
+            mFixups.push_back(pageFixups);
+        }
+        Relocate();
+        return true;
+    }
+    
+    void Relocate()
+    {
+        assert(mMemoryObjects.size() == 0);
+        // Apply relocations
+        for (const LEObject_t& leObj : mObjects)
+        {
+            MemoryObject_t obj{
+                .data = (uint8_t*)malloc(leObj.size),
+                .size = leObj.size,
+                .base = leObj.base
+            };
+            
+            memset(obj.data, 0, leObj.size);
+            
+            for (int i=0; i<leObj.pageCount; i++)
+            {
+                int pageIndex = leObj.pageTableIndex+i-1;
+                LEPage_t page = mPages[pageIndex];
+                uint32_t pageOffset = mHeader.datapage + (page.dataOffset-1)*mHeader.pagesize;
+                uint32_t pageSize = std::min((i+1)*mHeader.pagesize, leObj.size);
+                uint8_t* pageData = obj.data + i*mHeader.pagesize;
+                memcpy(pageData, mMzData + pageOffset, pageSize);
+                for (const LEFixup_t& fixup : mFixups[pageIndex])
+                {
+                    uint32_t value = 0;
+                    switch (fixup.sourceType)
+                    {
+                        case 7:
+                            value = fixup.targetOffset + mObjects[fixup.objectNumber-1].base;
+                            if (fixup.sourceOffset >= 0 && fixup.sourceOffset < pageSize)
+                                pageData[fixup.sourceOffset] = value;
+                            if (fixup.sourceOffset+1 >= 0 && fixup.sourceOffset+1 < pageSize)
+                                pageData[fixup.sourceOffset+1] = value>>8;
+                            if (fixup.sourceOffset+2 >= 0 && fixup.sourceOffset+2 < pageSize)
+                                pageData[fixup.sourceOffset+2] = value>>16;
+                            if (fixup.sourceOffset+3 >= 0 && fixup.sourceOffset+3 < pageSize)
+                                pageData[fixup.sourceOffset+3] = value>>24;
+                            break;
+                            
+                        default:
+                            assert(0);
+                        
+                    }
+                }
+            }
+            mMemoryObjects.push_back(obj);
+        }
+        
+        // dump
+//        uint8_t buffer[0x1e000 + 67424] = {0};
+//        memcpy(buffer, mMemoryObjects[0].data, mMemoryObjects[0].size);
+//        memcpy(buffer+0x1e000, mMemoryObjects[1].data, mMemoryObjects[1].size);
+//        FILE* ff = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/leutils/test", "wb");
+//        fwrite(buffer, 1, sizeof(buffer), ff);
+//        fclose(ff);
+    }
+    
+    virtual bool InRange(address_t addr, int size = 0) override
+    {
+        for (const MemoryObject_t& mo : mMemoryObjects)
+            if (addr >= mo.base && addr+size < mo.base + mo.size)
+                return true;
+
+        return false;
+    }
+    virtual const uint8_t* GetBufferAt(address_t addr) override
+    {
+        for (const MemoryObject_t& mo : mMemoryObjects)
+            if (addr.offset >= mo.base && addr.offset < mo.base + mo.size)
+                return mo.data + addr.offset - mo.base;
+        assert(0);
+        return nullptr;
+    }
+    virtual address_t GetEntry() override
+    {
+        // TODO: object index as segment?
+        // NO: linearAddress would mess it up (int)mHeader.startobj
+        return address_t(0, mMemoryObjects[mHeader.startobj-1].base + (int)mHeader.eip);
+    }
+    virtual std::string GetMain() override
+    {
+        return "";
+    }
+    virtual std::string GetFooter() override
+    {
+        return "";
     }
 };
