@@ -85,8 +85,8 @@ convert_t convert[X86_INS_ENDING] = {
         std::vector<std::string> aux;
         if (!((int)func.request & (int)procRequest_t::callFar))
         {
-            if (!((int)func.request & (int)procRequest_t::popsCs))
-                aux.push_back("stop(\"near_proc_retf\");");
+//            if (!((int)func.request & (int)procRequest_t::popsCs))
+//                aux.push_back("stop(\"near_proc_retf\");");
             if (func.callConv == callConv_t::callConvShiftStackNear)
                 aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
         }
@@ -190,7 +190,13 @@ convert_t convert[X86_INS_ENDING] = {
             .zf = [](convert_args){ return "flags.zero"; },
     },
 
-    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; } }, // TODO: flags carry?
+    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; },
+            .savecf = [](convert_args){
+                return "stop(\"x1\")";
+                    //return "($rd0 + $rd1 + $carry) >= $overflow0"; //, info->GetFlag('c').variableRead.c_str());
+                },
+
+    }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return instr->ArgsEqual() ? "1" : "!$rd0"; },
@@ -245,6 +251,8 @@ convert_t convert[X86_INS_ENDING] = {
             return "al = lodsb<ES_SI>();";
         else if (strcmp(instr->mOperands, "al, byte ptr ss:[si]") == 0)
             return "al = lodsb<SS_SI>();";
+        else if (strcmp(instr->mOperands, "al, byte ptr cs:[si]") == 0)
+            return "al = lodsb<CS_SI>();";
         assert(0);
         return "";
     } },
@@ -407,4 +415,6 @@ convert_t convert[X86_INS_ENDING] = {
             return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; ds = tmp2; /*ggg2!!check*/};";
         return "$wr0 = $rd1; ds = $rn1; /*ggg2*/;";
     } },
+    
+    [X86_INS_AAD] = {.convert = [](convert_args){ return "stop(\"aad\");"; } },
 };

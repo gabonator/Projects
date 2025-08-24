@@ -88,6 +88,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_CMC] = { .savedVisiblyCarry = true },
 
     [X86_INS_SAHF] = { .savedVisiblyCarry = true },
+    [X86_INS_CMPSB] = { .savedVisiblyCarry = true }, // ZERO!
 
     //            case X86_INS_STC:
     //            case X86_INS_CLC:
@@ -434,8 +435,12 @@ public:
     
     ~CCapstone()
     {
-        cs_free(mInsn, 1);
-        cs_close(&mHandle);
+        if (mInsn)
+        {
+            cs_free(mInsn, 1);
+            cs_close(&mHandle);
+            mInsn = nullptr;
+        }
     }
     
     void Set(shared<Loader> loader, Options& options)
@@ -594,6 +599,7 @@ public:
             {
                 if (verbose)
                     printf("disasm: %x->%x ", addr.first.offset, addr.second.offset);
+               
                 std::shared_ptr<CapInstr> instr = Capstone->Disasm(addr.second);
                 assert(instr);
                 if (instr->mAddress == a && instr->IsDirectJump())
@@ -644,6 +650,13 @@ public:
                         instr->isTerminating = true;
                     }
                 }
+                if (mOptions.terminators.find(addr.second) != mOptions.terminators.end())
+                {
+//                    continue;
+                    instr->mNext.clear();
+                    instr->isTerminating = true;
+                }
+
                 if (instr->IsIndirectJump())
                 {
                     shared<jumpTable_t> jt = mOptions.GetJumpTable(instr->mAddress);

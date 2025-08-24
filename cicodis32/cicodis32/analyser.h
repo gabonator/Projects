@@ -18,6 +18,7 @@ enum callConv_t {
 
 struct funcInfo_t {
     procRequest_t request;
+    int stackDrop{0};
     callConv_t callConv{callConvUnknown};
     arch_t arch;
     bool simpleStack{false};
@@ -307,20 +308,25 @@ public:
         }
         if ((instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL) && instr->IsDirectCall())
         {
-            if (mOptions.procModifiers.find(instr->CallTarget()) != mOptions.procModifiers.end())
+            if (mOptions.procModifiersStack.find(instr->CallTarget()) != mOptions.procModifiersStack.end())
             {
-                procRequest_t req = mOptions.procModifiers.find(instr->CallTarget())->second;
-                if ((int)req & (int)procRequest_t::stackDrop2)
-                    stackChange -= 2;
-                if ((int)req & (int)procRequest_t::stackDrop4)
-                    stackChange -= 4;
-                if ((int)req & (int)procRequest_t::stackDrop6)
-                    stackChange -= 6;
-                if ((int)req & (int)procRequest_t::stackDrop8)
-                    stackChange -= 8;
-                if ((int)req & (int)procRequest_t::stackDrop10)
-                    stackChange -= 10;
+//                procRequest_t req = mOptions.procModifiers.find(instr->CallTarget())->second;
+                stackChange -= mOptions.procModifiersStack.find(instr->CallTarget())->second;
+//                if ((int)req & (int)procRequest_t::stackDrop)
+//                    stackChange -=
+//                if ((int)req & (int)procRequest_t::stackDrop2)
+//                    stackChange -= 2;
+//                if ((int)req & (int)procRequest_t::stackDrop4)
+//                    stackChange -= 4;
+//                if ((int)req & (int)procRequest_t::stackDrop6)
+//                    stackChange -= 6;
+//                if ((int)req & (int)procRequest_t::stackDrop8)
+//                    stackChange -= 8;
+//                if ((int)req & (int)procRequest_t::stackDrop10)
+//                    stackChange -= 10;
             }
+            if (instr->mId == X86_INS_LCALL)
+                stackChange += 2;
         }
         info->stackRel = stackChange;
         //return stackChange;
@@ -331,7 +337,7 @@ public:
         info->procTarget = target;
     }
     
-    virtual void AnalyseProc(address_t proc, procRequest_t req) = 0;
+    virtual void AnalyseProc(address_t proc, procRequest_t req, int stackShift) = 0;
     
     std::map<address_t, procRequest_t> GetRequests(address_t proc)
     {

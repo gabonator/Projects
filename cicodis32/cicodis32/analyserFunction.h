@@ -19,7 +19,7 @@ public:
 
     virtual std::set<address_t> AnalyseInstruction(shared<instrInfo_t> instr, shared<info_t> info) = 0;
     
-    virtual void AnalyseProc(address_t proc, procRequest_t req)
+    virtual void AnalyseProc(address_t proc, procRequest_t req, int stackDrop)
     {
         shared<info_t> info = mInfos.find(proc)->second;
         code_t& code = info->code;
@@ -43,9 +43,10 @@ public:
         }
         info->func.request = req;
         info->func.callConv = GetCallConvention(info);
+        info->func.stackDrop = stackDrop;
         
         if (verbose)
-            DumpCode(proc, code, req);
+            DumpCode(proc, code, req, stackDrop);
 
         while (head.size())
         {
@@ -112,7 +113,18 @@ public:
             {
                 if (stackGood)
                 {
-                    if (p->instr->mId != X86_INS_RET || !((int)info->func.request & ((int)procRequest_t::stackDrop2 | (int)procRequest_t::stackDrop4 | (int)procRequest_t::stackDrop6 | (int)procRequest_t::stackDrop8 | (int)procRequest_t::stackDrop10)))
+                    if (p->instr->mId == X86_INS_RET)
+                    {
+                        if (info->func.stackDrop != -p->stack)
+                            p->stop = utils::format("stack_below, %d/%d", info->func.stackDrop, -p->stack);
+                            //p->stop = "stack_below_ret";
+                    } else
+                    if (p->instr->mId == X86_INS_RETF)
+                    {
+                        if (info->func.stackDrop != -p->stack)
+                            p->stop = utils::format("stack_below_retf, %d/%d", info->func.stackDrop, -p->stack);
+                    } else
+                    if (p->instr->mId != X86_INS_RET && p->instr->mId != X86_INS_RETF /*|| !((int)info->func.stackDrop)*/)
                     {
                         p->stop = "stack_below";
                     }
@@ -229,6 +241,8 @@ public:
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_SCASB)
                             continue;
+                        if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSB) // TODO: tables
+                            continue;
 
                         dep->GetFlag(flag->type).save = true;
                     }
@@ -257,23 +271,15 @@ public:
         }
     }
 
-    void DumpCode(address_t proc, code_t& code, procRequest_t req)
+    void DumpCode(address_t proc, code_t& code, procRequest_t req, int stackDrop)
     {
         printf("    %x %x:%x proc %x", proc.linearOffset(), proc.segment, proc.offset, proc.linearOffset());
         if ((int)req & (int)procRequest_t::returnCarry)
             printf(" +carry");
         if ((int)req & (int)procRequest_t::returnZero)
             printf(" +zero");
-        if ((int)req & (int)procRequest_t::stackDrop2)
-            printf(" +stackDrop2");
-        if ((int)req & (int)procRequest_t::stackDrop4)
-            printf(" +stackDrop4");
-        if ((int)req & (int)procRequest_t::stackDrop6)
-            printf(" +stackDrop6");
-        if ((int)req & (int)procRequest_t::stackDrop8)
-            printf(" +stackDrop8");
-        if ((int)req & (int)procRequest_t::stackDrop10)
-            printf(" +stackDrop10");
+        if (stackDrop != 0)
+            printf(" +stackDrop%d", stackDrop);
         printf("\n");
 
         for (const auto& p : code)

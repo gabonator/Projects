@@ -166,13 +166,13 @@ enum class procRequest_t
     none = 0,
     returnCarry = 1,
     returnZero = 2,
-    stackDrop2 = 4,
+//    stackDrop2 = 4,
     callNear = 8,
     callFar = 16,
-    stackDrop8 = 32,
-    stackDrop6 = 64,
-    stackDrop4 = 128,
-    stackDrop10 = 256,
+//    stackDrop8 = 32,
+//    stackDrop6 = 64,
+//    stackDrop4 = 128,
+//    stackDrop10 = 256,
     callIsolated = 512,
     popsCs = 1024
 };
@@ -207,7 +207,9 @@ public:
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
     std::set<address_t> isolateLabels;
+    std::set<address_t> terminators;
     std::map<address_t, procRequest_t> procModifiers;
+    std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
@@ -217,6 +219,7 @@ public:
         return nullptr;
     }
     bool verbose{false};
+    bool verboseAsm{false};
     bool printProcAddress{false};
     bool printLabelAddress{false};
 };

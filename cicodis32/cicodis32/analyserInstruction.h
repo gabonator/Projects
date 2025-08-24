@@ -17,6 +17,10 @@ public:
         code_t& code = info_->code;
         shared<CapInstr> instr = info->instr;
 
+        if (info->instr->mAddress == address_t{0x2da3, 0xc5c})
+        {
+            int f = 9;
+        }
         static const uint64_t readFlagMask[128] =
         {
             ['c'] = X86_EFLAGS_PRIOR_CF | X86_EFLAGS_TEST_CF,

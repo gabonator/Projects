@@ -28,7 +28,7 @@ public:
         Analyser::code_t& code = mInfo->code;
         assert(!code.empty());
 
-        if (verbose)
+        if (mOptions.verboseAsm)
             DumpInput(code);
 
         // TODO: bStub!
@@ -77,31 +77,8 @@ public:
                 extraInfo += " +returnZero";
                 temp ^= (int)procRequest_t::returnZero;
             }
-            if (temp & (int)procRequest_t::stackDrop2)
-            {
-                extraInfo += " +stackDrop2";
-                temp ^= (int)procRequest_t::stackDrop2;
-            }
-            if (temp & (int)procRequest_t::stackDrop4)
-            {
-                extraInfo += " +stackDrop4";
-                temp ^= (int)procRequest_t::stackDrop4;
-            }
-            if (temp & (int)procRequest_t::stackDrop6)
-            {
-                extraInfo += " +stackDrop6";
-                temp ^= (int)procRequest_t::stackDrop6;
-            }
-            if (temp & (int)procRequest_t::stackDrop8)
-            {
-                extraInfo += " +stackDrop8";
-                temp ^= (int)procRequest_t::stackDrop8;
-            }
-            if (temp & (int)procRequest_t::stackDrop10)
-            {
-                extraInfo += " +stackDrop10";
-                temp ^= (int)procRequest_t::stackDrop10;
-            }
+            if (info->func.stackDrop != 0)
+                extraInfo += utils::format(" +stackDrop%d", info->func.stackDrop);
             if (temp & (int)procRequest_t::callIsolated)
             {
                 extraInfo += " +isolate";
@@ -235,7 +212,7 @@ public:
             }
             else
             {
-                printf("Conversion for '%s'/%x not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.offset);
+                printf("Conversion for '%s'@ %x:%x not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset);
                 assert(0);
             }
             
@@ -343,9 +320,13 @@ public:
         if (set == X86_INS_OR && cond == X86_INS_JBE)
             return "!$rd0";
         if (set == X86_INS_DEC && cond == X86_INS_JG)
-            return "($sig0)$rd0 > 0"; // check unbalanced POST!
+            return "($sig0)$rd0 > 0 POST"; // check unbalanced POST!
         if (set == X86_INS_TEST && cond == X86_INS_JLE)
             return "($sig0)($rd0 & $rd1) <= 0 /*test+jle check*/";
+        if (set == X86_INS_OR && cond == X86_INS_JG)
+            return "($sig0)$rd0 > 0";
+        if (set == X86_INS_DEC && cond == X86_INS_JLE)
+            return "($sig0)$rd0 <= 0 POST"; // POST!
 
         assert(0);
         return "";
@@ -566,6 +547,8 @@ public:
                 return "DS_ESI";
             if (in == "byte ptr [esi]")
                 return "DS_ESI";
+            if (in == "byte ptr es:[si]" || in == "word ptr es:[si]")
+                return "ES_SI";
             assert(0);
             return "?";
         };
@@ -583,6 +566,11 @@ public:
             repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx) ";
             templ = templ.substr(6);
         }
+        if (templ.starts_with("repe_"))
+        {
+            repeat = "for (flags.zero = 0; cx != 0 && flags.zero; --cx) ";
+            templ = templ.substr(5);
+        }
         if (args[0] == "al")
             return repeat + templ + "_inv<" + argToTemplate(args[1]) + ">("+args[0]+");";
         if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
@@ -599,6 +587,7 @@ public:
     
     void DumpInput(Analyser::code_t& code)
     {
+//        printf("/*\n");
         for (const auto& [addr, pi] : code)
         {
             shared<CapInstr> p = pi->instr;
@@ -625,8 +614,13 @@ public:
                 }
             }
             snprintf(disasm, sizeof(disasm), "%s %s", p->mMnemonic, p->mOperands);
-            printf("%3d ", pi->stack);
+            printf("// %3d ", pi->stack);
             printf("%s%x %x:%x %-30s %s%s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, disasm, depends, provides);
         }
+//        printf("*/\n");
+    }
+    const std::vector<std::string>& GetCode()
+    {
+        return mCode;
     }
 };

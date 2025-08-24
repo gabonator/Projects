@@ -32,21 +32,10 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsRick1;
 //    Options options = Profiles::optionsBumpy;
 //    Options options = Profiles::optionsAv;
-    Options options = {
-        // BP 160:15e390
-        // memdumpbin 169:15e000 40000
-//        .loader = "LoaderSnapshot",
-//        .exec = "MEMDUMP.BIN",
-        .loader = "LoaderLe",
-        .loadAddress = 0x15e000,
-        .exec = "MANDEL.EXE",
-        .procList = {{0, 0x15fba3}}
-//        .start = true,
-//        .verbose = true,
-    };
+    Options options = Profiles::optionsCC1;
 //    options.verbose = true;
-//    options.printProcAddress = true;
-    //options.printLabelAddress = true;
+    options.printProcAddress = true;
+    options.printLabelAddress = true;
     
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -119,6 +108,18 @@ int main(int argc, char **argv) {
         printf("\n");
     }
 
+    printf(R"(
+    void callIndirect(int s, int o)
+    {
+        stop("ind");
+    }
+
+    void indirectJump(int s, int o)
+    {
+        stop("ind");
+    }
+)");
+    
     if (anyIndirectTable)
     {
         printf("void callIndirect(int seg, int ofs)\n{\n");
@@ -161,8 +162,11 @@ int main(int argc, char **argv) {
             procRequest_t modifier = procRequest_t::none;
             if (options.procModifiers.find(proc) != options.procModifiers.end())
                 modifier = options.procModifiers.find(proc)->second;
-            
-            analyser.AnalyseProc(proc, modifier);
+            int modifierStack = 0;
+            if (options.procModifiersStack.find(proc) != options.procModifiersStack.end())
+                modifierStack = options.procModifiersStack.find(proc)->second;
+
+            analyser.AnalyseProc(proc, modifier, modifierStack);
             if (options.recursive)
             {
                 for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
@@ -171,7 +175,7 @@ int main(int argc, char **argv) {
                     if (options.procModifiers.find(req.first) != options.procModifiers.end())
                         oldModifier = options.procModifiers.find(req.first)->second;
                     
-                    if (oldModifier != req.second)
+                    if (((int)oldModifier & (int)req.second) != (int)req.second) // should set new flag
                     {
                         req.second = (procRequest_t)((int)req.second | (int)oldModifier);
                         if (options.procModifiers.find(req.first) != options.procModifiers.end())
@@ -245,6 +249,77 @@ int main(int argc, char **argv) {
 //            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
 //    }
 
+    printf("/*\n");
+    options.verboseAsm = false;
+    for (address_t proc : analyser.AllMethods())
+    {
+        if (proc.offset == 0x0c6b)
+        {
+            int f = 9;
+        }
+        Convert convert(analyser, options);
+        convert.SetOffsetMask(options.arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
+        convert.ConvertProc(proc);
+
+//        for (std::string line : convert.GetCode())
+//            if (line.find("near_proc_retf") != std::string::npos)
+//                printf("{{0x%04x, 0x%04x}, procRequest_t::popsCs},\n", proc.segment, proc.offset);
+        
+        shared<Analyser::info_t> info = analyser.mInfos.find(proc)->second;
+        std::set<int> retArgs;
+        bool retCs = false;
+        bool instrRet = false, instrRetf = false;
+        for (const auto& [addr, instr] : info->code)
+        {
+            instrRet |= instr->instr->mId == X86_INS_RET;
+            instrRetf |= instr->instr->mId == X86_INS_RETF;
+            if (instr->instr->mId == X86_INS_RET || instr->instr->mId == X86_INS_RETF)
+            {
+                retArgs.insert(instr->instr->Imm());
+                if (instr->instr->mPrev.size()==1)
+                {
+                    shared<instrInfo_t> prev = info->code.find(*instr->instr->mPrev.begin())->second;
+                    if (prev->instr->mId == X86_INS_POP && strcmp(prev->instr->mOperands, "cs")==0)
+                        retCs = true;
+                }
+            }
+            //shared<instrInfo_t>
+        }
+        if (retArgs.size()>1)
+        {
+            if (retArgs.size() == 2 && *retArgs.begin() == 0)
+                retArgs.erase(0);
+            else
+                printf("// Mixed ret in %04x:%04x sub_%x()\n", proc.segment, proc.offset, proc.linearOffset());
+        }
+        if (retArgs.size()==1 && *retArgs.begin() != 0)
+        {
+//                    assert(retArgs.size() == 1);  xv xvxvx
+//                    if (retCs)
+//                        printf("{{0x%04x, 0x%04x}, procRequest_t((int)procRequest_t::stackDrop%d | (int)procRequest_t::popsCs)}, // %s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2, instr->instr->mMnemonic);
+//                    else
+            printf("{{0x%04x, 0x%04x}, %d}, // sub_%x%s%s%s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2 + instrRetf*2, proc.linearOffset(), instrRet ? " ret" : "", instrRetf ? " retf" : "", retCs ? " popcs" : "");
+
+        }
+
+        /*
+         shared <Analyser::info_t> mInfo;
+     //    shared<CTracer> mTracer;
+         std::vector<std::string> mCode;
+         
+     public:
+         Convert(const Analyser& anal, const Options& options) : mAnal(anal), mOptions(options)
+         {
+         }
+
+         void ConvertProc(address_t proc)
+         {
+             const bool verbose{mOptions.verbose};
+             mInfo = mAnal.mInfos.find(proc)->second;
+
+         */
+    }
+    printf("*/\n");
 
     return 0;
 }
