@@ -1,5 +1,5 @@
-#include "cico16.h" // TODO CICO
-#include <stdio.h>
+#include "cico16.h"
+
 void fixReloc(uint16_t seg);
 void sub_10e6b();
 
@@ -166,7 +166,9 @@ void sub_1f82b();
 void sub_20230();
 void sub_202ed();
 void sub_20387();
+void sub_20697();
 void sub_20ed5();
+void sub_20fa3();
 void sub_21662();
 void sub_21880();
 void sub_218c3();
@@ -212,6 +214,7 @@ void sub_2a703();
 void sub_2a70a();
 void sub_2a71c();
 void sub_2a73e();
+void sub_2a769();
 void sub_2a884();
 void sub_2a88b();
 void sub_2a8e4();
@@ -319,28 +322,28 @@ void sub_2ebf8();
     {
         stop("ind");
     }
-//Problem: 11b2:0000 sub_11b20 - near&far&uses stack! TODO CICO
-//Problem: 11b2:5ef4 sub_17a14 - near&far&uses stack!
-//Problem: 11b2:7d28 sub_19848 - near&far&uses stack!
-//Problem: 11b2:899d sub_1a4bd - near&far&uses stack!
-//Problem: 11b2:a72f sub_1c24f - near&far&uses stack!
-//Problem: 11b2:baf6 sub_1d616 - near&far&uses stack!
-//Problem: 1f0b:0101 sub_1f1b1 - near&far&uses stack!
-//Problem: 2188:021f sub_21a9f - near&far&uses stack!
-//Problem: 2188:02d3 sub_21b53 - near&far&uses stack!
-//Problem: 2188:0310 sub_21b90 - near&far&uses stack!
-//Problem: 2188:0628 sub_21ea8 - near&far&uses stack!
-//Problem: 2a31:00cc sub_2a3dc - near&far&uses stack!
-//Problem: 2aa3:00c9 sub_2aaf9 - near&far&uses stack!
-//Problem: 2aa3:00eb sub_2ab1b - near&far&uses stack!
-//Problem: 2aa3:054b sub_2af7b - near&far&uses stack!
-//Problem: 2da3:064e sub_2e07e - near&far&uses stack!
-//Problem: 2da3:0680 sub_2e0b0 - near&far&uses stack!
-//Problem: 2da3:06c1 sub_2e0f1 - near&far&uses stack!
-//Problem: 2da3:0c12 sub_2e642 - near&far&uses stack!
-//Problem: 2da3:0c17 sub_2e647 - near&far&uses stack!
-//Problem: 2da3:10a3 sub_2ead3 - near&far&uses stack!
-void sub_1ed0() // 01ed:0000 +stackDrop10
+// Problem: 11b2:0000 sub_11b20 - near&far&uses stack!
+// Problem: 11b2:5ef4 sub_17a14 - near&far&uses stack!
+// Problem: 11b2:7d28 sub_19848 - near&far&uses stack!
+// Problem: 11b2:899d sub_1a4bd - near&far&uses stack!
+// Problem: 11b2:a72f sub_1c24f - near&far&uses stack!
+// Problem: 11b2:baf6 sub_1d616 - near&far&uses stack!
+// Problem: 1f0b:0101 sub_1f1b1 - near&far&uses stack!
+// Problem: 2188:021f sub_21a9f - near&far&uses stack!
+// Problem: 2188:02d3 sub_21b53 - near&far&uses stack!
+// Problem: 2188:0310 sub_21b90 - near&far&uses stack!
+// Problem: 2188:0628 sub_21ea8 - near&far&uses stack!
+// Problem: 2a31:00cc sub_2a3dc - near&far&uses stack!
+// Problem: 2aa3:00c9 sub_2aaf9 - near&far&uses stack!
+// Problem: 2aa3:00eb sub_2ab1b - near&far&uses stack!
+// Problem: 2aa3:054b sub_2af7b - near&far&uses stack!
+// Problem: 2da3:064e sub_2e07e - near&far&uses stack!
+// Problem: 2da3:0680 sub_2e0b0 - near&far&uses stack!
+// Problem: 2da3:06c1 sub_2e0f1 - near&far&uses stack!
+// Problem: 2da3:0c12 sub_2e642 - near&far&uses stack!
+// Problem: 2da3:0c17 sub_2e647 - near&far&uses stack!
+// Problem: 2da3:10a3 sub_2ead3 - near&far&uses stack!
+void sub_1ed0() // 01ed:0000 +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -377,12 +380,11 @@ void sub_1ed0() // 01ed:0000 +stackDrop10
     push(cs); cs = 0x2aa3; sub_2adcb(); assert(cs == 0x01ed);
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_1f29() // 01ed:0059 +stackDrop22
+void sub_1f29() // 01ed:0059 +stackDrop20
 {
     sp -= 2;
     push(bp);
@@ -822,6 +824,7 @@ loc_2231: // 01ed:0361
     sub_1ed0();
 loc_22fc: // 01ed:042c
     ax = memoryAGet16(ss, bp + 16);
+//    stop("stack_bad");
     cx = 0x0004;
     ax <<= cl;
     dx = ax & 0x8000 ? 0xffff : 0x0000;
@@ -857,12 +860,11 @@ loc_22fc: // 01ed:042c
 loc_2347: // 01ed:0477
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 22/20");
     sp += 2;
     cs = pop();
     sp += 20;
 }
-void sub_234d() // 01ed:047d +stackDrop30
+void sub_234d() // 01ed:047d +stackDrop28
 {
     sp -= 2;
     push(bp);
@@ -912,9 +914,10 @@ loc_2393: // 01ed:04c3
     al = 0x00;
     push(ax);
     push(cs);
-    sub_1f29();
+    sub_1f29(); assert(0); // gabo! far proc called as near, pops cs. include popcs in stack balance
 loc_23be: // 01ed:04ee
     ax = memoryAGet16(ss, bp + 32);
+//    stop("stack_bad");
     dx = 0x002d;
     mul16(dx);
     di = ax;
@@ -1080,7 +1083,6 @@ loc_2435: // 01ed:0565
     memoryASet16(ds, di + 17929, bx);
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 30/28");
     sp += 2;
     cs = pop();
     sp += 28;
@@ -4048,6 +4050,7 @@ loc_439f: // 01ed:24cf
     memoryASet(ss, bp - 1, 0x00);
 loc_43a3: // 01ed:24d3
     al = memoryAGet(ss, bp - 1);
+    stop("stack_bad");
     sp = bp;
     bp = pop();
     sp += 2;
@@ -4241,6 +4244,7 @@ loc_4627: // 01ed:2757
     sub_1f29();
 loc_465a: // 01ed:278a
     goto loc_8cd5;
+    stop("stack_bad");
 loc_465d: // 01ed:278d
     di = bp - 516;
     push(ss);
@@ -7561,6 +7565,7 @@ loc_61ad: // 01ed:42dd
     sub_1f29();
 loc_620f: // 01ed:433f
     goto loc_8cd5;
+    stop("stack_bad");
 loc_6212: // 01ed:4342
     di = bp - 516;
     push(ss);
@@ -12630,6 +12635,7 @@ loc_8c53: // 01ed:6d83
     di = ax;
     memoryASet16(ds, di + 17890, 0x7d00);
 loc_8cd5: // 01ed:6e05
+    stop("stack_bad");
     if (memoryAGet16(ds, 0xa0be) == 0x0000)
         goto loc_8cdf;
     goto loc_8da0;
@@ -12708,6 +12714,7 @@ loc_8d93: // 01ed:6ec3
     push(memoryAGet16(ds, 0x5130));
     push(cs); cs = 0x2aa3; sub_2ab4f(); assert(cs == 0x01ed);
 loc_8da0: // 01ed:6ed0
+    stop("stack_bad");
     if (memoryAGet16(ss, bp - 258) == 0x0027)
         goto loc_8daa;
     goto loc_44e3;
@@ -12868,7 +12875,6 @@ loc_d191: // 01ed:b2c1
     push(cs); cs = 0x11b2; sub_1d616(); assert(cs == 0x01ed);
 loc_d238: // 01ed:b368
     ax = 0;
-    stop("stack_bad");
     memoryASet16(ds, 0x02da, ax);
     memoryASet(ds, 0x030b, 0x00);
     memoryASet16(ds, 0xa0c8, 0x0014);
@@ -16029,7 +16035,6 @@ loc_ec6d: // 01ed:cd9d
     sub_44c0();
 loc_edbc: // 01ed:ceec
     push(memoryAGet16(ds, 0x02b8));
-    stop("stack_bad");
     push(memoryAGet16(ds, 0x511e));
     push(memoryAGet16(ds, 0x5122));
     push(cs); cs = 0x28b3; sub_29ee5(); assert(cs == 0x01ed);
@@ -16292,7 +16297,6 @@ loc_f06f: // 01ed:d19f
         goto loc_f092;
 loc_f07f: // 01ed:d1af
     push(cs); cs = 0x11b2; sub_11b20(); assert(cs == 0x01ed);
-    stop("stack_bad");
     ax = 0;
     memoryASet16(ds, 0x5124, ax);
     sub_f02c();
@@ -16319,7 +16323,6 @@ void sub_f096() // 01ed:d1c6
     memoryASet16(ds, 0x4621, 0x0003);
     push(cs); cs = 0x11b2; sub_18a3a(); assert(cs == 0x01ed);
 loc_f0c5: // 01ed:d1f5
-    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x4625) <= (short)0x0003)
         goto loc_f0e7;
     ax = memoryAGet16(ds, 0x4625);
@@ -16435,6 +16438,7 @@ loc_f110: // 01ed:d240
     memoryASet16(ds, 0x4625, memoryAGet16(ds, 0x4625) + 1);
 loc_f1e6: // 01ed:d316
     ax = memoryAGet16(ds, 0x461b);
+    stop("stack_bad");
     if ((short)ax >= (short)memoryAGet16(ds, 0x4621))
         goto loc_f1f5;
     memoryASet16(ds, 0x461b, memoryAGet16(ds, 0x461b) + 1);
@@ -16834,7 +16838,6 @@ loc_f587: // 01ed:d6b7
     push(cs); cs = 0x11b2; sub_17a14(); assert(cs == 0x01ed);
 loc_f595: // 01ed:d6c5
     al = memoryAGet(ss, bp - 57);
-    stop("stack_bad");
     memoryASet(ss, bp - 1, al);
     al = memoryAGet(ss, bp - 1);
     sp = bp;
@@ -16862,7 +16865,6 @@ loc_f5bf: // 01ed:d6ef
         goto loc_f5dc;
 loc_f5cf: // 01ed:d6ff
     memoryASet(ds, 0xa126, 0x00);
-    stop("stack_bad");
     ax = 0;
     memoryASet16(ds, 0xa0be, ax);
     sub_f02c();
@@ -17404,7 +17406,6 @@ loc_fab6: // 01ed:dbe6
     push(cs); cs = 0x11b2; sub_1d485(); assert(cs == 0x01ed);
 loc_fb31: // 01ed:dc61
     goto loc_fb7b;
-    stop("stack_bad");
 loc_fb33: // 01ed:dc63
     if (ax != 0x0010)
         goto loc_fb3f;
@@ -17786,7 +17787,6 @@ void sub_fee1() // 01ed:e011
         goto loc_fef0;
     push(cs); cs = 0x11b2; sub_1d616(); assert(cs == 0x01ed);
 loc_fef0: // 01ed:e020
-    stop("stack_bad");
     if (memoryAGet(ds, 0x338a) == 0x00)
         goto loc_ff3c;
     ax = 0;
@@ -18114,7 +18114,6 @@ void sub_1023b() // 01ed:e36b
         goto loc_102c2;
 loc_1026c: // 01ed:e39c
     ax = 0;
-    stop("stack_bad");
     push(ax);
     ax = memoryAGet16(ds, 0x5132);
     cx = 0xfffc;
@@ -18144,7 +18143,6 @@ loc_102bc: // 01ed:e3ec
     ax = memoryAGet16(ss, bp - 2);
     memoryASet16(ds, 0xa0b4, ax);
 loc_102c2: // 01ed:e3f2
-    stop("stack_bad");
     if (memoryAGet(ds, 0x0306) != 0x00)
         goto loc_102cc;
     goto loc_103df;
@@ -18285,7 +18283,6 @@ void sub_103ed() // 01ed:e51d +stackDrop4
         goto loc_10444;
     push(cs); cs = 0x2188; sub_222b6(); assert(cs == 0x01ed);
 loc_10444: // 01ed:e574
-    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x5124) <= (short)0x0000)
         goto loc_10454;
     ax = 0x0005;
@@ -18313,7 +18310,6 @@ loc_10456: // 01ed:e586
         goto loc_1048d;
     push(cs); cs = 0x2188; sub_222b6(); assert(cs == 0x01ed);
 loc_1048d: // 01ed:e5bd
-    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x5124) <= (short)0x0000)
         goto loc_1049d;
     ax = 0x0005;
@@ -18822,6 +18818,7 @@ loc_10858: // 01ed:e988
     sub_234d();
 loc_1093c: // 01ed:ea6c
     memoryASet16(ds, 0x5120, memoryAGet16(ds, 0x5120) + 1);
+    stop("stack_bad");
     push(memoryAGet16(ds, 0x5120));
     ax = 0x002d;
     push(ax);
@@ -18892,7 +18889,6 @@ loc_109d0: // 01ed:eb00
     push(cs); cs = 0x11b2; sub_1d616(); assert(cs == 0x01ed);
     memoryASet(ds, 0xa100, 0x00);
 loc_109e8: // 01ed:eb18
-    stop("stack_bad");
     if (memoryAGet(ds, 0x030b) == 0x00)
         goto loc_10a43;
     ax = memoryAGet16(ds, 0x02f2);
@@ -19163,7 +19159,6 @@ loc_10c8f: // 01ed:edbf
     memoryASet(ds, 0xa107, 0x00);
 loc_10cb9: // 01ed:ede9
     memoryASet(ds, 0xa0f5, 0x01);
-    stop("stack_bad");
     ax = memoryAGet16(ds, 0xa0e2);
     cx = 0x0004;
     ax <<= cl;
@@ -19361,7 +19356,6 @@ void sub_10e6b() // 01ed:ef9b
     memoryASet(ds, 0xa10c, 0x00);
     push(cs); cs = 0x11b2; sub_1c95b(); assert(cs == 0x01ed);
 loc_10ec9: // 01ed:eff9
-    stop("stack_bad");
     if (memoryAGet(ds, 0x3396) == 0x00)
         goto loc_10ed3;
     goto loc_11a03;
@@ -19390,7 +19384,6 @@ loc_10f13: // 01ed:f043
     memoryASet(ds, 0xa110, 0x00);
 loc_10f18: // 01ed:f048
     push(cs); cs = 0x28b3; sub_2921c(); assert(cs == 0x01ed);
-    stop("stack_bad");
     if (memoryAGet(ds, 0xa110) != 0x00)
         goto loc_10f8e;
     ax = 0;
@@ -19433,7 +19426,6 @@ loc_10f87: // 01ed:f0b7
     sub_d079();
 loc_10f8e: // 01ed:f0be
     ax = 0;
-    stop("stack_bad");
     memoryASet16(ds, 0x2b5c, ax);
     ax = 0;
     memoryASet16(ds, 0xa0b6, ax);
@@ -20360,7 +20352,6 @@ loc_118d9: // 01ed:fa09
         goto loc_118fe;
     push(cs); cs = 0x11b2; sub_1ed02(); assert(cs == 0x01ed);
 loc_118fe: // 01ed:fa2e
-    stop("stack_bad");
     if (memoryAGet(ds, 0x338d) == 0x00)
         goto loc_1194b;
     memoryASet(ds, 0x338d, 0x00);
@@ -20409,13 +20400,11 @@ loc_1194b: // 01ed:fa7b
     push(memoryAGet16(ds, 0x2b78));
     sub_d079();
 loc_11991: // 01ed:fac1
-    stop("stack_bad");
     if (memoryAGet(ds, 0x3393) == 0x00)
         goto loc_119a2;
     memoryASet(ds, 0x3393, 0x00);
     push(cs); cs = 0x11b2; sub_14f05(); assert(cs == 0x01ed);
 loc_119a2: // 01ed:fad2
-    stop("stack_bad");
     if (memoryAGet(ds, 0x338c) == 0x00)
         goto loc_119dd;
     memoryASet(ds, 0x338c, 0x00);
@@ -20437,7 +20426,6 @@ loc_119d8: // 01ed:fb08
     push(cs); cs = 0x11b2; sub_17a14(); assert(cs == 0x01ed);
 loc_119dd: // 01ed:fb0d
     goto loc_10f98;
-    stop("stack_bad");
 loc_119e0: // 01ed:fb10
     if (memoryAGet(ds, 0xa0fb) != 0x00)
         goto loc_11a00;
@@ -20543,7 +20531,6 @@ void sub_11a82() // 01ed:fbb2
     dh = memoryAGet(cs, 0xfb92);
     dl = memoryAGet(cs, 0xfb93);
     interrupt(0x21);
-    stop("stack_unbalanced");
     cs = pop();
 }
 void sub_11af4() // 01ed:fc24
@@ -20592,7 +20579,7 @@ void sub_11b20() // 11b2:0000 +nearfar
     sp += 2;
     cs = pop();
 }
-void sub_11c0c() // 11b2:00ec +stackDrop4
+void sub_11c0c() // 11b2:00ec +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -21260,12 +21247,11 @@ loc_12153: // 11b2:0633
 loc_12166: // 11b2:0646
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_121e4() // 11b2:06c4 +stackDrop10
+void sub_121e4() // 11b2:06c4 +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -21410,12 +21396,11 @@ loc_12334: // 11b2:0814
 loc_12341: // 11b2:0821
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_12397() // 11b2:0877 +stackDrop4
+void sub_12397() // 11b2:0877 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -21884,6 +21869,7 @@ loc_127bf: // 11b2:0c9f
     sub_121e4();
 loc_127f8: // 11b2:0cd8
     ax = memoryAGet16(ss, bp - 22);
+    stop("stack_bad");
     if (ax != memoryAGet16(ss, bp - 42))
         goto loc_127bc;
 loc_12800: // 11b2:0ce0
@@ -21974,7 +21960,6 @@ loc_12891: // 11b2:0d71
     memoryASet16(ss, bp - 34, ax);
     memoryASet(ss, bp - 37, 0x00);
 loc_128d0: // 11b2:0db0
-    stop("stack_bad");
     if (memoryAGet16(ss, bp - 4) != 0x0000)
         goto loc_128d9;
     goto loc_129f8;
@@ -22190,12 +22175,11 @@ loc_12a9e: // 11b2:0f7e
     ax = memoryAGet16(ss, bp - 2);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_12b21() // 11b2:1001 +stackDrop4
+void sub_12b21() // 11b2:1001 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -22664,6 +22648,7 @@ loc_12f60: // 11b2:1440
     sub_121e4();
 loc_12f99: // 11b2:1479
     ax = memoryAGet16(ss, bp - 22);
+    stop("stack_bad");
     if (ax != memoryAGet16(ss, bp - 306))
         goto loc_12f5d;
 loc_12fa2: // 11b2:1482
@@ -22682,7 +22667,6 @@ loc_12fa2: // 11b2:1482
     memoryASet16(ss, bp - 28, ax);
     memoryASet(ss, bp - 303, 0x5a);
 loc_12fc5: // 11b2:14a5
-    stop("stack_bad");
     if (memoryAGet(ss, bp - 303) != 0x0d)
         goto loc_12fcf;
     goto loc_132bb;
@@ -22758,6 +22742,7 @@ loc_13002: // 11b2:14e2
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_13085: // 11b2:1565
     goto loc_130ee;
+    stop("stack_bad");
 loc_13087: // 11b2:1567
     if (memoryAGet(ss, bp - 303) != 0x08)
         goto loc_130ee;
@@ -22798,7 +22783,6 @@ loc_13087: // 11b2:1567
     memoryASet16(ss, bp - 28, memoryAGet16(ss, bp - 28) - 1);
 loc_130ee: // 11b2:15ce
     ax = 0x0064;
-    stop("stack_bad");
     push(ax);
     push(cs); cs = 0x2da3; sub_2e3b0(); assert(cs == 0x11b2);
     memoryASet16(ss, bp - 22, ax);
@@ -22868,7 +22852,6 @@ loc_1315a: // 11b2:163a
     memoryASet16(ss, bp - 38, ax);
     memoryASet(ss, bp - 43, 0x00);
 loc_13199: // 11b2:1679
-    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x2b60) > (short)0x0014)
         goto loc_131a3;
     goto loc_132b8;
@@ -23017,7 +23000,6 @@ loc_132bb: // 11b2:179b
     memoryASet16(es, di, dx);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -28587,7 +28569,6 @@ loc_18164: // 11b2:6644
     memoryASet16(ds, 0x2b66, ax);
 loc_1818f: // 11b2:666f
     memoryASet(ds, 0x3389, 0x00);
-    stop("stack_bad");
     sp = bp;
     bp = pop();
     sp += 2;
@@ -29075,7 +29056,7 @@ void sub_18738() // 11b2:6c18
     bp = pop();
     sp += 2;
 }
-void sub_187a6() // 11b2:6c86 +stackDrop4
+void sub_187a6() // 11b2:6c86 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -29208,7 +29189,6 @@ loc_188bf: // 11b2:6d9f
 loc_188c3: // 11b2:6da3
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -29392,7 +29372,7 @@ void sub_18a3a() // 11b2:6f1a +far
     sp += 2;
     cs = pop();
 }
-void sub_18b05() // 11b2:6fe5 +stackDrop4
+void sub_18b05() // 11b2:6fe5 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -29474,7 +29454,6 @@ loc_18ba8: // 11b2:7088
     al = memoryAGet(ss, bp - 1);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -30866,7 +30845,7 @@ loc_19b80: // 11b2:8060
     sp += 2;
     cs = pop();
 }
-void sub_19c01() // 11b2:80e1 +stackDrop10
+void sub_19c01() // 11b2:80e1 +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -31005,7 +30984,6 @@ loc_19d42: // 11b2:8222
 loc_19d4f: // 11b2:822f
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
@@ -31420,7 +31398,6 @@ loc_1a0ac: // 11b2:858c
     memoryASet16(ds, 0x2b66, ax);
 loc_1a129: // 11b2:8609
     goto loc_1a152;
-    stop("stack_bad");
 loc_1a12b: // 11b2:860b
     ax = 0;
     memoryASet16(ds, 0xa0ec, ax);
@@ -31559,7 +31536,6 @@ loc_1a2e0: // 11b2:87c0
     memoryASet16(ss, bp - 274, memoryAGet16(ss, bp - 274) + (0x0000 + flags.carry));
 loc_1a2ea: // 11b2:87ca
     ax = memoryAGet16(ss, bp - 276); es = memoryAGet16(ss, bp - 276 + 2); /*ggg2*/;
-    stop("stack_bad");
     dx = es;
     flags.carry = ax < 0x0001;
     ax -= 0x0001;
@@ -31769,7 +31745,7 @@ loc_1a4b9: // 11b2:8999
     sp += 2;
     cs = pop();
 }
-void sub_1a4bd() // 11b2:899d +nearfar +stackDrop6
+void sub_1a4bd() // 11b2:899d +nearfar +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -31838,7 +31814,6 @@ loc_1a542: // 11b2:8a22
 loc_1a54d: // 11b2:8a2d
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -31866,7 +31841,6 @@ void sub_1a852() // 11b2:8d32 +far
 loc_1a87f: // 11b2:8d5f
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_1a882: // 11b2:8d62
-    stop("stack_bad");
     if (memoryAGet16(ss, bp - 8) != 0x0001)
         goto loc_1a892;
     al = 0x01;
@@ -31888,7 +31862,6 @@ loc_1a89a: // 11b2:8d7a
 loc_1a8ad: // 11b2:8d8d
     memoryASet16(ss, bp - 4, memoryAGet16(ss, bp - 4) + 1);
 loc_1a8b0: // 11b2:8d90
-    stop("stack_bad");
     if (memoryAGet16(ss, bp - 8) != 0x0001)
         goto loc_1a8c0;
     al = 0x01;
@@ -31963,7 +31936,6 @@ loc_1a944: // 11b2:8e24
 loc_1a95a: // 11b2:8e3a
     memoryASet16(ss, bp - 4, memoryAGet16(ss, bp - 4) + 1);
 loc_1a95d: // 11b2:8e3d
-    stop("stack_bad");
     if (memoryAGet16(ss, bp - 6) != 0x0001)
         goto loc_1a96d;
     al = 0x01;
@@ -33890,6 +33862,7 @@ loc_1c395: // 11b2:a875
     memoryASet(ds, 0xa110, 0x00);
 loc_1c3a0: // 11b2:a880
     memoryASet(ds, 0xa110, 0x00);
+    stop("stack_bad");
     sp = bp;
     bp = pop();
     sp += 2;
@@ -34318,7 +34291,6 @@ void sub_1c95b() // 11b2:ae3b +far
 loc_1c9e8: // 11b2:aec8
     sync();
     push(cs); cs = 0x2a41; sub_2a70a(); assert(cs == 0x11b2);
-//    stop("stack_bad");
     if (al)
         goto loc_1c9f9;
     if ((short)memoryAGet16(ds, 0x2b60) <= (short)0x02d0)
@@ -34337,7 +34309,7 @@ loc_1c9f9: // 11b2:aed9
     sp += 2;
     cs = pop();
 }
-void sub_1ca12() // 11b2:aef2 +stackDrop4
+void sub_1ca12() // 11b2:aef2 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -34367,12 +34339,11 @@ loc_1ca39: // 11b2:af19
 loc_1ca54: // 11b2:af34
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_1ca5a() // 11b2:af3a +stackDrop4
+void sub_1ca5a() // 11b2:af3a +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -34404,7 +34375,6 @@ loc_1ca81: // 11b2:af61
 loc_1ca9f: // 11b2:af7f
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -34472,6 +34442,7 @@ loc_1cb25: // 11b2:b005
 loc_1cb40: // 11b2:b020
     memoryASet16(ds, 0x4613, memoryAGet16(ds, 0x4613) - 1);
 loc_1cb44: // 11b2:b024
+    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x0002) > (short)0xffff)
         goto loc_1cb54;
     ax = 0;
@@ -34724,6 +34695,7 @@ loc_1cdcc: // 11b2:b2ac
     sub_1c8be();
 loc_1cdde: // 11b2:b2be
     al = memoryAGet(ss, bp - 1);
+    stop("stack_bad");
     sp = bp;
     bp = pop();
     sp += 2;
@@ -34926,7 +34898,6 @@ loc_1cf47: // 11b2:b427
     memoryASet16(es, di, dx);
 loc_1cfe3: // 11b2:b4c3
     push(cs); cs = 0x2a41; sub_2a70a(); assert(cs == 0x11b2);
-    stop("stack_bad");
     if (!al)
         goto loc_1cfe3;
     memoryASet(ds, 0xa0fe, 0x00);
@@ -35096,7 +35067,6 @@ loc_1d19f: // 11b2:b67f
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_1d1a2: // 11b2:b682
     di = memoryAGet16(ss, bp - 2);
-//    stop("stack_bad");
     di <<= 1;
     di <<= 1;
     di += 0x5234;
@@ -35148,7 +35118,6 @@ loc_1d219: // 11b2:b6f9
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_1d21c: // 11b2:b6fc
     di = memoryAGet16(ss, bp - 2);
-//    stop("stack_bad");
     di <<= 1;
     di <<= 1;
     di += 0x5108;
@@ -35427,7 +35396,7 @@ loc_1d4cf: // 11b2:b9af
     sp += 2;
     cs = pop();
 }
-void sub_1d4d9() // 11b2:b9b9 +stackDrop4
+void sub_1d4d9() // 11b2:b9b9 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -35558,7 +35527,6 @@ loc_1d605: // 11b2:bae5
 loc_1d610: // 11b2:baf0
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -35584,7 +35552,7 @@ loc_1d63a: // 11b2:bb1a
     sp += 2;
     cs = pop();
 }
-void sub_1d648() // 11b2:bb28 +far +stackDrop6
+void sub_1d648() // 11b2:bb28 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -37527,6 +37495,7 @@ loc_1e995: // 11b2:ce75
     push(cs);
     sub_1d4d9();
 loc_1e9f7: // 11b2:ced7
+    stop("stack_bad");
     if (memoryAGet(ds, 0x3390) == 0x00)
         goto loc_1ea44;
     ax = 0x0014;
@@ -37557,6 +37526,7 @@ loc_1e9f7: // 11b2:ced7
     sub_1d4d9();
 loc_1ea44: // 11b2:cf24
     goto loc_1ebd8;
+    stop("stack_bad");
 loc_1ea47: // 11b2:cf27
     ax = memoryAGet16(ss, bp - 4);
     dx = 0x0014;
@@ -37629,6 +37599,7 @@ loc_1ea97: // 11b2:cf77
     push(cs);
     sub_1d4d9();
 loc_1eaf9: // 11b2:cfd9
+    stop("stack_bad");
     if (memoryAGet(ds, 0x3390) == 0x00)
         goto loc_1eb46;
     ax = 0x0014;
@@ -37659,6 +37630,7 @@ loc_1eaf9: // 11b2:cfd9
     sub_1d4d9();
 loc_1eb46: // 11b2:d026
     goto loc_1ebd8;
+    stop("stack_bad");
 loc_1eb49: // 11b2:d029
     ax = memoryAGet16(ss, bp - 4);
     dx = 0x0014;
@@ -37805,7 +37777,6 @@ loc_1ecae: // 11b2:d18e
         goto loc_1ecc1;
     push(cs); cs = 0x2188; sub_222b6(); assert(cs == 0x11b2);
 loc_1ecc1: // 11b2:d1a1
-    stop("stack_bad");
     if ((short)memoryAGet16(ds, 0x5124) <= (short)0x0000)
         goto loc_1ecd1;
     ax = 0x0005;
@@ -37814,7 +37785,6 @@ loc_1ecc1: // 11b2:d1a1
 loc_1ecd1: // 11b2:d1b1
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -38217,7 +38187,7 @@ loc_1f09e: // 11b2:d57e
     sp += 2;
     cs = pop();
 }
-void sub_1f0b0() // 1f0b:0000 +stackDrop6
+void sub_1f0b0() // 1f0b:0000 +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -38235,12 +38205,11 @@ void sub_1f0b0() // 1f0b:0000 +stackDrop6
     al = memoryAGet(ss, bp - 1);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_1f0f5() // 1f0b:0045 +stackDrop6
+void sub_1f0f5() // 1f0b:0045 +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -38279,12 +38248,11 @@ loc_1f110: // 1f0b:0060
     push(cs); cs = 0x2da3; sub_2e07e(); assert(cs == 0x1f0b);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_1f147() // 1f0b:0097 +stackDrop14
+void sub_1f147() // 1f0b:0097 +stackDrop12
 {
     sp -= 2;
     push(bp);
@@ -38312,6 +38280,7 @@ loc_1f17b: // 1f0b:00cb
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_1f17e: // 1f0b:00ce
     al = memoryAGet(ss, bp + 16);
+    stop("stack_bad");
     push(ax);
     al = memoryAGet(ss, bp - 2);
     push(ax);
@@ -38336,12 +38305,11 @@ loc_1f17e: // 1f0b:00ce
 loc_1f1ab: // 1f0b:00fb
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 14/12");
     sp += 2;
     cs = pop();
     sp += 12;
 }
-void sub_1f1b1() // 1f0b:0101 +nearfar +stackDrop16
+void sub_1f1b1() // 1f0b:0101 +nearfar +stackDrop14
 {
     sp -= 2;
     push(bp);
@@ -38479,6 +38447,7 @@ loc_1f305: // 1f0b:0255
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
 loc_1f308: // 1f0b:0258
     al = memoryAGet(ss, bp + 18);
+    stop("stack_bad");
     push(ax);
     al = memoryAGet(ss, bp - 2);
     push(ax);
@@ -38511,6 +38480,7 @@ loc_1f308: // 1f0b:0258
         goto loc_1f305;
 loc_1f34e: // 1f0b:029e
     al = memoryAGet(ss, bp + 18);
+    stop("stack_bad");
     push(ax);
     al = memoryAGet(ss, bp + 12);
     push(ax);
@@ -38560,12 +38530,11 @@ loc_1f34e: // 1f0b:029e
     sub_1f4aa();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 16/14");
     sp += 2;
     cs = pop();
     sp += 14;
 }
-void sub_1f3b9() // 1f0b:0309 +far +stackDrop16
+void sub_1f3b9() // 1f0b:0309 +far +stackDrop14
 {
     sp -= 2;
     push(bp);
@@ -38597,12 +38566,11 @@ void sub_1f3b9() // 1f0b:0309 +far +stackDrop16
     sub_1f147();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 16/14");
     sp += 2;
     cs = pop();
     sp += 14;
 }
-void sub_1f3f9() // 1f0b:0349 +far +stackDrop12
+void sub_1f3f9() // 1f0b:0349 +far +stackDrop10
 {
     sp -= 2;
     push(bp);
@@ -38642,7 +38610,6 @@ void sub_1f3f9() // 1f0b:0349 +far +stackDrop12
     sub_1f4aa();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 12/10");
     sp += 2;
     cs = pop();
     sp += 10;
@@ -38707,7 +38674,7 @@ void sub_1f48e() // 1f0b:03de +returnCarry
     di += bx;
     es = memoryAGet16(ds, 0x3398);
 }
-void sub_1f4aa() // 1f0b:03fa +stackDrop12
+void sub_1f4aa() // 1f0b:03fa +stackDrop10
 {
     sp -= 2;
     push(bp);
@@ -38762,7 +38729,6 @@ loc_1f4ec: // 1f0b:043c
     ds = pop();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 12/10");
     sp += 2;
     cs = pop();
     sp += 10;
@@ -38836,7 +38802,7 @@ void sub_1f5c0() // 1f5c:0000 +far
     sp += 2;
     cs = pop();
 }
-void sub_1f5cf() // 1f5c:000f +far +stackDrop4
+void sub_1f5cf() // 1f5c:000f +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -38867,12 +38833,11 @@ loc_1f5fa: // 1f5c:003a
     ds = pop();
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_1f607() // 1f5c:0047 +far +stackDrop4
+void sub_1f607() // 1f5c:0047 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -38942,14 +38907,12 @@ loc_1f699: // 1f5c:00d9
     memoryASet16(ss, bp - 2, 0xfff9);
 loc_1f69e: // 1f5c:00de
     ax = memoryAGet16(ss, bp - 2);
-//    stop("stack_bad");
     di = pop();
     si = pop();
     es = pop();
     ds = pop();
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -38985,7 +38948,7 @@ loc_1f6cf: // 1f5c:010f
     sp += 2;
     cs = pop();
 }
-void sub_1f76c() // 1f5c:01ac +far +stackDrop4
+void sub_1f76c() // 1f5c:01ac +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -39030,7 +38993,6 @@ loc_1f7b7: // 1f5c:01f7
     ds = pop();
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -39723,340 +39685,7 @@ loc_2025b: // 1f5c:0c9b
     out8(dx, al);
     cs = pop();
 }
-void sub_20fa3() // 1f5c:19e3
-{
-//    CSt/ackGuardFar sg(2, true);
-    push(0x9999);
-    push(bp);
-    bp = sp;
-    sp -= 0x0002;
-    push(ds);
-    push(es);
-    push(si);
-    push(di);
-    ax = 0x2ec1;
-    ds = ax;
-    push(bx);
-    push(cx);
-    push(dx);
-    if (memoryAGet16(ds, 0x3c52) != 0xffff)
-        goto loc_20fbf;
-    flags.carry = true;
-    goto loc_2100f;
-loc_20fbf: // 1f5c:19ff
-    ax = ds;
-    es = ax;
-    di = 0x3442;
-    if (memoryAGet16(ds, 0x3c4e) == 0xffff)
-        goto loc_20fd6;
-    ax = memoryAGet16(ds, 0x3c4e);
-    es = ax;
-    di = memoryAGet16(ds, 0x3c50);
-loc_20fd6: // 1f5c:1a16
-    ax = memoryAGet16(ss, bp + 6);
-    ax -= di;
-    flags.carry = (memoryAGet16(ds, 0x3c56) + ax) >= 0x10000;
-    memoryASet16(ds, 0x3c56, memoryAGet16(ds, 0x3c56) + ax);
-    if (!flags.carry)
-        goto loc_20fe6;
-    memoryASet16(ds, 0x3c54, memoryAGet16(ds, 0x3c54) + 0x0001);
-loc_20fe6: // 1f5c:1a26
-    bx = memoryAGet16(ds, 0x3c52);
-    cx = memoryAGet16(ds, 0x3c54);
-    dx = memoryAGet16(ds, 0x3c56);
-    al = 0x00;
-    ah = 0x42;
-    interrupt(0x21);
-    push(ds);
-    bx = memoryAGet16(ds, 0x3c52);
-    cx = memoryAGet16(ds, 0x3c4c);
-    dx = di;
-    ax = es;
-    ds = ax;
-    ah = 0x3f;
-    interrupt(0x21);
-    ds = pop();
-    memoryASet16(ss, bp - 2, di);
-loc_2100f: // 1f5c:1a4f
-    dx = pop();
-    cx = pop();
-    bx = pop();
-    ax = memoryAGet16(ss, bp - 2);
-    di = pop();
-    si = pop();
-    es = pop();
-    ds = pop();
-    sp = bp;
-    bp = pop();
-    assert(pop() == 0x9999);
-    cs = pop();
-    sp += 2;
-}
-
-void sub_20697() // 1f5c:10d7
-{
-//    CStackGuardFar sg(12, true);
-//    push(0x7777);
-    int y = sp;
-    ax = memoryAGet16(es, di + 24);
-    cl = 0x03;
-    ax >>= cl;
-    memoryASet16(ss, bp - 22, ax);
-    memoryASet16(ss, bp - 14, 0x0000);
-    ax = memoryAGet16(ds, si + 8);
-    ax -= memoryAGet16(ds, si + 4);
-    ax++;
-    bx = memoryAGet16(ss, bp + 10);
-    bx += ax;
-    if (bx <= memoryAGet16(es, di + 24))
-        goto loc_206c8;
-    ax = memoryAGet16(es, di + 24);
-    ax -= memoryAGet16(ss, bp + 10);
-    ax++;
-    if (!(al & 0x07))
-        goto loc_206c8;
-    ax++;
-    al &= 0xf8;
-    assert(abs(sp-y) < 20);
-loc_206c8: // 1f5c:1108
-    bl = memoryAGet(ds, si + 3);
-    bh = 0;
-    mul16(bx);
-    bl = 0x08;
-    div16(bl);
-    cl = ah;
-    ah = 0;
-    memoryASet16(ss, bp - 16, ax);
-    memoryASet16(ss, bp - 16, memoryAGet16(ss, bp - 16) - 1);
-    if (cl == 0x00)
-        goto loc_206f3;
-    memoryASet16(ss, bp - 14, 0x0001);
-    al = 0x80;
-    cl--;
-    al = sar8(al, cl);
-    memoryASet(ss, bp - 12, al);
-    memoryASet16(ss, bp - 16, memoryAGet16(ss, bp - 16) + 1);
-    assert(abs(sp-y) < 20);
-loc_206f3: // 1f5c:1133
-    al = 0x05;
-    dx = 0x03ce;
-    out8(dx, al);
-    dx++;
-    al = 0x00;
-    out8(dx, al);
-    al = 0x08;
-    dx = 0x03ce;
-    out8(dx, al);
-    dx++;
-    al = 0xff;
-    out8(dx, al);
-    memoryASet(ss, bp - 24, 0x01);
-    al = 0x02;
-    dx = 0x03c4;
-    out8(dx, al);
-    dx++;
-    al = memoryAGet(ss, bp - 24);
-    out8(dx, al);
-    memoryASet16(ss, bp - 28, 0x0001);
-    memoryASet16(ss, bp - 26, 0x0008);
-    if (memoryAGet(ds, si + 65) != 0x03)
-        goto loc_2072b;
-    memoryASet16(ss, bp - 26, 0x0004);
-    assert(abs(sp-y) < 20);
-loc_2072b: // 1f5c:116b
-    if (memoryAGet(ds, si + 65) != 0x01)
-        goto loc_20745;
-    memoryASet16(ss, bp - 28, 0x000f);
-    memoryASet16(ss, bp - 26, 0x0001);
-    al = 0x02;
-    dx = 0x03c4;
-    out8(dx, al);
-    dx++;
-    al = 0x0f;
-    out8(dx, al);
-    assert(abs(sp-y) < 20);
-loc_20745: // 1f5c:1185
-    ax = memoryAGet16(es, di + 32);
-    bx = memoryAGet16(ss, bp + 6);
-    mul16(bx);
-    dx = ax;
-    ax = memoryAGet16(ss, bp + 10);
-    cl = 0x03;
-    ax >>= cl;
-    dx += ax;
-    ax = memoryAGet16(ss, bp + 8);
-    if (memoryAGet16(ss, bp - 22) == 0x0050)
-        goto loc_20776;
-    if (memoryAGet16(ss, bp - 22) == 0x0064)
-        goto loc_20784;
-    cl = 0x03;
-    ax <<= cl;
-    dx += ax;
-    ax <<= 1;
-    ax <<= 1;
-    dx += ax;
-    assert(abs(sp-y) < 20);
-    goto loc_20796;
-loc_20776: // 1f5c:11b6
-    cl = 0x04;
-    ax <<= cl;
-    dx += ax;
-    ax <<= 1;
-    ax <<= 1;
-    dx += ax;
-    goto loc_20796;
-loc_20784: // 1f5c:11c4
-    ax <<= 1;
-    ax <<= 1;
-    dx += ax;
-    ax <<= 1;
-    ax <<= 1;
-    ax <<= 1;
-    dx += ax;
-    ax <<= 1;
-    dx += ax;
-    assert(abs(sp-y) < 20);
-loc_20796: // 1f5c:11d6
-    ax = memoryAGet16(ds, si + 10);
-    ax -= memoryAGet16(ds, si + 6);
-    ax++;
-    memoryASet16(ss, bp - 18, ax);
-    bx = memoryAGet16(ss, bp + 8);
-    bx += ax;
-    if (bx <= memoryAGet16(es, di + 26))
-        goto loc_207b6;
-    ax = memoryAGet16(es, di + 26);
-    ax -= memoryAGet16(ss, bp + 8);
-    ax++;
-    memoryASet16(ss, bp - 18, ax);
-    assert(abs(sp-y) < 20);
-loc_207b6: // 1f5c:11f6
-    bx = 0x0000;
-    ax = memoryAGet16(es, di + 30);
-    es = ax;
-    di = dx;
-    ax = memoryAGet16(ds, si + 66);
-    memoryASet16(ss, bp - 20, ax);
-    si += 0x0080;
-    flags.direction = false;
-    assert(abs(sp-y) < 20);
-loc_207cc: // 1f5c:120c
-    cx = 0x0001;
-    al = lodsb<DS_SI>(); //lodsb<MemAuto, DirAuto>();
-    ah = al;
-    ah &= 0xc0;
-    if (ah != 0xc0)
-        goto loc_207e0;
-    cl = al;
-    cl -= 0xc0;
-    al = lodsb<DS_SI>();//    lodsb<MemAuto, DirAuto>();
-    assert(abs(sp-y) < 20);
-loc_207e0: // 1f5c:1220
-    if (bx < memoryAGet16(ss, bp - 16))
-        goto loc_2080e;
-    if (bx > memoryAGet16(ss, bp - 16))
-        goto loc_20811;
-    if (memoryAGet16(ss, bp - 14) != 0x0001)
-        goto loc_2080e;
-    push(ax);
-    al = 0x08;
-    dx = 0x03ce;
-    out8(dx, al);
-    dx++;
-    al = memoryAGet(ss, bp - 12);
-    out8(dx, al);
-    al = memoryAGet(es, bx + di);
-    ax = pop();
-    memoryASet(es, bx + di, al);
-    push(ax);
-    assert(abs(sp-y) < 20);
-    al = 0x08;
-    dx = 0x03ce;
-    out8(dx, al);
-    dx++;
-    al = 0xff;
-    out8(dx, al);
-    ax = pop();
-    goto loc_20811;
-loc_2080e: // 1f5c:124e
-    memoryASet(es, bx + di, al);
-loc_20811: // 1f5c:1251
-    bx++;
-    if (bx != memoryAGet16(ss, bp - 20))
-        goto loc_2083f;
-    bx = 0;
-    dx = memoryAGet16(ss, bp - 26);
-    memoryASet(ss, bp - 24, memoryAGet(ss, bp - 24) << 1);
-    if (memoryAGet(ss, bp - 24) <= dl)
-        goto loc_20832;
-    dx = memoryAGet16(ss, bp - 28);
-    memoryASet(ss, bp - 24, dl);
-    di += memoryAGet16(ss, bp - 22);
-    tx = memoryAGet16(ss, bp - 18);
-    memoryASet16(ss, bp - 18, memoryAGet16(ss, bp - 18) - 1);
-    if (tx == 1)
-        goto loc_2085a;
-    assert(abs(sp-y) < 20);
-loc_20832: // 1f5c:1272
-    push(ax);
-    al = 0x02;
-    dx = 0x03c4;
-    out8(dx, al);
-    dx++;
-    al = memoryAGet(ss, bp - 24);
-    out8(dx, al);
-    ax = pop();
-    assert(abs(sp-y) < 20);
-loc_2083f: // 1f5c:127f
-    if (--cx)
-        goto loc_207e0;
-    if (si <= memoryAGet16(ss, bp - 10))
-        goto loc_20857;
-    {
-        int x = sp;
-        push(si);
-        push(cs);
-        cs = 0x1f5c;
-        sub_20fa3();
-        assert(cs == 0x1f5c);
-        assert(sp == x);
-    }
-    assert(abs(sp-y) < 20);
-    si = ax;
-    if (!flags.carry)
-        goto loc_20857;
-    memoryASet16(ss, bp - 2, 0xfffd);
-    goto loc_20869;
-loc_20857: // 1f5c:1297
-    goto loc_207cc;
-loc_2085a: // 1f5c:129a
-    al = 0x02;
-    dx = 0x03c4;
-    out8(dx, al);
-    dx++;
-    al = 0xff;
-    out8(dx, al);
-    memoryASet16(ss, bp - 2, 0x0000);
-    assert(abs(sp-y) < 20);
-loc_20869: // 1f5c:12a9
-    assert(abs(sp-y) < 20);
-    ax = memoryAGet16(ss, bp - 2);
-    di = pop();
-    si = pop();
-    es = pop();
-    ds = pop();
-    assert(abs(sp-y) < 20);
-    sp = bp;
-//    assert(abs(sp-y) < 20);
-    bp = pop();
-//    assert(sp==y);
-//    assert(pop() == 0x7777);
-    sp += 2;
-    cs = pop();
-    sp += 12;
-}
-
-void sub_202ed() // 1f5c:0d2d +far +stackDrop14
+void sub_202ed() // 1f5c:0d2d +far +stackDrop12
 {
     sp -= 2;
     push(bp);
@@ -40073,7 +39702,6 @@ void sub_202ed() // 1f5c:0d2d +far +stackDrop14
     push(cs); cs = 0x1f5c; sub_20387(); assert(cs == 0x1f5c);
 loc_20308: // 1f5c:0d48
     ax = memoryAGet16(ds, 0x33a8);
-//    stop("stack_bad");
     memoryASet16(ss, bp - 4, ax);
     ax = memoryAGet16(ss, bp + 16);
     ds = ax;
@@ -40118,23 +39746,20 @@ loc_20351: // 1f5c:0d91
     memoryASet16(ss, bp - 2, 0xfff9);
     goto loc_2037a;
 loc_20376: // 1f5c:0db6
-//    cs = memoryAGet16(es, di + 36 + 2); indirectJump(cs, memoryAGet16(es, di + 36)); stop();;
+    //    cs = memoryAGet16(es, di + 36 + 2); indirectJump(cs, memoryAGet16(es, di + 36)); stop();;
     assert(memoryAGet16(es, di + 0x24) == 0x10d7);
     assert(memoryAGet16(es, di + 0x24) == 0x10d7);
     cs = 0x1f5c;
-    sub_20697();
+    sub_20697(); // TODO!
     return;
-
 loc_2037a: // 1f5c:0dba
     ax = memoryAGet16(ss, bp - 2);
-    stop("stack_bad");
     di = pop();
     si = pop();
     es = pop();
     ds = pop();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 14/12");
     sp += 2;
     cs = pop();
     sp += 12;
@@ -40276,10 +39901,247 @@ void sub_20387() // 1f5c:0dc7 +far
     memoryASet(ds, 0x3c58, 0x01);
     cs = pop();
 }
-void sub_20ed5() // 1f5c:1915 +far +stackDrop12
+void sub_20697() // 1f5c:10d7
 {
     sp -= 2;
-    printf("breakpoint\n");//TODO?
+    ax = memoryAGet16(es, di + 24);
+    cl = 0x03;
+    ax >>= cl;
+    memoryASet16(ss, bp - 22, ax);
+    memoryASet16(ss, bp - 14, 0x0000);
+    ax = memoryAGet16(ds, si + 8);
+    ax -= memoryAGet16(ds, si + 4);
+    ax++;
+    bx = memoryAGet16(ss, bp + 10);
+    bx += ax;
+    if (bx <= memoryAGet16(es, di + 24))
+        goto loc_206c8;
+    ax = memoryAGet16(es, di + 24);
+    ax -= memoryAGet16(ss, bp + 10);
+    ax++;
+    if (!(al & 0x07))
+        goto loc_206c8;
+    ax++;
+    al &= 0xf8;
+loc_206c8: // 1f5c:1108
+    bl = memoryAGet(ds, si + 3);
+    bh = 0;
+    mul16(bx);
+    bl = 0x08;
+    div8(bl);
+    cl = ah;
+    ah = 0;
+    memoryASet16(ss, bp - 16, ax);
+    memoryASet16(ss, bp - 16, memoryAGet16(ss, bp - 16) - 1);
+    if (cl == 0x00)
+        goto loc_206f3;
+    memoryASet16(ss, bp - 14, 0x0001);
+    al = 0x80;
+    cl--;
+    al = sar8(al, cl);
+    memoryASet(ss, bp - 12, al);
+    memoryASet16(ss, bp - 16, memoryAGet16(ss, bp - 16) + 1);
+loc_206f3: // 1f5c:1133
+    al = 0x05;
+    dx = 0x03ce;
+    out8(dx, al);
+    dx++;
+    al = 0x00;
+    out8(dx, al);
+    al = 0x08;
+    dx = 0x03ce;
+    out8(dx, al);
+    dx++;
+    al = 0xff;
+    out8(dx, al);
+    memoryASet(ss, bp - 24, 0x01);
+    al = 0x02;
+    dx = 0x03c4;
+    out8(dx, al);
+    dx++;
+    al = memoryAGet(ss, bp - 24);
+    out8(dx, al);
+    memoryASet16(ss, bp - 28, 0x0001);
+    memoryASet16(ss, bp - 26, 0x0008);
+    if (memoryAGet(ds, si + 65) != 0x03)
+        goto loc_2072b;
+    memoryASet16(ss, bp - 26, 0x0004);
+loc_2072b: // 1f5c:116b
+    if (memoryAGet(ds, si + 65) != 0x01)
+        goto loc_20745;
+    memoryASet16(ss, bp - 28, 0x000f);
+    memoryASet16(ss, bp - 26, 0x0001);
+    al = 0x02;
+    dx = 0x03c4;
+    out8(dx, al);
+    dx++;
+    al = 0x0f;
+    out8(dx, al);
+loc_20745: // 1f5c:1185
+    ax = memoryAGet16(es, di + 32);
+    bx = memoryAGet16(ss, bp + 6);
+    mul16(bx);
+    dx = ax;
+    ax = memoryAGet16(ss, bp + 10);
+    cl = 0x03;
+    ax >>= cl;
+    dx += ax;
+    ax = memoryAGet16(ss, bp + 8);
+    if (memoryAGet16(ss, bp - 22) == 0x0050)
+        goto loc_20776;
+    if (memoryAGet16(ss, bp - 22) == 0x0064)
+        goto loc_20784;
+    cl = 0x03;
+    ax <<= cl;
+    dx += ax;
+    ax <<= 1;
+    ax <<= 1;
+    dx += ax;
+    goto loc_20796;
+loc_20776: // 1f5c:11b6
+    cl = 0x04;
+    ax <<= cl;
+    dx += ax;
+    ax <<= 1;
+    ax <<= 1;
+    dx += ax;
+    goto loc_20796;
+loc_20784: // 1f5c:11c4
+    ax <<= 1;
+    ax <<= 1;
+    dx += ax;
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    dx += ax;
+    ax <<= 1;
+    dx += ax;
+loc_20796: // 1f5c:11d6
+    ax = memoryAGet16(ds, si + 10);
+    ax -= memoryAGet16(ds, si + 6);
+    ax++;
+    memoryASet16(ss, bp - 18, ax);
+    bx = memoryAGet16(ss, bp + 8);
+    bx += ax;
+    if (bx <= memoryAGet16(es, di + 26))
+        goto loc_207b6;
+    ax = memoryAGet16(es, di + 26);
+    ax -= memoryAGet16(ss, bp + 8);
+    ax++;
+    memoryASet16(ss, bp - 18, ax);
+loc_207b6: // 1f5c:11f6
+    bx = 0x0000;
+    ax = memoryAGet16(es, di + 30);
+    es = ax;
+    di = dx;
+    ax = memoryAGet16(ds, si + 66);
+    memoryASet16(ss, bp - 20, ax);
+    si += 0x0080;
+    flags.direction = 0;
+loc_207cc: // 1f5c:120c
+    cx = 0x0001;
+    al = lodsb<DS_SI>();
+    ah = al;
+    ah &= 0xc0;
+    if (ah != 0xc0)
+        goto loc_207e0;
+    cl = al;
+    cl -= 0xc0;
+    al = lodsb<DS_SI>();
+loc_207e0: // 1f5c:1220
+    if (bx < memoryAGet16(ss, bp - 16))
+        goto loc_2080e;
+    if (bx > memoryAGet16(ss, bp - 16))
+        goto loc_20811;
+    if (memoryAGet16(ss, bp - 14) != 0x0001)
+        goto loc_2080e;
+    push(ax);
+    al = 0x08;
+    dx = 0x03ce;
+    out8(dx, al);
+    dx++;
+    al = memoryAGet(ss, bp - 12);
+    out8(dx, al);
+    al = memoryAGet(es, bx + di);
+    ax = pop();
+    memoryASet(es, bx + di, al);
+    push(ax);
+    al = 0x08;
+    dx = 0x03ce;
+    out8(dx, al);
+    dx++;
+    al = 0xff;
+    out8(dx, al);
+    ax = pop();
+    goto loc_20811;
+loc_2080e: // 1f5c:124e
+    memoryASet(es, bx + di, al);
+loc_20811: // 1f5c:1251
+    bx++;
+    if (bx != memoryAGet16(ss, bp - 20))
+        goto loc_2083f;
+    bx = 0;
+    dx = memoryAGet16(ss, bp - 26);
+    memoryASet(ss, bp - 24, memoryAGet(ss, bp - 24) << 1);
+    if (memoryAGet(ss, bp - 24) <= dl)
+        goto loc_20832;
+    dx = memoryAGet16(ss, bp - 28);
+    memoryASet(ss, bp - 24, dl);
+    di += memoryAGet16(ss, bp - 22);
+    memoryASet16(ss, bp - 18, memoryAGet16(ss, bp - 18) - 1);
+    if (!memoryAGet16(ss, bp - 18))
+        goto loc_2085a;
+loc_20832: // 1f5c:1272
+    push(ax);
+    al = 0x02;
+    dx = 0x03c4;
+    out8(dx, al);
+    dx++;
+    al = memoryAGet(ss, bp - 24);
+    out8(dx, al);
+    ax = pop();
+loc_2083f: // 1f5c:127f
+    if (--cx)
+        goto loc_207e0;
+    if (si <= memoryAGet16(ss, bp - 10))
+        goto loc_20857;
+    push(si);
+    push(cs); cs = 0x1f5c; sub_20fa3(); assert(cs == 0x1f5c);
+    si = ax;
+    if (!flags.carry)
+        goto loc_20857;
+    memoryASet16(ss, bp - 2, 0xfffd);
+    goto loc_20869;
+loc_20857: // 1f5c:1297
+    goto loc_207cc;
+    stop("stack_bad");
+loc_2085a: // 1f5c:129a
+    al = 0x02;
+    dx = 0x03c4;
+    out8(dx, al);
+    dx++;
+    al = 0xff;
+    out8(dx, al);
+    memoryASet16(ss, bp - 2, 0x0000);
+loc_20869: // 1f5c:12a9
+    ax = memoryAGet16(ss, bp - 2);
+//    stop("stack_bad");
+    di = pop();
+    si = pop();
+//    stop("stack_below");
+    es = pop();
+    ds = pop();
+    sp = bp;
+    bp = pop();
+//    stop("stack_unbalanced");
+    sp += 2;
+    cs = pop();
+    sp += 12;
+}
+void sub_20ed5() // 1f5c:1915 +far +stackDrop10
+{
+    sp -= 2;
+//    stop("breakpoint");
     push(bp);
     bp = sp;
     sp -= 0x0084;
@@ -40372,10 +40234,78 @@ loc_20f90: // 1f5c:19d0
     ds = pop();
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 12/10");
     sp += 2;
     cs = pop();
     sp += 10;
+}
+void sub_20fa3() // 1f5c:19e3 +far +returnCarry
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x0002;
+    push(ds);
+    push(es);
+    push(si);
+    push(di);
+    ax = 0x2ec1;
+    ds = ax;
+    push(bx);
+    push(cx);
+    push(dx);
+    if (memoryAGet16(ds, 0x3c52) != 0xffff)
+        goto loc_20fbf;
+    flags.carry = 1;
+    goto loc_2100f;
+loc_20fbf: // 1f5c:19ff
+    ax = ds;
+    es = ax;
+    di = 0x3442;
+    if (memoryAGet16(ds, 0x3c4e) == 0xffff)
+        goto loc_20fd6;
+    ax = memoryAGet16(ds, 0x3c4e);
+    es = ax;
+    di = memoryAGet16(ds, 0x3c50);
+loc_20fd6: // 1f5c:1a16
+    ax = memoryAGet16(ss, bp + 6);
+    ax -= di;
+    flags.carry = (memoryAGet16(ds, 0x3c56) + ax) >= 0x10000;
+    memoryASet16(ds, 0x3c56, memoryAGet16(ds, 0x3c56) + ax);
+    if (!flags.carry)
+        goto loc_20fe6;
+    memoryASet16(ds, 0x3c54, memoryAGet16(ds, 0x3c54) + 0x0001);
+loc_20fe6: // 1f5c:1a26
+    bx = memoryAGet16(ds, 0x3c52);
+    cx = memoryAGet16(ds, 0x3c54);
+    dx = memoryAGet16(ds, 0x3c56);
+    al = 0x00;
+    ah = 0x42;
+    interrupt(0x21);
+    push(ds);
+    bx = memoryAGet16(ds, 0x3c52);
+    cx = memoryAGet16(ds, 0x3c4c);
+    dx = di;
+    ax = es;
+    ds = ax;
+    ah = 0x3f;
+    interrupt(0x21);
+    ds = pop();
+    memoryASet16(ss, bp - 2, di);
+loc_2100f: // 1f5c:1a4f
+    dx = pop();
+    cx = pop();
+    bx = pop();
+    ax = memoryAGet16(ss, bp - 2);
+    di = pop();
+    si = pop();
+    es = pop();
+    ds = pop();
+    sp = bp;
+    bp = pop();
+//    stop("stack_below_retf, 0/2");
+    sp += 2;
+    cs = pop();
+    sp += 2;
 }
 void sub_21662() // 1f5c:20a2
 {
@@ -40603,7 +40533,7 @@ void sub_21662() // 1f5c:20a2
     sp += 2;
     cs = pop();
 }
-void sub_21880() // 2188:0000 +far +stackDrop6
+void sub_21880() // 2188:0000 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -40634,12 +40564,11 @@ loc_218b4: // 2188:0034
     al = memoryAGet(ss, bp - 1);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_218c3() // 2188:0043 +far +stackDrop6
+void sub_218c3() // 2188:0043 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -40847,12 +40776,11 @@ loc_21a96: // 2188:0216
     al = memoryAGet(ss, bp - 1);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_21a9f() // 2188:021f +nearfar +stackDrop4
+void sub_21a9f() // 2188:021f +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -40930,12 +40858,11 @@ loc_21b25: // 2188:02a5
 loc_21b4d: // 2188:02cd
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_21b53() // 2188:02d3 +nearfar +stackDrop6
+void sub_21b53() // 2188:02d3 +nearfar +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -40957,12 +40884,11 @@ void sub_21b53() // 2188:02d3 +nearfar +stackDrop6
     push(cs); cs = 0x28b3; sub_28d51(); assert(cs == 0x2188);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_21b90() // 2188:0310 +nearfar +stackDrop4
+void sub_21b90() // 2188:0310 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -40992,12 +40918,11 @@ void sub_21b90() // 2188:0310 +nearfar +stackDrop4
 loc_21bd1: // 2188:0351
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_21bd7() // 2188:0357 +far +stackDrop4
+void sub_21bd7() // 2188:0357 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -41033,7 +40958,6 @@ loc_21c09: // 2188:0389
 loc_21c25: // 2188:03a5
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -41084,7 +41008,7 @@ loc_21f09: // 2188:0689
     sp += 2;
     cs = pop();
 }
-void sub_22127() // 2188:08a7 +far +stackDrop8
+void sub_22127() // 2188:08a7 +far +stackDrop6
 {
     sp -= 2;
     push(bp);
@@ -41228,7 +41152,6 @@ void sub_22127() // 2188:08a7 +far +stackDrop8
     memoryASet16(ds, di + 17929, bx);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
@@ -41256,7 +41179,7 @@ loc_222e2: // 2188:0a62
     sp += 2;
     cs = pop();
 }
-void sub_23d9d() // 2188:251d +far +stackDrop8
+void sub_23d9d() // 2188:251d +far +stackDrop6
 {
     sp -= 2;
     push(bp);
@@ -41444,6 +41367,7 @@ loc_23e84: // 2188:2604
     sub_21a9f();
 loc_23f4c: // 2188:26cc
     ax = memoryAGet16(ss, bp + 6);
+    stop("stack_bad");
     ax += 0x0009;
     dx = ax & 0x8000 ? 0xffff : 0x0000;
     cx = 0x0010;
@@ -41561,6 +41485,7 @@ loc_23f80: // 2188:2700
     sub_21a9f();
 loc_24058: // 2188:27d8
     goto loc_240ca;
+    stop("stack_bad");
 loc_2405a: // 2188:27da
     ax = memoryAGet16(ss, bp + 10);
     dx = 0x002d;
@@ -41605,12 +41530,11 @@ loc_2405a: // 2188:27da
 loc_240ca: // 2188:284a
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_28b30() // 28b3:0000 +far +stackDrop6
+void sub_28b30() // 28b3:0000 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -41846,12 +41770,11 @@ loc_28cc5: // 28b3:0195
 loc_28d4b: // 28b3:021b
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_28d51() // 28b3:0221 +far +stackDrop6
+void sub_28d51() // 28b3:0221 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -41942,12 +41865,11 @@ loc_28d93: // 28b3:0263
 loc_28e19: // 28b3:02e9
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_28e1f() // 28b3:02ef +far +stackDrop4
+void sub_28e1f() // 28b3:02ef +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -42066,12 +41988,11 @@ void sub_28e1f() // 28b3:02ef +far +stackDrop4
     push(cs); cs = 0x2a41; sub_2a6ae(); assert(cs == 0x28b3);
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_28f76() // 28b3:0446 +far +stackDrop4
+void sub_28f76() // 28b3:0446 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -42190,12 +42111,11 @@ void sub_28f76() // 28b3:0446 +far +stackDrop4
     push(cs); cs = 0x2a41; sub_2a6ae(); assert(cs == 0x28b3);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_290cd() // 28b3:059d +far +stackDrop4
+void sub_290cd() // 28b3:059d +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -42314,7 +42234,6 @@ void sub_290cd() // 28b3:059d +far +stackDrop4
     push(cs); cs = 0x2a41; sub_2a6ae(); assert(cs == 0x28b3);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -42342,7 +42261,7 @@ loc_2922c: // 28b3:06fc
     sp += 2;
     cs = pop();
 }
-void sub_29241() // 28b3:0711 +far +stackDrop4
+void sub_29241() // 28b3:0711 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -42364,12 +42283,11 @@ loc_29251: // 28b3:0721
         goto loc_2924e;
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_29270() // 28b3:0740 +far +stackDrop6
+void sub_29270() // 28b3:0740 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -42596,12 +42514,11 @@ void sub_29270() // 28b3:0740 +far +stackDrop6
     memoryASet16(es, di + 65530, 0xff9d);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_294c2() // 28b3:0992 +far +stackDrop6
+void sub_294c2() // 28b3:0992 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -43546,12 +43463,11 @@ void sub_294c2() // 28b3:0992 +far +stackDrop6
     memoryASet16(es, di + 65530, 0xff9d);
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_29ee5() // 28b3:13b5 +far +stackDrop8
+void sub_29ee5() // 28b3:13b5 +far +stackDrop6
 {
     sp -= 2;
     push(bp);
@@ -43818,7 +43734,6 @@ loc_2a134: // 28b3:1604
 loc_2a16d: // 28b3:163d
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
@@ -43904,7 +43819,6 @@ void sub_2a21f() // 28b3:16ef +far
 //    push(ss);
 //    push(di);
 //    push(cs); cs = 0x2d99; sub_2d99b(); assert(cs == 0x28b3);
-    
     memoryASet16(ss, bp - 20, 0x001a); // gabo TODO
     memoryASet16(ss, bp - 18, 0x0008); // gabo
 
@@ -44081,7 +43995,7 @@ void sub_2a388() // 2a31:0078 +far
     sp += 2;
     cs = pop();
 }
-void sub_2a3dc() // 2a31:00cc +nearfar +stackDrop4
+void sub_2a3dc() // 2a31:00cc +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44109,7 +44023,6 @@ loc_2a3f8: // 2a31:00e8
     ax = cx;
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -44263,7 +44176,7 @@ loc_2a525: // 2a41:0115
     memoryASet16(ds, 0xa130, ax);
     memoryASet16(ds, 0xa132, dx);
 }
-void sub_2a555() // 2a41:0145 +stackDrop4
+void sub_2a555() // 2a41:0145 +stackDrop2
 {
     sp -= 2;
     if (memoryAGet(ds, 0xa13a) != 0x00)
@@ -44293,12 +44206,11 @@ loc_2a56e: // 2a41:015e
     sub_2a4f7();
     al = memoryAGet(ds, 0xa138);
     memoryASet(ds, 0xa12e, al);
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2a57d() // 2a41:016d +far +stackDrop4
+void sub_2a57d() // 2a41:016d +far +stackDrop2
 {
     sp -= 2;
     bx = sp;
@@ -44307,7 +44219,6 @@ void sub_2a57d() // 2a41:016d +far +stackDrop4
     sub_2a4f7();
     al = memoryAGet(ds, 0xa138);
     memoryASet(ds, 0xa12e, al);
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -44323,7 +44234,7 @@ void sub_2a5d2() // 2a41:01c2 +far
     sub_2a90c();
     cs = pop();
 }
-void sub_2a625() // 2a41:0215 +far +stackDrop6
+void sub_2a625() // 2a41:0215 +far +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -44345,13 +44256,12 @@ void sub_2a625() // 2a41:0215 +far +stackDrop6
         goto loc_2a64e;
     sub_2a90c();
 loc_2a64e: // 2a41:023e
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
     return;
 }
-void sub_2a669() // 2a41:0259 +far +stackDrop4
+void sub_2a669() // 2a41:0259 +far +stackDrop2
 {
     sp -= 2;
     bx = sp;
@@ -44363,12 +44273,11 @@ void sub_2a669() // 2a41:0259 +far +stackDrop4
 loc_2a677: // 2a41:0267
     memoryASet(ds, 0xa12e, memoryAGet(ds, 0xa12e) & 0x70);
     memoryASet(ds, 0xa12e, memoryAGet(ds, 0xa12e) | al);
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2a683() // 2a41:0273 +far +stackDrop4
+void sub_2a683() // 2a41:0273 +far +stackDrop2
 {
     sp -= 2;
     bx = sp;
@@ -44378,12 +44287,11 @@ void sub_2a683() // 2a41:0273 +far +stackDrop4
     al <<= cl;
     memoryASet(ds, 0xa12e, memoryAGet(ds, 0xa12e) & 0x8f);
     memoryASet(ds, 0xa12e, memoryAGet(ds, 0xa12e) | al);
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2a6ae() // 2a41:029e +far +stackDrop4
+void sub_2a6ae() // 2a41:029e +far +stackDrop2
 {
     sp -= 2;
     bx = sp;
@@ -44401,7 +44309,6 @@ loc_2a6c3: // 2a41:02b3
     if (dx)
         goto loc_2a6c3;
 loc_2a6cb: // 2a41:02bb
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -44459,7 +44366,7 @@ loc_2a73a: // 2a41:032a
     stop("stack_unbalanced");
     cs = pop();
 }
-void sub_2a73e() // 2a41:032e +stackDrop6
+void sub_2a73e() // 2a41:032e +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -44474,7 +44381,34 @@ void sub_2a73e() // 2a41:032e +stackDrop6
     memoryASet16(ds, di + 18, cs);
     memoryASet(ds, di + 48, 0x00);
     ds = pop();
-//    stop("stack_below_retf, 6/4");
+    sp += 2;
+    cs = pop();
+    sp += 4;
+}
+void sub_2a769() // 2a41:0359
+{
+    sp -= 2;
+    bx = sp;
+    push(ds);
+    di = memoryAGet16(ss, bx + 4); ds = memoryAGet16(ss, bx + 4 + 2); /*ggg2*/;
+    ax = 0x0391;
+    bx = 0x046f;
+    cx = bx;
+    if (memoryAGet16(ds, di + 2) == 0xd7b1)
+        goto loc_2a789;
+    memoryASet16(ds, di + 2, 0xd7b2);
+    ax = 0x043e;
+    bx = ax;
+loc_2a789: // 2a41:0379
+    memoryASet16(ds, di + 20, ax);
+    memoryASet16(ds, di + 22, cs);
+    memoryASet16(ds, di + 24, bx);
+    memoryASet16(ds, di + 26, cs);
+    memoryASet16(ds, di + 28, cx);
+    memoryASet16(ds, di + 30, cs);
+    ax = 0;
+    ds = pop();
+//    stop("stack_below_retf, 0/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -44674,7 +44608,7 @@ void sub_2aa30() // 2aa3:0000 +far
     sp += 2;
     cs = pop();
 }
-void sub_2aaf9() // 2aa3:00c9 +nearfar +stackDrop4
+void sub_2aaf9() // 2aa3:00c9 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44697,12 +44631,11 @@ loc_2ab13: // 2aa3:00e3
 loc_2ab15: // 2aa3:00e5
     interrupt(0x10);
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2ab1b() // 2aa3:00eb +nearfar +stackDrop4
+void sub_2ab1b() // 2aa3:00eb +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44711,12 +44644,11 @@ void sub_2ab1b() // 2aa3:00eb +nearfar +stackDrop4
     ah = 0;
     interrupt(0x10);
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2ab29() // 2aa3:00f9 +far +stackDrop4
+void sub_2ab29() // 2aa3:00f9 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44737,12 +44669,11 @@ loc_2ab37: // 2aa3:0107
     out16(dx, ax);
     ax = pop();
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2ab4f() // 2aa3:011f +far +stackDrop6
+void sub_2ab4f() // 2aa3:011f +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -44789,12 +44720,11 @@ loc_2ab84: // 2aa3:0154
     out8(dx, al);
     flags.interrupts = 1;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2aba2() // 2aa3:0172 +far +stackDrop6
+void sub_2aba2() // 2aa3:0172 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -44841,12 +44771,11 @@ loc_2abd7: // 2aa3:01a7
     out8(dx, al);
     flags.interrupts = 1;
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2abf5() // 2aa3:01c5 +far +stackDrop4
+void sub_2abf5() // 2aa3:01c5 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44878,7 +44807,6 @@ loc_2ac0a: // 2aa3:01da
     al = 0x07;
     out16(dx, ax);
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -44909,7 +44837,7 @@ loc_2ac4a: // 2aa3:021a
     es = pop();
     cs = pop();
 }
-void sub_2ac50() // 2aa3:0220 +far +stackDrop4
+void sub_2ac50() // 2aa3:0220 +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44953,7 +44881,7 @@ loc_2ac88: // 2aa3:0258
     cs = pop();
     sp += 2;
 }
-void sub_2ac8d() // 2aa3:025d +far +stackDrop4
+void sub_2ac8d() // 2aa3:025d +far +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -44964,12 +44892,11 @@ void sub_2ac8d() // 2aa3:025d +far +stackDrop4
     bh = bl;
     interrupt(0x10);
     bp = pop();
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2aca8() // 2aa3:0278 +far +stackDrop6
+void sub_2aca8() // 2aa3:0278 +far +stackDrop4
 {
     sp -= 2;
     push(bp);
@@ -44979,12 +44906,11 @@ void sub_2aca8() // 2aa3:0278 +far +stackDrop6
     bh = memoryAGet(ss, bp + 6);
     interrupt(0x10);
     bp = pop();
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2adcb() // 2aa3:039b +far +stackDrop10
+void sub_2adcb() // 2aa3:039b +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -44995,7 +44921,6 @@ void sub_2adcb() // 2aa3:039b +far +stackDrop10
     di = memoryAGet16(cs, 0x0060);
     di--;
     si = memoryAGet16(ss, bp + 10); ds = memoryAGet16(ss, bp + 10 + 2); /*ggg2*/;
-//    assert(ds); TODO
     dx = 0xa000;
     es = dx;
     bx = memoryAGet16(ss, bp + 6);
@@ -45022,7 +44947,7 @@ loc_2ae06: // 2aa3:03d6
     al = 0x02;
     out8(dx, al);
     cx = 0x0010;
-    /* // TODO
+    /* //TODO
 loc_2ae0f: // 2aa3:03df
     dx = 0x03ce;
     al = lodsb<DS_SI>();
@@ -45082,12 +45007,11 @@ loc_2ae0f: // 2aa3:03df
     di = pop();
     ds = pop();
     bp = pop();
-//    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2ae75() // 2aa3:0445 +far +stackDrop10
+void sub_2ae75() // 2aa3:0445 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45157,12 +45081,11 @@ loc_2aeb5: // 2aa3:0485
     di = pop();
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2af7b() // 2aa3:054b +nearfar +stackDrop4
+void sub_2af7b() // 2aa3:054b +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -45170,12 +45093,11 @@ void sub_2af7b() // 2aa3:054b +nearfar +stackDrop4
     ax = memoryAGet16(ss, bp + 6);
     memoryASet16(cs, 0x00ba, ax);
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2b144() // 2aa3:0714 +far +stackDrop10
+void sub_2b144() // 2aa3:0714 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45242,12 +45164,11 @@ loc_2b1c5: // 2aa3:0795
     out16(dx, ax);
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2c0eb() // 2aa3:16bb +far +stackDrop14
+void sub_2c0eb() // 2aa3:16bb +far +stackDrop12
 {
     sp -= 2;
     push(bp);
@@ -45332,12 +45253,11 @@ loc_2c15b: // 2aa3:172b
     ds = pop();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 14/12");
     sp += 2;
     cs = pop();
     sp += 12;
 }
-void sub_2c187() // 2aa3:1757 +far +stackDrop10
+void sub_2c187() // 2aa3:1757 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45411,12 +45331,11 @@ loc_2c1e4: // 2aa3:17b4
     ds = pop();
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2c34f() // 2aa3:191f +far +stackDrop10
+void sub_2c34f() // 2aa3:191f +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45462,7 +45381,7 @@ loc_2c3a3: // 2aa3:1973
     push(cx);
     push(di);
     dx = 0x03ce;
-//    al = lodsb<DS_SI>(); // CICO
+//    al = lodsb<DS_SI>();
     ah = al;
     di = ax;
     cl = memoryAGet(cs, 0x17e9);
@@ -45555,12 +45474,11 @@ loc_2c409: // 2aa3:19d9
     si = pop();
     ds = pop();
     bp = pop();
-//    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2c47d() // 2aa3:1a4d +far +stackDrop10
+void sub_2c47d() // 2aa3:1a4d +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45694,12 +45612,11 @@ loc_2c53e: // 2aa3:1b0e
     di = pop();
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2cdb9() // 2aa3:2389 +far +stackDrop10
+void sub_2cdb9() // 2aa3:2389 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45836,7 +45753,6 @@ loc_2ce7b: // 2aa3:244b
     si = pop();
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
@@ -45878,7 +45794,7 @@ void sub_2d138() // 2aa3:2708
     sp += 2;
     cs = pop();
 }
-void sub_2d2d7() // 2aa3:28a7 +stackDrop4
+void sub_2d2d7() // 2aa3:28a7 +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -45903,12 +45819,11 @@ loc_2d2fd: // 2aa3:28cd
     memoryASet16(cs, 0x25f9, ax);
 loc_2d315: // 2aa3:28e5
     bp = pop();
-//    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2d3f5() // 2aa3:29c5 +far +stackDrop10
+void sub_2d3f5() // 2aa3:29c5 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -45996,12 +45911,11 @@ loc_2d43a: // 2aa3:2a0a
     di = pop();
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2d48e() // 2aa3:2a5e +far +stackDrop10
+void sub_2d48e() // 2aa3:2a5e +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -46068,12 +45982,11 @@ loc_2d4d3: // 2aa3:2aa3
     di = pop();
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2d825() // 2aa3:2df5 +far +stackDrop10
+void sub_2d825() // 2aa3:2df5 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -46122,7 +46035,6 @@ loc_2d86c: // 2aa3:2e3c
     di = pop();
     si = pop();
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
@@ -46270,7 +46182,7 @@ void sub_2d99b() // 2d99:000b +far
     sp += 2;
     cs = pop();
 }
-void sub_2d9fc() // 2d99:006c +far +stackDrop8
+void sub_2d9fc() // 2d99:006c +far +stackDrop6
 {
     sp -= 2;
     push(bp);
@@ -46286,12 +46198,11 @@ void sub_2d9fc() // 2d99:006c +far +stackDrop8
     tx = bx; bx = ax; ax = tx;
     stosw<ES_DI>(ax);
     bp = pop();
-//    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_2da14() // 2d99:0084 +far +stackDrop8
+void sub_2da14() // 2d99:0084 +far +stackDrop6
 {
     sp -= 2;
     push(bp);
@@ -46303,7 +46214,6 @@ void sub_2da14() // 2d99:0084 +far +stackDrop8
     interrupt(0x21);
     ds = pop();
     bp = pop();
-//    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
@@ -46383,6 +46293,7 @@ loc_2da70: // 2da3:0040
     sub_2e5d2();
     push(cs);
     sub_2e647();
+//    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -46644,7 +46555,6 @@ loc_2db5f: // 2da3:012f
     push(ax);
     push(cs);
     sub_2e69b();
-    stop("stack_below");
     di = 0xa33c;
     si = 0x01dd;
     cx = 0x0012;
@@ -46692,7 +46602,7 @@ loc_2dc46: // 2da3:0216
     ax = memoryAGet16(ds, 0x02a4);
     goto loc_2db01;
 }
-void sub_2dc8d() // 2da3:025d +far +stackDrop12
+void sub_2dc8d() // 2da3:025d +far +stackDrop10
 {
     sp -= 2;
     bx = sp;
@@ -46703,7 +46613,6 @@ void sub_2dc8d() // 2da3:025d +far +stackDrop12
     flags.direction = 0;
     for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
     ds = dx;
-    stop("stack_below_retf, 12/10");
     sp += 2;
     cs = pop();
     sp += 10;
@@ -46727,7 +46636,7 @@ void sub_2dca9() // 2da3:0279 +far
     dx += cx;
     cs = pop();
 }
-void sub_2dd59() // 2da3:0329 +far +stackDrop8
+void sub_2dd59() // 2da3:0329 +far +stackDrop6
 {
     sp -= 2;
     goto loc_2dd59;
@@ -46794,7 +46703,6 @@ loc_2db5f: // 2da3:012f
     push(ax);
     push(cs);
     sub_2e69b();
-    stop("stack_below");
     di = 0xa33c;
     si = 0x01dd;
     cx = 0x0012;
@@ -46861,7 +46769,6 @@ loc_2dd7f: // 2da3:034f
     memoryASet16(es, di, cx);
     memoryASet16(es, di + 2, bx);
     bp = pop();
-//    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
@@ -46872,7 +46779,7 @@ loc_2dd8d: // 2da3:035d
     ax = 0x00cb;
     goto loc_2db01;
 }
-void sub_2dd94() // 2da3:0364 +far +stackDrop8
+void sub_2dd94() // 2da3:0364 +far +stackDrop6
 {
     sp -= 2;
     goto loc_2dd94;
@@ -46939,7 +46846,6 @@ loc_2db5f: // 2da3:012f
     push(ax);
     push(cs);
     sub_2e69b();
-    stop("stack_below");
     di = 0xa33c;
     si = 0x01dd;
     cx = 0x0012;
@@ -46989,7 +46895,6 @@ loc_2dd94: // 2da3:0364
     if (flags.carry)
         goto loc_2ddad;
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
@@ -47301,7 +47206,7 @@ void sub_2e055() // 2da3:0625
     dx &= 0x000f;
     ax |= cx;
 }
-void sub_2e064() // 2da3:0634 +far +stackDrop6
+void sub_2e064() // 2da3:0634 +far +stackDrop4
 {
     sp -= 2;
     flags.direction = 0;
@@ -47315,12 +47220,11 @@ void sub_2e064() // 2da3:0634 +far +stackDrop6
     ch = 0;
     for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
     ds = dx;
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2e07e() // 2da3:064e +nearfar +stackDrop12
+void sub_2e07e() // 2da3:064e +nearfar +stackDrop10
 {
     sp -= 2;
     flags.direction = 0;
@@ -47339,12 +47243,11 @@ loc_2e096: // 2da3:0666
     ch = 0;
     for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
     ds = dx;
-//    stop("stack_below_retf, 12/10");
     sp += 2;
     cs = pop();
     sp += 10;
 }
-void sub_2e0b0() // 2da3:0680 +nearfar +stackDrop10
+void sub_2e0b0() // 2da3:0680 +nearfar +stackDrop8
 {
     sp -= 2;
     flags.direction = 0;
@@ -47381,12 +47284,11 @@ loc_2e0e7: // 2da3:06b7
     cx = ax;
     for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
     ds = dx;
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e0f1() // 2da3:06c1 +nearfar +stackDrop6
+void sub_2e0f1() // 2da3:06c1 +nearfar +stackDrop4
 {
     sp -= 2;
     flags.direction = 0;
@@ -47410,12 +47312,11 @@ loc_2e111: // 2da3:06e1
     cl = al;
     for (; cx != 0; --cx) movsb<ES_DI, DS_SI>();
     ds = dx;
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2e11d() // 2da3:06ed +far +stackDrop10
+void sub_2e11d() // 2da3:06ed +far +stackDrop8
 {
     sp -= 2;
     flags.direction = 0;
@@ -47455,12 +47356,11 @@ loc_2e14e: // 2da3:071e
     ax = 0;
 loc_2e150: // 2da3:0720
     ds = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e154() // 2da3:0724 +far +returnZero +stackDrop10
+void sub_2e154() // 2da3:0724 +far +returnZero +stackDrop8
 {
     sp -= 2;
     flags.direction = 0;
@@ -47486,12 +47386,11 @@ loc_2e178: // 2da3:0748
     flags.zero = al == ah;
 loc_2e17a: // 2da3:074a
     ds = dx;
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e17f() // 2da3:074f +far +stackDrop4
+void sub_2e17f() // 2da3:074f +far +stackDrop2
 {
     sp -= 2;
     flags.direction = 0;
@@ -47501,12 +47400,11 @@ void sub_2e17f() // 2da3:074f +far +stackDrop4
     stosb<ES_DI>(al);
     al = memoryAGet(ss, bx + 4);
     stosb<ES_DI>(al);
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
 }
-void sub_2e200() // 2da3:07d0 +far +stackDrop10
+void sub_2e200() // 2da3:07d0 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -47552,12 +47450,11 @@ void sub_2e200() // 2da3:07d0 +far +stackDrop10
 loc_2e250: // 2da3:0820
     sp = bp;
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e304() // 2da3:08d4 +far +returnZero +stackDrop8
+void sub_2e304() // 2da3:08d4 +far +returnZero +stackDrop6
 {
     sp -= 2;
     bx = sp;
@@ -47572,12 +47469,11 @@ void sub_2e304() // 2da3:08d4 +far +returnZero +stackDrop8
     al = 0x01;
     al <<= cl;
     flags.zero = !(memoryAGet(es, bx + di) & al);
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_2e3b0() // 2da3:0980 +far +stackDrop4
+void sub_2e3b0() // 2da3:0980 +far +stackDrop2
 {
     sp -= 2;
     sub_2e3ff();
@@ -47590,7 +47486,6 @@ void sub_2e3b0() // 2da3:0980 +far +stackDrop4
     div16(bx);
     tx = dx; dx = ax; ax = tx;
 loc_2e3c3: // 2da3:0993
-    stop("stack_below_retf, 4/2");
     sp += 2;
     cs = pop();
     sp += 2;
@@ -47668,7 +47563,7 @@ loc_2e476: // 2da3:0a46
     al++;
     flags.carry = bx < memoryAGet16(cs, si);
     bx -= memoryAGet16(cs, si);
-    temp_cf = dx < memoryAGet16(cs, si + 2) + flags.carry;// carry // TODO CICO
+    temp_cf = dx < memoryAGet16(cs, si + 2) + flags.carry;
     dx = dx - memoryAGet16(cs, si + 2) - flags.carry;
     flags.carry = temp_cf;
     if (!flags.carry)
@@ -47795,7 +47690,7 @@ loc_2e545: // 2da3:0b15
         goto loc_2e525;
     goto loc_2e510;
 }
-void sub_2e556() // 2da3:0b26 +far +stackDrop14
+void sub_2e556() // 2da3:0b26 +far +stackDrop12
 {
     sp -= 2;
     push(bp);
@@ -47841,12 +47736,11 @@ loc_2e598: // 2da3:0b68
     ds = pop();
     sp = bp;
     bp = pop();
-//    stop("stack_below_retf, 14/12");
     sp += 2;
     cs = pop();
     sp += 12;
 }
-void sub_2e5a1() // 2da3:0b71 +far +stackDrop10
+void sub_2e5a1() // 2da3:0b71 +far +stackDrop8
 {
     sp -= 2;
     push(bp);
@@ -47878,12 +47772,11 @@ loc_2e5c8: // 2da3:0b98
     di = memoryAGet16(ss, bp + 6); es = memoryAGet16(ss, bp + 6 + 2); /*ggg2*/;
     memoryASet16(es, di, cx);
     bp = pop();
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e5d2() // 2da3:0ba2 +stackDrop10
+void sub_2e5d2() // 2da3:0ba2 +stackDrop8
 {
     sp -= 2;
     bx = sp;
@@ -47923,12 +47816,11 @@ loc_2e60a: // 2da3:0bda
     al = 0;
     stosb<ES_DI>(al);
     ds = pop();
-//    stop("stack_below_retf, 10/8"); TODO
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2e642() // 2da3:0c12 +nearfar +stackDrop6
+void sub_2e642() // 2da3:0c12 +nearfar +stackDrop4
 {
     sp -= 2;
     dx = 0xd7b1;
@@ -47955,6 +47847,7 @@ loc_2e670: // 2da3:0c40
     dx = pop();
 loc_2e678: // 2da3:0c48
     ax = 0;
+//    stop("stack_bad");
     memoryASet16(es, di + 2, dx);
     memoryASet16(es, di + 8, ax);
     memoryASet16(es, di + 10, ax);
@@ -47964,13 +47857,12 @@ loc_2e678: // 2da3:0c48
         goto loc_2e694;
     memoryASet16(es, di + 2, 0xd7b0);
 loc_2e694: // 2da3:0c64
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
     return;
 }
-void sub_2e647() // 2da3:0c17 +nearfar +stackDrop6
+void sub_2e647() // 2da3:0c17 +nearfar +stackDrop4
 {
     sp -= 2;
     dx = 0xd7b2;
@@ -47997,6 +47889,7 @@ loc_2e670: // 2da3:0c40
     dx = pop();
 loc_2e678: // 2da3:0c48
     ax = 0;
+//    stop("stack_bad");
     memoryASet16(es, di + 2, dx);
     memoryASet16(es, di + 8, ax);
     memoryASet16(es, di + 10, ax);
@@ -48006,43 +47899,12 @@ loc_2e678: // 2da3:0c48
         goto loc_2e694;
     memoryASet16(es, di + 2, 0xd7b0);
 loc_2e694: // 2da3:0c64
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
     return;
 }
-void sub_2a769() // 2a41:0359
-{
- //   CStackGuardFar sg(4, true);
-    push(0x7777);
-    bx = sp;
-    push(ds);
-    di = memoryAGet16(ss, bx + 4);
-    ds = memoryAGet16(ss, bx + 4 + 2);
-    ax = 0x0391;
-    bx = 0x046f;
-    cx = bx;
-    if (memoryAGet16(ds, di + 2) == 0xd7b1)
-        goto loc_2a789;
-    memoryASet16(ds, di + 2, 0xd7b2);
-    ax = 0x043e;
-    bx = ax;
-loc_2a789: // 2a41:0379
-    memoryASet16(ds, di + 20, ax);
-    memoryASet16(ds, di + 22, cs);
-    memoryASet16(ds, di + 24, bx);
-    memoryASet16(ds, di + 26, cs);
-    memoryASet16(ds, di + 28, cx);
-    memoryASet16(ds, di + 30, cs);
-    ax = 0;
-    ds = pop();
-    assert(pop() == 0x7777);
-    cs = pop();
-    sp += 4;
-}
-
-void sub_2e69b() // 2da3:0c6b +stackDrop6
+void sub_2e69b() // 2da3:0c6b +stackDrop4
 {
     sp -= 2;
     al = 0x01;
@@ -48066,7 +47928,6 @@ loc_2e6c3: // 2da3:0c93
     sub_2e6d6();
     memoryASet16(es, di + 2, 0xd7b0);
 loc_2e6d3: // 2da3:0ca3
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -48078,12 +47939,11 @@ void sub_2e6d6() // 2da3:0ca6 +returnZero
     push(di);
     push(es);
     push(di);
-    switch (memoryAGet32(es, bx + di)) // TODO: takes 2 from stack
+    switch (memoryAGet32(es, bx + di))
     {
         case 0x2da30cb7: push(cs); cs = 0x2da3; sub_2e6e7(); assert(cs == 0x2da3); break;
-        case 0x2a410359: push(cs); cs = 0x2a41; sub_2a769(); assert(cs == 0x2da3); break; // TODO!
+        case 0x2a410359: push(cs); cs = 0x2a41; sub_2a769(); assert(cs == 0x2da3); break; // TODO: stack balance
         default:
-            printf("callind = %x\n", memoryAGet32(es, bx + di)); // 2a410359
             stop();
     }
     flags.zero = !ax;
@@ -48093,8 +47953,9 @@ void sub_2e6d6() // 2da3:0ca6 +returnZero
 loc_2e6e4: // 2da3:0cb4
     di = pop();
     es = pop();
+//    stop("stack_unbalanced");
 }
-void sub_2e6e7() // 2da3:0cb7
+void sub_2e6e7() // 2da3:0cb7 +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -48151,7 +48012,6 @@ loc_2e74f: // 2da3:0d1f
     ax = 0;
 loc_2e765: // 2da3:0d35
     ds = pop();
-//    stop("stack_below_retf, 0/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -48167,7 +48027,7 @@ void sub_2e769() // 2da3:0d39
     interrupt(0x21);
     flags.carry = ax < 0x0080;
     ax -= 0x0080;
-    temp_cf = stop("x1");
+    temp_cf = dx < 0x0000 + flags.carry;
     dx = dx - 0x0000 - flags.carry;
     flags.carry = temp_cf;
     if (!flags.carry)
@@ -48267,7 +48127,7 @@ loc_2e8df: // 2da3:0eaf
     stop("stack_unbalanced");
     sp += 2;
 }
-void sub_2e91e() // 2da3:0eee +far +stackDrop6
+void sub_2e91e() // 2da3:0eee +far +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -48291,7 +48151,7 @@ loc_2e943: // 2da3:0f13
     if (memoryAGet16(es, di + 26) != 0x0000)
         goto loc_2e94d;
 loc_2e94a: // 2da3:0f1a
-    stop("stack_below_retf, 6/4");
+    stop("stack_bad");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -48307,7 +48167,7 @@ loc_2e94d: // 2da3:0f1d
     memoryASet16(ds, 0x02a4, ax);
     goto loc_2e94a;
 }
-void sub_2e93d() // 2da3:0f0d +far +stackDrop6
+void sub_2e93d() // 2da3:0f0d +far +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -48315,7 +48175,7 @@ void sub_2e93d() // 2da3:0f0d +far +stackDrop6
     if (memoryAGet16(es, di + 26) != 0x0000)
         goto loc_2e94d;
 loc_2e94a: // 2da3:0f1a
-    stop("stack_below_retf, 6/4");
+    stop("stack_bad");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -48331,7 +48191,7 @@ loc_2e94d: // 2da3:0f1d
     memoryASet16(ds, 0x02a4, ax);
     goto loc_2e94a;
 }
-void sub_2e981() // 2da3:0f51 +far +stackDrop6
+void sub_2e981() // 2da3:0f51 +far +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -48359,12 +48219,11 @@ loc_2e9a5: // 2da3:0f75
     di = pop();
     es = pop();
     memoryASet16(es, di + 8, bx);
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2e9e6() // 2da3:0fb6 +far +stackDrop8
+void sub_2e9e6() // 2da3:0fb6 +far +stackDrop6
 {
     bool temp_cond0;
 
@@ -48410,12 +48269,11 @@ loc_2ea19: // 2da3:0fe9
     memoryASet16(es, di + 8, bx);
     ds = pop();
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_2ea24() // 2da3:0ff4 +far +stackDrop10
+void sub_2ea24() // 2da3:0ff4 +far +stackDrop8
 {
     sp -= 2;
     bx = sp;
@@ -48441,12 +48299,11 @@ loc_2ea45: // 2da3:1015
     al = 0;
     stosb<ES_DI>(al);
     ds = pop();
-//    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
 }
-void sub_2ea52() // 2da3:1022 +far +stackDrop8
+void sub_2ea52() // 2da3:1022 +far +stackDrop6
 {
     sp -= 2;
     al = memoryAGet(ds, 0x02aa);
@@ -48474,6 +48331,7 @@ loc_2ea7f: // 2da3:104f
     dx = pop();
     ax = pop();
 loc_2ea89: // 2da3:1059
+//    stop("stack_bad");
     if (memoryAGet(es, di + 48) == 0x00)
         goto loc_2eaa2;
     push(ds);
@@ -48496,12 +48354,11 @@ loc_2eaa3: // 2da3:1073
     memoryASet16(es, di + 4, ax);
 loc_2eab3: // 2da3:1083
     bp = pop();
-//    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_2ea5b() // 2da3:102b +far +stackDrop8
+void sub_2ea5b() // 2da3:102b +far +stackDrop6
 {
     sp -= 2;
     ax = 0x3c00;
@@ -48525,6 +48382,7 @@ loc_2ea7f: // 2da3:104f
     dx = pop();
     ax = pop();
 loc_2ea89: // 2da3:1059
+    stop("stack_bad");
     if (memoryAGet(es, di + 48) == 0x00)
         goto loc_2eaa2;
     push(ds);
@@ -48547,12 +48405,11 @@ loc_2eaa3: // 2da3:1073
     memoryASet16(es, di + 4, ax);
 loc_2eab3: // 2da3:1083
     bp = pop();
-    stop("stack_below_retf, 8/6");
     sp += 2;
     cs = pop();
     sp += 6;
 }
-void sub_2ead3() // 2da3:10a3 +nearfar +stackDrop6
+void sub_2ead3() // 2da3:10a3 +nearfar +stackDrop4
 {
     sp -= 2;
     bx = sp;
@@ -48571,7 +48428,6 @@ void sub_2ead3() // 2da3:10a3 +nearfar +stackDrop6
 loc_2eaef: // 2da3:10bf
     memoryASet16(es, di + 2, 0xd7b0);
 loc_2eaf5: // 2da3:10c5
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
@@ -48586,7 +48442,7 @@ void sub_2eaf8() // 2da3:10c8 +returnZero
 loc_2eb06: // 2da3:10d6
     return;
 }
-void sub_2eb07() // 2da3:10d7 +far +stackDrop6
+void sub_2eb07() // 2da3:10d7 +far +stackDrop4
 {
     sp -= 2;
     ah = 0x3f;
@@ -48617,12 +48473,11 @@ loc_2eb36: // 2da3:1106
     memoryASet16(ds, 0x02a4, ax);
 loc_2eb39: // 2da3:1109
     bp = pop();
-//    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2eb0e() // 2da3:10de +far +stackDrop6
+void sub_2eb0e() // 2da3:10de +far +stackDrop4
 {
     sp -= 2;
     ah = 0x40;
@@ -48650,12 +48505,11 @@ loc_2eb36: // 2da3:1106
     memoryASet16(ds, 0x02a4, ax);
 loc_2eb39: // 2da3:1109
     bp = pop();
-    stop("stack_below_retf, 6/4");
     sp += 2;
     cs = pop();
     sp += 4;
 }
-void sub_2ebf8() // 2da3:11c8 +far +stackDrop10
+void sub_2ebf8() // 2da3:11c8 +far +stackDrop8
 {
     sp -= 2;
     bx = sp;
@@ -48664,7 +48518,6 @@ void sub_2ebf8() // 2da3:11c8 +far +stackDrop10
     al = memoryAGet(ss, bx + 4);
     flags.direction = 0;
     for (; cx != 0; --cx) stosb<ES_DI>(al);
-    stop("stack_below_retf, 10/8");
     sp += 2;
     cs = pop();
     sp += 8;
@@ -50543,63 +50396,56 @@ void fixReloc(uint16_t seg)
 int GetProcAt(int seg, int ofs)
 {
     int map[] = {
-        0x1ed0, 0x1ed, 0x0, 0x1ed, 0x56, 0x1f29, 0x1ed, 0x59, 0x1ed, 0x47a,
-        0x234d, 0x1ed, 0x47d, 0x1ed, 0x6bb, 0x258e, 0x1ed, 0x6be, 0x1ed, 0x6ee,
+        0x1ed0, 0x1ed, 0x0, 0x1ed, 0x59, 0x1f29, 0x1ed, 0x59, 0x1ed, 0x42c,
+        0x1f29, 0x1ed, 0x42f, 0x1ed, 0x47d, 0x234d, 0x1ed, 0x47d, 0x1ed, 0x4ee,
+        0x234d, 0x1ed, 0x4f1, 0x1ed, 0x6be, 0x258e, 0x1ed, 0x6be, 0x1ed, 0x6ee,
         0x25be, 0x1ed, 0x6ee, 0x1ed, 0x70d, 0x25dd, 0x1ed, 0x70d, 0x1ed, 0x727,
         0x29fd, 0x1ed, 0xb2d, 0x1ed, 0xb88, 0x2a58, 0x1ed, 0xb88, 0x1ed, 0xbaf,
         0x2a7f, 0x1ed, 0xbaf, 0x1ed, 0xc3e, 0x2b0e, 0x1ed, 0xc3e, 0x1ed, 0xf38,
-        0x2e08, 0x1ed, 0xf38, 0x1ed, 0xfbf, 0x2f07, 0x1ed, 0x1037, 0x1ed, 0x24dc,
-        0x44c0, 0x1ed, 0x25f0, 0x1ed, 0x6ee0, 0xd079, 0x1ed, 0xb1a9, 0x1ed, 0xb368,
-        0xd079, 0x1ed, 0xb36a, 0x1ed, 0xceec, 0xd079, 0x1ed, 0xcef0, 0x1ed, 0xcf46,
-        0xee16, 0x1ed, 0xcf46, 0x1ed, 0xcf6c, 0xee3c, 0x1ed, 0xcf6c, 0x1ed, 0xd140,
-        0xf010, 0x1ed, 0xd140, 0x1ed, 0xd15c, 0xf02c, 0x1ed, 0xd15c, 0x1ed, 0xd17d,
-        0xf04d, 0x1ed, 0xd17d, 0x1ed, 0xd1af, 0xf04d, 0x1ed, 0xd1b4, 0x1ed, 0xd1c6,
-        0xf096, 0x1ed, 0xd1c6, 0x1ed, 0xd1f5, 0xf096, 0x1ed, 0xd1fa, 0x1ed, 0xd342,
+        0x2e08, 0x1ed, 0xf38, 0x1ed, 0xfbf, 0x2f07, 0x1ed, 0x1037, 0x1ed, 0x24d3,
+        0x2f07, 0x1ed, 0x24d6, 0x1ed, 0x24dc, 0x44c0, 0x1ed, 0x25f0, 0x1ed, 0x278a,
+        0x44c0, 0x1ed, 0x278d, 0x1ed, 0x433f, 0x44c0, 0x1ed, 0x4342, 0x1ed, 0x6e05,
+        0x44c0, 0x1ed, 0x6e0a, 0x1ed, 0x6ed0, 0x44c0, 0x1ed, 0x6ed5, 0x1ed, 0x6ee0,
+        0xd079, 0x1ed, 0xb1a9, 0x1ed, 0xcf46, 0xee16, 0x1ed, 0xcf46, 0x1ed, 0xcf6c,
+        0xee3c, 0x1ed, 0xcf6c, 0x1ed, 0xd140, 0xf010, 0x1ed, 0xd140, 0x1ed, 0xd15c,
+        0xf02c, 0x1ed, 0xd15c, 0x1ed, 0xd17d, 0xf04d, 0x1ed, 0xd17d, 0x1ed, 0xd1c6,
+        0xf096, 0x1ed, 0xd1c6, 0x1ed, 0xd316, 0xf096, 0x1ed, 0xd319, 0x1ed, 0xd342,
         0xf212, 0x1ed, 0xd342, 0x1ed, 0xd360, 0xf230, 0x1ed, 0xd360, 0x1ed, 0xd4e5,
-        0xf3b5, 0x1ed, 0xd4e5, 0x1ed, 0xd5b8, 0xf492, 0x1ed, 0xd5c2, 0x1ed, 0xd6c5,
-        0xf492, 0x1ed, 0xd6c8, 0x1ed, 0xd6d4, 0xf5a4, 0x1ed, 0xd6d4, 0x1ed, 0xd6ff,
-        0xf5a4, 0x1ed, 0xd704, 0x1ed, 0xd710, 0xf5e0, 0x1ed, 0xd710, 0x1ed, 0xd72a,
+        0xf3b5, 0x1ed, 0xd4e5, 0x1ed, 0xd5b8, 0xf492, 0x1ed, 0xd5c2, 0x1ed, 0xd6d4,
+        0xf5a4, 0x1ed, 0xd6d4, 0x1ed, 0xd710, 0xf5e0, 0x1ed, 0xd710, 0x1ed, 0xd72a,
         0xf5fa, 0x1ed, 0xd72a, 0x1ed, 0xd880, 0xf5fa, 0x1ed, 0xd883, 0x1ed, 0xd8dc,
-        0xf5fa, 0x1ed, 0xd8df, 0x1ed, 0xdc61, 0xf5fa, 0x1ed, 0xdc63, 0x1ed, 0xdcb9,
-        0xfb89, 0x1ed, 0xdcb9, 0x1ed, 0xe011, 0xfee1, 0x1ed, 0xe011, 0x1ed, 0xe020,
-        0xfee1, 0x1ed, 0xe025, 0x1ed, 0xe1d3, 0xfee1, 0x1ed, 0xe1d8, 0x1ed, 0xe24f,
-        0xfee1, 0x1ed, 0xe254, 0x1ed, 0xe36b, 0x1023b, 0x1ed, 0xe36b, 0x1ed, 0xe39c,
-        0x1023b, 0x1ed, 0xe39e, 0x1ed, 0xe3f2, 0x1023b, 0x1ed, 0xe3f7, 0x1ed, 0xe51d,
-        0x103ed, 0x1ed, 0xe51d, 0x1ed, 0xe574, 0x103ed, 0x1ed, 0xe579, 0x1ed, 0xe5bd,
-        0x103ed, 0x1ed, 0xe5c2, 0x1ed, 0xe5d3, 0x104a3, 0x1ed, 0xe5d3, 0x1ed, 0xeaea,
-        0x109ba, 0x1ed, 0xeaea, 0x1ed, 0xeb18, 0x109ba, 0x1ed, 0xeb1d, 0x1ed, 0xeb9b,
+        0xf5fa, 0x1ed, 0xd8df, 0x1ed, 0xdcb9, 0xfb89, 0x1ed, 0xdcb9, 0x1ed, 0xe011,
+        0xfee1, 0x1ed, 0xe011, 0x1ed, 0xe1d3, 0xfee1, 0x1ed, 0xe1d8, 0x1ed, 0xe24f,
+        0xfee1, 0x1ed, 0xe254, 0x1ed, 0xe36b, 0x1023b, 0x1ed, 0xe36b, 0x1ed, 0xe51d,
+        0x103ed, 0x1ed, 0xe51d, 0x1ed, 0xe5d3, 0x104a3, 0x1ed, 0xe5d3, 0x1ed, 0xea6c,
+        0x104a3, 0x1ed, 0xea70, 0x1ed, 0xeaea, 0x109ba, 0x1ed, 0xeaea, 0x1ed, 0xeb9b,
         0x109ba, 0x1ed, 0xeba0, 0x1ed, 0xebab, 0x109ba, 0x1ed, 0xebb0, 0x1ed, 0xebf2,
-        0x10ac2, 0x1ed, 0xebf2, 0x1ed, 0xede9, 0x10ac2, 0x1ed, 0xedee, 0x1ed, 0xeec1,
-        0x10d91, 0x1ed, 0xeec1, 0x1ed, 0xef11, 0x10e08, 0x1ed, 0xef38, 0x1ed, 0xef9b,
-        0x10e6b, 0x1ed, 0xef9b, 0x1ed, 0xeff9, 0x10e6b, 0x1ed, 0xeffe, 0x1ed, 0xf048,
-        0x10e6b, 0x1ed, 0xf04d, 0x1ed, 0xf0be, 0x10e6b, 0x1ed, 0xf0c0, 0x1ed, 0xfa2e,
-        0x10e6b, 0x1ed, 0xfa33, 0x1ed, 0xfac1, 0x10e6b, 0x1ed, 0xfac6, 0x1ed, 0xfad2,
-        0x10e6b, 0x1ed, 0xfad7, 0x1ed, 0xfb0d, 0x10e6b, 0x1ed, 0xfb10, 0x1ed, 0xfb8f,
-        0x11a66, 0x1ed, 0xfb96, 0x1ed, 0xfbb2, 0x11a82, 0x1ed, 0xfbb2, 0x1ed, 0xfc23,
+        0x10ac2, 0x1ed, 0xebf2, 0x1ed, 0xeec1, 0x10d91, 0x1ed, 0xeec1, 0x1ed, 0xef11,
+        0x10e08, 0x1ed, 0xef38, 0x1ed, 0xef9b, 0x10e6b, 0x1ed, 0xef9b, 0x1ed, 0xfb8f,
+        0x11a66, 0x1ed, 0xfb96, 0x1ed, 0xfbb2, 0x11a82, 0x1ed, 0xfbb2, 0x1ed, 0xfc24,
         0x11af4, 0x1ed, 0xfc24, 0x1ed, 0xfc38, 0x11b08, 0x1ed, 0xfc38, 0x1ed, 0xfc45,
-        0x11b20, 0x11b2, 0x0, 0x11b2, 0x3e, 0x11c0c, 0x11b2, 0xec, 0x11b2, 0x649,
-        0x121e4, 0x11b2, 0x6c4, 0x11b2, 0x824, 0x12397, 0x11b2, 0x877, 0x11b2, 0xdb0,
-        0x12397, 0x11b2, 0xdb4, 0x11b2, 0xfce, 0x12b21, 0x11b2, 0x1001, 0x11b2, 0x14a5,
-        0x12b21, 0x11b2, 0x14aa, 0x11b2, 0x15ce, 0x12b21, 0x11b2, 0x15d1, 0x11b2, 0x1679,
-        0x12b21, 0x11b2, 0x167e, 0x11b2, 0x17ee, 0x13311, 0x11b2, 0x17f1, 0x11b2, 0x182f,
-        0x13371, 0x11b2, 0x1851, 0x11b2, 0x18d2, 0x1341a, 0x11b2, 0x18fa, 0x11b2, 0x1987,
-        0x13592, 0x11b2, 0x1a72, 0x11b2, 0x1bca, 0x13878, 0x11b2, 0x1d58, 0x11b2, 0x1f50,
-        0x13cb8, 0x11b2, 0x2198, 0x11b2, 0x24d9, 0x142c8, 0x11b2, 0x27a8, 0x11b2, 0x2ce6,
-        0x14ab2, 0x11b2, 0x2f92, 0x11b2, 0x33b7, 0x14f05, 0x11b2, 0x33e5, 0x11b2, 0x3483,
-        0x15101, 0x11b2, 0x35e1, 0x11b2, 0x37d8, 0x15466, 0x11b2, 0x3946, 0x11b2, 0x3b3d,
-        0x157da, 0x11b2, 0x3cba, 0x11b2, 0x3eb7, 0x159d7, 0x11b2, 0x3eb7, 0x11b2, 0x4013,
-        0x15b98, 0x11b2, 0x4078, 0x11b2, 0x4267, 0x15dd0, 0x11b2, 0x42b0, 0x11b2, 0x43a2,
-        0x167f7, 0x11b2, 0x4cd7, 0x11b2, 0x5b2c, 0x176ae, 0x11b2, 0x5b8e, 0x11b2, 0x5c4f,
-        0x177e5, 0x11b2, 0x5cc5, 0x11b2, 0x5da4, 0x17926, 0x11b2, 0x5e06, 0x11b2, 0x5ec7,
-        0x17a14, 0x11b2, 0x5ef4, 0x11b2, 0x5f92, 0x17ad0, 0x11b2, 0x5fb0, 0x11b2, 0x6012,
-        0x17b55, 0x11b2, 0x6035, 0x11b2, 0x60e3, 0x17c25, 0x11b2, 0x6105, 0x11b2, 0x617b,
-        0x17cd1, 0x11b2, 0x61b1, 0x11b2, 0x6315, 0x17f68, 0x11b2, 0x6448, 0x11b2, 0x666f,
-        0x17f68, 0x11b2, 0x6674, 0x11b2, 0x6678, 0x181f7, 0x11b2, 0x66d7, 0x11b2, 0x675c,
+        0x11b20, 0x11b2, 0x0, 0x11b2, 0x3e, 0x11c0c, 0x11b2, 0xec, 0x11b2, 0x64c,
+        0x121e4, 0x11b2, 0x6c4, 0x11b2, 0x827, 0x12397, 0x11b2, 0x877, 0x11b2, 0xcd8,
+        0x12397, 0x11b2, 0xcdb, 0x11b2, 0xfd1, 0x12b21, 0x11b2, 0x1001, 0x11b2, 0x1479,
+        0x12b21, 0x11b2, 0x147c, 0x11b2, 0x1565, 0x12b21, 0x11b2, 0x1567, 0x11b2, 0x17f1,
+        0x13311, 0x11b2, 0x17f1, 0x11b2, 0x182f, 0x13371, 0x11b2, 0x1851, 0x11b2, 0x18d2,
+        0x1341a, 0x11b2, 0x18fa, 0x11b2, 0x1987, 0x13592, 0x11b2, 0x1a72, 0x11b2, 0x1bca,
+        0x13878, 0x11b2, 0x1d58, 0x11b2, 0x1f50, 0x13cb8, 0x11b2, 0x2198, 0x11b2, 0x24d9,
+        0x142c8, 0x11b2, 0x27a8, 0x11b2, 0x2ce6, 0x14ab2, 0x11b2, 0x2f92, 0x11b2, 0x33b7,
+        0x14f05, 0x11b2, 0x33e5, 0x11b2, 0x3483, 0x15101, 0x11b2, 0x35e1, 0x11b2, 0x37d8,
+        0x15466, 0x11b2, 0x3946, 0x11b2, 0x3b3d, 0x157da, 0x11b2, 0x3cba, 0x11b2, 0x3eb7,
+        0x159d7, 0x11b2, 0x3eb7, 0x11b2, 0x4013, 0x15b98, 0x11b2, 0x4078, 0x11b2, 0x4267,
+        0x15dd0, 0x11b2, 0x42b0, 0x11b2, 0x43a2, 0x167f7, 0x11b2, 0x4cd7, 0x11b2, 0x5b2c,
+        0x176ae, 0x11b2, 0x5b8e, 0x11b2, 0x5c4f, 0x177e5, 0x11b2, 0x5cc5, 0x11b2, 0x5da4,
+        0x17926, 0x11b2, 0x5e06, 0x11b2, 0x5ec7, 0x17a14, 0x11b2, 0x5ef4, 0x11b2, 0x5f92,
+        0x17ad0, 0x11b2, 0x5fb0, 0x11b2, 0x6012, 0x17b55, 0x11b2, 0x6035, 0x11b2, 0x60e3,
+        0x17c25, 0x11b2, 0x6105, 0x11b2, 0x617b, 0x17cd1, 0x11b2, 0x61b1, 0x11b2, 0x6315,
+        0x17f68, 0x11b2, 0x6448, 0x11b2, 0x6678, 0x181f7, 0x11b2, 0x66d7, 0x11b2, 0x675c,
         0x182c3, 0x11b2, 0x67a3, 0x11b2, 0x6828, 0x18390, 0x11b2, 0x6870, 0x11b2, 0x68f5,
         0x1846d, 0x11b2, 0x694d, 0x11b2, 0x69d2, 0x18578, 0x11b2, 0x6a58, 0x11b2, 0x6b03,
         0x1866d, 0x11b2, 0x6b4d, 0x11b2, 0x6bee, 0x18738, 0x11b2, 0x6c18, 0x11b2, 0x6c7c,
-        0x187a6, 0x11b2, 0x6c86, 0x11b2, 0x6da6, 0x1891d, 0x11b2, 0x6dfd, 0x11b2, 0x6ec3,
-        0x18a3a, 0x11b2, 0x6f1a, 0x11b2, 0x6fdb, 0x18b05, 0x11b2, 0x6fe5, 0x11b2, 0x7091,
+        0x187a6, 0x11b2, 0x6c86, 0x11b2, 0x6da9, 0x1891d, 0x11b2, 0x6dfd, 0x11b2, 0x6ec3,
+        0x18a3a, 0x11b2, 0x6f1a, 0x11b2, 0x6fdb, 0x18b05, 0x11b2, 0x6fe5, 0x11b2, 0x7094,
         0x18c0c, 0x11b2, 0x70ec, 0x11b2, 0x71ad, 0x18d33, 0x11b2, 0x7213, 0x11b2, 0x73a1,
         0x18f1d, 0x11b2, 0x73fd, 0x11b2, 0x746d, 0x19015, 0x11b2, 0x74f5, 0x11b2, 0x7500,
         0x19015, 0x11b2, 0x7504, 0x11b2, 0x75a6, 0x19015, 0x11b2, 0x75aa, 0x11b2, 0x7659,
@@ -50609,262 +50455,269 @@ int GetProcAt(int seg, int ofs)
         0x19434, 0x11b2, 0x7bc5, 0x11b2, 0x7c09, 0x19434, 0x11b2, 0x7c0e, 0x11b2, 0x7c15,
         0x19848, 0x11b2, 0x7d28, 0x11b2, 0x7fd0, 0x19848, 0x11b2, 0x7fd5, 0x11b2, 0x8024,
         0x19848, 0x11b2, 0x8027, 0x11b2, 0x8060, 0x19848, 0x11b2, 0x8065, 0x11b2, 0x8069,
-        0x19c01, 0x11b2, 0x80e1, 0x11b2, 0x8232, 0x19d85, 0x11b2, 0x8265, 0x11b2, 0x835a,
+        0x19c01, 0x11b2, 0x80e1, 0x11b2, 0x8235, 0x19d85, 0x11b2, 0x8265, 0x11b2, 0x835a,
         0x19d85, 0x11b2, 0x8360, 0x11b2, 0x839e, 0x19d85, 0x11b2, 0x83a2, 0x11b2, 0x83d4,
         0x19d85, 0x11b2, 0x83d8, 0x11b2, 0x845a, 0x19d85, 0x11b2, 0x8460, 0x11b2, 0x8489,
-        0x19fb1, 0x11b2, 0x8491, 0x11b2, 0x8533, 0x1a05b, 0x11b2, 0x853b, 0x11b2, 0x8609,
-        0x1a05b, 0x11b2, 0x860b, 0x11b2, 0x8636, 0x1a15d, 0x11b2, 0x863d, 0x11b2, 0x86b5,
-        0x1a258, 0x11b2, 0x8738, 0x11b2, 0x87ca, 0x1a258, 0x11b2, 0x87ce, 0x11b2, 0x899d,
-        0x1a4bd, 0x11b2, 0x899d, 0x11b2, 0x8a30, 0x1a852, 0x11b2, 0x8d32, 0x11b2, 0x8d62,
-        0x1a852, 0x11b2, 0x8d66, 0x11b2, 0x8d90, 0x1a852, 0x11b2, 0x8d94, 0x11b2, 0x8e3d,
-        0x1a852, 0x11b2, 0x8e41, 0x11b2, 0x9061, 0x1b000, 0x11b2, 0x94e0, 0x11b2, 0x9cc0,
-        0x1b958, 0x11b2, 0x9e38, 0x11b2, 0xa03f, 0x1bcef, 0x11b2, 0xa1cf, 0x11b2, 0xa3d6,
-        0x1bf87, 0x11b2, 0xa467, 0x11b2, 0xa561, 0x1c0be, 0x11b2, 0xa59e, 0x11b2, 0xa641,
-        0x1c189, 0x11b2, 0xa669, 0x11b2, 0xa70a, 0x1c24f, 0x11b2, 0xa72f, 0x11b2, 0xa7cd,
-        0x1c30f, 0x11b2, 0xa7ef, 0x11b2, 0xa889, 0x1c55a, 0x11b2, 0xaa3a, 0x11b2, 0xab90,
+        0x19fb1, 0x11b2, 0x8491, 0x11b2, 0x8533, 0x1a05b, 0x11b2, 0x853b, 0x11b2, 0x8636,
+        0x1a15d, 0x11b2, 0x863d, 0x11b2, 0x86b5, 0x1a258, 0x11b2, 0x8738, 0x11b2, 0x899d,
+        0x1a4bd, 0x11b2, 0x899d, 0x11b2, 0x8a33, 0x1a852, 0x11b2, 0x8d32, 0x11b2, 0x9061,
+        0x1b000, 0x11b2, 0x94e0, 0x11b2, 0x9cc0, 0x1b958, 0x11b2, 0x9e38, 0x11b2, 0xa03f,
+        0x1bcef, 0x11b2, 0xa1cf, 0x11b2, 0xa3d6, 0x1bf87, 0x11b2, 0xa467, 0x11b2, 0xa561,
+        0x1c0be, 0x11b2, 0xa59e, 0x11b2, 0xa641, 0x1c189, 0x11b2, 0xa669, 0x11b2, 0xa70a,
+        0x1c24f, 0x11b2, 0xa72f, 0x11b2, 0xa7cd, 0x1c30f, 0x11b2, 0xa7ef, 0x11b2, 0xa880,
+        0x1c30f, 0x11b2, 0xa885, 0x11b2, 0xa889, 0x1c55a, 0x11b2, 0xaa3a, 0x11b2, 0xab90,
         0x1c6b0, 0x11b2, 0xab90, 0x11b2, 0xaba4, 0x1c6c4, 0x11b2, 0xaba4, 0x11b2, 0xabb8,
         0x1c72b, 0x11b2, 0xac0b, 0x11b2, 0xac7a, 0x1c7e0, 0x11b2, 0xacc0, 0x11b2, 0xad1c,
-        0x1c8be, 0x11b2, 0xad9e, 0x11b2, 0xae33, 0x1c95b, 0x11b2, 0xae3b, 0x11b2, 0xaec8,
-        0x1c95b, 0x11b2, 0xaecd, 0x11b2, 0xaef2, 0x1ca12, 0x11b2, 0xaef2, 0x11b2, 0xaf37,
-        0x1ca5a, 0x11b2, 0xaf3a, 0x11b2, 0xaf82, 0x1caa5, 0x11b2, 0xaf85, 0x11b2, 0xafd8,
-        0x1caa5, 0x11b2, 0xafdc, 0x11b2, 0xb2c5, 0x1cded, 0x11b2, 0xb2cd, 0x11b2, 0xb312,
-        0x1cded, 0x11b2, 0xb316, 0x11b2, 0xb4c3, 0x1cded, 0x11b2, 0xb4c8, 0x11b2, 0xb4f2,
+        0x1c8be, 0x11b2, 0xad9e, 0x11b2, 0xae33, 0x1c95b, 0x11b2, 0xae3b, 0x11b2, 0xaef2,
+        0x1ca12, 0x11b2, 0xaef2, 0x11b2, 0xaf3a, 0x1ca5a, 0x11b2, 0xaf3a, 0x11b2, 0xaf85,
+        0x1caa5, 0x11b2, 0xaf85, 0x11b2, 0xafd8, 0x1caa5, 0x11b2, 0xafdc, 0x11b2, 0xb024,
+        0x1caa5, 0x11b2, 0xb029, 0x11b2, 0xb2be, 0x1caa5, 0x11b2, 0xb2c1, 0x11b2, 0xb2c5,
+        0x1cded, 0x11b2, 0xb2cd, 0x11b2, 0xb312, 0x1cded, 0x11b2, 0xb316, 0x11b2, 0xb4f2,
         0x1cded, 0x11b2, 0xb4f5, 0x11b2, 0xb4f9, 0x1d03b, 0x11b2, 0xb51b, 0x11b2, 0xb62a,
-        0x1d15c, 0x11b2, 0xb63c, 0x11b2, 0xb682, 0x1d15c, 0x11b2, 0xb685, 0x11b2, 0xb6fc,
-        0x1d15c, 0x11b2, 0xb6ff, 0x11b2, 0xb7b9, 0x1d2d9, 0x11b2, 0xb7b9, 0x11b2, 0xb911,
+        0x1d15c, 0x11b2, 0xb63c, 0x11b2, 0xb7b9, 0x1d2d9, 0x11b2, 0xb7b9, 0x11b2, 0xb911,
         0x1d431, 0x11b2, 0xb911, 0x11b2, 0xb965, 0x1d485, 0x11b2, 0xb965, 0x11b2, 0xb981,
-        0x1d4a1, 0x11b2, 0xb981, 0x11b2, 0xb9b9, 0x1d4d9, 0x11b2, 0xb9b9, 0x11b2, 0xbaf3,
+        0x1d4a1, 0x11b2, 0xb981, 0x11b2, 0xb9b9, 0x1d4d9, 0x11b2, 0xb9b9, 0x11b2, 0xbaf6,
         0x1d616, 0x11b2, 0xbaf6, 0x11b2, 0xbb28, 0x1d648, 0x11b2, 0xbb28, 0x11b2, 0xc400,
         0x1d648, 0x11b2, 0xc403, 0x11b2, 0xc54a, 0x1d648, 0x11b2, 0xc54d, 0x11b2, 0xc5ee,
         0x1d648, 0x11b2, 0xc5f3, 0x11b2, 0xc60a, 0x1d648, 0x11b2, 0xc60d, 0x11b2, 0xc750,
         0x1d648, 0x11b2, 0xc755, 0x11b2, 0xc933, 0x1d648, 0x11b2, 0xc938, 0x11b2, 0xcb16,
         0x1d648, 0x11b2, 0xcb1b, 0x11b2, 0xccf9, 0x1d648, 0x11b2, 0xccfe, 0x11b2, 0xcdb7,
-        0x1d648, 0x11b2, 0xcdbc, 0x11b2, 0xce75, 0x1d648, 0x11b2, 0xce7a, 0x11b2, 0xcf77,
-        0x1d648, 0x11b2, 0xcf7c, 0x11b2, 0xd1a1, 0x1d648, 0x11b2, 0xd1a6, 0x11b2, 0xd1b4,
-        0x1ed02, 0x11b2, 0xd1e2, 0x11b2, 0xd582, 0x1f0b0, 0x1f0b, 0x0, 0x1f0b, 0x22,
-        0x1f0f5, 0x1f0b, 0x45, 0x1f0b, 0x94, 0x1f147, 0x1f0b, 0x97, 0x1f0b, 0xfe,
-        0x1f1b1, 0x1f0b, 0x101, 0x1f0b, 0x306, 0x1f3b9, 0x1f0b, 0x309, 0x1f0b, 0x346,
-        0x1f3f9, 0x1f0b, 0x349, 0x1f0b, 0x396, 0x1f449, 0x1f0b, 0x399, 0x1f0b, 0x3c7,
+        0x1d648, 0x11b2, 0xcdbc, 0x11b2, 0xce75, 0x1d648, 0x11b2, 0xce7a, 0x11b2, 0xced7,
+        0x1d648, 0x11b2, 0xcedc, 0x11b2, 0xcf24, 0x1d648, 0x11b2, 0xcf27, 0x11b2, 0xcf77,
+        0x1d648, 0x11b2, 0xcf7c, 0x11b2, 0xcfd9, 0x1d648, 0x11b2, 0xcfde, 0x11b2, 0xd026,
+        0x1d648, 0x11b2, 0xd029, 0x11b2, 0xd1b7, 0x1ed02, 0x11b2, 0xd1e2, 0x11b2, 0xd582,
+        0x1f0b0, 0x1f0b, 0x0, 0x1f0b, 0x25, 0x1f0f5, 0x1f0b, 0x45, 0x1f0b, 0x97,
+        0x1f147, 0x1f0b, 0x97, 0x1f0b, 0xce, 0x1f147, 0x1f0b, 0xd1, 0x1f0b, 0x101,
+        0x1f1b1, 0x1f0b, 0x101, 0x1f0b, 0x258, 0x1f1b1, 0x1f0b, 0x25b, 0x1f0b, 0x29e,
+        0x1f1b1, 0x1f0b, 0x2a1, 0x1f0b, 0x309, 0x1f3b9, 0x1f0b, 0x309, 0x1f0b, 0x349,
+        0x1f3f9, 0x1f0b, 0x349, 0x1f0b, 0x399, 0x1f449, 0x1f0b, 0x399, 0x1f0b, 0x3c7,
         0x1f477, 0x1f0b, 0x3c7, 0x1f0b, 0x3de, 0x1f48e, 0x1f0b, 0x3de, 0x1f0b, 0x3fa,
-        0x1f4aa, 0x1f0b, 0x3fa, 0x1f0b, 0x437, 0x1f4aa, 0x1f0b, 0x438, 0x1f0b, 0x440,
+        0x1f4aa, 0x1f0b, 0x3fa, 0x1f0b, 0x437, 0x1f4aa, 0x1f0b, 0x438, 0x1f0b, 0x443,
         0x1f53a, 0x1f0b, 0x48a, 0x1f0b, 0x492, 0x1f542, 0x1f0b, 0x492, 0x1f0b, 0x4fe,
         0x1f5ae, 0x1f0b, 0x4fe, 0x1f0b, 0x502, 0x1f5c0, 0x1f5c, 0x0, 0x1f5c, 0xf,
-        0x1f5cf, 0x1f5c, 0xf, 0x1f5c, 0x44, 0x1f607, 0x1f5c, 0x47, 0x1f5c, 0xde,
-        0x1f607, 0x1f5c, 0xe1, 0x1f5c, 0xe8, 0x1f6ab, 0x1f5c, 0xeb, 0x1f5c, 0x11a,
-        0x1f76c, 0x1f5c, 0x1ac, 0x1f5c, 0x201, 0x1f82b, 0x1f5c, 0x26b, 0x1f5c, 0xc70,
-        0x20230, 0x1f5c, 0xc70, 0x1f5c, 0xcc4, 0x202ed, 0x1f5c, 0xd2d, 0x1f5c, 0xd48,
-        0x202ed, 0x1f5c, 0xd4b, 0x1f5c, 0xdba, 0x202ed, 0x1f5c, 0xdbd, 0x1f5c, 0xdc4,
-        0x20387, 0x1f5c, 0xdc7, 0x1f5c, 0xf9b, 0x20ed5, 0x1f5c, 0x1915, 0x1f5c, 0x19e0,
-        0x21662, 0x1f5c, 0x20a2, 0x1f5c, 0x22b8, 0x21880, 0x2188, 0x0, 0x2188, 0x40,
-        0x218c3, 0x2188, 0x43, 0x2188, 0x21c, 0x21a9f, 0x2188, 0x21f, 0x2188, 0x2d0,
-        0x21b53, 0x2188, 0x2d3, 0x2188, 0x30d, 0x21b90, 0x2188, 0x310, 0x2188, 0x354,
-        0x21bd7, 0x2188, 0x357, 0x2188, 0x3a8, 0x21ea8, 0x2188, 0x628, 0x2188, 0x68d,
-        0x22127, 0x2188, 0x8a7, 0x2188, 0xa33, 0x222b6, 0x2188, 0xa36, 0x2188, 0xa66,
-        0x23d9d, 0x2188, 0x251d, 0x2188, 0x284d, 0x28b30, 0x28b3, 0x0, 0x28b3, 0x10f,
-        0x28b30, 0x28b3, 0x112, 0x28b3, 0x21e, 0x28d51, 0x28b3, 0x221, 0x28b3, 0x2ec,
-        0x28e1f, 0x28b3, 0x2ef, 0x28b3, 0x443, 0x28f76, 0x28b3, 0x446, 0x28b3, 0x59a,
-        0x290cd, 0x28b3, 0x59d, 0x28b3, 0x6e9, 0x2921c, 0x28b3, 0x6ec, 0x28b3, 0x711,
-        0x29241, 0x28b3, 0x711, 0x28b3, 0x73d, 0x29270, 0x28b3, 0x740, 0x28b3, 0x98f,
-        0x294c2, 0x28b3, 0x992, 0x28b3, 0x13b2, 0x29ee5, 0x28b3, 0x13b5, 0x28b3, 0x1640,
+        0x1f5cf, 0x1f5c, 0xf, 0x1f5c, 0x47, 0x1f607, 0x1f5c, 0x47, 0x1f5c, 0xeb,
+        0x1f6ab, 0x1f5c, 0xeb, 0x1f5c, 0x11a, 0x1f76c, 0x1f5c, 0x1ac, 0x1f5c, 0x204,
+        0x1f82b, 0x1f5c, 0x26b, 0x1f5c, 0xc70, 0x20230, 0x1f5c, 0xc70, 0x1f5c, 0xcc4,
+        0x202ed, 0x1f5c, 0xd2d, 0x1f5c, 0xdc7, 0x20387, 0x1f5c, 0xdc7, 0x1f5c, 0xf9b,
+        0x20697, 0x1f5c, 0x10d7, 0x1f5c, 0x1297, 0x20697, 0x1f5c, 0x129a, 0x1f5c, 0x12a9,
+        0x20697, 0x1f5c, 0x12ac, 0x1f5c, 0x12ad, 0x20697, 0x1f5c, 0x12ae, 0x1f5c, 0x12b3,
+        0x20ed5, 0x1f5c, 0x1915, 0x1f5c, 0x19e3, 0x20fa3, 0x1f5c, 0x19e3, 0x1f5c, 0x1a5c,
+        0x21662, 0x1f5c, 0x20a2, 0x1f5c, 0x22b8, 0x21880, 0x2188, 0x0, 0x2188, 0x43,
+        0x218c3, 0x2188, 0x43, 0x2188, 0x21f, 0x21a9f, 0x2188, 0x21f, 0x2188, 0x2d3,
+        0x21b53, 0x2188, 0x2d3, 0x2188, 0x310, 0x21b90, 0x2188, 0x310, 0x2188, 0x357,
+        0x21bd7, 0x2188, 0x357, 0x2188, 0x3ab, 0x21ea8, 0x2188, 0x628, 0x2188, 0x68d,
+        0x22127, 0x2188, 0x8a7, 0x2188, 0xa36, 0x222b6, 0x2188, 0xa36, 0x2188, 0xa66,
+        0x23d9d, 0x2188, 0x251d, 0x2188, 0x26cc, 0x23d9d, 0x2188, 0x26cf, 0x2188, 0x27d8,
+        0x23d9d, 0x2188, 0x27da, 0x2188, 0x2850, 0x28b30, 0x28b3, 0x0, 0x28b3, 0x10f,
+        0x28b30, 0x28b3, 0x112, 0x28b3, 0x221, 0x28d51, 0x28b3, 0x221, 0x28b3, 0x2ef,
+        0x28e1f, 0x28b3, 0x2ef, 0x28b3, 0x446, 0x28f76, 0x28b3, 0x446, 0x28b3, 0x59d,
+        0x290cd, 0x28b3, 0x59d, 0x28b3, 0x6ec, 0x2921c, 0x28b3, 0x6ec, 0x28b3, 0x711,
+        0x29241, 0x28b3, 0x711, 0x28b3, 0x740, 0x29270, 0x28b3, 0x740, 0x28b3, 0x992,
+        0x294c2, 0x28b3, 0x992, 0x28b3, 0x13b5, 0x29ee5, 0x28b3, 0x13b5, 0x28b3, 0x1643,
         0x2a173, 0x28b3, 0x1643, 0x28b3, 0x16b2, 0x2a173, 0x28b3, 0x16b5, 0x28b3, 0x16bf,
         0x2a21f, 0x28b3, 0x16ef, 0x28b3, 0x175d, 0x2a21f, 0x28b3, 0x1761, 0x28b3, 0x1789,
         0x2a2b9, 0x28b3, 0x1789, 0x28b3, 0x17d1, 0x2a310, 0x2a31, 0x0, 0x2a31, 0x38,
         0x2a348, 0x2a31, 0x38, 0x2a31, 0x58, 0x2a368, 0x2a31, 0x58, 0x2a31, 0x78,
-        0x2a388, 0x2a31, 0x78, 0x2a31, 0x7f, 0x2a3dc, 0x2a31, 0xcc, 0x2a31, 0xf8,
+        0x2a388, 0x2a31, 0x78, 0x2a31, 0x7f, 0x2a3dc, 0x2a31, 0xcc, 0x2a31, 0xfb,
         0x2a410, 0x2a41, 0x0, 0x2a41, 0x30, 0x2a440, 0x2a41, 0x30, 0x2a41, 0x99,
         0x2a4a9, 0x2a41, 0x99, 0x2a41, 0xe7, 0x2a4f7, 0x2a41, 0xe7, 0x2a41, 0x12f,
-        0x2a555, 0x2a41, 0x145, 0x2a41, 0x17f, 0x2a57d, 0x2a41, 0x16d, 0x2a41, 0x17f,
-        0x2a5d2, 0x2a41, 0x1c2, 0x2a41, 0x1dc, 0x2a625, 0x2a41, 0x215, 0x2a41, 0x23e,
-        0x2a669, 0x2a41, 0x259, 0x2a41, 0x270, 0x2a683, 0x2a41, 0x273, 0x2a41, 0x288,
-        0x2a6ae, 0x2a41, 0x29e, 0x2a41, 0x2bb, 0x2a6ce, 0x2a41, 0x2be, 0x2a41, 0x2c6,
+        0x2a555, 0x2a41, 0x145, 0x2a41, 0x182, 0x2a57d, 0x2a41, 0x16d, 0x2a41, 0x182,
+        0x2a5d2, 0x2a41, 0x1c2, 0x2a41, 0x1dc, 0x2a625, 0x2a41, 0x215, 0x2a41, 0x241,
+        0x2a669, 0x2a41, 0x259, 0x2a41, 0x273, 0x2a683, 0x2a41, 0x273, 0x2a41, 0x28b,
+        0x2a6ae, 0x2a41, 0x29e, 0x2a41, 0x2be, 0x2a6ce, 0x2a41, 0x2be, 0x2a41, 0x2c6,
         0x2a703, 0x2a41, 0x2f3, 0x2a41, 0x2fa, 0x2a70a, 0x2a41, 0x2fa, 0x2a41, 0x30c,
-        0x2a71c, 0x2a41, 0x30c, 0x2a41, 0x32a, 0x2a73e, 0x2a41, 0x32e, 0x2a41, 0x356,
-        0x2a884, 0x2a41, 0x474, 0x2a41, 0x4d4, 0x2a88b, 0x2a41, 0x47b, 0x2a41, 0x4d4,
-        0x2a8e4, 0x2a41, 0x4d4, 0x2a41, 0x4f5, 0x2a905, 0x2a41, 0x4f5, 0x2a41, 0x4fc,
-        0x2a905, 0x2a41, 0x608, 0x2a41, 0x613, 0x2a90c, 0x2a41, 0x4fc, 0x2a41, 0x503,
-        0x2a90c, 0x2a41, 0x608, 0x2a41, 0x613, 0x2aa18, 0x2a41, 0x608, 0x2a41, 0x613,
-        0x2aa30, 0x2aa3, 0x0, 0x2aa3, 0x2a, 0x2aaf9, 0x2aa3, 0xc9, 0x2aa3, 0xd7,
-        0x2aaf9, 0x2aa3, 0xd8, 0x2aa3, 0xe2, 0x2aaf9, 0x2aa3, 0xe3, 0x2aa3, 0xe8,
-        0x2ab1b, 0x2aa3, 0xeb, 0x2aa3, 0xf6, 0x2ab29, 0x2aa3, 0xf9, 0x2aa3, 0x11c,
-        0x2ab4f, 0x2aa3, 0x11f, 0x2aa3, 0x16f, 0x2aba2, 0x2aa3, 0x172, 0x2aa3, 0x1c2,
-        0x2abf5, 0x2aa3, 0x1c5, 0x2aa3, 0x1fe, 0x2ac31, 0x2aa3, 0x201, 0x2aa3, 0x220,
-        0x2ac50, 0x2aa3, 0x220, 0x2aa3, 0x257, 0x2ac50, 0x2aa3, 0x258, 0x2aa3, 0x25d,
-        0x2ac8d, 0x2aa3, 0x25d, 0x2aa3, 0x26c, 0x2aca8, 0x2aa3, 0x278, 0x2aa3, 0x287,
-        0x2adcb, 0x2aa3, 0x39b, 0x2aa3, 0x442, 0x2ae75, 0x2aa3, 0x445, 0x2aa3, 0x4c2,
-        0x2af7b, 0x2aa3, 0x54b, 0x2aa3, 0x556, 0x2b144, 0x2aa3, 0x714, 0x2aa3, 0x7a1,
-        0x2c0eb, 0x2aa3, 0x16bb, 0x2aa3, 0x1754, 0x2c187, 0x2aa3, 0x1757, 0x2aa3, 0x17e5,
-        0x2c34f, 0x2aa3, 0x191f, 0x2aa3, 0x19d4, 0x2c34f, 0x2aa3, 0x19d5, 0x2aa3, 0x1a45,
-        0x2c47d, 0x2aa3, 0x1a4d, 0x2aa3, 0x1b0b, 0x2c47d, 0x2aa3, 0x1b0c, 0x2aa3, 0x1b7b,
-        0x2cdb9, 0x2aa3, 0x2389, 0x2aa3, 0x2446, 0x2cdb9, 0x2aa3, 0x2447, 0x2aa3, 0x24bd,
-        0x2d138, 0x2aa3, 0x2708, 0x2aa3, 0x274f, 0x2d2d7, 0x2aa3, 0x28a7, 0x2aa3, 0x28cc,
-        0x2d2d7, 0x2aa3, 0x28cd, 0x2aa3, 0x28e6, 0x2d3f5, 0x2aa3, 0x29c5, 0x2aa3, 0x2a5b,
-        0x2d48e, 0x2aa3, 0x2a5e, 0x2aa3, 0x2ad5, 0x2d825, 0x2aa3, 0x2df5, 0x2aa3, 0x2e55,
-        0x2d888, 0x2aa3, 0x2e58, 0x2aa3, 0x2ea1, 0x2d8d1, 0x2aa3, 0x2ea1, 0x2aa3, 0x2efa,
-        0x2d99b, 0x2d99, 0xb, 0x2d99, 0x44, 0x2d9fc, 0x2d99, 0x6c, 0x2d99, 0x81,
-        0x2da14, 0x2d99, 0x84, 0x2d99, 0x94, 0x2da30, 0x2da3, 0x0, 0x2da3, 0x9d,
-        0x2db08, 0x2da3, 0xd8, 0x2da3, 0x12e, 0x2db08, 0x2da3, 0x12f, 0x2da3, 0x194,
-        0x2dbc4, 0x2da3, 0x194, 0x2da3, 0x1a2, 0x2dbd2, 0x2da3, 0x1a2, 0x2da3, 0x1ae,
-        0x2dbd2, 0x2da3, 0x1b2, 0x2da3, 0x1bc, 0x2dbde, 0x2da3, 0x1ae, 0x2da3, 0x1bc,
-        0x2dbec, 0x2da3, 0x1bc, 0x2da3, 0x1dd, 0x2dbf3, 0x2da3, 0x1c3, 0x2da3, 0x1dd,
-        0x2dbfe, 0x2da3, 0x1ce, 0x2da3, 0x1dd, 0x2dc06, 0x2da3, 0x1d6, 0x2da3, 0x1dd,
-        0x2dc37, 0x2da3, 0x207, 0x2da3, 0x20e, 0x2dc3e, 0x2da3, 0xd2, 0x2da3, 0xd5,
-        0x2dc3e, 0x2da3, 0xdc, 0x2da3, 0x12e, 0x2dc3e, 0x2da3, 0x132, 0x2da3, 0x135,
-        0x2dc3e, 0x2da3, 0x138, 0x2da3, 0x13e, 0x2dc3e, 0x2da3, 0x141, 0x2da3, 0x194,
-        0x2dc3e, 0x2da3, 0x20e, 0x2da3, 0x21c, 0x2dc8d, 0x2da3, 0x25d, 0x2da3, 0x272,
+        0x2a71c, 0x2a41, 0x30c, 0x2a41, 0x32a, 0x2a73e, 0x2a41, 0x32e, 0x2a41, 0x359,
+        0x2a769, 0x2a41, 0x359, 0x2a41, 0x38e, 0x2a884, 0x2a41, 0x474, 0x2a41, 0x4d4,
+        0x2a88b, 0x2a41, 0x47b, 0x2a41, 0x4d4, 0x2a8e4, 0x2a41, 0x4d4, 0x2a41, 0x4f5,
+        0x2a905, 0x2a41, 0x4f5, 0x2a41, 0x4fc, 0x2a905, 0x2a41, 0x608, 0x2a41, 0x613,
+        0x2a90c, 0x2a41, 0x4fc, 0x2a41, 0x503, 0x2a90c, 0x2a41, 0x608, 0x2a41, 0x613,
+        0x2aa18, 0x2a41, 0x608, 0x2a41, 0x613, 0x2aa30, 0x2aa3, 0x0, 0x2aa3, 0x2a,
+        0x2aaf9, 0x2aa3, 0xc9, 0x2aa3, 0xd7, 0x2aaf9, 0x2aa3, 0xd8, 0x2aa3, 0xe2,
+        0x2aaf9, 0x2aa3, 0xe3, 0x2aa3, 0xeb, 0x2ab1b, 0x2aa3, 0xeb, 0x2aa3, 0xf9,
+        0x2ab29, 0x2aa3, 0xf9, 0x2aa3, 0x11f, 0x2ab4f, 0x2aa3, 0x11f, 0x2aa3, 0x172,
+        0x2aba2, 0x2aa3, 0x172, 0x2aa3, 0x1c5, 0x2abf5, 0x2aa3, 0x1c5, 0x2aa3, 0x201,
+        0x2ac31, 0x2aa3, 0x201, 0x2aa3, 0x220, 0x2ac50, 0x2aa3, 0x220, 0x2aa3, 0x257,
+        0x2ac50, 0x2aa3, 0x258, 0x2aa3, 0x25d, 0x2ac8d, 0x2aa3, 0x25d, 0x2aa3, 0x26f,
+        0x2aca8, 0x2aa3, 0x278, 0x2aa3, 0x28a, 0x2adcb, 0x2aa3, 0x39b, 0x2aa3, 0x445,
+        0x2ae75, 0x2aa3, 0x445, 0x2aa3, 0x4c5, 0x2af7b, 0x2aa3, 0x54b, 0x2aa3, 0x559,
+        0x2b144, 0x2aa3, 0x714, 0x2aa3, 0x7a4, 0x2c0eb, 0x2aa3, 0x16bb, 0x2aa3, 0x1757,
+        0x2c187, 0x2aa3, 0x1757, 0x2aa3, 0x17e8, 0x2c34f, 0x2aa3, 0x191f, 0x2aa3, 0x19d4,
+        0x2c34f, 0x2aa3, 0x19d5, 0x2aa3, 0x1a48, 0x2c47d, 0x2aa3, 0x1a4d, 0x2aa3, 0x1b0b,
+        0x2c47d, 0x2aa3, 0x1b0c, 0x2aa3, 0x1b7e, 0x2cdb9, 0x2aa3, 0x2389, 0x2aa3, 0x2446,
+        0x2cdb9, 0x2aa3, 0x2447, 0x2aa3, 0x24c0, 0x2d138, 0x2aa3, 0x2708, 0x2aa3, 0x274f,
+        0x2d2d7, 0x2aa3, 0x28a7, 0x2aa3, 0x28cc, 0x2d2d7, 0x2aa3, 0x28cd, 0x2aa3, 0x28e9,
+        0x2d3f5, 0x2aa3, 0x29c5, 0x2aa3, 0x2a5e, 0x2d48e, 0x2aa3, 0x2a5e, 0x2aa3, 0x2ad8,
+        0x2d825, 0x2aa3, 0x2df5, 0x2aa3, 0x2e58, 0x2d888, 0x2aa3, 0x2e58, 0x2aa3, 0x2ea1,
+        0x2d8d1, 0x2aa3, 0x2ea1, 0x2aa3, 0x2efa, 0x2d99b, 0x2d99, 0xb, 0x2d99, 0x44,
+        0x2d9fc, 0x2d99, 0x6c, 0x2d99, 0x84, 0x2da14, 0x2d99, 0x84, 0x2d99, 0x97,
+        0x2da30, 0x2da3, 0x0, 0x2da3, 0x9c, 0x2db08, 0x2da3, 0xd8, 0x2da3, 0x12e,
+        0x2db08, 0x2da3, 0x12f, 0x2da3, 0x194, 0x2dbc4, 0x2da3, 0x194, 0x2da3, 0x1a2,
+        0x2dbd2, 0x2da3, 0x1a2, 0x2da3, 0x1ae, 0x2dbd2, 0x2da3, 0x1b2, 0x2da3, 0x1bc,
+        0x2dbde, 0x2da3, 0x1ae, 0x2da3, 0x1bc, 0x2dbec, 0x2da3, 0x1bc, 0x2da3, 0x1dd,
+        0x2dbf3, 0x2da3, 0x1c3, 0x2da3, 0x1dd, 0x2dbfe, 0x2da3, 0x1ce, 0x2da3, 0x1dd,
+        0x2dc06, 0x2da3, 0x1d6, 0x2da3, 0x1dd, 0x2dc37, 0x2da3, 0x207, 0x2da3, 0x20e,
+        0x2dc3e, 0x2da3, 0xd2, 0x2da3, 0xd5, 0x2dc3e, 0x2da3, 0xdc, 0x2da3, 0x12e,
+        0x2dc3e, 0x2da3, 0x132, 0x2da3, 0x135, 0x2dc3e, 0x2da3, 0x138, 0x2da3, 0x194,
+        0x2dc3e, 0x2da3, 0x20e, 0x2da3, 0x21c, 0x2dc8d, 0x2da3, 0x25d, 0x2da3, 0x275,
         0x2dca9, 0x2da3, 0x279, 0x2da3, 0x294, 0x2dd59, 0x2da3, 0xd2, 0x2da3, 0xd5,
         0x2dd59, 0x2da3, 0xdc, 0x2da3, 0x12e, 0x2dd59, 0x2da3, 0x132, 0x2da3, 0x135,
-        0x2dd59, 0x2da3, 0x138, 0x2da3, 0x13e, 0x2dd59, 0x2da3, 0x141, 0x2da3, 0x194,
-        0x2dd59, 0x2da3, 0x329, 0x2da3, 0x32c, 0x2dd59, 0x2da3, 0x32f, 0x2da3, 0x34f,
-        0x2dd59, 0x2da3, 0x352, 0x2da3, 0x35a, 0x2dd59, 0x2da3, 0x35e, 0x2da3, 0x364,
-        0x2dd94, 0x2da3, 0xd2, 0x2da3, 0xd5, 0x2dd94, 0x2da3, 0xdc, 0x2da3, 0x12e,
-        0x2dd94, 0x2da3, 0x132, 0x2da3, 0x135, 0x2dd94, 0x2da3, 0x138, 0x2da3, 0x13e,
-        0x2dd94, 0x2da3, 0x141, 0x2da3, 0x194, 0x2dd94, 0x2da3, 0x364, 0x2da3, 0x37a,
-        0x2dd94, 0x2da3, 0x37d, 0x2da3, 0x384, 0x2dde5, 0x2da3, 0x3b5, 0x2da3, 0x3f9,
-        0x2de76, 0x2da3, 0x446, 0x2da3, 0x4e2, 0x2df12, 0x2da3, 0x4e2, 0x2da3, 0x595,
-        0x2dfc5, 0x2da3, 0x595, 0x2da3, 0x5b9, 0x2dfe9, 0x2da3, 0x5b9, 0x2da3, 0x5ce,
-        0x2dffe, 0x2da3, 0x5ce, 0x2da3, 0x617, 0x2e047, 0x2da3, 0x617, 0x2da3, 0x625,
-        0x2e055, 0x2da3, 0x625, 0x2da3, 0x634, 0x2e064, 0x2da3, 0x634, 0x2da3, 0x64b,
-        0x2e07e, 0x2da3, 0x64e, 0x2da3, 0x66f, 0x2e0b0, 0x2da3, 0x680, 0x2da3, 0x6be,
-        0x2e0f1, 0x2da3, 0x6c1, 0x2da3, 0x6ea, 0x2e11d, 0x2da3, 0x6ed, 0x2da3, 0x721,
-        0x2e154, 0x2da3, 0x724, 0x2da3, 0x74c, 0x2e17f, 0x2da3, 0x74f, 0x2da3, 0x75e,
-        0x2e200, 0x2da3, 0x7d0, 0x2da3, 0x823, 0x2e304, 0x2da3, 0x8d4, 0x2da3, 0x8f2,
-        0x2e3b0, 0x2da3, 0x980, 0x2da3, 0x993, 0x2e3ff, 0x2da3, 0x9cf, 0x2da3, 0xa05,
-        0x2e437, 0x2da3, 0xa07, 0x2da3, 0xa14, 0x2e444, 0x2da3, 0xa14, 0x2da3, 0xa66,
-        0x2e4be, 0x2da3, 0xa8e, 0x2da3, 0xb26, 0x2e556, 0x2da3, 0xb26, 0x2da3, 0xb6e,
-        0x2e5a1, 0x2da3, 0xb71, 0x2da3, 0xb9f, 0x2e5d2, 0x2da3, 0xba2, 0x2da3, 0xbe4,
-        0x2e642, 0x2da3, 0xc12, 0x2da3, 0xc17, 0x2e642, 0x2da3, 0xc1f, 0x2da3, 0xc64,
-        0x2e647, 0x2da3, 0xc17, 0x2da3, 0xc1c, 0x2e647, 0x2da3, 0xc1f, 0x2da3, 0xc64,
-        0x2e69b, 0x2da3, 0xc6b, 0x2da3, 0xca3, 0x2e6d6, 0x2da3, 0xca6, 0x2da3, 0xcb6,
-        0x2e6e7, 0x2da3, 0xcb7, 0x2da3, 0xd36, 0x2e769, 0x2da3, 0xd39, 0x2da3, 0xd93,
-        0x2e891, 0x2da3, 0xe61, 0x2da3, 0xe85, 0x2e8b5, 0x2da3, 0xe85, 0x2da3, 0xec4,
-        0x2e91e, 0x2da3, 0xeee, 0x2da3, 0xf0d, 0x2e91e, 0x2da3, 0xf13, 0x2da3, 0xf1a,
-        0x2e91e, 0x2da3, 0xf1d, 0x2da3, 0xf33, 0x2e93d, 0x2da3, 0xf0d, 0x2da3, 0xf1a,
-        0x2e93d, 0x2da3, 0xf1d, 0x2da3, 0xf33, 0x2e981, 0x2da3, 0xf51, 0x2da3, 0xf7b,
-        0x2e9e6, 0x2da3, 0xfb6, 0x2da3, 0xff1, 0x2ea24, 0x2da3, 0xff4, 0x2da3, 0x101f,
-        0x2ea52, 0x2da3, 0x1022, 0x2da3, 0x102b, 0x2ea52, 0x2da3, 0x1031, 0x2da3, 0x1084,
-        0x2ea5b, 0x2da3, 0x102b, 0x2da3, 0x1084, 0x2ead3, 0x2da3, 0x10a3, 0x2da3, 0x10c5,
-        0x2eaf8, 0x2da3, 0x10c8, 0x2da3, 0x10d7, 0x2eb07, 0x2da3, 0x10d7, 0x2da3, 0x10de,
-        0x2eb07, 0x2da3, 0x10e3, 0x2da3, 0x110a, 0x2eb0e, 0x2da3, 0x10de, 0x2da3, 0x110a,
-        0x2ebf8, 0x2da3, 0x11c8, 0x2da3, 0x11d9,     };
+        0x2dd59, 0x2da3, 0x138, 0x2da3, 0x194, 0x2dd59, 0x2da3, 0x329, 0x2da3, 0x32c,
+        0x2dd59, 0x2da3, 0x32f, 0x2da3, 0x34f, 0x2dd59, 0x2da3, 0x352, 0x2da3, 0x35d,
+        0x2dd59, 0x2da3, 0x35e, 0x2da3, 0x364, 0x2dd94, 0x2da3, 0xd2, 0x2da3, 0xd5,
+        0x2dd94, 0x2da3, 0xdc, 0x2da3, 0x12e, 0x2dd94, 0x2da3, 0x132, 0x2da3, 0x135,
+        0x2dd94, 0x2da3, 0x138, 0x2da3, 0x194, 0x2dd94, 0x2da3, 0x364, 0x2da3, 0x384,
+        0x2dde5, 0x2da3, 0x3b5, 0x2da3, 0x3f9, 0x2de76, 0x2da3, 0x446, 0x2da3, 0x4e2,
+        0x2df12, 0x2da3, 0x4e2, 0x2da3, 0x595, 0x2dfc5, 0x2da3, 0x595, 0x2da3, 0x5b9,
+        0x2dfe9, 0x2da3, 0x5b9, 0x2da3, 0x5ce, 0x2dffe, 0x2da3, 0x5ce, 0x2da3, 0x617,
+        0x2e047, 0x2da3, 0x617, 0x2da3, 0x625, 0x2e055, 0x2da3, 0x625, 0x2da3, 0x634,
+        0x2e064, 0x2da3, 0x634, 0x2da3, 0x64e, 0x2e07e, 0x2da3, 0x64e, 0x2da3, 0x672,
+        0x2e0b0, 0x2da3, 0x680, 0x2da3, 0x6c1, 0x2e0f1, 0x2da3, 0x6c1, 0x2da3, 0x6ed,
+        0x2e11d, 0x2da3, 0x6ed, 0x2da3, 0x724, 0x2e154, 0x2da3, 0x724, 0x2da3, 0x74f,
+        0x2e17f, 0x2da3, 0x74f, 0x2da3, 0x761, 0x2e200, 0x2da3, 0x7d0, 0x2da3, 0x826,
+        0x2e304, 0x2da3, 0x8d4, 0x2da3, 0x8f5, 0x2e3b0, 0x2da3, 0x980, 0x2da3, 0x996,
+        0x2e3ff, 0x2da3, 0x9cf, 0x2da3, 0xa05, 0x2e437, 0x2da3, 0xa07, 0x2da3, 0xa14,
+        0x2e444, 0x2da3, 0xa14, 0x2da3, 0xa66, 0x2e4be, 0x2da3, 0xa8e, 0x2da3, 0xb26,
+        0x2e556, 0x2da3, 0xb26, 0x2da3, 0xb71, 0x2e5a1, 0x2da3, 0xb71, 0x2da3, 0xba2,
+        0x2e5d2, 0x2da3, 0xba2, 0x2da3, 0xbe7, 0x2e642, 0x2da3, 0xc12, 0x2da3, 0xc17,
+        0x2e642, 0x2da3, 0xc1f, 0x2da3, 0xc48, 0x2e642, 0x2da3, 0xc4a, 0x2da3, 0xc67,
+        0x2e647, 0x2da3, 0xc17, 0x2da3, 0xc1c, 0x2e647, 0x2da3, 0xc1f, 0x2da3, 0xc48,
+        0x2e647, 0x2da3, 0xc4a, 0x2da3, 0xc67, 0x2e69b, 0x2da3, 0xc6b, 0x2da3, 0xca6,
+        0x2e6d6, 0x2da3, 0xca6, 0x2da3, 0xcb6, 0x2e6e7, 0x2da3, 0xcb7, 0x2da3, 0xd39,
+        0x2e769, 0x2da3, 0xd39, 0x2da3, 0xd93, 0x2e891, 0x2da3, 0xe61, 0x2da3, 0xe85,
+        0x2e8b5, 0x2da3, 0xe85, 0x2da3, 0xec4, 0x2e91e, 0x2da3, 0xeee, 0x2da3, 0xf0d,
+        0x2e91e, 0x2da3, 0xf13, 0x2da3, 0xf1a, 0x2e91e, 0x2da3, 0xf1d, 0x2da3, 0xf33,
+        0x2e93d, 0x2da3, 0xf0d, 0x2da3, 0xf1a, 0x2e93d, 0x2da3, 0xf1d, 0x2da3, 0xf33,
+        0x2e981, 0x2da3, 0xf51, 0x2da3, 0xf7e, 0x2e9e6, 0x2da3, 0xfb6, 0x2da3, 0xff4,
+        0x2ea24, 0x2da3, 0xff4, 0x2da3, 0x1022, 0x2ea52, 0x2da3, 0x1022, 0x2da3, 0x102b,
+        0x2ea52, 0x2da3, 0x1031, 0x2da3, 0x1059, 0x2ea52, 0x2da3, 0x105e, 0x2da3, 0x1087,
+        0x2ea5b, 0x2da3, 0x102b, 0x2da3, 0x1059, 0x2ea5b, 0x2da3, 0x105e, 0x2da3, 0x1087,
+        0x2ead3, 0x2da3, 0x10a3, 0x2da3, 0x10c8, 0x2eaf8, 0x2da3, 0x10c8, 0x2da3, 0x10d7,
+        0x2eb07, 0x2da3, 0x10d7, 0x2da3, 0x10de, 0x2eb07, 0x2da3, 0x10e3, 0x2da3, 0x110d,
+        0x2eb0e, 0x2da3, 0x10de, 0x2da3, 0x110d, 0x2ebf8, 0x2da3, 0x11c8, 0x2da3, 0x11dc,
+    };
     for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)
         if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs <= map[i+3]*16 + map[i+4])
             return map[i];
     return 0;
 }
 /*
-{{0x01ed, 0x0000}, 10}, // sub_1ed0 retf
-{{0x01ed, 0x0059}, 22}, // sub_1f29 retf
-{{0x01ed, 0x047d}, 30}, // sub_234d retf
+{{0x01ed, 0x0000}, 8}, // sub_1ed0 retf
+{{0x01ed, 0x0059}, 20}, // sub_1f29 retf
+{{0x01ed, 0x047d}, 28}, // sub_234d retf
 {{0x01ed, 0x0f38}, 8}, // sub_2e08 ret
 {{0x01ed, 0x1037}, 8}, // sub_2f07 ret
 {{0x01ed, 0x25f0}, 6}, // sub_44c0 ret
 {{0x01ed, 0xb1a9}, 2}, // sub_d079 ret
 {{0x01ed, 0xd5c2}, 2}, // sub_f492 ret
 {{0x01ed, 0xe51d}, 4}, // sub_103ed ret
-{{0x11b2, 0x00ec}, 4}, // sub_11c0c retf
-{{0x11b2, 0x06c4}, 10}, // sub_121e4 retf
-{{0x11b2, 0x0877}, 4}, // sub_12397 retf
-{{0x11b2, 0x1001}, 4}, // sub_12b21 retf
-{{0x11b2, 0x6c86}, 4}, // sub_187a6 retf
-{{0x11b2, 0x6fe5}, 4}, // sub_18b05 retf
+{{0x11b2, 0x00ec}, 2}, // sub_11c0c retf
+{{0x11b2, 0x06c4}, 8}, // sub_121e4 retf
+{{0x11b2, 0x0877}, 2}, // sub_12397 retf
+{{0x11b2, 0x1001}, 2}, // sub_12b21 retf
+{{0x11b2, 0x6c86}, 2}, // sub_187a6 retf
+{{0x11b2, 0x6fe5}, 2}, // sub_18b05 retf
 {{0x11b2, 0x7213}, 2}, // sub_18d33 ret
 {{0x11b2, 0x73fd}, 2}, // sub_18f1d ret
-{{0x11b2, 0x80e1}, 10}, // sub_19c01 retf
-{{0x11b2, 0x899d}, 6}, // sub_1a4bd retf
-{{0x11b2, 0xaef2}, 4}, // sub_1ca12 retf
-{{0x11b2, 0xaf3a}, 4}, // sub_1ca5a retf
-{{0x11b2, 0xb9b9}, 4}, // sub_1d4d9 retf
-{{0x11b2, 0xbb28}, 6}, // sub_1d648 retf
-{{0x1f0b, 0x0000}, 6}, // sub_1f0b0 retf
-{{0x1f0b, 0x0045}, 6}, // sub_1f0f5 retf
-{{0x1f0b, 0x0097}, 14}, // sub_1f147 retf
-{{0x1f0b, 0x0101}, 16}, // sub_1f1b1 retf
-{{0x1f0b, 0x0309}, 16}, // sub_1f3b9 retf
-{{0x1f0b, 0x0349}, 12}, // sub_1f3f9 retf
-{{0x1f0b, 0x03fa}, 12}, // sub_1f4aa retf
-{{0x1f5c, 0x000f}, 4}, // sub_1f5cf retf
-{{0x1f5c, 0x0047}, 4}, // sub_1f607 retf
-{{0x1f5c, 0x01ac}, 4}, // sub_1f76c retf
-{{0x1f5c, 0x0d2d}, 14}, // sub_202ed retf
-{{0x1f5c, 0x1915}, 12}, // sub_20ed5 retf
-{{0x2188, 0x0000}, 6}, // sub_21880 retf
-{{0x2188, 0x0043}, 6}, // sub_218c3 retf
-{{0x2188, 0x021f}, 4}, // sub_21a9f retf
-{{0x2188, 0x02d3}, 6}, // sub_21b53 retf
-{{0x2188, 0x0310}, 4}, // sub_21b90 retf
-{{0x2188, 0x0357}, 4}, // sub_21bd7 retf
-{{0x2188, 0x08a7}, 8}, // sub_22127 retf
-{{0x2188, 0x251d}, 8}, // sub_23d9d retf
-{{0x28b3, 0x0000}, 6}, // sub_28b30 retf
-{{0x28b3, 0x0221}, 6}, // sub_28d51 retf
-{{0x28b3, 0x02ef}, 4}, // sub_28e1f retf
-{{0x28b3, 0x0446}, 4}, // sub_28f76 retf
-{{0x28b3, 0x059d}, 4}, // sub_290cd retf
-{{0x28b3, 0x0711}, 4}, // sub_29241 retf
-{{0x28b3, 0x0740}, 6}, // sub_29270 retf
-{{0x28b3, 0x0992}, 6}, // sub_294c2 retf
-{{0x28b3, 0x13b5}, 8}, // sub_29ee5 retf
-{{0x2a31, 0x00cc}, 4}, // sub_2a3dc retf
-{{0x2a41, 0x0145}, 4}, // sub_2a555 ret retf
-{{0x2a41, 0x016d}, 4}, // sub_2a57d retf
-{{0x2a41, 0x0215}, 6}, // sub_2a625 retf
-{{0x2a41, 0x0259}, 4}, // sub_2a669 retf
-{{0x2a41, 0x0273}, 4}, // sub_2a683 retf
-{{0x2a41, 0x029e}, 4}, // sub_2a6ae retf
-{{0x2a41, 0x032e}, 6}, // sub_2a73e retf
-{{0x2aa3, 0x00c9}, 4}, // sub_2aaf9 retf
-{{0x2aa3, 0x00eb}, 4}, // sub_2ab1b retf
-{{0x2aa3, 0x00f9}, 4}, // sub_2ab29 retf
-{{0x2aa3, 0x011f}, 6}, // sub_2ab4f retf
-{{0x2aa3, 0x0172}, 6}, // sub_2aba2 retf
-{{0x2aa3, 0x01c5}, 4}, // sub_2abf5 retf
-{{0x2aa3, 0x0220}, 4}, // sub_2ac50 retf
-{{0x2aa3, 0x025d}, 4}, // sub_2ac8d retf
-{{0x2aa3, 0x0278}, 6}, // sub_2aca8 retf
-{{0x2aa3, 0x039b}, 10}, // sub_2adcb retf
-{{0x2aa3, 0x0445}, 10}, // sub_2ae75 retf
-{{0x2aa3, 0x054b}, 4}, // sub_2af7b retf
-{{0x2aa3, 0x0714}, 10}, // sub_2b144 retf
-{{0x2aa3, 0x16bb}, 14}, // sub_2c0eb retf
-{{0x2aa3, 0x1757}, 10}, // sub_2c187 retf
-{{0x2aa3, 0x191f}, 10}, // sub_2c34f retf
-{{0x2aa3, 0x1a4d}, 10}, // sub_2c47d retf
-{{0x2aa3, 0x2389}, 10}, // sub_2cdb9 retf
-{{0x2aa3, 0x28a7}, 4}, // sub_2d2d7 retf
-{{0x2aa3, 0x29c5}, 10}, // sub_2d3f5 retf
-{{0x2aa3, 0x2a5e}, 10}, // sub_2d48e retf
-{{0x2aa3, 0x2df5}, 10}, // sub_2d825 retf
-{{0x2d99, 0x006c}, 8}, // sub_2d9fc retf
-{{0x2d99, 0x0084}, 8}, // sub_2da14 retf
-{{0x2da3, 0x025d}, 12}, // sub_2dc8d retf
-{{0x2da3, 0x0329}, 8}, // sub_2dd59 retf
-{{0x2da3, 0x0364}, 8}, // sub_2dd94 retf
-{{0x2da3, 0x0634}, 6}, // sub_2e064 retf
-{{0x2da3, 0x064e}, 12}, // sub_2e07e retf
-{{0x2da3, 0x0680}, 10}, // sub_2e0b0 retf
-{{0x2da3, 0x06c1}, 6}, // sub_2e0f1 retf
-{{0x2da3, 0x06ed}, 10}, // sub_2e11d retf
-{{0x2da3, 0x0724}, 10}, // sub_2e154 retf
-{{0x2da3, 0x074f}, 4}, // sub_2e17f retf
-{{0x2da3, 0x07d0}, 10}, // sub_2e200 retf
-{{0x2da3, 0x08d4}, 8}, // sub_2e304 retf
-{{0x2da3, 0x0980}, 4}, // sub_2e3b0 retf
-{{0x2da3, 0x0b26}, 14}, // sub_2e556 retf
-{{0x2da3, 0x0b71}, 10}, // sub_2e5a1 retf
-{{0x2da3, 0x0ba2}, 10}, // sub_2e5d2 retf
-{{0x2da3, 0x0c12}, 6}, // sub_2e642 retf
-{{0x2da3, 0x0c17}, 6}, // sub_2e647 retf
-{{0x2da3, 0x0c6b}, 6}, // sub_2e69b retf
-{{0x2da3, 0x0cb7}, 6}, // sub_2e6e7 retf
-{{0x2da3, 0x0eee}, 6}, // sub_2e91e retf
-{{0x2da3, 0x0f0d}, 6}, // sub_2e93d retf
-{{0x2da3, 0x0f51}, 6}, // sub_2e981 retf
-{{0x2da3, 0x0fb6}, 8}, // sub_2e9e6 retf
-{{0x2da3, 0x0ff4}, 10}, // sub_2ea24 retf
-{{0x2da3, 0x1022}, 8}, // sub_2ea52 retf
-{{0x2da3, 0x102b}, 8}, // sub_2ea5b retf
-{{0x2da3, 0x10a3}, 6}, // sub_2ead3 retf
-{{0x2da3, 0x10d7}, 6}, // sub_2eb07 retf
-{{0x2da3, 0x10de}, 6}, // sub_2eb0e retf
-{{0x2da3, 0x11c8}, 10}, // sub_2ebf8 retf
+{{0x11b2, 0x80e1}, 8}, // sub_19c01 retf
+{{0x11b2, 0x899d}, 4}, // sub_1a4bd retf
+{{0x11b2, 0xaef2}, 2}, // sub_1ca12 retf
+{{0x11b2, 0xaf3a}, 2}, // sub_1ca5a retf
+{{0x11b2, 0xb9b9}, 2}, // sub_1d4d9 retf
+{{0x11b2, 0xbb28}, 4}, // sub_1d648 retf
+{{0x1f0b, 0x0000}, 4}, // sub_1f0b0 retf
+{{0x1f0b, 0x0045}, 4}, // sub_1f0f5 retf
+{{0x1f0b, 0x0097}, 12}, // sub_1f147 retf
+{{0x1f0b, 0x0101}, 14}, // sub_1f1b1 retf
+{{0x1f0b, 0x0309}, 14}, // sub_1f3b9 retf
+{{0x1f0b, 0x0349}, 10}, // sub_1f3f9 retf
+{{0x1f0b, 0x03fa}, 10}, // sub_1f4aa retf
+{{0x1f5c, 0x000f}, 2}, // sub_1f5cf retf
+{{0x1f5c, 0x0047}, 2}, // sub_1f607 retf
+{{0x1f5c, 0x01ac}, 2}, // sub_1f76c retf
+{{0x1f5c, 0x0d2d}, 12}, // sub_202ed retf
+{{0x1f5c, 0x10d7}, 12}, // sub_20697 retf
+{{0x1f5c, 0x1915}, 10}, // sub_20ed5 retf
+{{0x1f5c, 0x19e3}, 2}, // sub_20fa3 retf
+{{0x2188, 0x0000}, 4}, // sub_21880 retf
+{{0x2188, 0x0043}, 4}, // sub_218c3 retf
+{{0x2188, 0x021f}, 2}, // sub_21a9f retf
+{{0x2188, 0x02d3}, 4}, // sub_21b53 retf
+{{0x2188, 0x0310}, 2}, // sub_21b90 retf
+{{0x2188, 0x0357}, 2}, // sub_21bd7 retf
+{{0x2188, 0x08a7}, 6}, // sub_22127 retf
+{{0x2188, 0x251d}, 6}, // sub_23d9d retf
+{{0x28b3, 0x0000}, 4}, // sub_28b30 retf
+{{0x28b3, 0x0221}, 4}, // sub_28d51 retf
+{{0x28b3, 0x02ef}, 2}, // sub_28e1f retf
+{{0x28b3, 0x0446}, 2}, // sub_28f76 retf
+{{0x28b3, 0x059d}, 2}, // sub_290cd retf
+{{0x28b3, 0x0711}, 2}, // sub_29241 retf
+{{0x28b3, 0x0740}, 4}, // sub_29270 retf
+{{0x28b3, 0x0992}, 4}, // sub_294c2 retf
+{{0x28b3, 0x13b5}, 6}, // sub_29ee5 retf
+{{0x2a31, 0x00cc}, 2}, // sub_2a3dc retf
+{{0x2a41, 0x0145}, 2}, // sub_2a555 ret retf
+{{0x2a41, 0x016d}, 2}, // sub_2a57d retf
+{{0x2a41, 0x0215}, 4}, // sub_2a625 retf
+{{0x2a41, 0x0259}, 2}, // sub_2a669 retf
+{{0x2a41, 0x0273}, 2}, // sub_2a683 retf
+{{0x2a41, 0x029e}, 2}, // sub_2a6ae retf
+{{0x2a41, 0x032e}, 4}, // sub_2a73e retf
+{{0x2a41, 0x0359}, 4}, // sub_2a769 retf
+{{0x2aa3, 0x00c9}, 2}, // sub_2aaf9 retf
+{{0x2aa3, 0x00eb}, 2}, // sub_2ab1b retf
+{{0x2aa3, 0x00f9}, 2}, // sub_2ab29 retf
+{{0x2aa3, 0x011f}, 4}, // sub_2ab4f retf
+{{0x2aa3, 0x0172}, 4}, // sub_2aba2 retf
+{{0x2aa3, 0x01c5}, 2}, // sub_2abf5 retf
+{{0x2aa3, 0x0220}, 2}, // sub_2ac50 retf
+{{0x2aa3, 0x025d}, 2}, // sub_2ac8d retf
+{{0x2aa3, 0x0278}, 4}, // sub_2aca8 retf
+{{0x2aa3, 0x039b}, 8}, // sub_2adcb retf
+{{0x2aa3, 0x0445}, 8}, // sub_2ae75 retf
+{{0x2aa3, 0x054b}, 2}, // sub_2af7b retf
+{{0x2aa3, 0x0714}, 8}, // sub_2b144 retf
+{{0x2aa3, 0x16bb}, 12}, // sub_2c0eb retf
+{{0x2aa3, 0x1757}, 8}, // sub_2c187 retf
+{{0x2aa3, 0x191f}, 8}, // sub_2c34f retf
+{{0x2aa3, 0x1a4d}, 8}, // sub_2c47d retf
+{{0x2aa3, 0x2389}, 8}, // sub_2cdb9 retf
+{{0x2aa3, 0x28a7}, 2}, // sub_2d2d7 retf
+{{0x2aa3, 0x29c5}, 8}, // sub_2d3f5 retf
+{{0x2aa3, 0x2a5e}, 8}, // sub_2d48e retf
+{{0x2aa3, 0x2df5}, 8}, // sub_2d825 retf
+{{0x2d99, 0x006c}, 6}, // sub_2d9fc retf
+{{0x2d99, 0x0084}, 6}, // sub_2da14 retf
+{{0x2da3, 0x025d}, 10}, // sub_2dc8d retf
+{{0x2da3, 0x0329}, 6}, // sub_2dd59 retf
+{{0x2da3, 0x0364}, 6}, // sub_2dd94 retf
+{{0x2da3, 0x0634}, 4}, // sub_2e064 retf
+{{0x2da3, 0x064e}, 10}, // sub_2e07e retf
+{{0x2da3, 0x0680}, 8}, // sub_2e0b0 retf
+{{0x2da3, 0x06c1}, 4}, // sub_2e0f1 retf
+{{0x2da3, 0x06ed}, 8}, // sub_2e11d retf
+{{0x2da3, 0x0724}, 8}, // sub_2e154 retf
+{{0x2da3, 0x074f}, 2}, // sub_2e17f retf
+{{0x2da3, 0x07d0}, 8}, // sub_2e200 retf
+{{0x2da3, 0x08d4}, 6}, // sub_2e304 retf
+{{0x2da3, 0x0980}, 2}, // sub_2e3b0 retf
+{{0x2da3, 0x0b26}, 12}, // sub_2e556 retf
+{{0x2da3, 0x0b71}, 8}, // sub_2e5a1 retf
+{{0x2da3, 0x0ba2}, 8}, // sub_2e5d2 retf
+{{0x2da3, 0x0c12}, 4}, // sub_2e642 retf
+{{0x2da3, 0x0c17}, 4}, // sub_2e647 retf
+{{0x2da3, 0x0c6b}, 4}, // sub_2e69b retf
+{{0x2da3, 0x0cb7}, 4}, // sub_2e6e7 retf
+{{0x2da3, 0x0eee}, 4}, // sub_2e91e retf
+{{0x2da3, 0x0f0d}, 4}, // sub_2e93d retf
+{{0x2da3, 0x0f51}, 4}, // sub_2e981 retf
+{{0x2da3, 0x0fb6}, 6}, // sub_2e9e6 retf
+{{0x2da3, 0x0ff4}, 8}, // sub_2ea24 retf
+{{0x2da3, 0x1022}, 6}, // sub_2ea52 retf
+{{0x2da3, 0x102b}, 6}, // sub_2ea5b retf
+{{0x2da3, 0x10a3}, 4}, // sub_2ead3 retf
+{{0x2da3, 0x10d7}, 4}, // sub_2eb07 retf
+{{0x2da3, 0x10de}, 4}, // sub_2eb0e retf
+{{0x2da3, 0x11c8}, 8}, // sub_2ebf8 retf
 */
+
