@@ -738,503 +738,201 @@ namespace Profiles {
         .loadAddress = 0x01ed0,
         .terminators = {{0x01ed, 0xfb8a}},
         
-        .procModifiers = {
-#if 0
-            /*
-             {{0x01ed, 0x0000}, procRequest_t::popsCs},
-             {{0x01ed, 0x0059}, procRequest_t::popsCs},
-             {{0x01ed, 0x047d}, procRequest_t::popsCs},
-             {{0x01ed, 0x06be}, procRequest_t::popsCs},
-             {{0x01ed, 0x06ee}, procRequest_t::popsCs},
-             {{0x01ed, 0x070d}, procRequest_t::popsCs},
-             {{0x01ed, 0xfbb2}, procRequest_t::popsCs},
-             {{0x01ed, 0xfc24}, procRequest_t::popsCs},
-             {{0x01ed, 0xfc38}, procRequest_t::popsCs},
-             {{0x11b2, 0x00ec}, procRequest_t::popsCs},
-             {{0x11b2, 0x06c4}, procRequest_t::popsCs},
-             {{0x11b2, 0x0877}, procRequest_t::popsCs},
-             {{0x11b2, 0x1001}, procRequest_t::popsCs},
-             {{0x11b2, 0x17f1}, procRequest_t::popsCs},
-             {{0x11b2, 0x1851}, procRequest_t::popsCs},
-             {{0x11b2, 0x18fa}, procRequest_t::popsCs},
-             {{0x11b2, 0x1a72}, procRequest_t::popsCs},
-             {{0x11b2, 0x1d58}, procRequest_t::popsCs},
-             {{0x11b2, 0x2198}, procRequest_t::popsCs},
-             {{0x11b2, 0x27a8}, procRequest_t::popsCs},
-             {{0x11b2, 0x2f92}, procRequest_t::popsCs},
-             {{0x11b2, 0x3cba}, procRequest_t::popsCs},
-             {{0x11b2, 0x3eb7}, procRequest_t::popsCs},
-             {{0x11b2, 0x4078}, procRequest_t::popsCs},
-             {{0x11b2, 0x42b0}, procRequest_t::popsCs},
-             {{0x11b2, 0x4cd7}, procRequest_t::popsCs},
-             {{0x11b2, 0x5cc5}, procRequest_t::popsCs},
-             {{0x11b2, 0x5e06}, procRequest_t::popsCs},
-             {{0x11b2, 0x5fb0}, procRequest_t::popsCs},
-             {{0x11b2, 0x6035}, procRequest_t::popsCs},
-             {{0x11b2, 0x61b1}, procRequest_t::popsCs},
-             {{0x11b2, 0x6448}, procRequest_t::popsCs},
-             {{0x11b2, 0x66d7}, procRequest_t::popsCs},
-             {{0x11b2, 0x67a3}, procRequest_t::popsCs},
-             {{0x11b2, 0x6870}, procRequest_t::popsCs},
-             {{0x11b2, 0x6a58}, procRequest_t::popsCs},
-             {{0x11b2, 0x6c86}, procRequest_t::popsCs},
-             {{0x11b2, 0x6dfd}, procRequest_t::popsCs},
-             {{0x11b2, 0x6fe5}, procRequest_t::popsCs},
-             {{0x11b2, 0x70ec}, procRequest_t::popsCs},
-             {{0x11b2, 0x74f5}, procRequest_t::popsCs},
-             {{0x11b2, 0x7914}, procRequest_t::popsCs},
-             {{0x11b2, 0x80e1}, procRequest_t::popsCs},
-             {{0x11b2, 0x863d}, procRequest_t::popsCs},
-             {{0x11b2, 0x9e38}, procRequest_t::popsCs},
-             {{0x11b2, 0xa1cf}, procRequest_t::popsCs},
-             {{0x11b2, 0xa59e}, procRequest_t::popsCs},
-             {{0x11b2, 0xa7ef}, procRequest_t::popsCs},
-             {{0x11b2, 0xaa3a}, procRequest_t::popsCs},
-             {{0x11b2, 0xaef2}, procRequest_t::popsCs},
-             {{0x11b2, 0xaf3a}, procRequest_t::popsCs},
-             {{0x11b2, 0xb9b9}, procRequest_t::popsCs},
-             {{0x1f0b, 0x0000}, procRequest_t::popsCs},
-             {{0x1f0b, 0x0045}, procRequest_t::popsCs},
-             {{0x1f0b, 0x0097}, procRequest_t::popsCs},
-             {{0x1f0b, 0x0399}, procRequest_t::popsCs},
-             {{0x1f0b, 0x03fa}, procRequest_t::popsCs},
-             {{0x1f0b, 0x0492}, procRequest_t::popsCs},
-             {{0x1f0b, 0x04fe}, procRequest_t::popsCs},
-             {{0x1f5c, 0x026b}, procRequest_t::popsCs},
-             {{0x1f5c, 0x20a2}, procRequest_t::popsCs},
-             {{0x28b3, 0x1643}, procRequest_t::popsCs},
-             {{0x2a41, 0x0145}, procRequest_t::popsCs},
-             {{0x2a41, 0x032e}, procRequest_t::popsCs},
-             {{0x2aa3, 0x0201}, procRequest_t::popsCs},
-             {{0x2aa3, 0x2708}, procRequest_t::popsCs},
-             {{0x2aa3, 0x28a7}, procRequest_t::popsCs},
-             {{0x2da3, 0x0ba2}, procRequest_t::popsCs},
-             {{0x2da3, 0x0c6b}, procRequest_t::popsCs},
-             
-             {{0x2188, 0x021f}, procRequest_t::stackDrop4},
-             */
-            {{0x01ed, 0x0000}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x01ed, 0x0059}, procRequest_t((int)procRequest_t::stackDrop22 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x01ed, 0x047d}, procRequest_t((int)procRequest_t::stackDrop30 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0x06be}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0x06ee}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0x070d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0x0b2d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x0b88}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x0baf}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x0c3e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x0f38}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x1037}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0x25f0}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xb1a9}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xcf46}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xcf6c}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd140}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd15c}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd17d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd1c6}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd342}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd360}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd4e5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd5c2}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd6d4}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd710}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xd72a}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xdcb9}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xe011}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xe36b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xe51d}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xe5d3}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xeaea}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xebf2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xeec1}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xef38}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x01ed, 0xfb96}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0xfbb2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0xfc24}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x01ed, 0xfc38}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x00ec}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x06c4}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x0877}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x1001}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x17f1}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x1851}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x18fa}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x1a72}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x1d58}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x2198}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x27a8}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x2f92}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x33e5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x35e1}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x3946}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x3cba}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x3eb7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x4078}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x42b0}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x4cd7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x5b8e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x5cc5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x5e06}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x5ef4}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x5fb0}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6035}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6105}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x61b1}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6448}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x66d7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x67a3}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6870}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x694d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x6a58}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6b4d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6c18}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x6c86}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6dfd}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6f1a}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x6fe5}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x70ec}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x7213}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x73fd}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x74f5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x7914}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x7d28}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x80e1}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x8265}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x8491}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x853b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x863d}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x8738}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x899d}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x8d32}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0x94e0}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0x9e38}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xa1cf}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xa467}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xa59e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xa669}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xa72f}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xa7ef}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xaa3a}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xab90}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xaba4}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xac0b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xacc0}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xad9e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x11b2, 0xae3b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xaef2}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xaf3a}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xaf85}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb2cd}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb51b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb63c}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb7b9}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb911}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb965}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb981}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xb9b9}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xbaf6}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xbb28}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x11b2, 0xd1e2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x0000}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x0045}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f0b, 0x0097}, procRequest_t((int)procRequest_t::stackDrop14 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f0b, 0x0101}, procRequest_t((int)procRequest_t::stackDrop16 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f0b, 0x0309}, procRequest_t((int)procRequest_t::stackDrop16 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f0b, 0x0349}, procRequest_t((int)procRequest_t::stackDrop12 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x0399}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x03c7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x03de}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-//            {{0x1f0b, 0x03fa}, procRequest_t((int)procRequest_t::stackDrop12 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x048a}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x1f0b, 0x0492}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f0b, 0x04fe}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x000f}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x0047}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x00eb}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x01ac}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x026b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x0c70}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f5c, 0x0d2d}, procRequest_t((int)procRequest_t::stackDrop14 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x0dc7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x1f5c, 0x1915}, procRequest_t((int)procRequest_t::stackDrop12 | (int)procRequest_t::popsCs)}, // retf
-            {{0x1f5c, 0x20a2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0000}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0043}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x021f}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x02d3}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0310}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0357}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0628}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x08a7}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x0a36}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2188, 0x251d}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0000}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0221}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x28b3, 0x02ef}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0446}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x059d}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x06ec}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0711}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0740}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x0992}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x13b5}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x1643}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x16ef}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x28b3, 0x1789}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a31, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a31, 0x0038}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a31, 0x0058}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a31, 0x0078}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a31, 0x00cc}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0030}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x0099}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x00e7}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x0145}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-//            Mixed ret in 2a41:0145 sub_2a555()
-            {{0x2a41, 0x016d}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x01c2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0215}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0259}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0273}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x029e}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x02be}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x02f3}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x02fa}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x030c}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x032e}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2a41, 0x0474}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x047b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x04d4}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x04f5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x04fc}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2a41, 0x0608}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2aa3, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x00c9}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x00eb}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x00f9}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x011f}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0172}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x01c5}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0201}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0220}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x025d}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0278}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x039b}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0445}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x054b}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x0714}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x2aa3, 0x16bb}, procRequest_t((int)procRequest_t::stackDrop14 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x1757}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x191f}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x1a4d}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2389}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2708}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x28a7}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x29c5}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2a5e}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2df5}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2e58}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2aa3, 0x2ea1}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2d99, 0x000b}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2d99, 0x006c}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2d99, 0x0084}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0000}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x00d8}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0194}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01a2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01ae}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01bc}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01c3}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01ce}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x01d6}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0207}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x020e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x020e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x2da3, 0x025d}, procRequest_t((int)procRequest_t::stackDrop12 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0279}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0329}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-//            Mixed ret in 2da3:0329 sub_2dd59()
-            {{0x2da3, 0x0364}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-//            Mixed ret in 2da3:0364 sub_2dd94()
-            {{0x2da3, 0x03b5}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0446}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0446}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x04e2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x04e2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x04e2}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0595}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0595}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x05b9}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x05ce}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x05ce}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0617}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0625}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0634}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-//            {{0x2da3, 0x064e}, procRequest_t((int)procRequest_t::stackDrop12 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0680}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x06c1}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x06ed}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0724}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x074f}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x07d0}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x08d4}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0980}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x09cf}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0a07}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0a14}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0a8e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0a8e}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-//            {{0x2da3, 0x0b26}, procRequest_t((int)procRequest_t::stackDrop14 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0b71}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0ba2}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0c12}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0c17}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0c6b}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0ca6}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0e61}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0e85}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0e85}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x0eee}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0f0d}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0f51}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0fb6}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x0ff4}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x1022}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x102b}, procRequest_t((int)procRequest_t::stackDrop8 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x10a3}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x10c8}, procRequest_t((int)procRequest_t::stackDrop2 | (int)procRequest_t::popsCs)}, // ret
-            {{0x2da3, 0x10d7}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x10de}, procRequest_t((int)procRequest_t::stackDrop6 | (int)procRequest_t::popsCs)}, // retf
-            {{0x2da3, 0x11c8}, procRequest_t((int)procRequest_t::stackDrop10 | (int)procRequest_t::popsCs)}, // retf
-            //
-            {{0x28b3, 0x02ef}, procRequest_t((int)procRequest_t::stackDrop4 | (int)procRequest_t::popsCs | (int)procRequest_t::callFar)}, // retf
-#endif
-            
+        .procModifiersStack = {
+            {{0x01ed, 0x0000}, 10}, // sub_1ed0 retf
+            {{0x01ed, 0x0059}, 22}, // sub_1f29 retf
+            {{0x01ed, 0x047d}, 30}, // sub_234d retf
+            {{0x01ed, 0x0f38}, 8}, // sub_2e08 ret
+            {{0x01ed, 0x1037}, 8}, // sub_2f07 ret
+            {{0x01ed, 0x25f0}, 6}, // sub_44c0 ret
+            {{0x01ed, 0xb1a9}, 2}, // sub_d079 ret
+            {{0x01ed, 0xd5c2}, 2}, // sub_f492 ret
+            {{0x01ed, 0xe51d}, 4}, // sub_103ed ret
+            {{0x11b2, 0x00ec}, 4}, // sub_11c0c retf
+            {{0x11b2, 0x06c4}, 10}, // sub_121e4 retf
+            {{0x11b2, 0x0877}, 4}, // sub_12397 retf
+            {{0x11b2, 0x1001}, 4}, // sub_12b21 retf
+            {{0x11b2, 0x6c86}, 4}, // sub_187a6 retf
+            {{0x11b2, 0x6fe5}, 4}, // sub_18b05 retf
+            {{0x11b2, 0x7213}, 2}, // sub_18d33 ret
+            {{0x11b2, 0x73fd}, 2}, // sub_18f1d ret
+            {{0x11b2, 0x80e1}, 10}, // sub_19c01 retf
+            {{0x11b2, 0x899d}, 6}, // sub_1a4bd retf
+            {{0x11b2, 0xaef2}, 4}, // sub_1ca12 retf
+            {{0x11b2, 0xaf3a}, 4}, // sub_1ca5a retf
+            {{0x11b2, 0xb9b9}, 4}, // sub_1d4d9 retf
+            {{0x11b2, 0xbb28}, 6}, // sub_1d648 retf
+            {{0x1f0b, 0x0000}, 6}, // sub_1f0b0 retf
+            {{0x1f0b, 0x0045}, 6}, // sub_1f0f5 retf
+            {{0x1f0b, 0x0097}, 14}, // sub_1f147 retf
+            {{0x1f0b, 0x0101}, 16}, // sub_1f1b1 retf
+            {{0x1f0b, 0x0309}, 16}, // sub_1f3b9 retf
+            {{0x1f0b, 0x0349}, 12}, // sub_1f3f9 retf
+            {{0x1f0b, 0x03fa}, 12}, // sub_1f4aa retf
+            {{0x1f5c, 0x000f}, 4}, // sub_1f5cf retf
+            {{0x1f5c, 0x0047}, 4}, // sub_1f607 retf
+            {{0x1f5c, 0x01ac}, 4}, // sub_1f76c retf
+            {{0x1f5c, 0x0d2d}, 14}, // sub_202ed retf
+            {{0x1f5c, 0x10d7}, 14}, // sub_20697 retf
+            {{0x1f5c, 0x1915}, 12}, // sub_20ed5 retf
+            {{0x1f5c, 0x19e3}, 4}, // sub_20fa3 retf
+            {{0x2188, 0x0000}, 6}, // sub_21880 retf
+            {{0x2188, 0x0043}, 6}, // sub_218c3 retf
+            {{0x2188, 0x021f}, 4}, // sub_21a9f retf
+            {{0x2188, 0x02d3}, 6}, // sub_21b53 retf
+            {{0x2188, 0x0310}, 4}, // sub_21b90 retf
+            {{0x2188, 0x0357}, 4}, // sub_21bd7 retf
+            {{0x2188, 0x03ab}, 6}, // sub_21c2b retf
+            {{0x2188, 0x068d}, 4}, // sub_21f0d retf
+            {{0x2188, 0x075e}, 6}, // sub_21fde retf
+            {{0x2188, 0x08a7}, 8}, // sub_22127 retf
+            {{0x2188, 0x0a66}, 8}, // sub_222e6 retf
+            {{0x2188, 0x1ddb}, 12}, // sub_2365b retf
+            {{0x2188, 0x1e74}, 14}, // sub_236f4 retf
+            {{0x2188, 0x1f58}, 6}, // sub_237d8 retf
+            {{0x2188, 0x1fb9}, 8}, // sub_23839 retf
+            {{0x2188, 0x1fc2}, 8}, // sub_23842 retf
+            {{0x2188, 0x2176}, 8}, // sub_239f6 retf
+            {{0x2188, 0x251d}, 8}, // sub_23d9d retf
+            {{0x2188, 0x2850}, 8}, // sub_240d0 retf
+            {{0x2188, 0x2877}, 8}, // sub_240f7 retf
+            {{0x2188, 0x298a}, 8}, // sub_2420a retf
+            {{0x2188, 0x2acf}, 8}, // sub_2434f retf
+            {{0x2188, 0x2bd4}, 8}, // sub_24454 retf
+            {{0x2188, 0x2d37}, 8}, // sub_245b7 retf
+            {{0x2188, 0x2e25}, 8}, // sub_246a5 retf
+            {{0x2188, 0x2f83}, 8}, // sub_24803 retf
+            {{0x2188, 0x323c}, 8}, // sub_24abc retf
+            {{0x2188, 0x32f6}, 8}, // sub_24b76 retf
+            {{0x2188, 0x3416}, 8}, // sub_24c96 retf
+            {{0x2188, 0x36b0}, 8}, // sub_24f30 retf
+            {{0x2188, 0x3904}, 8}, // sub_25184 retf
+            {{0x2188, 0x3a2e}, 8}, // sub_252ae retf
+            {{0x2188, 0x3be8}, 8}, // sub_25468 retf
+            {{0x2188, 0x3d23}, 8}, // sub_255a3 retf
+            {{0x2188, 0x3e70}, 8}, // sub_256f0 retf
+            {{0x2188, 0x3f13}, 8}, // sub_25793 retf
+            {{0x2188, 0x3f6c}, 8}, // sub_257ec retf
+            {{0x2188, 0x403a}, 8}, // sub_258ba retf
+            {{0x2188, 0x4145}, 8}, // sub_259c5 retf
+            {{0x2188, 0x47b9}, 8}, // sub_26039 retf
+            {{0x2188, 0x48fe}, 8}, // sub_2617e retf
+            {{0x2188, 0x4a4b}, 8}, // sub_262cb retf
+            {{0x2188, 0x4a82}, 8}, // sub_26302 retf
+            {{0x2188, 0x4ad3}, 8}, // sub_26353 retf
+            {{0x2188, 0x4c92}, 8}, // sub_26512 retf
+            {{0x2188, 0x4fd4}, 8}, // sub_26854 retf
+            {{0x2188, 0x52e7}, 8}, // sub_26b67 retf
+            {{0x2188, 0x55ec}, 8}, // sub_26e6c retf
+            {{0x2188, 0x5855}, 8}, // sub_270d5 retf
+            {{0x2188, 0x5bbe}, 8}, // sub_2743e retf
+            {{0x2188, 0x5c8f}, 8}, // sub_2750f retf
+            {{0x2188, 0x6232}, 8}, // sub_27ab2 retf
+            {{0x2188, 0x62f2}, 8}, // sub_27b72 retf
+            {{0x2188, 0x6458}, 8}, // sub_27cd8 retf
+            {{0x2188, 0x6681}, 8}, // sub_27f01 retf
+            {{0x2188, 0x672b}, 8}, // sub_27fab retf
+            {{0x2188, 0x69d3}, 8}, // sub_28253 retf
+            {{0x2188, 0x6afa}, 8}, // sub_2837a retf
+            {{0x2188, 0x6d31}, 8}, // sub_285b1 retf
+            {{0x2188, 0x6ff6}, 8}, // sub_28876 retf
+            {{0x2188, 0x70e4}, 8}, // sub_28964 retf
+            {{0x28b3, 0x0000}, 6}, // sub_28b30 retf
+            {{0x28b3, 0x0221}, 6}, // sub_28d51 retf
+            {{0x28b3, 0x02ef}, 4}, // sub_28e1f retf
+            {{0x28b3, 0x0446}, 4}, // sub_28f76 retf
+            {{0x28b3, 0x059d}, 4}, // sub_290cd retf
+            {{0x28b3, 0x0711}, 4}, // sub_29241 retf
+            {{0x28b3, 0x0740}, 6}, // sub_29270 retf
+            {{0x28b3, 0x0992}, 6}, // sub_294c2 retf
+            {{0x28b3, 0x13b5}, 8}, // sub_29ee5 retf
+            {{0x2a31, 0x00cc}, 4}, // sub_2a3dc retf
+            {{0x2a41, 0x0145}, 4}, // sub_2a555 ret retf
+            {{0x2a41, 0x016d}, 4}, // sub_2a57d retf
+            {{0x2a41, 0x0215}, 6}, // sub_2a625 retf
+            {{0x2a41, 0x0259}, 4}, // sub_2a669 retf
+            {{0x2a41, 0x0273}, 4}, // sub_2a683 retf
+            {{0x2a41, 0x029e}, 4}, // sub_2a6ae retf
+            {{0x2a41, 0x02c6}, 4}, // sub_2a6d6 retf
+            {{0x2a41, 0x032e}, 6}, // sub_2a73e retf
+            {{0x2a41, 0x0359}, 6}, // sub_2a769 retf
+            {{0x2aa3, 0x00c9}, 4}, // sub_2aaf9 retf
+            {{0x2aa3, 0x00eb}, 4}, // sub_2ab1b retf
+            {{0x2aa3, 0x00f9}, 4}, // sub_2ab29 retf
+            {{0x2aa3, 0x011f}, 6}, // sub_2ab4f retf
+            {{0x2aa3, 0x0172}, 6}, // sub_2aba2 retf
+            {{0x2aa3, 0x01c5}, 4}, // sub_2abf5 retf
+            {{0x2aa3, 0x0220}, 4}, // sub_2ac50 retf
+            {{0x2aa3, 0x025d}, 4}, // sub_2ac8d retf
+            {{0x2aa3, 0x0278}, 6}, // sub_2aca8 retf
+            {{0x2aa3, 0x039b}, 10}, // sub_2adcb retf
+            {{0x2aa3, 0x0445}, 10}, // sub_2ae75 retf
+            {{0x2aa3, 0x054b}, 4}, // sub_2af7b retf
+            {{0x2aa3, 0x0714}, 10}, // sub_2b144 retf
+            {{0x2aa3, 0x16bb}, 14}, // sub_2c0eb retf
+            {{0x2aa3, 0x1757}, 10}, // sub_2c187 retf
+            {{0x2aa3, 0x191f}, 10}, // sub_2c34f retf
+            {{0x2aa3, 0x1a4d}, 10}, // sub_2c47d retf
+            {{0x2aa3, 0x2389}, 10}, // sub_2cdb9 retf
+            {{0x2aa3, 0x28a7}, 4}, // sub_2d2d7 retf
+            {{0x2aa3, 0x29c5}, 10}, // sub_2d3f5 retf
+            {{0x2aa3, 0x2a5e}, 10}, // sub_2d48e retf
+            {{0x2aa3, 0x2df5}, 10}, // sub_2d825 retf
+            {{0x2d99, 0x0045}, 8}, // sub_2d9d5 retf
+            {{0x2d99, 0x006c}, 8}, // sub_2d9fc retf
+            {{0x2d99, 0x0084}, 8}, // sub_2da14 retf
+            {{0x2da3, 0x025d}, 12}, // sub_2dc8d retf
+            {{0x2da3, 0x0329}, 8}, // sub_2dd59 retf
+            {{0x2da3, 0x0364}, 8}, // sub_2dd94 retf
+            {{0x2da3, 0x0634}, 6}, // sub_2e064 retf
+            {{0x2da3, 0x064e}, 12}, // sub_2e07e retf
+            {{0x2da3, 0x0680}, 10}, // sub_2e0b0 retf
+            {{0x2da3, 0x06c1}, 6}, // sub_2e0f1 retf
+            {{0x2da3, 0x06ed}, 10}, // sub_2e11d retf
+            {{0x2da3, 0x0724}, 10}, // sub_2e154 retf
+            {{0x2da3, 0x074f}, 4}, // sub_2e17f retf
+            {{0x2da3, 0x07d0}, 10}, // sub_2e200 retf
+            {{0x2da3, 0x08d4}, 8}, // sub_2e304 retf
+            {{0x2da3, 0x0980}, 4}, // sub_2e3b0 retf
+            {{0x2da3, 0x0b26}, 14}, // sub_2e556 retf
+            {{0x2da3, 0x0b71}, 10}, // sub_2e5a1 retf
+            {{0x2da3, 0x0ba2}, 10}, // sub_2e5d2 retf
+            {{0x2da3, 0x0c12}, 6}, // sub_2e642 retf
+            {{0x2da3, 0x0c17}, 6}, // sub_2e647 retf
+            {{0x2da3, 0x0c6b}, 6}, // sub_2e69b retf
+            {{0x2da3, 0x0cb7}, 6}, // sub_2e6e7 retf
+            {{0x2da3, 0x0eee}, 6}, // sub_2e91e retf
+            {{0x2da3, 0x0f0d}, 6}, // sub_2e93d retf
+            {{0x2da3, 0x0f51}, 6}, // sub_2e981 retf
+            {{0x2da3, 0x0fb6}, 8}, // sub_2e9e6 retf
+            {{0x2da3, 0x0ff4}, 10}, // sub_2ea24 retf
+            {{0x2da3, 0x1022}, 8}, // sub_2ea52 retf
+            {{0x2da3, 0x102b}, 8}, // sub_2ea5b retf
+            {{0x2da3, 0x10a3}, 6}, // sub_2ead3 retf
+            {{0x2da3, 0x10d7}, 6}, // sub_2eb07 retf
+            {{0x2da3, 0x10de}, 6}, // sub_2eb0e retf
+            {{0x2da3, 0x11c8}, 10}, // sub_2ebf8 retf
         },
-            .procModifiersStack = {
-//                {{0x01ed, 0x0000}, 8},
-                {{0x01ed, 0x0000}, 10}, // sub_1ed0 retf
-                {{0x01ed, 0x0059}, 22}, // sub_1f29 retf
-                {{0x01ed, 0x047d}, 30}, // sub_234d retf
-                {{0x01ed, 0x0f38}, 8}, // sub_2e08 ret
-                {{0x01ed, 0x1037}, 8}, // sub_2f07 ret
-                {{0x01ed, 0x25f0}, 6}, // sub_44c0 ret
-                {{0x01ed, 0xb1a9}, 2}, // sub_d079 ret
-                {{0x01ed, 0xd5c2}, 2}, // sub_f492 ret
-                {{0x01ed, 0xe51d}, 4}, // sub_103ed ret
-                {{0x11b2, 0x00ec}, 4}, // sub_11c0c retf
-                {{0x11b2, 0x06c4}, 10}, // sub_121e4 retf
-                {{0x11b2, 0x0877}, 4}, // sub_12397 retf
-                {{0x11b2, 0x1001}, 4}, // sub_12b21 retf
-                {{0x11b2, 0x6c86}, 4}, // sub_187a6 retf
-                {{0x11b2, 0x6fe5}, 4}, // sub_18b05 retf
-                {{0x11b2, 0x7213}, 2}, // sub_18d33 ret
-                {{0x11b2, 0x73fd}, 2}, // sub_18f1d ret
-                {{0x11b2, 0x80e1}, 10}, // sub_19c01 retf
-                {{0x11b2, 0x899d}, 6}, // sub_1a4bd retf
-                {{0x11b2, 0xaef2}, 4}, // sub_1ca12 retf
-                {{0x11b2, 0xaf3a}, 4}, // sub_1ca5a retf
-                {{0x11b2, 0xb9b9}, 4}, // sub_1d4d9 retf
-                {{0x11b2, 0xbb28}, 6}, // sub_1d648 retf
-                {{0x1f0b, 0x0000}, 6}, // sub_1f0b0 retf
-                {{0x1f0b, 0x0045}, 6}, // sub_1f0f5 retf
-                {{0x1f0b, 0x0097}, 14}, // sub_1f147 retf
-                {{0x1f0b, 0x0101}, 16}, // sub_1f1b1 retf
-                {{0x1f0b, 0x0309}, 16}, // sub_1f3b9 retf
-                {{0x1f0b, 0x0349}, 12}, // sub_1f3f9 retf
-                {{0x1f0b, 0x03fa}, 12}, // sub_1f4aa retf
-                {{0x1f5c, 0x000f}, 4}, // sub_1f5cf retf
-                {{0x1f5c, 0x0047}, 4}, // sub_1f607 retf
-                {{0x1f5c, 0x01ac}, 4}, // sub_1f76c retf
-                {{0x1f5c, 0x0d2d}, 14}, // sub_202ed retf
-                {{0x1f5c, 0x1915}, 12}, // sub_20ed5 retf
-                {{0x2188, 0x0000}, 6}, // sub_21880 retf
-                {{0x2188, 0x0043}, 6}, // sub_218c3 retf
-                {{0x2188, 0x021f}, 4}, // sub_21a9f retf
-                {{0x2188, 0x02d3}, 6}, // sub_21b53 retf
-                {{0x2188, 0x0310}, 4}, // sub_21b90 retf
-                {{0x2188, 0x0357}, 4}, // sub_21bd7 retf
-                {{0x2188, 0x08a7}, 8}, // sub_22127 retf
-                {{0x2188, 0x251d}, 8}, // sub_23d9d retf
-                {{0x28b3, 0x0000}, 6}, // sub_28b30 retf
-                {{0x28b3, 0x0221}, 6}, // sub_28d51 retf
-                {{0x28b3, 0x02ef}, 4}, // sub_28e1f retf
-                {{0x28b3, 0x0446}, 4}, // sub_28f76 retf
-                {{0x28b3, 0x059d}, 4}, // sub_290cd retf
-                {{0x28b3, 0x0711}, 4}, // sub_29241 retf
-                {{0x28b3, 0x0740}, 6}, // sub_29270 retf
-                {{0x28b3, 0x0992}, 6}, // sub_294c2 retf
-                {{0x28b3, 0x13b5}, 8}, // sub_29ee5 retf
-                {{0x2a31, 0x00cc}, 4}, // sub_2a3dc retf
-                {{0x2a41, 0x0145}, 4}, // sub_2a555 ret retf
-                {{0x2a41, 0x016d}, 4}, // sub_2a57d retf
-                {{0x2a41, 0x0215}, 6}, // sub_2a625 retf
-                {{0x2a41, 0x0259}, 4}, // sub_2a669 retf
-                {{0x2a41, 0x0273}, 4}, // sub_2a683 retf
-                {{0x2a41, 0x029e}, 4}, // sub_2a6ae retf
-                {{0x2a41, 0x032e}, 6}, // sub_2a73e retf
-                {{0x2aa3, 0x00c9}, 4}, // sub_2aaf9 retf
-                {{0x2aa3, 0x00eb}, 4}, // sub_2ab1b retf
-                {{0x2aa3, 0x00f9}, 4}, // sub_2ab29 retf
-                {{0x2aa3, 0x011f}, 6}, // sub_2ab4f retf
-                {{0x2aa3, 0x0172}, 6}, // sub_2aba2 retf
-                {{0x2aa3, 0x01c5}, 4}, // sub_2abf5 retf
-                {{0x2aa3, 0x0220}, 4}, // sub_2ac50 retf
-                {{0x2aa3, 0x025d}, 4}, // sub_2ac8d retf
-                {{0x2aa3, 0x0278}, 6}, // sub_2aca8 retf
-                {{0x2aa3, 0x039b}, 10}, // sub_2adcb retf
-                {{0x2aa3, 0x0445}, 10}, // sub_2ae75 retf
-                {{0x2aa3, 0x054b}, 4}, // sub_2af7b retf
-                {{0x2aa3, 0x0714}, 10}, // sub_2b144 retf
-                {{0x2aa3, 0x16bb}, 14}, // sub_2c0eb retf
-                {{0x2aa3, 0x1757}, 10}, // sub_2c187 retf
-                {{0x2aa3, 0x191f}, 10}, // sub_2c34f retf
-                {{0x2aa3, 0x1a4d}, 10}, // sub_2c47d retf
-                {{0x2aa3, 0x2389}, 10}, // sub_2cdb9 retf
-                {{0x2aa3, 0x28a7}, 4}, // sub_2d2d7 retf
-                {{0x2aa3, 0x29c5}, 10}, // sub_2d3f5 retf
-                {{0x2aa3, 0x2a5e}, 10}, // sub_2d48e retf
-                {{0x2aa3, 0x2df5}, 10}, // sub_2d825 retf
-                {{0x2d99, 0x006c}, 8}, // sub_2d9fc retf
-                {{0x2d99, 0x0084}, 8}, // sub_2da14 retf
-                {{0x2da3, 0x025d}, 12}, // sub_2dc8d retf
-                {{0x2da3, 0x0329}, 8}, // sub_2dd59 retf
-                {{0x2da3, 0x0364}, 8}, // sub_2dd94 retf
-                {{0x2da3, 0x0634}, 6}, // sub_2e064 retf
-                {{0x2da3, 0x064e}, 12}, // sub_2e07e retf
-                {{0x2da3, 0x0680}, 10}, // sub_2e0b0 retf
-                {{0x2da3, 0x06c1}, 6}, // sub_2e0f1 retf
-                {{0x2da3, 0x06ed}, 10}, // sub_2e11d retf
-                {{0x2da3, 0x0724}, 10}, // sub_2e154 retf
-                {{0x2da3, 0x074f}, 4}, // sub_2e17f retf
-                {{0x2da3, 0x07d0}, 10}, // sub_2e200 retf
-                {{0x2da3, 0x08d4}, 8}, // sub_2e304 retf
-                {{0x2da3, 0x0980}, 4}, // sub_2e3b0 retf
-                {{0x2da3, 0x0b26}, 14}, // sub_2e556 retf
-                {{0x2da3, 0x0b71}, 10}, // sub_2e5a1 retf
-                {{0x2da3, 0x0ba2}, 10}, // sub_2e5d2 retf
-                {{0x2da3, 0x0c12}, 6}, // sub_2e642 retf
-                {{0x2da3, 0x0c17}, 6}, // sub_2e647 retf
-                {{0x2da3, 0x0c6b}, 6}, // sub_2e69b retf
-                {{0x2da3, 0x0eee}, 6}, // sub_2e91e retf
-                {{0x2da3, 0x0f0d}, 6}, // sub_2e93d retf
-                {{0x2da3, 0x0f51}, 6}, // sub_2e981 retf
-                {{0x2da3, 0x0fb6}, 8}, // sub_2e9e6 retf
-                {{0x2da3, 0x0ff4}, 10}, // sub_2ea24 retf
-                {{0x2da3, 0x1022}, 8}, // sub_2ea52 retf
-                {{0x2da3, 0x102b}, 8}, // sub_2ea5b retf
-                {{0x2da3, 0x10a3}, 6}, // sub_2ead3 retf
-                {{0x2da3, 0x10d7}, 6}, // sub_2eb07 retf
-                {{0x2da3, 0x10de}, 6}, // sub_2eb0e retf
-                {{0x2da3, 0x11c8}, 10}, // sub_2ebf8 retf
-            },
             .jumpTables = {
-                std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x2da3, 0x0caa), .baseptr = (const uint8_t*)"\xb7\x0c\xa3\x2d", .type = jumpTable_t::CallDwords, .elements = {0}, .selector = "memoryAGet32(es, bx + di)", .useCaseOffset = true }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x2da3, 0x0caa), .baseptr = (const uint8_t*)"\xb7\x0c\xa3\x2d\x59\x03\x41\x2a", .type = jumpTable_t::CallDwords, .elements = {0, 1}, .selector = "memoryAGet32(es, bx + di)", .useCaseOffset = true }),
+                //0x2a41 0359
+                //
+                
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xd87c), .baseptr = (const uint8_t*)"\x3f\x0a\xed\x01\x27\x07\xed\x01\x50\x28\x88\x21\x77\x28\x88\x21\x58\x64\x88\x21\xbe\x5b\x88\x21\x83\x2f\x88\x21\xb9\x1f\x88\x21\x55\x58\x88\x21\x8f\x5c\x88\x21\x32\x62\x88\x21\x4b\x4a\x88\x21\x82\x4a\x88\x21\xfa\x6a\x88\x21\x13\x3f\x88\x21\x31\x6d\x88\x21\xf6\x6f\x88\x21\xe4\x70\x88\x21\xec\x55\x88\x21\xd4\x4f\x88\x21\x8a\x29\x88\x21\xd3\x4a\x88\x21\x3c\x32\x88\x21\xf6\x32\x88\x21\x16\x34\x88\x21\xcf\x2a\x88\x21\x45\x41\x88\x21\x70\x3e\x88\x21\xd4\x2b\x88\x21\x37\x2d\x88\x21\xb0\x36\x88\x21\x04\x39\x88\x21\x2e\x3a\x88\x21\xe8\x3b\x88\x21\x23\x3d\x88\x21\x76\x21\x88\x21\xc2\x1f\x88\x21\xb9\x47\x88\x21\xfe\x48\x88\x21\xe7\x52\x88\x21\x92\x4c\x88\x21\xf2\x62\x88\x21\x6c\x3f\x88\x21\x3a\x40\x88\x21\x25\x2e\x88\x21\x81\x66\x88\x21\x2b\x67\x88\x21\xd3\x69\x88\x21", .type = jumpTable_t::CallDwords, .elements = sequence("0-47"), .selector = "memoryAGet32(ds, di + 17927)", .useCaseOffset = true }),
+                std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xd8d8), .baseptr = (const uint8_t*)"\x3f\x0a\xed\x01\x27\x07\xed\x01\x50\x28\x88\x21\x77\x28\x88\x21\x58\x64\x88\x21\xbe\x5b\x88\x21\x83\x2f\x88\x21\xb9\x1f\x88\x21\x55\x58\x88\x21\x8f\x5c\x88\x21\x32\x62\x88\x21\x4b\x4a\x88\x21\x82\x4a\x88\x21\xfa\x6a\x88\x21\x13\x3f\x88\x21\x31\x6d\x88\x21\xf6\x6f\x88\x21\xe4\x70\x88\x21\xec\x55\x88\x21\xd4\x4f\x88\x21\x8a\x29\x88\x21\xd3\x4a\x88\x21\x3c\x32\x88\x21\xf6\x32\x88\x21\x16\x34\x88\x21\xcf\x2a\x88\x21\x45\x41\x88\x21\x70\x3e\x88\x21\xd4\x2b\x88\x21\x37\x2d\x88\x21\xb0\x36\x88\x21\x04\x39\x88\x21\x2e\x3a\x88\x21\xe8\x3b\x88\x21\x23\x3d\x88\x21\x76\x21\x88\x21\xc2\x1f\x88\x21\xb9\x47\x88\x21\xfe\x48\x88\x21\xe7\x52\x88\x21\x92\x4c\x88\x21\xf2\x62\x88\x21\x6c\x3f\x88\x21\x3a\x40\x88\x21\x25\x2e\x88\x21\x81\x66\x88\x21\x2b\x67\x88\x21\xd3\x69\x88\x21", .type = jumpTable_t::CallDwords, .elements = sequence("0-47"), .selector = "memoryAGet32(ds, di + 17927)", .useCaseOffset = true }),
+
+                //\xb9\x1f\x88\x21\x50\x28\x88\x21\x77\x28\x88\x21\x23\x3d\x88\x21\x13\x3f\x88\x21\xfa\x6a\x88\x21\x31\x6d\x88\x21\xf6\x6f\x88\x21\xe4\x70\x88\x21
+                
+                
+
+                //    push(cs); cs = memoryAGet16(ds, di + 17927 + 2); callIndirect(cs, memoryAGet16(ds, di + 17927)); assert(cs == 0x01ed); // 01ed:d8d8;   2ec1:4607 - 2188:3f13
+
+//                di=10e, 2188:70e4 sub_218870e4()
+                //    push(cs); cs = memoryAGet16(ds, di + 17927 + 2); callIndirect(cs, memoryAGet16(ds, di + 17927)); assert(cs == 0x01ed); // 01ed:d87c;  // 2188:6ff6   ds=2ec1, di=225   01ed:d87c
+
             },
+            .procList = {{0x1f5c, 0x10d7}, {0x01ed, 0x0727}, {0x2d99, 0x0045}}, // label as function
+//            .marks = {{0x2aa3, 0x17e8}},
 
 //        2da3:0caa - 2da3:0cb7
 //        .verbose = true, .relocations = false, .verbose = true, .recursive = false, .procList = {{0x28b3, 0x02ef}},

@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
             options.procModifiers.insert({p, procRequest_t::callNear});
     }
 
-    printf("#include \"cico32.h\"\n\n");
+    printf("#include \"cico%s.h\"\n\n", options.arch == arch_t::arch16 ? "16" : "32");
     
     if (options.relocations)
         printf("%s\n", loader->GetMain().c_str());

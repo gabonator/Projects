@@ -121,7 +121,7 @@ public:
                     } else
                     if (p->instr->mId == X86_INS_RETF)
                     {
-                        if (info->func.stackDrop != -p->stack)
+                        if (info->func.stackDrop != -p->stack+2) // CHECK!!
                             p->stop = utils::format("stack_below_retf, %d/%d", info->func.stackDrop, -p->stack);
                     } else
                     if (p->instr->mId != X86_INS_RET && p->instr->mId != X86_INS_RETF /*|| !((int)info->func.stackDrop)*/)
@@ -141,6 +141,21 @@ public:
             }
         }
         
+        // marks
+        for (const auto& [a, p] : info->code)
+        {
+            //0x2c187, 0x2aa3, 0x1757, 0x2aa3, 0x17e5, 
+            int begin = p->instr->mAddress.linearOffset();
+            int end = p->instr->mAddress.linearOffset() + p->instr->mSize;
+            for (address_t addr : mOptions.marks)
+                if (addr.linearOffset() >= begin && addr.linearOffset() <= end)
+                    p->stop += utils::format("mark %04x:%04x, addr %04x:%04x, instr: %s %s, bytes: %s",
+                                             addr.segment, addr.offset, p->instr->mAddress.segment, p->instr->mAddress.offset,
+                                                 p->instr->mMnemonic,
+                                             p->instr->mOperands,
+                                             p->instr->GetBytes().c_str());
+        }
+
         // propagate call requests
         for (const auto& [a, p] : info->code)
         {
@@ -243,6 +258,10 @@ public:
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSB) // TODO: tables
                             continue;
+                        if (flag->type == 'c' && dep->instr->mId == X86_INS_INT)
+                            continue;
+                        if (dep->instr->mId == X86_INS_POPF)
+                            continue;
 
                         dep->GetFlag(flag->type).save = true;
                     }
@@ -301,7 +320,7 @@ public:
         // TODO: nearfar!?
         if (((int)req & (int)procRequest_t::callNear) && ((int)req & (int)procRequest_t::callFar))
         {
-            printf("Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
+            printf("// Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
                    info->proc.linearOffset());
 //            assert(!stack);
             return callConv_t::callConvShiftStackNearFar;

@@ -568,7 +568,7 @@ public:
         }
         if (templ.starts_with("repe_"))
         {
-            repeat = "for (flags.zero = 0; cx != 0 && flags.zero; --cx) ";
+            repeat = "for (flags.zero = 1; cx != 0 && flags.zero; --cx) ";
             templ = templ.substr(5);
         }
         if (args[0] == "al")

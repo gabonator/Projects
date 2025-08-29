@@ -134,7 +134,7 @@ public:
     virtual const uint8_t* GetBufferAt(address_t addr) override
     {
         int rel = addr.linearOffset() - _linearToFileOffset;
-        assert(rel >= 0x0 && rel+16   <= buffer.size());
+        assert(rel >= 0x0 && rel+16 <= buffer.size());
         return &buffer[rel];
     }
     

@@ -70,6 +70,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_AND] = { },
     [X86_INS_PUSHFD] = { .stack = +4 },
     [X86_INS_POPFD] = { .stack = +4 },
+    [X86_INS_POPF] = { .stack = +4, .savedVisiblyCarry = true },
     [X86_INS_CMP] = { },
     [X86_INS_MOVZX] = { },
     
@@ -313,6 +314,17 @@ public:
         assert (mDetail.op_count == 2);
         assert (mDetail.operands[1].type == X86_OP_IMM);
         return (int)mDetail.operands[1].imm;
+    }
+    std::string GetBytes()
+    {
+        std::string aux;
+        for (int i=0; i<mSize; i++)
+        {
+            if (i>0)
+                aux += " ";
+            aux += utils::format("%02x", mBytes[i]);
+        }
+        return aux;
     }
 };
 

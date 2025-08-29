@@ -93,6 +93,8 @@ public:
                 flag->willSetDirty = true;
             if (flag->type == 'c' && instr->mTemplate.savedVisiblyCarry)
                 flag->visible = true;
+            if (flag->type == 's' && instr->mTemplate.savedVisiblyCarry) // TODO
+                flag->visible = true;
         }
     };
 

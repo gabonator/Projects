@@ -101,6 +101,9 @@ convert_t convert[X86_INS_ENDING] = {
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
     }},
+    [X86_INS_IRET] = {.convert = [](convert_args){
+        return "stop(\"iret\");";
+    }},
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
@@ -192,8 +195,7 @@ convert_t convert[X86_INS_ENDING] = {
 
     [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; },
             .savecf = [](convert_args){
-                return "stop(\"x1\")";
-                    //return "($rd0 + $rd1 + $carry) >= $overflow0"; //, info->GetFlag('c').variableRead.c_str());
+                return "$rw0 < $rd1 + $carry";
                 },
 
     }, // TODO: flags carry?

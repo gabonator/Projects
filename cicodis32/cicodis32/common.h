@@ -211,6 +211,7 @@ public:
     std::map<address_t, procRequest_t> procModifiers;
     std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
+    std::set<address_t> marks;
     shared<jumpTable_t> GetJumpTable(address_t addr) const
     {
         for (auto jt : jumpTables)
