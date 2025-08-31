@@ -1,3 +1,4 @@
+#if 0
 #include "cico32.h"
 
 void fixReloc(uint16_t seg);
@@ -13029,3 +13030,4 @@ int GetProcAt(int seg, int ofs)
             return map[i];
     return 0;
 }
+#endif

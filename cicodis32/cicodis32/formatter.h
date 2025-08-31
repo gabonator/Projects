@@ -524,7 +524,7 @@ public:
                 assert(x86.op_count == 1);
                 if (x86.operands[0].type != X86_OP_IMM)
                 {
-                    snprintf(replace, 64, "indirectJump(cs, %s);", iformat(instr, info, func, "$rd0").c_str());
+                    snprintf(replace, 64, "indirectJump(cs, %s); // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(), instr->mAddress.segment, instr->mAddress.offset);
                 } else
                 {
                     if (x86.operands[0].size == 2)

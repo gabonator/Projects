@@ -16,7 +16,7 @@ public:
 class CEga : public CVideoAdapter
 {
     enum {
-        MemSize = 0x20000
+        MemSize = 0x30000
     };
 
 public:
@@ -185,7 +185,7 @@ public:
         {
             //https://dos4gw.org/INT_10H_1aH_Set_or_Query_Display_Combination_Code
             al = 0x1a;
-            ////bl = 0x08; // vga color
+            bl = 0x08; // vga color
             return true;
         }
         if (ax == 0x1000)
@@ -217,7 +217,37 @@ public:
             }
             return true;
         }
-
+        if (ax == 0x1130 && (bx>>8) == 0) // wtf
+        {
+            cx = 0x10;
+            dl = 0x18;
+            es = 0xc000;
+            bp = 0x500;
+            return true;
+        }
+        if (ax == 0x1130 && ((bx>>8) == 2 || (bx>>8) == 3)) // wtf 8x14 ptr!
+        {
+            printf("Warning: requests 8x14 font!\n"); // https://www.stanislavs.org/helppc/int_10-11.html
+            cx = 8;
+            dl = 0x18;
+            es = 0xf000;
+            bp = 0xfa6e;
+//            cx = 0x10;
+//            dl = 0x18;
+//            es = 0xc000;
+//            bp = 0x500;
+            return true;
+        }
+        if (ax==0x1001)
+            return true;
+        if (ax==0x1200 && bl==0x10)
+        {
+            bh=0;
+            bl=3;
+            ch=0xff;
+            cl=0;
+            return true;
+        }
         assert(0);
         return false;
     }
@@ -287,6 +317,17 @@ public:
                 assert(0);
             }
         }
+        if (port == 0x3d5)
+        {
+            if (data == 0x28)
+            {
+                mPitch = 80;
+                return true;
+            }
+
+            printf("EGA skip write16 port %x=%x\n", port, data);
+            return true;
+        }
         assert(0);
         return false;
     }
@@ -309,6 +350,7 @@ public:
     int vgawritecolorindex = 0;
     int vgareadcolorindex{0};
     int colorindex{0}; // fox
+    int mPitch{40};
     
     virtual bool PortWrite8(int port, int data) override
     {
@@ -399,7 +441,7 @@ public:
             return true;
  */
             int base = colorindex/3;
-            int ch = colorindex%3;
+            int xch = colorindex%3;
             if (data == 255) // wtf?
 //            {
 //                for (int i=base; i<16; i++)
@@ -410,7 +452,7 @@ public:
             //data &= 63;
 //            assert(data >= 0 && data < 64);  // TODO: GABO9
 //            printf("set pal %d %d = %d\n", base, 2-ch, data);
-            ((uint8_t*)palette)[base*4+2-ch] = data * 4;
+            ((uint8_t*)palette)[base*4+2-xch] = data * 4;
             colorindex++;
             return true;
         }
@@ -474,8 +516,9 @@ public:
     
     virtual uint32_t GetPixel(int x, int y) override
     {
+        mPitch = 240; //120; //;240; // 3 col
         uint8_t* _video = (uint8_t*)egamemory;
-        uint32_t off = (int)y * 40L + ((int)x / 8L);
+        uint32_t off = (int)y/5 * mPitch + (int)y%5 * (mPitch/5) + ((int)x / 8L);
         
         int mask = 0x80 >> (x % 8);
         int page = cfgAddr;
@@ -556,6 +599,10 @@ public:
         
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
+//        if (bWrite)
+//        {
+//            int f=  9;
+//        }
         modified = true;
         dwAddr -= 0xa000 * 16;
 
@@ -573,14 +620,14 @@ public:
         modified |= StoreLatch(dwAddr);
 //        nWriteMode = old;
 
-//        static int counter = 0;
-//        if (bWrite)
-//        {
-//            if (counter++%200==0)
-//            {
-//                sync();
-//            }
-//        }
+        static int counter = 0;
+        if (bWrite)
+        {
+            if (counter++%1000==0)
+            {
+                sync();
+            }
+        }
     }
 
     virtual uint8_t Read(uint32_t dwAddr) override
@@ -874,11 +921,11 @@ public:
 //                _cgaBackground = bl;
 //                return true;
 //            }
-            int bh = bx >> 8;
-            int bl = bx & 255;
-            if ( bh == 0x01 ) // WTF?
+            int xbh = bx >> 8;
+            int xbl = bx & 255;
+            if ( xbh == 0x01 ) // WTF?
             {
-                if (bl == 0x00)
+                if (xbl == 0x00)
                 {
                     _cgaPalette[0] = 0x000000;
                     _cgaPalette[1] = 0x55aa55;
@@ -886,7 +933,7 @@ public:
                     _cgaPalette[3] = 0x55aaaa;
                     return true;
                 }
-                if (bl == 0x01)
+                if (xbl == 0x01)
                 {
                     _cgaPalette[0] = 0x000000;
                     _cgaPalette[1] = 0xffff55;
@@ -948,6 +995,49 @@ public:
             pix4 <<= (x&3)*2;
             return _cgaPalette[pix4 >> 6];
         }
+        return 0;
+    }
+};
+
+class CText : public CVideoAdapter
+{
+public:
+    virtual bool PortWrite8(int port, int data) override
+    {
+        printf("Text write8 %x=%x\n", port, data);
+        return false;
+    }
+
+    virtual bool PortWrite16(int port, int data) override
+    {
+        printf("Text write16 %x=%x\n", port, data);
+        return false;
+    }
+    virtual uint8_t PortRead8(int port) override
+    {
+        assert(0);
+        return 0;
+    }
+
+    virtual bool Interrupt() override
+    {
+        printf("Text intr ax=%x\n", ax);
+        return true;
+    }
+
+    virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
+    {
+        printf("Text write %x = %x\n", dwAddr, bWrite);
+    }
+
+    virtual uint8_t Read(uint32_t dwAddr) override
+    {
+        printf("Text read %x\n", dwAddr);
+        return 0;
+    }
+
+    uint32_t GetPixel(int x, int y) override
+    {
         return 0;
     }
 };

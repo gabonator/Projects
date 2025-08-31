@@ -32,7 +32,8 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsRick1;
 //    Options options = Profiles::optionsBumpy;
 //    Options options = Profiles::optionsAv;
-    Options options = Profiles::optionsCC1;
+//    Options options = Profiles::optionsCC1;
+    Options options = Profiles::optionsCK1;
 //    options.verbose = true;
     options.printProcAddress = true;
     options.printLabelAddress = true;

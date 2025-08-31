@@ -195,7 +195,7 @@ convert_t convert[X86_INS_ENDING] = {
 
     [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; },
             .savecf = [](convert_args){
-                return "$rw0 < $rd1 + $carry";
+                return "$rd0 < $rd1 + $carry"; // rw0?
                 },
 
     }, // TODO: flags carry?

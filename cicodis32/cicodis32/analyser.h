@@ -355,8 +355,11 @@ public:
         if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
         {
             // stub
-            calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
-            return calls;
+//            if (code.begin()->second->instr->mDetail.operands[0].type == X86_OP_IMM)
+//            {
+                calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
+                return calls;
+//            }
         }
         for (const auto& p : code)
         {

@@ -7,8 +7,28 @@
 std::vector<uint8_t> getFileContents(const std::string& zipPath);
 
 extern uint16_t ax, bx, cx, dx;
-extern uint8_t& al, bl, cl, dl;
-extern uint8_t& ah, bh, ch, dh;
+
+#define al *reinterpret_cast<uint8_t*>(&ax)
+#define ah *(reinterpret_cast<uint8_t*>(&ax) + 1)
+#define bl *reinterpret_cast<uint8_t*>(&bx)
+#define bh *(reinterpret_cast<uint8_t*>(&bx) + 1)
+#define cl *reinterpret_cast<uint8_t*>(&cx)
+#define ch *(reinterpret_cast<uint8_t*>(&cx) + 1)
+#define dl *reinterpret_cast<uint8_t*>(&dx)
+#define dh *(reinterpret_cast<uint8_t*>(&dx) + 1)
+
+//extern uint8_t& al, bl, cl, dl;
+//extern uint8_t& ah, bh, ch, dh;
+
+//uint8_t& al = *reinterpret_cast<uint8_t*>(&ax);
+//uint8_t& ah = *(reinterpret_cast<uint8_t*>(&ax) + 1);
+//uint8_t& bl = *reinterpret_cast<uint8_t*>(&bx);
+//uint8_t& bh = *(reinterpret_cast<uint8_t*>(&bx) + 1);
+//uint8_t& cl = *reinterpret_cast<uint8_t*>(&cx);
+//uint8_t& ch = *(reinterpret_cast<uint8_t*>(&cx) + 1);
+//uint8_t& dl = *reinterpret_cast<uint8_t*>(&dx);
+//uint8_t& dh = *(reinterpret_cast<uint8_t*>(&dx) + 1);
+
 extern uint16_t cs, ds, es, ss, sp, si, di, bp;
 struct flags_t {
   bool carry, zero, interrupts, direction;
@@ -68,13 +88,33 @@ public:
     }
 } cga;
 
-CVideoAdapter* video = &ega;
+class CTextInstance : public CText
+{
+public:
+    virtual uint8_t ReadMemory(int seg, int ofs) override { assert(0); return 0;}
+    virtual void sync() override
+    {
+        sdl.Loop();
+    }
+} text;
 
+CVideoAdapter* video = &ega;
+void memoryASet16(int s, int o, int v);
+uint16_t memoryAGet16(int s, int o);
+uint8_t memoryAGet(int s, int o);
 void sync()
 {
     video->sync();
+//    memoryASet16(0x2ec1, 0x2b5e, memoryAGet16(0x2ec1, 0x2b5e) + 1);
+//    memoryASet16(0x2ec1, 0x2b60, memoryAGet16(0x2ec1, 0x2b60) + 1);
+//    memoryASet16(0x2ec1, 0x2b60, memoryAGet16(0x2ec1, 0x2b60) % 0x200);
+
+    // ck1
+    memoryASet16(ds, 0x5135, memoryAGet16(ds, 0x5135) + 6);
 }
 
+//void sub_25f7(int scancode);
+int lastKey = 0;
 /*
 void onKey(int k, int p)
 {
@@ -196,6 +236,69 @@ void onKey(int k, int p)
             case SDL_SCANCODE_SPACE: memoryASet(0x1228, 0x4d44 + 0x1c, p); break;
         }
     }
+    
+    if (strstr(root, "cc1."))
+    {
+        int scancode = -1;
+        switch (k)
+        {
+    case SDL_SCANCODE_UP: memoryASet(ds, 0x338b, p); break;
+    case SDL_SCANCODE_LEFT: memoryASet(ds, 0x338e, p); break;
+    case SDL_SCANCODE_RIGHT: memoryASet(ds, 0x338f, p); break;
+    case SDL_SCANCODE_DOWN: memoryASet(ds, 0x3390, p); break;
+            case SDL_SCANCODE_SPACE: lastKey = p;
+                scancode = 0x29 + p * 128;
+                break; // ? 1 : 0; break; // enter
+            case SDL_SCANCODE_N: scancode = 0x31 - 1 + (1-p) * 128; break;
+//            case SDL_SCANCODE_1: scancode = 0x60 + p * 128; break;
+//            case SDL_SCANCODE_2: scancode = 12 + p * 128; break;
+//            case SDL_SCANCODE_3: scancode = 1 + p * 128; break;
+//            case SDL_SCANCODE_4: scancode = 6 + p * 128; break;
+            case SDL_SCANCODE_1: scancode = 0x01 -1 + (1-p) * 128; break;
+/*
+ kbmap 2ec1:2b40=1 ESC
+ kbmap 2ec1:2b41=31 N // xxx crash - new game?
+ kbmap 2ec1:2b42=10 Q // quit to dos
+ kbmap 2ec1:2b43=17 I // instructions
+ kbmap 2ec1:2b44=1f S // galactic encyclopedia
+ kbmap 2ec1:2b45=18 O // how to order
+ kbmap 2ec1:2b46=23 H // high scores
+ kbmap 2ec1:2b47=13 R // restore game
+ kbmap 2ec1:2b48=39 ' ' // xxxx crash
+ kbmap 2ec1:2b49=1c '\n' // xxx crash
+ kbmap 2ec1:2b4a=1e 'A' // about apogee
+ kbmap 2ec1:2b4b=2e 'C' // official bbs
+ kbmap 2ec1:2b4c=21 'F' // foreign customers
+ kbmap 2ec1:2b4d=2f 'V' // video compatibility
+ */
+        }
+        assert(0);
+//        if (scancode != -1)
+//            sub_25f7(scancode);
+    }
+    if (strstr(root, "keen1."))
+    {
+        int scancode = 0;
+        switch (k)
+        {
+            case SDL_SCANCODE_SPACE: scancode = 0x39; break;
+            case SDL_SCANCODE_UP: scancode = 0x48; break;
+            case SDL_SCANCODE_LEFT: scancode = 0x4b; break;
+            case SDL_SCANCODE_RIGHT: scancode = 0x4d; break;
+            case SDL_SCANCODE_DOWN: scancode = 0x50; break;
+            case SDL_SCANCODE_LCTRL: scancode = 0x1d; break;
+        }
+        if (scancode)
+        {
+            if (p)
+            {
+                memoryASet(0x14f2, 0x50ac, scancode);
+                memoryASet(0x14f2, 0x50ac, memoryAGet(0x14f2, 0x50ac) | 0x80);
+            }
+            memoryASet(0x14f2, scancode + 20524, p);
+        }
+    }
+
 
 }
 /*
@@ -261,6 +364,36 @@ void load(const char* path_, const char* file, int size)
 
 void memoryASet(int s, int o, int v)
 {
+    if (s*16+o == 0x38fa0 +0x3ed0)
+    {
+        int f = 9;
+    }
+    
+    if (s*16+o == 0x2ec10 + 0x4615)
+    {
+        int f = 9;
+    }
+//    int proc = GetProcAt(s, o);
+//    if(proc!=0)
+//    {
+//        printf("Writing to code %04x:%0x in sub_%x()\n", s, o, proc);
+//    }
+
+    if (s == 0x7777)
+    {
+        if (o >= 0xa0000)
+        {
+            video->Write(o, v);
+            return;
+        }
+        int linear = o;
+        if (linear >= 0 && linear < memorySize)
+        {
+            memory[linear] = v;
+            return;
+        }
+        assert(0);
+    }
     assert(o <= 0xffff);
 //    if (sp != 0xeeee)
 //    {
@@ -291,8 +424,21 @@ void memoryASet(int s, int o, int v)
 }
 void memoryASet16(int s, int o, int v)
 {
+    if (s*16+o == 0x1ed0 + 0xdcc6)
+    {
+        int f = 9;
+    }
+
+    if (s*16+o == 0x2ec10 + 0x4615)
+    {
+        printf("NA: write 2ec1:4615=%04x\n", v);
+        int f = 9;
+    }
+
     o &= 0xffff;
     assert(o <= 0xffff);
+//    assert(GetProcAt(s, o)==0);
+
 //    if (sp != 0xeeee)
 //    {
 //        int p = GetProcAt(s, o);
@@ -332,6 +478,11 @@ void memoryASet16(int s, int o, int v)
         return;
     if (s == 0x0040 && o == 0x001c)
         return;
+    if (s == 0x0000)
+    {
+        printf("skip %x:%x = %x\n", s, o, v);
+        return;
+    }
 
     assert(0);
 }
@@ -368,12 +519,33 @@ uint8_t memoryAGet(int s, int o)
         return 0x0d;
     if (s == 0x0040 && o == 0x0010)
         return 0x26;
+    if (s == 0x0040 && o == 0x0087)
+        return 0x00;
+    if (s == 0x0040 && o == 0x006c)
+    {
+        auto getTick = []() -> uint32_t {
+            struct timespec ts;
+            unsigned theTick = 0U;
+            clock_gettime( CLOCK_REALTIME, &ts );
+            theTick  = ts.tv_nsec / 1000000;
+            theTick += ts.tv_sec * 1000;
+            return theTick;
+        };
+
+        return getTick()/54; // 0xd1; // number of ticks since midnight 54ms
+    }
+    if (s == 0x0000 && o == 0x0000)
+        return 0x1a;
 
     assert(0);
     return 0;
 }
 uint16_t memoryAGet16(int s, int o)
 {
+    if (s==0x11b2 && o==0x084d)
+    {
+        int f= 9;
+    }
     o &= 0xffff;
     assert(o <= 0xffff);
     
@@ -409,7 +581,11 @@ uint16_t memoryAGet16(int s, int o)
     }
     if (s == 0x0040 && o == 0x0080)
         return 0x1e;
+    if (s == 0x0000 && o == 0x041a)
+        return 0x00;
 
+    if (s == 0x0000 && o == 0x0487)
+        return 0x60;
     assert(0);
     return 0;
 }
@@ -465,6 +641,11 @@ void interrupt(int i)
             if (fullname[i] == '\\')
                 fullname[i] = '/';
         
+        if (!currentFile.empty())
+        {
+            printf("Warning single file not closed!\n");
+            currentFile.clear();
+        }
         assert(currentFile.empty());
         currentFile = getFileContents(fullname);
         currentFileOffset = 0;
@@ -523,6 +704,35 @@ void interrupt(int i)
         flags.carry = 0;
         return;        
     }
+    if (i == 0x21 && ah == 0x42 && al == 0x01)
+    {
+        assert(!currentFile.empty());
+        currentFileOffset += cx*0x10000 + dx;
+        flags.carry = 0;
+        return;
+    }
+    if (i == 0x21 && ah == 0x42 && al == 0x02)
+    {
+        assert(!currentFile.empty());
+        assert(cx == 0 && dx == 0);
+        currentFileOffset = currentFile.size();
+        ax = currentFileOffset & 0xffff;
+        dx = currentFileOffset >> 16;
+        flags.carry = 0;
+        return;
+    }
+    if (i == 0x21 && ah == 0x43)
+    {
+        // CHANGE mode
+        printf("change mode: ");
+        for (int i=0; i<20 && memoryAGet(ds, dx+i); i++)
+            printf("%c", memoryAGet(ds, dx+i));
+        printf("\n");
+        flags.carry = 0;
+        if (al == 0)
+            cx = 0;
+        return;
+    }
 
     if (i == 0x10)
     {
@@ -535,24 +745,22 @@ void interrupt(int i)
                 case 0x0d: video = &ega; break;
                 case 0x02: video = &ega; break; // bumpy?
                 case 0x04: video = &cga; break;
+                    
+                case 0x03:  // cc1
+                case 0x10: video = &text; break;
                 default:
                     assert(0);
             }
         }
-        if (ax == 0x1130 && (bx >> 8) == 0) //WTF
-        {
-            cx = 0x10;
-            dl = 0x18;
-            es = 0xc000;
-            bp = 0x500;
-            return;
-        }
-
+//        test();
         if (video->Interrupt())
             return;
     }
     if (i == 0x21 && ah == 0x25)
+    {
+        printf("Set int vector - %02x to %04x:%04x\n", al, ds, dx);
         return;
+    }
     if (i == 0x21 && ah == 0x35)
         return;
     if (i == 0x33)
@@ -613,7 +821,7 @@ void interrupt(int i)
     if (i == 0x21 && ah == 0x44)
     {
         ax = 0x80d3;
-        //dx = 0x80d3;
+        dx = 0x80d3; // TODO!
         flags.carry = 0;
         return;
     }
@@ -626,6 +834,31 @@ void interrupt(int i)
     {
         al = 0;
         //ctx->a.r8.l = keyBuffer.empty() ? 0 : 0xff; // check key
+        return;
+    }
+    if (i == 0x21 && ah == 0x2c)
+    {
+        printf("get time\n");
+        ch = 1; // hr
+        cl = 20; // min
+        dh = 17; // sec
+        dl = 50; // hundredths
+        return;
+    }
+    if (i == 0x16 && ah == 0x01)
+    {
+        flags.zero = lastKey == 0;
+        return;
+    }
+    if (i == 0x21 && ah == 0x40)
+    {
+        //write file
+        printf("Write file:");
+        for (int i=0; i<cx; i++)
+            printf("%c", memoryAGet(ds, dx+i));
+        printf("\n");
+        ax = cx;
+        flags.carry = false;
         return;
     }
 
@@ -694,6 +927,18 @@ std::vector<uint8_t> readFileFromZip(const std::string& zipPath, std::string fil
     FILE* f = fopen(zipPath.c_str(), "rb");
     if (!f)
     {
+        f = fopen(fileName.c_str(), "rb");
+        if (f)
+        {
+            fseek(f, 0, SEEK_END);
+            size_t dataSize = ftell(f);
+            rewind(f);
+
+            std::vector<uint8_t> Data(dataSize);
+            fread(Data.data(), 1, dataSize, f);
+            fclose(f);
+            return Data;
+        }
         printf("GABO-ERROR cant open '%s'\n", zipPath.c_str());
         assert(0);
         return {};

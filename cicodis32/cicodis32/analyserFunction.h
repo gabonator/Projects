@@ -217,7 +217,7 @@ public:
                 assert(deps.size() == 1);
                 shared<instrInfo_t> destructive = info->code.find(*deps.begin())->second;
                 // save whole condition if couldnt be reconstructed by saving single flag
-                assert(destructive->savePrecondition.size() == 0);
+                //assert(destructive->savePrecondition.size() == 0); // check ck1:loc_283c
                 destructive->savePrecondition.push_back({
                     .writeOp = destructive->instr->mId,
                     .readOp = p->instr->mId,

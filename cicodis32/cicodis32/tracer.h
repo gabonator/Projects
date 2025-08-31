@@ -668,7 +668,6 @@ public:
                     instr->mNext.clear();
                     instr->isTerminating = true;
                 }
-
                 if (instr->IsIndirectJump())
                 {
                     shared<jumpTable_t> jt = mOptions.GetJumpTable(instr->mAddress);

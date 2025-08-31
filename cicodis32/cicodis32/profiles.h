@@ -938,4 +938,77 @@ namespace Profiles {
 //        .verbose = true, .relocations = false, .verbose = true, .recursive = false, .procList = {{0x28b3, 0x02ef}},
 //            .verboseAsm = true
     };
+
+
+Options optionsCK1 = {
+    .loader = "LoaderMz",
+    .exec = "KEEN1.EXE",
+    .arch = arch_t::arch16,
+    .loadAddress = 0x01ed0,
+ //   .terminators = {{0x01ed, 0xfb8a}},
+    .procModifiersStack = {
+        {{0x01ed, 0xc5fa}, 4}, // sub_e4ca ret
+        {{0x01ed, 0xc7dc}, 2}, // sub_e6ac ret
+        {{0x01ed, 0xca7c}, 6}, // sub_e94c ret
+        {{0x01ed, 0xd296}, 2}, // sub_f166 ret
+        {{0x01ed, 0xd30d}, 12}, // sub_f1dd ret
+        {{0x01ed, 0xd473}, 4}, // sub_f343 ret
+        {{0x01ed, 0xd48c}, 2}, // sub_f35c ret
+        {{0x01ed, 0xd7a9}, 8}, // sub_f679 ret
+        {{0x01ed, 0xe0a3}, 10}, // sub_ff73 retf
+        {{0x01ed, 0xe0b2}, 10}, // sub_ff82 retf
+        {{0x01ed, 0xe29b}, 10}, // sub_1016b retf
+
+    },
+    .jumpTables = {
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x0210), .table = {0x14f0, 0x0002}, .type = jumpTable_t::CallWords, .elements = {0, 3, 0x0c/2}, .selector = "memoryAGet16(es, bx + 2)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xc19a), .baseptr = (const uint8_t*)"\xaf\xc1", .type = jumpTable_t::CallWords, .elements = sequence("0-0"), .selector = "ax", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x162f), .table = {0x01ed, 5897}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+        //indirectJump(cs, memoryAGet16(cs, bx + 5897)); // 01ed:162f;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x5a60), .table = {0x01ed, 23349}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 23349)); // 01ed:5a60;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x5650), .table = {0x01ed, 22217}, .type = jumpTable_t::JumpWords, .elements = sequence("0-8"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 22217)); // 01ed:5650;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xb82d), .baseptr = (const uint8_t*)"\xd4\xa1\xeb\xa1\x97\xa4\xfd\x95\xab\x97\xf0\x97\x6c\x98\x6d\x9e", .type = jumpTable_t::CallWords, .elements = sequence("0-7"), .selector = "cx", .useCaseOffset = true }),
+
+        //callIndirect(cs, cx); // 01ed:b82d; 01ed:a1d4 : a1d4, a1eb, a479 (a497)
+        // 95fd, 97ab, 97f0, 986c, 9e6d
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x9680), .table = {0x01ed, 38568}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+
+//        indirectJump(cs, memoryAGet16(cs, bx + 38568)); // 01ed:9680;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x956b), .table = {0x01ed, 38381}, .type = jumpTable_t::JumpWords, .elements = sequence("0-7"), .selector = "bx"}),
+        //callIndirect(cs, memoryAGet16(ss, 0x5016)); // 01ed:bba4; //14f2:20484 0-4
+
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xbba4), .table = {0x14f2, 20484}, .type = jumpTable_t::CallWords, .elements = sequence("0-4"), .selector = "bx"}),
+        
+        //callIndirect(cs, memoryAGet16(ss, 0x5016)); // 01ed:bbce;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xbbce), .table = {0x14f2, 20484}, .type = jumpTable_t::CallWords, .elements = sequence("0-4"), .selector = "bx"}),
+        //callIndirect(cs, memoryAGet16(ss, 0x5016)); // 01ed:bbf8;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xbbf8), .table = {0x14f2, 20484}, .type = jumpTable_t::CallWords, .elements = sequence("0-4"), .selector = "bx"}),
+        //    callIndirect(cs, memoryAGet16(ss, 0x5016)); // 01ed:bc22;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xbc22), .table = {0x14f2, 20484}, .type = jumpTable_t::CallWords, .elements = sequence("0-4"), .selector = "bx"}),
+        //indirectJump(cs, memoryAGet16(cs, bx + 44556)); // 01ed:ab73;
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xab73), .table = {0x01ed, 44556}, .type = jumpTable_t::JumpWords, .elements = sequence("0-7"), .selector = "bx"}),
+        //callIndirect(cs, memoryAGet16(ds, 0x8252)); // 01ed:4d26; 3867, 194f, 3c99
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x4d26), .baseptr = (const uint8_t*)"\x67\x38\x4f\x19\x99\x3c", .type = jumpTable_t::CallWords, .elements = sequence("0-2"), .selector = "memoryAGet16(ds, 0x8252)", .useCaseOffset = true }),
+        
+//        indirectJump(cs, memoryAGet16(cs, bx + 15229)); // 01ed:3926; 0-6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x3926), .table = {0x01ed, 15229}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 15876)); // 01ed:3ca9; 0-6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x3ca9), .table = {0x01ed, 15876}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 17808)); // 01ed:4382; 0-0x19
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x4382), .table = {0x01ed, 17808}, .type = jumpTable_t::JumpWords, .elements = sequence("0-25"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 23079)); // 01ed:597a; 0-8
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x597a), .table = {0x01ed, 23079}, .type = jumpTable_t::JumpWords, .elements = sequence("0-8"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 56381)); // 01ed:d871; 0..0x17
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0xd871), .table = {0x01ed, 56381}, .type = jumpTable_t::JumpWords, .elements = sequence("0-10"), .selector = "bx"}),
+         
+    },
+        .procList = {{0x01ed,0x015c},{0x01ed,0xbf97},{0x01ed,0xbe1a},{0x01ed,0xd1bd}}
+    
+//    indirect bx=0 tab=14f0:2 target=1ed:cbed sub_eabd()
+//    indirect bx=c tab=14f0:2 target=1ed:e5a1 sub_10471()
+
+    //01ed:0210; 14f0:2
+};
 }

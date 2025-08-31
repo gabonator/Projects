@@ -174,8 +174,9 @@ public:
 
             if (pinfo->savePrecondition.size())
             {
-                assert(pinfo->savePrecondition.size()==1);
-                mCode.push_back("    " + pinfo->savePrecondition[0].variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, pinfo->savePrecondition[0].readOp)) + ";\n");
+//                assert(pinfo->savePrezcondition.size()==1);
+                for (const auto& prec : pinfo->savePrecondition)
+                    mCode.push_back("    " + prec.variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, prec.readOp)) + ";\n");
             }
 
             if (pinfo->infiniteLoop)
@@ -327,6 +328,10 @@ public:
             return "($sig0)$rd0 > 0";
         if (set == X86_INS_DEC && cond == X86_INS_JLE)
             return "($sig0)$rd0 <= 0 POST"; // POST!
+        if (set == X86_INS_INC && cond == X86_INS_JLE)
+            return "($sig0)$rd0 <= 0 POST"; // POST!
+        if (set == X86_INS_SUB && cond == X86_INS_JGE)
+            return "($sig0)$rd0 >= 0 POST";
 
         assert(0);
         return "";
