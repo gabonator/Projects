@@ -168,6 +168,7 @@ public:
             address_t proc;
             code_t code;
             funcInfo_t func;
+            procRequest_t reqSelf{procRequest_t::none};
         };
         std::map<address_t, shared<info_t>> mInfos;
     
@@ -244,7 +245,16 @@ public:
         }
         int stackChange = instr->mTemplate.stack;
         if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
+        {
+//            if (info->procRequest & procRequest_t::nearAsFar)
+//            {
+//                assert(0);
+//                int f = 9;
+//            }
+//           if (instr->mId == X86_INS_RETF)
             stackChange -= instr->Imm();
+        }
+        
         if (instr->mDetail.op_count >= 1 && instr->mDetail.operands[0].type == X86_OP_REG &&
             instr->mDetail.operands[0].reg == X86_REG_SP)
         {
@@ -330,6 +340,10 @@ public:
     {
         std::map<address_t, procRequest_t> aux;
         shared<info_t> info = check(mInfos.find(proc), mInfos.end())->second;
+        if (info->reqSelf != procRequest_t::none)
+        {
+            aux.insert(std::pair<address_t, procRequest_t>(info->proc, info->reqSelf));
+        }
         for (auto i : info->code)
         {
             if (i.second->procRequest != procRequest_t::none)

@@ -605,6 +605,8 @@ public:
 //        }
         modified = true;
         dwAddr -= 0xa000 * 16;
+//        if (dwAddr>=0x1000 && dwAddr<=0x5200 )
+//            bWrite = 0x55;
 
         if (nWriteMode != 1)
             LoadLatch(dwAddr);
@@ -620,14 +622,14 @@ public:
         modified |= StoreLatch(dwAddr);
 //        nWriteMode = old;
 
-        static int counter = 0;
-        if (bWrite)
-        {
-            if (counter++%1000==0)
-            {
-                sync();
-            }
-        }
+//        static int counter = 0;
+//        if (bWrite)
+//        {
+//            if (counter++%1000==0)
+//            {
+//                sync();
+//            }
+//        }
     }
 
     virtual uint8_t Read(uint32_t dwAddr) override

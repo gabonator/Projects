@@ -89,6 +89,11 @@ public:
                 extraInfo += " +popsCs";
                 temp ^= (int)procRequest_t::popsCs;
             }
+            if (temp & (int)procRequest_t::nearAsFar)
+            {
+                extraInfo += " +nearAsFar";
+                temp ^= (int)procRequest_t::nearAsFar;
+            }
             assert(temp == 0);
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));

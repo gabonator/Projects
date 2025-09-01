@@ -21,6 +21,10 @@ public:
     
     virtual void AnalyseProc(address_t proc, procRequest_t req, int stackDrop)
     {
+        if (proc.offset == 0xe23b)
+        {
+            int f = 9;
+        }
         shared<info_t> info = mInfos.find(proc)->second;
         code_t& code = info->code;
         //code_t code = info->code;
@@ -69,6 +73,10 @@ public:
                     *prevInfo = *info->code.find(link.first)->second;
                 } else {
                     prevInfo->stack = 0; // TODO: long call?
+//                    if ((int)req & (int)procRequest_t::nearAsFar)
+//                    {
+//                        prevInfo->stack = 2;
+//                    }
                 }
                 
                 shared<instrInfo_t> newInfo = code.find(link.second)->second;
@@ -98,18 +106,32 @@ public:
         }
 
         // TODO: BAD, collect all RET, and merge
-        PostProcess(info);
+        PostProcess(info, req);
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
     }
     
-    void PostProcess(shared<info_t> info)
+    void PostProcess(shared<info_t> info, procRequest_t req)
     {
+        int stackOffset = (int)req & (int)procRequest_t::nearAsFar ? 2 : 0;
+        int stackOffsetRetf = (int)req & (int)procRequest_t::nearAsFar ? -2 : 0;
+
+        if (info->proc.offset == 0xe23b)
+        {
+            int f = 9;
+        }
+        // TODO: stop cleanup in second pass!
+        for (const auto& [a, p] : info->code)
+        {
+            if (p->stop.starts_with("stack_"))
+                p->stop.clear();
+        }
+
         FindInfiniteLoops(info->code);
         bool stackGood = true;
         // static stack check
         for (const auto& [a, p] : info->code)
         {
-            if (p->stack < 0)
+            if (p->stack + stackOffset < 0)
             {
                 if (stackGood)
                 {
@@ -132,11 +154,16 @@ public:
                     continue;
                 }
             }
-            if (p->stack >= 0)
+            if (p->stack + stackOffset >= 0)
                 stackGood = true;
-            if (p->instr->mId == X86_INS_RET || p->instr->mId == X86_INS_RETF)
+            if (p->instr->mId == X86_INS_RET )
             {
-                if (p->stack != 0)
+                if (p->stack + stackOffset != 0)
+                    p->stop = "stack_unbalanced";
+            }
+            if (p->instr->mId == X86_INS_RETF)
+            {
+                if (p->stack + stackOffsetRetf != 0)
                     p->stop = "stack_unbalanced";
             }
         }
@@ -268,6 +295,42 @@ public:
                 }
             }
         }
+        
+        // self modifying
+        if (info->code.size() > 5 && info->code.begin()->second->instr->mAddress == info->proc)
+        {
+            std::vector<shared<instrInfo_t>> linear;
+            std::set<x86_insn> exits;
+            
+            for (const auto& [a, p] : info->code)
+            {
+                if (!p->instr->mTemplate.continuous)
+                    break;
+                if (p->instr->mNext.size() != 1)
+                    break;
+                if (linear.size() > 5)
+                    break;
+                linear.push_back(p);
+            }
+            for (const auto& [a, p] : info->code)
+            {
+                if (p->instr->mTemplate.ret)
+                    exits.insert(p->instr->mId);
+            }
+
+            if (linear[0]->instr->mId == X86_INS_POP &&
+                linear[1]->instr->mId == X86_INS_PUSH &&
+                strcmp(linear[1]->instr->mOperands, "cs") == 0 &&
+                linear[2]->instr->mId == X86_INS_PUSH &&
+                strcmp(linear[2]->instr->mOperands, linear[0]->instr->mOperands) == 0 &&
+                exits.size() == 1 &&
+                *exits.begin() == X86_INS_RETF)
+            {
+                info->reqSelf = procRequest_t((int)info->reqSelf | (int)procRequest_t::nearAsFar);
+            }
+            
+        }
+        //AddProcRequest(p, p->instr->CallTarget(), r);
     }
     
     void FindInfiniteLoops(code_t& code)
@@ -303,6 +366,7 @@ public:
 
         for (const auto& p : code)
         {
+            printf("%+3d", p.second->stack);
             if (p.second->instr->isLabel)
                 printf("loc_");
             else
@@ -325,6 +389,10 @@ public:
 //            assert(!stack);
             return callConv_t::callConvShiftStackNearFar;
         }
+        if ((int)req & (int)procRequest_t::nearAsFar)
+        {
+            return callConv_t::callConvShiftStackNear;
+        } else
         if ((int)req & (int)procRequest_t::callFar)
         {
             if (stack)

@@ -373,11 +373,11 @@ void memoryASet(int s, int o, int v)
     {
         int f = 9;
     }
-//    int proc = GetProcAt(s, o);
-//    if(proc!=0)
-//    {
-//        printf("Writing to code %04x:%0x in sub_%x()\n", s, o, proc);
-//    }
+    int proc = GetProcAt(s, o);
+    if(proc!=0)
+    {
+        printf("Writing to code %04x:%0x in sub_%x()\n", s, o, proc);
+    }
 
     if (s == 0x7777)
     {
@@ -424,7 +424,7 @@ void memoryASet(int s, int o, int v)
 }
 void memoryASet16(int s, int o, int v)
 {
-    if (s*16+o == 0x1ed0 + 0xdcc6)
+    if (s*16+o == 0x14f20 + 0x6052)
     {
         int f = 9;
     }
@@ -437,18 +437,19 @@ void memoryASet16(int s, int o, int v)
 
     o &= 0xffff;
     assert(o <= 0xffff);
-//    assert(GetProcAt(s, o)==0);
+    int p = GetProcAt(s, o);
 
 //    if (sp != 0xeeee)
 //    {
 //        int p = GetProcAt(s, o);
 //        if (!p)
 //            p = GetProcAt(s, o+1);
-//        if (p)
-//        {
-//            printf("Writing to code sub_%x, mem=%x:%x=%x value=%x\n", p, s, o, s*16+o, v);
+        if (p)
+        {
+            printf("Writing to code sub_%x, mem=%x:%x=%x prev=%x new=%x\n", p, s, o, s*16+o,
+                   memoryAGet16(s, o), v);
 //            assert(0);
-//        }
+        }
 //    }
     if (s >= 0xa000)
     {

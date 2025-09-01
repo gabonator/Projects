@@ -1,15 +1,8 @@
 diff --git a/ck1.clean b/ck1.cpp
-index 0c99058..978ec6d 100644
+index 408988f..455583f 100644
 --- a/ck1.clean
 +++ b/ck1.cpp
-@@ -1,5 +1,5 @@
- #include "cico16.h"
--
-+#include <stdio.h>
- void fixReloc(uint16_t seg);
- void sub_1ed0();
- 
-@@ -286,7 +286,7 @@ void sub_12290();
+@@ -303,7 +303,7 @@ void sub_12290();
      }
  void sub_1ed0() // 01ed:0000
  {
@@ -18,16 +11,16 @@ index 0c99058..978ec6d 100644
      dx = 0x14f2;
      memoryASet16(cs, 0x0235, dx);
      ah = 0x30;
-@@ -390,7 +390,7 @@ loc_1f6c: // 01ed:009c
-     push(memoryAGet16(ds, 0x0086));
-     push(memoryAGet16(ds, 0x0084));
-     push(memoryAGet16(ds, 0x0082));
--    sub_319f();
-+    sub_319f(); // gameplay!
-     memoryASet(cs, 0x01e7, 0x72);
-     memoryASet(cs, 0x01d6, 0x00);
-     push(ax);
-@@ -465,7 +465,7 @@ loc_2149: // 01ed:0279
+@@ -458,7 +458,7 @@ loc_20f0: // 01ed:0220
+     memoryASet16(ds, bx + si, memoryAGet16(ds, bx + si) + ax);
+     push(bp);
+     bp = sp;
+-    ax = 0;
++    assert(0); ax = 0; // write to cs! 0x14f2
+     memoryASet16(ds, 0x6ed8, ax);
+     memoryASet16(ds, 0x6ecc, ax);
+     memoryASet16(ds, 0x6ebe, ax);
+@@ -482,7 +482,7 @@ loc_2149: // 01ed:0279
      memoryASet16(ds, 0x5640, ax);
      bp = pop();
      stop("stack_unbalanced");
@@ -36,7 +29,16 @@ index 0c99058..978ec6d 100644
  }
  void sub_1fdf() // 01ed:010f
  {
-@@ -626,11 +626,13 @@ void sub_2078() // 01ed:01a8
+@@ -566,7 +566,7 @@ loc_20f6: // 01ed:0226
+     memoryASet16(ds, bx + si, memoryAGet16(ds, bx + si) + ax);
+     push(bp);
+     bp = sp;
+-    ax = 0;
++    assert(0); ax = 0;
+     memoryASet16(ds, 0x6ed8, ax);
+     memoryASet16(ds, 0x6ecc, ax);
+     memoryASet16(ds, 0x6ebe, ax);
+@@ -643,6 +643,7 @@ void sub_2078() // 01ed:01a8
  }
  void sub_20a5() // 01ed:01d5
  {
@@ -44,19 +46,7 @@ index 0c99058..978ec6d 100644
  loc_20a5: // 01ed:01d5
      ah = 0xff;
      dx = di;
-     bx = si;
- loc_20ab: // 01ed:01db
-+    printf("%04x:%04x = %02x %02x\n", ds, bx, memoryAGet(ds, bx), memoryAGet(ds, bx+1));
-     if (bx == di)
-         goto loc_20c3;
-     if (memoryAGet(ds, bx) == 0xff)
-@@ -664,11 +666,13 @@ loc_20e0: // 01ed:0210
-         case 0xd062: sub_ef32(); break;
-         case 0xe5a1: sub_10471(); break;
-         default:
-+            printf("%04x sub_%02x()\n", memoryAGet16(es, bx + 2), cs*16+memoryAGet16(es, bx + 2));
-             stop();
-     }
+@@ -686,6 +687,7 @@ loc_20e0: // 01ed:0210
      ds = pop();
      goto loc_20a5;
  loc_20e7: // 01ed:0217
@@ -64,73 +54,16 @@ index 0c99058..978ec6d 100644
      return;
  }
  void sub_20e8() // 01ed:0218
-@@ -679,6 +683,8 @@ void sub_20e8() // 01ed:0218
- }
- void sub_2109() // 01ed:0239
- {
-+    sync();
-+    return;
-     sp -= 2;
-     push(bp);
-     bp = sp;
-@@ -691,6 +697,7 @@ void sub_2109() // 01ed:0239
+@@ -708,6 +710,8 @@ void sub_2109() // 01ed:0239
      memoryASet16(ds, 0x7fba, 0x6c64);
      memoryASet16(ds, 0x5db6, 0x5660);
  loc_212f: // 01ed:025f
-+    sync();
++//    sync();
++    memoryASet16(ds, 0x5135, memoryAGet16(ds, 0x5135)+1);
      ax = memoryAGet16(ds, 0x5135);
      ax -= memoryAGet16(ds, 0x563e);
      memoryASet16(ds, 0x5b14, ax);
-@@ -3076,13 +3083,14 @@ void sub_490b() // 01ed:2a3b
-     memoryASet16(ds, 0x8238, cx);
-     memoryASet16(ds, 0x823a, bx);
-     si = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     bp = pop();
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-     sp += 2;
- }
- void sub_49b9() // 01ed:2ae9
- {
-+    int t= bp;
-     sp -= 2;
-     push(bp);
-     bp = sp;
-@@ -3177,10 +3185,11 @@ void sub_49b9() // 01ed:2ae9
-     memoryASet16(ds, si + 26, ax);
-     di = pop();
-     si = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     bp = pop();
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-     sp += 2;
-+    assert(t==bp);
- }
- void sub_4a6a() // 01ed:2b9a
- {
-@@ -4853,6 +4862,7 @@ loc_6bbf: // 01ed:4cef
-         goto loc_6bc7;
-     goto loc_6cb3;
- loc_6bc7: // 01ed:4cf7
-+    sync();
-     ax = 0x8220;
-     push(ds);
-     push(ax);
-@@ -4877,7 +4887,8 @@ loc_6beb: // 01ed:4d1b
-     {
-         case 0x3867: sub_5737(); break;
-         default:
--            stop();
-+            printf("adr=%x\n", memoryAGet16(ds, 0x8252));
-+            //stop();
-     }
-     ax = memoryAGet16(ds, 0x823c);
-     dx = ax & 0x8000 ? 0xffff : 0x0000;
-@@ -12315,6 +12326,7 @@ loc_b3b9: // 01ed:94e9
+@@ -13690,6 +13694,7 @@ loc_b3b9: // 01ed:94e9
      sub_7b0a();
      goto loc_b3cc;
  loc_b3c3: // 01ed:94f3
@@ -138,15 +71,15 @@ index 0c99058..978ec6d 100644
      ax = 0x0007;
      push(ax);
      sub_dfb2();
-@@ -13611,6 +13623,7 @@ void sub_be82() // 01ed:9fb2
+@@ -14983,6 +14988,7 @@ void sub_be82() // 01ed:9fb2
      sp++;
      sp++;
  loc_bef4: // 01ed:a024
 +    sync();
      ax = bp - 6;
-     stop("stack_bad");
      push(ss);
-@@ -13725,7 +13738,7 @@ loc_bfd1: // 01ed:a101
+     push(ax);
+@@ -15096,7 +15102,7 @@ loc_bfd1: // 01ed:a101
      ax = si;
      ax -= di;
      ax++;
@@ -155,7 +88,15 @@ index 0c99058..978ec6d 100644
          goto loc_bfe6;
      ax = di;
      ax--;
-@@ -16469,9 +16482,9 @@ loc_d733: // 01ed:b863
+@@ -17033,6 +17039,7 @@ loc_d0dd: // 01ed:b20d
+         goto loc_d0e3;
+     goto loc_d064;
+ loc_d0e3: // 01ed:b213
++    sync();
+     ax = bp - 6;
+     push(ss);
+     push(ax);
+@@ -17827,9 +17834,9 @@ loc_d733: // 01ed:b863
      al = in8(dx);
      dx = 0x03c0;
      al = 0x33;
@@ -168,37 +109,15 @@ index 0c99058..978ec6d 100644
      di = pop();
      si = pop();
      sp += 2;
-@@ -18779,7 +18792,7 @@ loc_ec68: // 01ed:cd98
-     bx <<= 1;
-     memoryASet16(ds, bx + 21784, memoryAGet16(ds, bx + 21784) & 0xfdff);
-     ax = memoryAGet16(ss, bp + 6);
--    memoryASet16(ss, bp - 8, ax);
-+    memoryASet16(ss, bp - 8, ax); // text ptr
-     ax = memoryAGet16(ss, bp + 8);
-     memoryASet16(ss, bp - 4, ax);
-     goto loc_ecd6;
-@@ -18794,7 +18807,7 @@ loc_ec81: // 01ed:cdb1
-     memoryASet(ds, si, 0x0d);
-     si++;
- loc_ec97: // 01ed:cdc7
--    al = memoryAGet(ss, bp - 5);
-+    al = memoryAGet(ss, bp - 5); // copy text  msg[128]
-     memoryASet(ds, si, al);
-     si++;
-     ax = bp - 138;
-@@ -18838,9 +18851,9 @@ loc_ecdc: // 01ed:ce0c
-         goto loc_ed18;
-     push(dx);
-     ax = bp - 138;
--    push(ax);
-+    push(ax); // text ptr
-     push(memoryAGet16(ss, bp + 4));
--    sub_fb3d();
-+    sub_fb3d(); // No Ega!  01ed:ce2b
-     sp += 0x0006;
-     memoryASet16(ss, bp - 2, ax);
-     if (ax == di)
-@@ -18979,7 +18992,7 @@ loc_ee93: // 01ed:cfc3
+@@ -18428,6 +18435,7 @@ void sub_dc9e() // 01ed:bdce
+     if (ax)
+         goto loc_dcc8;
+ loc_dcaa: // 01ed:bdda
++    sync();
+     bl = memoryAGet(ds, 0x50ac);
+     if ((char)bl >= 0)
+         goto loc_dcaa;
+@@ -20346,7 +20354,7 @@ loc_ee93: // 01ed:cfc3
  loc_ee9b: // 01ed:cfcb
      si = pop();
      bp = pop();
@@ -207,20 +126,7 @@ index 0c99058..978ec6d 100644
      sp += 2;
      sp += 6;
  }
-@@ -19145,10 +19158,10 @@ loc_efcc: // 01ed:d0fc
-     goto loc_eff7;
- loc_eff5: // 01ed:d125
-     ax = 0;
--    stop("stack_bad");
-+//    stop("stack_bad");
- loc_eff7: // 01ed:d127
-     memoryASet(ds, 0x5558, al);
--    stop("stack_bad");
-+//    stop("stack_bad");
-     if (memoryAGet(ds, 0x5554) != 0x07)
-         goto loc_f006;
-     ax = 0xb000;
-@@ -20120,7 +20133,7 @@ loc_f6f1: // 01ed:d821
+@@ -21489,7 +21497,7 @@ loc_f6f1: // 01ed:d821
      memoryASet(ss, di, al);
      di++;
      memoryASet(ss, bp - 20, memoryAGet(ss, bp - 20) - 1);
@@ -229,7 +135,26 @@ index 0c99058..978ec6d 100644
          goto loc_f6e8;
      sub_f6a9();
      goto loc_f6e8;
-@@ -20191,7 +20204,7 @@ void sub_f6a0() // 01ed:d7d0
+@@ -21759,8 +21767,8 @@ loc_fa16: // 01ed:db46
+     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) | 0x0040);
+     bx--;
+     bx--;
+-    temp_cond1 = (short)memoryAGet16(ss, bp - 14) >= 0 POST;
+     memoryASet16(ss, bp - 14, memoryAGet16(ss, bp - 14) - 0x0002);
++    temp_cond1 = (short)memoryAGet16(ss, bp - 14) >= 0;
+     if (temp_cond1)
+         goto loc_fa27;
+     memoryASet16(ss, bp - 14, 0x0000);
+@@ -21821,7 +21829,7 @@ loc_fa81: // 01ed:dbb1
+     memoryASet(ss, di, al);
+     di++;
+     memoryASet(ss, bp - 20, memoryAGet(ss, bp - 20) - 1);
+-    if ((char)memoryAGet(ss, bp - 20) > 0 POST)
++    if ((char)memoryAGet(ss, bp - 20) > 0)
+         goto loc_fa8f;
+     sub_f6a9();
+ loc_fa8f: // 01ed:dbbf
+@@ -21883,7 +21891,7 @@ void sub_f6a0() // 01ed:d7d0
      memoryASet(ss, di, al);
      di++;
      memoryASet(ss, bp - 20, memoryAGet(ss, bp - 20) - 1);
@@ -238,273 +163,20 @@ index 0c99058..978ec6d 100644
          goto loc_f6d8;
      push(bx);
      push(cx);
-@@ -20440,6 +20453,8 @@ loc_fcee: // 01ed:de1e
- }
- void sub_fcf7() // 01ed:de27
- {
-+    assert(cs == 0x1ed);
-+
-     push(ax);
-     ds = memoryAGet16(cs, 0xdcc6);
-     ax = 0;
-@@ -20448,6 +20463,8 @@ void sub_fcf7() // 01ed:de27
-     sub_e587();
-     bx = pop();
-     bx = pop();
-+    assert(cs == 0x1ed);
-+
-     ax &= 0x000f;
-     if (!ax)
-         goto loc_fd1e;
-@@ -20460,6 +20477,8 @@ void sub_fcf7() // 01ed:de27
-     sub_e587();
-     bx = pop();
-     bx = pop();
-+    assert(cs == 0x1ed);
-+
- loc_fd1e: // 01ed:de4e
-     ax = pop();
-     push(ax);
-@@ -20468,10 +20487,12 @@ loc_fd1e: // 01ed:de4e
-     cl = 0x04;
-     bx >>= cl;
-     ax <<= cl;
-+    assert(cs == 0x1ed);
-     ds = memoryAGet16(cs, 0xdcc6);
-+    assert(ds);
-     push(bx);
-     push(ax);
--    sub_e587();
-+    sub_e587(); // should return ax=0 bx=2700 cx=2706 dx=24f2
-     bx = pop();
-     bx = pop();
-     bx = pop();
-@@ -20602,9 +20623,10 @@ loc_fe28: // 01ed:df58
- }
- void sub_ff73() // 01ed:e0a3 +stackDrop10
- {
-+    int t = cs;
-     sp -= 2;
-     cx = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(cx);
-     cx = 0;
-@@ -20702,7 +20724,7 @@ void sub_ff82() // 01ed:e0b2 +stackDrop10
- {
-     sp -= 2;
-     cx = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(cx);
-     cx = 0x0002;
-@@ -20782,10 +20804,11 @@ loc_1000e: // 01ed:e13e
-     di = pop();
-     si = pop();
-     bp = pop();
--    stop("stack_below_retf, 10/6");
-+//    stop("stack_below_retf, 10/6");
-     sp += 2;
-     cs = pop();
-     sp += 8;
-+//    assert(t == cs);
-     return;
- loc_10014: // 01ed:e144
-     div16(bx);
-@@ -20798,8 +20821,10 @@ loc_1001d: // 01ed:e14d
- }
- void sub_10021() // 01ed:e151
- {
-+    int t = cs;
-+    sp -= 2;
-     bx = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(bx);
-     if (cl >= 0x10)
-@@ -20811,21 +20836,26 @@ void sub_10021() // 01ed:e151
-     cl += 0x10;
-     bx >>= cl;
-     dx |= bx;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( t == cs);
-     return;
- loc_10039: // 01ed:e169
-     cl -= 0x10;
-     tx = dx; dx = ax; ax = tx;
-     ax = 0;
-     dx <<= cl;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( t == cs);
- }
- void sub_10042() // 01ed:e172
- {
-+    sp -= 2;
-     bx = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(bx);
-     if (cl >= 0x10)
-@@ -20837,7 +20867,8 @@ void sub_10042() // 01ed:e172
-     cl += 0x10;
-     bx <<= cl;
-     ax |= bx;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-     return;
- loc_1005a: // 01ed:e18a
-@@ -20845,13 +20876,16 @@ loc_1005a: // 01ed:e18a
-     tx = dx; dx = ax; ax = tx;
-     dx = ax & 0x8000 ? 0xffff : 0x0000;
-     ax = sar16(ax, cl);
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
- }
- void sub_10062() // 01ed:e192
- {
-+    int t = cs;
-+    sp -= 2;
-     bx = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(bx);
-     if (cl >= 0x10)
-@@ -20863,21 +20897,27 @@ void sub_10062() // 01ed:e192
-     cl += 0x10;
-     bx <<= cl;
-     ax |= bx;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( cs == t);
-     return;
- loc_1007a: // 01ed:e1aa
-     cl -= 0x10;
-     tx = dx; dx = ax; ax = tx;
-     dx = 0;
-     ax >>= cl;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( cs == t);
- }
- void sub_10083() // 01ed:e1b3
- {
-+    int t = cs;
-+    sp -= 2;
-     es = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(es);
-     es = dx;
-@@ -20913,8 +20953,10 @@ loc_100a9: // 01ed:e1d9
-     bx = pop();
-     memoryASet16(es, bx, ax);
-     memoryASet16(es, bx + 2, dx);
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( cs == t);
-     return;
-   // gap 30 bytes
- loc_100e5: // 01ed:e215
-@@ -20937,13 +20979,17 @@ loc_100ed: // 01ed:e21d
-     bx = pop();
-     memoryASet16(es, bx, ax);
-     memoryASet16(es, bx + 2, dx);
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert( cs == t);
- }
- void sub_1010b() // 01ed:e23b
- {
--    es = pop();
--    stop("stack_below");
-+    int t = cs;
-+    es = 0x7777;
-+//    es = pop();
-+//    stop("stack_below");
-     push(cs);
-     push(es);
-     if ((short)cx >= 0)
-@@ -20970,7 +21016,8 @@ loc_10126: // 01ed:e256
-     dx += ax;
-     al = ch;
-     ax &= 0x000f;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-     return;
-   // gap 19 bytes
-@@ -20991,14 +21038,18 @@ loc_10155: // 01ed:e285
-     dx += ax;
-     al = ch;
-     ax &= 0x000f;
--    stop("stack_unbalanced");
-+//    stop("stack_unbalanced");
-+    sp += 2;
-     cs = pop();
-+    assert(cs == t);
- }
- void sub_1016b() // 01ed:e29b +stackDrop10
- {
-+    int t = cs;
-+
-     sp -= 2;
-     es = pop();
--    stop("stack_below");
-+//    stop("stack_below");
-     push(cs);
-     push(es);
-     push(bp);
-@@ -21018,17 +21069,19 @@ void sub_1016b() // 01ed:e29b +stackDrop10
-     di = pop();
-     si = pop();
-     bp = pop();
--    stop("stack_below_retf, 10/6");
-+//    stop("stack_below_retf, 10/6");
-     sp += 2;
-     cs = pop();
-     sp += 8;
-+    assert(cs == t);
- }
+@@ -22712,9 +22720,9 @@ void sub_1016b() // 01ed:e29b +stackDrop8 +nearAsFar
  void sub_1018a() // 01ed:e2ba
  {
--    sp -= 2;
+     sp -= 2;
 -    bx = pop();
 -    stop("stack_below");
 -    sp -= cx;
-+    int t = cs;
-+    push(0xeeee); //sp -= 2;
 +    bx = pop(); // ret addr
 +    //stop("stack_below");
 +    sp -= cx; // skip 3 args
      push(cs);
      goto loc_10195;
    // gap 5 bytes
-@@ -21051,9 +21104,10 @@ loc_10195: // 01ed:e2c5
+@@ -22737,7 +22745,7 @@ loc_10195: // 01ed:e2c5
      tx = si; si = ax; ax = tx;
      ds = pop();
      di = pop();
@@ -512,26 +184,8 @@ index 0c99058..978ec6d 100644
 +//    stop("stack_unbalanced");
      sp += 2;
      cs = pop();
-+    assert(t == cs);
  }
- void sub_101c0() // 01ed:e2f0
- {
-@@ -21403,10 +21457,10 @@ loc_2149: // 01ed:0279
-     return;
-   // gap 58136 bytes
- loc_10471: // 01ed:e5a1
--    memoryASet16(ds, 0x5634, pop());
--    memoryASet16(ds, 0x5636, pop());
--    memoryASet16(ds, 0x5638, pop());
--    memoryASet16(cs, 0xe59f, ds);
-+    memoryASet16(ds, 0x5634, pop()); //assert(memoryAGet16(ds, 0x5634) == 0x0214); // return adr
-+    memoryASet16(ds, 0x5636, pop()); assert(memoryAGet16(ds, 0x5636) == 0x14f0); // ds
-+    memoryASet16(ds, 0x5638, pop()); //assert(memoryAGet16(ds, 0x5638) == 0x00eb); ??
-+    memoryASet16(cs, 0xe59f, ds); assert(sp == 0);
-     memoryASet16(ds, 0x563a, si);
-     memoryASet16(ds, 0x563c, di);
-     flags.direction = 0;
-@@ -21521,7 +21575,7 @@ loc_10558: // 01ed:e688
+@@ -23207,7 +23215,7 @@ loc_10558: // 01ed:e688
      memoryASet16(ds, 0x0082, ax);
      ax = memoryAGet16(ds, 0x5632);
      memoryASet16(ds, 0x0084, ax);
@@ -540,7 +194,7 @@ index 0c99058..978ec6d 100644
  }
  void sub_10500() // 01ed:e630 +returnCarry +returnZero
  {
-@@ -27162,4 +27216,3 @@ int GetProcAt(int seg, int ofs)
+@@ -28830,4 +28838,3 @@ int GetProcAt(int seg, int ofs)
  {{0x01ed, 0xe0b2}, 10}, // sub_ff82 retf
  {{0x01ed, 0xe29b}, 10}, // sub_1016b retf
  */

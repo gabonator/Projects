@@ -174,7 +174,8 @@ enum class procRequest_t
 //    stackDrop4 = 128,
 //    stackDrop10 = 256,
     callIsolated = 512,
-    popsCs = 1024
+    popsCs = 1024,
+    nearAsFar = 2048
 };
 
 enum class arch_t {
