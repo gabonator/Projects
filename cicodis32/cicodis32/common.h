@@ -64,6 +64,7 @@ class Loader {
 public:
     virtual bool LoadFile(const char* executable, int loadAddress) = 0;
     virtual const uint8_t* GetBufferAt(address_t addr) = 0;
+    virtual const uint8_t* GetBufferAt(int offset) = 0;
     virtual bool InRange(address_t addr, int size = 0) = 0;
     virtual address_t GetEntry() = 0;
     virtual std::string GetMain() = 0;
@@ -89,6 +90,10 @@ struct jumpTable_t {
     int minaddr{0};
     bool useCaseOffset{false};
     
+    int fileoffset{0};
+    int filestep{0};
+    int filecount{0};
+    
     address_t GetBaseAddress() const
     {
         return table;
@@ -104,6 +109,15 @@ struct jumpTable_t {
     }
     address_t GetTarget(int i) const
     {
+        if (filestep)
+        {
+            if (type == CallDwords)
+            {
+                uint16_t* parts = (uint16_t*)(baseptr + i*filestep);
+                return address_t{parts[1], parts[0]};
+            }
+            assert(0);
+        }
         if (type == CallDwords)
         {
 //            assert(0);
@@ -213,12 +227,15 @@ public:
     std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
     std::set<address_t> marks;
-    shared<jumpTable_t> GetJumpTable(address_t addr) const
+    std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {
+        std::vector<shared<jumpTable_t>> aux;
         for (auto jt : jumpTables)
             if (jt->instruction == addr)
-                return jt;
-        return nullptr;
+                aux.push_back(jt);
+//                return jt;
+//        return nullptr;
+        return aux;
     }
     bool verbose{false};
     bool verboseAsm{false};

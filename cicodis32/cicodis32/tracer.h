@@ -69,8 +69,9 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_INT] = { }, // TODO
     [X86_INS_AND] = { },
     [X86_INS_PUSHFD] = { .stack = +4 },
-    [X86_INS_POPFD] = { .stack = +4 },
-    [X86_INS_POPF] = { .stack = +4, .savedVisiblyCarry = true },
+    [X86_INS_POPFD] = { .stack = -4 },
+    [X86_INS_PUSHF] = { .stack = +2},
+    [X86_INS_POPF] = { .stack = -2, .savedVisiblyCarry = true },
     [X86_INS_CMP] = { },
     [X86_INS_MOVZX] = { },
     
@@ -672,8 +673,7 @@ public:
                 }
                 if (instr->IsIndirectJump())
                 {
-                    shared<jumpTable_t> jt = mOptions.GetJumpTable(instr->mAddress);
-                    if (jt)
+                    for (shared<jumpTable_t> jt : mOptions.GetJumpTables(instr->mAddress))
                     {
                         for (int i=0; i<jt->GetSize(); i++)
                             if (jt->IsValid(i))
@@ -711,8 +711,7 @@ public:
             }
             if (p.second->IsIndirectJump()) // use mNext?
             {
-                shared<jumpTable_t> jt = mOptions.GetJumpTable(p.first);
-                if (jt)
+                for (shared<jumpTable_t> jt : mOptions.GetJumpTables(p.first))
                 {
                     for (int i=0; i<jt->GetSize(); i++)
                     {

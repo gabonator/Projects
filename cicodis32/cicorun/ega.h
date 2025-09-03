@@ -392,6 +392,7 @@ public:
     int vgareadcolorindex{0};
     int colorindex{0}; // fox
     int mPitch{40};
+    int mPanning{0};
     
     virtual bool PortWrite8(int port, int data) override
     {
@@ -410,12 +411,24 @@ public:
              */
             if (index == -1)
             {
-                if (data <= 0x10)
+                //if (data <= 0x10)
                     index = data;
             }
             else
             {
-                SetPaletteIndex(index, data);
+                if (index<16) {
+                    SetPaletteIndex(index, data);
+                } else {
+                    if ((index & 0x1f) == 0x13)
+                    {
+                        static int sh = 0;
+                        data &= 7;
+                        mPanning = data; //((data&7) == 0) ? 0 : 7-(data & 7); //7-(data&7);
+                        printf("panning: %d\n", mPanning);
+//                         horizontal pel panning
+                    } else
+                        assert(0);
+                }
                 index = -1;
             }
 //            std::cout << "port 3c0 ignore\n";
@@ -560,10 +573,8 @@ public:
         uint8_t* _video = (uint8_t*)egamemory;
         const int alternative = 2;
         if (alternative == 2)
-        {
             mPitch = rowOffset*2; // 248;
-            //off = (y)*(248) + x/8;
-        }
+        x += mPanning;
 
         uint32_t off = (int)y * mPitch + ((int)x / 8L);
         if (alternative == 1)

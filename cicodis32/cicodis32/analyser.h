@@ -403,11 +403,11 @@ public:
                 }
             }
 
-            shared<jumpTable_t> jt;
+            std::vector<shared<jumpTable_t>> jts;
             if (pinstr->IsIndirectCall())
             {
-                jt = mOptions.GetJumpTable(pinstr->mAddress);
-                if (jt)
+                jts = mOptions.GetJumpTables(pinstr->mAddress);
+                for (shared<jumpTable_t> jt : jts)
                 {
                     for (int i=0; i<jt->GetSize(); i++)
                         if (jt->IsValid(i))

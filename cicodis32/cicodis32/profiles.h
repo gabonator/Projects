@@ -1468,13 +1468,34 @@ Options optionsCK4 = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x0507), .table = {0x30d4, 24600}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "di"}),
         //    push(cs); cs = memoryAGet16(ds, 0x7ae8 + 2); callIndirect(cs, memoryAGet16(ds, 0x7ae8)); assert(cs == 0x1493); // 1493:18e7; 7b1:66d, 1439:1650
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1493, 0x18e7), .baseptr = (const uint8_t*)"\x6d\x06\xb1\x07\x50\x16\x39\x14", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x7ae8)", .useCaseOffset = true }),
-        //indirectJump(cs, memoryAGet16(ss, 0x6016)); // 1ff7:017e; 1ff7:01ba, 1a0
-        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x017e), .baseptr = (const uint8_t*)"\xba\x01\xa0\x01", .type = jumpTable_t::JumpWords, .elements = sequence("0-1"), .selector = "memoryAGet16(ss, 0x6016)", .useCaseOffset = true }),
+        //indirectJump(cs, memoryAGet16(ss, 0x6016)); // 1ff7:017e; 1ff7:01ba, 1a0, 1ec, 1d6, 202
+//        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x017e), .baseptr = (const uint8_t*)"\xba\x01\xa0\x01\xec\x01\xd6\x01\x02\x02", .type = jumpTable_t::JumpWords, .elements = sequence("0-4"), .selector = "memoryAGet16(ss, 0x6016)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x017e), .table = {0x30d4, 24554}, .type = jumpTable_t::JumpWords, .elements = sequence("0-21"), .selector = "memoryAGet16(ss, 0x6016)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x017e), .baseptr = (const uint8_t*)"\xa0\x01", .type = jumpTable_t::JumpWords, .elements = sequence("0-0"), .selector = "memoryAGet16(ss, 0x6016)", .useCaseOffset = true }),
+
         //    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x056a); // 056a:004a; 1ef3:78d
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x056a, 0x004a), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
         //push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1b1e); // 1b1e:0e74; 1ef3:078d
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0e74), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
 //        push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:0eaa; // 1ef3:0e2c
+        
+//        05da:1bc2
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x05da, 0x1bc2), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1b1e:0d27
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0d27), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1b1e:0dd6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0dd6), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1b1e:11dd
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x11dd), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1b1e:1407
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x1407), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1c76:054d
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x054d), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1c76:0560
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x0560), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+//        1c76:0575
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x0575), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
+        
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0eaa), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
         //indirectJump(cs, memoryAGet16(ss, si + 26234)); // 1ff7:08a0;  // 30d4:26234 1ff7:08a5 0,2
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1ff7, 0x08a0), .table = {0x30d4, 26234}, .type = jumpTable_t::JumpWords, .elements = sequence("0-2"), .selector = "si"}),
@@ -1488,6 +1509,29 @@ Options optionsCK4 = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x01eb), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
   //      push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:0224;
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x0224), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+        //1b1e:0d3c
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0d3c), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1b1e:0e13
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x0e13), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1b1e:11f9
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x11f9), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1b1e:147d
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x147d), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1b1e:14a8
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x14a8), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1b1e:1558
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x1558), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1c76:05fb
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x05fb), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1c76:064d
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x064d), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1c76:0673
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x673), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1c76:1952
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x1952), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+//        1c76:1994
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x1994), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
+
         //    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1c76); // 1c76:01d6; // 1ef3:078d
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x01d6), .baseptr = (const uint8_t*)"\x8d\x07\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43bc)", .useCaseOffset = true }),
         //push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1c76); // 1c76:01ff;
@@ -1496,7 +1540,66 @@ Options optionsCK4 = {
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x0198), .baseptr = (const uint8_t*)"\x2c\x0e\xf3\x1e", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0x43c0)", .useCaseOffset = true }),
 //        push(cs); cs = memoryAGet16(es, bx + 12 + 2); callIndirect(cs, memoryAGet16(es, bx + 12)); assert(cs == 0x1c76); // 1c76:213e; 1c76:1e34
         std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x213e), .baseptr = (const uint8_t*)"\x34\x1e\x76\x1c", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(es, bx + 12)", .useCaseOffset = true }),
+        
+        //    indirectJump(cs, memoryAGet16(cs, bx + 1429)); // 107c:005f; gg 0..0x57
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x107c, 0x005f), .table = {0x107c, 1429}, .type = jumpTable_t::JumpWords, .elements = sequence("0-87"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 1976)); // 1c76:071b; gg 0..5
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x071b), .table = {0x1c76, 1976}, .type = jumpTable_t::JumpWords, .elements = sequence("0-5"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 2543)); // 0f7c:0985; gg 0..6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0f7c, 0x0985), .table = {0x0f7c, 2543}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 2841)); // 0b02:0ac8; gg 0..9
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0b02, 0x0ac8), .table = {0x0b02, 2841}, .type = jumpTable_t::JumpWords, .elements = sequence("0-9"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 3358)); // 164d:0a71; gg 0..4
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x164d, 0x0a71), .table = {0x164d, 3358}, .type = jumpTable_t::JumpWords, .elements = sequence("0-4"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 3409)); // 1841:0c77; gg 0..3
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1841, 0x0c77), .table = {0x1841, 3409}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 3969)); // 07b1:0e67; gg 0..12
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x07b1, 0x0e67), .table = {0x07b1, 3969}, .type = jumpTable_t::JumpWords, .elements = sequence("0-12"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 5495)); // 1b1e:12f6; gg 0..6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1b1e, 0x12f6), .table = {0x1b1e, 5495}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 6727)); // 0d6d:196c; gg 0..0x19
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0d6d, 0x196c), .table = {0x0d6d, 6727}, .type = jumpTable_t::JumpWords, .elements = sequence("0-25"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 817)); // 0b02:0154; gg 0..0x12
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0b02, 0x0154), .table = {0x0b02, 817}, .type = jumpTable_t::JumpWords, .elements = sequence("0-18"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 9330)); // 1c76:2434; gg 0..6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x2434), .table = {0x1c76, 9330}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 959)); // 01ed:02d9; gg 0..6
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x01ed, 0x02d9), .table = {0x01ed, 959}, .type = jumpTable_t::JumpWords, .elements = sequence("0-6"), .selector = "bx"}),
 
+//        indirectJump(cs, memoryAGet16(cs, bx + 3388)); // 126d:0ce7; gy 0..3
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x126d, 0x0ce7), .table = {0x126d, 3388}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 3454)); // 138f:0d28; gy 0..3
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x138f, 0x0d28), .table = {0x138f, 3454}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+//        indirectJump(cs, memoryAGet16(cs, bx + 3806)); // 138f:0e7d; gy 0..3
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x138f, 0x0e7d), .table = {0x138f, 3806}, .type = jumpTable_t::JumpWords, .elements = sequence("0-3"), .selector = "bx"}),
+
+        
+//        push(cs); cs = memoryAGet16(ds, 0xe7fa + 2); callIndirect(cs, memoryAGet16(ds, 0xe7fa)); assert(cs == 0x1c76); // 1c76:250f;  //07b1:0466
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1c76, 0x250f), .baseptr = (const uint8_t*)"\x66\x04\xb1\x07", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0xe7fa)", .useCaseOffset = true }),
+//        push(cs); cs = memoryAGet16(ds, di + 16 + 2); callIndirect(cs, memoryAGet16(ds, di + 16)); assert(cs == 0x0bc9); // 0bc9:0fb0;  // f7c:6af 0f7c06f0
+//        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x0fb0), .baseptr = (const uint8_t*)"\xaf\x06\x7c\x0f\xf0\x06\x7c\x0f", .type = jumpTable_t::CallDwords, .elements = sequence("0-1"), .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+//        push(cs); cs = memoryAGet16(ds, bx + 24 + 2); callIndirect(cs, memoryAGet16(ds, bx + 24)); assert(cs == 0x08aa); // 08aa:2468; // 0bc9:176e
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x08aa, 0x2468), .baseptr = (const uint8_t*)"\x6e\x17\xc9\x0b", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, bx + 24)", .useCaseOffset = true }),
+    //    push(cs); cs = memoryAGet16(ds, 0xdda8 + 2); callIndirect(cs, memoryAGet16(ds, 0xdda8)); assert(cs == 0x1841); // 1841:1cb7; // 07b1:0561
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x1841, 0x1cb7), .baseptr = (const uint8_t*)"\x61\x05\xb1\x07", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, 0xdda8)", .useCaseOffset = true }),
+//        push(cs); cs = memoryAGet16(ds, di + 16 + 2); callIndirect(cs, memoryAGet16(ds, di + 16)); assert(cs == 0x0bc9); // 0bc9:106d; // 1195:002e 1195008b 119500b3 119500db 0f7c06af
+    
+//        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x106d), .baseptr = (const uint8_t*)"\x2e\x00\x95\x11\x8b\x00\x95\x11\xb3\x00\x95\x11\xdb\x00\x95\x11\xaf\x06\x7c\x0f", .type = jumpTable_t::CallDwords, .elements = sequence("0-4"), .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x106d), .fileoffset = 0x33a6c,
+            .filestep = 30, .filecount = 300/30, .type = jumpTable_t::CallDwords, .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x106d), .fileoffset = 0x33102,
+            .filestep = 30, .filecount = 300/30, .type = jumpTable_t::CallDwords, .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x0fb0), .fileoffset = 0x33a6c,
+            .filestep = 30, .filecount = 300/30, .type = jumpTable_t::CallDwords, .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x0fb0), .fileoffset = 0x33102,
+            .filestep = 30, .filecount = 300/30, .type = jumpTable_t::CallDwords, .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+
+        //0x33210+30
+//        std::shared_ptr<jumpTable_t>(new jumpTable_t{.instruction = address_t(0x0bc9, 0x106d), .baseptr = (const uint8_t*)"\xaf\x06\x7c\x0f", .type = jumpTable_t::CallDwords, .elements = sequence("0-0"), .selector = "memoryAGet32(ds, di + 16)", .useCaseOffset = true }),
+
+        
     },
     .procList = {{0x164d,0x000b},{0x1a61,0x05f5},{0x01ed,0x1aab}},
 

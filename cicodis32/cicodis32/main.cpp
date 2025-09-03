@@ -61,6 +61,17 @@ int main(int argc, char **argv) {
     bool anyIndirectTable = false;
     for (auto t : options.jumpTables)
     {
+//        int fileoffset{0};
+//        int filestep{0};
+//        int filecount{0};
+        if (t->fileoffset)
+            t->baseptr = loader->GetBufferAt(t->fileoffset);
+        if (t->filecount)
+        {
+            for (int i=0; i<t->filecount; i++)
+                t->elements.push_back(i);
+        }
+
         if (!t->baseptr)
             t->baseptr = loader->GetBufferAt(t->table);
         if (strcmp(t->selector, "indirect") == 0)

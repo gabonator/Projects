@@ -419,6 +419,7 @@ void sub_1ed0() // 01ed:0000 +stackDrop10
     di <<= 1;
     di <<= 1;
     {int tmp1 = memoryAGet16(ds, di + 21044); int tmp2 = memoryAGet16(ds, di + 21044 + 2); di = tmp1; es = tmp2; /*ggg2!!check*/};
+//    assert(es > 5);
     di += ax;
     di += 0xff63;
     push(es);
@@ -56146,6 +56147,7 @@ loc_2ab37: // 2aa3:0107
     cs = pop();
     sp += 2;
 }
+
 void sub_2ab4f() // 2aa3:011f +far +stackDrop6
 {
     sp -= 2;
@@ -56169,6 +56171,7 @@ loc_2ab5a: // 2aa3:012a
     cx >>= 1;
     ax += cx;
     bx = ax;
+    
     al = 0x0c;
     dx = 0x03d4;
     out16(dx, ax);
@@ -56188,9 +56191,9 @@ loc_2ab84: // 2aa3:0154
     ah = al;
     dx = 0x03c0;
     al = 0x33;
-//    out8(dx, al); gaboskip
-//    tl = al; al = ah; ah = tl;
-//    out8(dx, al);
+    out8(dx, al);
+    tl = al; al = ah; ah = tl;
+    out8(dx, al);
     flags.interrupts = 1;
     bp = pop();
     sp += 2;
@@ -56422,7 +56425,8 @@ loc_2ae06: // 2aa3:03d6
     cx = 0x0010;
 loc_2ae0f: // 2aa3:03df
     dx = 0x03ce;
-    ds = ds ? ds : loadAddress;
+    //assert(ds > 5);
+    ds = ds > 5 ? ds : loadAddress;
     al = lodsb<DS_SI>();
     ah = 0x08;
     tl = al; al = ah; ah = tl;
@@ -56848,7 +56852,7 @@ void sub_2c34f() // 2aa3:191f +far +stackDrop10
 loc_2c39d: // 2aa3:196d
     memoryASet(cs, 0x17e8, 0x02);
 loc_2c3a3: // 2aa3:1973
-    ds = ds ? ds : loadAddress;
+    ds = ds > 5 ? ds : loadAddress;
     dl = memoryAGet(cs, 0x17e8);
     dl--;
     memoryASet(cs, 0x17e8, dl);
@@ -57336,7 +57340,7 @@ loc_2d431: // 2aa3:2a01
     out8(dx, al);
     cx = 0x0010;
 loc_2d43a: // 2aa3:2a0a
-    ds = ds ? ds : loadAddress;
+    ds = ds > 5 ? ds : loadAddress;
     al = lodsb<DS_SI>();
     dx = 0x03c5;
     al = 0x01;

@@ -1,0 +1,178 @@
+diff --git a/ck4.clean b/ck4.cpp
+index 4100343..f98a366 100644
+--- a/ck4.clean
++++ b/ck4.cpp
+@@ -577,7 +577,7 @@ void sub_20bb8();
+ // Problem: 1ef3:0e75 sub_1fda5 - near&far&uses stack!
+ void sub_1ed0() // 01ed:0000
+ {
+-    sp -= 2;
++//    sp -= 2;
+     dx = 0x30d4;
+     memoryASet16(cs, 0x023c, dx);
+     ah = 0x30;
+@@ -845,6 +845,7 @@ void sub_207e() // 01ed:01ae +stackDrop2
+ }
+ void sub_20ab() // 01ed:01db
+ {
++    sp -= 2;
+ loc_20ab: // 01ed:01db
+     ah = 0xff;
+     dx = di;
+@@ -889,6 +890,7 @@ loc_20e6: // 01ed:0216
+     ds = pop();
+     goto loc_20ab;
+ loc_20ed: // 01ed:021d
++    sp += 2;
+     return;
+ }
+ void sub_20ee() // 01ed:021e
+@@ -3381,7 +3383,7 @@ loc_364f: // 01ed:177f
+ loc_3657: // 01ed:1787
+     si = pop();
+     bp = pop();
+-    stop("stack_below, 0/6");
++//    stop("stack_below, 0/6");
+     sp += 2;
+     sp += 6;
+ }
+@@ -6338,7 +6340,7 @@ void sub_54b1() // 01ed:35e1
+ {
+     sp -= 2;
+     memoryASet16(ds, 0x7440, pop());
+-    stop("stack_below");
++//    stop("stack_below");
+     memoryASet16(ds, 0x7442, pop());
+     memoryASet16(ds, 0x7444, pop());
+     memoryASet16(cs, 0x35df, ds);
+@@ -6457,7 +6459,7 @@ loc_559a: // 01ed:36ca
+     memoryASet16(ds, 0x0084, ax);
+     ax = memoryAGet16(ds, 0x743e);
+     memoryASet16(ds, 0x0086, ax);
+-    indirectJump(cs, memoryAGet16(ds, 0x7440)); // 01ed:36f0;
++//    indirectJump(cs, memoryAGet16(ds, 0x7440)); // 01ed:36f0;
+ }
+ void sub_5540() // 01ed:3670 +returnCarry +returnZero
+ {
+@@ -7825,12 +7827,13 @@ void sub_618c() // 05da:03ec
+     memoryASet16(ds, 0xa54a, ax);
+     memoryASet16(ds, 0xa548, dx);
+ loc_61f5: // 05da:0455
+-    ax = memoryAGet16(ds, 0xa53f);
+-    dx = memoryAGet16(ds, 0xa53d);
+-    if (ax != memoryAGet16(ds, 0xa54a))
+-        goto loc_6208;
+-    if (dx == memoryAGet16(ds, 0xa548))
+-        goto loc_61f5;
++    sync();
++//    ax = memoryAGet16(ds, 0xa53f);
++//    dx = memoryAGet16(ds, 0xa53d);
++//    if (ax != memoryAGet16(ds, 0xa54a))
++//        goto loc_6208;
++//    if (dx == memoryAGet16(ds, 0xa548))
++//        goto loc_61f5;
+ loc_6208: // 05da:0468
+     ax = memoryAGet16(ds, 0xa53f);
+     dx = memoryAGet16(ds, 0xa53d);
+@@ -8010,6 +8013,7 @@ loc_6397: // 05da:05f7
+ loc_63d4: // 05da:0634
+     memoryASet16(ds, 0xa021, 0x0000);
+ loc_63da: // 05da:063a
++    sync();
+     ax = memoryAGet16(ds, 0xa53f);
+     dx = memoryAGet16(ds, 0xa53d);
+     memoryASet16(ss, bp - 36, ax);
+@@ -21893,14 +21897,15 @@ loc_16953: // 164d:0483
+     memoryASet16(ss, bp - 2, ax);
+     memoryASet16(ss, bp - 4, dx);
+ loc_16970: // 164d:04a0
+-    ax = memoryAGet16(ds, 0xa53f);
+-    dx = memoryAGet16(ds, 0xa53d);
+-    if (ax < memoryAGet16(ss, bp - 2))
+-        goto loc_16970;
+-    if (ax > memoryAGet16(ss, bp - 2))
+-        goto loc_16983;
+-    if (dx <= memoryAGet16(ss, bp - 4))
+-        goto loc_16970;
++    sync();
++//    ax = memoryAGet16(ds, 0xa53f);
++//    dx = memoryAGet16(ds, 0xa53d);
++//    if (ax < memoryAGet16(ss, bp - 2))
++//        goto loc_16970;
++//    if (ax > memoryAGet16(ss, bp - 2))
++//        goto loc_16983;
++//    if (dx <= memoryAGet16(ss, bp - 4))
++//        goto loc_16970;
+ loc_16983: // 164d:04b3
+     push(si);
+     push(cs);
+@@ -22825,6 +22830,7 @@ loc_1734a: // 164d:0e7a
+     si = 0;
+     goto loc_1737c;
+ loc_1734e: // 164d:0e7e
++    sync();
+     bx = si;
+     bx <<= 1;
+     if (memoryAGet16(ds, bx + 52294) != 0x0000)
+@@ -22843,8 +22849,8 @@ loc_1736c: // 164d:0e9c
+     push(cs);
+     sub_16948();
+     sp += 0x0002;
+-    if (ax)
+-        goto loc_1736c;
++//    if (ax)
++//        goto loc_1736c;
+     si = pop();
+     bp = pop();
+     sp += 2;
+@@ -22989,6 +22995,7 @@ void sub_17462() // 164d:0f92 +far +stackDrop2
+     memoryASet16(ss, bp - 2, ax);
+     memoryASet16(ss, bp - 4, dx);
+ loc_17479: // 164d:0fa9
++    sync();
+     push(cs);
+     sub_17413();
+     if (!ax)
+@@ -32841,6 +32848,7 @@ void sub_1e111() // 1c76:19b1
+     memoryASet16(ss, bp - 48, dx);
+     goto loc_1e17b;
+ loc_1e17b: // 1c76:1a1b
++    sync();
+     ax = memoryAGet16(ds, 0xa53f);
+     dx = memoryAGet16(ds, 0xa53d);
+     flags.carry = dx < memoryAGet16(ss, bp - 48);
+@@ -34158,6 +34166,7 @@ loc_1ed1b: // 1c76:25bb
+     memoryASet16(ss, bp - 8, dx);
+     si = 0;
+ loc_1ed55: // 1c76:25f5
++    sync();
+     ax = memoryAGet16(ds, 0xa53f);
+     dx = memoryAGet16(ds, 0xa53d);
+     if (ax < memoryAGet16(ss, bp - 6))
+@@ -36031,11 +36040,6 @@ loc_200ca: // 1ff7:015a
+         case 0x03b2: goto loc_20322;
+         case 0x03e2: goto loc_20352;
+         case 0x0412: goto loc_20382;
+-        default:
+-            stop();
+-    }
+-    switch (memoryAGet16(ss, 0x6016))
+-    {
+         case 0x01a0: goto loc_20110;
+         default:
+             stop();
+@@ -36899,6 +36903,9 @@ loc_2061a: // 1ff7:06aa
+ }
+ void sub_206c9() // 1ff7:0759 +stackDrop2
+ {
++    sync();
++    cs = pop();
++    return;
+     dx = 0x03da;
+     bx = memoryAGet16(ds, 0xa53d);
+     bx += 0x0003;
+@@ -41096,4 +41103,3 @@ int GetProcAt(int seg, int ofs)
+ {{0x1ff7, 0x0ad3}, 2}, // sub_20a43 retf
+ {{0x1ff7, 0x0b1a}, 2}, // sub_20a8a retf
+ */
+-Program ended with exit code: 0

@@ -49,6 +49,11 @@ public:
         assert(address - mLoadAddress >= 0x0 && address - mLoadAddress+16 <= mSize);
         return mData + address - mLoadAddress;
     }
+    virtual const uint8_t* GetBufferAt(int offset) override
+    {
+        assert(0);
+        return nullptr;
+    }
     virtual address_t GetEntry() override
     {
         assert(0);
@@ -137,7 +142,11 @@ public:
         assert(rel >= 0x0 && rel+16 <= buffer.size());
         return &buffer[rel];
     }
-    
+    virtual const uint8_t* GetBufferAt(int offset) override
+    {
+        assert(offset >= 0x0 && offset+16 <= buffer.size());
+        return &buffer[offset];
+    }
     virtual address_t GetEntry() override
     {
         return address_t(header->cs + (_loadBase >> 4), header->ip + (_loadBase % 16));
@@ -472,6 +481,11 @@ public:
         for (const MemoryObject_t& mo : mMemoryObjects)
             if (addr.offset >= mo.base && addr.offset < mo.base + mo.size)
                 return mo.data + addr.offset - mo.base;
+        assert(0);
+        return nullptr;
+    }
+    virtual const uint8_t* GetBufferAt(int offset) override
+    {
         assert(0);
         return nullptr;
     }

@@ -187,16 +187,20 @@ void sub_77d1();
 void sub_78b3();
 void sub_799e();
 void sub_7af5();
+void sub_7b16();
 void sub_7b73();
 void sub_7ba3();
+void sub_7f76();
 void sub_7f94();
 void sub_8051();
+void sub_8071();
 void sub_80a1();
 void sub_817d();
 void sub_82fa();
 void sub_836b();
 void sub_8370();
 void sub_8404();
+void sub_8502();
 void sub_8891();
 void sub_8aab();
 void sub_8b2f();
@@ -225,14 +229,17 @@ void sub_b02a();
 void sub_b03d();
 void sub_b0a3();
 void sub_b0c1();
+void sub_b0e6();
 void sub_b148();
 void sub_b377();
 void sub_b3dc();
 void sub_b3fe();
 void sub_b4b2();
+void sub_b693();
 void sub_b6c1();
 void sub_b7bc();
 void sub_b9c5();
+void sub_bb4d();
 void sub_bc95();
 void sub_bcbd();
 void sub_bce5();
@@ -247,18 +254,68 @@ void sub_cb7e();
 void sub_cd27();
 void sub_ce1c();
 void sub_ce9a();
+void sub_d3fe();
+void sub_d6de();
 void sub_eab9();
 void sub_ed9d();
+void sub_ee45();
+void sub_ef0f();
 void sub_efb9();
+void sub_f7c3();
 void sub_f838();
 void sub_f88b();
 void sub_f90f();
 void sub_fc78();
+void sub_fcca();
+void sub_fdee();
+void sub_fe6f();
+void sub_feb0();
+void sub_ff6b();
+void sub_ffe6();
 void sub_10069();
 void sub_101bd();
 void sub_1021b();
 void sub_107c3();
 void sub_11226();
+void sub_11365();
+void sub_114be();
+void sub_11950();
+void sub_1197e();
+void sub_119db();
+void sub_11a03();
+void sub_11a2b();
+void sub_11a53();
+void sub_11a7b();
+void sub_11aa3();
+void sub_11acb();
+void sub_11af3();
+void sub_11b5c();
+void sub_11b9e();
+void sub_11bb9();
+void sub_11c4e();
+void sub_11d95();
+void sub_11ead();
+void sub_11f09();
+void sub_123de();
+void sub_124b7();
+void sub_126d6();
+void sub_12892();
+void sub_12a6b();
+void sub_12d82();
+void sub_12dfc();
+void sub_12fba();
+void sub_13198();
+void sub_1337b();
+void sub_137cc();
+void sub_138fe();
+void sub_13d37();
+void sub_13f80();
+void sub_14397();
+void sub_1444f();
+void sub_145dc();
+void sub_146a5();
+void sub_1472b();
+void sub_148c1();
 void sub_1493f();
 void sub_149c4();
 void sub_14a24();
@@ -347,6 +404,7 @@ void sub_18af2();
 void sub_18b2a();
 void sub_18c78();
 void sub_18cbb();
+void sub_18cff();
 void sub_18d56();
 void sub_18e41();
 void sub_18e88();
@@ -356,6 +414,8 @@ void sub_18f71();
 void sub_19060();
 void sub_19072();
 void sub_19169();
+void sub_19188();
+void sub_19338();
 void sub_19435();
 void sub_19630();
 void sub_196fc();
@@ -473,6 +533,7 @@ void sub_1efdc();
 void sub_1f019();
 void sub_1f082();
 void sub_1f09f();
+void sub_1f0f2();
 void sub_1f20d();
 void sub_1f23d();
 void sub_1f28c();
@@ -538,16 +599,20 @@ void sub_20bb8();
 // Problem: 056a:022f sub_58cf - near&far&uses stack!
 // Problem: 056a:0329 sub_59c9 - near&far&uses stack!
 // Problem: 05da:1a31 sub_77d1 - near&far&uses stack!
+// Problem: 07b1:0063 sub_7b73 - near&far&uses stack!
 // Problem: 07b1:0591 sub_80a1 - near&far&uses stack!
 // Problem: 08aa:1e11 sub_a8b1 - near&far&uses stack!
 // Problem: 08aa:1e8b sub_a92b - near&far&uses stack!
+// Problem: 08aa:1ef2 sub_a992 - near&far&uses stack!
 // Problem: 08aa:2092 sub_ab32 - near&far&uses stack!
 // Problem: 08aa:20c7 sub_ab67 - near&far&uses stack!
 // Problem: 0bc9:06a5 sub_c335 - near&far&uses stack!
+// Problem: 0d6d:13e9 sub_eab9 - near&far&uses stack!
 // Problem: 1493:00f4 sub_14a24 - near&far&uses stack!
 // Problem: 1493:09c2 sub_152f2 - near&far&uses stack!
 // Problem: 1493:0bae sub_154de - near&far&uses stack!
 // Problem: 1493:151a sub_15e4a - near&far&uses stack!
+// Problem: 1493:1562 sub_15e92 - near&far&uses stack!
 // Problem: 1493:184b sub_1617b - near&far&uses stack!
 // Problem: 164d:08a8 sub_16d78 - near&far&uses stack!
 // Problem: 164d:0f43 sub_17413 - near&far&uses stack!
@@ -557,6 +622,7 @@ void sub_20bb8();
 // Problem: 174b:0987 sub_17e37 - near&far&uses stack!
 // Problem: 174b:0ad5 sub_17f85 - near&far&uses stack!
 // Problem: 1841:06e2 sub_18af2 - near&far&uses stack!
+// Problem: 1841:0b08 sub_18f18 - near&far&uses stack!
 // Problem: 1841:1333 sub_19743 - near&far&uses stack!
 // Problem: 1841:185b sub_19c6b - near&far&uses stack!
 // Problem: 1841:1c6e sub_1a07e - near&far&uses stack!
@@ -992,8 +1058,38 @@ loc_2193: // 01ed:02c3
     if (bx > 0x0006)
         goto loc_21d5;
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 959)); // 01ed:02d9;
-  // gap 39 bytes
+    switch (bx)
+    {
+        case 0: goto loc_21ae;
+        case 2: goto loc_21b7;
+        case 4: goto loc_21d5;
+        case 6: goto loc_21d0;
+        case 8: goto loc_21d5;
+        case 10: goto loc_21d5;
+        case 12: goto loc_21c6;
+        default:
+            stop();
+    }
+loc_21ae: // 01ed:02de
+    ah = 0x0e;
+    al = 0x07;
+    sub_366a();
+    goto loc_222d;
+loc_21b7: // 01ed:02e7
+    al = memoryAGet(ds, 0x7348);
+    ah = 0x00;
+    if ((short)ax >= (short)memoryAGet16(ss, bp - 2))
+        goto loc_222d;
+    memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) - 1);
+    goto loc_222d;
+loc_21c6: // 01ed:02f6
+    al = memoryAGet(ds, 0x7348);
+    ah = 0x00;
+    memoryASet16(ss, bp - 2, ax);
+    goto loc_222d;
+loc_21d0: // 01ed:0300
+    memoryASet16(ss, bp - 4, memoryAGet16(ss, bp - 4) + 1);
+    goto loc_222d;
 loc_21d5: // 01ed:0305
     al = memoryAGet(ds, 0x7351);
     ah = 0x00;
@@ -1034,6 +1130,7 @@ loc_220c: // 01ed:033c
     sub_366a();
 loc_222a: // 01ed:035a
     memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
+loc_222d: // 01ed:035d
     al = memoryAGet(ds, 0x734a);
     ah = 0x00;
     if ((short)ax >= (short)memoryAGet16(ss, bp - 2))
@@ -3383,7 +3480,7 @@ loc_364f: // 01ed:177f
 loc_3657: // 01ed:1787
     si = pop();
     bp = pop();
-    //stop("stack_below, 0/6");
+//    stop("stack_below, 0/6");
     sp += 2;
     sp += 6;
 }
@@ -3606,7 +3703,6 @@ loc_3812: // 01ed:1942
     sub_3a4b();
 loc_3816: // 01ed:1946
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -6380,10 +6476,7 @@ loc_54fd: // 01ed:362d
     flags.carry = di < ax;
     di -= ax;
     if (flags.carry)
-    {
-        assert(0);
         goto loc_5568;
-    }
     sp = di;
     push(es);
     ds = pop();
@@ -6422,7 +6515,7 @@ loc_553c: // 01ed:366c
     goto loc_5524;
   // gap 40 bytes
 loc_5568: // 01ed:3698
-    //stop("stack_below"); CRASH
+    stop("stack_below");
     sub_20f6();
     return;
 loc_556d: // 01ed:369d
@@ -10302,7 +10395,12 @@ loc_7950: // 05da:1bb0
     push(ss);
     ax = bp - 26;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x05da); // 05da:1bc2;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x05da); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     ax = 0x0128;
     ax -= memoryAGet16(ss, bp - 6);
@@ -10488,7 +10586,58 @@ void sub_7af5() // 05da:1d55 +far +stackDrop2
     sp += 2;
     cs = pop();
 }
-void sub_7b73() // 07b1:0063 +far +stackDrop2
+void sub_7b16() // 07b1:0006
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = 0x007c;
+    goto loc_7b3f;
+loc_7b1f: // 07b1:000f
+    bx = si;
+    bx <<= 1;
+    if (memoryAGet16(ds, bx + 31469) == 0x0000)
+        goto loc_7b3e;
+    ax = 0x0001;
+    push(ax);
+    ax = si;
+    ax <<= 1;
+    ax += 0x7aed;
+    push(ax);
+    push(cs); cs = 0x174b; sub_17f02(); assert(cs == 0x07b1);
+    sp += 0x0004;
+loc_7b3e: // 07b1:002e
+    si++;
+loc_7b3f: // 07b1:002f
+    if ((short)si < (short)0x0209)
+        goto loc_7b1f;
+    si = 0x020b;
+    goto loc_7b6a;
+loc_7b4a: // 07b1:003a
+    bx = si;
+    bx <<= 1;
+    if (memoryAGet16(ds, bx + 31469) == 0x0000)
+        goto loc_7b69;
+    ax = 0x0001;
+    push(ax);
+    ax = si;
+    ax <<= 1;
+    ax += 0x7aed;
+    push(ax);
+    push(cs); cs = 0x174b; sub_17f02(); assert(cs == 0x07b1);
+    sp += 0x0004;
+loc_7b69: // 07b1:0059
+    si++;
+loc_7b6a: // 07b1:005a
+    if ((short)si < (short)0x127f)
+        goto loc_7b4a;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_7b73() // 07b1:0063 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -10534,6 +10683,22 @@ void sub_7ba3() // 07b1:0093 +stackDrop2
     push(dx);
     push(cs); cs = 0x164d; sub_17462(); assert(cs == 0x07b1);
     sp += 0x0006;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_7f76() // 07b1:0466
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(cs);
+    sub_7b73();
+    memoryASet(ds, 0xa7e6, memoryAGet(ds, 0xa7e6) - 1);
+    memoryASet(ds, 0x7aec, memoryAGet(ds, 0x7aec) >> 1);
+    push(cs); cs = 0x1493; sub_15e4a(); assert(cs == 0x07b1);
+    memoryASet(ds, 0x7aec, memoryAGet(ds, 0x7aec) << 1);
+    memoryASet(ds, 0xa7e6, memoryAGet(ds, 0xa7e6) + 1);
     bp = pop();
     sp += 2;
     cs = pop();
@@ -10633,6 +10798,30 @@ void sub_8051() // 07b1:0541 +stackDrop2
     push(ax);
     push(cs); cs = 0x1841; sub_19060(); assert(cs == 0x07b1);
     sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_8071() // 07b1:0561
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    memoryASet16(ds, 0xa7c4, memoryAGet16(ds, 0xa7c4) + 1);
+    ax = memoryAGet16(ds, 0xa7c4);
+    if (ax != 0x0002)
+        goto loc_809f;
+    push(cs); cs = 0x1ef3; sub_1f0f2(); assert(cs == 0x07b1);
+    ax = 0;
+    push(ax);
+    push(ax);
+    push(cs); cs = 0x1841; sub_19060(); assert(cs == 0x07b1);
+    sp += 0x0004;
+    ax = memoryAGet16(ds, 0xa54a);
+    dx = memoryAGet16(ds, 0xa548);
+    memoryASet16(ds, 0xa53f, ax);
+    memoryASet16(ds, 0xa53d, dx);
+loc_809f: // 07b1:058f
     bp = pop();
     sp += 2;
     cs = pop();
@@ -11094,6 +11283,379 @@ loc_84f8: // 07b1:09e8
     sp += 2;
     cs = pop();
 }
+void sub_8502() // 07b1:09f2
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x000a;
+    push(si);
+    push(di);
+    bx = memoryAGet16(ds, 0xa7ed);
+    bx <<= 1;
+    bx <<= 1;
+    push(memoryAGet16(ds, bx + 6390));
+    push(memoryAGet16(ds, bx + 6388));
+    push(ds);
+    ax = 0x7a88;
+    push(ax);
+    push(cs); cs = 0x01ed; sub_5683(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = bp - 10;
+    push(ax);
+    ax = bp - 8;
+    push(ax);
+    ax = 0x7a88;
+    push(ax);
+    push(cs); cs = 0x056a; sub_56ac(); assert(cs == 0x07b1);
+    sp += 0x0006;
+    ax = 0x0008;
+    push(ax);
+    ax = 0;
+    push(ax);
+    ax = 0x7a60;
+    push(ax);
+    push(cs); cs = 0x01ed; sub_3bf5(); assert(cs == 0x07b1);
+    sp += 0x0006;
+    memoryASet16(ds, 0x7a6a, memoryAGet16(ds, 0x7a6a) - 1);
+    if ((short)memoryAGet16(ds, 0x7a6a) >= (short)0x0000)
+        goto loc_855c;
+    goto loc_888b;
+loc_855c: // 07b1:0a4c
+    push(cs); cs = 0x1ef3; sub_1f8c9(); assert(cs == 0x07b1);
+    ax = 0x0008;
+    push(ax);
+    ax = 0x0014;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c250(); assert(cs == 0x07b1);
+    sp += 0x0004;
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x0003);
+    ax = 0x02ff;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    ax = memoryAGet16(ds, 0xa535);
+    ax += 0x0016;
+    memoryASet16(ss, bp - 2, ax);
+    if (memoryAGet16(ss, bp - 10) >= 0x000f)
+        goto loc_8596;
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x0004);
+loc_8596: // 07b1:0a86
+    ax = 0x7a88;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    ax = memoryAGet16(ss, bp - 2);
+    ax += 0x0002;
+    memoryASet16(ds, 0xa535, ax);
+    ax = 0x0317;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x0004);
+    ax = memoryAGet16(ds, 0xa535);
+    ax -= 0x0002;
+    memoryASet16(ss, bp - 4, ax);
+    ax = 0x0321;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x07b1);
+    memoryASet16(ss, bp - 6, 0x0000);
+loc_85db: // 07b1:0acb
+    if (memoryAGet16(ss, bp - 6) == 0x0000)
+        goto loc_85e6;
+    si = memoryAGet16(ss, bp - 4);
+    goto loc_85e9;
+loc_85e6: // 07b1:0ad6
+    si = memoryAGet16(ss, bp - 2);
+loc_85e9: // 07b1:0ad9
+    dx = memoryAGet16(ds, 0xa53f);
+    ax = memoryAGet16(ds, 0xa53d);
+    cl = 0x04;
+    push(cs); cs = 0x01ed; sub_5084(); assert(cs == 0x07b1);
+    ax &= 0x0001;
+    ax |= 0x0000;
+    if (!ax)
+        goto loc_8604;
+    di = 0x000c;
+    goto loc_8607;
+loc_8604: // 07b1:0af4
+    di = 0x0001;
+loc_8607: // 07b1:0af7
+    push(di);
+    push(si);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = si;
+    ax++;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = si;
+    ax += 0x000c;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = si;
+    ax += 0x000d;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0005;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(di);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0005;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x07b1);
+    ax = 0x000f;
+    push(ax);
+    push(si);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = si;
+    ax += 0x000c;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = si;
+    ax += 0x000d;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fedf(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0004;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += 0x0005;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0004;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    ax = 0x000f;
+    push(ax);
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0005;
+    push(ax);
+    ax = si;
+    ax += 0x000b;
+    push(ax);
+    ax = si;
+    ax++;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1ff28(); assert(cs == 0x07b1);
+    sp += 0x0008;
+    if (memoryAGet(ds, 0xa545) != 0x01)
+        goto loc_8816;
+    memoryASet16(ds, 0x7a68, 0x0000);
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x07b1);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_8816: // 07b1:0d06
+    ax = 0xa7c6;
+    push(ax);
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x164d; sub_16e8e(); assert(cs == 0x07b1);
+    sp += 0x0004;
+    if (memoryAGet16(ds, 0xa7c6) != 0x0000)
+        goto loc_8841;
+    if (memoryAGet16(ds, 0xa7c8) != 0x0000)
+        goto loc_8841;
+    if (memoryAGet(ds, 0xa545) == 0x1c)
+        goto loc_8841;
+    if (memoryAGet(ds, 0xa545) != 0x39)
+        goto loc_8859;
+loc_8841: // 07b1:0d31
+    if (memoryAGet16(ss, bp - 6) == 0x0000)
+        goto loc_888b;
+    memoryASet16(ds, 0x7a68, 0x0000);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+  // gap 6 bytes
+loc_8859: // 07b1:0d49
+    if (memoryAGet16(ds, 0xa7d0) == 0xffff)
+        goto loc_8867;
+    if (memoryAGet(ds, 0xa545) != 0x48)
+        goto loc_886f;
+loc_8867: // 07b1:0d57
+    memoryASet16(ss, bp - 6, 0x0000);
+    goto loc_85db;
+loc_886f: // 07b1:0d5f
+    if (memoryAGet16(ds, 0xa7d0) == 0x0001)
+        goto loc_8880;
+    if (memoryAGet(ds, 0xa545) == 0x50)
+        goto loc_8880;
+    goto loc_85db;
+loc_8880: // 07b1:0d70
+    memoryASet16(ss, bp - 6, 0x0001);
+    goto loc_85db;
+  // gap 3 bytes
+loc_888b: // 07b1:0d7b
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
 void sub_8891() // 07b1:0d81 +far +stackDrop2
 {
     sp -= 2;
@@ -11102,6 +11664,7 @@ void sub_8891() // 07b1:0d81 +far +stackDrop2
     push(si);
     if (memoryAGet16(ds, 0x7a70) == 0x0006)
         goto loc_8916;
+loc_889c: // 07b1:0d8c
     ax = memoryAGet16(ds, 0x474a);
     memoryASet16(ds, 0x7a6c, ax);
     memoryASet16(ds, 0x474a, 0x0000);
@@ -11176,8 +11739,114 @@ loc_8962: // 07b1:0e52
     goto loc_8a6c;
 loc_8975: // 07b1:0e65
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 3969)); // 07b1:0e67;
-  // gap 240 bytes
+    switch (bx)
+    {
+        case 0: goto loc_8981;
+        case 2: goto loc_89ee;
+        case 4: goto loc_8988;
+        case 6: goto loc_8a6c;
+        case 8: goto loc_889c;
+        case 10: goto loc_8916;
+        case 12: goto loc_89ee;
+        case 14: goto loc_8a64;
+        case 16: goto loc_8a6c;
+        case 18: goto loc_8a6c;
+        case 20: goto loc_8a6c;
+        case 22: goto loc_8a6c;
+        case 24: goto loc_89ee;
+        default:
+            stop();
+    }
+  // gap 5 bytes
+loc_8981: // 07b1:0e71
+    push(cs);
+    sub_8502();
+    goto loc_8a6c;
+loc_8988: // 07b1:0e78
+    if (memoryAGet16(ds, 0xa7ed) == 0x0000)
+        goto loc_899b;
+    ax = 0x000d;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x07b1);
+    sp += 0x0002;
+loc_899b: // 07b1:0e8b
+    ax = memoryAGet16(ds, 0xa7ed);
+    memoryASet16(ds, 0xa7c2, ax);
+    bx = memoryAGet16(ds, 0xa7ed);
+    bx <<= 1;
+    memoryASet16(ds, bx + 31262, 0x0001);
+    push(cs); cs = 0x107c; sub_11365(); assert(cs == 0x07b1);
+    if (memoryAGet16(ds, 0x7a5e) == 0x0008)
+        goto loc_89c2;
+    memoryASet16(ds, 0x7a68, 0x0000);
+    goto loc_8a6c;
+loc_89c2: // 07b1:0eb2
+    push(cs);
+    sub_7b16();
+    push(cs); cs = 0x1841; sub_18549(); assert(cs == 0x07b1);
+    push(cs); cs = 0x1ef3; sub_1f8c9(); assert(cs == 0x07b1);
+    push(cs); cs = 0x0b02; sub_bb4d(); assert(cs == 0x07b1);
+    push(memoryAGet16(ds, 0x7a5e));
+    push(memoryAGet16(ds, 0x7a52));
+    push(memoryAGet16(ds, 0x7a50));
+    push(cs); cs = 0x05da; sub_799e(); assert(cs == 0x07b1);
+    sp += 0x0006;
+    si = pop();
+    bp = pop();
+    stop("stack_unbalanced");
+    sp += 2;
+    cs = pop();
+    return;
+  // gap 2 bytes
+loc_89ee: // 07b1:0ede
+    if (memoryAGet16(ds, 0xa7ed) == 0x0000)
+        goto loc_8a31;
+    ax = 0x000d;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    memoryASet16(ds, 0x7a68, 0x0000);
+    ax = memoryAGet16(ds, 0xa7ed);
+    memoryASet16(ds, 0xa7c2, ax);
+    bx = memoryAGet16(ds, 0xa7ed);
+    bx <<= 1;
+    memoryASet16(ds, bx + 31262, 0x0001);
+    if (memoryAGet16(ds, 0x7a72) == 0x0000)
+        goto loc_8a6c;
+    if (memoryAGet16(ds, 0xa7ed) != 0x0002)
+        goto loc_8a6c;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x07b1);
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+  // gap 2 bytes
+loc_8a31: // 07b1:0f21
+    si = memoryAGet16(ds, 0xa7b4);
+    ax = memoryAGet16(ds, 0xa7b2);
+    memoryASet16(ds, 0xa7b4, ax);
+    ax = 0x0008;
+    push(ax);
+    ax = 0x001a;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c250(); assert(cs == 0x07b1);
+    sp += 0x0004;
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x0019);
+    ax = 0x0389;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x07b1);
+    sp += 0x0002;
+    memoryASet16(ds, 0xa7b4, si);
+    goto loc_8a6c;
+  // gap 2 bytes
+loc_8a64: // 07b1:0f54
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x07b1);
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
 loc_8a6c: // 07b1:0f5c
     if ((short)memoryAGet16(ds, 0x7a6a) < (short)0x0000)
         goto loc_8a76;
@@ -14208,7 +14877,7 @@ loc_a97c: // 08aa:1edc
     sp += 2;
     cs = pop();
 }
-void sub_a992() // 08aa:1ef2 +stackDrop2
+void sub_a992() // 08aa:1ef2 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -14783,7 +15452,14 @@ loc_aee6: // 08aa:2446
     memoryASet16(ds, bx + 4, 0x0000);
     push(bx);
     bx = memoryAGet16(ds, bx + 28);
-    push(cs); cs = memoryAGet16(ds, bx + 24 + 2); callIndirect(cs, memoryAGet16(ds, bx + 24)); assert(cs == 0x08aa); // 08aa:2468;
+    switch (memoryAGet32(ds, bx + 24))
+    {
+        case 0xbc9176e: push(cs); cs = 0x0bc9; sub_d3fe(); assert(cs == 0x08aa); break;
+        default:
+            printf("missingB %x\n", memoryAGet32(ds, di + 16)); // 706f4320
+
+//            stop();
+    }
     sp += 0x0002;
 loc_af0e: // 08aa:246e
     bx = memoryAGet16(ds, 0xc5bb);
@@ -14988,6 +15664,48 @@ void sub_b0c1() // 0b02:00a1 +stackDrop2
     sp += 2;
     cs = pop();
 }
+void sub_b0e6() // 0b02:00c6
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(cs);
+    sub_b0c1();
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = 0x00c8;
+    push(ax);
+    ax = 0x0028;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7b2));
+    push(memoryAGet16(ds, 0xa7b4));
+    push(cs); cs = 0x1ff7; sub_20405(); assert(cs == 0x0b02);
+    sp += 0x0008;
+    memoryASet16(ds, 0xa53f, 0x0000);
+    memoryASet16(ds, 0xa53d, 0x0000);
+loc_b11d: // 0b02:00fd
+    ax = memoryAGet16(ds, 0xc8a7);
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    if (dx > memoryAGet16(ds, 0xa53f))
+        goto loc_b11d;
+    if (dx != memoryAGet16(ds, 0xa53f))
+        goto loc_b12f;
+    if (ax > memoryAGet16(ds, 0xa53d))
+        goto loc_b11d;
+loc_b12f: // 0b02:010f
+    push(memoryAGet16(ds, 0xc8a9));
+    push(memoryAGet16(ds, 0xc8ab));
+    ax = memoryAGet16(ds, 0xc8ad);
+    ax &= 0xfff8;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x0b02);
+    sp += 0x0006;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
 void sub_b148() // 0b02:0128 +stackDrop2
 {
     sp -= 2;
@@ -15010,8 +15728,241 @@ void sub_b148() // 0b02:0128 +stackDrop2
     goto loc_b34b;
 loc_b172: // 0b02:0152
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 817)); // 0b02:0154;
-  // gap 466 bytes
+    switch (bx)
+    {
+        case 0: goto loc_b179;
+        case 2: goto loc_b1c9;
+        case 4: goto loc_b34b;
+        case 6: goto loc_b1b9;
+        case 8: goto loc_b34b;
+        case 10: goto loc_b25d;
+        case 12: goto loc_b34b;
+        case 14: goto loc_b34b;
+        case 16: goto loc_b34b;
+        case 18: goto loc_b34b;
+        case 20: goto loc_b21a;
+        case 22: goto loc_b34b;
+        case 24: goto loc_b34b;
+        case 26: goto loc_b34b;
+        case 28: goto loc_b1b9;
+        case 30: goto loc_b34b;
+        case 32: goto loc_b34b;
+        case 34: goto loc_b34b;
+        case 36: goto loc_b253;
+        default:
+            stop();
+    }
+loc_b179: // 0b02:0159
+    push(cs);
+    sub_b03d();
+    memoryASet16(ds, 0xc8ab, ax);
+    push(cs);
+    sub_b03d();
+    memoryASet16(ds, 0xc8ad, ax);
+    push(cs);
+    sub_b03d();
+    memoryASet16(ss, bp - 6, ax);
+    push(cs);
+    sub_b03d();
+    memoryASet16(ss, bp - 8, ax);
+    ax = 0x0004;
+    push(ax);
+    push(memoryAGet16(ss, bp - 8));
+    push(memoryAGet16(ss, bp - 6));
+    push(memoryAGet16(ds, 0xc8ab));
+    push(memoryAGet16(ds, 0xc8ad));
+    push(cs); cs = 0x1ef3; sub_1fd13(); assert(cs == 0x0b02);
+    sp += 0x000a;
+    push(cs);
+    sub_b02a();
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_b1b9: // 0b02:0199
+    memoryASet16(ds, 0xc8a5, 0x0001);
+    memoryASet16(ds, 0xc8b1, memoryAGet16(ds, 0xc8b1) - 1);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_b1c9: // 0b02:01a9
+    memoryASet16(ds, 0xc8b1, memoryAGet16(ds, 0xc8b1) + 1);
+    bx = memoryAGet16(ds, 0xc8b1); es = memoryAGet16(ds, 0xc8b1 + 2); /*ggg2*/;
+    al = memoryAGet(es, bx);
+    cbw();
+    push(ax);
+    push(cs); cs = 0x01ed; sub_332b(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    memoryASet16(ss, bp - 2, ax);
+    if ((short)memoryAGet16(ss, bp - 2) < (short)0x0030)
+        goto loc_b1f7;
+    if ((short)memoryAGet16(ss, bp - 2) > (short)0x0039)
+        goto loc_b1f7;
+    al = memoryAGet(ss, bp - 2);
+    al += 0xd0;
+    memoryASet(ds, 0x6025, al);
+    goto loc_b20b;
+loc_b1f7: // 0b02:01d7
+    if ((short)memoryAGet16(ss, bp - 2) < (short)0x0041)
+        goto loc_b20b;
+    if ((short)memoryAGet16(ss, bp - 2) > (short)0x0046)
+        goto loc_b20b;
+    al = memoryAGet(ss, bp - 2);
+    al += 0xc9;
+    memoryASet(ds, 0x6025, al);
+loc_b20b: // 0b02:01eb
+    memoryASet(ds, 0x6025, memoryAGet(ds, 0x6025) ^ 0x04);
+    memoryASet16(ds, 0xc8b1, memoryAGet16(ds, 0xc8b1) + 1);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_b21a: // 0b02:01fa
+    push(cs);
+    sub_b03d();
+    memoryASet16(ds, 0x6022, ax);
+    ax += 0xfff6;
+    bx = 0x000a;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    memoryASet16(ds, 0xc8af, ax);
+    dx = 0x000a;
+    imul16(dx);
+    ax += 0x000a;
+    memoryASet16(ds, 0x6022, ax);
+    push(cs);
+    sub_b03d();
+    memoryASet16(ds, 0x6020, ax);
+loc_b23f: // 0b02:021f
+    bx = memoryAGet16(ds, 0xc8b1); es = memoryAGet16(ds, 0xc8b1 + 2); /*ggg2*/;
+    memoryASet16(ds, 0xc8b1, memoryAGet16(ds, 0xc8b1) + 1);
+    if (memoryAGet(es, bx) != 0x0a)
+        goto loc_b23f;
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_b253: // 0b02:0233
+    push(cs);
+    sub_b0e6();
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_b25d: // 0b02:023d
+    push(cs);
+    sub_b0a3();
+    push(memoryAGet16(ds, 0xc8a9));
+    push(memoryAGet16(ds, 0xc8ab));
+    ax = memoryAGet16(ds, 0xc8ad);
+    ax &= 0xfff8;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x0b02);
+    sp += 0x0006;
+    bx = memoryAGet16(ds, 0xc8a9);
+    bx <<= 1;
+    bx <<= 1;
+    es = memoryAGet16(ds, 0xa552);
+    ax = memoryAGet16(es, bx + 65512);
+    ax <<= 1;
+    ax <<= 1;
+    ax <<= 1;
+    memoryASet16(ss, bp - 6, ax);
+    bx = memoryAGet16(ds, 0xc8a9);
+    bx <<= 1;
+    bx <<= 1;
+    ax = memoryAGet16(es, bx + 65514);
+    memoryASet16(ss, bp - 8, ax);
+    ax = memoryAGet16(ss, bp - 6);
+    bx = 0x0002;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    dx = memoryAGet16(ds, 0xc8ad);
+    dx += ax;
+    memoryASet16(ss, bp - 10, dx);
+    if ((short)memoryAGet16(ss, bp - 10) <= (short)0x00a0)
+        goto loc_b2c3;
+    ax = memoryAGet16(ds, 0xc8ad);
+    ax += 0xfff8;
+    si = ax;
+    goto loc_b2ce;
+loc_b2c3: // 0b02:02a3
+    ax = memoryAGet16(ds, 0xc8ad);
+    ax += memoryAGet16(ss, bp - 6);
+    ax += 0x0008;
+    si = ax;
+loc_b2ce: // 0b02:02ae
+    ax = memoryAGet16(ds, 0xc8ab);
+    ax += 0xfff6;
+    bx = 0x000a;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    memoryASet16(ss, bp - 4, ax);
+    if ((short)memoryAGet16(ss, bp - 4) >= (short)0x0000)
+        goto loc_b2e8;
+    memoryASet16(ss, bp - 4, 0x0000);
+loc_b2e8: // 0b02:02c8
+    ax = memoryAGet16(ds, 0xc8ab);
+    ax += memoryAGet16(ss, bp - 8);
+    ax += 0xfff6;
+    bx = 0x000a;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    di = ax;
+    if ((short)di < (short)0x0012)
+        goto loc_b301;
+    di = 0x0011;
+loc_b301: // 0b02:02e1
+    ax = memoryAGet16(ss, bp - 4);
+    memoryASet16(ss, bp - 2, ax);
+    goto loc_b327;
+loc_b309: // 0b02:02e9
+    if ((short)memoryAGet16(ss, bp - 10) <= (short)0x00a0)
+        goto loc_b31b;
+    bx = memoryAGet16(ss, bp - 2);
+    bx <<= 1;
+    memoryASet16(ds, bx + 51381, si);
+    goto loc_b324;
+loc_b31b: // 0b02:02fb
+    bx = memoryAGet16(ss, bp - 2);
+    bx <<= 1;
+    memoryASet16(ds, bx + 51417, si);
+loc_b324: // 0b02:0304
+    memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
+loc_b327: // 0b02:0307
+    if ((short)memoryAGet16(ss, bp - 2) <= (short)di)
+        goto loc_b309;
+    bx = memoryAGet16(ds, 0xc8af);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 51417);
+    if (ax <= memoryAGet16(ds, 0x6020))
+        goto loc_b34b;
+    bx = memoryAGet16(ds, 0xc8af);
+    bx <<= 1;
+    memoryASet16(ds, 0x6020, ax);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
 loc_b34b: // 0b02:032b
     di = pop();
     si = pop();
@@ -15356,6 +16307,28 @@ loc_b687: // 0b02:0667
     di = pop();
     si = pop();
     sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_b693() // 0b02:0673
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    memoryASet16(ds, 0xc8ff, memoryAGet16(ds, 0xc8ff) - 1);
+loc_b69a: // 0b02:067a
+    memoryASet16(ds, 0xc8b1, memoryAGet16(ds, 0xc8b1) - 1);
+    bx = memoryAGet16(ds, 0xc8b1); es = memoryAGet16(ds, 0xc8b1 + 2); /*ggg2*/;
+    if (memoryAGet(es, bx) != 0x5e)
+        goto loc_b69a;
+    al = memoryAGet(es, bx + 1);
+    cbw();
+    push(ax);
+    push(cs); cs = 0x01ed; sub_332b(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    if (ax != 0x0050)
+        goto loc_b69a;
     bp = pop();
     sp += 2;
     cs = pop();
@@ -15794,8 +16767,37 @@ loc_bace: // 0b02:0aae
     if (bx > 0x0009)
         goto loc_bb11;
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 2841)); // 0b02:0ac8;
-  // gap 36 bytes
+    switch (bx)
+    {
+        case 0: goto loc_baed;
+        case 2: goto loc_baed;
+        case 4: goto loc_bb11;
+        case 6: goto loc_baed;
+        case 8: goto loc_bb11;
+        case 10: goto loc_bb03;
+        case 12: goto loc_bb11;
+        case 14: goto loc_bb11;
+        case 16: goto loc_bb03;
+        case 18: goto loc_bb03;
+        default:
+            stop();
+    }
+loc_baed: // 0b02:0acd
+    if ((short)memoryAGet16(ds, 0xc8ff) <= (short)0x0001)
+        goto loc_bb11;
+    push(cs);
+    sub_b693();
+    push(cs);
+    sub_b693();
+    si = 0x0001;
+    goto loc_bb11;
+  // gap 2 bytes
+loc_bb03: // 0b02:0ae3
+    ax = memoryAGet16(ds, 0xc8ff);
+    if ((short)ax >= (short)memoryAGet16(ds, 0xc8fd))
+        goto loc_bb11;
+    si = 0x0001;
+    goto loc_bb11;
 loc_bb11: // 0b02:0af1
     if (memoryAGet(ds, 0xa545) == 0x01)
         goto loc_bb1b;
@@ -15809,6 +16811,134 @@ loc_bb1b: // 0b02:0afb
     sp += 0x0002;
     push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x0b02);
     goto loc_ba24;
+}
+void sub_bb4d() // 0b02:0b2d +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x0002;
+    push(si);
+    ax = 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1f23d(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    push(cs); cs = 0x1841; sub_18549(); assert(cs == 0x0b02);
+    push(cs); cs = 0x1493; sub_15dfd(); assert(cs == 0x0b02);
+    push(cs); cs = 0x1493; sub_15f4f(); assert(cs == 0x0b02);
+    ax = 0x0030;
+    push(ax);
+    push(cs); cs = 0x1493; sub_15a47(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = 0x002f;
+    push(ax);
+    push(cs); cs = 0x1493; sub_15a47(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = 0x1287;
+    push(ax);
+    push(cs); cs = 0x1493; sub_15a47(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = memoryAGet16(ds, 0x9ffb);
+    memoryASet16(ss, bp - 2, ax);
+    memoryASet16(ds, 0xc8b3, ax);
+    memoryASet16(ds, 0xc8b1, 0x0000);
+    push(cs);
+    sub_b6c1();
+    ax = 0x0007;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_ab67(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    goto loc_bc3b;
+loc_bbb5: // 0b02:0b95
+    ax = 0;
+    push(ax);
+    push(cs);
+    sub_b4b2();
+    sp += 0x0002;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x0b02);
+    ax = 0;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7b4));
+    push(cs); cs = 0x1ff7; sub_2074a(); assert(cs == 0x0b02);
+    sp += 0x0004;
+loc_bbd3: // 0b02:0bb3
+    ax = 0x002f;
+    push(ax);
+    ax = 0x00b8;
+    push(ax);
+    ax = 0x012a;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x0b02);
+    sp += 0x0006;
+    si = 0;
+    goto loc_bc01;
+loc_bbeb: // 0b02:0bcb
+    push(cs); cs = 0x164d; sub_17413(); assert(cs == 0x0b02);
+    if (ax)
+        goto loc_bc3b;
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    si++;
+loc_bc01: // 0b02:0be1
+    if ((short)si < (short)0x0046)
+        goto loc_bbeb;
+    ax = 0x0030;
+    push(ax);
+    ax = 0x00b8;
+    push(ax);
+    ax = 0x012a;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x0b02);
+    sp += 0x0006;
+    si = 0;
+    goto loc_bc34;
+loc_bc1e: // 0b02:0bfe
+    push(cs); cs = 0x164d; sub_17413(); assert(cs == 0x0b02);
+    if (ax)
+        goto loc_bc3b;
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    si++;
+loc_bc34: // 0b02:0c14
+    if ((short)si < (short)0x0046)
+        goto loc_bc1e;
+    goto loc_bbd3;
+loc_bc3b: // 0b02:0c1b
+    ax = memoryAGet16(ds, 0xc8ff);
+    if ((short)ax >= (short)memoryAGet16(ds, 0xc8fd))
+        goto loc_bc47;
+    goto loc_bbb5;
+loc_bc47: // 0b02:0c27
+    push(cs); cs = 0x08aa; sub_ab32(); assert(cs == 0x0b02);
+    ax = 0x9ffb;
+    push(ax);
+    push(cs); cs = 0x174b; sub_17e37(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = 0x7b4b;
+    push(ax);
+    push(cs); cs = 0x174b; sub_17e37(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    ax = 0x7b4d;
+    push(ax);
+    push(cs); cs = 0x174b; sub_17e37(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    push(cs); cs = 0x1493; sub_15e1d(); assert(cs == 0x0b02);
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x0b02);
+    ax = 0x0004;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1f23d(); assert(cs == 0x0b02);
+    sp += 0x0002;
+    push(cs); cs = 0x1841; sub_18549(); assert(cs == 0x0b02);
+    push(cs); cs = 0x1493; sub_15e92(); assert(cs == 0x0b02);
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
 }
 void sub_bc95() // 0bc9:0005 +stackDrop2
 {
@@ -17175,7 +18305,28 @@ loc_cc2c: // 0bc9:0f9c
     goto loc_cc46;
 loc_cc3f: // 0bc9:0faf
     push(si);
-    push(cs); cs = memoryAGet16(ds, di + 16 + 2); callIndirect(cs, memoryAGet16(ds, di + 16)); assert(cs == 0x0bc9); // 0bc9:0fb0;
+    switch (memoryAGet32(ds, di + 16))
+    {
+        case 0x1195002e: push(cs); cs = 0x1195; sub_1197e(); assert(cs == 0x0bc9); break;
+        case 0x1195008b: push(cs); cs = 0x1195; sub_119db(); assert(cs == 0x0bc9); break;
+        case 0x119500b3: push(cs); cs = 0x1195; sub_11a03(); assert(cs == 0x0bc9); break;
+        case 0x119500db: push(cs); cs = 0x1195; sub_11a2b(); assert(cs == 0x0bc9); break;
+        case 0x11950103: push(cs); cs = 0x1195; sub_11a53(); assert(cs == 0x0bc9); break;
+        case 0x1195012b: push(cs); cs = 0x1195; sub_11a7b(); assert(cs == 0x0bc9); break;
+        case 0x11950153: push(cs); cs = 0x1195; sub_11aa3(); assert(cs == 0x0bc9); break;
+        case 0x1195017b: push(cs); cs = 0x1195; sub_11acb(); assert(cs == 0x0bc9); break;
+        case 0x1195024e: push(cs); cs = 0x1195; sub_11b9e(); assert(cs == 0x0bc9); break;
+        case 0xf7c07ab: push(cs); cs = 0x0f7c; sub_ff6b(); assert(cs == 0x0bc9); break;
+        case 0xf7c0826: push(cs); cs = 0x0f7c; sub_ffe6(); assert(cs == 0x0bc9); break;
+        case 0xf7c06af: push(cs); cs = 0x0f7c; sub_fe6f(); assert(cs == 0x0bc9); break;
+        case 0xf7c06f0: push(cs); cs = 0x0f7c; sub_feb0(); assert(cs == 0x0bc9); break;
+        default:
+            printf("missingA %x\n", memoryAGet32(ds, di + 16));
+//            missingA d6d0395
+//            missingA bc916c9
+//            int i = memoryAGet32(ds, di + 16);
+//            stop();
+    }
     sp += 0x0002;
 loc_cc46: // 0bc9:0fb6
     ax = 0;
@@ -17263,7 +18414,26 @@ loc_cce9: // 0bc9:1059
     goto loc_cd03;
 loc_ccfc: // 0bc9:106c
     push(si);
-    push(cs); cs = memoryAGet16(ds, di + 16 + 2); callIndirect(cs, memoryAGet16(ds, di + 16)); assert(cs == 0x0bc9); // 0bc9:106d;
+    switch (memoryAGet32(ds, di + 16))
+    {
+        case 0x1195002e: push(cs); cs = 0x1195; sub_1197e(); assert(cs == 0x0bc9); break;
+        case 0x1195008b: push(cs); cs = 0x1195; sub_119db(); assert(cs == 0x0bc9); break;
+        case 0x119500b3: push(cs); cs = 0x1195; sub_11a03(); assert(cs == 0x0bc9); break;
+        case 0x119500db: push(cs); cs = 0x1195; sub_11a2b(); assert(cs == 0x0bc9); break;
+        case 0x11950103: push(cs); cs = 0x1195; sub_11a53(); assert(cs == 0x0bc9); break;
+        case 0x1195012b: push(cs); cs = 0x1195; sub_11a7b(); assert(cs == 0x0bc9); break;
+        case 0x11950153: push(cs); cs = 0x1195; sub_11aa3(); assert(cs == 0x0bc9); break;
+        case 0x1195017b: push(cs); cs = 0x1195; sub_11acb(); assert(cs == 0x0bc9); break;
+        case 0x1195024e: push(cs); cs = 0x1195; sub_11b9e(); assert(cs == 0x0bc9); break;
+        case 0xf7c07ab: push(cs); cs = 0x0f7c; sub_ff6b(); assert(cs == 0x0bc9); break;
+        case 0xf7c0826: push(cs); cs = 0x0f7c; sub_ffe6(); assert(cs == 0x0bc9); break;
+        case 0xf7c06af: push(cs); cs = 0x0f7c; sub_fe6f(); assert(cs == 0x0bc9); break;
+        case 0xf7c06f0: push(cs); cs = 0x0f7c; sub_feb0(); assert(cs == 0x0bc9); break;
+        default:
+            printf("missingC %x\n", memoryAGet32(ds, di + 16)); // d6d0395
+
+//            stop();
+    }
     sp += 0x0002;
 loc_cd03: // 0bc9:1073
     if (memoryAGet16(ds, si + 28) != di)
@@ -17522,7 +18692,59 @@ loc_ceec: // 0bc9:125c
     sp += 2;
     cs = pop();
 }
-void sub_eab9() // 0d6d:13e9 +far +stackDrop2
+void sub_d3fe() // 0bc9:176e
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    push(memoryAGet16(ds, si + 32));
+    ax = 0;
+    push(ax);
+    push(memoryAGet16(ds, si + 30));
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = si;
+    ax += 0x0046;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19a51(); assert(cs == 0x0bc9);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_d6de() // 0d6d:000e +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx, 0x0002);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0001);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff0f;
+    memoryASet16(ds, bx + 12, ax);
+    ax = memoryAGet16(ss, bp + 10);
+    memoryASet16(ds, bx + 14, ax);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x098c;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0d6d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_eab9() // 0d6d:13e9 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -17675,6 +18897,160 @@ loc_ee41: // 0d6d:1771
     sp += 2;
     cs = pop();
 }
+void sub_ee45() // 0d6d:1775
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    push(di);
+    di = memoryAGet16(ss, bp + 6);
+    si = memoryAGet16(ss, bp + 10);
+    ax = 0x0001;
+    push(ax);
+    push(ax);
+    push(memoryAGet16(ss, bp + 8));
+    push(di);
+    push(ax);
+    push(ds);
+    ax = 0x1424;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19338(); assert(cs == 0x0d6d);
+    sp += 0x000e;
+    bx = si;
+    bx <<= 1;
+    push(memoryAGet16(ds, bx + 5084));
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    bx = si;
+    bx <<= 1;
+    push(memoryAGet16(ds, bx + 5108));
+    push(cs); cs = 0x08aa; sub_a992(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    if (si >= 0x0004)
+        goto loc_ee96;
+    bx = si;
+    bx <<= 1;
+    memoryASet16(ds, bx + 31328, memoryAGet16(ds, bx + 31328) + 1);
+    goto loc_eeb4;
+loc_ee96: // 0d6d:17c6
+    if (si != 0x000a)
+        goto loc_eea1;
+    memoryASet16(ds, 0x7a6a, memoryAGet16(ds, 0x7a6a) + 1);
+    goto loc_eeb4;
+loc_eea1: // 0d6d:17d1
+    if (si != 0x000b)
+        goto loc_eeb4;
+    bx = memoryAGet16(ds, 0x7a6c);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 5076);
+    memoryASet16(ds, 0x7a58, memoryAGet16(ds, 0x7a58) + ax);
+loc_eeb4: // 0d6d:17e4
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0003);
+    ax = di;
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 16, 0xffff);
+    bx = si;
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 5132);
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 30, ax);
+    memoryASet16(ds, bx + 64, ax);
+    ax = 0x1f28;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0d6d);
+    sp += 0x0004;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 6, 0x0000);
+    di = pop();
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_ef0f() // 0d6d:183f
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    push(di);
+    si = memoryAGet16(ss, bp + 6);
+    di = memoryAGet16(ss, bp + 8);
+    ax = 0x0001;
+    push(ax);
+    push(ax);
+    push(di);
+    push(si);
+    push(ax);
+    push(ds);
+    ax = 0x1424;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19338(); assert(cs == 0x0d6d);
+    sp += 0x000e;
+    ax = 0x000a;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    push(di);
+    push(si);
+    push(cs); cs = 0x1195; sub_11b5c(); assert(cs == 0x0d6d);
+    sp += 0x0004;
+    memoryASet16(ds, 0x7a5a, memoryAGet16(ds, 0x7a5a) + 1);
+    ax = memoryAGet16(ds, 0x7a5a);
+    if (ax != 0x0064)
+        goto loc_efb5;
+    memoryASet16(ds, 0x7a5a, 0x0000);
+    ax = 0x0011;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    memoryASet16(ds, 0x7a6a, memoryAGet16(ds, 0x7a6a) + 1);
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x0d6d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0003);
+    ax = si;
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = di;
+    ax--;
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 16, 0xffff);
+    ax = 0x00da;
+    memoryASet16(ds, bx + 30, ax);
+    memoryASet16(ds, bx + 64, ax);
+    ax = 0x1f28;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0d6d);
+    sp += 0x0004;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 6, 0x0000);
+loc_efb5: // 0d6d:18e5
+    di = pop();
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
 void sub_efb9() // 0d6d:18e9 +far +stackDrop2
 {
     sp -= 2;
@@ -17730,8 +19106,115 @@ loc_f02c: // 0d6d:195c
     goto loc_f0ee;
 loc_f03a: // 0d6d:196a
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 6727)); // 0d6d:196c;
-  // gap 173 bytes
+    switch (bx)
+    {
+        case 0: goto loc_f041;
+        case 2: goto loc_f048;
+        case 4: goto loc_f0ee;
+        case 6: goto loc_f0ee;
+        case 8: goto loc_f056;
+        case 10: goto loc_f056;
+        case 12: goto loc_f056;
+        case 14: goto loc_f056;
+        case 16: goto loc_f0ee;
+        case 18: goto loc_f0ee;
+        case 20: goto loc_f0ee;
+        case 22: goto loc_f0ee;
+        case 24: goto loc_f0ee;
+        case 26: goto loc_f0c8;
+        case 28: goto loc_f0ee;
+        case 30: goto loc_f0ee;
+        case 32: goto loc_f0ee;
+        case 34: goto loc_f0ee;
+        case 36: goto loc_f0d9;
+        case 38: goto loc_f0d9;
+        case 40: goto loc_f0d9;
+        case 42: goto loc_f0d9;
+        case 44: goto loc_f0d9;
+        case 46: goto loc_f0d9;
+        case 48: goto loc_f0d9;
+        case 50: goto loc_f0d9;
+        default:
+            stop();
+    }
+loc_f041: // 0d6d:1971
+    push(cs);
+    sub_eab9();
+    goto loc_f0ee;
+loc_f048: // 0d6d:1978
+    push(memoryAGet16(ss, bp - 2));
+    push(di);
+    push(cs);
+    sub_ef0f();
+    sp += 0x0004;
+    goto loc_f0ee;
+loc_f056: // 0d6d:1986
+    ax = memoryAGet16(ds, si + 50);
+    if (ax == memoryAGet16(ss, bp - 2))
+        goto loc_f061;
+    goto loc_f111;
+loc_f061: // 0d6d:1991
+    if (memoryAGet16(ds, si + 54) != 0x0000)
+        goto loc_f06a;
+    goto loc_f111;
+loc_f06a: // 0d6d:199a
+    if (memoryAGet16(ds, si + 28) != 0x0e1e)
+        goto loc_f074;
+    goto loc_f111;
+loc_f074: // 0d6d:19a4
+    bx = memoryAGet16(ss, bp - 10);
+    bx -= 0x0007;
+    bx <<= 1;
+    if (memoryAGet16(ds, bx + 31328) != 0x0000)
+        goto loc_f086;
+    goto loc_f111;
+loc_f086: // 0d6d:19b6
+    ax = di;
+    cl = 0x08;
+    ax <<= cl;
+    ax += 0xffc0;
+    memoryASet16(ss, bp - 12, ax);
+    ax = memoryAGet16(ds, si + 10);
+    if (ax == memoryAGet16(ss, bp - 12))
+        goto loc_f0ab;
+    ax = memoryAGet16(ss, bp - 12);
+    memoryASet16(ds, si + 62, ax);
+    memoryASet16(ds, si + 28, 0x0e3c);
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_f0ab: // 0d6d:19db
+    bx = memoryAGet16(ss, bp - 10);
+    bx -= 0x0007;
+    bx <<= 1;
+    memoryASet16(ds, bx + 31328, memoryAGet16(ds, bx + 31328) - 1);
+    ax = 0x0e1e;
+    push(ax);
+    push(si);
+    push(cs); cs = 0x0bc9; sub_ce9a(); assert(cs == 0x0d6d);
+    sp += 0x0004;
+    goto loc_f0ee;
+  // gap 2 bytes
+loc_f0c8: // 0d6d:19f8
+    if (memoryAGet16(ds, 0xcab5) != 0x0000)
+        goto loc_f0ee;
+    memoryASet16(ds, 0xcab5, 0x0001);
+    goto loc_f0ee;
+  // gap 2 bytes
+loc_f0d9: // 0d6d:1a09
+    ax = memoryAGet16(ss, bp - 10);
+    ax -= 0x0015;
+    ax += 0x0004;
+    push(ax);
+    push(memoryAGet16(ss, bp - 2));
+    push(di);
+    push(cs);
+    sub_ee45();
+    sp += 0x0006;
 loc_f0ee: // 0d6d:1a1e
     di++;
     memoryASet16(ss, bp - 6, memoryAGet16(ss, bp - 6) + 0x0002);
@@ -17753,6 +19236,53 @@ loc_f111: // 0d6d:1a41
     di = pop();
     si = pop();
     sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_f7c3() // 0f7c:0003 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    bx = memoryAGet16(ds, 0xa7d4);
+    memoryASet16(ds, bx, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0003);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 6, 0x0000);
+    memoryASet16(ds, bx + 64, 0xffff);
+    memoryASet16(ds, bx + 62, 0xffff);
+    memoryASet16(ds, bx + 66, 0xffff);
+    memoryASet16(ds, bx + 68, 0xffff);
+    if (memoryAGet16(ds, 0xa52f) == 0x0000)
+        goto loc_f7ff;
+    memoryASet16(ds, bx + 28, 0x089c);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_f7ff: // 0f7c:003f
+    if (memoryAGet16(ds, 0x3bd6) != 0x0000)
+        goto loc_f818;
+    ax = 0x1456;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d4));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0f7c);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_f818: // 0f7c:0058
+    ax = 0x1474;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d4));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0f7c);
+    sp += 0x0004;
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x0081, memoryAGet(es, 0x0081) | dl);
     bp = pop();
     sp += 2;
     cs = pop();
@@ -18274,6 +19804,396 @@ loc_fcc7: // 0f7c:0507
     sp += 2;
     cs = pop();
 }
+void sub_fcca() // 0f7c:050a +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    if (memoryAGet16(ds, 0x7a70) == 0x0007)
+        goto loc_fcd7;
+    goto loc_fd80;
+loc_fcd7: // 0f7c:0517
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 6, 0x0000);
+    memoryASet16(ds, bx, 0x0002);
+    ax = memoryAGet16(ds, 0x7a1a);
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ds, 0x7a1c);
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0003);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0000);
+    if (memoryAGet16(ds, 0x7a1a) >= 0x1400)
+        goto loc_fd3d;
+    memoryASet16(ds, bx + 62, 0x0118);
+    ax = 0x1e00;
+    ax -= memoryAGet16(ds, bx + 10);
+    bx = 0x0118;
+    dx = 0;
+    div16(bx);
+    ax++;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 22, ax);
+    ax = 0x3700;
+    ax -= memoryAGet16(ds, bx + 12);
+    bx = 0x0118;
+    dx = 0;
+    div16(bx);
+    ax++;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 24, ax);
+    goto loc_fd6e;
+loc_fd3d: // 0f7c:057d
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 62, 0x008c);
+    ax = 0x1000;
+    ax -= memoryAGet16(ds, bx + 10);
+    bx = 0x008c;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    ax++;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 22, ax);
+    ax = 0x2f00;
+    ax -= memoryAGet16(ds, bx + 12);
+    bx = 0x008c;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    ax++;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 24, ax);
+loc_fd6e: // 0f7c:05ae
+    ax = 0x1492;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d6));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0f7c);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_fd80: // 0f7c:05c0
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx, 0x0002);
+    if (memoryAGet16(ds, 0x7a1a) != 0x0000)
+        goto loc_fda3;
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    goto loc_fdb3;
+loc_fda3: // 0f7c:05e3
+    bx = memoryAGet16(ds, 0xa7d6);
+    ax = memoryAGet16(ds, 0x7a1a);
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ds, 0x7a1c);
+    memoryASet16(ds, bx + 12, ax);
+loc_fdb3: // 0f7c:05f3
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0001);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0000);
+    memoryASet16(ds, bx + 62, 0x0006);
+    memoryASet16(ds, bx + 64, 0x0003);
+    memoryASet16(ds, bx + 66, 0x0000);
+    memoryASet16(ds, bx + 30, 0x0100);
+    ax = 0x14ec;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x0f7c);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_fdee() // 0f7c:062e
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x0004;
+    push(si);
+    push(di);
+    si = memoryAGet16(ss, bp + 6);
+    ax = memoryAGet16(ds, si + 46);
+    memoryASet16(ss, bp - 2, ax);
+    goto loc_fe61;
+loc_fe01: // 0f7c:0641
+    di = memoryAGet16(ds, si + 44);
+    goto loc_fe59;
+loc_fe06: // 0f7c:0646
+    bx = memoryAGet16(ss, bp - 2);
+    bx <<= 1;
+    bx = memoryAGet16(ds, bx + 51493);
+    bx >>= 1;
+    bx <<= 1;
+    es = memoryAGet16(ds, 0xa7eb);
+    ax = di;
+    ax <<= 1;
+    bx += ax;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 4, ax);
+    if (memoryAGet16(ss, bp - 4) <= 0xc000)
+        goto loc_fe58;
+    if (memoryAGet16(ss, bp - 4) > 0xc012)
+        goto loc_fe58;
+    ax = memoryAGet16(ds, si + 10);
+    memoryASet16(ds, 0x7a1a, ax);
+    ax = memoryAGet16(ds, si + 12);
+    memoryASet16(ds, 0x7a1c, ax);
+    ax = memoryAGet16(ss, bp - 4);
+    ax -= 0xc000;
+    memoryASet16(ds, 0x7a68, ax);
+    memoryASet16(ds, 0x7a70, 0x0002);
+    ax = 0x000c;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0f7c);
+    sp += 0x0002;
+loc_fe58: // 0f7c:0698
+    di++;
+loc_fe59: // 0f7c:0699
+    if (memoryAGet16(ds, si + 48) >= di)
+        goto loc_fe06;
+    memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
+loc_fe61: // 0f7c:06a1
+    ax = memoryAGet16(ds, si + 50);
+    if (ax >= memoryAGet16(ss, bp - 2))
+        goto loc_fe01;
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_fe6f() // 0f7c:06af
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    if (memoryAGet16(ds, 0xa7d2) == 0x0008)
+        goto loc_fe90;
+    memoryASet16(ds, si + 28, 0x15a0);
+    memoryASet16(ds, si + 64, 0x0000);
+    push(si);
+    push(cs);
+    sub_feb0();
+    sp += 0x0002;
+loc_fe90: // 0f7c:06d0
+    if (memoryAGet16(ds, 0xc5c9) != 0x0000)
+        goto loc_fea5;
+    if (memoryAGet16(ds, 0xc5c5) != 0x0000)
+        goto loc_fea5;
+    if (memoryAGet16(ds, 0xc5c1) == 0x0000)
+        goto loc_fead;
+loc_fea5: // 0f7c:06e5
+    push(si);
+    push(cs);
+    sub_fdee();
+    sp += 0x0002;
+loc_fead: // 0f7c:06ed
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_feb0() // 0f7c:06f0
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    if (memoryAGet16(ds, si + 66) == 0x0000)
+        goto loc_fed0;
+    memoryASet16(ds, si + 66, memoryAGet16(ds, si + 66) - 0x0004);
+    if ((short)memoryAGet16(ds, si + 66) >= (short)0x0000)
+        goto loc_ff1d;
+    memoryASet16(ds, si + 66, 0x0000);
+    goto loc_ff1d;
+  // gap 2 bytes
+loc_fed0: // 0f7c:0710
+    ax = memoryAGet16(ds, 0xa7ce);
+    memoryASet16(ds, si + 14, ax);
+    ax = memoryAGet16(ds, 0xa7d0);
+    memoryASet16(ds, si + 16, ax);
+    if (memoryAGet16(ds, 0xc5c5) != 0x0000)
+        goto loc_fef1;
+    if (memoryAGet16(ds, 0xc5c1) != 0x0000)
+        goto loc_fef1;
+    if (memoryAGet16(ds, 0xc5c9) == 0x0000)
+        goto loc_fef9;
+loc_fef1: // 0f7c:0731
+    push(si);
+    push(cs);
+    sub_fdee();
+    sp += 0x0002;
+loc_fef9: // 0f7c:0739
+    if (memoryAGet16(ds, 0xa7d2) != 0x0008)
+        goto loc_ff17;
+    memoryASet16(ds, si + 28, 0x14ec);
+    bx = memoryAGet16(ds, si + 62);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 5566);
+    ax += 0x0003;
+    memoryASet16(ds, si + 30, ax);
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_ff17: // 0f7c:0757
+    ax = memoryAGet16(ds, 0xa7d2);
+    memoryASet16(ds, si + 62, ax);
+loc_ff1d: // 0f7c:075d
+    memoryASet16(ds, si + 64, memoryAGet16(ds, si + 64) + 1);
+    ax = memoryAGet16(ds, si + 64);
+    if (ax != 0x0004)
+        goto loc_ff2d;
+    memoryASet16(ds, si + 64, 0x0000);
+loc_ff2d: // 0f7c:076d
+    bx = memoryAGet16(ds, si + 62);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 5566);
+    bx = memoryAGet16(ds, si + 64);
+    bx <<= 1;
+    ax += memoryAGet16(ds, bx + 5582);
+    memoryASet16(ds, si + 30, ax);
+    if (memoryAGet16(ds, si + 64) != 0x0001)
+        goto loc_ff56;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0f7c);
+    sp += 0x0002;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_ff56: // 0f7c:0796
+    if (memoryAGet16(ds, si + 64) != 0x0003)
+        goto loc_ff68;
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0f7c);
+    sp += 0x0002;
+loc_ff68: // 0f7c:07a8
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_ff6b() // 0f7c:07ab
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = memoryAGet16(ds, si + 62);
+    ax -= memoryAGet16(ds, 0xa54c);
+    memoryASet16(ds, si + 62, ax);
+    ax = memoryAGet16(ds, si + 22);
+    imul16(memoryAGet16(ds, 0xa54c));
+    memoryASet16(ds, 0xc923, ax);
+    ax = memoryAGet16(ds, si + 24);
+    imul16(memoryAGet16(ds, 0xa54c));
+    memoryASet16(ds, 0xc921, ax);
+    if ((short)memoryAGet16(ds, si + 62) > (short)0x0000)
+        goto loc_ffe3;
+    ax = memoryAGet16(ds, si + 22);
+    dx = memoryAGet16(ds, si + 62);
+    dx = -dx;
+    imul16(dx);
+    memoryASet16(ds, 0xc923, memoryAGet16(ds, 0xc923) - ax);
+    ax = memoryAGet16(ds, si + 24);
+    dx = memoryAGet16(ds, si + 62);
+    dx = -dx;
+    imul16(dx);
+    memoryASet16(ds, 0xc921, memoryAGet16(ds, 0xc921) - ax);
+    memoryASet16(ds, si + 32, 0x0001);
+    memoryASet16(ds, si + 62, 0x0006);
+    memoryASet16(ds, si + 64, 0x0003);
+    memoryASet16(ds, si + 66, 0x0000);
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0000);
+    memoryASet16(ds, si + 28, 0x14ec);
+    memoryASet16(ds, si + 30, 0x0100);
+    memoryASet16(ds, si + 6, 0x0001);
+loc_ffe3: // 0f7c:0823
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_ffe6() // 0f7c:0826
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    if (memoryAGet16(ds, si + 66) == 0x0000)
+        goto loc_10006;
+    memoryASet16(ds, si + 66, memoryAGet16(ds, si + 66) - 0x0006);
+    if ((short)memoryAGet16(ds, si + 66) >= (short)0x0000)
+        goto loc_10026;
+    memoryASet16(ds, si + 66, 0x0000);
+    goto loc_10026;
+  // gap 2 bytes
+loc_10006: // 0f7c:0846
+    ax = memoryAGet16(ds, 0xa7ce);
+    memoryASet16(ds, si + 14, ax);
+    ax = memoryAGet16(ds, 0xa7d0);
+    memoryASet16(ds, si + 16, ax);
+    if (memoryAGet16(ds, 0xa7ce) != 0x0000)
+        goto loc_10020;
+    if (memoryAGet16(ds, 0xa7d0) == 0x0000)
+        goto loc_10026;
+loc_10020: // 0f7c:0860
+    ax = memoryAGet16(ds, 0xa7d2);
+    memoryASet16(ds, si + 62, ax);
+loc_10026: // 0f7c:0866
+    bx = memoryAGet16(ds, si + 62);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 5590);
+    ax += memoryAGet16(ds, si + 64);
+    memoryASet16(ds, si + 30, ax);
+    memoryASet16(ds, si + 64, memoryAGet16(ds, si + 64) + 1);
+    ax = memoryAGet16(ds, si + 64);
+    if (ax != 0x0002)
+        goto loc_10045;
+    memoryASet16(ds, si + 64, 0x0000);
+loc_10045: // 0f7c:0885
+    if (memoryAGet16(ds, si + 64) != 0x0000)
+        goto loc_1005a;
+    ax = 0x001a;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0f7c);
+    sp += 0x0002;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_1005a: // 0f7c:089a
+    ax = 0x001b;
+    push(ax);
+    push(cs); cs = 0x1a61; sub_1b001(); assert(cs == 0x0f7c);
+    sp += 0x0002;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
 void sub_10069() // 0f7c:08a9 +far +stackDrop2
 {
     sp -= 2;
@@ -18365,8 +20285,33 @@ loc_1013b: // 0f7c:097b
     if (bx > 0x0006)
         goto loc_10178;
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 2543)); // 0f7c:0985;
-  // gap 46 bytes
+    switch (bx)
+    {
+        case 0: goto loc_1014a;
+        case 2: goto loc_10178;
+        case 4: goto loc_10156;
+        case 6: goto loc_10178;
+        case 8: goto loc_10162;
+        case 10: goto loc_10178;
+        case 12: goto loc_1016e;
+        default:
+            stop();
+    }
+loc_1014a: // 0f7c:098a
+    memoryASet16(ds, si + 14, 0x0000);
+    memoryASet16(ds, si + 16, 0xffff);
+    goto loc_10178;
+loc_10156: // 0f7c:0996
+    memoryASet16(ds, si + 14, 0x0001);
+    memoryASet16(ds, si + 16, 0x0000);
+    goto loc_10178;
+loc_10162: // 0f7c:09a2
+    memoryASet16(ds, si + 14, 0x0000);
+    memoryASet16(ds, si + 16, 0x0001);
+    goto loc_10178;
+loc_1016e: // 0f7c:09ae
+    memoryASet16(ds, si + 14, 0xffff);
+    memoryASet16(ds, si + 16, 0x0000);
 loc_10178: // 0f7c:09b8
     memoryASet16(ds, si + 64, 0x0000);
     memoryASet16(ds, si + 66, 0x0012);
@@ -18639,8 +20584,525 @@ loc_10811: // 107c:0051
     goto loc_10ccd;
 loc_1081d: // 107c:005d
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 1429)); // 107c:005f;
-  // gap 1193 bytes
+    switch (bx)
+    {
+        case 0: goto loc_10824;
+        case 2: goto loc_10850;
+        case 4: goto loc_1087c;
+        case 6: goto loc_108a4;
+        case 8: goto loc_108cd;
+        case 10: goto loc_108e2;
+        case 12: goto loc_1090b;
+        case 14: goto loc_10934;
+        case 16: goto loc_10949;
+        case 18: goto loc_1095e;
+        case 20: goto loc_1098d;
+        case 22: goto loc_109bc;
+        case 24: goto loc_109d1;
+        case 26: goto loc_10a00;
+        case 28: goto loc_10a29;
+        case 30: goto loc_10a3e;
+        case 32: goto loc_10a67;
+        case 34: goto loc_10a7c;
+        case 36: goto loc_10a91;
+        case 38: goto loc_10aba;
+        case 40: goto loc_10acf;
+        case 42: goto loc_10af8;
+        case 44: goto loc_10a5d;
+        case 46: goto loc_10a53;
+        case 48: goto loc_10b0d;
+        case 50: goto loc_10b20;
+        case 52: goto loc_10b32;
+        case 54: goto loc_10b32;
+        case 56: goto loc_10b32;
+        case 58: goto loc_10b32;
+        case 60: goto loc_10ccd;
+        case 62: goto loc_10b4e;
+        case 64: goto loc_10b63;
+        case 66: goto loc_10b72;
+        case 68: goto loc_10b9e;
+        case 70: goto loc_10ccd;
+        case 72: goto loc_10ccd;
+        case 74: goto loc_10ccd;
+        case 76: goto loc_10ccd;
+        case 78: goto loc_10ccd;
+        case 80: goto loc_10ccd;
+        case 82: goto loc_10bbb;
+        case 84: goto loc_10aee;
+        case 86: goto loc_10ae4;
+        case 88: goto loc_1092a;
+        case 90: goto loc_10920;
+        case 92: goto loc_109f6;
+        case 94: goto loc_109ec;
+        case 96: goto loc_108c3;
+        case 98: goto loc_108b9;
+        case 100: goto loc_10901;
+        case 102: goto loc_108f7;
+        case 104: goto loc_10c49;
+        case 106: goto loc_10c49;
+        case 108: goto loc_10c49;
+        case 110: goto loc_10c49;
+        case 112: goto loc_10c64;
+        case 114: goto loc_10c64;
+        case 116: goto loc_10c64;
+        case 118: goto loc_10c64;
+        case 120: goto loc_10c64;
+        case 122: goto loc_10c64;
+        case 124: goto loc_10c64;
+        case 126: goto loc_10c64;
+        case 128: goto loc_10c64;
+        case 130: goto loc_10c64;
+        case 132: goto loc_10c64;
+        case 134: goto loc_10c64;
+        case 136: goto loc_10c8a;
+        case 138: goto loc_10c8a;
+        case 140: goto loc_10c8a;
+        case 142: goto loc_10c8a;
+        case 144: goto loc_10ab0;
+        case 146: goto loc_10aa6;
+        case 148: goto loc_10ca5;
+        case 150: goto loc_10cbb;
+        case 152: goto loc_10cb4;
+        case 154: goto loc_10cad;
+        case 156: goto loc_10c23;
+        case 158: goto loc_10c23;
+        case 160: goto loc_10c23;
+        case 162: goto loc_10c23;
+        case 164: goto loc_10bfd;
+        case 166: goto loc_10bfd;
+        case 168: goto loc_10bfd;
+        case 170: goto loc_10bfd;
+        case 172: goto loc_10a1f;
+        case 174: goto loc_10a15;
+        default:
+            stop();
+    }
+loc_10824: // 107c:0064
+    ax = 0x0001;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x0d6d; sub_d6de(); assert(cs == 0x107c);
+    sp += 0x0006;
+    push(cs); cs = 0x0f7c; sub_f7c3(); assert(cs == 0x107c);
+    memoryASet16(ds, 0xcb3d, 0x0001);
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x00fd, memoryAGet(es, 0x00fd) | dl);
+    goto loc_10ccd;
+loc_10850: // 107c:0090
+    ax = 0xffff;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x0d6d; sub_d6de(); assert(cs == 0x107c);
+    sp += 0x0006;
+    push(cs); cs = 0x0f7c; sub_f7c3(); assert(cs == 0x107c);
+    memoryASet16(ds, 0xcb3d, 0x0001);
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x00fd, memoryAGet(es, 0x00fd) | dl);
+    goto loc_10ccd;
+loc_1087c: // 107c:00bc
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x0f7c; sub_fcca(); assert(cs == 0x107c);
+    sp += 0x0004;
+    push(cs); cs = 0x0f7c; sub_f7c3(); assert(cs == 0x107c);
+    memoryASet16(ds, 0xcb4f, 0x0001);
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x00fd, memoryAGet(es, 0x00fd) | dl);
+    goto loc_10ccd;
+loc_108a4: // 107c:00e4
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11bb9(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb5d, 0x0001);
+    goto loc_10ccd;
+loc_108b9: // 107c:00f9
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_108c3;
+    goto loc_10ccd;
+loc_108c3: // 107c:0103
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_108cd;
+    goto loc_10ccd;
+loc_108cd: // 107c:010d
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_12a6b(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb75, 0x0001);
+    goto loc_10ccd;
+loc_108e2: // 107c:0122
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_146a5(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb57, 0x0001);
+    goto loc_10ccd;
+loc_108f7: // 107c:0137
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10901;
+    goto loc_10ccd;
+loc_10901: // 107c:0141
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_1090b;
+    goto loc_10ccd;
+loc_1090b: // 107c:014b
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_126d6(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb6b, 0x0001);
+    goto loc_10ccd;
+loc_10920: // 107c:0160
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_1092a;
+    goto loc_10ccd;
+loc_1092a: // 107c:016a
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10934;
+    goto loc_10ccd;
+loc_10934: // 107c:0174
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_124b7(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb69, 0x0001);
+    goto loc_10ccd;
+loc_10949: // 107c:0189
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_12892(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb73, 0x0001);
+    goto loc_10ccd;
+loc_1095e: // 107c:019e
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_12dfc(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb59, 0x0001);
+    si = 0x015e;
+    goto loc_10984;
+loc_10975: // 107c:01b5
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, si, memoryAGet(es, si) | dl);
+    si++;
+loc_10984: // 107c:01c4
+    if (si <= 0x0161)
+        goto loc_10975;
+    goto loc_10ccd;
+loc_1098d: // 107c:01cd
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_12d82(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb59, 0x0001);
+    si = 0x015e;
+    goto loc_109b3;
+loc_109a4: // 107c:01e4
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, si, memoryAGet(es, si) | dl);
+    si++;
+loc_109b3: // 107c:01f3
+    if (si <= 0x0161)
+        goto loc_109a4;
+    goto loc_10ccd;
+loc_109bc: // 107c:01fc
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_12fba(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb71, 0x0001);
+    goto loc_10ccd;
+loc_109d1: // 107c:0211
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11ead(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb5f, 0x0001);
+    memoryASet16(ds, 0xcb83, 0x0001);
+    goto loc_10ccd;
+loc_109ec: // 107c:022c
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_109f6;
+    goto loc_10ccd;
+loc_109f6: // 107c:0236
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10a00;
+    goto loc_10ccd;
+loc_10a00: // 107c:0240
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_13198(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb6d, 0x0001);
+    goto loc_10ccd;
+loc_10a15: // 107c:0255
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10a1f;
+    goto loc_10ccd;
+loc_10a1f: // 107c:025f
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10a29;
+    goto loc_10ccd;
+loc_10a29: // 107c:0269
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_13f80(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb63, 0x0001);
+    goto loc_10ccd;
+loc_10a3e: // 107c:027e
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_14397(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb65, 0x0001);
+    goto loc_10ccd;
+loc_10a53: // 107c:0293
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10a5d;
+    goto loc_10ccd;
+loc_10a5d: // 107c:029d
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10a67;
+    goto loc_10ccd;
+loc_10a67: // 107c:02a7
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_1444f(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb7d, 0x0001);
+    goto loc_10ccd;
+loc_10a7c: // 107c:02bc
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_138fe(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb5b, 0x0001);
+    goto loc_10ccd;
+loc_10a91: // 107c:02d1
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_13d37(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb61, 0x0001);
+    goto loc_10ccd;
+loc_10aa6: // 107c:02e6
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10ab0;
+    goto loc_10ccd;
+loc_10ab0: // 107c:02f0
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10aba;
+    goto loc_10ccd;
+loc_10aba: // 107c:02fa
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_123de(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb67, 0x0001);
+    goto loc_10ccd;
+loc_10acf: // 107c:030f
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11d95(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb53, 0x0001);
+    goto loc_10ccd;
+loc_10ae4: // 107c:0324
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10aee;
+    goto loc_10ccd;
+loc_10aee: // 107c:032e
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10af8;
+    goto loc_10ccd;
+loc_10af8: // 107c:0338
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11c4e(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb51, 0x0001);
+    goto loc_10ccd;
+loc_10b0d: // 107c:034d
+    ax = 0x0001;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1841; sub_18f18(); assert(cs == 0x107c);
+    sp += 0x0006;
+    goto loc_10ccd;
+loc_10b20: // 107c:0360
+    ax = 0;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1841; sub_18f18(); assert(cs == 0x107c);
+    sp += 0x0006;
+    goto loc_10ccd;
+loc_10b32: // 107c:0372
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffe5;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_1337b(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xcb6f, 0x0001);
+    goto loc_10ccd;
+loc_10b4e: // 107c:038e
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x126d; sub_137cc(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb6f, 0x0001);
+    goto loc_10ccd;
+loc_10b63: // 107c:03a3
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11950(); assert(cs == 0x107c);
+    sp += 0x0004;
+    goto loc_10ccd;
+loc_10b72: // 107c:03b2
+    if ((short)memoryAGet16(ds, 0x7a58) < (short)0x0005)
+        goto loc_10b7c;
+    goto loc_10ccd;
+loc_10b7c: // 107c:03bc
+    ax = 0x000b;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11af3(); assert(cs == 0x107c);
+    sp += 0x0006;
+    bx = memoryAGet16(ds, 0x19d2);
+    bx <<= 1;
+    memoryASet16(ds, bx + 52027, 0x0001);
+    goto loc_10ccd;
+  // gap 3 bytes
+loc_10b9e: // 107c:03de
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_148c1(); assert(cs == 0x107c);
+    sp += 0x0004;
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x01ae, memoryAGet(es, 0x01ae) | dl);
+    goto loc_10ccd;
+loc_10bbb: // 107c:03fb
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs);
+    sub_114be();
+    sp += 0x0004;
+    push(cs); cs = 0x0f7c; sub_f7c3(); assert(cs == 0x107c);
+    memoryASet16(ds, 0xcb7b, 0x0001);
+    si = 0x00db;
+    goto loc_10be6;
+loc_10bd7: // 107c:0417
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, si, memoryAGet(es, si) | dl);
+    si++;
+loc_10be6: // 107c:0426
+    if (si <= 0x00e2)
+        goto loc_10bd7;
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x00fd, memoryAGet(es, 0x00fd) | dl);
+    goto loc_10ccd;
+loc_10bfd: // 107c:043d
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0003)
+        goto loc_10c07;
+    goto loc_10ccd;
+loc_10c07: // 107c:0447
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffad;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_1472b(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xcb79, 0x0001);
+    goto loc_10ccd;
+loc_10c23: // 107c:0463
+    if ((short)memoryAGet16(ds, 0x7a6c) >= (short)0x0002)
+        goto loc_10c2d;
+    goto loc_10ccd;
+loc_10c2d: // 107c:046d
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffb1;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_1472b(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xcb79, 0x0001);
+    goto loc_10ccd;
+loc_10c49: // 107c:0489
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffcb;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_1472b(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xcb79, 0x0001);
+    goto loc_10ccd;
+loc_10c64: // 107c:04a4
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffc7;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11af3(); assert(cs == 0x107c);
+    sp += 0x0006;
+    bx = memoryAGet16(ss, bp - 8);
+    bx <<= 1;
+    bx = memoryAGet16(ds, bx + 6474);
+    bx <<= 1;
+    memoryASet16(ds, bx + 52027, 0x0001);
+    goto loc_10ccd;
+loc_10c8a: // 107c:04ca
+    ax = memoryAGet16(ss, bp - 8);
+    ax += 0xffbb;
+    push(ax);
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x138f; sub_145dc(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xcb7f, 0x0001);
+    goto loc_10ccd;
+loc_10ca5: // 107c:04e5
+    memoryASet16(ds, 0xcb81, 0x0001);
+    goto loc_10ccd;
+loc_10cad: // 107c:04ed
+    if ((short)memoryAGet16(ds, 0x7a6c) < (short)0x0003)
+        goto loc_10ccd;
+loc_10cb4: // 107c:04f4
+    if ((short)memoryAGet16(ds, 0x7a6c) < (short)0x0002)
+        goto loc_10ccd;
+loc_10cbb: // 107c:04fb
+    push(memoryAGet16(ss, bp - 4));
+    push(di);
+    push(cs); cs = 0x1195; sub_11f09(); assert(cs == 0x107c);
+    sp += 0x0004;
+    memoryASet16(ds, 0xcb5f, 0x0001);
 loc_10ccd: // 107c:050d
     di++;
 loc_10cce: // 107c:050e
@@ -18747,6 +21209,1500 @@ void sub_11226() // 107c:0a66 +far +stackDrop2
     push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x107c);
     push(cs); cs = 0x164d; sub_173af(); assert(cs == 0x107c);
     push(cs); cs = 0x1493; sub_15e1d(); assert(cs == 0x107c);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11365() // 107c:0ba5 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(cs); cs = 0x1a61; sub_1b10d(); assert(cs == 0x107c);
+    push(cs); cs = 0x1493; sub_15dfd(); assert(cs == 0x107c);
+    ax = 0x2c27;
+    dl = memoryAGet(ds, 0x7aec);
+    es = ax;
+    memoryASet(es, 0x006e, memoryAGet(es, 0x006e) | dl);
+    es = ax;
+    memoryASet(es, 0x006f, memoryAGet(es, 0x006f) | dl);
+    es = ax;
+    memoryASet(es, 0x0070, memoryAGet(es, 0x0070) | dl);
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x1493; sub_1617b(); assert(cs == 0x107c);
+    sp += 0x0002;
+    ax = 0xffff;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_ab67(); assert(cs == 0x107c);
+    sp += 0x0002;
+    push(cs); cs = 0x1ef3; sub_1f8c9(); assert(cs == 0x107c);
+    ax = 0x0008;
+    push(ax);
+    ax = 0x001a;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c250(); assert(cs == 0x107c);
+    sp += 0x0004;
+    ax = 0x006e;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7de));
+    push(memoryAGet16(ds, 0xa533));
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x0006);
+    memoryASet16(ds, 0xa531, memoryAGet16(ds, 0xa531) - 0x0030);
+    memoryASet16(ds, 0xa533, memoryAGet16(ds, 0xa533) + 0x0030);
+    if (memoryAGet16(ds, 0xa7ed) != 0x0011)
+        goto loc_113f2;
+    ax = 0x1d43;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x107c);
+    sp += 0x0002;
+    goto loc_113fe;
+loc_113f2: // 107c:0c32
+    ax = 0x1da7;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x107c);
+    sp += 0x0002;
+loc_113fe: // 107c:0c3e
+    push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x107c);
+    ax = 0x003c;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x107c);
+    sp += 0x0002;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x107c);
+    push(cs); cs = 0x164d; sub_173af(); assert(cs == 0x107c);
+    ax = 0x0008;
+    push(ax);
+    ax = 0x001a;
+    push(ax);
+    push(cs); cs = 0x1b1e; sub_1c250(); assert(cs == 0x107c);
+    sp += 0x0004;
+    ax = 0x006f;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7de));
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    ax -= 0x0030;
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x107c);
+    sp += 0x0006;
+    memoryASet16(ds, 0xa531, memoryAGet16(ds, 0xa531) - 0x0030);
+    memoryASet16(ds, 0xa535, memoryAGet16(ds, 0xa535) + 0x000c);
+    bx = memoryAGet16(ds, 0x7a5e);
+    bx <<= 1;
+    push(memoryAGet16(ds, bx + 6620));
+    push(cs); cs = 0x1b1e; sub_1c09d(); assert(cs == 0x107c);
+    sp += 0x0002;
+    push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x107c);
+    ax = 0x001e;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x107c);
+    sp += 0x0002;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x107c);
+    push(cs); cs = 0x164d; sub_173af(); assert(cs == 0x107c);
+    ax = 0x0070;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7de));
+    ax = memoryAGet16(ds, 0xa533);
+    ax += memoryAGet16(ds, 0xa531);
+    push(ax);
+    push(cs); cs = 0x1ef3; sub_1fba9(); assert(cs == 0x107c);
+    sp += 0x0006;
+    push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x107c);
+    ax = 0x001e;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x107c);
+    sp += 0x0002;
+    push(cs); cs = 0x164d; sub_16d78(); assert(cs == 0x107c);
+    push(cs); cs = 0x164d; sub_173af(); assert(cs == 0x107c);
+    memoryASet16(ds, 0x7a5e, memoryAGet16(ds, 0x7a5e) + 1);
+    push(cs); cs = 0x1493; sub_15e1d(); assert(cs == 0x107c);
+    push(cs); cs = 0x08aa; sub_ab32(); assert(cs == 0x107c);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_114be() // 107c:0cfe
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    bx = memoryAGet16(ds, 0xa7d6);
+    memoryASet16(ds, bx, 0x0002);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0001);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 14, 0x0001);
+    memoryASet16(ds, bx + 16, 0x0001);
+    memoryASet16(ds, bx + 6, 0x0002);
+    ax = 0x19ec;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x107c);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11950() // 1195:0000 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0001);
+    memoryASet16(ds, bx + 2, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 28, 0x1dfc);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_1197e() // 1195:002e
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    push(di);
+    di = memoryAGet16(ss, bp + 6);
+    bx = memoryAGet16(ds, 0xa7d6);
+    ax = memoryAGet16(ds, bx + 48);
+    if (ax < memoryAGet16(ds, di + 10))
+        goto loc_119b9;
+    ax = memoryAGet16(ds, di + 10);
+    ax += 0x0005;
+    if (memoryAGet16(ds, bx + 44) > ax)
+        goto loc_119b9;
+    ax = memoryAGet16(ds, bx + 46);
+    if (ax < memoryAGet16(ds, di + 12))
+        goto loc_119b9;
+    ax = memoryAGet16(ds, di + 12);
+    ax += 0x0004;
+    if (memoryAGet16(ds, bx + 50) > ax)
+        goto loc_119b9;
+    memoryASet16(ds, di + 28, 0x1ece);
+    di = pop();
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_119b9: // 1195:0069
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, di + 12));
+    push(memoryAGet16(ds, di + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x0008;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    di = pop();
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_119db() // 1195:008b
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x000e;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11a03() // 1195:00b3
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x0014;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11a2b() // 1195:00db
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x001a;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11a53() // 1195:0103
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x0014;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11a7b() // 1195:012b
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x000e;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11aa3() // 1195:0153
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x0008;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11acb() // 1195:017b
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    ax = 0x0004;
+    push(ax);
+    ax = 0x0006;
+    push(ax);
+    push(memoryAGet16(ds, si + 12));
+    push(memoryAGet16(ds, si + 10));
+    ax = 0x003c;
+    push(ax);
+    ax = 0x0002;
+    push(ax);
+    push(cs); cs = 0x1841; sub_19188(); assert(cs == 0x1195);
+    sp += 0x000c;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11af3() // 1195:01a3 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 10);
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 6, 0x0000);
+    memoryASet16(ds, bx + 32, 0x0002);
+    memoryASet16(ds, bx, 0x0004);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 16, 0xffff);
+    memoryASet16(ds, bx + 62, si);
+    bx = si;
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 8096);
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 30, ax);
+    memoryASet16(ds, bx + 64, ax);
+    ax = memoryAGet16(ds, bx + 64);
+    ax += 0x0002;
+    memoryASet16(ds, bx + 66, ax);
+    ax = 0x1eec;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11b5c() // 1195:020c +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 6, 0x0000);
+    memoryASet16(ds, bx + 32, 0x0003);
+    memoryASet16(ds, bx, 0x0001);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x1f46;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11b9e() // 1195:024e
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 6);
+    memoryASet16(ds, si + 30, memoryAGet16(ds, si + 30) + 1);
+    ax = memoryAGet16(ds, si + 30);
+    if (ax != memoryAGet16(ds, si + 66))
+        goto loc_11bb6;
+    ax = memoryAGet16(ds, si + 64);
+    memoryASet16(ds, si + 30, ax);
+loc_11bb6: // 1195:0266
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11bb9() // 1195:0269 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0006);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xfe8f;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x1195);
+    if ((short)ax >= (short)0x0080)
+        goto loc_11c03;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_11c0c;
+loc_11c03: // 1195:02b3
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_11c0c: // 1195:02bc
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x1fb8;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11c4e() // 1195:02fe +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0005);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff8f;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x1195);
+    if ((short)ax >= (short)0x0080)
+        goto loc_11c98;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_11ca1;
+loc_11c98: // 1195:0348
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_11ca1: // 1195:0351
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x2012;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11d95() // 1195:0445 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0009);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff0f;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 14, 0x0001);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x20e4;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11ead() // 1195:055d +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0008);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff8f;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 14, 0x0001);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x2120;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_11f09() // 1195:05b9 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0x0001;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x001b);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff0f;
+    memoryASet16(ds, bx + 12, ax);
+    ax = memoryAGet16(ds, bx + 10);
+    bx = memoryAGet16(ds, 0xa7d6);
+    if (ax >= memoryAGet16(ds, bx + 10))
+        goto loc_11f56;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_11f5f;
+loc_11f56: // 1195:0606
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_11f5f: // 1195:060f
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x21b6;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_123de() // 1195:0a8e +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000a);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xfe8f;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x1195);
+    if ((short)ax >= (short)0x0080)
+        goto loc_12428;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_12431;
+loc_12428: // 1195:0ad8
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_12431: // 1195:0ae1
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x2378;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_124b7() // 1195:0b67 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x1195);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000b);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x1195);
+    if ((short)ax >= (short)0x0080)
+        goto loc_124fe;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_12507;
+loc_124fe: // 1195:0bae
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_12507: // 1195:0bb7
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x1195);
+    if ((short)ax >= (short)0x0080)
+        goto loc_1251c;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    goto loc_12525;
+loc_1251c: // 1195:0bcc
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0xffff);
+loc_12525: // 1195:0bd5
+    ax = 0x2486;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d8));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x1195);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_126d6() // 126d:0006 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000c);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0x008f;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    if ((short)ax >= (short)0x0080)
+        goto loc_12720;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_12729;
+loc_12720: // 126d:0050
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_12729: // 126d:0059
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x26de;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_12892() // 126d:01c2 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000d);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x0001;
+    memoryASet16(ds, bx + 14, ax);
+    memoryASet16(ds, bx + 16, ax);
+    ax = 0x28a0;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_12a6b() // 126d:039b +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000e);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xfe00;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    if ((short)ax >= (short)0x0080)
+        goto loc_12ab5;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_12abe;
+loc_12ab5: // 126d:03e5
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_12abe: // 126d:03ee
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    memoryASet16(ds, bx + 64, 0x0008);
+    ax = 0x2af8;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_12d82() // 126d:06b2 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0010);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    if ((short)ax >= (short)0x0080)
+        goto loc_12dc9;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_12dd2;
+loc_12dc9: // 126d:06f9
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_12dd2: // 126d:0702
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x2e9a;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    bx = 0x0020;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 26, ax);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_12dfc() // 126d:072c +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0011);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax += 0xfffd;
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x2ef4;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_12fba() // 126d:08ea +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x000f);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff80;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 16, 0x0001);
+    memoryASet16(ds, bx + 14, 0x0000);
+    ax = 0x2f12;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_13198() // 126d:0ac8 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0012);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    if ((short)ax >= (short)0x0080)
+        goto loc_131df;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_131e8;
+loc_131df: // 126d:0b0f
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_131e8: // 126d:0b18
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x126d);
+    bx = 0x0040;
+    dx = ax & 0x8000 ? 0xffff : 0x0000;
+    idiv16(bx);
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 8, ax);
+    ax = 0x3002;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_1337b() // 126d:0cab +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0014);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    bx = memoryAGet16(ss, bp + 10);
+    if (bx > 0x0003)
+        goto loc_133fa;
+    bx <<= 1;
+    switch (bx)
+    {
+        case 0: goto loc_133bc;
+        case 2: goto loc_133cc;
+        case 4: goto loc_133dc;
+        case 6: goto loc_133ec;
+        default:
+            stop();
+    }
+loc_133bc: // 126d:0cec
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0xffff);
+    goto loc_133fa;
+loc_133cc: // 126d:0cfc
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    memoryASet16(ds, bx + 16, 0x0000);
+    goto loc_133fa;
+loc_133dc: // 126d:0d0c
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0001);
+    goto loc_133fa;
+loc_133ec: // 126d:0d1c
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+    memoryASet16(ds, bx + 16, 0x0000);
+loc_133fa: // 126d:0d2a
+    ax = 0x316a;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d8));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_137cc() // 126d:10fc +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x126d);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0014);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 62, ax);
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0001);
+    memoryASet16(ds, bx + 6, 0x0000);
+    ax = 0x3188;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x126d);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_138fe() // 138f:000e +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x001a);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0003);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xfe80;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x138f);
+    if ((short)ax >= (short)0x0080)
+        goto loc_13948;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_13951;
+loc_13948: // 138f:0058
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_13951: // 138f:0061
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x31e2;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_13d37() // 138f:0447 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0013);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0003);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff30;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x0001;
+    memoryASet16(ds, bx + 14, ax);
+    memoryASet16(ds, bx + 16, ax);
+    ax = 0x343a;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_13f80() // 138f:0690 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0015);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0002);
+    memoryASet16(ds, bx + 6, 0x0002);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xfd00;
+    memoryASet16(ds, bx + 12, ax);
+    push(cs); cs = 0x1eef; sub_1ef1a(); assert(cs == 0x138f);
+    if ((short)ax >= (short)0x0080)
+        goto loc_13fcf;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    goto loc_13fd8;
+loc_13fcf: // 138f:06df
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+loc_13fd8: // 138f:06e8
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x35c0;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_14397() // 138f:0aa7 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0016);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 6, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x0001;
+    memoryASet16(ds, bx + 14, ax);
+    memoryASet16(ds, bx + 16, ax);
+    ax = 0x3764;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_1444f() // 138f:0b5f +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0017);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    memoryASet16(ds, bx + 6, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 62, ax);
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x0001;
+    memoryASet16(ds, bx + 14, ax);
+    memoryASet16(ds, bx + 16, ax);
+    ax = 0x37a0;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_145dc() // 138f:0cec +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0020);
+    memoryASet16(ds, bx + 2, 0x0002);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    bx = memoryAGet16(ss, bp + 10);
+    if (bx > 0x0003)
+        goto loc_1465b;
+    bx <<= 1;
+    switch (bx)
+    {
+        case 0: goto loc_1461d;
+        case 2: goto loc_1462d;
+        case 4: goto loc_1463d;
+        case 6: goto loc_1464d;
+        default:
+            stop();
+    }
+loc_1461d: // 138f:0d2d
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0xffff);
+    goto loc_1465b;
+loc_1462d: // 138f:0d3d
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0001);
+    memoryASet16(ds, bx + 16, 0x0000);
+    goto loc_1465b;
+loc_1463d: // 138f:0d4d
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0x0000);
+    memoryASet16(ds, bx + 16, 0x0001);
+    goto loc_1465b;
+loc_1464d: // 138f:0d5d
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 14, 0xffff);
+    memoryASet16(ds, bx + 16, 0x0000);
+loc_1465b: // 138f:0d6b
+    ax = 0x3890;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d8));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_146a5() // 138f:0db5 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0018);
+    memoryASet16(ds, bx + 2, 0x0001);
+    memoryASet16(ds, bx + 32, 0x0000);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff00;
+    memoryASet16(ds, bx + 62, ax);
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 16, 0x0001);
+    ax = 0x38ea;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_1472b() // 138f:0e3b +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = memoryAGet16(ss, bp + 10);
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x0001);
+    memoryASet16(ds, bx + 2, 0x0001);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    memoryASet16(ds, bx + 6, 0x0000);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    memoryASet16(ds, bx + 12, ax);
+    memoryASet16(ds, bx + 62, si);
+    bx = si;
+    if (bx > 0x0003)
+        goto loc_147bb;
+    bx <<= 1;
+    switch (bx)
+    {
+        case 0: goto loc_14772;
+        case 2: goto loc_14786;
+        case 4: goto loc_1479a;
+        case 6: goto loc_147aa;
+        default:
+            stop();
+    }
+loc_14772: // 138f:0e82
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 12, memoryAGet16(ds, bx + 12) - 0x0030);
+    memoryASet16(ds, bx + 10, memoryAGet16(ds, bx + 10) + 0x0090);
+    memoryASet16(ds, bx + 30, 0x017c);
+    goto loc_147bb;
+loc_14786: // 138f:0e96
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 10, memoryAGet16(ds, bx + 10) + 0x0080);
+    memoryASet16(ds, bx + 12, memoryAGet16(ds, bx + 12) + 0x0050);
+    memoryASet16(ds, bx + 30, 0x0180);
+    goto loc_147bb;
+loc_1479a: // 138f:0eaa
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 10, memoryAGet16(ds, bx + 10) + 0x0090);
+    memoryASet16(ds, bx + 30, 0x017e);
+    goto loc_147bb;
+loc_147aa: // 138f:0eba
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx + 12, memoryAGet16(ds, bx + 12) + 0x0070);
+    memoryASet16(ds, bx + 10, memoryAGet16(ds, bx + 10) - 0x0030);
+    memoryASet16(ds, bx + 30, 0x0182);
+loc_147bb: // 138f:0ecb
+    ax = 0x3962;
+    push(ax);
+    push(memoryAGet16(ds, 0xa7d8));
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_148c1() // 138f:0fd1 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    ax = 0;
+    push(ax);
+    push(cs); cs = 0x08aa; sub_a8b1(); assert(cs == 0x138f);
+    sp += 0x0002;
+    bx = memoryAGet16(ds, 0xa7d8);
+    memoryASet16(ds, bx, 0x001e);
+    memoryASet16(ds, bx + 2, 0x0001);
+    ax = memoryAGet16(ss, bp + 6);
+    cl = 0x08;
+    ax <<= cl;
+    memoryASet16(ds, bx + 10, ax);
+    ax = memoryAGet16(ss, bp + 8);
+    ax <<= cl;
+    ax += 0xff00;
+    memoryASet16(ds, bx + 12, ax);
+    ax = 0x3a34;
+    push(ax);
+    push(bx);
+    push(cs); cs = 0x0bc9; sub_ce1c(); assert(cs == 0x138f);
+    sp += 0x0004;
     bp = pop();
     sp += 2;
     cs = pop();
@@ -19593,7 +23549,7 @@ void sub_15284() // 1493:0954 +far +stackDrop2
     memoryASet16(ds, 0xa7ed, 0xffff);
     memoryASet(ds, 0x7aec, 0x01);
     memoryASet(ds, 0xa7e6, 0x00);
-    memoryASet16(ds, 0x7aea, 0x1493); 
+    memoryASet16(ds, 0x7aea, 0x1493);
     memoryASet16(ds, 0x7ae8, 0x1650);
     memoryASet16(ds, 0x7ae6, 0x1493);
     memoryASet16(ds, 0x7ae4, 0x17bf);
@@ -20797,7 +24753,7 @@ loc_15e63: // 1493:1533
     sp += 2;
     cs = pop();
 }
-void sub_15e92() // 1493:1562 +stackDrop2
+void sub_15e92() // 1493:1562 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -21359,7 +25315,7 @@ void sub_164db() // 164d:000b
     out8(dx, al);
     if (memoryAGet(ss, bp - 1) != 0xe0)
         goto loc_16512;
-    memoryASet16(ds, 0x7478, 0x0001); // keyb
+    memoryASet16(ds, 0x7478, 0x0001);
     goto loc_1667a;
 loc_16512: // 164d:0042
     if (memoryAGet(ss, bp - 1) != 0xe1)
@@ -21374,7 +25330,7 @@ loc_16521: // 164d:0051
     ah = 0x00;
     ax <<= 1;
     bx = ax;
-    memoryASet16(ds, bx + 50759, 0x0000); //key c647
+    memoryASet16(ds, bx + 50759, 0x0000);
     goto loc_16674;
 loc_1653d: // 164d:006d
     al = memoryAGet(ds, 0x7487);
@@ -21394,14 +25350,14 @@ loc_1653d: // 164d:006d
 loc_16566: // 164d:0096
     bx = si;
     bx <<= 1;
-    if (memoryAGet16(ds, bx + 52237) != 0x0000) // cc0d
+    if (memoryAGet16(ds, bx + 52237) != 0x0000)
         goto loc_1659d;
     al = memoryAGet(ds, 0x7487);
     if (al != memoryAGet(ds, 0x3bc2))
         goto loc_16586;
     bx = si;
     bx <<= 1;
-    memoryASet16(ds, bx + 52215, 0x0001); // cbf7
+    memoryASet16(ds, bx + 52215, 0x0001);
     goto loc_165d0;
 loc_16586: // 164d:00b6
     al = memoryAGet(ds, 0x7487);
@@ -21415,14 +25371,14 @@ loc_16586: // 164d:00b6
 loc_1659d: // 164d:00cd
     bx = si;
     bx <<= 1;
-    if (memoryAGet16(ds, bx + 52237) != 0x0000) // cc0d
+    if (memoryAGet16(ds, bx + 52237) != 0x0000)
         goto loc_165d0;
     al = memoryAGet(ds, 0x7487);
     if (al != memoryAGet(ds, 0x3bcc))
         goto loc_165bd;
     bx = si;
     bx <<= 1;
-    memoryASet16(ds, bx + 52215, 0x0001); // cbf7
+    memoryASet16(ds, bx + 52215, 0x0001);
     goto loc_165d0;
 loc_165bd: // 164d:00ed
     al = memoryAGet(ds, 0x7487);
@@ -21836,7 +25792,7 @@ loc_168fb: // 164d:042b
     sp += 2;
     cs = pop();
 }
-void sub_1690f() // 164d:043f +stackDrop2 joystick
+void sub_1690f() // 164d:043f +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -21897,7 +25853,6 @@ loc_16953: // 164d:0483
     memoryASet16(ss, bp - 4, dx);
 loc_16970: // 164d:04a0
     sync();
-    printf("cmp %04x:%04x = %04x:%04x\n", dx, ax, memoryAGet16(ss, bp - 4), memoryAGet16(ss, bp - 2));
 //    ax = memoryAGet16(ds, 0xa53f);
 //    dx = memoryAGet16(ds, 0xa53d);
 //    if (ax < memoryAGet16(ss, bp - 2))
@@ -22559,8 +26514,173 @@ loc_16f29: // 164d:0a59
     goto loc_170cc;
 loc_16f3f: // 164d:0a6f
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 3358)); // 164d:0a71;
-  // gap 390 bytes
+    switch (bx)
+    {
+        case 0: goto loc_16f46;
+        case 2: goto loc_16f46;
+        case 4: goto loc_17047;
+        case 6: goto loc_17047;
+        case 8: goto loc_170b1;
+        default:
+            stop();
+    }
+loc_16f46: // 164d:0a76
+    ax = memoryAGet16(ss, bp - 16);
+    dx = 0x000a;
+    imul16(dx);
+    ax += 0x3bc2;
+    si = ax;
+    al = memoryAGet(ds, si + 2);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16f6f;
+    memoryASet16(ss, bp - 12, 0xffff);
+    memoryASet16(ss, bp - 14, 0xffff);
+    goto loc_16fc1;
+loc_16f6f: // 164d:0a9f
+    al = memoryAGet(ds, si + 4);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16f8b;
+    memoryASet16(ss, bp - 12, 0x0001);
+    memoryASet16(ss, bp - 14, 0xffff);
+    goto loc_16fc1;
+loc_16f8b: // 164d:0abb
+    al = memoryAGet(ds, si + 7);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16fa7;
+    memoryASet16(ss, bp - 12, 0xffff);
+    memoryASet16(ss, bp - 14, 0x0001);
+    goto loc_16fc1;
+loc_16fa7: // 164d:0ad7
+    al = memoryAGet(ds, si + 9);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16fc1;
+    memoryASet16(ss, bp - 12, 0x0001);
+    memoryASet16(ss, bp - 14, 0x0001);
+loc_16fc1: // 164d:0af1
+    al = memoryAGet(ds, si + 3);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16fd8;
+    memoryASet16(ss, bp - 14, 0xffff);
+    goto loc_16fed;
+loc_16fd8: // 164d:0b08
+    al = memoryAGet(ds, si + 8);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_16fed;
+    memoryASet16(ss, bp - 14, 0x0001);
+loc_16fed: // 164d:0b1d
+    al = memoryAGet(ds, si + 5);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000) // left key
+        goto loc_17004;
+    memoryASet16(ss, bp - 12, 0xffff);
+    goto loc_17019;
+loc_17004: // 164d:0b34
+    al = memoryAGet(ds, si + 6);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_17019;
+    memoryASet16(ss, bp - 12, 0x0001);
+loc_17019: // 164d:0b49
+    al = memoryAGet(ds, si);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_1702b;
+    memoryASet16(ss, bp - 6, memoryAGet16(ss, bp - 6) + 1);
+loc_1702b: // 164d:0b5b
+    al = memoryAGet(ds, si + 1);
+    ah = 0x00;
+    ax <<= 1;
+    bx = ax;
+    if (memoryAGet16(ds, bx + 50759) == 0x0000)
+        goto loc_1703f;
+    memoryASet16(ss, bp - 6, memoryAGet16(ss, bp - 6) + 0x0002);
+loc_1703f: // 164d:0b6f
+    memoryASet16(ss, bp - 2, 0x0000);
+    goto loc_170cc;
+loc_17047: // 164d:0b77
+    ax = 0;
+    push(ax);
+    ax = bp - 10;
+    push(ax);
+    ax = bp - 8;
+    push(ax);
+    ax = memoryAGet16(ss, bp - 16);
+    ax += 0xfffe;
+    push(ax);
+    push(cs);
+    sub_16768();
+    sp += 0x0008;
+    if (memoryAGet16(ds, 0xc643) == 0x0000)
+        goto loc_17099;
+    ax = 0x0002;
+    push(ax);
+    push(cs);
+    sub_1690f();
+    sp += 0x0002;
+    memoryASet16(ss, bp - 6, ax);
+    di = 0;
+    goto loc_17094;
+loc_17079: // 164d:0ba9
+    bx = di;
+    bx <<= 1;
+    cl = memoryAGet(ds, bx + 52229);
+    ax = 0x0001;
+    ax <<= cl;
+    dx = memoryAGet16(ss, bp - 6);
+    dx &= ax;
+    bx = di;
+    bx <<= 1;
+    memoryASet16(ds, bx + 50747, dx);
+    di++;
+loc_17094: // 164d:0bc4
+    if ((short)di < (short)0x0004)
+        goto loc_17079;
+loc_17099: // 164d:0bc9
+    ax = memoryAGet16(ss, bp - 16);
+    ax += 0xfffe;
+    push(ax);
+    push(cs);
+    sub_1690f();
+    sp += 0x0002;
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 2, 0x0001);
+    goto loc_170cc;
+loc_170b1: // 164d:0be1
+    ax = bp - 10;
+    push(ax);
+    ax = bp - 8;
+    push(ax);
+    push(cs);
+    sub_166a0();
+    sp += 0x0004;
+    push(cs);
+    sub_166b8();
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 2, 0x0001);
 loc_170cc: // 164d:0bfc
     if (memoryAGet16(ss, bp - 2) == 0x0000)
         goto loc_1710a;
@@ -22835,7 +26955,7 @@ loc_1734e: // 164d:0e7e
     bx <<= 1;
     if (memoryAGet16(ds, bx + 52294) != 0x0000)
         goto loc_17360;
-    if (memoryAGet16(ds, 0xc643) == 0x0000) // 30d4:0xc643
+    if (memoryAGet16(ds, 0xc643) == 0x0000)
         goto loc_1737b;
 loc_17360: // 164d:0e90
     push(si);
@@ -22849,8 +26969,7 @@ loc_1736c: // 164d:0e9c
     push(cs);
     sub_16948();
     sp += 0x0002;
-    printf("skip!\n");
-//    if (ax) sss
+//    if (ax)
 //        goto loc_1736c;
     si = pop();
     bp = pop();
@@ -25598,6 +29717,52 @@ loc_18cf8: // 1841:08e8
     sp += 2;
     cs = pop();
 }
+void sub_18cff() // 1841:08ef
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    push(di);
+    cx = memoryAGet16(ss, bp + 6);
+    di = memoryAGet16(ss, bp + 8);
+    si = memoryAGet16(ds, 0xd076);
+    goto loc_18d4e;
+loc_18d10: // 1841:0900
+    ax = memoryAGet16(ds, si);
+    ax -= cx;
+    if (ax >= memoryAGet16(ss, bp + 10))
+        goto loc_18d4b;
+    ax = memoryAGet16(ds, si + 2);
+    ax -= di;
+    if (ax >= memoryAGet16(ss, bp + 12))
+        goto loc_18d4b;
+    ax = memoryAGet16(ds, si + 14);
+    bx = memoryAGet16(ds, si + 12);
+    memoryASet16(ds, bx, ax);
+    if (memoryAGet16(ds, si + 14) == 0x0000)
+        goto loc_18d3a;
+    ax = memoryAGet16(ds, si + 12);
+    bx = memoryAGet16(ds, si + 14);
+    memoryASet16(ds, bx + 12, ax);
+loc_18d3a: // 1841:092a
+    dx = memoryAGet16(ds, si + 14);
+    ax = memoryAGet16(ds, 0xd074);
+    memoryASet16(ds, si + 14, ax);
+    memoryASet16(ds, 0xd074, si);
+    si = dx;
+    goto loc_18d4e;
+loc_18d4b: // 1841:093b
+    si = memoryAGet16(ds, si + 14);
+loc_18d4e: // 1841:093e
+    if (si)
+        goto loc_18d10;
+    di = pop();
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
 void sub_18d56() // 1841:0946 +stackDrop2
 {
     sp -= 2;
@@ -25804,7 +29969,7 @@ void sub_18f0b() // 1841:0afb +stackDrop2
     sp += 2;
     cs = pop();
 }
-void sub_18f18() // 1841:0b08 +stackDrop2
+void sub_18f18() // 1841:0b08 +nearfar +stackDrop2
 {
     sp -= 2;
     push(bp);
@@ -25991,8 +30156,60 @@ void sub_19072() // 1841:0c62 +stackDrop2
     goto loc_19120;
 loc_19085: // 1841:0c75
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 3409)); // 1841:0c77;
-  // gap 148 bytes
+    switch (bx)
+    {
+        case 0: goto loc_1908c;
+        case 2: goto loc_190af;
+        case 4: goto loc_190d7;
+        case 6: goto loc_190fe;
+        default:
+            stop();
+    }
+loc_1908c: // 1841:0c7c
+    si = 0;
+    memoryASet16(ss, bp - 4, 0x0001);
+    di = memoryAGet16(ds, 0xc74f);
+    ax = memoryAGet16(ds, 0xc74d);
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 8, 0x0001);
+    memoryASet16(ss, bp - 10, 0x0000);
+    memoryASet16(ss, bp - 2, 0x0015);
+    goto loc_19150;
+loc_190af: // 1841:0c9f
+    si = 0x0014;
+    memoryASet16(ss, bp - 4, 0x0016);
+    ax = memoryAGet16(ds, 0xc74f);
+    ax += 0x0015;
+    ax--;
+    di = ax;
+    ax = memoryAGet16(ds, 0xc74d);
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 8, 0x0000);
+    memoryASet16(ss, bp - 10, 0x0001);
+    memoryASet16(ss, bp - 2, 0x000e);
+    goto loc_19150;
+loc_190d7: // 1841:0cc7
+    si = 0x011e;
+    memoryASet16(ss, bp - 4, 0x0001);
+    di = memoryAGet16(ds, 0xc74f);
+    ax = memoryAGet16(ds, 0xc74d);
+    ax += 0x000e;
+    ax--;
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 8, 0x0001);
+    memoryASet16(ss, bp - 10, 0x0000);
+    memoryASet16(ss, bp - 2, 0x0015);
+    goto loc_19150;
+loc_190fe: // 1841:0cee
+    si = 0;
+    memoryASet16(ss, bp - 4, 0x0016);
+    di = memoryAGet16(ds, 0xc74f);
+    ax = memoryAGet16(ds, 0xc74d);
+    memoryASet16(ss, bp - 6, ax);
+    memoryASet16(ss, bp - 8, 0x0000);
+    memoryASet16(ss, bp - 10, 0x0001);
+    memoryASet16(ss, bp - 2, 0x000e);
+    goto loc_19150;
 loc_19120: // 1841:0d10
     ax = 0x42ac;
     push(ax);
@@ -26039,6 +30256,290 @@ void sub_19169() // 1841:0d59 +far +stackDrop2
     sub_1a07e();
     push(cs);
     sub_1a07e();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_19188() // 1841:0d78 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x002c;
+    push(si);
+    push(di);
+    push(memoryAGet16(ss, bp + 16));
+    push(memoryAGet16(ss, bp + 14));
+    push(memoryAGet16(ss, bp + 12));
+    push(memoryAGet16(ss, bp + 10));
+    push(cs);
+    sub_18cff();
+    sp += 0x0008;
+    bx = memoryAGet16(ss, bp + 8);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 51493);
+    ax >>= 1;
+    ax += memoryAGet16(ss, bp + 6);
+    memoryASet16(ss, bp - 4, ax);
+    ax <<= 1;
+    dx = memoryAGet16(ds, 0xa7e7);
+    memoryASet16(ss, bp - 20, dx);
+    memoryASet16(ss, bp - 22, ax);
+    ax = memoryAGet16(ss, bp - 4);
+    ax <<= 1;
+    dx = memoryAGet16(ds, 0xa7e9);
+    memoryASet16(ss, bp - 24, dx);
+    memoryASet16(ss, bp - 26, ax);
+    ax = memoryAGet16(ss, bp - 4);
+    ax <<= 1;
+    dx = memoryAGet16(ds, 0xa7eb);
+    memoryASet16(ss, bp - 28, dx);
+    memoryASet16(ss, bp - 30, ax);
+    bx = memoryAGet16(ss, bp + 12);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 51493);
+    ax >>= 1;
+    ax += memoryAGet16(ss, bp + 10);
+    di = ax;
+    di -= memoryAGet16(ss, bp - 4);
+    ax = memoryAGet16(ds, 0xa7e4);
+    ax -= memoryAGet16(ss, bp + 14);
+    memoryASet16(ss, bp - 10, ax);
+    memoryASet16(ss, bp - 2, 0x0000);
+    goto loc_19327;
+loc_19202: // 1841:0df2
+    si = 0;
+    goto loc_19304;
+loc_19207: // 1841:0df7
+    bx = memoryAGet16(ss, bp - 22); es = memoryAGet16(ss, bp - 22 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 12, ax);
+    bx = memoryAGet16(ss, bp - 26); es = memoryAGet16(ss, bp - 26 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 14, ax);
+    bx = memoryAGet16(ss, bp - 30); es = memoryAGet16(ss, bp - 30 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 16, ax);
+    ax = di;
+    ax <<= 1;
+    dx = memoryAGet16(ss, bp - 20);
+    bx = memoryAGet16(ss, bp - 22);
+    bx += ax;
+    memoryASet16(ss, bp - 32, dx);
+    memoryASet16(ss, bp - 34, bx);
+    ax = di;
+    ax <<= 1;
+    dx = memoryAGet16(ss, bp - 24);
+    bx = memoryAGet16(ss, bp - 26);
+    bx += ax;
+    memoryASet16(ss, bp - 36, dx);
+    memoryASet16(ss, bp - 38, bx);
+    ax = di;
+    ax <<= 1;
+    dx = memoryAGet16(ss, bp - 28);
+    bx = memoryAGet16(ss, bp - 30);
+    bx += ax;
+    memoryASet16(ss, bp - 40, dx);
+    memoryASet16(ss, bp - 42, bx);
+    bx = memoryAGet16(ss, bp - 34); es = memoryAGet16(ss, bp - 34 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    if (ax != memoryAGet16(ss, bp - 12))
+        goto loc_19279;
+    bx = memoryAGet16(ss, bp - 38); es = memoryAGet16(ss, bp - 38 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    if (ax != memoryAGet16(ss, bp - 14))
+        goto loc_19279;
+    bx = memoryAGet16(ss, bp - 42); es = memoryAGet16(ss, bp - 42 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    if (ax == memoryAGet16(ss, bp - 16))
+        goto loc_1929b;
+loc_19279: // 1841:0e69
+    bx = memoryAGet16(ss, bp - 34); es = memoryAGet16(ss, bp - 34 + 2); /*ggg2*/;
+    ax = memoryAGet16(ss, bp - 12);
+    memoryASet16(es, bx, ax);
+    bx = memoryAGet16(ss, bp - 38); es = memoryAGet16(ss, bp - 38 + 2); /*ggg2*/;
+    ax = memoryAGet16(ss, bp - 14);
+    memoryASet16(es, bx, ax);
+    bx = memoryAGet16(ss, bp - 42); es = memoryAGet16(ss, bp - 42 + 2); /*ggg2*/;
+    ax = memoryAGet16(ss, bp - 16);
+    memoryASet16(es, bx, ax);
+    memoryASet16(ss, bp - 44, 0x0001);
+    goto loc_192a0;
+loc_1929b: // 1841:0e8b
+    memoryASet16(ss, bp - 44, 0x0000);
+loc_192a0: // 1841:0e90
+    ax = memoryAGet16(ss, bp + 10);
+    ax += si;
+    ax -= memoryAGet16(ds, 0xc74f);
+    memoryASet16(ss, bp - 6, ax);
+    ax = memoryAGet16(ss, bp + 12);
+    ax += memoryAGet16(ss, bp - 2);
+    ax -= memoryAGet16(ds, 0xc74d);
+    memoryASet16(ss, bp - 8, ax);
+    if (memoryAGet16(ss, bp - 8) >= 0x000e)
+        goto loc_192f7;
+    if (memoryAGet16(ss, bp - 6) >= 0x0015)
+        goto loc_192f7;
+    if (memoryAGet16(ss, bp - 44) == 0x0000)
+        goto loc_192e3;
+    bx = memoryAGet16(ss, bp - 8);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 57836);
+    ax += memoryAGet16(ss, bp - 6);
+    memoryASet16(ss, bp - 18, ax);
+    push(ax);
+    push(cs); cs = 0x1a13; sub_1a13c(); assert(cs == 0x1841);
+    sp += 0x0002;
+loc_192e3: // 1841:0ed3
+    ax = memoryAGet16(ss, bp + 12);
+    ax += memoryAGet16(ss, bp - 2);
+    push(ax);
+    ax = memoryAGet16(ss, bp + 10);
+    ax += si;
+    push(ax);
+    push(cs);
+    sub_18b2a();
+    sp += 0x0004;
+loc_192f7: // 1841:0ee7
+    si++;
+    memoryASet16(ss, bp - 22, memoryAGet16(ss, bp - 22) + 0x0002);
+    memoryASet16(ss, bp - 26, memoryAGet16(ss, bp - 26) + 0x0002);
+    memoryASet16(ss, bp - 30, memoryAGet16(ss, bp - 30) + 0x0002);
+loc_19304: // 1841:0ef4
+    if (si >= memoryAGet16(ss, bp + 14))
+        goto loc_1930c;
+    goto loc_19207;
+loc_1930c: // 1841:0efc
+    memoryASet16(ss, bp - 2, memoryAGet16(ss, bp - 2) + 1);
+    ax = memoryAGet16(ss, bp - 10);
+    ax <<= 1;
+    memoryASet16(ss, bp - 22, memoryAGet16(ss, bp - 22) + ax);
+    ax = memoryAGet16(ss, bp - 10);
+    ax <<= 1;
+    memoryASet16(ss, bp - 26, memoryAGet16(ss, bp - 26) + ax);
+    ax = memoryAGet16(ss, bp - 10);
+    ax <<= 1;
+    memoryASet16(ss, bp - 30, memoryAGet16(ss, bp - 30) + ax);
+loc_19327: // 1841:0f17
+    ax = memoryAGet16(ss, bp - 2);
+    if (ax >= memoryAGet16(ss, bp + 16))
+        goto loc_19332;
+    goto loc_19202;
+loc_19332: // 1841:0f22
+    di = pop();
+    si = pop();
+    sp = bp;
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_19338() // 1841:0f28 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    sp -= 0x0012;
+    push(si);
+    push(di);
+    push(memoryAGet16(ss, bp + 18));
+    push(memoryAGet16(ss, bp + 16));
+    push(memoryAGet16(ss, bp + 14));
+    push(memoryAGet16(ss, bp + 12));
+    push(cs);
+    sub_18cff();
+    sp += 0x0008;
+    bx = memoryAGet16(ss, bp + 14);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 51493);
+    ax >>= 1;
+    ax <<= 1;
+    bx = memoryAGet16(ss, bp + 10);
+    bx <<= 1;
+    dx = memoryAGet16(ds, bx + 42983);
+    bx = memoryAGet16(ss, bp + 12);
+    bx <<= 1;
+    ax += bx;
+    memoryASet16(ss, bp - 10, dx);
+    memoryASet16(ss, bp - 12, ax);
+    ax = memoryAGet16(ds, 0xa7e4);
+    ax -= memoryAGet16(ss, bp + 16);
+    memoryASet16(ss, bp - 6, ax);
+    di = 0;
+    goto loc_19427;
+loc_19384: // 1841:0f74
+    si = 0;
+    goto loc_19416;
+loc_19389: // 1841:0f79
+    bx = memoryAGet16(ss, bp - 12); es = memoryAGet16(ss, bp - 12 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 14, ax);
+    bx = memoryAGet16(ss, bp + 6); es = memoryAGet16(ss, bp + 6 + 2); /*ggg2*/;
+    ax = memoryAGet16(es, bx);
+    memoryASet16(ss, bp - 16, ax);
+    memoryASet16(ss, bp + 6, memoryAGet16(ss, bp + 6) + 0x0002);
+    ax = memoryAGet16(ss, bp - 14);
+    if (ax == memoryAGet16(ss, bp - 16))
+        goto loc_193b7;
+    bx = memoryAGet16(ss, bp - 12); es = memoryAGet16(ss, bp - 12 + 2); /*ggg2*/;
+    ax = memoryAGet16(ss, bp - 16);
+    memoryASet16(es, bx, ax);
+    memoryASet16(ss, bp - 18, 0x0001);
+    goto loc_193bc;
+loc_193b7: // 1841:0fa7
+    memoryASet16(ss, bp - 18, 0x0000);
+loc_193bc: // 1841:0fac
+    memoryASet16(ss, bp - 12, memoryAGet16(ss, bp - 12) + 0x0002);
+    ax = memoryAGet16(ss, bp + 12);
+    ax += si;
+    ax -= memoryAGet16(ds, 0xc74f);
+    memoryASet16(ss, bp - 2, ax);
+    ax = memoryAGet16(ss, bp + 14);
+    ax += di;
+    ax -= memoryAGet16(ds, 0xc74d);
+    memoryASet16(ss, bp - 4, ax);
+    if (memoryAGet16(ss, bp - 4) >= 0x000e)
+        goto loc_19415;
+    if (memoryAGet16(ss, bp - 2) >= 0x0015)
+        goto loc_19415;
+    if (memoryAGet16(ss, bp - 18) == 0x0000)
+        goto loc_19402;
+    bx = memoryAGet16(ss, bp - 4);
+    bx <<= 1;
+    ax = memoryAGet16(ds, bx + 57836);
+    ax += memoryAGet16(ss, bp - 2);
+    memoryASet16(ss, bp - 8, ax);
+    push(ax);
+    push(cs); cs = 0x1a13; sub_1a13c(); assert(cs == 0x1841);
+    sp += 0x0002;
+loc_19402: // 1841:0ff2
+    ax = memoryAGet16(ss, bp + 14);
+    ax += di;
+    push(ax);
+    ax = memoryAGet16(ss, bp + 12);
+    ax += si;
+    push(ax);
+    push(cs);
+    sub_18b2a();
+    sp += 0x0004;
+loc_19415: // 1841:1005
+    si++;
+loc_19416: // 1841:1006
+    if (si >= memoryAGet16(ss, bp + 16))
+        goto loc_1941e;
+    goto loc_19389;
+loc_1941e: // 1841:100e
+    di++;
+    ax = memoryAGet16(ss, bp - 6);
+    ax <<= 1;
+    memoryASet16(ss, bp - 12, memoryAGet16(ss, bp - 12) + ax);
+loc_19427: // 1841:1017
+    if (di >= memoryAGet16(ss, bp + 18))
+        goto loc_1942f;
+    goto loc_19384;
+loc_1942f: // 1841:101f
+    di = pop();
+    si = pop();
+    sp = bp;
     bp = pop();
     sp += 2;
     cs = pop();
@@ -26234,6 +30735,7 @@ loc_19687: // 1841:1277
     cs = pop();
     return;
 loc_196b4: // 1841:12a4
+    sync();
     ax = memoryAGet16(ds, 0xa53f);
     dx = memoryAGet16(ds, 0xa53d);
     memoryASet16(ss, bp - 2, ax);
@@ -27354,7 +31856,12 @@ void sub_1a07e() // 1841:1c6e +nearfar +stackDrop2
     ax |= memoryAGet16(ds, 0xddaa);
     if (!ax)
         goto loc_1a0cb;
-    push(cs); cs = memoryAGet16(ds, 0xdda8 + 2); callIndirect(cs, memoryAGet16(ds, 0xdda8)); assert(cs == 0x1841); // 1841:1cb7;
+    switch (memoryAGet32(ds, 0xdda8))
+    {
+        case 0x7b10561: push(cs); cs = 0x07b1; sub_8071(); assert(cs == 0x1841); break;
+        default:
+            stop();
+    }
 loc_1a0cb: // 1841:1cbb
     ax = memoryAGet16(ds, 0xe6ec);
     ax &= memoryAGet16(ds, 0xdda6);
@@ -27992,7 +32499,6 @@ void sub_1a68b() // 1a61:007b +stackDrop2
     memoryASet16(ds, 0x787e, dx);
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -28010,7 +32516,6 @@ void sub_1a6b9() // 1a61:00a9 +stackDrop2
     out8(0x61, al);
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -28092,7 +32597,6 @@ void sub_1a754() // 1a61:0144 +stackDrop2
     out8(0x61, al);
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -28153,7 +32657,6 @@ void sub_1a76e() // 1a61:015e +stackDrop2
     al = in8(dx);
     al = in8(dx);
     bp = pop();
-//    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -28175,7 +32678,6 @@ void sub_1a7b0() // 1a61:01a0 +stackDrop2
     sp += 0x0004;
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -28530,7 +33032,6 @@ void sub_1aaa1() // 1a61:0491 +stackDrop2
     memoryASet16(ds, 0x7676, 0x0000);
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -29379,10 +33880,11 @@ void sub_1b10d() // 1a61:0afd +far +stackDrop2
     push(bp);
     bp = sp;
 loc_1b110: // 1a61:0b00
+    sync();
     push(cs);
     sub_1b0a0();
-    if (ax)
-        goto loc_1b110;
+//    if (ax)
+//        goto loc_1b110;
     bp = pop();
     sp += 2;
     cs = pop();
@@ -29469,7 +33971,6 @@ void sub_1b172() // 1a61:0b62 +far +stackDrop2
 loc_1b1c1: // 1a61:0bb1
     flagsFromReg(pop());
     bp = pop();
-    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -30994,7 +35495,12 @@ loc_1befa: // 1b1e:0d1a
     push(ax);
     push(ds);
     push(di);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1b1e); // 1b1e:0d27;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     ax = memoryAGet16(ds, 0xa537);
     memoryASet16(ds, 0x6020, ax);
@@ -31002,7 +35508,12 @@ loc_1befa: // 1b1e:0d1a
     memoryASet16(ds, 0x6022, ax);
     push(ds);
     push(di);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:0d3c;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     di = si;
     if (memoryAGet(ss, bp - 1) == 0x00)
@@ -31088,7 +35599,12 @@ void sub_1bfa2() // 1b1e:0dc2 +stackDrop2
     push(ax);
     push(ds);
     push(si);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1b1e); // 1b1e:0dd6;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     ax = memoryAGet16(ss, bp + 12);
     ax -= memoryAGet16(ss, bp + 8);
@@ -31110,7 +35626,12 @@ void sub_1bfa2() // 1b1e:0dc2 +stackDrop2
     memoryASet16(ds, 0x6022, dx);
     push(ds);
     push(si);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:0e13;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     si = pop();
     sp = bp;
@@ -31460,7 +35981,12 @@ void sub_1c38f() // 1b1e:11af +stackDrop2
     push(ss);
     ax = bp - 132;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1b1e); // 1b1e:11dd;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     ax = memoryAGet16(ss, bp + 6);
     ax += memoryAGet16(ss, bp - 2);
@@ -31471,7 +35997,12 @@ void sub_1c38f() // 1b1e:11af +stackDrop2
     push(ds);
     ax = 0x4748;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:11f9;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     si = pop();
     sp = bp;
@@ -31582,7 +36113,18 @@ loc_1c4c7: // 1b1e:12e7
     goto loc_1c5c3;
 loc_1c4d4: // 1b1e:12f4
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 5495)); // 1b1e:12f6;
+    switch (bx)
+    {
+        case 0: goto loc_1c4ec;
+        case 2: goto loc_1c5c3;
+        case 4: goto loc_1c50e;
+        case 6: goto loc_1c5bf;
+        case 8: goto loc_1c5bf;
+        case 10: goto loc_1c5bf;
+        case 12: goto loc_1c58e;
+        default:
+            stop();
+    }
 loc_1c4db: // 1b1e:12fb
     if (!si)
         goto loc_1c4e0;
@@ -31591,13 +36133,28 @@ loc_1c4e0: // 1b1e:1300
     memoryASet(ss, bp - 12, 0x00);
     memoryASet16(ss, bp - 6, 0x0001);
     goto loc_1c5c3;
-  // gap 20 bytes
+loc_1c4ec: // 1b1e:130c
+    if (memoryAGet(ss, bp + si + -150) == 0x00)
+        goto loc_1c4f4;
+    si++;
+loc_1c4f4: // 1b1e:1314
+    memoryASet(ss, bp - 12, 0x00);
+    memoryASet16(ss, bp - 6, 0x0001);
+    goto loc_1c5c3;
 loc_1c500: // 1b1e:1320
     si = 0;
     memoryASet(ss, bp - 12, 0x00);
     memoryASet16(ss, bp - 6, 0x0001);
     goto loc_1c5c3;
-  // gap 27 bytes
+loc_1c50e: // 1b1e:132e
+    ax = bp - 150;
+    push(ax);
+    push(cs); cs = 0x01ed; sub_41dd(); assert(cs == 0x1b1e);
+    sp += 0x0002;
+    si = ax;
+    memoryASet(ss, bp - 12, 0x00);
+    memoryASet16(ss, bp - 6, 0x0001);
+    goto loc_1c5c3;
 loc_1c529: // 1b1e:1349
     ax = bp - 150;
     push(ax);
@@ -31635,7 +36192,24 @@ loc_1c583: // 1b1e:13a3
     memoryASet(ss, bp - 12, 0x00);
     memoryASet16(ss, bp - 6, 0x0001);
     goto loc_1c5c3;
-  // gap 49 bytes
+loc_1c58e: // 1b1e:13ae
+    if (memoryAGet(ss, bp + si + -150) == 0x00)
+        goto loc_1c5b4;
+    ax = bp - 149;
+    dx = si;
+    dx += ax;
+    push(dx);
+    ax = bp - 150;
+    dx = si;
+    dx += ax;
+    push(dx);
+    push(cs); cs = 0x01ed; sub_41b9(); assert(cs == 0x1b1e);
+    sp += 0x0004;
+    memoryASet16(ss, bp - 2, 0x0001);
+loc_1c5b4: // 1b1e:13d4
+    memoryASet(ss, bp - 12, 0x00);
+    memoryASet16(ss, bp - 6, 0x0001);
+    goto loc_1c5c3;
 loc_1c5bf: // 1b1e:13df
     memoryASet(ss, bp - 12, 0x00);
 loc_1c5c3: // 1b1e:13e3
@@ -31653,7 +36227,12 @@ loc_1c5c3: // 1b1e:13e3
     push(ss);
     ax = bp - 150;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1b1e); // 1b1e:1407;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     if ((char)memoryAGet(ss, bp - 12) < (char)0x20)
         goto loc_1c645;
@@ -31702,7 +36281,12 @@ loc_1c645: // 1b1e:1465
     push(ss);
     ax = bp - 278;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:147d;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     ax = bp - 150;
     push(ax);
@@ -31717,7 +36301,12 @@ loc_1c645: // 1b1e:1465
     push(ss);
     ax = bp - 150;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:14a8;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     memoryASet16(ss, bp - 2, 0x0000);
 loc_1c694: // 1b1e:14b4
@@ -31788,7 +36377,12 @@ loc_1c720: // 1b1e:1540
     push(ss);
     ax = bp - 278;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1b1e); // 1b1e:1558;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1b1e); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
 loc_1c73f: // 1b1e:155f
     push(cs); cs = 0x1ef3; sub_1f7b6(); assert(cs == 0x1b1e);
@@ -32358,7 +36952,12 @@ void sub_1cc96() // 1c76:0536 +stackDrop2
     push(ax);
     push(ds);
     push(memoryAGet16(ss, bp + 6));
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1c76); // 1c76:054d;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     ax = bp - 2;
     push(ax);
@@ -32366,7 +36965,12 @@ void sub_1cc96() // 1c76:0536 +stackDrop2
     push(ax);
     push(ds);
     push(memoryAGet16(ss, bp + 8));
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1c76); // 1c76:0560;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     if (!di)
         goto loc_1ccde;
@@ -32376,7 +36980,12 @@ void sub_1cc96() // 1c76:0536 +stackDrop2
     push(ax);
     push(ds);
     push(di);
-    push(cs); cs = memoryAGet16(ds, 0x43bc + 2); callIndirect(cs, memoryAGet16(ds, 0x43bc)); assert(cs == 0x1c76); // 1c76:0575;
+    switch (memoryAGet32(ds, 0x43bc))
+    {
+        case 0x1ef3078d: push(cs); cs = 0x1ef3; sub_1f6bd(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0008;
     goto loc_1cce3;
 loc_1ccde: // 1c76:057e
@@ -32438,7 +37047,12 @@ loc_1cd1b: // 1c76:05bb
     memoryASet16(ds, 0x6022, ax);
     push(ds);
     push(memoryAGet16(ss, bp + 6));
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:05fb;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     ax = memoryAGet16(ss, bp - 4);
     ax <<= 1;
@@ -32468,7 +37082,12 @@ loc_1cd1b: // 1c76:05bb
     memoryASet16(ds, 0x6020, dx);
     push(ds);
     push(memoryAGet16(ss, bp + 8));
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:064d;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     ax = memoryAGet16(ds, 0x6022);
     ax += memoryAGet16(ss, bp - 4);
@@ -32483,7 +37102,12 @@ loc_1cd1b: // 1c76:05bb
     memoryASet16(ds, 0x6020, dx);
     push(ds);
     push(di);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:0673;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
 loc_1cdda: // 1c76:067a
     push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x1c76);
@@ -32557,8 +37181,51 @@ loc_1ce62: // 1c76:0702
     if (bx > 0x0005)
         goto loc_1cee2;
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 1976)); // 1c76:071b;
-  // gap 98 bytes
+    switch (bx)
+    {
+        case 0: goto loc_1ce80;
+        case 2: goto loc_1ce9d;
+        case 4: goto loc_1ceaa;
+        case 6: goto loc_1cec7;
+        case 8: goto loc_1cec7;
+        case 10: goto loc_1cec7;
+        default:
+            stop();
+    }
+loc_1ce80: // 1c76:0720
+    di = 0x4932;
+    memoryASet16(ss, bp - 4, 0x494b);
+    if (memoryAGet16(ds, 0xc631) == 0x0000)
+        goto loc_1cee2;
+    if (memoryAGet16(ds, 0x78e2) == 0x0000)
+        goto loc_1cee2;
+    si = 0x0001;
+    goto loc_1cee2;
+  // gap 2 bytes
+loc_1ce9d: // 1c76:073d
+    di = 0x495d;
+    memoryASet16(ss, bp - 4, 0x496a);
+    si = 0x0001;
+    goto loc_1cee2;
+loc_1ceaa: // 1c76:074a
+    di = 0x497a;
+    memoryASet16(ss, bp - 4, 0x498b);
+    if (memoryAGet16(ds, 0xc631) == 0x0000)
+        goto loc_1cee2;
+    if (memoryAGet16(ds, 0x78e2) == 0x0000)
+        goto loc_1cee2;
+    si = 0x0001;
+    goto loc_1cee2;
+  // gap 2 bytes
+loc_1cec7: // 1c76:0767
+    di = 0x49a0;
+    memoryASet16(ss, bp - 4, 0x49b1);
+    if (memoryAGet16(ds, 0xc631) == 0x0000)
+        goto loc_1cee2;
+    if (memoryAGet16(ds, 0x78e2) == 0x0000)
+        goto loc_1cee2;
+    si = 0x0001;
+    goto loc_1cee2;
 loc_1cee2: // 1c76:0782
     if (!si)
         goto loc_1cef6;
@@ -32689,7 +37356,12 @@ void sub_1e07a() // 1c76:191a
     push(ds);
     ax = 0x4dce;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:1952;  1ef3:0e2c
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     ax = memoryAGet16(ds, 0x6020);
     memoryASet16(ds, 0xa537, ax);
@@ -32712,7 +37384,12 @@ void sub_1e07a() // 1c76:191a
     push(ds);
     ax = 0x4dd4;
     push(ax);
-    push(cs); cs = memoryAGet16(ds, 0x43c0 + 2); callIndirect(cs, memoryAGet16(ds, 0x43c0)); assert(cs == 0x1c76); // 1c76:1994;
+    switch (memoryAGet32(ds, 0x43c0))
+    {
+        case 0x1ef30e2c: push(cs); cs = 0x1ef3; sub_1fd5c(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     sp += 0x0004;
     ax = memoryAGet16(ds, 0x6020);
     memoryASet16(ds, 0xa537, ax);
@@ -32766,6 +37443,7 @@ void sub_1e111() // 1c76:19b1
     memoryASet16(ss, bp - 48, dx);
     goto loc_1e17b;
 loc_1e17b: // 1c76:1a1b
+    sync();
     ax = memoryAGet16(ds, 0xa53f);
     dx = memoryAGet16(ds, 0xa53d);
     flags.carry = dx < memoryAGet16(ss, bp - 48);
@@ -33566,10 +38244,7 @@ loc_1e87f: // 1c76:211f
     {
         case 0x1c761e34: push(cs); cs = 0x1c76; sub_1e594(); assert(cs == 0x1c76); break;
         default:
-        {
-            //int x = memoryAGet16(es, bx + 12);
             stop();
-        }
     }
     sp += 0x0006;
     if (!ax)
@@ -33916,13 +38591,55 @@ void sub_1eb86() // 1c76:2426 +stackDrop2
     if (bx > 0x0006)
         goto loc_1ebc3;
     bx <<= 1;
-    indirectJump(cs, memoryAGet16(cs, bx + 9330)); // 1c76:2434;
-  // gap 42 bytes
+    switch (bx)
+    {
+        case 0: goto loc_1ebcf;
+        case 2: goto loc_1eb9b;
+        case 4: goto loc_1eba3;
+        case 6: goto loc_1ebcf;
+        case 8: goto loc_1ebab;
+        case 10: goto loc_1ebb3;
+        case 12: goto loc_1ebbb;
+        default:
+            stop();
+    }
+  // gap 2 bytes
+loc_1eb9b: // 1c76:243b
+    memoryASet16(ds, 0xc62f, 0x0001);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_1eba3: // 1c76:2443
+    memoryASet16(ds, 0x78e0, 0x0001);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_1ebab: // 1c76:244b
+    memoryASet16(ds, 0x474a, 0x0001);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_1ebb3: // 1c76:2453
+    memoryASet16(ds, 0x474a, 0x0002);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
+loc_1ebbb: // 1c76:245b
+    memoryASet16(ds, 0x474a, 0x0003);
+    bp = pop();
+    sp += 2;
+    cs = pop();
+    return;
 loc_1ebc3: // 1c76:2463
     ax = 0x4e86;
     push(ax);
     push(cs); cs = 0x056a; sub_58cf(); assert(cs == 0x1c76);
     sp += 0x0002;
+loc_1ebcf: // 1c76:246f
     bp = pop();
     sp += 2;
     cs = pop();
@@ -33996,7 +38713,12 @@ loc_1ec54: // 1c76:24f4
     ax |= memoryAGet16(ds, 0xe7fc);
     if (!ax)
         goto loc_1ec75;
-    push(cs); cs = memoryAGet16(ds, 0xe7fa + 2); callIndirect(cs, memoryAGet16(ds, 0xe7fa)); assert(cs == 0x1c76); // 1c76:250f;
+    switch (memoryAGet32(ds, 0xe7fa))
+    {
+        case 0x7b10466: push(cs); cs = 0x07b1; sub_7f76(); assert(cs == 0x1c76); break;
+        default:
+            stop();
+    }
     goto loc_1ecc0;
 loc_1ec75: // 1c76:2515
     if (memoryAGet16(ds, 0x78e0) == 0x0000)
@@ -34112,7 +38834,7 @@ loc_1ed7d: // 1c76:261d
     memoryASet16(es, bx + 2, memoryAGet16(es, bx + 2) | 0x0002);
 loc_1ed92: // 1c76:2632
     push(cs); cs = 0x1ef3; sub_1f9cb(); assert(cs == 0x1c76);
-    if (memoryAGet(ds, 0xa545) != 0x00) 
+    if (memoryAGet(ds, 0xa545) != 0x00)
         goto loc_1eda1;
     goto loc_1ee64;
 loc_1eda1: // 1c76:2641
@@ -34492,6 +39214,48 @@ loc_1f0e5: // 1ef3:01b5
     if ((short)si >= 0)
         goto loc_1f0a8;
     memoryASet16(ds, 0xc757, 0x0001);
+    si = pop();
+    bp = pop();
+    sp += 2;
+    cs = pop();
+}
+void sub_1f0f2() // 1ef3:01c2 +far
+{
+    sp -= 2;
+    push(bp);
+    bp = sp;
+    push(si);
+    si = 0;
+    goto loc_1f137;
+loc_1f0fa: // 1ef3:01ca
+    ax = si;
+    dx = 0x0011;
+    imul16(dx);
+    dl = memoryAGet(ds, 0xa54e);
+    bx = ax;
+    memoryASet(ds, bx + 20164, dl);
+    ax = si;
+    dx = 0x0011;
+    imul16(dx);
+    ax += 0x4eb4;
+    ax = ds;
+    es = ax;
+    ax = si;
+    dx = 0x0011;
+    imul16(dx);
+    ax += 0x4eb4;
+    dx = ax;
+    ax = 0x1002;
+    interrupt(0x10);
+    ax = 0x0006;
+    push(ax);
+    push(cs); cs = 0x1ff7; sub_20a43(); assert(cs == 0x1ef3);
+    sp += 0x0002;
+    si++;
+loc_1f137: // 1ef3:0207
+    if ((short)si < (short)0x0004)
+        goto loc_1f0fa;
+    memoryASet16(ds, 0xc757, 0x0000);
     si = pop();
     bp = pop();
     sp += 2;
@@ -35940,7 +40704,26 @@ loc_200ca: // 1ff7:015a
     dx = memoryAGet16(ss, 0x4fd0);
     switch (memoryAGet16(ss, 0x6016))
     {
+        case 0x0198: goto loc_20108;
         case 0x01ba: goto loc_2012a;
+        case 0x01c8: goto loc_20138;
+        case 0x01d6: goto loc_20146;
+        case 0x01ec: goto loc_2015c;
+        case 0x0202: goto loc_20172;
+        case 0x021a: goto loc_2018a;
+        case 0x0232: goto loc_201a2;
+        case 0x0252: goto loc_201c2;
+        case 0x0272: goto loc_201e2;
+        case 0x0292: goto loc_20202;
+        case 0x02b2: goto loc_20222;
+        case 0x02da: goto loc_2024a;
+        case 0x0302: goto loc_20272;
+        case 0x032a: goto loc_2029a;
+        case 0x0352: goto loc_202c2;
+        case 0x0382: goto loc_202f2;
+        case 0x03b2: goto loc_20322;
+        case 0x03e2: goto loc_20352;
+        case 0x0412: goto loc_20382;
         case 0x01a0: goto loc_20110;
         default:
             stop();
@@ -35951,6 +40734,7 @@ loc_200f3: // 1ff7:0183
     memoryASet(ss, 0x4fcc, memoryAGet(ss, 0x4fcc) << 1);
     if (memoryAGet(ss, 0x4fcc) != 0x10)
         goto loc_200ca;
+loc_20108: // 1ff7:0198
     ax = ss;
     ds = ax;
     di = pop();
@@ -35984,6 +40768,362 @@ loc_2012a: // 1ff7:01ba
     di += dx;
     if (--cx)
         goto loc_2012a;
+    goto loc_200f3;
+loc_20138: // 1ff7:01c8
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20138;
+    goto loc_200f3;
+loc_20146: // 1ff7:01d6
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_20146;
+    goto loc_200f3;
+loc_2015c: // 1ff7:01ec
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_2015c;
+    goto loc_200f3;
+loc_20172: // 1ff7:0202
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20172;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_2018a: // 1ff7:021a
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_2018a;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_201a2: // 1ff7:0232
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_201a2;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_201c2: // 1ff7:0252
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_201c2;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_201e2: // 1ff7:0272
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_201e2;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20202: // 1ff7:0292
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20202;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20222: // 1ff7:02b2
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_20222;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_2024a: // 1ff7:02da
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_2024a;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20272: // 1ff7:0302
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20272;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_2029a: // 1ff7:032a
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_2029a;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_202c2: // 1ff7:0352
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_202c2;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_202f2: // 1ff7:0382
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_202f2;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20322: // 1ff7:03b2
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20322;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20352: // 1ff7:03e2
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    di += dx;
+    if (--cx)
+        goto loc_20352;
+    goto loc_200f3;
+  // gap 1 bytes
+loc_20382: // 1ff7:0412
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    ax = lodsw<DS_SI>();
+    ax &= memoryAGet16(es, di);
+    ax |= memoryAGet16(ds, bx + si + -2);
+    stosw<ES_DI>(ax);
+    al = lodsb<DS_SI>();
+    al &= memoryAGet(es, di);
+    al |= memoryAGet(ds, bx + si + -1);
+    stosb<ES_DI>(al);
+    di += dx;
+    if (--cx)
+        goto loc_20382;
     goto loc_200f3;
 }
 void sub_203b9() // 1ff7:0449 +far +stackDrop2
@@ -36072,7 +41212,6 @@ loc_20435: // 1ff7:04c5
     di = pop();
     si = pop();
     bp = pop();
-//    stop("stack_unbalanced");
     sp += 2;
     cs = pop();
 }
@@ -39898,97 +45037,101 @@ int GetProcAt(int seg, int ofs)
         0x203b, 0x1ed, 0x16b, 0x1ed, 0x1ae, 0x207e, 0x1ed, 0x1ae, 0x1ed, 0x1db,
         0x20ab, 0x1ed, 0x1db, 0x1ed, 0x21e, 0x20ee, 0x1ed, 0x21e, 0x1ed, 0x226,
         0x20f6, 0x1ed, 0x226, 0x1ed, 0x26c, 0x213d, 0x1ed, 0x26d, 0x1ed, 0x29a,
-        0x216a, 0x1ed, 0x29a, 0x1ed, 0x2de, 0x216a, 0x1ed, 0x305, 0x1ed, 0x3bf,
-        0x22b3, 0x1ed, 0x3e3, 0x1ed, 0x3fc, 0x22cc, 0x1ed, 0x3fc, 0x1ed, 0x4b5,
-        0x2385, 0x1ed, 0x4b5, 0x1ed, 0x59d, 0x246d, 0x1ed, 0x59d, 0x1ed, 0x5ba,
-        0x248b, 0x1ed, 0x5bb, 0x1ed, 0x5e0, 0x24b0, 0x1ed, 0x5e0, 0x1ed, 0x660,
-        0x2530, 0x1ed, 0x660, 0x1ed, 0x69f, 0x256f, 0x1ed, 0x69f, 0x1ed, 0x70c,
-        0x25dc, 0x1ed, 0x70c, 0x1ed, 0x75e, 0x262e, 0x1ed, 0x75e, 0x1ed, 0x7e0,
-        0x26b0, 0x1ed, 0x7e0, 0x1ed, 0x818, 0x277c, 0x1ed, 0x8ac, 0x1ed, 0x947,
-        0x2912, 0x1ed, 0xa42, 0x1ed, 0xab1, 0x2981, 0x1ed, 0xab1, 0x1ed, 0xb19,
-        0x2a2c, 0x1ed, 0xb5c, 0x1ed, 0xbac, 0x2a7c, 0x1ed, 0xbac, 0x1ed, 0xc43,
-        0x2b13, 0x1ed, 0xc43, 0x1ed, 0xce9, 0x2bf3, 0x1ed, 0xd23, 0x1ed, 0xd3c,
-        0x2c0c, 0x1ed, 0xd3c, 0x1ed, 0xe40, 0x2d25, 0x1ed, 0xe55, 0x1ed, 0xf90,
-        0x2e73, 0x1ed, 0xfa3, 0x1ed, 0xfe6, 0x2ec7, 0x1ed, 0xff7, 0x1ed, 0x101d,
-        0x2eed, 0x1ed, 0x101d, 0x1ed, 0x1056, 0x2f26, 0x1ed, 0x1056, 0x1ed, 0x1084,
-        0x2f54, 0x1ed, 0x1084, 0x1ed, 0x114a, 0x301a, 0x1ed, 0x114a, 0x1ed, 0x1188,
-        0x3058, 0x1ed, 0x1188, 0x1ed, 0x11cb, 0x309b, 0x1ed, 0x11cb, 0x1ed, 0x11ee,
-        0x30be, 0x1ed, 0x11ee, 0x1ed, 0x12a3, 0x3173, 0x1ed, 0x12a3, 0x1ed, 0x1314,
-        0x31e4, 0x1ed, 0x1314, 0x1ed, 0x13ec, 0x32bc, 0x1ed, 0x13ec, 0x1ed, 0x1415,
-        0x32ff, 0x1ed, 0x142f, 0x1ed, 0x145b, 0x332b, 0x1ed, 0x145b, 0x1ed, 0x1487,
-        0x3357, 0x1ed, 0x1487, 0x1ed, 0x1491, 0x3383, 0x1ed, 0x14b3, 0x1ed, 0x155b,
-        0x3383, 0x1ed, 0x155d, 0x1ed, 0x15ac, 0x349f, 0x1ed, 0x15cf, 0x1ed, 0x163f,
-        0x352c, 0x1ed, 0x165c, 0x1ed, 0x1681, 0x3551, 0x1ed, 0x1681, 0x1ed, 0x16a3,
-        0x3573, 0x1ed, 0x16a3, 0x1ed, 0x16d4, 0x35d6, 0x1ed, 0x1706, 0x1ed, 0x170c,
-        0x35e9, 0x1ed, 0x1719, 0x1ed, 0x1734, 0x3604, 0x1ed, 0x1734, 0x1ed, 0x1752,
-        0x3622, 0x1ed, 0x1752, 0x1ed, 0x1762, 0x3632, 0x1ed, 0x1762, 0x1ed, 0x1789,
-        0x365c, 0x1ed, 0x178c, 0x1ed, 0x179a, 0x366a, 0x1ed, 0x179a, 0x1ed, 0x181e,
-        0x36ee, 0x1ed, 0x181e, 0x1ed, 0x183b, 0x370b, 0x1ed, 0x183b, 0x1ed, 0x1915,
-        0x37e5, 0x1ed, 0x1915, 0x1ed, 0x1947, 0x3845, 0x1ed, 0x1975, 0x1ed, 0x19b6,
-        0x3886, 0x1ed, 0x19b6, 0x1ed, 0x19cf, 0x38e2, 0x1ed, 0x1a12, 0x1ed, 0x1a2d,
-        0x38fd, 0x1ed, 0x1a2d, 0x1ed, 0x1a8b, 0x395b, 0x1ed, 0x1a8b, 0x1ed, 0x1a9a,
-        0x396a, 0x1ed, 0x1a9a, 0x1ed, 0x1aab, 0x397b, 0x1ed, 0x1aab, 0x1ed, 0x1ae3,
-        0x39b3, 0x1ed, 0x1ae3, 0x1ed, 0x1b06, 0x3a24, 0x1ed, 0x1b54, 0x1ed, 0x1b7b,
-        0x3a4b, 0x1ed, 0x1b7b, 0x1ed, 0x1bb8, 0x3a88, 0x1ed, 0x1bb8, 0x1ed, 0x1bc9,
-        0x3a99, 0x1ed, 0x1bc9, 0x1ed, 0x1bf2, 0x3ac2, 0x1ed, 0x1bf2, 0x1ed, 0x1c6f,
-        0x3b3f, 0x1ed, 0x1c6f, 0x1ed, 0x1c9b, 0x3b6b, 0x1ed, 0x1c9b, 0x1ed, 0x1cb5,
-        0x3b85, 0x1ed, 0x1cb5, 0x1ed, 0x1cdc, 0x3bac, 0x1ed, 0x1cdc, 0x1ed, 0x1cfd,
-        0x3bcd, 0x1ed, 0x1cfd, 0x1ed, 0x1d25, 0x3bf5, 0x1ed, 0x1d25, 0x1ed, 0x1d40,
-        0x3c10, 0x1ed, 0x1d40, 0x1ed, 0x1d62, 0x3c32, 0x1ed, 0x1d62, 0x1ed, 0x1d7b,
-        0x3c4b, 0x1ed, 0x1d7b, 0x1ed, 0x1d8d, 0x3c5d, 0x1ed, 0x1d8d, 0x1ed, 0x1ec4,
-        0x3d94, 0x1ed, 0x1ec4, 0x1ed, 0x1f10, 0x3de0, 0x1ed, 0x1f10, 0x1ed, 0x1fcb,
-        0x3e9b, 0x1ed, 0x1fcb, 0x1ed, 0x1fe5, 0x3ecb, 0x1ed, 0x1ffb, 0x1ed, 0x201a,
-        0x3eea, 0x1ed, 0x201a, 0x1ed, 0x2040, 0x3f10, 0x1ed, 0x2040, 0x1ed, 0x20f1,
-        0x3fc1, 0x1ed, 0x20f1, 0x1ed, 0x2256, 0x4135, 0x1ed, 0x2265, 0x1ed, 0x2281,
-        0x4151, 0x1ed, 0x2281, 0x1ed, 0x22ba, 0x418a, 0x1ed, 0x22ba, 0x1ed, 0x22e9,
-        0x41b9, 0x1ed, 0x22e9, 0x1ed, 0x230d, 0x41dd, 0x1ed, 0x230d, 0x1ed, 0x2327,
-        0x41f7, 0x1ed, 0x2327, 0x1ed, 0x2353, 0x4223, 0x1ed, 0x2353, 0x1ed, 0x2369,
-        0x4710, 0x1ed, 0x2840, 0x1ed, 0x2866, 0x4736, 0x1ed, 0x2866, 0x1ed, 0x28df,
-        0x47af, 0x1ed, 0x28df, 0x1ed, 0x2928, 0x4b7b, 0x1ed, 0x2cab, 0x1ed, 0x2d0d,
-        0x4bdd, 0x1ed, 0x2d0d, 0x1ed, 0x2da7, 0x4c4e, 0x1ed, 0x2d7e, 0x1ed, 0x2da7,
-        0x4c77, 0x1ed, 0x2da7, 0x1ed, 0x2ddd, 0x4cad, 0x1ed, 0x2ddd, 0x1ed, 0x2e06,
-        0x4cd6, 0x1ed, 0x2e06, 0x1ed, 0x2e67, 0x4d37, 0x1ed, 0x2e67, 0x1ed, 0x2ea0,
-        0x4d70, 0x1ed, 0x2ea0, 0x1ed, 0x2ec3, 0x4d93, 0x1ed, 0x2ec3, 0x1ed, 0x2f40,
-        0x4f5a, 0x1ed, 0x308a, 0x1ed, 0x30a1, 0x4f95, 0x1ed, 0x30c5, 0x1ed, 0x30c9,
-        0x4f95, 0x1ed, 0x30df, 0x1ed, 0x3170, 0x5043, 0x1ed, 0x3173, 0x1ed, 0x3191,
-        0x5064, 0x1ed, 0x3194, 0x1ed, 0x31b1, 0x5084, 0x1ed, 0x31b4, 0x1ed, 0x31d2,
-        0x50a5, 0x1ed, 0x31d5, 0x1ed, 0x3216, 0x50a5, 0x1ed, 0x3234, 0x1ed, 0x325a,
-        0x50e9, 0x1ed, 0x31f0, 0x1ed, 0x3216, 0x50e9, 0x1ed, 0x3219, 0x1ed, 0x325a,
-        0x512a, 0x1ed, 0x325a, 0x1ed, 0x3289, 0x512a, 0x1ed, 0x329c, 0x1ed, 0x32ba,
-        0x512d, 0x1ed, 0x325d, 0x1ed, 0x3289, 0x512d, 0x1ed, 0x329c, 0x1ed, 0x32ba,
-        0x518a, 0x1ed, 0x32ba, 0x1ed, 0x32e2, 0x51b5, 0x1ed, 0x32e5, 0x1ed, 0x3301,
-        0x51d7, 0x1ed, 0x3308, 0x1ed, 0x3327, 0x51f8, 0x1ed, 0x3328, 0x1ed, 0x3345,
-        0x5215, 0x1ed, 0x3345, 0x1ed, 0x337f, 0x524f, 0x1ed, 0x337f, 0x1ed, 0x33d4,
-        0x5288, 0x1ed, 0x33b8, 0x1ed, 0x33d4, 0x52a4, 0x1ed, 0x33d4, 0x1ed, 0x33f7,
-        0x52c7, 0x1ed, 0x33f7, 0x1ed, 0x3457, 0x5327, 0x1ed, 0x3457, 0x1ed, 0x3497,
-        0x5367, 0x1ed, 0x3497, 0x1ed, 0x34c0, 0x5390, 0x1ed, 0x34c0, 0x1ed, 0x34d9,
-        0x5473, 0x1ed, 0x35a3, 0x1ed, 0x35ba, 0x548a, 0x1ed, 0x35ba, 0x1ed, 0x35db,
-        0x54b1, 0x1ed, 0x35e5, 0x1ed, 0x3670, 0x54b1, 0x1ed, 0x3699, 0x1ed, 0x36f4,
-        0x5540, 0x1ed, 0x3670, 0x1ed, 0x3698, 0x55c4, 0x1ed, 0x36f4, 0x1ed, 0x374c,
-        0x561c, 0x1ed, 0x374c, 0x1ed, 0x3770, 0x5683, 0x1ed, 0x37b3, 0x1ed, 0x37dc,
-        0x56ac, 0x56a, 0xc, 0x56a, 0x7f, 0x571f, 0x56a, 0x7f, 0x56a, 0xa7,
-        0x5747, 0x56a, 0xa7, 0x56a, 0x22f, 0x58cf, 0x56a, 0x22f, 0x56a, 0x329,
-        0x59c9, 0x56a, 0x329, 0x56a, 0x349, 0x59e9, 0x56a, 0x349, 0x56a, 0x3cb,
-        0x5a6b, 0x56a, 0x3cb, 0x56a, 0x45d, 0x5a6b, 0x56a, 0x45f, 0x56a, 0x4a6,
-        0x5a6b, 0x56a, 0x4a8, 0x56a, 0x4e2, 0x5b97, 0x56a, 0x4f7, 0x56a, 0x6ab,
-        0x5d4b, 0x56a, 0x6ab, 0x56a, 0x70a, 0x5dab, 0x5da, 0xb, 0x5da, 0x65,
-        0x5e05, 0x5da, 0x65, 0x5da, 0x136, 0x5ed6, 0x5da, 0x136, 0x5da, 0x2d8,
-        0x6078, 0x5da, 0x2d8, 0x5da, 0x3e3, 0x618c, 0x5da, 0x3ec, 0x5da, 0x6a1,
-        0x6441, 0x5da, 0x6a1, 0x5da, 0x76c, 0x6510, 0x5da, 0x770, 0x5da, 0x872,
-        0x6612, 0x5da, 0x872, 0x5da, 0x8f6, 0x6612, 0x5da, 0x8f8, 0x5da, 0xa35,
-        0x67d5, 0x5da, 0xa35, 0x5da, 0xd14, 0x6ab4, 0x5da, 0xd14, 0x5da, 0xfcf,
-        0x6d6f, 0x5da, 0xfcf, 0x5da, 0x1376, 0x7116, 0x5da, 0x1376, 0x5da, 0x13e4,
-        0x7184, 0x5da, 0x13e4, 0x5da, 0x160a, 0x73aa, 0x5da, 0x160a, 0x5da, 0x168a,
-        0x742a, 0x5da, 0x168a, 0x5da, 0x1775, 0x7515, 0x5da, 0x1775, 0x5da, 0x18b8,
-        0x7658, 0x5da, 0x18b8, 0x5da, 0x19c9, 0x776a, 0x5da, 0x19ca, 0x5da, 0x1a31,
-        0x77d1, 0x5da, 0x1a31, 0x5da, 0x1b13, 0x78b3, 0x5da, 0x1b13, 0x5da, 0x1bfe,
-        0x799e, 0x5da, 0x1bfe, 0x5da, 0x1d55, 0x7af5, 0x5da, 0x1d55, 0x5da, 0x1d76,
+        0x216a, 0x1ed, 0x29a, 0x1ed, 0x3bf, 0x22b3, 0x1ed, 0x3e3, 0x1ed, 0x3fc,
+        0x22cc, 0x1ed, 0x3fc, 0x1ed, 0x4b5, 0x2385, 0x1ed, 0x4b5, 0x1ed, 0x59d,
+        0x246d, 0x1ed, 0x59d, 0x1ed, 0x5ba, 0x248b, 0x1ed, 0x5bb, 0x1ed, 0x5e0,
+        0x24b0, 0x1ed, 0x5e0, 0x1ed, 0x660, 0x2530, 0x1ed, 0x660, 0x1ed, 0x69f,
+        0x256f, 0x1ed, 0x69f, 0x1ed, 0x70c, 0x25dc, 0x1ed, 0x70c, 0x1ed, 0x75e,
+        0x262e, 0x1ed, 0x75e, 0x1ed, 0x7e0, 0x26b0, 0x1ed, 0x7e0, 0x1ed, 0x818,
+        0x277c, 0x1ed, 0x8ac, 0x1ed, 0x947, 0x2912, 0x1ed, 0xa42, 0x1ed, 0xab1,
+        0x2981, 0x1ed, 0xab1, 0x1ed, 0xb19, 0x2a2c, 0x1ed, 0xb5c, 0x1ed, 0xbac,
+        0x2a7c, 0x1ed, 0xbac, 0x1ed, 0xc43, 0x2b13, 0x1ed, 0xc43, 0x1ed, 0xce9,
+        0x2bf3, 0x1ed, 0xd23, 0x1ed, 0xd3c, 0x2c0c, 0x1ed, 0xd3c, 0x1ed, 0xe40,
+        0x2d25, 0x1ed, 0xe55, 0x1ed, 0xf90, 0x2e73, 0x1ed, 0xfa3, 0x1ed, 0xfe6,
+        0x2ec7, 0x1ed, 0xff7, 0x1ed, 0x101d, 0x2eed, 0x1ed, 0x101d, 0x1ed, 0x1056,
+        0x2f26, 0x1ed, 0x1056, 0x1ed, 0x1084, 0x2f54, 0x1ed, 0x1084, 0x1ed, 0x114a,
+        0x301a, 0x1ed, 0x114a, 0x1ed, 0x1188, 0x3058, 0x1ed, 0x1188, 0x1ed, 0x11cb,
+        0x309b, 0x1ed, 0x11cb, 0x1ed, 0x11ee, 0x30be, 0x1ed, 0x11ee, 0x1ed, 0x12a3,
+        0x3173, 0x1ed, 0x12a3, 0x1ed, 0x1314, 0x31e4, 0x1ed, 0x1314, 0x1ed, 0x13ec,
+        0x32bc, 0x1ed, 0x13ec, 0x1ed, 0x1415, 0x32ff, 0x1ed, 0x142f, 0x1ed, 0x145b,
+        0x332b, 0x1ed, 0x145b, 0x1ed, 0x1487, 0x3357, 0x1ed, 0x1487, 0x1ed, 0x1491,
+        0x3383, 0x1ed, 0x14b3, 0x1ed, 0x155b, 0x3383, 0x1ed, 0x155d, 0x1ed, 0x15ac,
+        0x349f, 0x1ed, 0x15cf, 0x1ed, 0x163f, 0x352c, 0x1ed, 0x165c, 0x1ed, 0x1681,
+        0x3551, 0x1ed, 0x1681, 0x1ed, 0x16a3, 0x3573, 0x1ed, 0x16a3, 0x1ed, 0x16d4,
+        0x35d6, 0x1ed, 0x1706, 0x1ed, 0x170c, 0x35e9, 0x1ed, 0x1719, 0x1ed, 0x1734,
+        0x3604, 0x1ed, 0x1734, 0x1ed, 0x1752, 0x3622, 0x1ed, 0x1752, 0x1ed, 0x1762,
+        0x3632, 0x1ed, 0x1762, 0x1ed, 0x1789, 0x365c, 0x1ed, 0x178c, 0x1ed, 0x179a,
+        0x366a, 0x1ed, 0x179a, 0x1ed, 0x181e, 0x36ee, 0x1ed, 0x181e, 0x1ed, 0x183b,
+        0x370b, 0x1ed, 0x183b, 0x1ed, 0x1915, 0x37e5, 0x1ed, 0x1915, 0x1ed, 0x1948,
+        0x3845, 0x1ed, 0x1975, 0x1ed, 0x19b6, 0x3886, 0x1ed, 0x19b6, 0x1ed, 0x19cf,
+        0x38e2, 0x1ed, 0x1a12, 0x1ed, 0x1a2d, 0x38fd, 0x1ed, 0x1a2d, 0x1ed, 0x1a8b,
+        0x395b, 0x1ed, 0x1a8b, 0x1ed, 0x1a9a, 0x396a, 0x1ed, 0x1a9a, 0x1ed, 0x1aab,
+        0x397b, 0x1ed, 0x1aab, 0x1ed, 0x1ae3, 0x39b3, 0x1ed, 0x1ae3, 0x1ed, 0x1b06,
+        0x3a24, 0x1ed, 0x1b54, 0x1ed, 0x1b7b, 0x3a4b, 0x1ed, 0x1b7b, 0x1ed, 0x1bb8,
+        0x3a88, 0x1ed, 0x1bb8, 0x1ed, 0x1bc9, 0x3a99, 0x1ed, 0x1bc9, 0x1ed, 0x1bf2,
+        0x3ac2, 0x1ed, 0x1bf2, 0x1ed, 0x1c6f, 0x3b3f, 0x1ed, 0x1c6f, 0x1ed, 0x1c9b,
+        0x3b6b, 0x1ed, 0x1c9b, 0x1ed, 0x1cb5, 0x3b85, 0x1ed, 0x1cb5, 0x1ed, 0x1cdc,
+        0x3bac, 0x1ed, 0x1cdc, 0x1ed, 0x1cfd, 0x3bcd, 0x1ed, 0x1cfd, 0x1ed, 0x1d25,
+        0x3bf5, 0x1ed, 0x1d25, 0x1ed, 0x1d40, 0x3c10, 0x1ed, 0x1d40, 0x1ed, 0x1d62,
+        0x3c32, 0x1ed, 0x1d62, 0x1ed, 0x1d7b, 0x3c4b, 0x1ed, 0x1d7b, 0x1ed, 0x1d8d,
+        0x3c5d, 0x1ed, 0x1d8d, 0x1ed, 0x1ec4, 0x3d94, 0x1ed, 0x1ec4, 0x1ed, 0x1f10,
+        0x3de0, 0x1ed, 0x1f10, 0x1ed, 0x1fcb, 0x3e9b, 0x1ed, 0x1fcb, 0x1ed, 0x1fe5,
+        0x3ecb, 0x1ed, 0x1ffb, 0x1ed, 0x201a, 0x3eea, 0x1ed, 0x201a, 0x1ed, 0x2040,
+        0x3f10, 0x1ed, 0x2040, 0x1ed, 0x20f1, 0x3fc1, 0x1ed, 0x20f1, 0x1ed, 0x2256,
+        0x4135, 0x1ed, 0x2265, 0x1ed, 0x2281, 0x4151, 0x1ed, 0x2281, 0x1ed, 0x22ba,
+        0x418a, 0x1ed, 0x22ba, 0x1ed, 0x22e9, 0x41b9, 0x1ed, 0x22e9, 0x1ed, 0x230d,
+        0x41dd, 0x1ed, 0x230d, 0x1ed, 0x2327, 0x41f7, 0x1ed, 0x2327, 0x1ed, 0x2353,
+        0x4223, 0x1ed, 0x2353, 0x1ed, 0x2369, 0x4710, 0x1ed, 0x2840, 0x1ed, 0x2866,
+        0x4736, 0x1ed, 0x2866, 0x1ed, 0x28df, 0x47af, 0x1ed, 0x28df, 0x1ed, 0x2928,
+        0x4b7b, 0x1ed, 0x2cab, 0x1ed, 0x2d0d, 0x4bdd, 0x1ed, 0x2d0d, 0x1ed, 0x2da7,
+        0x4c4e, 0x1ed, 0x2d7e, 0x1ed, 0x2da7, 0x4c77, 0x1ed, 0x2da7, 0x1ed, 0x2ddd,
+        0x4cad, 0x1ed, 0x2ddd, 0x1ed, 0x2e06, 0x4cd6, 0x1ed, 0x2e06, 0x1ed, 0x2e67,
+        0x4d37, 0x1ed, 0x2e67, 0x1ed, 0x2ea0, 0x4d70, 0x1ed, 0x2ea0, 0x1ed, 0x2ec3,
+        0x4d93, 0x1ed, 0x2ec3, 0x1ed, 0x2f40, 0x4f5a, 0x1ed, 0x308a, 0x1ed, 0x30a1,
+        0x4f95, 0x1ed, 0x30c5, 0x1ed, 0x30c9, 0x4f95, 0x1ed, 0x30df, 0x1ed, 0x3170,
+        0x5043, 0x1ed, 0x3173, 0x1ed, 0x3191, 0x5064, 0x1ed, 0x3194, 0x1ed, 0x31b1,
+        0x5084, 0x1ed, 0x31b4, 0x1ed, 0x31d2, 0x50a5, 0x1ed, 0x31d5, 0x1ed, 0x3216,
+        0x50a5, 0x1ed, 0x3234, 0x1ed, 0x325a, 0x50e9, 0x1ed, 0x31f0, 0x1ed, 0x3216,
+        0x50e9, 0x1ed, 0x3219, 0x1ed, 0x325a, 0x512a, 0x1ed, 0x325a, 0x1ed, 0x3289,
+        0x512a, 0x1ed, 0x329c, 0x1ed, 0x32ba, 0x512d, 0x1ed, 0x325d, 0x1ed, 0x3289,
+        0x512d, 0x1ed, 0x329c, 0x1ed, 0x32ba, 0x518a, 0x1ed, 0x32ba, 0x1ed, 0x32e2,
+        0x51b5, 0x1ed, 0x32e5, 0x1ed, 0x3301, 0x51d7, 0x1ed, 0x3308, 0x1ed, 0x3327,
+        0x51f8, 0x1ed, 0x3328, 0x1ed, 0x3345, 0x5215, 0x1ed, 0x3345, 0x1ed, 0x337f,
+        0x524f, 0x1ed, 0x337f, 0x1ed, 0x33d4, 0x5288, 0x1ed, 0x33b8, 0x1ed, 0x33d4,
+        0x52a4, 0x1ed, 0x33d4, 0x1ed, 0x33f7, 0x52c7, 0x1ed, 0x33f7, 0x1ed, 0x3457,
+        0x5327, 0x1ed, 0x3457, 0x1ed, 0x3497, 0x5367, 0x1ed, 0x3497, 0x1ed, 0x34c0,
+        0x5390, 0x1ed, 0x34c0, 0x1ed, 0x34d9, 0x5473, 0x1ed, 0x35a3, 0x1ed, 0x35ba,
+        0x548a, 0x1ed, 0x35ba, 0x1ed, 0x35db, 0x54b1, 0x1ed, 0x35e5, 0x1ed, 0x3670,
+        0x54b1, 0x1ed, 0x3699, 0x1ed, 0x36f4, 0x5540, 0x1ed, 0x3670, 0x1ed, 0x3698,
+        0x55c4, 0x1ed, 0x36f4, 0x1ed, 0x374c, 0x561c, 0x1ed, 0x374c, 0x1ed, 0x3770,
+        0x5683, 0x1ed, 0x37b3, 0x1ed, 0x37dc, 0x56ac, 0x56a, 0xc, 0x56a, 0x7f,
+        0x571f, 0x56a, 0x7f, 0x56a, 0xa7, 0x5747, 0x56a, 0xa7, 0x56a, 0x22f,
+        0x58cf, 0x56a, 0x22f, 0x56a, 0x329, 0x59c9, 0x56a, 0x329, 0x56a, 0x349,
+        0x59e9, 0x56a, 0x349, 0x56a, 0x3cb, 0x5a6b, 0x56a, 0x3cb, 0x56a, 0x45d,
+        0x5a6b, 0x56a, 0x45f, 0x56a, 0x4a6, 0x5a6b, 0x56a, 0x4a8, 0x56a, 0x4e2,
+        0x5b97, 0x56a, 0x4f7, 0x56a, 0x6ab, 0x5d4b, 0x56a, 0x6ab, 0x56a, 0x70a,
+        0x5dab, 0x5da, 0xb, 0x5da, 0x65, 0x5e05, 0x5da, 0x65, 0x5da, 0x136,
+        0x5ed6, 0x5da, 0x136, 0x5da, 0x2d8, 0x6078, 0x5da, 0x2d8, 0x5da, 0x3e3,
+        0x618c, 0x5da, 0x3ec, 0x5da, 0x6a1, 0x6441, 0x5da, 0x6a1, 0x5da, 0x76c,
+        0x6510, 0x5da, 0x770, 0x5da, 0x872, 0x6612, 0x5da, 0x872, 0x5da, 0x8f6,
+        0x6612, 0x5da, 0x8f8, 0x5da, 0xa35, 0x67d5, 0x5da, 0xa35, 0x5da, 0xd14,
+        0x6ab4, 0x5da, 0xd14, 0x5da, 0xfcf, 0x6d6f, 0x5da, 0xfcf, 0x5da, 0x1376,
+        0x7116, 0x5da, 0x1376, 0x5da, 0x13e4, 0x7184, 0x5da, 0x13e4, 0x5da, 0x160a,
+        0x73aa, 0x5da, 0x160a, 0x5da, 0x168a, 0x742a, 0x5da, 0x168a, 0x5da, 0x1775,
+        0x7515, 0x5da, 0x1775, 0x5da, 0x18b8, 0x7658, 0x5da, 0x18b8, 0x5da, 0x19c9,
+        0x776a, 0x5da, 0x19ca, 0x5da, 0x1a31, 0x77d1, 0x5da, 0x1a31, 0x5da, 0x1b13,
+        0x78b3, 0x5da, 0x1b13, 0x5da, 0x1bfe, 0x799e, 0x5da, 0x1bfe, 0x5da, 0x1d55,
+        0x7af5, 0x5da, 0x1d55, 0x5da, 0x1d76, 0x7b16, 0x7b1, 0x6, 0x7b1, 0x63,
         0x7b73, 0x7b1, 0x63, 0x7b1, 0x93, 0x7ba3, 0x7b1, 0x93, 0x7b1, 0xd3,
-        0x7f94, 0x7b1, 0x484, 0x7b1, 0x541, 0x8051, 0x7b1, 0x541, 0x7b1, 0x561,
+        0x7f76, 0x7b1, 0x466, 0x7b1, 0x484, 0x7f94, 0x7b1, 0x484, 0x7b1, 0x541,
+        0x8051, 0x7b1, 0x541, 0x7b1, 0x561, 0x8071, 0x7b1, 0x561, 0x7b1, 0x591,
         0x80a1, 0x7b1, 0x591, 0x7b1, 0x66d, 0x817d, 0x7b1, 0x66d, 0x7b1, 0x7ea,
         0x82fa, 0x7b1, 0x7ea, 0x7b1, 0x85b, 0x836b, 0x7b1, 0x85b, 0x7b1, 0x860,
         0x8370, 0x7b1, 0x860, 0x7b1, 0x8f4, 0x8404, 0x7b1, 0x8f4, 0x7b1, 0x9f2,
-        0x8891, 0x7b1, 0xd81, 0x7b1, 0xe6c, 0x8891, 0x7b1, 0xf5c, 0x7b1, 0xf81,
+        0x8502, 0x7b1, 0x9f2, 0x7b1, 0xd43, 0x8502, 0x7b1, 0xd49, 0x7b1, 0xd78,
+        0x8502, 0x7b1, 0xd7b, 0x7b1, 0xd81, 0x8891, 0x7b1, 0xd81, 0x7b1, 0xe6c,
+        0x8891, 0x7b1, 0xe71, 0x7b1, 0xedb, 0x8891, 0x7b1, 0xede, 0x7b1, 0xf1f,
+        0x8891, 0x7b1, 0xf21, 0x7b1, 0xf52, 0x8891, 0x7b1, 0xf54, 0x7b1, 0xf81,
         0x8aab, 0x8aa, 0xb, 0x8aa, 0x8f, 0x8b2f, 0x8aa, 0x8f, 0x8aa, 0x169,
         0x8c09, 0x8aa, 0x169, 0x8aa, 0x4a9, 0x8c09, 0x8aa, 0x4ab, 0x8aa, 0x4b8,
         0x8c09, 0x8aa, 0x4ba, 0x8aa, 0x4c7, 0x8c09, 0x8aa, 0x4c9, 0x8aa, 0x4d5,
@@ -40009,12 +45152,13 @@ int GetProcAt(int seg, int ofs)
         0xac66, 0x8aa, 0x21c6, 0x8aa, 0x2444, 0xac66, 0x8aa, 0x2446, 0x8aa, 0x253d,
         0xac66, 0x8aa, 0x253f, 0x8aa, 0x258a, 0xb02a, 0xb02, 0xa, 0xb02, 0x1d,
         0xb03d, 0xb02, 0x1d, 0xb02, 0x83, 0xb0a3, 0xb02, 0x83, 0xb02, 0xa1,
-        0xb0c1, 0xb02, 0xa1, 0xb02, 0xc6, 0xb148, 0xb02, 0x128, 0xb02, 0x159,
-        0xb148, 0xb02, 0x32b, 0xb02, 0x331, 0xb377, 0xb02, 0x357, 0xb02, 0x3bc,
+        0xb0c1, 0xb02, 0xa1, 0xb02, 0xc6, 0xb0e6, 0xb02, 0xc6, 0xb02, 0x128,
+        0xb148, 0xb02, 0x128, 0xb02, 0x331, 0xb377, 0xb02, 0x357, 0xb02, 0x3bc,
         0xb3dc, 0xb02, 0x3bc, 0xb02, 0x3de, 0xb3fe, 0xb02, 0x3de, 0xb02, 0x492,
-        0xb4b2, 0xb02, 0x492, 0xb02, 0x673, 0xb6c1, 0xb02, 0x6a1, 0xb02, 0x77b,
-        0xb6c1, 0xb02, 0x77d, 0xb02, 0x79c, 0xb7bc, 0xb02, 0x79c, 0xb02, 0x99c,
-        0xb9c5, 0xb02, 0x9a5, 0xb02, 0xacd, 0xb9c5, 0xb02, 0xaf1, 0xb02, 0xb13,
+        0xb4b2, 0xb02, 0x492, 0xb02, 0x673, 0xb693, 0xb02, 0x673, 0xb02, 0x69d,
+        0xb6c1, 0xb02, 0x6a1, 0xb02, 0x77b, 0xb6c1, 0xb02, 0x77d, 0xb02, 0x79c,
+        0xb7bc, 0xb02, 0x79c, 0xb02, 0x99c, 0xb9c5, 0xb02, 0x9a5, 0xb02, 0xae1,
+        0xb9c5, 0xb02, 0xae3, 0xb02, 0xb13, 0xbb4d, 0xb02, 0xb2d, 0xb02, 0xc75,
         0xbc95, 0xbc9, 0x5, 0xbc9, 0x2d, 0xbcbd, 0xbc9, 0x2d, 0xbc9, 0x55,
         0xbce5, 0xbc9, 0x55, 0xbc9, 0xcb, 0xbce5, 0xbc9, 0xcd, 0xbc9, 0x19f,
         0xbe2f, 0xbc9, 0x19f, 0xbc9, 0x215, 0xbe2f, 0xbc9, 0x217, 0xbc9, 0x2da,
@@ -40024,15 +45168,41 @@ int GetProcAt(int seg, int ofs)
         0xc7d9, 0xbc9, 0xb49, 0xbc9, 0xc9a, 0xcb7e, 0xbc9, 0xeee, 0xbc9, 0x1023,
         0xcb7e, 0xbc9, 0x1025, 0xbc9, 0x1097, 0xcd27, 0xbc9, 0x1097, 0xbc9, 0x10d7,
         0xcd27, 0xbc9, 0x10d9, 0xbc9, 0x118c, 0xce1c, 0xbc9, 0x118c, 0xbc9, 0x120a,
-        0xce9a, 0xbc9, 0x120a, 0xbc9, 0x1260, 0xeab9, 0xd6d, 0x13e9, 0xd6d, 0x145f,
+        0xce9a, 0xbc9, 0x120a, 0xbc9, 0x1260, 0xd3fe, 0xbc9, 0x176e, 0xbc9, 0x1795,
+        0xd6de, 0xd6d, 0xe, 0xd6d, 0x52, 0xeab9, 0xd6d, 0x13e9, 0xd6d, 0x145f,
         0xeab9, 0xd6d, 0x1461, 0xd6d, 0x14a9, 0xed9d, 0xd6d, 0x16cd, 0xd6d, 0x171e,
-        0xed9d, 0xd6d, 0x1722, 0xd6d, 0x1775, 0xefb9, 0xd6d, 0x18e9, 0xd6d, 0x1971,
-        0xefb9, 0xd6d, 0x1a1e, 0xd6d, 0x1a47, 0xf838, 0xf7c, 0x78, 0xf7c, 0xcb,
+        0xed9d, 0xd6d, 0x1722, 0xd6d, 0x1775, 0xee45, 0xd6d, 0x1775, 0xd6d, 0x183f,
+        0xef0f, 0xd6d, 0x183f, 0xd6d, 0x18e9, 0xefb9, 0xd6d, 0x18e9, 0xd6d, 0x19f6,
+        0xefb9, 0xd6d, 0x19f8, 0xd6d, 0x1a07, 0xefb9, 0xd6d, 0x1a09, 0xd6d, 0x1a47,
+        0xf7c3, 0xf7c, 0x3, 0xf7c, 0x78, 0xf838, 0xf7c, 0x78, 0xf7c, 0xcb,
         0xf88b, 0xf7c, 0xcb, 0xf7c, 0x14f, 0xf90f, 0xf7c, 0x14f, 0xf7c, 0x4b8,
-        0xfc78, 0xf7c, 0x4b8, 0xf7c, 0x50a, 0x10069, 0xf7c, 0x8a9, 0xf7c, 0x98a,
-        0x10069, 0xf7c, 0x9b8, 0xf7c, 0x9ef, 0x101bd, 0xf7c, 0x9fd, 0xf7c, 0xa5b,
-        0x1021b, 0xf7c, 0xa5b, 0xf7c, 0xbc4, 0x107c3, 0x107c, 0x3, 0x107c, 0x64,
-        0x107c3, 0x107c, 0x50d, 0x107c, 0x594, 0x11226, 0x107c, 0xa66, 0x107c, 0xae2,
+        0xfc78, 0xf7c, 0x4b8, 0xf7c, 0x50a, 0xfcca, 0xf7c, 0x50a, 0xf7c, 0x62e,
+        0xfdee, 0xf7c, 0x62e, 0xf7c, 0x6af, 0xfe6f, 0xf7c, 0x6af, 0xf7c, 0x6f0,
+        0xfeb0, 0xf7c, 0x6f0, 0xf7c, 0x70e, 0xfeb0, 0xf7c, 0x710, 0xf7c, 0x7ab,
+        0xff6b, 0xf7c, 0x7ab, 0xf7c, 0x826, 0xffe6, 0xf7c, 0x826, 0xf7c, 0x844,
+        0xffe6, 0xf7c, 0x846, 0xf7c, 0x8a9, 0x10069, 0xf7c, 0x8a9, 0xf7c, 0x9ef,
+        0x101bd, 0xf7c, 0x9fd, 0xf7c, 0xa5b, 0x1021b, 0xf7c, 0xa5b, 0xf7c, 0xbc4,
+        0x107c3, 0x107c, 0x3, 0x107c, 0x3db, 0x107c3, 0x107c, 0x3de, 0x107c, 0x594,
+        0x11226, 0x107c, 0xa66, 0x107c, 0xae2, 0x11365, 0x107c, 0xba5, 0x107c, 0xcfe,
+        0x114be, 0x107c, 0xcfe, 0x107c, 0xd43, 0x11950, 0x1195, 0x0, 0x1195, 0x2e,
+        0x1197e, 0x1195, 0x2e, 0x1195, 0x8b, 0x119db, 0x1195, 0x8b, 0x1195, 0xb3,
+        0x11a03, 0x1195, 0xb3, 0x1195, 0xdb, 0x11a2b, 0x1195, 0xdb, 0x1195, 0x103,
+        0x11a53, 0x1195, 0x103, 0x1195, 0x12b, 0x11a7b, 0x1195, 0x12b, 0x1195, 0x153,
+        0x11aa3, 0x1195, 0x153, 0x1195, 0x17b, 0x11acb, 0x1195, 0x17b, 0x1195, 0x1a3,
+        0x11af3, 0x1195, 0x1a3, 0x1195, 0x20c, 0x11b5c, 0x1195, 0x20c, 0x1195, 0x24e,
+        0x11b9e, 0x1195, 0x24e, 0x1195, 0x269, 0x11bb9, 0x1195, 0x269, 0x1195, 0x2d4,
+        0x11c4e, 0x1195, 0x2fe, 0x1195, 0x369, 0x11d95, 0x1195, 0x445, 0x1195, 0x493,
+        0x11ead, 0x1195, 0x55d, 0x1195, 0x5ab, 0x11f09, 0x1195, 0x5b9, 0x1195, 0x627,
+        0x123de, 0x1195, 0xa8e, 0x1195, 0xaf9, 0x124b7, 0x1195, 0xb67, 0x1195, 0xbe7,
+        0x126d6, 0x126d, 0x6, 0x126d, 0x71, 0x12892, 0x126d, 0x1c2, 0x126d, 0x20c,
+        0x12a6b, 0x126d, 0x39b, 0x126d, 0x40b, 0x12d82, 0x126d, 0x6b2, 0x126d, 0x72c,
+        0x12dfc, 0x126d, 0x72c, 0x126d, 0x770, 0x12fba, 0x126d, 0x8ea, 0x126d, 0x938,
+        0x13198, 0x126d, 0xac8, 0x126d, 0xb42, 0x1337b, 0x126d, 0xcab, 0x126d, 0xd3c,
+        0x137cc, 0x126d, 0x10fc, 0x126d, 0x114f, 0x138fe, 0x138f, 0xe, 0x138f, 0x79,
+        0x13d37, 0x138f, 0x447, 0x138f, 0x494, 0x13f80, 0x138f, 0x690, 0x138f, 0x700,
+        0x14397, 0x138f, 0xaa7, 0x138f, 0xaf6, 0x1444f, 0x138f, 0xb5f, 0x138f, 0xbb1,
+        0x145dc, 0x138f, 0xcec, 0x138f, 0xd7d, 0x146a5, 0x138f, 0xdb5, 0x138f, 0xe01,
+        0x1472b, 0x138f, 0xe3b, 0x138f, 0xede, 0x148c1, 0x138f, 0xfd1, 0x138f, 0x1010,
         0x1493f, 0x1493, 0xf, 0x1493, 0x5f, 0x149c4, 0x1493, 0x94, 0x1493, 0xf4,
         0x14a24, 0x1493, 0xf4, 0x1493, 0x140, 0x14a70, 0x1493, 0x140, 0x1493, 0x18c,
         0x14bb3, 0x1493, 0x283, 0x1493, 0x2cc, 0x14bfc, 0x1493, 0x2cc, 0x1493, 0x3f5,
@@ -40061,103 +45231,103 @@ int GetProcAt(int seg, int ofs)
         0x16c64, 0x164d, 0x794, 0x164d, 0x826, 0x16cf6, 0x164d, 0x826, 0x164d, 0x868,
         0x16d38, 0x164d, 0x868, 0x164d, 0x896, 0x16d78, 0x164d, 0x8a8, 0x164d, 0x8cb,
         0x16d9b, 0x164d, 0x8cb, 0x164d, 0x8f9, 0x16dc9, 0x164d, 0x8f9, 0x164d, 0x9be,
-        0x16e8e, 0x164d, 0x9be, 0x164d, 0xa76, 0x16e8e, 0x164d, 0xbfc, 0x164d, 0xd1e,
-        0x171f8, 0x164d, 0xd28, 0x164d, 0xd39, 0x17209, 0x164d, 0xd39, 0x164d, 0xd81,
-        0x17251, 0x164d, 0xd81, 0x164d, 0xda1, 0x17271, 0x164d, 0xda1, 0x164d, 0xdbf,
-        0x1728f, 0x164d, 0xdbf, 0x164d, 0xdd7, 0x172ef, 0x164d, 0xe1f, 0x164d, 0xe3d,
-        0x1732a, 0x164d, 0xe5a, 0x164d, 0xedf, 0x173af, 0x164d, 0xedf, 0x164d, 0xf43,
-        0x17413, 0x164d, 0xf43, 0x164d, 0xf92, 0x17462, 0x164d, 0xf92, 0x164d, 0xfe1,
-        0x174b1, 0x174b, 0x1, 0x174b, 0x37, 0x174e7, 0x174b, 0x37, 0x174b, 0xe5,
-        0x17595, 0x174b, 0xe5, 0x174b, 0x109, 0x175b9, 0x174b, 0x109, 0x174b, 0x181,
-        0x17631, 0x174b, 0x181, 0x174b, 0x19c, 0x1764c, 0x174b, 0x19c, 0x174b, 0x20b,
-        0x176bb, 0x174b, 0x20b, 0x174b, 0x236, 0x176e6, 0x174b, 0x236, 0x174b, 0x3c5,
-        0x17875, 0x174b, 0x3c5, 0x174b, 0x42b, 0x178db, 0x174b, 0x42b, 0x174b, 0x6e2,
-        0x17b92, 0x174b, 0x6e2, 0x174b, 0x712, 0x17bc2, 0x174b, 0x712, 0x174b, 0x987,
-        0x17e37, 0x174b, 0x987, 0x174b, 0x9c9, 0x17e37, 0x174b, 0x9cb, 0x174b, 0xa52,
-        0x17f02, 0x174b, 0xa52, 0x174b, 0xabe, 0x17f02, 0x174b, 0xac0, 0x174b, 0xad5,
-        0x17f85, 0x174b, 0xad5, 0x174b, 0xb41, 0x17f85, 0x174b, 0xb43, 0x174b, 0xb5d,
-        0x1800d, 0x174b, 0xb5d, 0x174b, 0xd3d, 0x181ed, 0x174b, 0xd3d, 0x174b, 0xe7f,
-        0x1832f, 0x174b, 0xe7f, 0x174b, 0xee6, 0x18396, 0x174b, 0xee6, 0x174b, 0xf64,
-        0x18414, 0x174b, 0xf64, 0x174b, 0xf6f, 0x1841f, 0x1841, 0xf, 0x1841, 0x134,
-        0x18544, 0x1841, 0x134, 0x1841, 0x139, 0x18549, 0x1841, 0x139, 0x1841, 0x1c2,
-        0x185d2, 0x1841, 0x1c2, 0x1841, 0x318, 0x18728, 0x1841, 0x318, 0x1841, 0x6e2,
-        0x18af2, 0x1841, 0x6e2, 0x1841, 0x71a, 0x18b2a, 0x1841, 0x71a, 0x1841, 0x868,
-        0x18c78, 0x1841, 0x868, 0x1841, 0x8ab, 0x18cbb, 0x1841, 0x8ab, 0x1841, 0x8ef,
+        0x16e8e, 0x164d, 0x9be, 0x164d, 0xd1e, 0x171f8, 0x164d, 0xd28, 0x164d, 0xd39,
+        0x17209, 0x164d, 0xd39, 0x164d, 0xd81, 0x17251, 0x164d, 0xd81, 0x164d, 0xda1,
+        0x17271, 0x164d, 0xda1, 0x164d, 0xdbf, 0x1728f, 0x164d, 0xdbf, 0x164d, 0xdd7,
+        0x172ef, 0x164d, 0xe1f, 0x164d, 0xe3d, 0x1732a, 0x164d, 0xe5a, 0x164d, 0xedf,
+        0x173af, 0x164d, 0xedf, 0x164d, 0xf43, 0x17413, 0x164d, 0xf43, 0x164d, 0xf92,
+        0x17462, 0x164d, 0xf92, 0x164d, 0xfe1, 0x174b1, 0x174b, 0x1, 0x174b, 0x37,
+        0x174e7, 0x174b, 0x37, 0x174b, 0xe5, 0x17595, 0x174b, 0xe5, 0x174b, 0x109,
+        0x175b9, 0x174b, 0x109, 0x174b, 0x181, 0x17631, 0x174b, 0x181, 0x174b, 0x19c,
+        0x1764c, 0x174b, 0x19c, 0x174b, 0x20b, 0x176bb, 0x174b, 0x20b, 0x174b, 0x236,
+        0x176e6, 0x174b, 0x236, 0x174b, 0x3c5, 0x17875, 0x174b, 0x3c5, 0x174b, 0x42b,
+        0x178db, 0x174b, 0x42b, 0x174b, 0x6e2, 0x17b92, 0x174b, 0x6e2, 0x174b, 0x712,
+        0x17bc2, 0x174b, 0x712, 0x174b, 0x987, 0x17e37, 0x174b, 0x987, 0x174b, 0x9c9,
+        0x17e37, 0x174b, 0x9cb, 0x174b, 0xa52, 0x17f02, 0x174b, 0xa52, 0x174b, 0xabe,
+        0x17f02, 0x174b, 0xac0, 0x174b, 0xad5, 0x17f85, 0x174b, 0xad5, 0x174b, 0xb41,
+        0x17f85, 0x174b, 0xb43, 0x174b, 0xb5d, 0x1800d, 0x174b, 0xb5d, 0x174b, 0xd3d,
+        0x181ed, 0x174b, 0xd3d, 0x174b, 0xe7f, 0x1832f, 0x174b, 0xe7f, 0x174b, 0xee6,
+        0x18396, 0x174b, 0xee6, 0x174b, 0xf64, 0x18414, 0x174b, 0xf64, 0x174b, 0xf6f,
+        0x1841f, 0x1841, 0xf, 0x1841, 0x134, 0x18544, 0x1841, 0x134, 0x1841, 0x139,
+        0x18549, 0x1841, 0x139, 0x1841, 0x1c2, 0x185d2, 0x1841, 0x1c2, 0x1841, 0x318,
+        0x18728, 0x1841, 0x318, 0x1841, 0x6e2, 0x18af2, 0x1841, 0x6e2, 0x1841, 0x71a,
+        0x18b2a, 0x1841, 0x71a, 0x1841, 0x868, 0x18c78, 0x1841, 0x868, 0x1841, 0x8ab,
+        0x18cbb, 0x1841, 0x8ab, 0x1841, 0x8ef, 0x18cff, 0x1841, 0x8ef, 0x1841, 0x946,
         0x18d56, 0x1841, 0x946, 0x1841, 0xa31, 0x18e41, 0x1841, 0xa31, 0x1841, 0xa78,
         0x18e88, 0x1841, 0xa78, 0x1841, 0xafb, 0x18f0b, 0x1841, 0xafb, 0x1841, 0xb08,
         0x18f18, 0x1841, 0xb08, 0x1841, 0xb38, 0x18f18, 0x1841, 0xb3a, 0x1841, 0xb61,
         0x18f71, 0x1841, 0xb61, 0x1841, 0xc50, 0x19060, 0x1841, 0xc50, 0x1841, 0xc62,
-        0x19072, 0x1841, 0xc62, 0x1841, 0xc7c, 0x19072, 0x1841, 0xd10, 0x1841, 0xd1e,
-        0x19072, 0x1841, 0xd20, 0x1841, 0xd50, 0x19169, 0x1841, 0xd59, 0x1841, 0xd78,
-        0x19435, 0x1841, 0x1025, 0x1841, 0x1137, 0x19630, 0x1841, 0x1220, 0x1841, 0x12ec,
-        0x196fc, 0x1841, 0x12ec, 0x1841, 0x1333, 0x19743, 0x1841, 0x1333, 0x1841, 0x13dd,
-        0x197ed, 0x1841, 0x13dd, 0x1841, 0x1641, 0x19a51, 0x1841, 0x1641, 0x1841, 0x16d1,
-        0x19a51, 0x1841, 0x16d3, 0x1841, 0x185b, 0x19c6b, 0x1841, 0x185b, 0x1841, 0x18e3,
-        0x19cf3, 0x1841, 0x18e3, 0x1841, 0x1a6e, 0x19e7e, 0x1841, 0x1a6e, 0x1841, 0x1c6e,
-        0x1a07e, 0x1841, 0x1c6e, 0x1841, 0x1d2a, 0x1a13c, 0x1a13, 0xc, 0x1a13, 0x54,
-        0x1a13c, 0x1a13, 0x55, 0x1a13, 0x1ea, 0x1a31a, 0x1a13, 0x1ea, 0x1a13, 0x295,
-        0x1a31a, 0x1a13, 0x296, 0x1a13, 0x344, 0x1a474, 0x1a13, 0x344, 0x1a13, 0x4ee,
-        0x1a61e, 0x1a61, 0xe, 0x1a61, 0x33, 0x1a643, 0x1a61, 0x33, 0x1a61, 0x53,
-        0x1a68b, 0x1a61, 0x7b, 0x1a61, 0xa8, 0x1a6b9, 0x1a61, 0xa9, 0x1a61, 0xc2,
-        0x1a6d3, 0x1a61, 0xc3, 0x1a61, 0x144, 0x1a754, 0x1a61, 0x144, 0x1a61, 0x15d,
-        0x1a76e, 0x1a61, 0x15e, 0x1a61, 0x19f, 0x1a7b0, 0x1a61, 0x1a0, 0x1a61, 0x1c0,
-        0x1a7d1, 0x1a61, 0x1c1, 0x1a61, 0x2d7, 0x1a8e7, 0x1a61, 0x2d7, 0x1a61, 0x356,
-        0x1a966, 0x1a61, 0x356, 0x1a61, 0x3de, 0x1a9ee, 0x1a61, 0x3de, 0x1a61, 0x3ef,
-        0x1a9ee, 0x1a61, 0x3f1, 0x1a61, 0x491, 0x1aaa1, 0x1a61, 0x491, 0x1a61, 0x4ca,
-        0x1aadb, 0x1a61, 0x4cb, 0x1a61, 0x504, 0x1ab14, 0x1a61, 0x504, 0x1a61, 0x529,
-        0x1ab39, 0x1a61, 0x529, 0x1a61, 0x5f5, 0x1ac05, 0x1a61, 0x5f5, 0x1a61, 0x664,
-        0x1ac05, 0x1a61, 0x666, 0x1a61, 0x6d7, 0x1ace7, 0x1a61, 0x6d7, 0x1a61, 0x6fb,
-        0x1ad0b, 0x1a61, 0x6fb, 0x1a61, 0x712, 0x1ad22, 0x1a61, 0x712, 0x1a61, 0x72d,
-        0x1ad3d, 0x1a61, 0x72d, 0x1a61, 0x74b, 0x1ad5b, 0x1a61, 0x74b, 0x1a61, 0x79f,
-        0x1ad5b, 0x1a61, 0x7a1, 0x1a61, 0x7d0, 0x1ade0, 0x1a61, 0x7d0, 0x1a61, 0x810,
-        0x1ade0, 0x1a61, 0x812, 0x1a61, 0x826, 0x1ae36, 0x1a61, 0x826, 0x1a61, 0x913,
-        0x1af23, 0x1a61, 0x913, 0x1a61, 0x99f, 0x1afaf, 0x1a61, 0x99f, 0x1a61, 0x9df,
-        0x1b001, 0x1a61, 0x9f1, 0x1a61, 0xa90, 0x1b0a0, 0x1a61, 0xa90, 0x1a61, 0xad7,
-        0x1b0e7, 0x1a61, 0xad7, 0x1a61, 0xafd, 0x1b10d, 0x1a61, 0xafd, 0x1a61, 0xb0a,
-        0x1b11a, 0x1a61, 0xb0a, 0x1a61, 0xb15, 0x1b125, 0x1a61, 0xb15, 0x1a61, 0xb62,
-        0x1b172, 0x1a61, 0xb62, 0x1a61, 0xbb3, 0x1b1c4, 0x1a61, 0xbb4, 0x1a61, 0xbc7,
-        0x1b1d7, 0x1a61, 0xbc7, 0x1a61, 0xbde, 0x1b324, 0x1b1e, 0x144, 0x1b1e, 0x154,
-        0x1b334, 0x1b1e, 0x154, 0x1b1e, 0x180, 0x1b360, 0x1b1e, 0x180, 0x1b1e, 0x348,
-        0x1b528, 0x1b1e, 0x348, 0x1b1e, 0x490, 0x1b670, 0x1b1e, 0x490, 0x1b1e, 0x547,
-        0x1b727, 0x1b1e, 0x547, 0x1b1e, 0x5a9, 0x1b727, 0x1b1e, 0x5ab, 0x1b1e, 0x5c1,
-        0x1b7a1, 0x1b1e, 0x5c1, 0x1b1e, 0x5e2, 0x1b7c2, 0x1b1e, 0x5e2, 0x1b1e, 0x5ff,
-        0x1b7df, 0x1b1e, 0x5ff, 0x1b1e, 0x6b5, 0x1b895, 0x1b1e, 0x6b5, 0x1b1e, 0x6fe,
-        0x1b8de, 0x1b1e, 0x6fe, 0x1b1e, 0x783, 0x1b963, 0x1b1e, 0x783, 0x1b1e, 0x79a,
-        0x1b97a, 0x1b1e, 0x79a, 0x1b1e, 0x802, 0x1b97a, 0x1b1e, 0x804, 0x1b1e, 0x81e,
-        0x1b9fe, 0x1b1e, 0x81e, 0x1b1e, 0x8b0, 0x1ba90, 0x1b1e, 0x8b0, 0x1b1e, 0x911,
-        0x1baf1, 0x1b1e, 0x911, 0x1b1e, 0xc3c, 0x1be1c, 0x1b1e, 0xc3c, 0x1b1e, 0xc7a,
-        0x1be1c, 0x1b1e, 0xc7c, 0x1b1e, 0xcda, 0x1beba, 0x1b1e, 0xcda, 0x1b1e, 0xcf9,
-        0x1bed9, 0x1b1e, 0xcf9, 0x1b1e, 0xd72, 0x1bf52, 0x1b1e, 0xd72, 0x1b1e, 0xd9a,
-        0x1bf7a, 0x1b1e, 0xd9a, 0x1b1e, 0xdc2, 0x1bfa2, 0x1b1e, 0xdc2, 0x1b1e, 0xe1f,
-        0x1bfff, 0x1b1e, 0xe1f, 0x1b1e, 0xe60, 0x1c040, 0x1b1e, 0xe60, 0x1b1e, 0xebd,
-        0x1c09d, 0x1b1e, 0xebd, 0x1b1e, 0xf02, 0x1c0e2, 0x1b1e, 0xf02, 0x1b1e, 0xf2f,
-        0x1c10f, 0x1b1e, 0xf2f, 0x1b1e, 0x1070, 0x1c250, 0x1b1e, 0x1070, 0x1b1e, 0x1098,
-        0x1c38f, 0x1b1e, 0x11af, 0x1b1e, 0x1205, 0x1c3e5, 0x1b1e, 0x1205, 0x1b1e, 0x130c,
-        0x1c3e5, 0x1b1e, 0x1320, 0x1b1e, 0x132e, 0x1c3e5, 0x1b1e, 0x1349, 0x1b1e, 0x13ae,
-        0x1c3e5, 0x1b1e, 0x13df, 0x1b1e, 0x1577, 0x1c765, 0x1c76, 0x5, 0x1c76, 0x24,
+        0x19072, 0x1841, 0xc62, 0x1841, 0xd1e, 0x19072, 0x1841, 0xd20, 0x1841, 0xd50,
+        0x19169, 0x1841, 0xd59, 0x1841, 0xd78, 0x19188, 0x1841, 0xd78, 0x1841, 0xf28,
+        0x19338, 0x1841, 0xf28, 0x1841, 0x1025, 0x19435, 0x1841, 0x1025, 0x1841, 0x1137,
+        0x19630, 0x1841, 0x1220, 0x1841, 0x12ec, 0x196fc, 0x1841, 0x12ec, 0x1841, 0x1333,
+        0x19743, 0x1841, 0x1333, 0x1841, 0x13dd, 0x197ed, 0x1841, 0x13dd, 0x1841, 0x1641,
+        0x19a51, 0x1841, 0x1641, 0x1841, 0x16d1, 0x19a51, 0x1841, 0x16d3, 0x1841, 0x185b,
+        0x19c6b, 0x1841, 0x185b, 0x1841, 0x18e3, 0x19cf3, 0x1841, 0x18e3, 0x1841, 0x1a6e,
+        0x19e7e, 0x1841, 0x1a6e, 0x1841, 0x1c6e, 0x1a07e, 0x1841, 0x1c6e, 0x1841, 0x1d2a,
+        0x1a13c, 0x1a13, 0xc, 0x1a13, 0x54, 0x1a13c, 0x1a13, 0x55, 0x1a13, 0x1ea,
+        0x1a31a, 0x1a13, 0x1ea, 0x1a13, 0x295, 0x1a31a, 0x1a13, 0x296, 0x1a13, 0x344,
+        0x1a474, 0x1a13, 0x344, 0x1a13, 0x4ee, 0x1a61e, 0x1a61, 0xe, 0x1a61, 0x33,
+        0x1a643, 0x1a61, 0x33, 0x1a61, 0x53, 0x1a68b, 0x1a61, 0x7b, 0x1a61, 0xa9,
+        0x1a6b9, 0x1a61, 0xa9, 0x1a61, 0xc3, 0x1a6d3, 0x1a61, 0xc3, 0x1a61, 0x144,
+        0x1a754, 0x1a61, 0x144, 0x1a61, 0x15e, 0x1a76e, 0x1a61, 0x15e, 0x1a61, 0x1a0,
+        0x1a7b0, 0x1a61, 0x1a0, 0x1a61, 0x1c1, 0x1a7d1, 0x1a61, 0x1c1, 0x1a61, 0x2d7,
+        0x1a8e7, 0x1a61, 0x2d7, 0x1a61, 0x356, 0x1a966, 0x1a61, 0x356, 0x1a61, 0x3de,
+        0x1a9ee, 0x1a61, 0x3de, 0x1a61, 0x3ef, 0x1a9ee, 0x1a61, 0x3f1, 0x1a61, 0x491,
+        0x1aaa1, 0x1a61, 0x491, 0x1a61, 0x4cb, 0x1aadb, 0x1a61, 0x4cb, 0x1a61, 0x504,
+        0x1ab14, 0x1a61, 0x504, 0x1a61, 0x529, 0x1ab39, 0x1a61, 0x529, 0x1a61, 0x5f5,
+        0x1ac05, 0x1a61, 0x5f5, 0x1a61, 0x664, 0x1ac05, 0x1a61, 0x666, 0x1a61, 0x6d7,
+        0x1ace7, 0x1a61, 0x6d7, 0x1a61, 0x6fb, 0x1ad0b, 0x1a61, 0x6fb, 0x1a61, 0x712,
+        0x1ad22, 0x1a61, 0x712, 0x1a61, 0x72d, 0x1ad3d, 0x1a61, 0x72d, 0x1a61, 0x74b,
+        0x1ad5b, 0x1a61, 0x74b, 0x1a61, 0x79f, 0x1ad5b, 0x1a61, 0x7a1, 0x1a61, 0x7d0,
+        0x1ade0, 0x1a61, 0x7d0, 0x1a61, 0x810, 0x1ade0, 0x1a61, 0x812, 0x1a61, 0x826,
+        0x1ae36, 0x1a61, 0x826, 0x1a61, 0x913, 0x1af23, 0x1a61, 0x913, 0x1a61, 0x99f,
+        0x1afaf, 0x1a61, 0x99f, 0x1a61, 0x9df, 0x1b001, 0x1a61, 0x9f1, 0x1a61, 0xa90,
+        0x1b0a0, 0x1a61, 0xa90, 0x1a61, 0xad7, 0x1b0e7, 0x1a61, 0xad7, 0x1a61, 0xafd,
+        0x1b10d, 0x1a61, 0xafd, 0x1a61, 0xb0a, 0x1b11a, 0x1a61, 0xb0a, 0x1a61, 0xb15,
+        0x1b125, 0x1a61, 0xb15, 0x1a61, 0xb62, 0x1b172, 0x1a61, 0xb62, 0x1a61, 0xbb4,
+        0x1b1c4, 0x1a61, 0xbb4, 0x1a61, 0xbc7, 0x1b1d7, 0x1a61, 0xbc7, 0x1a61, 0xbde,
+        0x1b324, 0x1b1e, 0x144, 0x1b1e, 0x154, 0x1b334, 0x1b1e, 0x154, 0x1b1e, 0x180,
+        0x1b360, 0x1b1e, 0x180, 0x1b1e, 0x348, 0x1b528, 0x1b1e, 0x348, 0x1b1e, 0x490,
+        0x1b670, 0x1b1e, 0x490, 0x1b1e, 0x547, 0x1b727, 0x1b1e, 0x547, 0x1b1e, 0x5a9,
+        0x1b727, 0x1b1e, 0x5ab, 0x1b1e, 0x5c1, 0x1b7a1, 0x1b1e, 0x5c1, 0x1b1e, 0x5e2,
+        0x1b7c2, 0x1b1e, 0x5e2, 0x1b1e, 0x5ff, 0x1b7df, 0x1b1e, 0x5ff, 0x1b1e, 0x6b5,
+        0x1b895, 0x1b1e, 0x6b5, 0x1b1e, 0x6fe, 0x1b8de, 0x1b1e, 0x6fe, 0x1b1e, 0x783,
+        0x1b963, 0x1b1e, 0x783, 0x1b1e, 0x79a, 0x1b97a, 0x1b1e, 0x79a, 0x1b1e, 0x802,
+        0x1b97a, 0x1b1e, 0x804, 0x1b1e, 0x81e, 0x1b9fe, 0x1b1e, 0x81e, 0x1b1e, 0x8b0,
+        0x1ba90, 0x1b1e, 0x8b0, 0x1b1e, 0x911, 0x1baf1, 0x1b1e, 0x911, 0x1b1e, 0xc3c,
+        0x1be1c, 0x1b1e, 0xc3c, 0x1b1e, 0xc7a, 0x1be1c, 0x1b1e, 0xc7c, 0x1b1e, 0xcda,
+        0x1beba, 0x1b1e, 0xcda, 0x1b1e, 0xcf9, 0x1bed9, 0x1b1e, 0xcf9, 0x1b1e, 0xd72,
+        0x1bf52, 0x1b1e, 0xd72, 0x1b1e, 0xd9a, 0x1bf7a, 0x1b1e, 0xd9a, 0x1b1e, 0xdc2,
+        0x1bfa2, 0x1b1e, 0xdc2, 0x1b1e, 0xe1f, 0x1bfff, 0x1b1e, 0xe1f, 0x1b1e, 0xe60,
+        0x1c040, 0x1b1e, 0xe60, 0x1b1e, 0xebd, 0x1c09d, 0x1b1e, 0xebd, 0x1b1e, 0xf02,
+        0x1c0e2, 0x1b1e, 0xf02, 0x1b1e, 0xf2f, 0x1c10f, 0x1b1e, 0xf2f, 0x1b1e, 0x1070,
+        0x1c250, 0x1b1e, 0x1070, 0x1b1e, 0x1098, 0x1c38f, 0x1b1e, 0x11af, 0x1b1e, 0x1205,
+        0x1c3e5, 0x1b1e, 0x1205, 0x1b1e, 0x1577, 0x1c765, 0x1c76, 0x5, 0x1c76, 0x24,
         0x1c784, 0x1c76, 0x24, 0x1c76, 0x4b, 0x1c7ab, 0x1c76, 0x4b, 0x1c76, 0x78,
         0x1c7d8, 0x1c76, 0x78, 0x1c76, 0x110, 0x1c870, 0x1c76, 0x110, 0x1c76, 0x1a6,
         0x1c906, 0x1c76, 0x1a6, 0x1c76, 0x24c, 0x1c9ac, 0x1c76, 0x24c, 0x1c76, 0x35e,
         0x1cabe, 0x1c76, 0x35e, 0x1c76, 0x391, 0x1caf1, 0x1c76, 0x391, 0x1c76, 0x45a,
-        0x1cc96, 0x1c76, 0x536, 0x1c76, 0x6e8, 0x1ce48, 0x1c76, 0x6e8, 0x1c76, 0x720,
-        0x1ce48, 0x1c76, 0x782, 0x1c76, 0x7b7, 0x1cfcb, 0x1c76, 0x86b, 0x1c76, 0x926,
-        0x1e07a, 0x1c76, 0x191a, 0x1c76, 0x19b1, 0x1e111, 0x1c76, 0x19b1, 0x1c76, 0x1a60,
-        0x1e111, 0x1c76, 0x1a63, 0x1c76, 0x1c0d, 0x1e111, 0x1c76, 0x1c0f, 0x1c76, 0x1e34,
-        0x1e594, 0x1c76, 0x1e34, 0x1c76, 0x1e9d, 0x1e5fe, 0x1c76, 0x1e9e, 0x1c76, 0x1ef6,
-        0x1e656, 0x1c76, 0x1ef6, 0x1c76, 0x1f37, 0x1e697, 0x1c76, 0x1f37, 0x1c76, 0x1fda,
-        0x1e73a, 0x1c76, 0x1fda, 0x1c76, 0x2032, 0x1e73a, 0x1c76, 0x2034, 0x1c76, 0x2067,
-        0x1e7c7, 0x1c76, 0x2067, 0x1c76, 0x20a0, 0x1e800, 0x1c76, 0x20a0, 0x1c76, 0x20ca,
-        0x1e82a, 0x1c76, 0x20ca, 0x1c76, 0x2108, 0x1e868, 0x1c76, 0x2108, 0x1c76, 0x2153,
-        0x1e8b3, 0x1c76, 0x2153, 0x1c76, 0x219f, 0x1e8ff, 0x1c76, 0x219f, 0x1c76, 0x222f,
-        0x1e8ff, 0x1c76, 0x2233, 0x1c76, 0x2265, 0x1e9c5, 0x1c76, 0x2265, 0x1c76, 0x2355,
-        0x1eab5, 0x1c76, 0x2355, 0x1c76, 0x2426, 0x1eb86, 0x1c76, 0x2426, 0x1c76, 0x2439,
-        0x1eb86, 0x1c76, 0x2463, 0x1c76, 0x2471, 0x1ebe0, 0x1c76, 0x2480, 0x1c76, 0x24db,
-        0x1ec3b, 0x1c76, 0x24db, 0x1c76, 0x2582, 0x1ece2, 0x1c76, 0x2582, 0x1c76, 0x2790,
-        0x1eef2, 0x1eef, 0x2, 0x1eef, 0x18, 0x1eef2, 0x1eef, 0x19, 0x1eef, 0x2a,
-        0x1ef1a, 0x1eef, 0x2a, 0x1eef, 0x45, 0x1ef35, 0x1ef3, 0x5, 0x1ef3, 0x90,
-        0x1efc0, 0x1ef3, 0x90, 0x1ef3, 0xac, 0x1efdc, 0x1ef3, 0xac, 0x1ef3, 0xe9,
-        0x1f019, 0x1ef3, 0xe9, 0x1ef3, 0xfd, 0x1f082, 0x1ef3, 0x152, 0x1ef3, 0x16f,
-        0x1f09f, 0x1ef3, 0x16f, 0x1ef3, 0x1c2, 0x1f20d, 0x1ef3, 0x2dd, 0x1ef3, 0x30d,
+        0x1cc96, 0x1c76, 0x536, 0x1c76, 0x6e8, 0x1ce48, 0x1c76, 0x6e8, 0x1c76, 0x73b,
+        0x1ce48, 0x1c76, 0x73d, 0x1c76, 0x765, 0x1ce48, 0x1c76, 0x767, 0x1c76, 0x7b7,
+        0x1cfcb, 0x1c76, 0x86b, 0x1c76, 0x926, 0x1e07a, 0x1c76, 0x191a, 0x1c76, 0x19b1,
+        0x1e111, 0x1c76, 0x19b1, 0x1c76, 0x1a60, 0x1e111, 0x1c76, 0x1a63, 0x1c76, 0x1c0d,
+        0x1e111, 0x1c76, 0x1c0f, 0x1c76, 0x1e34, 0x1e594, 0x1c76, 0x1e34, 0x1c76, 0x1e9d,
+        0x1e5fe, 0x1c76, 0x1e9e, 0x1c76, 0x1ef6, 0x1e656, 0x1c76, 0x1ef6, 0x1c76, 0x1f37,
+        0x1e697, 0x1c76, 0x1f37, 0x1c76, 0x1fda, 0x1e73a, 0x1c76, 0x1fda, 0x1c76, 0x2032,
+        0x1e73a, 0x1c76, 0x2034, 0x1c76, 0x2067, 0x1e7c7, 0x1c76, 0x2067, 0x1c76, 0x20a0,
+        0x1e800, 0x1c76, 0x20a0, 0x1c76, 0x20ca, 0x1e82a, 0x1c76, 0x20ca, 0x1c76, 0x2108,
+        0x1e868, 0x1c76, 0x2108, 0x1c76, 0x2153, 0x1e8b3, 0x1c76, 0x2153, 0x1c76, 0x219f,
+        0x1e8ff, 0x1c76, 0x219f, 0x1c76, 0x222f, 0x1e8ff, 0x1c76, 0x2233, 0x1c76, 0x2265,
+        0x1e9c5, 0x1c76, 0x2265, 0x1c76, 0x2355, 0x1eab5, 0x1c76, 0x2355, 0x1c76, 0x2426,
+        0x1eb86, 0x1c76, 0x2426, 0x1c76, 0x2439, 0x1eb86, 0x1c76, 0x243b, 0x1c76, 0x2471,
+        0x1ebe0, 0x1c76, 0x2480, 0x1c76, 0x24db, 0x1ec3b, 0x1c76, 0x24db, 0x1c76, 0x2582,
+        0x1ece2, 0x1c76, 0x2582, 0x1c76, 0x2790, 0x1eef2, 0x1eef, 0x2, 0x1eef, 0x18,
+        0x1eef2, 0x1eef, 0x19, 0x1eef, 0x2a, 0x1ef1a, 0x1eef, 0x2a, 0x1eef, 0x45,
+        0x1ef35, 0x1ef3, 0x5, 0x1ef3, 0x90, 0x1efc0, 0x1ef3, 0x90, 0x1ef3, 0xac,
+        0x1efdc, 0x1ef3, 0xac, 0x1ef3, 0xe9, 0x1f019, 0x1ef3, 0xe9, 0x1ef3, 0xfd,
+        0x1f082, 0x1ef3, 0x152, 0x1ef3, 0x16f, 0x1f09f, 0x1ef3, 0x16f, 0x1ef3, 0x1c2,
+        0x1f0f2, 0x1ef3, 0x1c2, 0x1ef3, 0x215, 0x1f20d, 0x1ef3, 0x2dd, 0x1ef3, 0x30d,
         0x1f23d, 0x1ef3, 0x30d, 0x1ef3, 0x35c, 0x1f28c, 0x1ef3, 0x35c, 0x1ef3, 0x3c1,
         0x1f4ad, 0x1ef3, 0x57d, 0x1ef3, 0x64e, 0x1f57e, 0x1ef3, 0x64e, 0x1ef3, 0x74d,
         0x1f67d, 0x1ef3, 0x74d, 0x1ef3, 0x78d, 0x1f6bd, 0x1ef3, 0x78d, 0x1ef3, 0x7b2,
@@ -40172,8 +45342,15 @@ int GetProcAt(int seg, int ofs)
         0x1fedf, 0x1ef3, 0xfaf, 0x1ef3, 0xff8, 0x1ff28, 0x1ef3, 0xff8, 0x1ef3, 0x1040,
         0x1ff70, 0x1ff7, 0x0, 0x1ff7, 0x4f, 0x1ffbf, 0x1ff7, 0x4f, 0x1ff7, 0xaf,
         0x2001f, 0x1ff7, 0xaf, 0x1ff7, 0x115, 0x20085, 0x1ff7, 0x115, 0x1ff7, 0x146,
-        0x20085, 0x1ff7, 0x147, 0x1ff7, 0x1c8, 0x203b9, 0x1ff7, 0x449, 0x1ff7, 0x495,
-        0x20405, 0x1ff7, 0x495, 0x1ff7, 0x4de, 0x2044f, 0x1ff7, 0x4df, 0x1ff7, 0x59f,
+        0x20085, 0x1ff7, 0x147, 0x1ff7, 0x219, 0x20085, 0x1ff7, 0x21a, 0x1ff7, 0x231,
+        0x20085, 0x1ff7, 0x232, 0x1ff7, 0x251, 0x20085, 0x1ff7, 0x252, 0x1ff7, 0x271,
+        0x20085, 0x1ff7, 0x272, 0x1ff7, 0x291, 0x20085, 0x1ff7, 0x292, 0x1ff7, 0x2b1,
+        0x20085, 0x1ff7, 0x2b2, 0x1ff7, 0x2d9, 0x20085, 0x1ff7, 0x2da, 0x1ff7, 0x301,
+        0x20085, 0x1ff7, 0x302, 0x1ff7, 0x329, 0x20085, 0x1ff7, 0x32a, 0x1ff7, 0x351,
+        0x20085, 0x1ff7, 0x352, 0x1ff7, 0x381, 0x20085, 0x1ff7, 0x382, 0x1ff7, 0x3b1,
+        0x20085, 0x1ff7, 0x3b2, 0x1ff7, 0x3e1, 0x20085, 0x1ff7, 0x3e2, 0x1ff7, 0x411,
+        0x20085, 0x1ff7, 0x412, 0x1ff7, 0x449, 0x203b9, 0x1ff7, 0x449, 0x1ff7, 0x495,
+        0x20405, 0x1ff7, 0x495, 0x1ff7, 0x4df, 0x2044f, 0x1ff7, 0x4df, 0x1ff7, 0x59f,
         0x2050f, 0x1ff7, 0x59f, 0x1ff7, 0x5da, 0x2054a, 0x1ff7, 0x5da, 0x1ff7, 0x759,
         0x206c9, 0x1ff7, 0x759, 0x1ff7, 0x7da, 0x2074a, 0x1ff7, 0x7da, 0x1ff7, 0x80d,
         0x2077d, 0x1ff7, 0x80d, 0x1ff7, 0x849, 0x207b9, 0x1ff7, 0x0, 0x1ff7, 0x4f,
@@ -40316,16 +45493,20 @@ int GetProcAt(int seg, int ofs)
 {{0x05da, 0x1b13}, 2}, // sub_78b3 retf
 {{0x05da, 0x1bfe}, 2}, // sub_799e retf
 {{0x05da, 0x1d55}, 2}, // sub_7af5 retf
+{{0x07b1, 0x0006}, 2}, // sub_7b16 retf
 {{0x07b1, 0x0063}, 2}, // sub_7b73 retf
 {{0x07b1, 0x0093}, 2}, // sub_7ba3 retf
+{{0x07b1, 0x0466}, 2}, // sub_7f76 retf
 {{0x07b1, 0x0484}, 2}, // sub_7f94 retf
 {{0x07b1, 0x0541}, 2}, // sub_8051 retf
+{{0x07b1, 0x0561}, 2}, // sub_8071 retf
 {{0x07b1, 0x0591}, 2}, // sub_80a1 retf
 {{0x07b1, 0x066d}, 2}, // sub_817d retf
 {{0x07b1, 0x07ea}, 2}, // sub_82fa retf
 {{0x07b1, 0x085b}, 2}, // sub_836b retf
 {{0x07b1, 0x0860}, 2}, // sub_8370 retf
 {{0x07b1, 0x08f4}, 2}, // sub_8404 retf
+{{0x07b1, 0x09f2}, 2}, // sub_8502 retf
 {{0x07b1, 0x0d81}, 2}, // sub_8891 retf
 {{0x08aa, 0x000b}, 2}, // sub_8aab retf
 {{0x08aa, 0x008f}, 2}, // sub_8b2f retf
@@ -40354,14 +45535,17 @@ int GetProcAt(int seg, int ofs)
 {{0x0b02, 0x001d}, 2}, // sub_b03d retf
 {{0x0b02, 0x0083}, 2}, // sub_b0a3 retf
 {{0x0b02, 0x00a1}, 2}, // sub_b0c1 retf
+{{0x0b02, 0x00c6}, 2}, // sub_b0e6 retf
 {{0x0b02, 0x0128}, 2}, // sub_b148 retf
 {{0x0b02, 0x0357}, 2}, // sub_b377 retf
 {{0x0b02, 0x03bc}, 2}, // sub_b3dc retf
 {{0x0b02, 0x03de}, 2}, // sub_b3fe retf
 {{0x0b02, 0x0492}, 2}, // sub_b4b2 retf
+{{0x0b02, 0x0673}, 2}, // sub_b693 retf
 {{0x0b02, 0x06a1}, 2}, // sub_b6c1 retf
 {{0x0b02, 0x079c}, 2}, // sub_b7bc retf
 {{0x0b02, 0x09a5}, 2}, // sub_b9c5 retf
+{{0x0b02, 0x0b2d}, 2}, // sub_bb4d retf
 {{0x0bc9, 0x0005}, 2}, // sub_bc95 retf
 {{0x0bc9, 0x002d}, 2}, // sub_bcbd retf
 {{0x0bc9, 0x0055}, 2}, // sub_bce5 retf
@@ -40376,18 +45560,68 @@ int GetProcAt(int seg, int ofs)
 {{0x0bc9, 0x1097}, 2}, // sub_cd27 retf
 {{0x0bc9, 0x118c}, 2}, // sub_ce1c retf
 {{0x0bc9, 0x120a}, 2}, // sub_ce9a retf
+{{0x0bc9, 0x176e}, 2}, // sub_d3fe retf
+{{0x0d6d, 0x000e}, 2}, // sub_d6de retf
 {{0x0d6d, 0x13e9}, 2}, // sub_eab9 retf
 {{0x0d6d, 0x16cd}, 2}, // sub_ed9d retf
+{{0x0d6d, 0x1775}, 2}, // sub_ee45 retf
+{{0x0d6d, 0x183f}, 2}, // sub_ef0f retf
 {{0x0d6d, 0x18e9}, 2}, // sub_efb9 retf
+{{0x0f7c, 0x0003}, 2}, // sub_f7c3 retf
 {{0x0f7c, 0x0078}, 2}, // sub_f838 retf
 {{0x0f7c, 0x00cb}, 2}, // sub_f88b retf
 {{0x0f7c, 0x014f}, 2}, // sub_f90f retf
 {{0x0f7c, 0x04b8}, 2}, // sub_fc78 retf
+{{0x0f7c, 0x050a}, 2}, // sub_fcca retf
+{{0x0f7c, 0x062e}, 2}, // sub_fdee retf
+{{0x0f7c, 0x06af}, 2}, // sub_fe6f retf
+{{0x0f7c, 0x06f0}, 2}, // sub_feb0 retf
+{{0x0f7c, 0x07ab}, 2}, // sub_ff6b retf
+{{0x0f7c, 0x0826}, 2}, // sub_ffe6 retf
 {{0x0f7c, 0x08a9}, 2}, // sub_10069 retf
 {{0x0f7c, 0x09fd}, 2}, // sub_101bd retf
 {{0x0f7c, 0x0a5b}, 2}, // sub_1021b retf
 {{0x107c, 0x0003}, 2}, // sub_107c3 retf
 {{0x107c, 0x0a66}, 2}, // sub_11226 retf
+{{0x107c, 0x0ba5}, 2}, // sub_11365 retf
+{{0x107c, 0x0cfe}, 2}, // sub_114be retf
+{{0x1195, 0x0000}, 2}, // sub_11950 retf
+{{0x1195, 0x002e}, 2}, // sub_1197e retf
+{{0x1195, 0x008b}, 2}, // sub_119db retf
+{{0x1195, 0x00b3}, 2}, // sub_11a03 retf
+{{0x1195, 0x00db}, 2}, // sub_11a2b retf
+{{0x1195, 0x0103}, 2}, // sub_11a53 retf
+{{0x1195, 0x012b}, 2}, // sub_11a7b retf
+{{0x1195, 0x0153}, 2}, // sub_11aa3 retf
+{{0x1195, 0x017b}, 2}, // sub_11acb retf
+{{0x1195, 0x01a3}, 2}, // sub_11af3 retf
+{{0x1195, 0x020c}, 2}, // sub_11b5c retf
+{{0x1195, 0x024e}, 2}, // sub_11b9e retf
+{{0x1195, 0x0269}, 2}, // sub_11bb9 retf
+{{0x1195, 0x02fe}, 2}, // sub_11c4e retf
+{{0x1195, 0x0445}, 2}, // sub_11d95 retf
+{{0x1195, 0x055d}, 2}, // sub_11ead retf
+{{0x1195, 0x05b9}, 2}, // sub_11f09 retf
+{{0x1195, 0x0a8e}, 2}, // sub_123de retf
+{{0x1195, 0x0b67}, 2}, // sub_124b7 retf
+{{0x126d, 0x0006}, 2}, // sub_126d6 retf
+{{0x126d, 0x01c2}, 2}, // sub_12892 retf
+{{0x126d, 0x039b}, 2}, // sub_12a6b retf
+{{0x126d, 0x06b2}, 2}, // sub_12d82 retf
+{{0x126d, 0x072c}, 2}, // sub_12dfc retf
+{{0x126d, 0x08ea}, 2}, // sub_12fba retf
+{{0x126d, 0x0ac8}, 2}, // sub_13198 retf
+{{0x126d, 0x0cab}, 2}, // sub_1337b retf
+{{0x126d, 0x10fc}, 2}, // sub_137cc retf
+{{0x138f, 0x000e}, 2}, // sub_138fe retf
+{{0x138f, 0x0447}, 2}, // sub_13d37 retf
+{{0x138f, 0x0690}, 2}, // sub_13f80 retf
+{{0x138f, 0x0aa7}, 2}, // sub_14397 retf
+{{0x138f, 0x0b5f}, 2}, // sub_1444f retf
+{{0x138f, 0x0cec}, 2}, // sub_145dc retf
+{{0x138f, 0x0db5}, 2}, // sub_146a5 retf
+{{0x138f, 0x0e3b}, 2}, // sub_1472b retf
+{{0x138f, 0x0fd1}, 2}, // sub_148c1 retf
 {{0x1493, 0x000f}, 2}, // sub_1493f retf
 {{0x1493, 0x0094}, 2}, // sub_149c4 retf
 {{0x1493, 0x00f4}, 2}, // sub_14a24 retf
@@ -40475,6 +45709,7 @@ int GetProcAt(int seg, int ofs)
 {{0x1841, 0x071a}, 2}, // sub_18b2a retf
 {{0x1841, 0x0868}, 2}, // sub_18c78 retf
 {{0x1841, 0x08ab}, 2}, // sub_18cbb retf
+{{0x1841, 0x08ef}, 2}, // sub_18cff retf
 {{0x1841, 0x0946}, 2}, // sub_18d56 retf
 {{0x1841, 0x0a31}, 2}, // sub_18e41 retf
 {{0x1841, 0x0a78}, 2}, // sub_18e88 retf
@@ -40484,6 +45719,8 @@ int GetProcAt(int seg, int ofs)
 {{0x1841, 0x0c50}, 2}, // sub_19060 retf
 {{0x1841, 0x0c62}, 2}, // sub_19072 retf
 {{0x1841, 0x0d59}, 2}, // sub_19169 retf
+{{0x1841, 0x0d78}, 2}, // sub_19188 retf
+{{0x1841, 0x0f28}, 2}, // sub_19338 retf
 {{0x1841, 0x1025}, 2}, // sub_19435 retf
 {{0x1841, 0x1220}, 2}, // sub_19630 retf
 {{0x1841, 0x12ec}, 2}, // sub_196fc retf
@@ -40600,6 +45837,7 @@ int GetProcAt(int seg, int ofs)
 {{0x1ef3, 0x00e9}, 2}, // sub_1f019 retf
 {{0x1ef3, 0x0152}, 2}, // sub_1f082 retf
 {{0x1ef3, 0x016f}, 2}, // sub_1f09f retf
+{{0x1ef3, 0x01c2}, 2}, // sub_1f0f2 retf
 {{0x1ef3, 0x02dd}, 2}, // sub_1f20d retf
 {{0x1ef3, 0x030d}, 2}, // sub_1f23d retf
 {{0x1ef3, 0x035c}, 2}, // sub_1f28c retf

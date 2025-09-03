@@ -201,10 +201,12 @@ public:
             if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
 
-            if (mOptions.GetJumpTable(pinstr->mAddress))
+            if (mOptions.GetJumpTables(pinstr->mAddress).size())
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
-                DumpIndirectTable(mOptions.GetJumpTable(pinstr->mAddress));
+                // TODO!
+                for (shared<jumpTable_t> jt : mOptions.GetJumpTables(pinstr->mAddress))
+                    DumpIndirectTable(jt);
             } else
             if (convert[pinstr->mId].convert)
             {
