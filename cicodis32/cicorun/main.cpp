@@ -94,6 +94,9 @@ public:
     virtual uint8_t ReadMemory(int seg, int ofs) override { assert(0); return 0;}
     virtual void sync() override
     {
+        for (int y=0; y<200; y++)
+          for (int x=0; x<320; x++)
+            sdl.SetPixel(x, y, GetPixel(x, y));
         sdl.Loop();
     }
 } text;
@@ -106,14 +109,22 @@ void sync()
 {
     video->sync();
 //    memoryASet16(0x2ec1, 0x2b5e, memoryAGet16(0x2ec1, 0x2b5e) + 1);
+    // cc1
 //    memoryASet16(0x2ec1, 0x2b60, memoryAGet16(0x2ec1, 0x2b60) + 1);
 //    memoryASet16(0x2ec1, 0x2b60, memoryAGet16(0x2ec1, 0x2b60) % 0x200);
 
+    
+    // ck4
+    int x = memoryAGet16(ds, 0xa53d);
+    x += 5;
+    memoryASet16(ds, 0xa53d, x);
+    if (x >= 0x10000)
+        memoryASet16(ds, 0xa53e, memoryAGet16(ds, 0xa53e)+1);
     // ck1
-    memoryASet16(ds, 0x5135, memoryAGet16(ds, 0x5135) + 6);
+//    memoryASet16(ds, 0x5135, memoryAGet16(ds, 0x5135) + 6);
 }
 
-//void sub_25f7(int scancode);
+void sub_25f7(int scancode);
 int lastKey = 0;
 /*
 void onKey(int k, int p)
@@ -247,14 +258,22 @@ void onKey(int k, int p)
     case SDL_SCANCODE_RIGHT: memoryASet(ds, 0x338f, p); break;
     case SDL_SCANCODE_DOWN: memoryASet(ds, 0x3390, p); break;
             case SDL_SCANCODE_SPACE: lastKey = p;
-                scancode = 0x29 + p * 128;
+                //scancode = 0x29 + p * 128;
+                memoryASet16(ds, 0x2b5e, p ? 0x29 : 0x29 + 128);
                 break; // ? 1 : 0; break; // enter
-            case SDL_SCANCODE_N: scancode = 0x31 - 1 + (1-p) * 128; break;
+            case SDL_SCANCODE_N:
+//                scancode = 0x31 - 1 + (1-p) * 128;
+                memoryASet16(ds, 0x2b5e, p ? 0x31 : 0x31 + 128);
+                memoryASet16(ds, 0xa0b4, 0); break;
 //            case SDL_SCANCODE_1: scancode = 0x60 + p * 128; break;
 //            case SDL_SCANCODE_2: scancode = 12 + p * 128; break;
 //            case SDL_SCANCODE_3: scancode = 1 + p * 128; break;
 //            case SDL_SCANCODE_4: scancode = 6 + p * 128; break;
-            case SDL_SCANCODE_1: scancode = 0x01 -1 + (1-p) * 128; break;
+            case SDL_SCANCODE_1:
+                memoryASet16(ds, 0x2b5e, p ? 1 : 1 + 128);
+                memoryASet16(ds, 0xa0b4, 0);
+                break;
+
 /*
  kbmap 2ec1:2b40=1 ESC
  kbmap 2ec1:2b41=31 N // xxx crash - new game?
@@ -272,9 +291,15 @@ void onKey(int k, int p)
  kbmap 2ec1:2b4d=2f 'V' // video compatibility
  */
         }
-        assert(0);
+        //assert(0);
 //        if (scancode != -1)
-//            sub_25f7(scancode);
+//        {
+////            sub_25f7(scancode);
+//            memoryASet16(ds, 0x2b5e, scancode+1);
+////            ax = 0;
+//            memoryASet16(ds, 0xa0b4, 0);
+//
+//        }
     }
     if (strstr(root, "keen1."))
     {
@@ -298,8 +323,19 @@ void onKey(int k, int p)
             memoryASet(0x14f2, scancode + 20524, p);
         }
     }
+    if (strstr(root, "keen4."))
+    {
+        int scancode = 0;
+        switch (k)
+        {
+            case SDL_SCANCODE_SPACE: memoryASet(0x30d4, 0xc643, p); break;
+            case SDL_SCANCODE_UP: memoryASet(0x30d4, 0xa545, p ? 0x48 : 0); break;
+            case SDL_SCANCODE_DOWN: memoryASet(0x30d4, 0xa545, p ? 0x50 : 0); break;
+            case SDL_SCANCODE_RETURN: memoryASet(0x30d4, 0xa545, p ? 0x1c : 0);break;
 
-
+                
+        }
+    }
 }
 /*
 void onKey(int k, int p)
@@ -364,11 +400,6 @@ void load(const char* path_, const char* file, int size)
 
 void memoryASet(int s, int o, int v)
 {
-    if (s*16+o == 0x38fa0 +0x3ed0)
-    {
-        int f = 9;
-    }
-    
     if (s*16+o == 0x2ec10 + 0x4615)
     {
         int f = 9;
@@ -376,7 +407,8 @@ void memoryASet(int s, int o, int v)
     int proc = GetProcAt(s, o);
     if(proc!=0)
     {
-        printf("Writing to code %04x:%0x in sub_%x()\n", s, o, proc);
+        printf("Writing to code %04x:%0x in sub_%x(), prev %02x, new %02x\n", s, o, proc,
+               memoryAGet(s, o), v);
     }
 
     if (s == 0x7777)
@@ -429,12 +461,6 @@ void memoryASet16(int s, int o, int v)
         int f = 9;
     }
 
-    if (s*16+o == 0x2ec10 + 0x4615)
-    {
-        printf("NA: write 2ec1:4615=%04x\n", v);
-        int f = 9;
-    }
-
     o &= 0xffff;
     assert(o <= 0xffff);
     int p = GetProcAt(s, o);
@@ -481,7 +507,7 @@ void memoryASet16(int s, int o, int v)
         return;
     if (s == 0x0000)
     {
-        printf("skip %x:%x = %x\n", s, o, v);
+        printf("skip bios write %x:%x = %x\n", s, o, v);
         return;
     }
 
@@ -601,9 +627,19 @@ uint32_t memoryAGet32(int s, int o)
 
 void interrupt(int i)
 {
+    struct fileslot_t {
+        bool opened{false};
+        int handle{-1};
+        int offset{0};
+        char name[1024] = {0};
+        std::vector<uint8_t> data;
+    };
+    static fileslot_t slots[32];
+    static int slotCounter = 0;
+    
     //static FILE* f = nullptr;
-    static std::vector<uint8_t> currentFile;
-    static int currentFileOffset;
+    //static std::vector<uint8_t> currentFile;
+    //static int currentFileOffset;
     
     if (i == 0x12)
     {
@@ -642,36 +678,47 @@ void interrupt(int i)
             if (fullname[i] == '\\')
                 fullname[i] = '/';
         
-        if (!currentFile.empty())
-        {
-            printf("Warning single file not closed!\n");
-            currentFile.clear();
-        }
-        assert(currentFile.empty());
-        currentFile = getFileContents(fullname);
-        currentFileOffset = 0;
+//        if (!currentFile.empty())
+//        {
+//            printf("Warning single file not closed!\n");
+//            currentFile.clear();
+//        }
+//        assert(currentFile.empty());
+        assert(slotCounter < sizeof(slots)/sizeof(slots[0]));
+        
+        std::vector<uint8_t> data = getFileContents(fullname);
 
-        if (currentFile.empty())
+        if (data.empty())
         {
             printf("Not found: %s\n", fullname);
             flags.carry = 1;
             ax = 0;
         } else {
-            printf("Opening %s\n", fullname);
+
+            slots[slotCounter].opened = true;
+            slots[slotCounter].handle = 0xb0+slotCounter;
+            slots[slotCounter].offset = 0;
+            strncpy(slots[slotCounter].name, fullname, sizeof(slots[slotCounter].name));
+            slots[slotCounter].data = std::move(data);
+
+            ax = slots[slotCounter].handle;
             flags.carry = 0;
-            ax = 1;
+            printf("Opening %s as %x\n", fullname, ax);
+            slotCounter++;
         }
         return;
     }
     if (i == 0x21 && ah == 0x3f)
     {
-        assert(!currentFile.empty());
+        fileslot_t& slot = slots[bx-0xb0];
+        assert(slot.handle == bx);
+        assert(slot.opened);
         assert(ds < 0xa000);
 //        uint8_t* buf = new uint8_t[cx];
         
         int c = cx;
-        if (c > currentFile.size() - currentFileOffset)
-            c = currentFile.size() - currentFileOffset;
+        if (c > slot.data.size() - slot.offset)
+            c = slot.data.size() - slot.offset;
         if (c <= 0)
         {
             ax = 0;
@@ -684,8 +731,8 @@ void interrupt(int i)
         int linear = (ds-loadAddress)*16 + dx;
         assert (linear >= 0 && linear+c < memorySize);
         //memcpy(&memory[linear], buf, c);
-        memcpy(&memory[linear], &currentFile[currentFileOffset], c);
-        currentFileOffset += c;
+        memcpy(&memory[linear], &slot.data[slot.offset], c);
+        slot.offset += c;
 //        delete[] buf;
         ax = c;
         flags.carry = 0;
@@ -693,32 +740,55 @@ void interrupt(int i)
     }
     if (i == 0x21 && ah == 0x3e)
     {
-        currentFile.clear();
-        //fclose(f);
-//        f = nullptr;
+        fileslot_t& slot = slots[bx-0xb0];
+        assert(slot.handle == bx);
+        assert(slot.opened);
+
+        printf("Closing %s as %x\n", slot.name, slot.handle);
+        slot.data.clear();
+        slot.opened = false;
         return;
     }
     if (i == 0x21 && ah == 0x42 && al == 0x00)
     {
-        assert(!currentFile.empty());
-        currentFileOffset = cx*0x10000 + dx;
+        fileslot_t& slot = slots[bx-0xb0];
+        assert(slot.handle == bx);
+        assert(slot.opened);
+
+        if (slot.data.empty())
+        {
+            flags.carry = 1;
+            return;
+        }
+        assert(!slot.data.empty());
+        slot.offset = cx*0x10000 + dx;
+        assert(slot.offset <= slot.data.size());
         flags.carry = 0;
         return;        
     }
     if (i == 0x21 && ah == 0x42 && al == 0x01)
     {
-        assert(!currentFile.empty());
-        currentFileOffset += cx*0x10000 + dx;
+        fileslot_t& slot = slots[bx-0xb0];
+        assert(slot.handle == bx);
+        assert(slot.opened);
+        assert(slot.data.empty());
+
+        slot.offset += cx*0x10000 + dx;
+        assert(slot.offset <= slot.data.size());
         flags.carry = 0;
         return;
     }
     if (i == 0x21 && ah == 0x42 && al == 0x02)
     {
-        assert(!currentFile.empty());
+        fileslot_t& slot = slots[bx-0xb0];
+        assert(slot.handle == bx);
+        assert(slot.opened);
+        assert(slot.data.empty());
+
         assert(cx == 0 && dx == 0);
-        currentFileOffset = currentFile.size();
-        ax = currentFileOffset & 0xffff;
-        dx = currentFileOffset >> 16;
+        slot.offset = slot.data.size();
+        ax = slot.offset & 0xffff;
+        dx = slot.offset >> 16;
         flags.carry = 0;
         return;
     }
@@ -862,6 +932,8 @@ void interrupt(int i)
         flags.carry = false;
         return;
     }
+    if (i==0x2f)
+        return;
 
     assert(0);
 }

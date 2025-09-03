@@ -181,7 +181,7 @@ public:
             {
 //                assert(pinfo->savePrezcondition.size()==1);
                 for (const auto& prec : pinfo->savePrecondition)
-                    mCode.push_back("    " + prec.variable + " = " + iformat(pinstr, pinfo, info->func, precondition(pinstr, prec.readOp)) + ";\n");
+                    mCode.push_back("    " + prec.variable + " = " + iformat(pinstr, pinfo, info->func, preCondition(pinstr, prec.readOp)) + ";\n");
             }
 
             if (pinfo->infiniteLoop)
@@ -252,8 +252,8 @@ public:
                 if (flag->save && !flag->depends.empty())
                     tempNames.insert(utils::format("temp_%cf", flag->type));
 
-            if (!pinfo->savePrecondition.empty())
-                tempNames.insert(pinfo->savePrecondition[0].variable);
+            for (const auto& p : pinfo->savePrecondition)
+                tempNames.insert(p.variable);
         }
         return tempNames;
     }
@@ -281,24 +281,44 @@ public:
         mCode.push_back(format("            stop();\n"));
         mCode.push_back(format("    }\n"));
     }
-    
-    std::string precondition(shared<CapInstr> instr, x86_insn cond)
+    std::string preCondition(shared<CapInstr> instr, x86_insn cond)
     {
         x86_insn set = instr->mId;
+
         if (set == X86_INS_ADD && cond == X86_INS_JG)
             return "($sig0)$rd0 + ($sig0)$rd1 > 0";
         if (set == X86_INS_ADD && cond == X86_INS_JL)
             return "($sig0)$rd0 + ($sig0)$rd1 < 0";
         if (set == X86_INS_ADD && cond == X86_INS_JLE)
             return "($sig0)$rd0 + ($sig0)$rd1 <= 0";
+        if (set == X86_INS_INC && cond == X86_INS_JLE)
+            return "($sig0)$rd0 + 1 <= 0";
+        if (set == X86_INS_INC && cond == X86_INS_JGE)
+            return "($sig0)$rd0 + 1 >= 0";
+
         if (set == X86_INS_SUB && cond == X86_INS_JG)
             return "($sig0)$rd0 - ($sig0)$rd1 > 0";
         if (set == X86_INS_SUB && cond == X86_INS_JLE)
             return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
         if (set == X86_INS_SUB && cond == X86_INS_JA)
             return "$rd0 - $rd1 > 0";
-        
-        // simple
+        if (set == X86_INS_SUB && cond == X86_INS_JGE)
+            return "($sig0)$rd0 - ($sig0)$rd1 >= 0";
+        if (set == X86_INS_DEC && cond == X86_INS_JL)
+            return "($sig0)$rd0 - 1 < 0";
+        if (set == X86_INS_DEC && cond == X86_INS_JLE)
+            return "($sig0)$rd0 - 1 <= 0";
+        if (set == X86_INS_DEC && cond == X86_INS_JG)
+            return "($sig0)$rd0 - 1 > 0";
+        if (set == X86_INS_DEC && cond == X86_INS_JGE)
+            return "($sig0)$rd0 - 1 >= 0";
+        assert(0);
+        return "";
+    }
+    std::string postCondition(shared<CapInstr> instr, x86_insn cond)
+    {
+        x86_insn set = instr->mId;
+
         if (set == X86_INS_CMP && cond == X86_INS_JGE)
             return "($sig0)$rd0 >= ($sig0)$rd1";
         if (set == X86_INS_CMP && cond == X86_INS_JLE)
@@ -311,36 +331,127 @@ public:
             return "($sig0)$rd0 < ($sig0)$rd1";
         if (set == X86_INS_CMP && cond == X86_INS_JBE)
             return "$rd0 <= $rd1";
-        if (set == X86_INS_OR && cond == X86_INS_JA) // cf=0, zf=?, ja: !cf & !zf
-            return "!$rd0 /*ggg6*/";
-        if (set == X86_INS_OR && cond == X86_INS_JGE)
-            return "($sig0)$rd0 >= 0";
-        if (set == X86_INS_OR && cond == X86_INS_JLE)
-            return "($sig0)$rd0 <= 0";
-        if (set == X86_INS_OR && cond == X86_INS_JL)
-            return "($sig0)$rd0 < 0";
+
         if (set == X86_INS_CALL && cond == X86_INS_JA)
             return "!flags.carry && !flags.zero";
         if (set == X86_INS_CALL && cond == X86_INS_JBE)
             return "flags.carry || flags.zero";
-        if (set == X86_INS_OR && cond == X86_INS_JBE)
-            return "!$rd0";
-        if (set == X86_INS_DEC && cond == X86_INS_JG)
-            return "($sig0)$rd0 > 0 POST"; // check unbalanced POST!
-        if (set == X86_INS_TEST && cond == X86_INS_JLE)
-            return "($sig0)($rd0 & $rd1) <= 0 /*test+jle check*/";
-        if (set == X86_INS_OR && cond == X86_INS_JG)
-            return "($sig0)$rd0 > 0";
-        if (set == X86_INS_DEC && cond == X86_INS_JLE)
-            return "($sig0)$rd0 <= 0 POST"; // POST!
-        if (set == X86_INS_INC && cond == X86_INS_JLE)
-            return "($sig0)$rd0 <= 0 POST"; // POST!
-        if (set == X86_INS_SUB && cond == X86_INS_JGE)
-            return "($sig0)$rd0 >= 0 POST";
+        
+        if (set == X86_INS_OR && instr->ArgsEqual()) // test
+        {
+            switch (cond)
+            {
+                case X86_INS_JGE:
+                        return "($sig0)$rd0 >= 0";
+                case X86_INS_JG:
+                        return "($sig0)$rd0 > 0";
+                case X86_INS_JLE:
+                        return "($sig0)$rd0 <= 0";
+                case X86_INS_JL:
+                        return "($sig0)$rd0 < 0";
+                case X86_INS_JBE:
+                        return "!$rd0"; // or, jbe?
+                case X86_INS_JA:
+                        return "$rd0"; // or, ja?
+                default:
+                    assert(0);
+            }
+        }
+            
 
         assert(0);
         return "";
     }
+
+//    std::string _condition(shared<CapInstr> instr, x86_insn cond)
+//    {
+//        // todo: split precondition, postcondition
+//        x86_insn set = instr->mId;
+//        bool probe = ((set == X86_INS_OR || set == X86_INS_TEST) && instr->ArgsEqual()); // test !!
+//        if (probe)
+//        {
+//            switch (cond)
+//            {
+//                case X86_INS_JGE:
+//                        return "($sig0)$rd0 >= 0";
+//                case X86_INS_JG:
+//                        return "($sig0)$rd0 > 0";
+//                case X86_INS_JLE:
+//                        return "($sig0)$rd0 <= 0";
+//                case X86_INS_JL:
+//                        return "($sig0)$rd0 < 0";
+//                case X86_INS_JBE:
+//                        return "!$rd0"; // or, jbe?
+//                default:
+//                    assert(0);
+//            }
+//        }
+//            
+//        if (set == X86_INS_ADD && cond == X86_INS_JG)
+//            return "($sig0)$rd0 + ($sig0)$rd1 > 0";
+//        if (set == X86_INS_ADD && cond == X86_INS_JL)
+//            return "($sig0)$rd0 + ($sig0)$rd1 < 0";
+//        if (set == X86_INS_ADD && cond == X86_INS_JLE)
+//            return "($sig0)$rd0 + ($sig0)$rd1 <= 0";
+//        if (set == X86_INS_INC && cond == X86_INS_JLE)
+//            return "($sig0)$rd0 + 1 <= 0";
+//        
+//        if (set == X86_INS_SUB && cond == X86_INS_JG)
+//            return "($sig0)$rd0 - ($sig0)$rd1 > 0";
+//        if (set == X86_INS_SUB && cond == X86_INS_JLE)
+//            return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
+//        if (set == X86_INS_SUB && cond == X86_INS_JA)
+//            return "$rd0 - $rd1 > 0";
+//        if (set == X86_INS_SUB && cond == X86_INS_JGE)
+//            return "($sig0)$rd0 - ($sig0)$rd1 >= 0";
+//        if (set == X86_INS_DEC && cond == X86_INS_JLE)
+//            return "($sig0)$rd0 - 1 <= 0";
+//        if (set == X86_INS_DEC && cond == X86_INS_JG)
+//            return "($sig0)$rd0 - 1 > 0";
+//
+//        // simple
+//        if (set == X86_INS_CMP && cond == X86_INS_JGE)
+//            return "($sig0)$rd0 >= ($sig0)$rd1";
+//        if (set == X86_INS_CMP && cond == X86_INS_JLE)
+//            return "($sig0)$rd0 <= ($sig0)$rd1";
+//        if (set == X86_INS_CMP && cond == X86_INS_JA)
+//            return "$rd0 > $rd1";
+//        if (set == X86_INS_CMP && cond == X86_INS_JG)
+//            return "($sig0)$rd0 > ($sig0)$rd1";
+//        if (set == X86_INS_CMP && cond == X86_INS_JL)
+//            return "($sig0)$rd0 < ($sig0)$rd1";
+//        if (set == X86_INS_CMP && cond == X86_INS_JBE)
+//            return "$rd0 <= $rd1";
+//
+//        if (set == X86_INS_CALL && cond == X86_INS_JA)
+//            return "!flags.carry && !flags.zero";
+//        if (set == X86_INS_CALL && cond == X86_INS_JBE)
+//            return "flags.carry || flags.zero";
+//
+////        if (set == X86_INS_OR && cond == X86_INS_JA) // cf=0, zf=?, ja: !cf & !zf
+////            return "!$rd0 /*ggg6*/ POST or/ja";
+////        if (set == X86_INS_OR && cond == X86_INS_JGE)
+////            return "($sig0)$rd0 >= 0 POST or/jge";
+////        if (set == X86_INS_OR && cond == X86_INS_JLE)
+////            return "($sig0)$rd0 <= 0 POST or/jle";
+////        if (set == X86_INS_OR && cond == X86_INS_JL)
+////            return "($sig0)$rd0 < 0 POST or/jl";
+////        if (set == X86_INS_OR && cond == X86_INS_JBE)
+////            return "!$rd0 POST or/jbe";
+////        if (set == X86_INS_DEC && cond == X86_INS_JG)
+////            return "($sig0)$rd0 > 0 POST dec/jg"; // check unbalanced POST!
+////        if (set == X86_INS_TEST && cond == X86_INS_JLE)
+////            return "($sig0)($rd0 & $rd1) <= 0 CHECK";
+////        if (set == X86_INS_OR && cond == X86_INS_JG)
+////            return "($sig0)$rd0 > 0 POST";
+////        if (set == X86_INS_DEC && cond == X86_INS_JLE)
+////            return "($sig0)$rd0 <= 0 POST dec/jle"; // POST!
+////        if (set == X86_INS_INC && cond == X86_INS_JLE)
+////            return "($sig0)$rd0 <= 0 POST inc/jle"; // POST!
+//
+//        assert(0);
+//        return "";
+//    }
     
     std::string InvertCondition(std::string cond)
     {
@@ -516,7 +627,7 @@ public:
         {
             assert(lastSet.size() == 1);
             shared<instrInfo_t> lastSetInfo = mInfo->code.find(*lastSet.begin())->second;
-            return iformat(lastSetInfo->instr, lastSetInfo, func, precondition(lastSetInfo->instr, instr->mId));
+            return iformat(lastSetInfo->instr, lastSetInfo, func, postCondition(lastSetInfo->instr, instr->mId));
         }
 //        assert(0);
         return "stop(\"build_condition_failed\")";

@@ -33,10 +33,12 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsBumpy;
 //    Options options = Profiles::optionsAv;
 //    Options options = Profiles::optionsCC1;
-    Options options = Profiles::optionsCK1;
+//    Options options = Profiles::optionsCK1;
+    Options options = Profiles::optionsCK4;
 //    options.verbose = true;
     options.printProcAddress = true;
     options.printLabelAddress = true;
+//    options.verboseAsm = true;
     
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
@@ -227,7 +229,7 @@ int main(int argc, char **argv) {
     }
     printf("    };\n");
     printf("    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)\n");
-    printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs <= map[i+3]*16 + map[i+4])\n");
+    printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs < map[i+3]*16 + map[i+4])\n");
     printf("            return map[i];\n");
     printf("    return 0;\n");
     printf("}\n");
@@ -282,6 +284,8 @@ int main(int argc, char **argv) {
                     shared<instrInfo_t> prev = info->code.find(*instr->instr->mPrev.begin())->second;
                     if (prev->instr->mId == X86_INS_POP && strcmp(prev->instr->mOperands, "cs")==0)
                         retCs = true;
+//                    if (prev->instr->mId == X86_INS_ADD && strstr(prev->instr->mOperands, "sp, "))
+//                        retArgs.insert(prev->instr->Imm());
                 }
             }
             //shared<instrInfo_t>
@@ -293,16 +297,14 @@ int main(int argc, char **argv) {
             else
                 printf("// Mixed ret in %04x:%04x sub_%x()\n", proc.segment, proc.offset, proc.linearOffset());
         }
-        if (retArgs.size()==1 && *retArgs.begin() != 0)
+        if (retArgs.size()==1 && (*retArgs.begin() != 0 || instrRetf))
         {
 //                    assert(retArgs.size() == 1);  xv xvxvx
 //                    if (retCs)
 //                        printf("{{0x%04x, 0x%04x}, procRequest_t((int)procRequest_t::stackDrop%d | (int)procRequest_t::popsCs)}, // %s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2, instr->instr->mMnemonic);
 //                    else
             printf("{{0x%04x, 0x%04x}, %d}, // sub_%x%s%s%s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2 + instrRetf*2, proc.linearOffset(), instrRet ? " ret" : "", instrRetf ? " retf" : "", retCs ? " popcs" : "");
-
         }
-
         /*
          shared <Analyser::info_t> mInfo;
      //    shared<CTracer> mTracer;

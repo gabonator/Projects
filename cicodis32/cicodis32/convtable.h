@@ -419,4 +419,5 @@ convert_t convert[X86_INS_ENDING] = {
     } },
     
     [X86_INS_AAD] = {.convert = [](convert_args){ return "stop(\"aad\");"; } },
+//    [X86_INS_DAS] = {.convert = [](convert_args){return "stop(\"das\")";} },
 };

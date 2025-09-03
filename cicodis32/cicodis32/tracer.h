@@ -87,6 +87,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_STC] = { .savedVisiblyCarry = true },
     [X86_INS_CLC] = { .savedVisiblyCarry = true },
     [X86_INS_CMC] = { .savedVisiblyCarry = true },
+    [X86_INS_INC] = { .destructiveCarry = true },
+    [X86_INS_DEC] = { .destructiveCarry = true },
 
     [X86_INS_SAHF] = { .savedVisiblyCarry = true },
     [X86_INS_CMPSB] = { .savedVisiblyCarry = true }, // ZERO!

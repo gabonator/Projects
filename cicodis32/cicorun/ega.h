@@ -1,3 +1,5 @@
+extern unsigned char cga_font[2048];
+
 class CVideoAdapter
 {
 public:
@@ -248,10 +250,44 @@ public:
             cl=0;
             return true;
         }
+        if (ah=0x1b)
+        {
+            uint8_t data[] = {
+                0x00, 0x27, 0x00, 0xC0, 0x0D, 0x28, 0x00, 0x00,
+                0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x07, 0x06, 0x00, 0xD4, 0x03,
+                0x29, 0x30, 0x19, 0x08, 0x00, 0x08, 0x00, 0x10,
+                0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+                0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+            };
+
+            for (int i=0; i<64; i++)
+                memoryASet(es, di+i, data[i]);
+            al = 0x1b;
+            return true;
+        }
+        if (ah == 0x1a)
+        {
+            al = 0x1a;
+            bx = 0x0404;
+            return true;
+        }
+        /*
+            case 0x0f:
+                return true;
+            case 0x1a:
+                al = 0x1a;
+                bx = 0x0404;
+                return true;
+         */
+
         assert(0);
         return false;
     }
     int last3c4reg = 0;
+    int rowOffset = 40;
     virtual bool PortWrite16(int port, int data) override
     {
         if ( port == 0x3c4 )
@@ -289,14 +325,19 @@ public:
             if ( (data & 0x00ff) == 0x0c )
             {
                 SetAddrHi( data >>8 );
-                sync();
                 return true;
             }
             if ( (data & 0x00ff) == 0x0d )
             {
                 SetAddrLo( data >> 8);
+                sync();
                 return true;
             }
+            if ((data & 0x00ff) == 0x13)
+            {
+                rowOffset = data >> 8;
+            }
+
             printf("Skip video write out %x, %x\n", port, data);
             return true;
         }
@@ -516,10 +557,20 @@ public:
     
     virtual uint32_t GetPixel(int x, int y) override
     {
-        mPitch = 240; //120; //;240; // 3 col
         uint8_t* _video = (uint8_t*)egamemory;
-        uint32_t off = (int)y/5 * mPitch + (int)y%5 * (mPitch/5) + ((int)x / 8L);
-        
+        const int alternative = 2;
+        if (alternative == 2)
+        {
+            mPitch = rowOffset*2; // 248;
+            //off = (y)*(248) + x/8;
+        }
+
+        uint32_t off = (int)y * mPitch + ((int)x / 8L);
+        if (alternative == 1)
+        {
+            mPitch = 240;
+            off = (int)y/5 * mPitch + (int)y%5 * (mPitch/5) + ((int)x / 8L);
+        }
         int mask = 0x80 >> (x % 8);
         int page = cfgAddr;
         int shift = page*4;
@@ -1003,6 +1054,7 @@ public:
 
 class CText : public CVideoAdapter
 {
+    uint8_t buffer[80*25*2];
 public:
     virtual bool PortWrite8(int port, int data) override
     {
@@ -1023,13 +1075,30 @@ public:
 
     virtual bool Interrupt() override
     {
-        printf("Text intr ax=%x\n", ax);
-        return true;
+        switch (ah)
+        {
+            case 0x0f:
+                return true;
+            case 0x1a:
+                al = 0x1a;
+                bx = 0x0404;
+                return true;
+            default:
+                printf("UNIMPLEMENTED: Text intr ax=%x\n", ax);
+                return true;
+        }
     }
 
     virtual void Write(uint32_t dwAddr, uint8_t bWrite) override
     {
-        printf("Text write %x = %x\n", dwAddr, bWrite);
+        dwAddr -= 0xb8000;
+        if (dwAddr < sizeof(buffer))
+            buffer[dwAddr] = bWrite;
+        else
+            printf("Text write %x = %x\n", dwAddr, bWrite);
+//        static int cnt=0;
+//        if (cnt++%200 == 0)
+//            sync();
     }
 
     virtual uint8_t Read(uint32_t dwAddr) override
@@ -1040,6 +1109,18 @@ public:
 
     uint32_t GetPixel(int x, int y) override
     {
+        int row = y/8;
+        int col = x/8;
+        int subx = x%8;
+        int suby = y%8;
+        int chr = buffer[(row*80+col)*2];
+        int attr = buffer[(row*80+col)*2+1];
+
+        if (cga_font[chr*8+suby] & (128>>subx))
+            return 0xffffffff;
+        else
+            return 0x00000000;
+        
         return 0;
     }
 };
