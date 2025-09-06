@@ -227,6 +227,7 @@ public:
     std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
     std::set<address_t> marks;
+    std::set<address_t> indirects;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {
         std::vector<shared<jumpTable_t>> aux;

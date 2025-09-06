@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsAv;
 //    Options options = Profiles::optionsCC1;
 //    Options options = Profiles::optionsCK1;
-    Options options = Profiles::optionsCK4;
+    Options options = Profiles::optionsCK4a;
 //    options.verbose = true;
     options.printProcAddress = true;
     options.printLabelAddress = true;
@@ -49,6 +49,9 @@ int main(int argc, char **argv) {
         loader.reset(new LoaderLe);
     else
         assert(0);
+    
+    for (int i=1; i<argc; i++)
+        options.indirects.insert(address_t::fromString(argv[i]));
     
     if (!loader->LoadFile(options.exec, options.loadAddress))
     {
@@ -94,13 +97,18 @@ int main(int argc, char **argv) {
         for (int i=0; i<j->GetSize(); i++)
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
-    
+
+    for (address_t proc : options.indirects)
+    {
+        startEntries.push_back(proc);
+    }
+
     for (address_t p : startEntries)
     {
         if (options.procModifiers.find(p) == options.procModifiers.end())
             options.procModifiers.insert({p, procRequest_t::callNear});
     }
-
+    
     printf("#include \"cico%s.h\"\n\n", options.arch == arch_t::arch16 ? "16" : "32");
     
     if (options.relocations)
@@ -123,15 +131,29 @@ int main(int argc, char **argv) {
     }
 
     printf(R"(
+    #include <stdio.h>
+
     void callIndirect(int s, int o)
     {
-        stop("ind");
+        switch (s*0x10000+o)
+        {
+)");
+    for (address_t proc : options.indirects)
+    {
+        printf("            case 0x%x: sub_%x(); break;\n", proc.segment*0x10000 + proc.offset, proc.linearOffset());
+    }
+    printf(R"(
+            default:
+                printf("\nMISSING INDIRECT %%04x:%%04x\n", s, o);
+                exit(3);
+        }
     }
 
     void indirectJump(int s, int o)
     {
         stop("ind");
     }
+
 )");
     
     if (anyIndirectTable)

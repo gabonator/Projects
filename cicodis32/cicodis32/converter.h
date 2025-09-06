@@ -280,7 +280,7 @@ public:
                 mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
             }
         mCode.push_back(format("        default:\n"));
-        mCode.push_back(format("            stop();\n"));
+        mCode.push_back(format("            stop(\"ind %04x:%04x\");\n", jt->instruction.segment, jt->instruction.offset));
         mCode.push_back(format("    }\n"));
     }
     std::string preCondition(shared<CapInstr> instr, x86_insn cond)
