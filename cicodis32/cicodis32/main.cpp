@@ -23,7 +23,8 @@
 #include "analyserInstruction.h"
 #include "formatter.h"
 #include "converter.h"
-#include "profiles.h"
+//#include "profiles.h"
+#include "json.h"
 
 int main(int argc, char **argv) {
 //    Options options = Profiles::optionsGoose;
@@ -34,12 +35,97 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsAv;
 //    Options options = Profiles::optionsCC1;
 //    Options options = Profiles::optionsCK1;
-    Options options = Profiles::optionsCK4a;
+//    Options options = Profiles::optionsCK4a;
 //    options.verbose = true;
+    Options options;
     options.printProcAddress = true;
     options.printLabelAddress = true;
 //    options.verboseAsm = true;
+
+#if 1
+    assert(argc==2);
+    std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
+    assert(!optFile.empty());
     
+    const char* strJson = (const char*)&optFile[0]; //R"({"id": "config", "loader": "LoaderMz", "executable": "KEEN4.EXE", "architecture": "arch16", "loadAddres": 0x01ed0})";
+#else
+    std::string strJson = R"({"id": "config", "loader": "LoaderMz", "executable": "KEEN4.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "verboseAsm": false}
+//{"id": "config", "recursive": false, "relocations": false, "verboseAsm": true, "procList": ["01ed:35e1"]}
+{"id": "indirectCall", "proc": "01ed:12a3"}
+{"id": "inject", "addr": "01ed:35e1", "text": "//quiet"})";
+#endif
+
+    for (std::string line : utils::split(strJson, "\n"))
+    {
+        if (line.empty() || line.starts_with("//"))
+            continue;
+        CJson json(line.c_str());
+        if (json["id"] == "config")
+        {
+            json.ForEach([&](const CSubstring& k, const CSubstring& v){
+                if (k == "id")
+                    return;
+                if (k == "loader")
+                    v.ToString(options.loader, sizeof(options.loader));
+                else if (k == "executable")
+                    v.ToString(options.exec, sizeof(options.exec));
+                else if (k == "architecture" && v == "arch16")
+                    options.arch = arch_t::arch16;
+                else if (k == "architecture" && v == "arch32")
+                    options.arch = arch_t::arch32;
+                else if (k == "loadAddress")
+                    options.loadAddress = CConversion(v).ToInt();
+                else if (k == "verboseAsm" && v == "true")
+                    options.verboseAsm = true;
+                else if (k == "verboseAsm" && v == "false")
+                    options.verboseAsm = false;
+                else if (k == "recursive" && v == "false")
+                    options.recursive = false;
+                else if (k == "relocations" && v == "false")
+                    options.relocations = false;
+                else if (k == "stackShiftAlways" && v == "true")
+                    options.stackShiftAlways = true;
+                else if (k == "procList")
+                {
+                    CJson(v).ForEach([&](const CSubstring& v)
+                    {
+                        options.procList.push_back(address_t::fromString(CJson(v).GetString()));
+                    });
+                }
+                else
+                {
+                    char temp1[128];
+                    char temp2[128];
+                    printf("Wrong attribute: %s=%s\n", k.ToString(temp1, 128), v.ToString(temp2, 128));
+                    //                printf("Wrong attribute: k=%s\n", k.GetString());
+                    //                printf("Wrong attribute: v=%s\n", v.GetString());
+                    assert(0);
+                }
+            });
+        } else
+        if (json["id"] == "indirectCall")
+        {
+            options.indirectCalls.insert(address_t::fromString(json["proc"].GetString()));
+        } else
+        if (json["id"] == "indirectJump")
+        {
+            address_t target = address_t::fromString(json["target"].GetString());
+            address_t parent = address_t::fromString(json["parent"].GetString());
+            address_t origin = address_t::fromString(json["origin"].GetString());
+            options.indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
+        } else
+        if (json["id"] == "inject")
+        {
+            options.inject.insert({address_t::fromString(json["addr"].GetString()), json["text"].GetString()});
+        } else
+        {
+            printf("Wrong json: '%s'\n", line.c_str());
+            assert(0);
+        }
+    }
+    
+    //sub_3c4b
+
     shared<Loader> loader;
     if (strcmp(options.loader, "LoaderMz") == 0)
         loader.reset(new LoaderMz);
@@ -50,8 +136,8 @@ int main(int argc, char **argv) {
     else
         assert(0);
     
-    for (int i=1; i<argc; i++)
-        options.indirects.insert(address_t::fromString(argv[i]));
+//    for (int i=2; i<argc; i++)
+//        options.indirects.insert(address_t::fromString(argv[i]));
     
     if (!loader->LoadFile(options.exec, options.loadAddress))
     {
@@ -84,7 +170,10 @@ int main(int argc, char **argv) {
     std::vector<address_t> startEntries;
     
     if (options.start)
+    {
+        options.procModifiers.insert({loader->GetEntry(), procRequest_t{(int)procRequest_t::entry | (int) procRequest_t::callNear}});
         startEntries.push_back(loader->GetEntry());
+    }
     for (address_t p : options.procList)
         startEntries.push_back(p);
     for (address_t p : options.isolateLabels)
@@ -98,9 +187,15 @@ int main(int argc, char **argv) {
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
 
-    for (address_t proc : options.indirects)
+    for (address_t proc : options.indirectCalls)
     {
         startEntries.push_back(proc);
+    }
+
+    for (indirectJump_t j : options.indirectJumps)
+    {
+        options.procModifiers.insert({j.target, procRequest_t::callIsolated});
+        startEntries.push_back(j.target);
     }
 
     for (address_t p : startEntries)
@@ -130,29 +225,37 @@ int main(int argc, char **argv) {
         printf("\n");
     }
 
-    printf(R"(
-    #include <stdio.h>
+    printf(R"(#include <stdio.h>
 
-    void callIndirect(int s, int o)
+void callIndirect(int s, int o)
+{
+    switch (s*0x10000+o)
     {
-        switch (s*0x10000+o)
-        {
 )");
-    for (address_t proc : options.indirects)
+    for (address_t proc : options.indirectCalls)
     {
-        printf("            case 0x%x: sub_%x(); break;\n", proc.segment*0x10000 + proc.offset, proc.linearOffset());
+        printf("        case 0x%x: sub_%x(); break;\n", proc.segment*0x10000 + proc.offset, proc.linearOffset());
     }
-    printf(R"(
-            default:
-                printf("\nMISSING INDIRECT %%04x:%%04x\n", s, o);
-                exit(3);
-        }
+    printf(R"(        default:
+            printf("\nMISSING INDIRECT CALL %%04x:%%04x\n", s, o);
+            exit(3);
     }
+}
 
-    void indirectJump(int s, int o)
+void indirectJump(int s, int o, const char* info)
+{
+    switch (s*0x10000+o)
     {
-        stop("ind");
+)");
+    for (const indirectJump_t& j : options.indirectJumps)
+    {
+        printf("        case 0x%x: sub_%x(); break;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
     }
+    printf(R"(        default:
+            printf("\nMISSING INDIRECT JUMP %%04x:%%04x @ %%s\n", s, o, info);
+            exit(3);
+    }
+}
 
 )");
     
@@ -184,6 +287,22 @@ int main(int argc, char **argv) {
         printf("}\n\n");
     }
     
+    std::set<address_t> processFinal;
+    std::set<address_t> processFinal2;
+    std::set<address_t> processFinal3;
+    std::set<address_t> processFinal4;
+    std::set<address_t> processFinal5;
+    std::set<address_t> processFinal6;
+    for (indirectJump_t j : options.indirectJumps)
+    {
+        processFinal.insert(j.target);
+        processFinal2.insert(j.target);
+        processFinal3.insert(j.target);
+        processFinal4.insert(j.target);
+        processFinal5.insert(j.target);
+        processFinal6.insert(j.target);
+    }
+
     std::set<address_t> processNew;
     processNew = analyser.AllMethods();
     // TODO: call conv!
@@ -198,9 +317,23 @@ int main(int argc, char **argv) {
             procRequest_t modifier = procRequest_t::none;
             if (options.procModifiers.find(proc) != options.procModifiers.end())
                 modifier = options.procModifiers.find(proc)->second;
-            int modifierStack = 0;
-            if (options.procModifiersStack.find(proc) != options.procModifiersStack.end())
-                modifierStack = options.procModifiersStack.find(proc)->second;
+//            int modifierStack = 0;
+//            if (options.procModifiersStack.find(proc) != options.procModifiersStack.end())
+//                modifierStack = options.procModifiersStack.find(proc)->second;
+            int modifierStack = analyser.GuessStackBalanceForProcCached(proc);
+
+            if (processFinal.empty() && (int)modifier & (int)procRequest_t::callIsolated)
+            {
+                // find parent, reuse attributes
+                for (indirectJump_t j : options.indirectJumps)
+                    if (j.target == proc)
+                    {
+                        if (options.procModifiers.find(j.parent) != options.procModifiers.end())
+                            modifier = procRequest_t{(int)modifier | (int)options.procModifiers.find(j.parent)->second};
+                        modifierStack = analyser.GuessStackBalanceForProcCached(j.parent);
+                        break;
+                    }
+            }
 
             analyser.AnalyseProc(proc, modifier, modifierStack);
             if (options.recursive)
@@ -223,6 +356,20 @@ int main(int argc, char **argv) {
                 }
             }
         }
+        
+        // TODO: dependency tree!!!
+        if (processFinal5.empty())
+            processFinal5 = std::move(processFinal6);
+        if (processFinal4.empty())
+            processFinal4 = std::move(processFinal5);
+        if (processFinal3.empty())
+            processFinal3 = std::move(processFinal4);
+        if (processFinal2.empty())
+            processFinal2 = std::move(processFinal3);
+        if (processFinal.empty())
+            processFinal = std::move(processFinal2);
+        if (processNew.empty())
+            processNew = std::move(processFinal);
     }
 
     for (address_t proc : analyser.AllMethods())
@@ -284,78 +431,8 @@ int main(int argc, char **argv) {
 //        if (p.second > 1)
 //            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
 //    }
-
-    printf("/*\n");
-    options.verboseAsm = false;
-    for (address_t proc : analyser.AllMethods())
-    {
-        if (proc.offset == 0x0c6b)
-        {
-            int f = 9;
-        }
-        Convert convert(analyser, options);
-        convert.SetOffsetMask(options.arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
-        convert.ConvertProc(proc);
-
-//        for (std::string line : convert.GetCode())
-//            if (line.find("near_proc_retf") != std::string::npos)
-//                printf("{{0x%04x, 0x%04x}, procRequest_t::popsCs},\n", proc.segment, proc.offset);
-        
-        shared<Analyser::info_t> info = analyser.mInfos.find(proc)->second;
-        std::set<int> retArgs;
-        bool retCs = false;
-        bool instrRet = false, instrRetf = false;
-        for (const auto& [addr, instr] : info->code)
-        {
-            instrRet |= instr->instr->mId == X86_INS_RET;
-            instrRetf |= instr->instr->mId == X86_INS_RETF;
-            if (instr->instr->mId == X86_INS_RET || instr->instr->mId == X86_INS_RETF)
-            {
-                retArgs.insert(instr->instr->Imm());
-                if (instr->instr->mPrev.size()==1)
-                {
-                    shared<instrInfo_t> prev = info->code.find(*instr->instr->mPrev.begin())->second;
-                    if (prev->instr->mId == X86_INS_POP && strcmp(prev->instr->mOperands, "cs")==0)
-                        retCs = true;
-//                    if (prev->instr->mId == X86_INS_ADD && strstr(prev->instr->mOperands, "sp, "))
-//                        retArgs.insert(prev->instr->Imm());
-                }
-            }
-            //shared<instrInfo_t>
-        }
-        if (retArgs.size()>1)
-        {
-            if (retArgs.size() == 2 && *retArgs.begin() == 0)
-                retArgs.erase(0);
-            else
-                printf("// Mixed ret in %04x:%04x sub_%x()\n", proc.segment, proc.offset, proc.linearOffset());
-        }
-        if (retArgs.size()==1 && (*retArgs.begin() != 0 || instrRetf))
-        {
-//                    assert(retArgs.size() == 1);  xv xvxvx
-//                    if (retCs)
-//                        printf("{{0x%04x, 0x%04x}, procRequest_t((int)procRequest_t::stackDrop%d | (int)procRequest_t::popsCs)}, // %s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2, instr->instr->mMnemonic);
-//                    else
-            printf("{{0x%04x, 0x%04x}, %d}, // sub_%x%s%s%s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2 + instrRetf*2, proc.linearOffset(), instrRet ? " ret" : "", instrRetf ? " retf" : "", retCs ? " popcs" : "");
-        }
-        /*
-         shared <Analyser::info_t> mInfo;
-     //    shared<CTracer> mTracer;
-         std::vector<std::string> mCode;
-         
-     public:
-         Convert(const Analyser& anal, const Options& options) : mAnal(anal), mOptions(options)
-         {
-         }
-
-         void ConvertProc(address_t proc)
-         {
-             const bool verbose{mOptions.verbose};
-             mInfo = mAnal.mInfos.find(proc)->second;
-
-         */
-    }
-    printf("*/\n");
+    
 
     return 0;
 }
+

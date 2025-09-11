@@ -50,51 +50,7 @@ public:
             if (mOptions.printLabelAddress)
                 extraInfo += utils::format(" %04x:%04x", proc.segment, proc.offset);
             
-            int temp = (int)info->func.request;
-            if (temp & (int)procRequest_t::callNear && temp & (int)procRequest_t::callFar)
-            {
-                extraInfo += " +nearfar";
-                temp ^= (int)procRequest_t::callNear;
-                temp ^= (int)procRequest_t::callFar;
-            } else {
-                if (temp & (int)procRequest_t::callNear)
-                {
-                    temp ^= (int)procRequest_t::callNear;
-                }
-                if (temp & (int)procRequest_t::callFar)
-                {
-                    extraInfo += " +far";
-                    temp ^= (int)procRequest_t::callFar;
-                }
-            }
-            if (temp & (int)procRequest_t::returnCarry)
-            {
-                extraInfo += " +returnCarry";
-                temp ^= (int)procRequest_t::returnCarry;
-            }
-            if (temp & (int)procRequest_t::returnZero)
-            {
-                extraInfo += " +returnZero";
-                temp ^= (int)procRequest_t::returnZero;
-            }
-            if (info->func.stackDrop != 0)
-                extraInfo += utils::format(" +stackDrop%d", info->func.stackDrop);
-            if (temp & (int)procRequest_t::callIsolated)
-            {
-                extraInfo += " +isolate";
-                temp ^= (int)procRequest_t::callIsolated;
-            }
-            if (temp & (int)procRequest_t::popsCs)
-            {
-                extraInfo += " +popsCs";
-                temp ^= (int)procRequest_t::popsCs;
-            }
-            if (temp & (int)procRequest_t::nearAsFar)
-            {
-                extraInfo += " +nearAsFar";
-                temp ^= (int)procRequest_t::nearAsFar;
-            }
-            assert(temp == 0);
+            extraInfo += info->func.makeProcIdentifier();
         }
         mCode.push_back(format("void sub_%x()%s\n{\n", proc.linearOffset(), extraInfo.c_str()));
 
@@ -109,13 +65,16 @@ public:
         if (anyTemp)
             mCode.push_back("\n");
 
-        if (info->func.callConv == callConv_t::callConvShiftStackNear)
-            mCode.push_back("    sp -= 2;\n");
-        if (info->func.callConv == callConv_t::callConvShiftStackFar)
-            mCode.push_back("    sp -= 2;\n"); // TODO!!!
-        if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
-            mCode.push_back("    sp -= 2;\n");
-
+        if (!((int)info->func.request & (int)procRequest_t::callIsolated))
+        {
+            if (info->func.callConv == callConv_t::callConvShiftStackNear)
+                mCode.push_back("    sp -= 2;\n");
+            if (info->func.callConv == callConv_t::callConvShiftStackFar)
+                mCode.push_back("    sp -= 2;\n"); // TODO!!!
+            if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
+                mCode.push_back("    sp -= 2;\n");
+        }
+        
         if (code.begin()->first != proc)
             mCode.push_back(format("    goto loc_%x;\n", proc.linearOffset()));
 
@@ -142,8 +101,17 @@ public:
                     mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
             }
 
+            std::string injectstr;
             const auto& injectit = mOptions.inject.find(p.first);
             if (injectit != mOptions.inject.end())
+                injectstr = injectit->second;
+            
+            if (injectstr == "//remove")
+            {
+                next = {p.first.segment, p.first.offset + p.second->instr->mSize};
+                continue;
+            }
+            if (!injectstr.empty() && injectstr != "//quiet" && injectstr != "//comment" && injectstr != "//remove")
                 mCode.push_back(std::string("    ") + injectit->second + "\n");
 
             std::vector<std::string> post;
@@ -198,7 +166,7 @@ public:
             }
             
             
-            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
+            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret && injectstr != "//quiet")
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
 
             if (mOptions.GetJumpTables(pinstr->mAddress).size())
@@ -210,11 +178,10 @@ public:
             } else
             if (convert[pinstr->mId].convert)
             {
-                if (pinstr->mAddress.offset == 3953)
-                {
-                    int f = 9;
-                }
                 std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
+                if (injectstr == "//comment")
+                    command = "// " + command;
+                
                 if (command.size())
                     mCode.push_back("    " + command + "\n");
             }
@@ -226,8 +193,8 @@ public:
             
             mCode.insert(mCode.end(), post.begin(), post.end());
 
-            if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret)
-                mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
+            if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret && injectstr != "//quiet")
+                mCode.push_back("    stop(\""  + pinfo->stop + "\", \"" + pinfo->instr->mAddress.toString() + "\");\n");  
             if (pinstr->isTerminating)
                 mCode.push_back("    stop(\"terminating\");\n");
             if (pinstr->isReturning)

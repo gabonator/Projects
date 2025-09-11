@@ -21,13 +21,8 @@ public:
     
     virtual void AnalyseProc(address_t proc, procRequest_t req, int stackDrop)
     {
-        if (proc.offset == 0xe23b)
-        {
-            int f = 9; // todo: remove
-        }
         shared<info_t> info = mInfos.find(proc)->second;
         code_t& code = info->code;
-        //code_t code = info->code;
         std::vector<std::pair<address_t, address_t>> head({{address_t(), proc}});
 
         tempIndexPrecond.clear();
@@ -39,7 +34,8 @@ public:
         for (const auto& [addr, p] : info->code)
             GetStackChange(p, info->code);
 
-        if (info->func.request != req)
+        // TODO: can we always reset?
+//        if (info->func.request != req)
         {
             // second iteration
             for (const auto& [addr, p] : info->code)
@@ -72,7 +68,10 @@ public:
                     assert(info->code.find(link.first) != info->code.end());
                     *prevInfo = *info->code.find(link.first)->second;
                 } else {
-                    prevInfo->stack = 0; // TODO: long call?
+                    if ((int)req & (int)procRequest_t::callIsolated)
+                        prevInfo->stack = ResumeStackFromIndirectJump(proc);
+                    else
+                        prevInfo->stack = 0; // TODO: long call?
 //                    if ((int)req & (int)procRequest_t::nearAsFar)
 //                    {
 //                        prevInfo->stack = 2;
@@ -110,15 +109,37 @@ public:
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
     }
     
+    int ResumeStackFromIndirectJump(address_t proc)
+    {
+        if (proc.offset == 0x022c)
+        {
+            int f = 9; // todo: remove
+        }
+
+        // find parent, reuse attributes
+        for (indirectJump_t j : mOptions.indirectJumps)
+            if (j.target == proc)
+            {
+                shared<info_t> parentInfo = mInfos.find(j.parent)->second;
+                for (const auto& [a, p] : parentInfo->code)
+                    if (a == j.origin)
+                    {
+                        //assert(p->stack != -9999); // last pass must be valid
+                        return p->stack;
+                    }
+                
+                assert(0);
+            }
+        assert(0);
+        return 0;
+    }
+    
     void PostProcess(shared<info_t> info, procRequest_t req)
     {
+        bool isolate = (int)req & (int)procRequest_t::callIsolated; // TODO: risky!
         int stackOffset = (int)req & (int)procRequest_t::nearAsFar ? 2 : 0;
         int stackOffsetRetf = (int)req & (int)procRequest_t::nearAsFar ? -2 : 0;
 
-        if (info->proc.offset == 0xe23b)
-        {
-            int f = 9;
-        }
         // TODO: stop cleanup in second pass!
         for (const auto& [a, p] : info->code)
         {
@@ -131,6 +152,9 @@ public:
         // static stack check
         for (const auto& [a, p] : info->code)
         {
+            if (a == info->func.proc)
+                stackGood = true;
+
             if (p->stack + stackOffset < 0)
             {
                 if (stackGood)
@@ -158,12 +182,12 @@ public:
                 stackGood = true;
             if (p->instr->mId == X86_INS_RET )
             {
-                if (p->stack + stackOffset != 0)
+                if (p->stack + stackOffset != 0 && !isolate)
                     p->stop = "stack_unbalanced";
             }
             if (p->instr->mId == X86_INS_RETF)
             {
-                if (p->stack + stackOffsetRetf != 0)
+                if (p->stack + stackOffsetRetf != 0 && !isolate)
                     p->stop = "stack_unbalanced";
             }
         }
@@ -297,7 +321,7 @@ public:
         }
         
         // self modifying
-        if (info->code.size() > 5 && info->code.begin()->second->instr->mAddress == info->proc)
+        if (info->code.size() > 5 && info->code.begin()->second->instr->mAddress == info->func.proc)
         {
             std::vector<shared<instrInfo_t>> linear;
             std::set<x86_insn> exits;
@@ -377,24 +401,53 @@ public:
 
     callConv_t GetCallConvention(shared<info_t> info) // TODO: should be merged with procrequest?
     {
+        procRequest_t req = mOptions.procModifiers.find(info->func.proc)->second;
+        if ((int)req & (int)procRequest_t::callIsolated)
+        {
+            // resume stack balance?
+            if (mOptions.stackShiftAlways) // TODO: wtf?
+                for (const auto& [a, i] : info->code)
+                {
+                    if (i->instr->mId == X86_INS_RETF)
+                    {
+                        if (mOptions.stackShiftAlways)
+                            return callConv_t::callConvShiftStackFar;
+                        return callConv_t::callConvFar;
+                    }
+                    if (i->instr->mId == X86_INS_RET)
+                    {
+                        if (mOptions.stackShiftAlways)
+                            return callConv_t::callConvShiftStackNear;
+                        return callConv_t::callConvNear;
+                    }
+                }
+//            assert(0);
+            // what if isolated part uses stack and parent doesn't?
+            if (mOptions.stackShiftAlways)
+                return callConv_t::callConvShiftStackNear;
+            return callConv_t::callConvNear;
+        }
+
         bool stack = UsesReg(info->code, X86_REG_SP) || UsesReg(info->code, X86_REG_ESP);
         if (info->func.simpleStack)
             stack |= UsesReg(info->code, X86_REG_BP);
-        procRequest_t req = mOptions.procModifiers.find(info->proc)->second;
         // TODO: nearfar!?
         if (((int)req & (int)procRequest_t::callNear) && ((int)req & (int)procRequest_t::callFar))
         {
-            printf("// Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
-                   info->proc.linearOffset());
+//            printf("// Problem: %04x:%04x sub_%x - near&far&uses stack!\n", info->proc.segment, info->proc.offset,
+//                   info->proc.linearOffset());
 //            assert(!stack);
             return callConv_t::callConvShiftStackNearFar;
         }
+        
         if ((int)req & (int)procRequest_t::nearAsFar)
         {
             return callConv_t::callConvShiftStackNear;
         } else
         if ((int)req & (int)procRequest_t::callFar)
         {
+            if (mOptions.stackShiftAlways)
+                return callConv_t::callConvShiftStackFar;
             if (stack)
             {
                 if (info->func.simpleStack)
@@ -405,6 +458,13 @@ public:
         }
         else if ((int)req & (int)procRequest_t::callNear)
         {
+            if (mOptions.stackShiftAlways)
+            {
+                if ((int)info->func.request & (int)procRequest_t::entry)
+                    return callConv_t::callConvNear;
+                else
+                    return callConv_t::callConvShiftStackNear;
+            }
             if (stack)
             {
                 if (info->func.simpleStack)

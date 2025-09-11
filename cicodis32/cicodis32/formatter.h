@@ -274,7 +274,7 @@ public:
         
         while ((p = strstr(p, "$")) != nullptr)
         {
-            char replace[128];
+            char replace[256];
             p++;
             tok[0] = 0;
             for (int i=0; i<32; i++)
@@ -301,22 +301,22 @@ public:
             if (strcmp(tok, "immd0") == 0)
             {
                 assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "%d", (int)x86.operands[0].imm);
+                snprintf(replace, sizeof(replace), "%d", (int)x86.operands[0].imm);
             }
             if (strcmp(tok, "immx0") == 0)
             {
                 assert(x86.op_count >= 1 && x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "0x%x", (int)x86.operands[0].imm);
+                snprintf(replace, sizeof(replace), "0x%x", (int)x86.operands[0].imm);
             }
             if (strcmp(tok, "immd1") == 0)
             {
                 assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
-                snprintf(replace, 64, "%d", (int)x86.operands[1].imm);
+                snprintf(replace, sizeof(replace), "%d", (int)x86.operands[1].imm);
             }
             if (strcmp(tok, "immx1") == 0)
             {
                 assert(x86.op_count >= 2 && x86.operands[1].type == X86_OP_IMM);
-                snprintf(replace, 64, "0x%x", (int)x86.operands[1].imm);
+                snprintf(replace, sizeof(replace), "0x%x", (int)x86.operands[1].imm);
             }
             if (strcmp(tok, "wr0") == 0 || strcmp(tok, "rd0") == 0 || strcmp(tok, "rw0") == 0 || strcmp(tok, "rm0") == 0)
             {
@@ -332,19 +332,19 @@ public:
                         switch (tok[1] == 'm' ? 2 : x86.operands[0].size)
                         {
                             case 1:
-                                snprintf(replace, 64, "memoryAGet(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet(%s, %s)", segment, offset);
                                 break;
                             case 2:
-                                snprintf(replace, 64, "memoryAGet16(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s)", segment, offset);
                                 break;
                             case 4:
-                                snprintf(replace, 64, "memoryAGet32(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet32(%s, %s)", segment, offset);
                                 break;
                             case 8:
-                                snprintf(replace, 64, "memoryAGet64(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet64(%s, %s)", segment, offset);
                                 break;
                             case 10:
-                                snprintf(replace, 64, "memoryAGet80(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet80(%s, %s)", segment, offset);
                                 break;
                             default:
                                 assert(0);
@@ -361,7 +361,7 @@ public:
                     assert(x86.operands[0].size == 4);
                     char segment[32], offset[32];
                     GetOpAddress(x86.operands[0], segment, offset, info, func);
-                    snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
+                    snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s + 2)", segment, offset);
                 } else
                     assert(0);
             }
@@ -378,17 +378,17 @@ public:
             }
             if (strcmp(tok, "addr") == 0)
             {
-                snprintf(replace, 64, "%04x:%04x", instr->mAddress.segment, instr->mAddress.offset);
+                snprintf(replace, sizeof(replace), "%04x:%04x", instr->mAddress.segment, instr->mAddress.offset);
             }
             if (strcmp(tok, "seg") == 0)
             {
-                snprintf(replace, 64, "0x%04x", instr->mAddress.segment);
+                snprintf(replace, sizeof(replace), "0x%04x", instr->mAddress.segment);
             }
             if (strcmp(tok, "ltarget") == 0)
             {
                 // LCALL target
                 assert(instr->IsDirectCall());
-                snprintf(replace, 64, "sub_%x", instr->CallTarget().linearOffset());
+                snprintf(replace, sizeof(replace), "sub_%x", instr->CallTarget().linearOffset());
             }
 
             if (strcmp(tok, "rn1") == 0)
@@ -399,9 +399,9 @@ public:
                     char segment[32], offset[32];
                     GetOpAddress(x86.operands[1], segment, offset, info, func);
 //                    if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
-//                        snprintf(replace, 64, "memoryAGet16(%s, %s + 2)", segment, offset);
+//                        snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s + 2)", segment, offset);
 //                    else
-                        snprintf(replace, 64, "memoryAGet%s(%s, %s + 2)",
+                        snprintf(replace, sizeof(replace), "memoryAGet%s(%s, %s + 2)",
                              memorySuffix(x86.operands[1].size), segment, offset);
                 } else
                     assert(0);
@@ -420,9 +420,9 @@ public:
                             char segment[32], offset[32];
                             GetOpAddress(x86.operands[1], segment, offset, info, func);
                             if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
-                                snprintf(replace, 64, "memoryAGet16(%s, %s)", segment, offset);
+                                snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s)", segment, offset);
                             else
-                                snprintf(replace, 64, "memoryAGet%s(%s, %s)",
+                                snprintf(replace, sizeof(replace), "memoryAGet%s(%s, %s)",
                                      memorySuffix(x86.operands[1].size), segment, offset);
                         } else
                             strcpy(replace, ToCString(x86.operands[1], info, func).c_str());
@@ -505,7 +505,7 @@ public:
             {
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
-                snprintf(replace, 64, "loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                snprintf(replace, sizeof(replace), "loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
             }
             if (strcmp(tok, "prefix") == 0)
             {
@@ -524,13 +524,16 @@ public:
                 assert(x86.op_count == 1);
                 if (x86.operands[0].type != X86_OP_IMM)
                 {
-                    snprintf(replace, 64, "indirectJump(cs, %s); // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(), instr->mAddress.segment, instr->mAddress.offset);
+                    snprintf(replace, sizeof(replace), "indirectJump(cs, %s, \"%04x:%04x/%04x:%04x\"); return; // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(),
+                             func.proc.segment, func.proc.offset,
+                             instr->mAddress.segment, instr->mAddress.offset,
+                             instr->mAddress.segment, instr->mAddress.offset);
                 } else
                 {
                     if (x86.operands[0].size == 2)
-                        snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
+                        snprintf(replace, sizeof(replace), "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
                     else
-                        snprintf(replace, 64, "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                        snprintf(replace, sizeof(replace), "goto loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
                 }
             }
             if (strcmp(tok, "goto_ltarget") == 0)
@@ -538,7 +541,7 @@ public:
                 assert(instr->mId == X86_INS_LJMP);
                 if (x86.op_count == 2)
                 {
-                    snprintf(replace, sizeof(replace), "indirectJump(%s, %s);",
+                    snprintf(replace, sizeof(replace), "indirectJump(%s, %s); return;",
                              iformat(instr, info, func, "$rd0").c_str(),
                              iformat(instr, info, func, "$rd1").c_str());
                 } else if (x86.op_count == 1)
@@ -553,19 +556,19 @@ public:
                 assert(x86.op_count == 1);
                 assert(x86.operands[0].type == X86_OP_IMM);
                 if (x86.operands[0].size == 2)
-                    snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
+                    snprintf(replace, sizeof(replace), "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm & 0xffff).linearOffset());
                 else
-                    snprintf(replace, 64, "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
+                    snprintf(replace, sizeof(replace), "sub_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
             }
             if (strcmp(tok, "width0") == 0)
             {
                 assert(x86.op_count >= 1);
-                snprintf(replace, 64, "%d", x86.operands[0].size*8);
+                snprintf(replace, sizeof(replace), "%d", x86.operands[0].size*8);
             }
             if (strcmp(tok, "width1") == 0)
             {
                 assert(x86.op_count >= 2);
-                snprintf(replace, 64, "%d", x86.operands[1].size*8);
+                snprintf(replace, sizeof(replace), "%d", x86.operands[1].size*8);
             }
 //            if (strcmp(tok, "realmode") == 0)
 //            {

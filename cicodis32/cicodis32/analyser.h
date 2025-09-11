@@ -17,11 +17,71 @@ enum callConv_t {
 };
 
 struct funcInfo_t {
+    address_t proc;
     procRequest_t request;
     int stackDrop{0};
+    int stackEntry{0};
     callConv_t callConv{callConvUnknown};
     arch_t arch;
     bool simpleStack{false};
+    
+    std::string makeProcIdentifier() const
+    {
+        std::string extraInfo;
+        int temp = (int)request;
+        if (temp & (int)procRequest_t::callNear && temp & (int)procRequest_t::callFar)
+        {
+            extraInfo += " +nearfar";
+            temp ^= (int)procRequest_t::callNear;
+            temp ^= (int)procRequest_t::callFar;
+        } else {
+            if (temp & (int)procRequest_t::callNear)
+            {
+                temp ^= (int)procRequest_t::callNear;
+            }
+            if (temp & (int)procRequest_t::callFar)
+            {
+                extraInfo += " +far";
+                temp ^= (int)procRequest_t::callFar;
+            }
+        }
+        if (temp & (int)procRequest_t::returnCarry)
+        {
+            extraInfo += " +returnCarry";
+            temp ^= (int)procRequest_t::returnCarry;
+        }
+        if (temp & (int)procRequest_t::returnZero)
+        {
+            extraInfo += " +returnZero";
+            temp ^= (int)procRequest_t::returnZero;
+        }
+        if (stackDrop != 0 && stackDrop != -999)
+            extraInfo += utils::format(" +stackDrop%d", stackDrop);
+        if (stackEntry != 0)
+            extraInfo += utils::format(" +stackEntry%d", stackEntry);
+        if (temp & (int)procRequest_t::callIsolated)
+        {
+            extraInfo += " +isolate";
+            temp ^= (int)procRequest_t::callIsolated;
+        }
+        if (temp & (int)procRequest_t::popsCs)
+        {
+            extraInfo += " +popsCs";
+            temp ^= (int)procRequest_t::popsCs;
+        }
+        if (temp & (int)procRequest_t::nearAsFar)
+        {
+            extraInfo += " +nearAsFar";
+            temp ^= (int)procRequest_t::nearAsFar;
+        }
+        if (temp & (int)procRequest_t::entry)
+        {
+            extraInfo += " +entry";
+            temp ^= (int)procRequest_t::entry;
+        }
+        assert(temp == 0);
+        return extraInfo;
+    }
 };
 
 struct instrInfo_t {
@@ -152,6 +212,7 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
     }
     else
     {
+        // does it enter following instruction from multiple paths?
         if (stack != (stackAbs == -9999 ? o->stack + stackRel : stackAbs))
             stop = "stack_bad";
     }
@@ -165,7 +226,7 @@ public:
     Options& mOptions;
 //        std::map<address_t, std::shared_ptr<CTracer>> mMethods;
         struct info_t {
-            address_t proc;
+            //address_t proc;
             code_t code;
             funcInfo_t func;
             procRequest_t reqSelf{procRequest_t::none};
@@ -182,7 +243,7 @@ public:
         std::shared_ptr<CTracer> tracer(new CTracer(mOptions));
         tracer->Trace(method);
         std::shared_ptr<info_t> newInfo = std::make_shared<info_t>();
-        newInfo->proc = method;
+        newInfo->func.proc = method;
         newInfo->func.arch = mOptions.arch;
         newInfo->func.simpleStack = mOptions.simpleStack;
         
@@ -318,16 +379,85 @@ public:
         }
         if ((instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL) && instr->IsDirectCall())
         {
+            int change = GuessStackBalanceForProcCached(instr->CallTarget());
+            if (change != -999)
+            {
+                stackChange -= GuessStackBalanceForProcCached(instr->CallTarget());
+                if (instr->mId == X86_INS_LCALL)
+                    stackChange += 2;
+            }
+/*
             if (mOptions.procModifiersStack.find(instr->CallTarget()) != mOptions.procModifiersStack.end())
             {
                 stackChange -= mOptions.procModifiersStack.find(instr->CallTarget())->second;
                 if (instr->mId == X86_INS_LCALL)
                     stackChange += 2;
             }
+ */
+            // TODO: if indirect, then it is just a guess. Provide some method to specify stack balance for indirects
         }
         info->stackRel = stackChange;
         //return stackChange;
     }
+    
+    int GuessStackBalanceForProcCached(address_t proc)
+    {
+        if (mOptions.procModifiersStack.find(proc) != mOptions.procModifiersStack.end())
+        {
+            return mOptions.procModifiersStack.find(proc)->second;
+        }
+        int b = GuessStackBalanceForProc(proc);
+        mOptions.procModifiersStack.insert({proc, b});
+        return b;
+    }
+    
+    int GuessStackBalanceForProc(address_t proc)
+    {
+        shared<info_t> info = mInfos.find(proc)->second;
+        std::set<int> retArgs;
+        bool retCs = false;
+        bool instrRet = false, instrRetf = false;
+        for (const auto& [addr, instr] : info->code)
+        {
+            instrRet |= instr->instr->mId == X86_INS_RET;
+            instrRetf |= instr->instr->mId == X86_INS_RETF;
+            if (instr->instr->mId == X86_INS_RET || instr->instr->mId == X86_INS_RETF)
+            {
+                retArgs.insert(instr->instr->Imm());
+                if (instr->instr->mPrev.size()==1)
+                {
+                    shared<instrInfo_t> prev = info->code.find(*instr->instr->mPrev.begin())->second;
+                    if (prev->instr->mId == X86_INS_POP && strcmp(prev->instr->mOperands, "cs")==0)
+                        retCs = true;
+//                    if (prev->instr->mId == X86_INS_ADD && strstr(prev->instr->mOperands, "sp, "))
+//                        retArgs.insert(prev->instr->Imm());
+                }
+            }
+            if (instr->instr->isTerminating)
+                retArgs.insert(0);
+            //shared<instrInfo_t>
+        }
+        if (retArgs.size()>1)
+        {
+            if (retArgs.size() == 2 && *retArgs.begin() == 0)
+                retArgs.erase(0);
+            else
+                printf("// Mixed ret in %04x:%04x sub_%x()\n", proc.segment, proc.offset, proc.linearOffset());
+        }
+        if (retArgs.size()==1 && (*retArgs.begin() != 0 || instrRetf))
+        {
+//            printf("{{0x%04x, 0x%04x}, %d}, // sub_%x%s%s%s\n", proc.segment, proc.offset, *retArgs.begin() + retCs*2 + instrRetf*2, proc.linearOffset(), instrRet ? " ret" : "", instrRetf ? " retf" : "", retCs ? " popcs" : "");
+            return *retArgs.begin() + retCs*2 + instrRetf*2;
+        }
+        if (retArgs.size()==1 && *retArgs.begin() == 0)
+        {
+            // far?
+            return 0;
+        }
+//        assert(0);
+        return -999;
+    }
+    
     void AddProcRequest(shared<instrInfo_t> info, address_t target, procRequest_t req)
     {
         info->procRequest = (procRequest_t)((int)info->procRequest | (int)req);
@@ -342,7 +472,7 @@ public:
         shared<info_t> info = check(mInfos.find(proc), mInfos.end())->second;
         if (info->reqSelf != procRequest_t::none)
         {
-            aux.insert(std::pair<address_t, procRequest_t>(info->proc, info->reqSelf));
+            aux.insert(std::pair<address_t, procRequest_t>(info->func.proc, info->reqSelf));
         }
         for (auto i : info->code)
         {

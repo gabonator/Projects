@@ -62,6 +62,7 @@ using namespace utils;
 
 class Loader {
 public:
+    static std::vector<uint8_t> GetFileContents(std::string fullPath);
     virtual bool LoadFile(const char* executable, int loadAddress) = 0;
     virtual const uint8_t* GetBufferAt(address_t addr) = 0;
     virtual const uint8_t* GetBufferAt(int offset) = 0;
@@ -183,19 +184,23 @@ enum class procRequest_t
 //    stackDrop2 = 4,
     callNear = 8,
     callFar = 16,
-//    stackDrop8 = 32,
-//    stackDrop6 = 64,
-//    stackDrop4 = 128,
-//    stackDrop10 = 256,
     callIsolated = 512,
     popsCs = 1024,
-    nearAsFar = 2048
+    nearAsFar = 2048,
+    entry = 4096
 };
 
 enum class arch_t {
     archNone = 0,
     arch16 = 1,
     arch32 = 2
+};
+
+struct indirectJump_t
+{
+    address_t target;
+    address_t parent;
+    address_t origin;
 };
 
 class Options {
@@ -209,8 +214,8 @@ public:
 //        int entries;
 //        char index[32];
 //    };
-    const char loader[32];
-    const char exec[1024];
+    char loader[32];
+    char exec[1024];
     bool recursive{true};
     bool start{true};
     bool relocations{true};
@@ -218,6 +223,7 @@ public:
     int loadAddress{0x10000};
     arch_t arch{arch_t::archNone};
     bool simpleStack{false};
+    bool stackShiftAlways{false};
     
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
@@ -227,7 +233,8 @@ public:
     std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
     std::set<address_t> marks;
-    std::set<address_t> indirects;
+    std::set<address_t> indirectCalls;
+    std::vector<indirectJump_t> indirectJumps;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {
         std::vector<shared<jumpTable_t>> aux;
