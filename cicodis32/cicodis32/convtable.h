@@ -147,10 +147,10 @@ convert_t convert[X86_INS_ENDING] = {
         {
             if (instr->mDetail.operands[0].size == 2)
 //                return "callIndirect(cs, $rd0);";
-                return "callIndirect(cs, $rd0); // $addr;";
+                return "indirectCall(cs, $rd0, $seg, $ofs); // $addr;";
             if (instr->mDetail.operands[0].size == 4)
 //                return "callIndirect(cs, $rd0);";
-                return "callIndirect(cs, $rd0); // CALL DWORD $addr;";
+                return "indirectCall(cs, $rd0, $seg, $ofs); // CALL DWORD $addr;";
             assert(0);
             return "stop();";
         }
@@ -165,7 +165,7 @@ convert_t convert[X86_INS_ENDING] = {
         }
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
         {
-            return "push(cs); cs = $rns0; callIndirect(cs, $rm0); assert(cs == $seg); // $addr;";
+            return "push(cs); cs = $rns0; indirectCall(cs, $rm0, $seg, $ofs); assert(cs == $seg); // $addr;";
         }
         assert(0);
         return "";
@@ -408,14 +408,14 @@ convert_t convert[X86_INS_ENDING] = {
         if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) || Capstone->Intersects(instr->mDetail.operands[1], es))
             return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; es = tmp2; /*ggg2!!check*/};";
         assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
-        return "$wr0 = $rd1; es = $rn1; /*ggg2*/;";
+        return "$wr0 = $rd1; es = $rn1;";
     } },
     [X86_INS_LDS] = {.convert = [](convert_args){
         cs_x86_op ds{.type = X86_OP_REG, .reg = X86_REG_DS};
 //        assert(!Capstone->Intersects(instr->mDetail.operands[1], ds));
         if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]))
             return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; ds = tmp2; /*ggg2!!check*/};";
-        return "$wr0 = $rd1; ds = $rn1; /*ggg2*/;";
+        return "$wr0 = $rd1; ds = $rn1;";
     } },
     
     [X86_INS_AAD] = {.convert = [](convert_args){ return "stop(\"aad\");"; } },

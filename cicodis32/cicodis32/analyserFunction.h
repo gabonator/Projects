@@ -72,10 +72,6 @@ public:
                         prevInfo->stack = ResumeStackFromIndirectJump(proc);
                     else
                         prevInfo->stack = 0; // TODO: long call?
-//                    if ((int)req & (int)procRequest_t::nearAsFar)
-//                    {
-//                        prevInfo->stack = 2;
-//                    }
                 }
                 
                 shared<instrInfo_t> newInfo = code.find(link.second)->second;
@@ -111,15 +107,14 @@ public:
     
     int ResumeStackFromIndirectJump(address_t proc)
     {
-        if (proc.offset == 0x022c)
-        {
-            int f = 9; // todo: remove
-        }
-
         // find parent, reuse attributes
         for (indirectJump_t j : mOptions.indirectJumps)
             if (j.target == proc)
             {
+//                auto pParent = mIndirectToParent.find(j.origin);
+//                if (pParent == mIndirectToParent.end())
+//                    assert(0);
+                
                 shared<info_t> parentInfo = mInfos.find(j.parent)->second;
                 for (const auto& [a, p] : parentInfo->code)
                     if (a == j.origin)

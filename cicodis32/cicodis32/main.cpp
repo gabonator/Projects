@@ -105,7 +105,10 @@ int main(int argc, char **argv) {
         } else
         if (json["id"] == "indirectCall")
         {
-            options.indirectCalls.insert(address_t::fromString(json["proc"].GetString()));
+            address_t target = address_t::fromString(json["target"].GetString());
+            //address_t parent = address_t::fromString(json["parent"].GetString());
+            address_t origin = address_t::fromString(json["origin"].GetString());
+            options.indirectCalls.push_back({.target = target, /*.parent = parent,*/ .origin = origin});
         } else
         if (json["id"] == "indirectJump")
         {
@@ -187,9 +190,9 @@ int main(int argc, char **argv) {
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
 
-    for (address_t proc : options.indirectCalls)
+    for (indirectJump_t j : options.indirectCalls)
     {
-        startEntries.push_back(proc);
+        startEntries.push_back(j.target);
     }
 
     for (indirectJump_t j : options.indirectJumps)
@@ -225,36 +228,66 @@ int main(int argc, char **argv) {
         printf("\n");
     }
 
+    auto IndirectOrigins = [](std::vector<indirectJump_t> tab)
+    {
+        std::set<address_t> org;
+        for (const indirectJump_t& j : tab)
+            org.insert(j.origin);
+        return org;
+    };
+    
     printf(R"(#include <stdio.h>
 
-void callIndirect(int s, int o)
+void indirectCall(int s, int o, int orgs, int orgo)
 {
-    switch (s*0x10000+o)
+    switch (orgs*0x10000+orgo)
     {
 )");
-    for (address_t proc : options.indirectCalls)
+    for (address_t org : IndirectOrigins(options.indirectCalls))
     {
-        printf("        case 0x%x: sub_%x(); break;\n", proc.segment*0x10000 + proc.offset, proc.linearOffset());
+        printf(R"(        case 0x%x: 
+            switch (s*0x10000+o)
+            {
+)", org.segment*0x10000 + org.offset);
+
+        for (const indirectJump_t& j : options.indirectCalls)
+        {
+            if (j.origin == org)
+                printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
+        }
+        printf(R"(            }
+            break;
+)");
     }
-    printf(R"(        default:
-            printf("\nMISSING INDIRECT CALL %%04x:%%04x\n", s, o);
-            exit(3);
-    }
+    printf(R"(    }
+    printf("\nMISSING INDIRECT CALL %%04x:%%04x @ %%04x:%%04x\n", s, o, orgs, orgo);
+    exit(3);
 }
 
-void indirectJump(int s, int o, const char* info)
+void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 {
-    switch (s*0x10000+o)
+    switch (orgs*0x10000+orgo)
     {
 )");
-    for (const indirectJump_t& j : options.indirectJumps)
+    for (address_t org : IndirectOrigins(options.indirectJumps))
     {
-        printf("        case 0x%x: sub_%x(); break;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
+        printf(R"(        case 0x%x: 
+            switch (s*0x10000+o)
+            {
+)", org.segment*0x10000 + org.offset);
+
+        for (const indirectJump_t& j : options.indirectJumps)
+        {
+            if (j.origin == org)
+                printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
+        }
+        printf(R"(            }
+            break;
+)");
     }
-    printf(R"(        default:
-            printf("\nMISSING INDIRECT JUMP %%04x:%%04x @ %%s\n", s, o, info);
-            exit(3);
-    }
+    printf(R"(    }
+    printf("\nMISSING INDIRECT JUMP %%04x:%%04x @ %%04x:%%04x/%%04x:%%04x\n", s, o, orgs, orgo, pars, paro);
+    exit(3);
 }
 
 )");
@@ -287,55 +320,81 @@ void indirectJump(int s, int o, const char* info)
         printf("}\n\n");
     }
     
-    std::set<address_t> processFinal;
-    std::set<address_t> processFinal2;
-    std::set<address_t> processFinal3;
-    std::set<address_t> processFinal4;
-    std::set<address_t> processFinal5;
-    std::set<address_t> processFinal6;
-    for (indirectJump_t j : options.indirectJumps)
-    {
-        processFinal.insert(j.target);
-        processFinal2.insert(j.target);
-        processFinal3.insert(j.target);
-        processFinal4.insert(j.target);
-        processFinal5.insert(j.target);
-        processFinal6.insert(j.target);
-    }
+//    std::set<address_t> processFinal;
+//    std::set<address_t> processFinal2;
+//    std::set<address_t> processFinal3;
+//    std::set<address_t> processFinal4;
+//    std::set<address_t> processFinal5;
+//    std::set<address_t> processFinal6;
+//    for (indirectJump_t j : options.indirectJumps)
+//    {
+//        processFinal.insert(j.target);
+//        processFinal2.insert(j.target);
+//        processFinal3.insert(j.target);
+//        processFinal4.insert(j.target);
+//        processFinal5.insert(j.target);
+//        processFinal6.insert(j.target);
+//    }
+//
+    std::map<address_t, address_t> dependency;
+    for (const indirectJump_t& j : options.indirectJumps)
+        dependency.insert({j.target, j.parent});
 
     std::set<address_t> processNew;
     processNew = analyser.AllMethods();
     // TODO: call conv!
+    std::set<address_t> processed;
     
     while (!processNew.empty())
     {
-        std::set<address_t> process = processNew;
-        processNew.clear();
+        std::set<address_t> keep;
+        std::set<address_t> process;
+        
+        for (address_t p : processNew)
+        {
+            bool depends = false;
+
+            auto pDeps = dependency.find(p);
+            if (pDeps != dependency.end())
+                depends = processed.find(pDeps->second) == processed.end();
+                
+            if (depends)
+                keep.insert(p);
+            else
+                process.insert(p);
+        }
+        
+        //std::set<address_t> process = processNew;
+        //processNew.clear();
+        processNew = keep;
         
         for (address_t proc : process)
         {
             procRequest_t modifier = procRequest_t::none;
             if (options.procModifiers.find(proc) != options.procModifiers.end())
                 modifier = options.procModifiers.find(proc)->second;
-//            int modifierStack = 0;
-//            if (options.procModifiersStack.find(proc) != options.procModifiersStack.end())
-//                modifierStack = options.procModifiersStack.find(proc)->second;
             int modifierStack = analyser.GuessStackBalanceForProcCached(proc);
 
-            if (processFinal.empty() && (int)modifier & (int)procRequest_t::callIsolated)
+            if (/*processFinal.empty() &&*/ (int)modifier & (int)procRequest_t::callIsolated)
             {
                 // find parent, reuse attributes
                 for (indirectJump_t j : options.indirectJumps)
                     if (j.target == proc)
                     {
-                        if (options.procModifiers.find(j.parent) != options.procModifiers.end())
-                            modifier = procRequest_t{(int)modifier | (int)options.procModifiers.find(j.parent)->second};
-                        modifierStack = analyser.GuessStackBalanceForProcCached(j.parent);
+//                        auto pParent = analyser.mIndirectToParent.find(j.origin);
+//                        assert(pParent != analyser.mIndirectToParent.end());
+//                        address_t parent = pParent->second;
+                        address_t parent = j.parent;
+                        if (options.procModifiers.find(parent) != options.procModifiers.end())
+                            modifier = procRequest_t{(int)modifier | (int)options.procModifiers.find(parent)->second};
+                        modifierStack = analyser.GuessStackBalanceForProcCached(parent);
                         break;
                     }
             }
 
             analyser.AnalyseProc(proc, modifier, modifierStack);
+            processed.insert(proc);
+            
             if (options.recursive)
             {
                 for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
@@ -352,24 +411,25 @@ void indirectJump(int s, int o, const char* info)
                         else
                             options.procModifiers.insert(req);
                         processNew.insert(req.first);
+                        processed.erase(req.first);
                     }
                 }
             }
         }
         
-        // TODO: dependency tree!!!
-        if (processFinal5.empty())
-            processFinal5 = std::move(processFinal6);
-        if (processFinal4.empty())
-            processFinal4 = std::move(processFinal5);
-        if (processFinal3.empty())
-            processFinal3 = std::move(processFinal4);
-        if (processFinal2.empty())
-            processFinal2 = std::move(processFinal3);
-        if (processFinal.empty())
-            processFinal = std::move(processFinal2);
-        if (processNew.empty())
-            processNew = std::move(processFinal);
+//        // TODO: dependency tree!!!
+//        if (processFinal5.empty())
+//            processFinal5 = std::move(processFinal6);
+//        if (processFinal4.empty())
+//            processFinal4 = std::move(processFinal5);
+//        if (processFinal3.empty())
+//            processFinal3 = std::move(processFinal4);
+//        if (processFinal2.empty())
+//            processFinal2 = std::move(processFinal3);
+//        if (processFinal.empty())
+//            processFinal = std::move(processFinal2);
+//        if (processNew.empty())
+//            processNew = std::move(processFinal);
     }
 
     for (address_t proc : analyser.AllMethods())

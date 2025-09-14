@@ -56,6 +56,17 @@ namespace utils {
         size_t last = str.find_last_not_of(' ');
         return str.substr(first, last - first + 1);
     }
+
+    std::string replace(std::string str, const std::string& find, const std::string& replace) {
+        if (find.empty()) return str; // avoid infinite loop
+
+        size_t pos = 0;
+        while ((pos = str.find(find, pos)) != std::string::npos) {
+            str.replace(pos, find.length(), replace);
+            pos += replace.length(); // move past the replaced part
+        }
+        return str;
+    }
 };
 
 using namespace utils;
@@ -233,7 +244,7 @@ public:
     std::map<address_t, int> procModifiersStack;
     std::map<address_t, std::string> inject;
     std::set<address_t> marks;
-    std::set<address_t> indirectCalls;
+    std::vector<indirectJump_t> indirectCalls;
     std::vector<indirectJump_t> indirectJumps;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {

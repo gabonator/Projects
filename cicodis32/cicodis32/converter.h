@@ -180,7 +180,7 @@ public:
             {
                 std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
                 if (injectstr == "//comment")
-                    command = "// " + command;
+                    command = "// " + utils::replace(command, "\n", "");
                 
                 if (command.size())
                     mCode.push_back("    " + command + "\n");

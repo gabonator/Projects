@@ -224,14 +224,14 @@ class ProgramAnalyser {
 public:
     typedef std::map<address_t, shared<instrInfo_t>> code_t;
     Options& mOptions;
-//        std::map<address_t, std::shared_ptr<CTracer>> mMethods;
-        struct info_t {
-            //address_t proc;
-            code_t code;
-            funcInfo_t func;
-            procRequest_t reqSelf{procRequest_t::none};
-        };
-        std::map<address_t, shared<info_t>> mInfos;
+    struct info_t {
+        //address_t proc;
+        code_t code;
+        funcInfo_t func;
+        procRequest_t reqSelf{procRequest_t::none};
+    };
+    std::map<address_t, shared<info_t>> mInfos;
+//    std::map<address_t, address_t> mIndirectToParent; // TODO
     
 public:
     ProgramAnalyser(Options& options) : mOptions(options)
@@ -252,6 +252,11 @@ public:
             shared<instrInfo_t> info = std::make_shared<instrInfo_t>();
             info->instr = instr;
             newInfo->code.insert({addr, info});
+//            if (instr->IsIndirectCall() || instr->IsIndirectJump())
+//            {
+//                if (mIndirectToParent.find(instr->mAddress) == mIndirectToParent.end())
+//                    mIndirectToParent.insert({instr->mAddress, method});
+//            }
         }
         mInfos.insert({method, newInfo});
     }

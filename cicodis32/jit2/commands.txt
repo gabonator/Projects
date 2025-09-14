@@ -1,0 +1,101 @@
+{"id": "config", "loader": "LoaderMz", "executable": "keen4.zip/KEEN4.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "stackShiftAlways": true}
+//{"id": "config", "verboseAsm": true }
+{"id": "inject", "addr": "01ed:35e1", "text": "//quiet"}
+{"id": "inject", "addr": "01ed:36f0", "text": "//comment"}
+{"id": "inject", "addr": "1b1e:06fe", "text": "sync();"}
+{"id": "inject", "addr": "05da:0bf8", "text": "if (si%3 == 0) sync();"}
+{"id": "inject", "addr": "1ff7:0759", "text": "sp += 2; sync(); cs = pop(); return;"}
+{"id": "inject", "addr": "1ef3:0a9b", "text": "sync();"}
+{"id": "inject", "addr": "164d:04a0", "text": "sync(); /*"}
+{"id": "inject", "addr": "164d:04b3", "text": "*/"}
+{"id": "inject", "addr": "164d:0fa9", "text": "sync();"}
+{"id": "inject", "addr": "1841:12a4", "text": "sync();"}
+{"id": "inject", "addr": "1a61:0b00", "text": "sync();"}
+{"id": "inject", "addr": "1a61:0b06", "text": "//comment"}
+{"id": "inject", "addr": "1c76:25f5", "text": "sync();"}
+{"id": "inject", "addr": "05da:0455", "text": "sync(); /*"}
+{"id": "inject", "addr": "05da:0468", "text": "*/"}
+{"id": "inject", "addr": "05da:063a", "text": "sync();"}
+{"id": "inject", "addr": "164d:0e7e", "text": "sync();"}
+{"id": "inject", "addr": "164d:0ea6", "text": "//comment"}
+
+{"id": "indirectCall", "target": "01ed:12a3", "origin": "01ed:0216"}
+{"id": "indirectCall", "target": "1ff7:0b60", "origin": "1ff7:0b4b"}
+{"id": "indirectJump", "target": "056a:0448", "origin": "056a:0443", "parent": "056a:03cb"}
+{"id": "indirectJump", "target": "05da:02f2", "origin": "05da:02ed", "parent": "05da:02d8"}
+{"id": "indirectJump", "target": "1ff7:050c", "origin": "1ff7:0507", "parent": "1ff7:04df"}
+{"id": "indirectCall", "target": "07b1:066d", "origin": "1493:18e7"}
+{"id": "indirectJump", "target": "1ff7:01ba", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectCall", "target": "01ed:36f4", "origin": "01ed:0216"}
+{"id": "indirectCall", "target": "01ed:35e1", "origin": "01ed:0216"}
+{"id": "indirectCall", "target": "01ed:181e", "origin": "01ed:0216"}
+{"id": "indirectJump", "target": "05da:0349", "origin": "05da:02ed", "parent": "05da:02d8"}
+{"id": "indirectJump", "target": "1ff7:0553", "origin": "1ff7:0507", "parent": "1ff7:04df"}
+{"id": "indirectCall", "target": "1ef3:078d", "origin": "056a:004a"}
+{"id": "indirectCall", "target": "1ef3:078d", "origin": "1b1e:0e74"}
+{"id": "indirectCall", "target": "1ef3:0e2c", "origin": "1b1e:0eaa"}
+{"id": "indirectJump", "target": "1ff7:08a5", "origin": "1ff7:08a0", "parent": "1ff7:0849"}
+{"id": "indirectCall", "target": "07b1:07ea", "origin": "1493:1933"}
+{"id": "indirectJump", "target": "1ff7:052f", "origin": "1ff7:0507", "parent": "1ff7:04df"}
+{"id": "indirectCall", "target": "07b1:085b", "origin": "1493:1ba1"}
+{"id": "indirectCall", "target": "1ef3:0e2c", "origin": "1c76:01c2"}
+{"id": "indirectJump", "target": "1ff7:08bc", "origin": "1ff7:08a0", "parent": "1ff7:0849"}
+{"id": "indirectCall", "target": "1ef3:078d", "origin": "1c76:01d6"}
+{"id": "indirectCall", "target": "1ef3:0e2c", "origin": "1c76:01eb"}
+{"id": "indirectCall", "target": "1ef3:078d", "origin": "1c76:01ff"}
+{"id": "indirectCall", "target": "1ef3:0e2c", "origin": "1c76:0224"}
+{"id": "indirectCall", "target": "1ef3:0e2c", "origin": "1c76:0198"}
+{"id": "indirectJump", "target": "1c76:0767", "origin": "1c76:071b", "parent": "1c76:06e8"}
+{"id": "indirectJump", "target": "1c76:2453", "origin": "1c76:2434", "parent": "1c76:2426"}
+{"id": "indirectCall", "target": "07b1:0466", "origin": "1c76:250f"}
+{"id": "indirectJump", "target": "107c:03a3", "origin": "107c:005f", "parent": "107c:0003"}
+{"id": "indirectJump", "target": "107c:00bc", "origin": "107c:005f", "parent": "107c:03a3"}
+{"id": "indirectJump", "target": "107c:034d", "origin": "107c:005f", "parent": "107c:00bc"}
+{"id": "indirectJump", "target": "164d:0a76", "origin": "164d:0a71", "parent": "164d:09be"}
+{"id": "indirectCall", "target": "0f7c:06af", "origin": "0bc9:0fb0"}
+{"id": "indirectCall", "target": "0bc9:176e", "origin": "08aa:2468"}
+{"id": "indirectJump", "target": "1ff7:01c8", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectJump", "target": "1ff7:01a0", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectCall", "target": "07b1:0561", "origin": "1841:1cb7"}
+{"id": "indirectCall", "target": "0f7c:06f0", "origin": "0bc9:106d"}
+{"id": "indirectJump", "target": "1ff7:0202", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectJump", "target": "1841:0c7c", "origin": "1841:0c77", "parent": "1841:0c62"}
+{"id": "indirectJump", "target": "1ff7:01ec", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectCall", "target": "1195:002e", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:008b", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:00b3", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:00db", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "0f7c:06af", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:0103", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:012b", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "0f7c:06f0", "origin": "0bc9:0fb0"}
+{"id": "indirectCall", "target": "1195:0153", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "1195:017b", "origin": "0bc9:106d"}
+{"id": "indirectJump", "target": "07b1:0ede", "origin": "07b1:0e67", "parent": "07b1:0d81"}
+{"id": "indirectJump", "target": "107c:032e", "origin": "107c:005f", "parent": "107c:034d"}
+{"id": "indirectJump", "target": "107c:022c", "origin": "107c:005f", "parent": "107c:032e"}
+{"id": "indirectJump", "target": "107c:01fc", "origin": "107c:005f", "parent": "107c:022c"}
+{"id": "indirectJump", "target": "107c:0338", "origin": "107c:005f", "parent": "107c:01fc"}
+{"id": "indirectJump", "target": "107c:0090", "origin": "107c:005f", "parent": "107c:01fc"}
+{"id": "indirectJump", "target": "107c:04a4", "origin": "107c:005f", "parent": "107c:034d"}
+{"id": "indirectJump", "target": "107c:038e", "origin": "107c:005f", "parent": "107c:04a4"}
+{"id": "indirectCall", "target": "0d6d:0395", "origin": "0bc9:0fb0"}
+{"id": "indirectCall", "target": "0bc9:16c9", "origin": "0bc9:0fb0"}
+{"id": "indirectCall", "target": "126d:114f", "origin": "0bc9:0f16"}
+{"id": "indirectCall", "target": "0d6d:1aa2", "origin": "08aa:2468"}
+{"id": "indirectCall", "target": "126d:097e", "origin": "08aa:2468"}
+{"id": "indirectCall", "target": "0d6d:0395", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "0bc9:16c9", "origin": "0bc9:106d"}
+{"id": "indirectCall", "target": "0d6d:062c", "origin": "0bc9:0fb0"}
+{"id": "indirectCall", "target": "0d6d:1b5f", "origin": "08aa:2468"}
+{"id": "indirectCall", "target": "0d6d:062c", "origin": "0bc9:106d"}
+{"id": "indirectJump", "target": "1ff7:021a", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectJump", "target": "1ff7:0232", "origin": "1ff7:017e", "parent": "1ff7:0115"}
+{"id": "indirectCall", "target": "0d6d:0b5b", "origin": "0bc9:0f16"}
+{"id": "indirectCall", "target": "0d6d:1c48", "origin": "08aa:2468"}
+{"id": "indirectCall", "target": "0d6d:0b5b", "origin": "0bc9:0fb0"}
+{"id": "indirectJump", "target": "1841:0cee", "origin": "1841:0c77", "parent": "1841:0c62"}
+{"id": "indirectJump", "target": "0d6d:1978", "origin": "0d6d:196c", "parent": "0d6d:18e9"}
+{"id": "indirectCall", "target": "0d6d:14a9", "origin": "08aa:23aa"}
+{"id": "indirectCall", "target": "126d:0938", "origin": "08aa:23c0"}
+{"id": "indirectJump", "target": "1841:0cc7", "origin": "1841:0c77", "parent": "1841:0c62"}
