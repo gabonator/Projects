@@ -64,6 +64,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--cx)\n        $goto_target;"; } },
     [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--cx && $cond)\n        $goto_target;"; },
         .flagCondition = "!$zero"},
+    [X86_INS_LOOPE] = {.convert = [](convert_args){ return "if (--cx && !$cond)\n        $goto_target;"; },
+        .flagCondition = "$zero"},
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
@@ -131,6 +133,8 @@ convert_t convert[X86_INS_ENDING] = {
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return "!$rd0"; },
             .savecf = [](convert_args){ return "($rd0 + $rd1) >= $overflow0"; },
+            .savezf = [](convert_args){ return "($rd0 + $rd1) % $overflow0 == 0"; },
+            .savesf = [](convert_args){ return "($rd0 + $rd1) & $msb0"; },
     },
     [X86_INS_LEA] = {.convert = [](convert_args){ return "$wr0 = $adr1;"; } },
     [X86_INS_SAHF] = {.convert = [](convert_args){ return "sahf();"; },
@@ -263,6 +267,8 @@ convert_t convert[X86_INS_ENDING] = {
             return "ax = lodsw<DS_SI>();";
         else if (strcmp(instr->mOperands, "ax, word ptr [esi]") == 0)
             return "ax = lodsw<DS_ESI>();";
+        else if (strcmp(instr->mOperands, "ax, word ptr cs:[si]") == 0)
+            return "ax = lodsw<CS_SI>();";
         assert(0);
         return "";
     } },
@@ -288,6 +294,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHL] = {.convert = [](convert_args){
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
     },
+            .zf = [](convert_args){ return "!$rd0 && stop()"; },
             .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0)"; },
     },
     [X86_INS_ROL] = {.convert = [](convert_args){
@@ -309,7 +316,7 @@ convert_t convert[X86_INS_ENDING] = {
         return "$wr0 = rcl$width0($rd0, $rd1);";
     } },
     [X86_INS_IMUL] = {.convert = [](convert_args){
-        if (instr->mDetail.op_count == 3 && instr->mDetail.operands[2].type == X86_OP_IMM && instr->mDetail.operands[0].size == 4)
+        if (instr->mDetail.op_count == 3) // && instr->mDetail.operands[2].type == X86_OP_IMM && instr->mDetail.operands[0].size == 4)
             return "$wr0 = $rd1 * $rd2;";
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 1)
             return "ax = ((char)$rd0 * (short)ax) & 0xffff;";
@@ -368,6 +375,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_STOSD] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_CMPSB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }},
+    [X86_INS_CMPSW] = {.convert = [](convert_args){ return "$string"; },
+        .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CWDE] = {.convert = [](convert_args){ return func.arch == arch_t::arch16 ? "cbw();" : "cwde();"; } }, // CBW/CWDE
     [X86_INS_CDQ] = {.convert = [](convert_args){
         return func.arch == arch_t::arch16 ? "dx = ax & 0x8000 ? 0xffff : 0x0000;" : "stop(\"cdq\");"; } }, // CWD/CWDE
@@ -420,4 +429,8 @@ convert_t convert[X86_INS_ENDING] = {
     
     [X86_INS_AAD] = {.convert = [](convert_args){ return "stop(\"aad\");"; } },
 //    [X86_INS_DAS] = {.convert = [](convert_args){return "stop(\"das\")";} },
+    [X86_INS_DAA] = {.convert = [](convert_args){return "stop(\"daa\")";},
+        .cf = [](convert_args){ return "stop()"; },},
+    [X86_INS_AAM] = {.convert = [](convert_args){ return "stop(\"aam\");"; } },
+    [X86_INS_AAA] = {.convert = [](convert_args){ return "stop(\"aaa\");"; } },
 };

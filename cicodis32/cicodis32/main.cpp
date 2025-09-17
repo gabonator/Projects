@@ -75,6 +75,10 @@ int main(int argc, char **argv) {
                     options.arch = arch_t::arch32;
                 else if (k == "loadAddress")
                     options.loadAddress = CConversion(v).ToInt();
+                else if (k == "start" && v == "false")
+                    options.start = false;
+                else if (k == "verbose" && v == "true")
+                    options.verbose = true;
                 else if (k == "verboseAsm" && v == "true")
                     options.verboseAsm = true;
                 else if (k == "verboseAsm" && v == "false")
@@ -83,6 +87,8 @@ int main(int argc, char **argv) {
                     options.recursive = false;
                 else if (k == "relocations" && v == "false")
                     options.relocations = false;
+                else if (k == "declarations" && v == "false")
+                    options.declarations = false;
                 else if (k == "stackShiftAlways" && v == "true")
                     options.stackShiftAlways = true;
                 else if (k == "procList")
@@ -117,11 +123,100 @@ int main(int argc, char **argv) {
             address_t origin = address_t::fromString(json["origin"].GetString());
             options.indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
         } else
+        if (json["id"] == "jumpTable" && json["calls"])
+        {
+            std::vector<uint16_t> targets;
+            std::vector<int> elements;
+
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            CJson(json["calls"]).ForEach([&](const CSubstring& v)
+            {
+                address_t target = address_t::fromString(CJson(v).GetString());
+                targets.push_back(target.offset);
+                targets.push_back(target.segment);
+                elements.push_back((int)elements.size());
+            });
+            uint16_t* ptargets = new uint16_t[targets.size()];
+            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
+            
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
+                .type = jumpTable_t::switch_e::CallDwords, .useCaseOffset = true, .elements = elements});
+            
+            options.jumpTables.push_back(jt);
+        } else
+        if (json["id"] == "jumpTable" && json["jumps"])
+        {
+            std::vector<uint16_t> targets;
+            std::vector<int> elements;
+
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            CJson(json["jumps"]).ForEach([&](const CSubstring& v)
+            {
+                address_t target = address_t::fromString(CJson(v).GetString());
+                assert(target.segment == instruction.segment);
+                targets.push_back(target.offset);
+                elements.push_back((int)elements.size());
+            });
+            uint16_t* ptargets = new uint16_t[targets.size()];
+            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
+            
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
+                .type = jumpTable_t::switch_e::JumpWords, .useCaseOffset = true, .elements = elements});
+            
+            options.jumpTables.push_back(jt);
+        } else
+        if (json["id"] == "jumpTable")
+        {
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            address_t table = address_t::fromString(json["table"].GetString());
+            int entries = json["entries"].GetNumber();
+            std::string strType = json["type"].GetString();
+            std::string selector = json["selector"].GetString();
+            int minaddr = json["filterMin"] ? json["filterMin"].GetNumber() : 0;
+            
+            jumpTable_t::switch_e type = jumpTable_t::switch_e::None;
+            if (strType == "jumpwords")
+                type = jumpTable_t::switch_e::JumpWords;
+            else if (strType == "callwords")
+                type = jumpTable_t::switch_e::CallWords;
+            else if (strType == "calldwords")
+                type = jumpTable_t::switch_e::CallDwords;
+            else
+                assert(0);
+            
+            std::vector<int> elements;
+            for (int i=0; i<entries; i++)
+                elements.push_back(i);
+
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .table = table, .type = type, .elements = elements, .selector = selector,
+                .minaddr = minaddr});
+            
+            options.jumpTables.push_back(jt);
+        } else
         if (json["id"] == "inject")
         {
             options.inject.insert({address_t::fromString(json["addr"].GetString()), json["text"].GetString()});
         } else
+        if (json["id"] == "marks")
         {
+            CJson(json["marks"]).ForEach([&](const CSubstring& v)
+            {
+                options.marks.insert(address_t::fromString(CJson(v).GetString()));
+            });
+        } else
+        if (json["id"] == "overlay")
+        {
+            options.overlayBase = address_t::fromString(json["addr"].GetString());
+            CJson(json["bytes"]).ForEach([&](const CSubstring& v)
+            {
+                int b = CJson(v).GetNumber();
+                options.overlayBytes.push_back(b);
+            });
+        }
+        else {
             printf("Wrong json: '%s'\n", line.c_str());
             assert(0);
         }
@@ -147,6 +242,8 @@ int main(int argc, char **argv) {
         printf("Cannot open file %s\n", options.exec);
         return 1;
     }
+    if (options.overlayBase)
+        loader->Overlay(options.overlayBase, options.overlayBytes);
     Capstone->Set(loader, options);
 
     
@@ -166,7 +263,7 @@ int main(int argc, char **argv) {
 
         if (!t->baseptr)
             t->baseptr = loader->GetBufferAt(t->table);
-        if (strcmp(t->selector, "indirect") == 0)
+        if (t->selector == "indirect")
             anyIndirectTable = true;
     }
 
@@ -185,7 +282,7 @@ int main(int argc, char **argv) {
         startEntries.push_back(p);
     }
     for (shared<jumpTable_t> j : options.jumpTables)
-        if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords)
+        if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords || j->type == jumpTable_t::CallDwords)
         for (int i=0; i<j->GetSize(); i++)
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
@@ -296,7 +393,7 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
     {
         printf("void callIndirect(int seg, int ofs)\n{\n");
         for (auto table : options.jumpTables)
-            if (strcmp(table->selector, "indirect") == 0)
+            if (table->selector == "indirect")
             {
                 std::set<int> used;
                 printf("    if (seg == 0x%04x)\n    {\n", table->instruction.segment);
@@ -458,6 +555,10 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
     printf("int GetProcAt(int seg, int ofs)\n");
     printf("{\n");
+    printf("    int marks[] = {\n");
+    for (address_t mark : options.marks)
+        printf("0x%04x, 0x%04x, ", mark.segment, mark.offset);
+    printf("    };\n");
     printf("    int map[] = {\n");
     for (int i=0; i<procMap.size(); i++)
     {
@@ -468,6 +569,10 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
             printf("\n");
     }
     printf("    };\n");
+    printf("    for (int i=0; i<sizeof(marks)/sizeof(marks[0]); i+=2)\n");
+    printf("        if (seg == marks[i] && ofs == marks[i+1])\n");
+    printf("            return 0;\n");
+    printf("\n");
     printf("    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)\n");
     printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs < map[i+3]*16 + map[i+4])\n");
     printf("            return map[i];\n");

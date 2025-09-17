@@ -81,6 +81,7 @@ public:
     virtual address_t GetEntry() = 0;
     virtual std::string GetMain() = 0;
     virtual std::string GetFooter() = 0;
+    virtual void Overlay(address_t addr, const std::vector<uint8_t>& bytes) = 0;
 };
 
 struct jumpTable_t {
@@ -97,8 +98,9 @@ struct jumpTable_t {
 //        CallWordsByOfs
     } type{None};
     
-    char selector[64];
+    std::string selector;
     const uint8_t* baseptr{nullptr};
+    bool release{false};
     int minaddr{0};
     bool useCaseOffset{false};
     
@@ -106,6 +108,15 @@ struct jumpTable_t {
     int filestep{0};
     int filecount{0};
     
+    ~jumpTable_t()
+    {
+        if (release)
+        {
+            assert(baseptr);
+            delete baseptr;
+            baseptr = nullptr;
+        }
+    }
     address_t GetBaseAddress() const
     {
         return table;
@@ -145,7 +156,7 @@ struct jumpTable_t {
     {
         if (minaddr == 0)
             return true;
-        assert(type == CallWords);
+        assert(type == CallWords || type == JumpWords);
         uint16_t* parts = (uint16_t*)baseptr;
         return parts[elements[i]] >= minaddr;
     }
@@ -260,6 +271,9 @@ public:
     bool verboseAsm{false};
     bool printProcAddress{false};
     bool printLabelAddress{false};
+    
+    address_t overlayBase;
+    std::vector<uint8_t> overlayBytes;
 };
 
 template<typename T, typename U> T check(T o, U end)

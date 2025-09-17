@@ -243,6 +243,10 @@ public:
         int tempCounter = 0;
         for (const auto& [a, p] : info->code)
         {
+            if (a.offset == 0x946f)
+            {
+                int f = 9;
+            }
             // save full cond
             int needed = 0;
             bool anyDirty = false;
@@ -258,17 +262,20 @@ public:
                 if (flag->needed && flag->dirty)
                     anyDirty = true;
             }
-            if (anyDirty && needed > 1 && deps.size() == 1)
+            if (anyDirty && needed > 1 /* && deps.size() == 1*/)
             {
-                assert(deps.size() == 1);
-                shared<instrInfo_t> destructive = info->code.find(*deps.begin())->second;
-                // save whole condition if couldnt be reconstructed by saving single flag
-                //assert(destructive->savePrecondition.size() == 0); // check ck1:loc_283c
-                destructive->savePrecondition.push_back({
-                    .writeOp = destructive->instr->mId,
-                    .readOp = p->instr->mId,
-                    .variable = utils::format("temp_cond%d", tempCounter)
-                });
+                for (address_t depAddr : deps)
+                {
+//                    assert(deps.size() == 1);
+                    shared<instrInfo_t> destructive = info->code.find(depAddr)->second;
+                    // save whole condition if couldnt be reconstructed by saving single flag
+                    //assert(destructive->savePrecondition.size() == 0); // check ck1:loc_283c
+                    destructive->savePrecondition.push_back({
+                        .writeOp = destructive->instr->mId,
+                        .readOp = p->instr->mId,
+                        .variable = utils::format("temp_cond%d", tempCounter)
+                    });
+                }
                 assert(p->readPrecondition.size() == 0);
                 p->readPrecondition.push_back(utils::format("temp_cond%d", tempCounter));
                 tempCounter++;
@@ -282,7 +289,7 @@ public:
             {
                 if (p->readPrecondition.size())
                 {
-                    assert(flag->depends.size() <= 1);
+//                    assert(flag->depends.size() <= 1);
                     continue;
                 }
                 
@@ -295,7 +302,10 @@ public:
                     for (address_t depAddr : flag->depends)
                     {
                         shared<instrInfo_t> dep = info->code.find(depAddr)->second;
-                        
+                        if (dep->savePrecondition.size())
+                            continue; // TODO!!
+
+
                         if (dep->instr->mId == X86_INS_CALL)
                             continue;
                         if (flag->type == 'c' && dep->instr->mTemplate.savedVisiblyCarry)
@@ -303,6 +313,8 @@ public:
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_SCASB)
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSB) // TODO: tables
+                            continue;
+                        if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSW) // TODO: tables
                             continue;
                         if (flag->type == 'c' && dep->instr->mId == X86_INS_INT)
                             continue;
@@ -337,7 +349,8 @@ public:
                     exits.insert(p->instr->mId);
             }
 
-            if (linear[0]->instr->mId == X86_INS_POP &&
+            if (linear.size() > 2 &&
+                linear[0]->instr->mId == X86_INS_POP &&
                 linear[1]->instr->mId == X86_INS_PUSH &&
                 strcmp(linear[1]->instr->mOperands, "cs") == 0 &&
                 linear[2]->instr->mId == X86_INS_PUSH &&

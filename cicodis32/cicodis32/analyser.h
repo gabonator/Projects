@@ -366,6 +366,9 @@ public:
                 case X86_INS_DEC:
                     stackChange++;
                     break;
+                case X86_INS_AND:
+                    // and sp, fffe !?
+                    break;
                 case X86_INS_ADD:
                     if (instr->mDetail.operands[1].type == X86_OP_IMM)
                         stackChange -= instr->Imm();
@@ -504,11 +507,11 @@ public:
         if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
         {
             // stub
-//            if (code.begin()->second->instr->mDetail.operands[0].type == X86_OP_IMM)
-//            {
+            if (code.begin()->second->instr->mDetail.operands[0].type == X86_OP_IMM)
+            {
                 calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
                 return calls;
-//            }
+            }
         }
         for (const auto& p : code)
         {

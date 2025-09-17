@@ -32,7 +32,7 @@ public:
             DumpInput(code);
 
         // TODO: bStub!
-        if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP)
+        if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP && code.begin()->second->instr->IsDirectJump())
         {
             // stub
             mCode.push_back(format("void sub_%x()\n{\n", proc.linearOffset()));
@@ -83,7 +83,7 @@ public:
         {
             if (next && p.first != next)
             {
-                mCode.push_back(format("  // gap %d bytes\n", p.first.offset - next.offset));
+                mCode.push_back(format("    // gap %d bytes\n", p.first.offset - next.offset));
             }
             shared<CapInstr> pinstr = p.second->instr;
             auto codeit = info->code.find(p.first);
@@ -174,7 +174,7 @@ public:
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
                 // TODO!
                 for (shared<jumpTable_t> jt : mOptions.GetJumpTables(pinstr->mAddress))
-                    DumpIndirectTable(jt);
+                    DumpIndirectTable(jt, pinstr, pinfo, info->func);
             } else
             if (convert[pinstr->mId].convert)
             {
@@ -227,11 +227,24 @@ public:
         return tempNames;
     }
 
-    void DumpIndirectTable(shared<jumpTable_t> jt)
+    void DumpIndirectTable(shared<jumpTable_t> jt, shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func)
     {
         std::set<int> dupl;
         
-        mCode.push_back(format("    switch (%s)\n", jt->selector));
+        std::string selector = jt->selector;
+        if (selector.empty())
+        {
+            if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1)
+                selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
+            else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
+                selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
+            else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
+                selector = iformat(instr, info, func, "$rd0");
+            else
+                assert(0);
+        }
+
+        mCode.push_back(format("    switch (%s)\n", selector.c_str()));
         mCode.push_back(format("    {\n"));
         for (int i=0; i<jt->GetSize(); i++)
             if (jt->IsValid(i))
@@ -269,6 +282,8 @@ public:
             return "($sig0)$rd0 - ($sig0)$rd1 > 0";
         if (set == X86_INS_SUB && cond == X86_INS_JLE)
             return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
+        if (set == X86_INS_SUB && cond == X86_INS_JL)
+            return "($sig0)$rd0 - ($sig0)$rd1 < 0";
         if (set == X86_INS_SUB && cond == X86_INS_JA)
             return "$rd0 - $rd1 > 0";
         if (set == X86_INS_SUB && cond == X86_INS_JGE)
@@ -281,6 +296,8 @@ public:
             return "($sig0)$rd0 - 1 > 0";
         if (set == X86_INS_DEC && cond == X86_INS_JGE)
             return "($sig0)$rd0 - 1 >= 0";
+        if (set == X86_INS_NEG && cond == X86_INS_JLE)
+            return "($sig0)$rd0 <= 0";
         assert(0);
         return "";
     }
@@ -326,7 +343,9 @@ public:
                     assert(0);
             }
         }
-            
+           
+        if (set == X86_INS_SAHF)
+            return "stop(\"sahf get flag\")";
 
         assert(0);
         return "";
@@ -448,6 +467,8 @@ public:
             return "$rd0 /* gabo-3 */";
         if (cond.starts_with("flags."))
             return "!"+cond;
+        if (cond == "!!($rd0 & $msb0)")
+            return "!($rd0 & $msb0)";
         assert(0);
         return "!(" + cond+ ")";
     }
@@ -473,6 +494,8 @@ public:
         for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             if (flag->needed)
             {
+                if (flag->lastSet.empty())
+                    return "stop(\"problem-73\")";
                 assert(!flag->lastSet.empty());
                 needFlags++;
                 dirty |= flag->dirty;
@@ -577,6 +600,8 @@ public:
                 return "flags.zero";
             else if (flagCondition == "!$zero")
                 return "!flags.zero";
+            else if (flagCondition == "$sign")
+                return "xxxflags.sign";
             assert(0);
         }
 //        if ((dirty || lastSet.size() > 1) && needFlags == 1 && needType.size() == 1 && !info->GetFlag(*needType.begin()).variableRead.empty())
@@ -639,6 +664,8 @@ public:
                 return "DS_ESI";
             if (in == "byte ptr es:[si]" || in == "word ptr es:[si]")
                 return "ES_SI";
+            if (in == "byte ptr cs:[si]" || in == "word ptr cs:[si]")
+                return "CS_SI";
             assert(0);
             return "?";
         };

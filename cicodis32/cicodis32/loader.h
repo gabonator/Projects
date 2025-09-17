@@ -112,6 +112,10 @@ public:
     {
         return "";
     }
+    void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
+    {
+        assert(0);
+    }
 };
 
 class LoaderMz : public Loader {
@@ -212,7 +216,7 @@ public:
         std::string execName = std::string::npos != lastSlash ? strExecutable.substr(lastSlash+1) : strExecutable;
         std::string execPath = std::string::npos != lastSlash ? strExecutable.substr(0, lastSlash) : "";
 
-        std::string strMain = format(R"(void start()
+        std::string strMain = format(R"(void init()
 {
     headerSize = 0x%04x;
     loadAddress = 0x%04x;
@@ -223,6 +227,11 @@ public:
     ss = 0x%04x;
     sp = 0x%04x;
     load("%s", "%s", %d);
+    fixReloc(loadAddress);
+}
+
+void start()
+{
     %ssub_%x();
 }
 )",
@@ -253,11 +262,11 @@ public:
             int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
             uint16_t* addr = (uint16_t*)&buffer[linearOffset];
             if (reloc->segment == 0)
-                strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x\n",
-                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr);
+                strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
+                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
             else
-                strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x\n",
-                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr);
+                strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
+                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
         }
 
         strReloc += "}\n";
@@ -275,6 +284,16 @@ public:
             uint16_t* addr = (uint16_t*)&buffer[linearOffset];
             *addr += _loadBase/16;
         }
+    }
+
+    void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
+    {
+        // GetBufferAt
+        int rel = addr.linearOffset() - _linearToFileOffset;
+        assert(rel >= 0x0 && rel+16 <= buffer.size());
+        uint8_t* buf = &buffer[rel];
+
+        memcpy(buf, &bytes[0], bytes.size());
     }
 };
 
@@ -565,5 +584,9 @@ public:
     virtual std::string GetFooter() override
     {
         return "";
+    }
+    void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
+    {
+        assert(0);
     }
 };
