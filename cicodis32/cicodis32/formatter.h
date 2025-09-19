@@ -528,9 +528,13 @@ public:
                 assert(x86.op_count == 1);
                 if (x86.operands[0].type != X86_OP_IMM)
                 {
-                    snprintf(replace, sizeof(replace), "indirectJump(cs, %s, 0x%04x, 0x%04x, 0x%04x, 0x%04x); return; // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(),
+                    if (func.jit)
+                        snprintf(replace, sizeof(replace), "indirectJump(cs, %s, 0x%04x, 0x%04x, 0x%04x, 0x%04x); return; // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(),
                              instr->mAddress.segment, instr->mAddress.offset,
                              func.proc.segment, func.proc.offset,
+                             instr->mAddress.segment, instr->mAddress.offset);
+                    else
+                        snprintf(replace, sizeof(replace), "indirectJump(cs, %s); return; // %04x:%04x", iformat(instr, info, func, "$rd0").c_str(),
                              instr->mAddress.segment, instr->mAddress.offset);
                 } else
                 {

@@ -163,7 +163,7 @@ public:
     }
     bool IsIndirectJump()
     {
-        if (mId != X86_INS_JMP)
+        if (mId != X86_INS_JMP && mId != X86_INS_LJMP)
             return false;
         assert(mDetail.op_count == 1);
         return mDetail.operands[0].type != X86_OP_IMM;

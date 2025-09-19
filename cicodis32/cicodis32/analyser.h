@@ -23,6 +23,7 @@ struct funcInfo_t {
     int stackEntry{0};
     callConv_t callConv{callConvUnknown};
     arch_t arch;
+    bool jit;
     bool simpleStack{false};
     
     std::string makeProcIdentifier() const
@@ -246,6 +247,7 @@ public:
         newInfo->func.proc = method;
         newInfo->func.arch = mOptions.arch;
         newInfo->func.simpleStack = mOptions.simpleStack;
+        newInfo->func.jit = mOptions.jit;
         
         for (const auto& [addr, instr] : tracer->GetCode())
         {

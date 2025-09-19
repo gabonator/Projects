@@ -108,6 +108,8 @@ public:
     int ResumeStackFromIndirectJump(address_t proc)
     {
         // find parent, reuse attributes
+        if (mOptions.isolateLabels.find(proc) != mOptions.isolateLabels.end())
+            return 0;
         for (indirectJump_t j : mOptions.indirectJumps)
             if (j.target == proc)
             {

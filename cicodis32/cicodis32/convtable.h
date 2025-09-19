@@ -151,10 +151,10 @@ convert_t convert[X86_INS_ENDING] = {
         {
             if (instr->mDetail.operands[0].size == 2)
 //                return "callIndirect(cs, $rd0);";
-                return "indirectCall(cs, $rd0, $seg, $ofs); // $addr;";
+                return func.jit ? "indirectCall(cs, $rd0, $seg, $ofs); // $addr;" : "indirectCall(cs, $rd0); // $addr;";
             if (instr->mDetail.operands[0].size == 4)
 //                return "callIndirect(cs, $rd0);";
-                return "indirectCall(cs, $rd0, $seg, $ofs); // CALL DWORD $addr;";
+                return func.jit ? "indirectCall(cs, $rd0, $seg, $ofs); // CALL DWORD $addr;" : "indirectCall(cs, $rd0); // $addr;";
             assert(0);
             return "stop();";
         }
@@ -169,7 +169,7 @@ convert_t convert[X86_INS_ENDING] = {
         }
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM)
         {
-            return "push(cs); cs = $rns0; indirectCall(cs, $rm0, $seg, $ofs); assert(cs == $seg); // $addr;";
+            return func.jit ? "push(cs); cs = $rns0; indirectCall(cs, $rm0, $seg, $ofs); assert(cs == $seg); // $addr;" : "push(cs); cs = $rns0; indirectCall(cs, $rm0); assert(cs == $seg); // $addr;";
         }
         assert(0);
         return "";

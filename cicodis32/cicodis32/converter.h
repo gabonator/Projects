@@ -130,6 +130,7 @@ public:
                         case 'o': save = convert[pinstr->mId].saveof; break;
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
+                    assert(!pinfo->instr->mTemplate.destructiveCarry);
                     assert(save);
                     
                     std::string fName(flagName[flag->type]);
@@ -240,6 +241,8 @@ public:
                 selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
             else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
                 selector = iformat(instr, info, func, "$rd0");
+            else if (instr->mId == X86_INS_LJMP && instr->mDetail.op_count == 1)
+                selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
             else
                 assert(0);
         }
@@ -346,6 +349,8 @@ public:
            
         if (set == X86_INS_SAHF)
             return "stop(\"sahf get flag\")";
+        if (set == X86_INS_TEST && cond == X86_INS_JLE)
+            return "($sig0)($rd0 & $rd1) <= 0";
 
         assert(0);
         return "";

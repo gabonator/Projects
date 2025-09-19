@@ -180,6 +180,9 @@ public:
             return false;
         }
         
+        // append extra 16 dummy bytes, match with GetBufferAt
+        buffer.resize(buffer.size()+16);
+        
         size = buffer.size();
         header = (MZHeader*)&buffer[0];
         assert(header->id[0] == 'M' && header->id[1] == 'Z');
@@ -226,13 +229,12 @@ public:
     es = 0x%04x;
     ss = 0x%04x;
     sp = 0x%04x;
-    load("%s", "%s", %d);
-    fixReloc(loadAddress);
+    load("%s", "%s", %d);%s
 }
 
 void start()
 {
-    %ssub_%x();
+    sub_%x();
 }
 )",
                 header->headerSize16*16,
@@ -244,7 +246,7 @@ void start()
                 header->ss+_loadBase/16,
                 header->sp,
                 execPath.c_str(), execName.c_str(), size,
-                _dumpReloc ? "fixReloc(cs);\n    " : "",
+                _dumpReloc ? "\n    fixReloc(loadAddress);" : "",
                 (_loadBase/16+header->cs)*16+header->ip);
                 
         std::string strForward = format("void fixReloc(uint16_t seg);\nvoid sub_%x();\n\n", (_loadBase/16+header->cs)*16+header->ip);

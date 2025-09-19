@@ -98,6 +98,21 @@ int main(int argc, char **argv) {
                         options.procList.push_back(address_t::fromString(CJson(v).GetString()));
                     });
                 }
+                else if (k == "isolate")
+                {
+                    CJson(v).ForEach([&](const CSubstring& v)
+                    {
+                        options.isolateLabels.insert(address_t::fromString(CJson(v).GetString()));
+                    });
+                }
+                else if (k == "terminator")
+                {
+                    CJson(v).ForEach([&](const CSubstring& v)
+                    {
+                        options.terminators.insert(address_t::fromString(CJson(v).GetString()));
+                    });
+                }
+
                 else
                 {
                     char temp1[128];
@@ -170,6 +185,8 @@ int main(int argc, char **argv) {
         if (json["id"] == "jumpTable")
         {
             address_t instruction = address_t::fromString(json["addr"].GetString());
+//            if (json["addr"])
+//                instruction = address_t::fromString(json["addr"].GetString());
             address_t table = address_t::fromString(json["table"].GetString());
             int entries = json["entries"].GetNumber();
             std::string strType = json["type"].GetString();
@@ -333,30 +350,32 @@ int main(int argc, char **argv) {
         return org;
     };
     
-    printf(R"(#include <stdio.h>
+    if (options.jit)
+    {
+        printf(R"(#include <stdio.h>
 
 void indirectCall(int s, int o, int orgs, int orgo)
 {
     switch (orgs*0x10000+orgo)
     {
 )");
-    for (address_t org : IndirectOrigins(options.indirectCalls))
-    {
-        printf(R"(        case 0x%x: 
+        for (address_t org : IndirectOrigins(options.indirectCalls))
+        {
+            printf(R"(        case 0x%x: 
             switch (s*0x10000+o)
             {
 )", org.segment*0x10000 + org.offset);
-
-        for (const indirectJump_t& j : options.indirectCalls)
-        {
-            if (j.origin == org)
-                printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
-        }
-        printf(R"(            }
+            
+            for (const indirectJump_t& j : options.indirectCalls)
+            {
+                if (j.origin == org)
+                    printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
+            }
+            printf(R"(            }
             break;
 )");
-    }
-    printf(R"(    }
+        }
+        printf(R"(    }
     printf("\nMISSING INDIRECT CALL %%04x:%%04x @ %%04x:%%04x\n", s, o, orgs, orgo);
     exit(3);
 }
@@ -366,32 +385,33 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
     switch (orgs*0x10000+orgo)
     {
 )");
-    for (address_t org : IndirectOrigins(options.indirectJumps))
-    {
-        printf(R"(        case 0x%x: 
+        for (address_t org : IndirectOrigins(options.indirectJumps))
+        {
+            printf(R"(        case 0x%x: 
             switch (s*0x10000+o)
             {
 )", org.segment*0x10000 + org.offset);
-
-        for (const indirectJump_t& j : options.indirectJumps)
-        {
-            if (j.origin == org)
-                printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
-        }
-        printf(R"(            }
+            
+            for (const indirectJump_t& j : options.indirectJumps)
+            {
+                if (j.origin == org)
+                    printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
+            }
+            printf(R"(            }
             break;
 )");
-    }
-    printf(R"(    }
+        }
+        printf(R"(    }
     printf("\nMISSING INDIRECT JUMP %%04x:%%04x @ %%04x:%%04x/%%04x:%%04x\n", s, o, orgs, orgo, pars, paro);
     exit(3);
 }
 
 )");
+    }
     
     if (anyIndirectTable)
     {
-        printf("void callIndirect(int seg, int ofs)\n{\n");
+        printf("void indirectCall(int seg, int ofs)\n{\n");
         for (auto table : options.jumpTables)
             if (table->selector == "indirect")
             {
@@ -412,8 +432,8 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
                 
                 printf("        }\n");
                 printf("    }\n");
-                
             }
+        printf("    stop(\"ind\");\n");
         printf("}\n\n");
     }
     
@@ -555,10 +575,17 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
     printf("int GetProcAt(int seg, int ofs)\n");
     printf("{\n");
-    printf("    int marks[] = {\n");
-    for (address_t mark : options.marks)
-        printf("0x%04x, 0x%04x, ", mark.segment, mark.offset);
-    printf("    };\n");
+    if (options.marks.size())
+    {
+        printf("    int marks[] = {\n");
+        for (address_t mark : options.marks)
+            printf("0x%04x, 0x%04x, ", mark.segment, mark.offset);
+        printf("    };\n");
+        printf("    for (int i=0; i<sizeof(marks)/sizeof(marks[0]); i+=2)\n");
+        printf("        if (seg == marks[i] && ofs == marks[i+1])\n");
+        printf("            return 0;\n");
+        printf("\n");
+    }
     printf("    int map[] = {\n");
     for (int i=0; i<procMap.size(); i++)
     {
@@ -569,9 +596,6 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
             printf("\n");
     }
     printf("    };\n");
-    printf("    for (int i=0; i<sizeof(marks)/sizeof(marks[0]); i+=2)\n");
-    printf("        if (seg == marks[i] && ofs == marks[i+1])\n");
-    printf("            return 0;\n");
     printf("\n");
     printf("    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)\n");
     printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs < map[i+3]*16 + map[i+4])\n");

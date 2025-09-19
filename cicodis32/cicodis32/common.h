@@ -246,6 +246,7 @@ public:
     arch_t arch{arch_t::archNone};
     bool simpleStack{false};
     bool stackShiftAlways{false};
+    bool jit{false};
     
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
