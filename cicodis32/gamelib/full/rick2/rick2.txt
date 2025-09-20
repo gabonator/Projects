@@ -1,0 +1,12 @@
+{"id": "config", "loader": "LoaderMz", "executable": "rick2.zip/RICK2.EXE", "architecture": "arch16"}
+{"id": "inject", "addr": "1040:6957", "text": "sync();"}
+{"id": "inject", "addr": "1040:964B", "text": "sync();"}
+{"id": "inject", "addr": "1040:c067", "text": "sync();"}
+{"id": "inject", "addr": "1040:9A18", "text": "memoryASet(cs, 0xbda2, 0xc3); flags.carry = false; return;"}
+{"id": "inject", "addr": "1040:BBA0", "text": "return;"}
+{"id": "inject", "addr": "1040:BDA2", "text": "return;"}
+{"id": "inject", "addr": "1040:BEE2", "text": "if (0)"}
+{"id": "inject", "addr": "1040:BF22", "text": "if (0)"}
+{"id": "config", "isolate": ["1040:92F3", "1040:BF59", "1040:9B12", "1040:9331"]}
+{"id": "jumpTable", "addr": "1040:0000", "table": "1040:0000", "entries": 38, "type": "callwords", "selector": "indirect"}
+{"id": "jumpTable", "addr": "1040:0000", "table": "1040:9bb8", "entries": 15, "type": "callwords", "selector": "indirect"}

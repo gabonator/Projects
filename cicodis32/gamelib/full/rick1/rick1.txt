@@ -1,0 +1,8 @@
+{"id": "config", "loader": "LoaderMz", "executable": "rick1.zip/RICK1.EXE", "architecture": "arch16"}
+{"id": "inject", "addr": "341b:015c", "text": "sync();"}
+{"id": "inject", "addr": "341b:0433", "text": "sync();"}
+{"id": "inject", "addr": "341b:0fbe", "text": "sync();"}
+{"id": "inject", "addr": "341b:1b0d", "text": "sync();"}
+{"id": "inject", "addr": "341b:1f72", "text": "sync(); return;"}
+{"id": "inject", "addr": "341b:015c", "text": "sync();"}
+{"id": "jumpTable", "addr": "341b:228a", "table": "1040:80bf", "entries": 24, "type": "jumpwords", "selector": "di - 0x80bf"}
