@@ -202,15 +202,15 @@ class CJson
     enum {
         MaxStringLength = 512
     };
-
+    
     CSubstring mString;
-
+    
 public:
     typedef std::function<void(const CSubstring&, const CSubstring&)> TKeyValueCallback;
     typedef std::function<void(const CSubstring&)> TValueCallback;
-//    typedef void (* TKeyValueCallback)(const CSubstring&, const CSubstring&);
-//    typedef void (* TValueCallback)(const CSubstring&);
-
+    //    typedef void (* TKeyValueCallback)(const CSubstring&, const CSubstring&);
+    //    typedef void (* TValueCallback)(const CSubstring&);
+    
 public:
     void ToString(char* str, int maxLen) const
     {
@@ -219,11 +219,11 @@ public:
         else
             strcpy(str, "");
     }
-
+    
     CJson()
     {
     }
-  
+    
     CJson(const CSubstring& str) : mString(str)
     {
     }
@@ -235,17 +235,17 @@ public:
         
         CSubstring copyString = mString;
         TraverseString(copyString, [](const CSubstring& s)
-        {
+                       {
             if (s.Length() < MaxStringLength-1)
             {
                 memcpy(strValue, s.GetBuffer(), s.Length());
                 strValue[s.Length()] = 0;
             }
         });
-
+        
         return strValue;
     }
-
+    
     int GetNumber()
     {
         static int nResult;
@@ -253,19 +253,38 @@ public:
         nResult = 0;
         
         TraverseNumber(copyString, [](const CSubstring& s)
-        {
+                       {
             nResult = CConversion(s).ToInt();
         });
         
         return nResult;
     }
-    
-    bool operator == (const char* v)
+
+    bool GetBoolean()
     {
-//        printf("compare '%s' '%s'\n", GetString(), v);
-        return strcmp(GetString(), v) == 0;
+        static bool bResult;
+        CSubstring copyString = mString;
+        bResult = false;
+        
+        TraverseKeyword(copyString, [](const CSubstring& s)
+        {
+            if (s == "true")
+                bResult = true;
+            else if (s == "false")
+                bResult = false;
+            else
+                assert(0);
+        });
+        
+        return bResult;
     }
 
+    bool operator == (const char* v)
+    {
+        //        printf("compare '%s' '%s'\n", GetString(), v);
+        return strcmp(GetString(), v) == 0;
+    }
+    
     CJson operator[](const char* pKey)
     {
         static CJson _aux;
@@ -275,14 +294,14 @@ public:
         
         CSubstring copyString = mString;
         TraverseObject(copyString, [](const CSubstring& key, const CSubstring& value)
-        {
+                       {
             if (key == _pKey)
                 _aux = CJson(value);
         });
         //_ASSERT(_aux);
         return _aux;
     }
-
+    
     CJson operator[](int nIndex)
     {
         static CJson _aux;
@@ -292,7 +311,7 @@ public:
         
         CSubstring copyString = mString;
         TraverseArray(copyString, [](const CSubstring& value)
-        {
+                      {
             if (_nIndex-- == 0)
                 _aux = CJson(value);
         });
@@ -320,13 +339,13 @@ public:
             assert(0);
         }
     }
-
+    
     void ForEach(TValueCallback callback)
     {
         CSubstring& s = mString;
         while (s.Length() && (s[0] == ' ' || s[0] == ',' || s[0] == '\r' || s[0] == '\n'))
             s++;
-
+        
         if (mString && mString[0] == '[')
         {
             TraverseArray(mString, callback);
@@ -335,7 +354,17 @@ public:
             assert(0);
         }
     }
-    
+    bool IsArray()
+    {
+        CSubstring temp = mString;
+        return TraverseArray(temp, [](const CSubstring&){});
+    }
+    bool IsObject()
+    {
+        CSubstring temp = mString;
+        return TraverseObject(temp, [](const CSubstring&, const CSubstring&){});
+    }
+
 private:
     bool TraverseString(CSubstring& s, TValueCallback callback)
     {

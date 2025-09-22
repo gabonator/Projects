@@ -456,7 +456,7 @@ Options optionsBumpy = {
             }),
             std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = address_t(0x0ed9, 0x25e4),
-                .baseptr = (const uint8_t*)"\x04\x20\x63\x20\x46\x1f\xfa\x20",
+                .baseptr = (const uint8_t*)"\x04\x20 \x63\x20 \x46\x1f \xfa\x20",
                 .type = jumpTable_t::JumpWords,
                 .elements = {0, 1, 2, 3},
                 .selector = "ax",

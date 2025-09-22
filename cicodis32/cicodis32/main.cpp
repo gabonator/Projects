@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsCK4a;
 //    options.verbose = true;
     Options options;
-    options.printProcAddress = true;
-    options.printLabelAddress = true;
+//    options.printProcAddress = true;
+//    options.printLabelAddress = true;
 //    options.verboseAsm = true;
 
 #if 1
@@ -95,7 +95,22 @@ int main(int argc, char **argv) {
                 {
                     CJson(v).ForEach([&](const CSubstring& v)
                     {
-                        options.procList.push_back(address_t::fromString(CJson(v).GetString()));
+                        std::string strAddr = CJson(v).GetString();
+                        if (strAddr.find("+") != std::string::npos)
+                        {
+                            int plus = (int)strAddr.find("+");
+                            std::string modifier = strAddr.substr(plus);
+                            strAddr = strAddr.substr(0, plus);
+                            procRequest_t req = procRequest_t::none;
+                            if (modifier == "+returnZero")
+                                req = procRequest_t((int)procRequest_t::returnZero | (int)procRequest_t::callNear);
+                            else if (modifier == "+returnCarry+returnZero")
+                                req = procRequest_t((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear);
+                            else
+                                assert(0);
+                            options.procModifiers.insert({address_t::fromString(strAddr), req});
+                        }
+                        options.procList.push_back(address_t::fromString(strAddr));
                     });
                 }
                 else if (k == "isolate")
@@ -138,13 +153,13 @@ int main(int argc, char **argv) {
             address_t origin = address_t::fromString(json["origin"].GetString());
             options.indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
         } else
-        if (json["id"] == "jumpTable" && json["calls"])
+        if (json["id"] == "jumpTable" && json["callsFar"])
         {
             std::vector<uint16_t> targets;
             std::vector<int> elements;
 
             address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["calls"]).ForEach([&](const CSubstring& v)
+            CJson(json["callsFar"]).ForEach([&](const CSubstring& v)
             {
                 address_t target = address_t::fromString(CJson(v).GetString());
                 targets.push_back(target.offset);
@@ -157,6 +172,28 @@ int main(int argc, char **argv) {
             std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::CallDwords, .useCaseOffset = true, .elements = elements});
+            
+            options.jumpTables.push_back(jt);
+        } else
+        if (json["id"] == "jumpTable" && json["callsNear"])
+        {
+            std::vector<uint16_t> targets;
+            std::vector<int> elements;
+
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            CJson(json["callsNear"]).ForEach([&](const CSubstring& v)
+            {
+                address_t target = address_t::fromString(CJson(v).GetString());
+                assert(target.segment == instruction.segment);
+                targets.push_back(target.offset);
+                elements.push_back((int)elements.size());
+            });
+            uint16_t* ptargets = new uint16_t[targets.size()];
+            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
+            
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
+                .type = jumpTable_t::switch_e::CallWords, .useCaseOffset = true, .elements = elements});
             
             options.jumpTables.push_back(jt);
         } else
@@ -188,10 +225,27 @@ int main(int argc, char **argv) {
 //            if (json["addr"])
 //                instruction = address_t::fromString(json["addr"].GetString());
             address_t table = address_t::fromString(json["table"].GetString());
-            int entries = json["entries"].GetNumber();
+            
+            //int entries = json["entries"].GetNumber();
             std::string strType = json["type"].GetString();
             std::string selector = json["selector"].GetString();
             int minaddr = json["filterMin"] ? json["filterMin"].GetNumber() : 0;
+            
+            bool useCaseOffset = json["useCaseOffset"] ? json["useCaseOffset"].GetBoolean() : false;
+
+            std::vector<int> elements;
+
+            if (json["entries"].IsArray())
+            {
+                CJson(json["entries"]).ForEach([&](const CSubstring& v)
+                {
+                    elements.push_back(CJson(v).GetNumber());
+                });
+            } else {
+                int entries = json["entries"].GetNumber();
+                for (int i=0; i<entries; i++)
+                    elements.push_back(i);
+            }
             
             jumpTable_t::switch_e type = jumpTable_t::switch_e::None;
             if (strType == "jumpwords")
@@ -200,16 +254,15 @@ int main(int argc, char **argv) {
                 type = jumpTable_t::switch_e::CallWords;
             else if (strType == "calldwords")
                 type = jumpTable_t::switch_e::CallDwords;
+            else if (strType == "jumpfix")
+                type = jumpTable_t::switch_e::JumpFix;
             else
                 assert(0);
             
-            std::vector<int> elements;
-            for (int i=0; i<entries; i++)
-                elements.push_back(i);
 
             std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = instruction, .table = table, .type = type, .elements = elements, .selector = selector,
-                .minaddr = minaddr});
+                .minaddr = minaddr, .useCaseOffset = useCaseOffset});
             
             options.jumpTables.push_back(jt);
         } else

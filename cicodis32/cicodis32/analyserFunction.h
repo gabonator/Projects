@@ -245,10 +245,9 @@ public:
         int tempCounter = 0;
         for (const auto& [a, p] : info->code)
         {
-            if (a.offset == 0x946f)
-            {
-                int f = 9;
-            }
+            if (p->instr->mId == X86_INS_RET || p->instr->mId == X86_INS_RETF)
+                continue;
+
             // save full cond
             int needed = 0;
             bool anyDirty = false;
@@ -298,7 +297,7 @@ public:
                 if (flag->depends.empty())
                     continue;
                 
-                if (flag->dirty || flag->depends.size() > 1 || p->instr->mTemplate.ret)
+                if (flag->dirty || flag->depends.size() > 1 /*|| p->instr->mTemplate.ret*/)
                 {
                     // cannot calculate this flag value from input operands of lastSet
                     for (address_t depAddr : flag->depends)

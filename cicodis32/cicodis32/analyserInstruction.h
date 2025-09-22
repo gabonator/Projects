@@ -95,6 +95,8 @@ public:
                 flag->visible = true;
             if (flag->type == 's' && instr->mTemplate.savedVisiblyCarry) // TODO
                 flag->visible = true;
+            if (flag->type == 'z' && instr->mTemplate.savedVisiblyZero) // TODO
+                flag->visible = true;
         }
     };
 

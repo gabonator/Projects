@@ -91,7 +91,7 @@ struct instrInfo_t {
     
     struct instrInfoFlag_t {
         char type{0};
-        // this instruction requireds this flag for operation
+        // this instruction requires this flag for operation
         bool needed{false};
         // lastSet instructions were altered, so flag value extraction is not possible anymore
         bool dirty{false};

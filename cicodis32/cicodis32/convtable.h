@@ -33,6 +33,7 @@ convert_t convert[X86_INS_ENDING] = {
             return "$rw0 ^= $rd1;";
     },
         .zf = [](convert_args){ return "!$rd0"; },
+        .cf = [](convert_args){ return "0"; },
         .savezf = [](convert_args){ assert(instr->ArgsEqual()); return "0"; },
         .savecf = [](convert_args){ return "0"; },
     },
@@ -87,8 +88,8 @@ convert_t convert[X86_INS_ENDING] = {
         std::vector<std::string> aux;
         if (!((int)func.request & (int)procRequest_t::callFar))
         {
-//            if (!((int)func.request & (int)procRequest_t::popsCs))
-//                aux.push_back("stop(\"near_proc_retf\");");
+            //            if (!((int)func.request & (int)procRequest_t::popsCs))
+            //                aux.push_back("stop(\"near_proc_retf\");");
             if (func.callConv == callConv_t::callConvShiftStackNear)
                 aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
         }
@@ -102,7 +103,8 @@ convert_t convert[X86_INS_ENDING] = {
         if (!(instr->isLast && !instr->isLabel))
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
-    }},
+    },
+        .flagCondition = "$ret",},
     [X86_INS_IRET] = {.convert = [](convert_args){
         return "stop(\"iret\");";
     }},
@@ -112,6 +114,7 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_AND] = {.convert = [](convert_args){
         return instr->ArgsEqual() ? "" : "$rw0 &= $rd1;"; },
+        .cf = [](convert_args){ return "0"; },
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
         .savecf = [](convert_args){ return "0"; },

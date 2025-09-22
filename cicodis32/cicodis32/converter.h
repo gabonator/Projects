@@ -130,7 +130,7 @@ public:
                         case 'o': save = convert[pinstr->mId].saveof; break;
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
-                    assert(!pinfo->instr->mTemplate.destructiveCarry);
+                    //assert(!pinfo->instr->mTemplate.destructiveCarry);
                     assert(save);
                     
                     std::string fName(flagName[flag->type]);
@@ -170,6 +170,19 @@ public:
             if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret && injectstr != "//quiet")
                 mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
 
+            if (pinfo->instr->mTemplate.ret)
+            {
+                for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                {
+                    if (flag->needed)
+                    {
+                        std::string flagvalue = BuildConditionFor(pinfo->instr, pinfo, info->func, flag);
+                        if (!flagvalue.empty())
+                            mCode.push_back("    " + flagvalue + ";\n");
+                    }
+                }
+            }
+            
             if (mOptions.GetJumpTables(pinstr->mAddress).size())
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
@@ -235,7 +248,9 @@ public:
         std::string selector = jt->selector;
         if (selector.empty())
         {
-            if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1)
+            if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
+                selector = iformat(instr, info, func, "$rd0");
+            else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
                 selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
             else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
                 selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
@@ -301,6 +316,10 @@ public:
             return "($sig0)$rd0 - 1 >= 0";
         if (set == X86_INS_NEG && cond == X86_INS_JLE)
             return "($sig0)$rd0 <= 0";
+
+        if (set == X86_INS_CMP && cond == X86_INS_JGE)
+            return "($sig0)$rd0 >= ($sig0)$rd1 /*xxx*/";
+
         assert(0);
         return "";
     }
@@ -585,7 +604,13 @@ public:
                     else if (flagCondition[0] == '!' && flagCondition[1] == '$' && flagCondition[2] == flag->type)
                         return iformat(lastSetInstr->instr, info, func, InvertCondition(value));
                     else if (flagCondition == "$ret")
-                        return iformat(lastSetInstr->instr, info, func, value);
+                    {
+                        assert(0);
+//                        static const char* flagName[128] = {['c'] = "flags.carry",
+//                            ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow"};
+//
+//                        return std::string(flagName[flag->type]) + " = " + iformat(lastSetInstr->instr, info, func, value);
+                    }
                     else
                         assert(0);
                 }
@@ -609,18 +634,6 @@ public:
                 return "xxxflags.sign";
             assert(0);
         }
-//        if ((dirty || lastSet.size() > 1) && needFlags == 1 && needType.size() == 1 && !info->GetFlag(*needType.begin()).variableRead.empty())
-//        {
-//            char needFlag = *needType.begin();
-//            convert_t cond = convert[instr->mId];
-//            std::string flagCondition = cond.flagCondition;
-//            if (flagCondition[1] == needFlag) // "$carry"
-//                return info->GetFlag(needFlag).variableRead;
-//            else if (flagCondition[0] == '!' && flagCondition[2] == needFlag) // "!$carry"
-//                return InvertCondition(info->GetFlag(needFlag).variableRead);
-//            else
-//                assert(0);
-//        }
         
         if (!dirty && needFlags > 1)
         {
@@ -628,10 +641,50 @@ public:
             shared<instrInfo_t> lastSetInfo = mInfo->code.find(*lastSet.begin())->second;
             return iformat(lastSetInfo->instr, lastSetInfo, func, postCondition(lastSetInfo->instr, instr->mId));
         }
-//        assert(0);
+
         return "stop(\"build_condition_failed\")";
     }
     
+    std::string BuildConditionFor(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func, const instrInfo_t::instrInfoFlag_t* flag)
+    {
+        bool allVisible = true;
+        for (address_t a : flag->lastSet)
+        {
+            shared<instrInfo_t> lastSetInstr = mInfo->code.find(a)->second;
+            allVisible &= lastSetInstr->GetFlag(flag->type).save || lastSetInstr->GetFlag(flag->type).visible;
+        }
+        if (allVisible)
+            return "";
+
+        assert(flag->needed);
+        assert(flag->lastSet.size() == 1);
+        
+        shared<instrInfo_t> lastSetInstr = mInfo->code.find(*flag->lastSet.begin())->second;
+        convert_t templ = convert[lastSetInstr->instr->mId];
+
+        // expression to recover flag value
+//        if (lastSetInstr->GetFlag(flag->type).save || lastSetInstr->GetFlag(flag->type).visible)
+//            return "";
+        
+        std::string value;
+        switch (flag->type)
+        {
+            case 'c': value = templ.cf(lastSetInstr->instr, info, func); break;
+            case 'z': value = templ.zf(lastSetInstr->instr, info, func); break;
+            case 's': value = templ.sf(lastSetInstr->instr, info, func); break;
+        }
+        assert(!value.empty());
+            
+        static const char* flagName[128] = {['c'] = "flags.carry",
+            ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow"};
+        
+        std::string lvalue = flagName[flag->type];
+        std::string rvalue = iformat(lastSetInstr->instr, info, func, value);
+        if (lvalue == rvalue)
+            return "";
+        return lvalue + " = " + rvalue;
+    }
+
     virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) override
     {
         auto replace = [](const char* in, const char* s, const char* r)

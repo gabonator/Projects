@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "miniz.h"
 
+
 std::vector<uint8_t> Loader::GetFileContents(std::string fullPath)
 {
     FILE* f = fopen(fullPath.c_str(), "rb");

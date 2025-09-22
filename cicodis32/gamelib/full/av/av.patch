@@ -1,0 +1,212 @@
+diff --git a/av.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/av2.cpp
+index 77268c3..c2a7941 100644
+--- a/av.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/av2.cpp
+@@ -1,8 +1,10 @@
+ #include "cico16.h"
++#include <stdio.h>
+ 
+ void fixReloc(uint16_t seg);
+ void sub_1ed0();
+-
++void indirectCall(int s, int o) { stop(); }
++void indirectJump(int s, int o) { stop(); }
+ void init()
+ {
+     headerSize = 0x0200;
+@@ -3427,6 +3429,7 @@ loc_4085:
+     sub_2abe();
+     si = 0;
+ loc_40ab:
++    sync();
+     if (memoryAGet16(ds, 0x09d4) == 0x0000)
+         goto loc_40b5;
+     goto loc_4168;
+@@ -4588,7 +4591,12 @@ loc_6163:
+     si = memoryAGet16(ds, si + 8);
+     ds = pop();
+     es = pop();
+-    push(cs); cs = memoryAGet16(ss, bp - 14 + 2); indirectCall(cs, memoryAGet16(ss, bp - 14)); assert(cs == 0x01ed); // 01ed:42b1;
++//    push(cs); cs = memoryAGet16(ss, bp - 14 + 2); indirectCall(cs, memoryAGet16(ss, bp - 14)); assert(cs == 0x01ed); // 01ed:42b1;
++    assert(memoryAGet16(ss, bp - 14 + 2) == 0x0a57 && memoryAGet16(ss, bp - 14) == 0xff9a);
++    // 55 cd 33 5d cb
++    // push bp; int 33; pop bp; retf
++    interrupt(memoryAGet(0xa57, 0xff9a+2));
++
+     push(flagAsReg());
+     push(flagAsReg());
+     push(si);
+@@ -5753,7 +5761,7 @@ loc_21ca:
+     // gap 18166 bytes
+ loc_68c6:
+     memoryASet16(cs, 0x49f0, pop());
+-    stop("stack_below", "01ed:49f6");
++//    stop("stack_below", "01ed:49f6");
+     memoryASet16(cs, 0x49f2, ds);
+     flags.direction = 0;
+     es = memoryAGet16(ds, 0x0084);
+@@ -5857,7 +5865,7 @@ loc_699f:
+ loc_69a7:
+     ax = 0;
+     memoryASet16(ss, bp, ax);
+-    indirectJump(cs, memoryAGet16(cs, 0x49f0)); return; // 01ed:4adc;
++//    indirectJump(cs, memoryAGet16(cs, 0x49f0)); return; // 01ed:4adc;
+ }
+ void sub_694f() // +returnCarry +returnZero
+ {
+@@ -6652,7 +6660,7 @@ loc_736b:
+     bx = memoryAGet16(ss, bp - 6); es = memoryAGet16(ss, bp - 6 + 2);
+     ax = memoryAGet16(es, bx + 2);
+     memoryASet16(ss, bp - 2, ax);
+-    if (stop() /*ggg9*/)
++    if (memoryAGet(es, bx + 6) < 0x01) // TODO CICO!
+         goto loc_73ac;
+     if (ax <= 0x0005)
+         goto loc_739b;
+@@ -8230,9 +8238,13 @@ loc_8579:
+ void sub_858c()
+ {
+     sp -= 2;
+-    push(es);
+-    push(bx);
+-    stop("stack_unbalanced");
++    assert(es == 0x043e && bx == 0x0072);
++//    push(es);
++//    push(bx);
++//    stop("stack_unbalanced");    
++    push(cs);
++    cs = es;
++    sub_4452();
+     sp += 2;
+     cs = pop();
+ }
+@@ -9387,8 +9399,13 @@ loc_5232:
+     ds = pop();
+     es = pop();
+     goto loc_5255;
+-loc_5250:
+-    indirectCall(cs, memoryAGet16(cs, 0x051e)); // 043e:0e70;
++loc_5250: // TODO
++    switch (memoryAGet16(cs, 0x051e))
++    {
++        case 0x0538: sub_4918(); break;
++        default:
++            stop();
++    }
+ loc_5255:
+     tx = si; si = bx; bx = tx;
+     memoryASet16(cs, 0x0e12, memoryAGet16(cs, 0x0e12) - 1);
+@@ -11683,6 +11700,7 @@ void sub_8e60()
+     push(cs);
+     ds = pop();
+     push(si);
++    int oldsp = sp;
+     switch (si)
+     {
+         case 0: sub_9032(); break;
+@@ -11715,20 +11733,35 @@ void sub_8e60()
+         case 54: sub_8f74(); break;
+         case 56: sub_8edf(); break;
+         default:
+-            stop("ind 08e6:0004");
++            stop();
+     }
++    if (sp - oldsp != 0)
++    {
++        assert(sp - oldsp == 4);
++        sp += 2; // gabo
++        cs = pop();
++        return;
++    }
++
+     si = pop();
+     ds = pop();
+-    cs = memoryAGet16(cs, 0x0049 + 2); indirectJump(cs, memoryAGet16(cs, 0x0049)); stop();;
++
++    switch (memoryAGet16(cs, 0x49+2)*16+memoryAGet16(cs, 0x49))
++    {
++        case 0x43e0:
++            // imitate jump
++            cs = 0x43e;
++            sp += 2;
++            sub_43e0(); break;
++        default:
++            assert(0);
++    }
+ }
+-void sub_8ed5() // +stackDrop2 +isolate
++void sub_8ed5() // +stackDrop2 +isolate  gabo
+ {
+-    si = pop();
+-    stop("stack_below", "08e6:0075");
++    sp += 2;
+     si = pop();
+     ds = pop();
+-    sp += 2;
+-    cs = pop();
+ }
+ void sub_8ed9()
+ {
+@@ -11876,7 +11909,7 @@ void sub_8f86()
+     sub_8f8f();
+     sub_922d();
+     sub_8ed5();
+-    stop("stack_below", "08e6:012c");
++//    stop("stack_below", "08e6:012c");
+     return;
+ }
+ void sub_8f8f()
+@@ -11948,7 +11981,7 @@ loc_8fc0:
+ loc_8fff:
+     sub_a01d();
+     sub_8ed5();
+-    stop("stack_below", "08e6:01a2");
++//    stop("stack_below", "08e6:01a2");
+     return;
+     // gap 4468 bytes
+ loc_a179:
+@@ -11975,7 +12008,7 @@ void sub_9014()
+     sp -= 2;
+     sub_9fd7();
+     sub_8ed5();
+-    stop("stack_below", "08e6:01b7");
++//    stop("stack_below", "08e6:01b7");
+     return;
+ }
+ void sub_901a()
+@@ -11985,7 +12018,7 @@ void sub_901a()
+         goto loc_9027;
+     sub_a225();
+     sub_8ed5();
+-    stop("stack_below", "08e6:01c4");
++//    stop("stack_below", "08e6:01c4");
+     return;
+ loc_9027:
+     sp += 2;
+@@ -11997,7 +12030,7 @@ void sub_9028()
+     memoryASet(ds, 0x116c, ah);
+     memoryASet(ds, 0x116d, al);
+     sub_8ed5();
+-    stop("stack_below", "08e6:01cf");
++//    stop("stack_below", "08e6:01cf");
+     return;
+ }
+ void sub_9032()
+@@ -12040,7 +12073,7 @@ loc_9037:
+     bx = pop();
+     es = pop();
+     sub_8ed5();
+-    stop("stack_below", "08e6:021d");
++//    stop("stack_below", "08e6:021d");
+     return;
+ }
+ void sub_9082()
+@@ -12080,7 +12113,7 @@ void sub_9082()
+     memoryASet(ds, 0x0072, 0x00);
+     sub_9fea();
+     sub_8ed5();
+-    stop("stack_below", "08e6:0265");
++//    stop("stack_below", "08e6:0265");
+     return;
+ }
+ void sub_90c8()

@@ -17,6 +17,7 @@ struct instruction_t
     bool ret{false};
     bool destructiveCarry{false};
     bool savedVisiblyCarry{false};
+    bool savedVisiblyZero{false};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
@@ -66,7 +67,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_XOR] = {},
     [X86_INS_TEST] = {},
     
-    [X86_INS_INT] = { }, // TODO
+    [X86_INS_INT] = { .savedVisiblyCarry = true }, // TODO, add isr mask?
     [X86_INS_AND] = { },
     [X86_INS_PUSHFD] = { .stack = +4 },
     [X86_INS_POPFD] = { .stack = -4 },
@@ -92,7 +93,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_DEC] = { .destructiveCarry = true },
 
     [X86_INS_SAHF] = { .savedVisiblyCarry = true },
-    [X86_INS_CMPSB] = { .savedVisiblyCarry = true }, // ZERO!
+    [X86_INS_CMPSB] = { .savedVisiblyZero = true }, 
 
     //            case X86_INS_STC:
     //            case X86_INS_CLC:

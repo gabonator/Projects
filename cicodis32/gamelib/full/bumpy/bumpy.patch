@@ -1,0 +1,101 @@
+diff --git a/./bumpy.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/bumpy.cpp
+index 9e51a55..e3022f0 100644
+--- a/./bumpy.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/bumpy.cpp
+@@ -3,6 +3,8 @@
+ void fixReloc(uint16_t seg);
+ void sub_1ed0();
+ 
++void indirectCall(int, int) { stop(); }
++
+ void init()
+ {
+     headerSize = 0x1200;
+@@ -19673,7 +19675,7 @@ loc_c852: // 01ed:a982
+     di = pop();
+     si = pop();
+     bp = pop();
+-    stop("stack_below_retf, 10/6");
++//    stop("stack_below_retf, 10/6");
+     sp += 2;
+     cs = pop();
+     sp += 8;
+@@ -19764,7 +19766,7 @@ void sub_c8c5() // 01ed:a9f5 +stackDrop10 +nearAsFar
+     di = pop();
+     si = pop();
+     bp = pop();
+-    stop("stack_below_retf, 10/6");
++    //stop("stack_below_retf, 10/6");
+     sp += 2;
+     cs = pop();
+     sp += 8;
+@@ -19869,7 +19871,7 @@ loc_2126: // 01ed:0256
+     // gap 42998 bytes
+ loc_c91e: // 01ed:aa4e
+     memoryASet16(ds, 0x6bb0, pop());
+-    stop("stack_below", "01ed:aa4e");
++//    stop("stack_below", "01ed:aa4e");
+     memoryASet16(ds, 0x6bb2, pop());
+     memoryASet16(ds, 0x6bb4, pop());
+     memoryASet16(cs, 0xaa4c, ds);
+@@ -19993,7 +19995,7 @@ loc_ca0e: // 01ed:ab3e
+     memoryASet16(ds, 0x006d, ax);
+     ax = memoryAGet16(ds, 0x6bac);
+     memoryASet16(ds, 0x006b, ax);
+-    indirectJump(cs, memoryAGet16(ds, 0x6bb0)); return; // 01ed:ab6d;
++//    stop(); //indirectJump(cs, memoryAGet16(ds, 0x6bb0)); return; // 01ed:ab6d;
+ }
+ void sub_c9ad() // 01ed:aadd +returnCarry +returnZero
+ {
+@@ -21373,9 +21375,9 @@ loc_d5d2: // 0ca6:0b72
+     si += bp;
+     ax |= memoryAGet16(ds, si);
+     push(si);
+-    stop("mark 0ca6:0b81, addr 0ca6:0b80, instr: push si, bytes: 56", "0ca6:0b80");
+-    stop("mark 0ca6:0b81, addr 0ca6:0b81, instr: nop , bytes: 90mark 0ca6:0b82, addr 0ca6:0b81, instr: nop , bytes: 90", "0ca6:0b81");
+-    stop("mark 0ca6:0b82, addr 0ca6:0b82, instr: nop , bytes: 90", "0ca6:0b82");
++//    stop("mark 0ca6:0b81, addr 0ca6:0b80, instr: push si, bytes: 56", "0ca6:0b80");
++//    stop("mark 0ca6:0b81, addr 0ca6:0b81, instr: nop , bytes: 90mark 0ca6:0b82, addr 0ca6:0b81, instr: nop , bytes: 90", "0ca6:0b81");
++//    stop("mark 0ca6:0b82, addr 0ca6:0b82, instr: nop , bytes: 90", "0ca6:0b82");
+     ch = ah;
+     ah = al;
+     dx = 0x03ce;
+@@ -23221,8 +23223,8 @@ loc_e527: // 0e15:03d7
+         goto loc_e55b;
+     goto loc_e5fe;
+ loc_e55b: // 0e15:040b
+-    flags.zero = stop("post") && !memoryAGet(ds, 0x4e16);
+     memoryASet(ds, 0x4e16, memoryAGet(ds, 0x4e16) - 1);
++    flags.zero = !memoryAGet(ds, 0x4e16); // cico post
+     ds = bp;
+     if (!flags.zero)
+         goto loc_e527;
+@@ -24507,7 +24509,7 @@ loc_f25f: // 0ed9:04cf
+     di = ~di;
+ loc_f2ad: // 0ed9:051d
+     ax = 0x0000;
+-    indirectJump(cs, ax); return; // 0ed9:0520;
++    stop(); //indirectJump(cs, ax); return; // 0ed9:0520;
+ }
+ void sub_f9b4() // 0ed9:0c24
+ {
+@@ -25439,9 +25441,7 @@ loc_10ec9: // 0ed9:2139
+     return;
+     // gap 1183 bytes
+ loc_11371: // 0ed9:25e1
+-    ax = memoryAGet16(cs, 0x25e2); stop();
+-    ax = 0x0000;
+-    stop("mark 0ed9:25e2, addr 0ed9:25e1, instr: mov ax, 0, bytes: b8 00 00mark 0ed9:25e3, addr 0ed9:25e1, instr: mov ax, 0, bytes: b8 00 00", "0ed9:25e1");
++    ax = memoryAGet16(cs, 0x25e2);
+     switch (ax)
+     {
+         case 0x2004: goto loc_10d94;
+@@ -26017,7 +26017,7 @@ loc_1189c: // 0ed9:2b0c
+     bx = sar16(bx, 0x0001);
+     dl = memoryAGet(cs, bx + 13307);
+     memoryASet16(cs, 0x3211, cx);
+-    indirectJump(cs, ax); return; // 0ed9:2b5c;
++    stop(); //indirectJump(cs, ax); return; // 0ed9:2b5c;
+     // gap 129 bytes
+ loc_1196f: // 0ed9:2bdf
+     ds = pop();
