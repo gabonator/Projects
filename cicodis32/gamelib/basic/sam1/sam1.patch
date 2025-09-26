@@ -1,0 +1,166 @@
+diff --git a/sam1.clean b/sam1.cpp
+index 31c8024..b35362e 100644
+--- a/sam1.clean
++++ b/sam1.cpp
+@@ -1076,6 +1076,7 @@ loc_32ed: // 01ed:141d
+     push(ax);
+     push(cs); cs = 0x2baf; sub_2bd8f(); assert(cs == 0x01ed);
+ loc_32f6: // 01ed:1426
++    sync();
+     if (memoryAGet(ds, 0x6ec6) == 0x00)
+         goto loc_3300;
+     goto loc_6f9f;
+@@ -38665,8 +38671,9 @@ loc_19e94: // 19e6:0034
+     memoryASet16(ss, bp - 24, ax);
+     si = 0;
+     es = si;
+-    {int tmp1 = memoryAGet16(es, 0x0487); int tmp2 = memoryAGet16(es, 0x0487 + 2); di = tmp1; es = tmp2; /*ggg2!!check*/};
+-    al = memoryAGet(es, di);
++    //{int tmp1 = memoryAGet16(es, 0x0487); int tmp2 = memoryAGet16(es, 0x0487 + 2); di = tmp1; es = tmp2; /*ggg2!!check*/};
++    //al = memoryAGet(es, di);
++    al = 1; //gabo
+     memoryASet(ss, bp - 31, al);
+     if (memoryAGet(ss, bp - 31) == 0x00)
+         goto loc_19ecb;
+@@ -41298,6 +41305,7 @@ loc_1b907: // 19e6:1aa7
+     memoryASet(ds, 0x6eca, 0x00);
+     memoryASet(ds, 0x6ecb, 0x00);
+ loc_1b91b: // 19e6:1abb
++    sync();
+     ax = 0;
+     push(ax);
+     di = 0x041a;
+@@ -41314,6 +41322,7 @@ loc_1b91b: // 19e6:1abb
+     push(ax);
+     push(cs); cs = 0x2a6b; sub_2a6b0(); assert(cs == 0x19e6);
+ loc_1b940: // 19e6:1ae0
++    sync();
+     ax = 0;
+     push(ax);
+     di = 0x041a;
+@@ -41551,6 +41560,7 @@ loc_1bb82: // 19e6:1d22
+     memoryASet16(ss, bp - 24, ax);
+     goto loc_1bba9;
+ loc_1bb8d: // 19e6:1d2d
++    sync();
+     ax = 0;
+     push(ax);
+     di = 0x041a;
+@@ -44025,6 +44035,7 @@ void sub_1d365() // 19e6:3505 +far +stackDrop2
+     ax = 0;
+     memoryASet16(ds, 0x682c, ax);
+ loc_1d40a: // 19e6:35aa
++    sync();
+     if ((short)memoryAGet16(ds, 0x6824) <= (short)0x0000)
+         goto loc_1d41f;
+     push(cs);
+@@ -58501,7 +58513,8 @@ loc_29081: // 282f:0d91
+     memoryASet16(ss, bp - 2, 0xfff9);
+     goto loc_290aa;
+ loc_290a6: // 282f:0db6
+-    switch (memoryAGet16(es, di + 36 + 2)*0x10000 + memoryAGet16(es, di + 36))
++    assert(memoryAGet16(es, di + 36 + 2) == cs);
++    switch (memoryAGet16(es, di + 36))
+     {
+         case 0x10d7: goto loc_293c7;
+         default:
+@@ -58893,7 +58906,7 @@ void sub_290b7() // 282f:0dc7 +far +stackDrop2
+ void sub_29c05() // 282f:1915 +far +stackDrop12
+ {
+     sp -= 2;
+-    stop("breakpoint");
++    //stop("breakpoint");
+     push(bp);
+     bp = sp;
+     sp -= 0x0084;
+@@ -60410,7 +60423,7 @@ loc_2b479: // 2a7d:0ca9
+     dx = 0x0001;
+     cl = memoryAGet(ss, bp - 2);
+     dx <<= cl;
+-    if (stop("test get flag"))
++    if (((short)dx & ax) <= 0) // TODO: CICO!
+         goto loc_2b499;
+     cl = 0x07;
+     cl -= memoryAGet(ss, bp - 2);
+@@ -60765,13 +60778,14 @@ void sub_2b7c3() // 2b4d:02f3 +far +stackDrop2
+ }
+ void sub_2b7ca() // 2b4d:02fa +far +stackDrop2
+ {
++    sync();
+     sp -= 2;
+     if (memoryAGet(ds, 0x70eb) != 0x00)
+         goto loc_2b7d9;
+     ah = 0x01;
+     interrupt(0x16);
+     al = 0x00;
+-    if (flags.zero)
++    if (flags.zero) // wait key
+         goto loc_2b7db;
+ loc_2b7d9: // 2b4d:0309
+     al = 0x01;
+@@ -60868,12 +60884,12 @@ loc_2b929: // 2b4d:0459
+         goto loc_2b929;
+     goto loc_2b937;
+ loc_2b934: // 2b4d:0464
+-    sub_2b9d3();
++    sub_2b9d3(); // Print text / Error: this game requires EGA
+ loc_2b937: // 2b4d:0467
+     sub_2b615();
+-    stop("stack_below", "2b4d:0467");
++//    stop("stack_below", "2b4d:0467");
+     ax = 0;
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+     sp += 4;
+@@ -62865,13 +62881,18 @@ void sub_2eb3b() // 2eb3:000b +far +stackDrop2
+     si = pop();
+     ax = pop();
+     flags.interrupts = 0;
+-    stop("stack_unbalanced");
+-    sp += 2;
+-    cs = pop();
+-}
+-void sub_2eb75() // 2eb3:0045 +stackDrop8
+-{
+-    sp -= 2;
++        
++    sp += 10; // jumps to f000:1320 int 10, ax=1b00, bx=0, cx=0cad, dx=2ebd
++    interrupt(0x10);
++    //sp += 2;
++// TODO CODE CONTINUES 2eb3:0045
++//    sp += 2;
++//    cs = pop();
++//    stop("stack_unbalanced");
++//}
++//void sub_2eb75() // 2eb3:0045 +stackDrop8
++//{
++//    sp -= 2;
+     push(flagAsReg());
+     push(es);
+     push(di);
+@@ -62899,11 +62920,12 @@ void sub_2eb75() // 2eb3:0045 +stackDrop8
+     ax = pop();
+     stosw<ES_DI>(ax);
+     ds = pop();
+-    stop("stack_below", "2eb3:0067");
++//    stop("stack_below", "2eb3:0067");
+     bp = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
++    // TODO CHECK!
+     sp += 6;
+ }
+ void sub_2eb9c() // 2eb3:006c +far +stackDrop8
+@@ -64604,7 +64627,7 @@ void sub_2f876() // 2ebd:0ca6 +returnZero
+ loc_2f884: // 2ebd:0cb4
+     di = pop();
+     es = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+ }
+ void sub_2f887() // 2ebd:0cb7 +stackDrop6

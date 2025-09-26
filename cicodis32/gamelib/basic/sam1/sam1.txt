@@ -1,0 +1,6 @@
+{"id": "config", "loader": "LoaderMz", "executable": "sam1.zip/SAM1.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "stackShiftAlways": true}
+{"id": "config", terminator: ["01ed:5145"]}
+{"id": "config", procList: ["2eb3:0045"]}
+{"id": "jumpTable", "addr": "2ebd:0caa", "calls": ["2ebd:0cb7", "2b4d:0359", "2b4d:046f", "2b4d:043e", "2b4d:046f"]}
+{"id": "jumpTable", "addr": "2ebd:0f26", "calls": ["2b4d:043e"]}
+{"id": "jumpTable", "addr": "282f:0db6", "jumps": ["282f:10d7"]}
