@@ -364,7 +364,84 @@ class LoaderLe : public Loader {
         uint32_t pageCount;
         uint32_t __paddingCheckTodo;
     };
-    struct LEFixup_t
+#pragma pack(pop)
+    class Fixup_t
+    {
+    public:
+        enum {
+            SOURCE_16BIT_OFFSET_FIXUP = 5,
+            SOURCE_32BIT_OFFSET_FIXUP = 7
+        };
+
+    private:
+        const uint8_t* buffer;
+    public:
+        Fixup_t(const uint8_t* b) : buffer{b}
+        {
+        }
+        int getSourceType() const
+        {
+            return buffer[0];
+        }
+        int getFlags() const
+        {
+            return buffer[1];
+        }
+        int getSourceOffset() const
+        {
+            return buffer[2] | (buffer[3] << 8);
+        }
+        int getObjectNumber() const
+        {
+            return buffer[4];
+        }
+        uint32_t getTargetOffset() const
+        {
+            switch (getSourceType())
+            {
+                case SOURCE_16BIT_OFFSET_FIXUP:
+                case SOURCE_32BIT_OFFSET_FIXUP:
+                    switch (getFlags())
+                    {
+                        case 0:
+                            return buffer[5] | (buffer[6] << 8);
+                        case 0x10:
+                            return buffer[5] | (buffer[6] << 8) | (buffer[7] << 16) | (buffer[8] << 24);
+                        default: assert(0);
+                    }
+                    break;
+                default:
+                    assert(0);
+            }
+
+        }
+
+        int getSize() const
+        {
+            switch (getSourceType())
+            {
+                case SOURCE_32BIT_OFFSET_FIXUP:
+                case SOURCE_16BIT_OFFSET_FIXUP:
+                    switch (getFlags())
+                    {
+                        case 0: return 7;
+                        case 0x10: return 7+2;
+                        default: assert(0);
+                    }
+                    break;
+                default:
+                    assert(0);
+            }
+            return 0;
+        }
+    };
+/*
+    struct LEFixupHead_t
+    {
+        uint8_t sourceType;
+        uint8_t targetFlags;
+    };
+    struct LEFixup0700_t
     {
         uint8_t sourceType;
         uint8_t targetFlags;
@@ -372,8 +449,15 @@ class LoaderLe : public Loader {
         uint8_t objectNumber;
         uint16_t targetOffset;
     };
-
-#pragma pack(pop)
+    struct LEFixup0710_t
+    {
+        uint8_t sourceType;
+        uint8_t targetFlags;
+        int16_t sourceOffset;
+        uint8_t objectNumber;
+        uint32_t targetOffset;
+    };
+*/
     struct LEPage_t
     {
         uint32_t dataOffset;
@@ -387,7 +471,6 @@ class LoaderLe : public Loader {
         uint32_t size;
         uint32_t base;
     };
-
     std::vector<uint8_t> mBytes;
     uint8_t* mMzData{nullptr};
     uint8_t* mLeData{nullptr};
@@ -396,7 +479,7 @@ class LoaderLe : public Loader {
     int mLoadAddress{0};
     std::vector<LEObject_t> mObjects;
     std::vector<LEPage_t> mPages;
-    std::vector<std::vector<LEFixup_t>> mFixups;
+    std::vector<std::vector<Fixup_t>> mFixups;
     std::vector<MemoryObject_t> mMemoryObjects;
     
 private:
@@ -446,6 +529,7 @@ public:
             perror("open failed");
             return false;
         }
+        mFileSize = mBytes.size();
         mMzData = &mBytes[0];
         
 //        fread(mMzData, 1, mFileSize, f);
@@ -460,16 +544,19 @@ public:
         
         // Parse header
         assert(mHeader.magic[0] == 'L' && mHeader.magic[1] == 'E');
-        //std::vector<uint32_t> bases{0x15e000, 0x15e000 + 0x1e000};
         std::vector<uint32_t> bases;
-        bases.push_back(loadAddress);
-        bases.push_back(loadAddress + 0x1e000);
+        loadAddress = 0x196000;
+        int curAddress = loadAddress;
         
         for (int i=0; i<mHeader.objcnt; i++)
         {
             LEObject_t leObj = *((LEObject_t*)(mLeData + mHeader.objtab + i*sizeof(LEObject_t)));
-            leObj.base = bases[i];
+            leObj.base = curAddress;
             mObjects.push_back(leObj);
+            
+            bases.push_back(curAddress);
+            int alignedSize = (leObj.size + mHeader.pagesize - 1) & ~(mHeader.pagesize - 1);
+            curAddress += alignedSize;
         }
         for (int i=0; i<mHeader.mpages; i++)
         {
@@ -481,14 +568,19 @@ public:
         uint32_t* fixupOffsets = (uint32_t*)(mLeData + mHeader.fpagetab);
         for (int i=0; i<mHeader.mpages; i++)
         {
-            std::vector<LEFixup_t> pageFixups;
+            std::vector<Fixup_t> pageFixups;
             for (int o=fixupOffsets[i]; o<fixupOffsets[i+1];)
             {
-                LEFixup_t fixup = *(LEFixup_t*)(mLeData + mHeader.frectab + o);
-                assert(fixup.sourceType == 7);
-                assert(sizeof(LEFixup_t) == 7);
-                o += sizeof(LEFixup_t);
+                Fixup_t fixup(mLeData + mHeader.frectab + o);
                 pageFixups.push_back(fixup);
+                o += fixup.getSize();
+//
+//                uint8_t* test = mLeData + mHeader.frectab + o;
+//                LEFixup_t fixup = *(LEFixup_t*)(mLeData + mHeader.frectab + o);
+//                assert(fixup.sourceType == 7);
+//                assert(sizeof(LEFixup_t) == 7);
+//                o += sizeof(LEFixup_t);
+//                pageFixups.push_back(fixup);
             }
             mFixups.push_back(pageFixups);
         }
@@ -518,23 +610,30 @@ public:
                 uint32_t pageSize = std::min((i+1)*mHeader.pagesize, leObj.size);
                 uint8_t* pageData = obj.data + i*mHeader.pagesize;
                 memcpy(pageData, mMzData + pageOffset, pageSize);
-                for (const LEFixup_t& fixup : mFixups[pageIndex])
+                for (const Fixup_t& fixup : mFixups[pageIndex])
                 {
                     uint32_t value = 0;
-                    switch (fixup.sourceType)
+                    switch (fixup.getSourceType())
                     {
-                        case 7:
-                            value = fixup.targetOffset + mObjects[fixup.objectNumber-1].base;
-                            if (fixup.sourceOffset >= 0 && fixup.sourceOffset < pageSize)
-                                pageData[fixup.sourceOffset] = value;
-                            if (fixup.sourceOffset+1 >= 0 && fixup.sourceOffset+1 < pageSize)
-                                pageData[fixup.sourceOffset+1] = value>>8;
-                            if (fixup.sourceOffset+2 >= 0 && fixup.sourceOffset+2 < pageSize)
-                                pageData[fixup.sourceOffset+2] = value>>16;
-                            if (fixup.sourceOffset+3 >= 0 && fixup.sourceOffset+3 < pageSize)
-                                pageData[fixup.sourceOffset+3] = value>>24;
+                        case Fixup_t::SOURCE_32BIT_OFFSET_FIXUP:
+                            value = fixup.getTargetOffset() + mObjects[fixup.getObjectNumber()-1].base;
+                            if (fixup.getSourceOffset() >= 0 && fixup.getSourceOffset() < pageSize)
+                                pageData[fixup.getSourceOffset()] = value;
+                            if (fixup.getSourceOffset()+1 >= 0 && fixup.getSourceOffset()+1 < pageSize)
+                                pageData[fixup.getSourceOffset()+1] = value>>8;
+                            if (fixup.getSourceOffset()+2 >= 0 && fixup.getSourceOffset()+2 < pageSize)
+                                pageData[fixup.getSourceOffset()+2] = value>>16;
+                            if (fixup.getSourceOffset()+3 >= 0 && fixup.getSourceOffset()+3 < pageSize)
+                                pageData[fixup.getSourceOffset()+3] = value>>24;
                             break;
-                            
+                        case Fixup_t::SOURCE_16BIT_OFFSET_FIXUP:
+                            // TODO: check!
+                            value = fixup.getTargetOffset() + mObjects[fixup.getObjectNumber()-1].base;
+                            if (fixup.getSourceOffset() >= 0 && fixup.getSourceOffset() < pageSize)
+                                pageData[fixup.getSourceOffset()] = value;
+                            if (fixup.getSourceOffset()+1 >= 0 && fixup.getSourceOffset()+1 < pageSize)
+                                pageData[fixup.getSourceOffset()+1] = value>>8;
+                            break;
                         default:
                             assert(0);
                         
@@ -543,6 +642,13 @@ public:
             }
             mMemoryObjects.push_back(obj);
         }
+        
+        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/wrms1.bin", "wb");
+        fwrite(mMemoryObjects[0].data, 1, mMemoryObjects[0].size, f);
+        fclose(f);
+        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/wrms2.bin", "wb");
+        fwrite(mMemoryObjects[1].data, 1, mMemoryObjects[1].size, f);
+        fclose(f);
         
         // dump
 //        uint8_t buffer[0x1e000 + 67424] = {0};
@@ -553,6 +659,45 @@ public:
 //        fclose(ff);
     }
     
+    virtual std::string GetFooter() override
+    {
+        std::string strReloc = "void fixReloc(uint16_t seg)\n{\n";
+        for (const LEObject_t& leObj : mObjects)
+        {
+            for (int i=0; i<leObj.pageCount; i++)
+            {
+                int pageIndex = leObj.pageTableIndex+i-1;
+                LEPage_t page = mPages[pageIndex];
+                uint32_t pageOffset = mHeader.datapage + (page.dataOffset-1)*mHeader.pagesize;
+                uint32_t pageSize = std::min((i+1)*mHeader.pagesize, leObj.size);
+//                uint8_t* pageData = obj.data + i*mHeader.pagesize;
+//                memcpy(pageData, mMzData + pageOffset, pageSize);
+                for (const Fixup_t& fixup : mFixups[pageIndex])
+                {
+                    
+                }
+
+            }
+        }
+        /*
+        for (int i=0; i<header->relocations; i++)
+        {
+            MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
+            int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
+            uint16_t* addr = (uint16_t*)&buffer[linearOffset];
+            if (reloc->segment == 0)
+                strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
+                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
+            else
+                strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
+                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
+        }
+*/
+        strReloc += "}\n";
+        
+        return strReloc;
+    }
+
     virtual bool InRange(address_t addr, int size = 0) override
     {
         for (const MemoryObject_t& mo : mMemoryObjects)
@@ -578,16 +723,16 @@ public:
     {
         // TODO: object index as segment?
         // NO: linearAddress would mess it up (int)mHeader.startobj
-        return address_t(0, mMemoryObjects[mHeader.startobj-1].base + (int)mHeader.eip);
+        return address_t(0x160, mMemoryObjects[mHeader.startobj-1].base + (int)mHeader.eip);
     }
     virtual std::string GetMain() override
     {
         return "";
     }
-    virtual std::string GetFooter() override
-    {
-        return "";
-    }
+//    virtual std::string GetFooter() override
+//    {
+//        return "";
+//    }
     void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
     {
         assert(0);

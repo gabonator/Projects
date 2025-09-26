@@ -14,6 +14,7 @@ enum callConv_t {
     callConvNear = 5,
     callConvFar = 6,
     callConvShiftStackNearFar = 7,
+    callConvShiftStackLong = 8
 };
 
 struct funcInfo_t {
@@ -39,6 +40,11 @@ struct funcInfo_t {
             if (temp & (int)procRequest_t::callNear)
             {
                 temp ^= (int)procRequest_t::callNear;
+            }
+            if (temp & (int)procRequest_t::callLong)
+            {
+                extraInfo += " +long";
+                temp ^= (int)procRequest_t::callLong;
             }
             if (temp & (int)procRequest_t::callFar)
             {
@@ -423,6 +429,10 @@ public:
     
     int GuessStackBalanceForProc(address_t proc)
     {
+        if(mInfos.find(proc) == mInfos.end())
+        {
+            return -999;
+        }
         shared<info_t> info = mInfos.find(proc)->second;
         std::set<int> retArgs;
         bool retCs = false;
@@ -511,7 +521,10 @@ public:
             // stub
             if (code.begin()->second->instr->mDetail.operands[0].type == X86_OP_IMM)
             {
-                calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
+                if (mOptions.arch == arch_t::arch16)
+                    calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
+                else
+                    calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callLong});
                 return calls;
             }
         }
@@ -526,7 +539,10 @@ public:
                     if (unique.find(pinstr->CallTarget()) == unique.end())
                     {
                         unique.insert(pinstr->CallTarget());
-                        calls.push_back({pinstr->CallTarget(), procRequest_t::callNear});
+                        if (pinstr->mDetail.operands[0].size == 2)
+                            calls.push_back({pinstr->CallTarget(), procRequest_t::callNear});
+                        else
+                            calls.push_back({pinstr->CallTarget(), procRequest_t::callLong});
                     }
                 }
             }
@@ -554,7 +570,10 @@ public:
                             if (unique.find(jt->GetTarget(i)) == unique.end())
                             {
                                 unique.insert(jt->GetTarget(i));
-                                calls.push_back({jt->GetTarget(i), procRequest_t::callNear});
+                                if (jt->type == jumpTable_t::switch_e::Call32)
+                                    calls.push_back({jt->GetTarget(i), procRequest_t::callLong});
+                                else
+                                    calls.push_back({jt->GetTarget(i), procRequest_t::callNear});
                             }
                 }
             }

@@ -95,6 +95,7 @@ struct jumpTable_t {
         JumpWords,
         JumpFix,
         Call,
+        Call32,
 //        CallWordsByOfs
     } type{None};
     
@@ -147,6 +148,11 @@ struct jumpTable_t {
             uint16_t* parts = (uint16_t*)baseptr;
             return address_t{parts[i*2+1], parts[i*2]};
         }
+        if (type == Call32)
+        {
+            uint32_t* parts = (uint32_t*)baseptr;
+            return address_t{instruction.segment, (int)parts[i]};
+        }
         if (type == JumpFix || type == Call)
             return GetBaseAddress();
         uint16_t* parts = (uint16_t*)baseptr;
@@ -187,6 +193,8 @@ struct jumpTable_t {
             case Call:
 //            case CallWordsByOfs:
                 return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
+            case Call32:
+                return format("case 0x%x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
             default:
                 assert(0);
                 return "stop(/*3*/);";
@@ -209,7 +217,8 @@ enum class procRequest_t
     callIsolated = 512,
     popsCs = 1024,
     nearAsFar = 2048,
-    entry = 4096
+    entry = 4096,
+    callLong = 8192,
 };
 
 enum class arch_t {

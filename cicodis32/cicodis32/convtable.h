@@ -70,14 +70,25 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_JCXZ] = {.convert = [](convert_args){ return "if (cx==0)\n        $goto_target;"; } },
     [X86_INS_RET] = {.convert = [](convert_args){
         std::vector<std::string> aux;
-        assert((int)func.request & (int)procRequest_t::callNear);
+        assert(((int)func.request & (int)procRequest_t::callNear) ||
+               ((int)func.request & (int)procRequest_t::callLong));
         assert(func.callConv == callConv_t::callConvNear ||
                func.callConv == callConv_t::callConvShiftStackNear ||
-               func.callConv == callConv_t::callConvSimpleStackNear);
+               func.callConv == callConv_t::callConvSimpleStackNear ||
+               func.callConv == callConv_t::callConvShiftStackLong);
+        if (func.callConv == callConv_t::callConvShiftStackLong)
+            aux.push_back("esp += 4;");
         if (func.callConv == callConv_t::callConvShiftStackNear)
             aux.push_back("sp += 2;"); // TODO: on all exit paths!!!
         if (instr->Imm() != 0)
-            aux.push_back("sp += $immd0;");
+        {
+            if (func.arch == arch_t::arch16)
+                aux.push_back("sp += $immd0;");
+            else if (func.arch == arch_t::arch32)
+                aux.push_back("esp += $immd0;");
+            else
+                assert(0);
+        }
         if (!(instr->isLast && !instr->isLabel))
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
@@ -99,7 +110,14 @@ convert_t convert[X86_INS_ENDING] = {
             aux.push_back("sp += 2;");
         aux.push_back("cs = pop();");
         if (instr->Imm() != 0)
-            aux.push_back("sp += $immd0;");
+        {
+            if (func.arch == arch_t::arch16)
+                aux.push_back("sp += $immd0;");
+            else if (func.arch == arch_t::arch32)
+                aux.push_back("esp += $immd0;");
+            else
+                assert(0);
+        }
         if (!(instr->isLast && !instr->isLabel))
             aux.push_back("return;");
         return utils::join(aux, "\n    ");
@@ -298,7 +316,12 @@ convert_t convert[X86_INS_ENDING] = {
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
     },
             .zf = [](convert_args){ return "!$rd0 && stop()"; },
-            .savecf = [](convert_args){ assert(instr->Imm() == 1); return "!!($rd0 & $msb0)"; },
+            .savecf = [](convert_args){
+                if (instr->Imm() == 1)
+                    return std::string("!!($rd0 & $msb0)");
+                else
+                    return utils::format("!!(($rd0<<%d) & $msb0)", instr->Imm()-1);
+            },
     },
     [X86_INS_ROL] = {.convert = [](convert_args){
         return "$wr0 = rol$width0($rd0, $rd1);";
@@ -325,6 +348,9 @@ convert_t convert[X86_INS_ENDING] = {
             return "ax = ((char)$rd0 * (short)ax) & 0xffff;";
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 2)
             return "imul16($rd0);";
+        if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].size == 4 && instr->mDetail.operands[1].size == 4)
+            return "$wr0 = (int32_t)$rd0 * (int32_t)$rd1;";
+
         assert(0);
         return "";
     } },
@@ -376,6 +402,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_STOSW] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_MOVSW] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_STOSD] = {.convert = [](convert_args){ return "$string"; }},
+    [X86_INS_MOVSD] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_CMPSB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CMPSW] = {.convert = [](convert_args){ return "$string"; },
@@ -391,6 +418,8 @@ convert_t convert[X86_INS_ENDING] = {
                 return "tl = $rd0; $wr0 = $rd1; $wr1 = tl;";
             case 2:
                 return "tx = $rd0; $wr0 = $rd1; $wr1 = tx;";
+            case 4:
+                return "etx = $rd0; $wr0 = $rd1; $wr1 = etx;";
             default:
                 assert(0);
         }
@@ -436,4 +465,6 @@ convert_t convert[X86_INS_ENDING] = {
         .cf = [](convert_args){ return "stop()"; },},
     [X86_INS_AAM] = {.convert = [](convert_args){ return "stop(\"aam\");"; } },
     [X86_INS_AAA] = {.convert = [](convert_args){ return "stop(\"aaa\");"; } },
+    [X86_INS_SETNE] = {.convert = [](convert_args){ return "$wr0 = !($cond);"; },
+        .flagCondition = "$zero"},
 };

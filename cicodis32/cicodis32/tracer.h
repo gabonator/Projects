@@ -92,7 +92,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_INC] = { .destructiveCarry = true },
     [X86_INS_DEC] = { .destructiveCarry = true },
 
-    [X86_INS_SAHF] = { .savedVisiblyCarry = true },
+    [X86_INS_SAHF] = { .savedVisiblyCarry = true, .savedVisiblyZero = true },
     [X86_INS_CMPSB] = { .savedVisiblyZero = true }, 
 
     //            case X86_INS_STC:
@@ -374,6 +374,21 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
     strcpy(mOperands, p->op_str);
     memset(mBytes, 0, sizeof(mBytes));
     memcpy(mBytes, p->bytes, mSize);
+    if (mBytes[0] == 0xf2 || mBytes[0] == 0xf3)
+    {
+//         REPNE MOVSD f2 a5 - missing REPNE prefix
+//         REPNE MOVSB f2 a4
+        if (!strstr(mMnemonic, "rep"))
+        {
+            if (memcmp(mMnemonic, "mov", 3) == 0 && mBytes[0] == 0xf2)
+            {
+                char temp[64];
+                snprintf(temp, sizeof(temp), "repne %s", mMnemonic);
+                strcpy(mMnemonic, temp);
+            } else
+                assert(0);
+        }
+    }
 }
 
 void CapInstr::Populate()

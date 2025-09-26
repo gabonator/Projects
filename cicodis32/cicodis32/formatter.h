@@ -85,8 +85,18 @@ public:
         {
             snprintf(offset, 32, "%s + %s*%d", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), (int)op.mem.scale);
         }
+        else if (op.mem.base == X86_REG_INVALID && op.mem.index != X86_REG_INVALID && op.mem.scale != 1 && op.mem.disp != 0)
+        {
+            snprintf(offset, 32, "%s * %d + 0x%llx", Capstone->ToString(op.mem.index), op.mem.scale, op.mem.disp);
+        }
+        else if (op.mem.base != X86_REG_INVALID && op.mem.index != X86_REG_INVALID && op.mem.scale != 1 && op.mem.disp != 0)
+        {
+            snprintf(offset, 32, "%s + %s * %d + 0x%llx", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), op.mem.scale, op.mem.disp);
+        }
         else
+        {
             assert(0);
+        }
         
         strcpy(segment, "?");
         switch (op.mem.segment)
@@ -108,6 +118,7 @@ public:
                         case callConv_t::callConvShiftStackNearFar:
                         case callConv_t::callConvNear:
                         case callConv_t::callConvFar:
+                        case callConv_t::callConvShiftStackLong:
                             break;
                         default:
                             strcat(offset, " - stop(\"simple stack\")");
@@ -117,6 +128,16 @@ public:
                 break;
             default:
                 strcpy(segment, Capstone->ToString(op.mem.segment));
+        }
+        
+        
+        if (strstr(offset, "2147483647"))
+        {
+            // worms
+            if (strcmp(offset+3, " + 2147483647") == 0 && info->instr->mSize == 6)
+                snprintf(offset+3, /*sizeof(offset)-2*/ 64, " + memoryAGet32(cs, 0x%x)", info->instr->mAddress.linearOffset()+2);
+            else
+                assert(0);
         }
     }
     
@@ -151,9 +172,9 @@ public:
         }
         if (op.type == X86_OP_MEM)
         {
-            char segment[32], offset[32], tmp[64];
+            char segment[64], offset[64], tmp[64];
             GetOpAddress(op, segment, offset, info, func);
-            snprintf(tmp, 32, "memory%s(%s, %s)", memorySuffix(op.size), segment, offset);
+            snprintf(tmp, 64, "memory%s(%s, %s)", memorySuffix(op.size), segment, offset);
             return tmp;
         }
         printf("error: %d, %d\n", op.type, op.size);
@@ -258,7 +279,7 @@ public:
                     
                     std::string rvalue_formatted = iformat(instr, info, func, rvalue);
                     
-                    char segment[32], offset[32], tmp[128];
+                    char segment[64], offset[64], tmp[128];
                     GetOpAddress(op, segment, offset, info, func);
                     snprintf(tmp, 128, "memoryASet%s(%s, %s, %s);", memorySuffix(x86.operands[index].size), segment, offset, rvalue_formatted.c_str());
                     return tmp;
@@ -327,7 +348,7 @@ public:
                     assert(x86.op_count >= 1);
                     if (getset && x86.operands[0].type == X86_OP_MEM)
                     {
-                        char segment[32], offset[32];
+                        char segment[64], offset[64];
                         GetOpAddress(x86.operands[0], segment, offset, info, func);
                         switch (tok[1] == 'm' ? 2 : x86.operands[0].size)
                         {
@@ -359,7 +380,7 @@ public:
                 if (getset && x86.operands[0].type == X86_OP_MEM)
                 {
                     assert(x86.operands[0].size == 4);
-                    char segment[32], offset[32];
+                    char segment[64], offset[64];
                     GetOpAddress(x86.operands[0], segment, offset, info, func);
                     snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s + 2)", segment, offset);
                 } else
@@ -370,7 +391,7 @@ public:
                 assert(x86.op_count >= 1);
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
-                    char segment[32], offset[32];
+                    char segment[64], offset[64];
                     GetOpAddress(x86.operands[1], segment, offset, info, func);
                     strcpy(replace, offset);
                 } else
@@ -400,7 +421,7 @@ public:
                 assert(x86.op_count >= 2);
                 if (getset && x86.operands[1].type == X86_OP_MEM)
                 {
-                    char segment[32], offset[32];
+                    char segment[64], offset[64];
                     GetOpAddress(x86.operands[1], segment, offset, info, func);
 //                    if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
 //                        snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s + 2)", segment, offset);
@@ -417,12 +438,16 @@ public:
                     strcpy(replace, "PROBLEM-11f");
                 else
                 {
+                    /*
+
+                     */
                     if(x86.op_count >= 2)
                     {
                         if (getset && x86.operands[1].type == X86_OP_MEM)
                         {
-                            char segment[32], offset[32];
+                            char segment[64], offset[64];
                             GetOpAddress(x86.operands[1], segment, offset, info, func);
+                            
                             if (instr->mId == X86_INS_LES || instr->mId == X86_INS_LDS)
                                 snprintf(replace, sizeof(replace), "memoryAGet16(%s, %s)", segment, offset);
                             else
@@ -485,6 +510,9 @@ public:
                         break;
                     case 2:
                         strcpy(replace, "0x10000");
+                        break;
+                    case 4:
+                        strcpy(replace, "0x100000000ull");
                         break;
                     default:
                         assert(0);

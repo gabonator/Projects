@@ -27,6 +27,7 @@ struct address_t {
     }
     int linearOffset() const
     {
+        return offset; // only for 32bit!!!
         return segment*0x10+offset;
     }
     bool operator == (const address_t& b) const

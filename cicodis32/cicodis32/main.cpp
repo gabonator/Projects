@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
 //    Options options = Profiles::optionsCK4a;
 //    options.verbose = true;
     Options options;
-//    options.printProcAddress = true;
-//    options.printLabelAddress = true;
+    options.printProcAddress = true;
+    options.printLabelAddress = true;
 //    options.verboseAsm = true;
 
 #if 1
@@ -194,6 +194,28 @@ int main(int argc, char **argv) {
             std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::CallWords, .useCaseOffset = true, .elements = elements});
+            
+            options.jumpTables.push_back(jt);
+        } else
+        if (json["id"] == "jumpTable" && json["calls32"])
+        {
+            std::vector<uint32_t> targets;
+            std::vector<int> elements;
+
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            CJson(json["calls32"]).ForEach([&](const CSubstring& v)
+            {
+                address_t target = address_t::fromString(CJson(v).GetString());
+                assert(target.segment == instruction.segment);
+                targets.push_back(target.offset);
+                elements.push_back((int)elements.size());
+            });
+            uint32_t* ptargets = new uint32_t[targets.size()];
+            memcpy(ptargets, &targets[0], sizeof(uint32_t) * targets.size());
+            
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
+                .type = jumpTable_t::switch_e::Call32, .useCaseOffset = true, .elements = elements});
             
             options.jumpTables.push_back(jt);
         } else
@@ -371,7 +393,7 @@ int main(int argc, char **argv) {
     for (address_t p : startEntries)
     {
         if (options.procModifiers.find(p) == options.procModifiers.end())
-            options.procModifiers.insert({p, procRequest_t::callNear});
+            options.procModifiers.insert({p, options.arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
     }
     
     printf("#include \"cico%s.h\"\n\n", options.arch == arch_t::arch16 ? "16" : "32");
@@ -490,22 +512,6 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
         printf("}\n\n");
     }
     
-//    std::set<address_t> processFinal;
-//    std::set<address_t> processFinal2;
-//    std::set<address_t> processFinal3;
-//    std::set<address_t> processFinal4;
-//    std::set<address_t> processFinal5;
-//    std::set<address_t> processFinal6;
-//    for (indirectJump_t j : options.indirectJumps)
-//    {
-//        processFinal.insert(j.target);
-//        processFinal2.insert(j.target);
-//        processFinal3.insert(j.target);
-//        processFinal4.insert(j.target);
-//        processFinal5.insert(j.target);
-//        processFinal6.insert(j.target);
-//    }
-//
     std::map<address_t, address_t> dependency;
     for (const indirectJump_t& j : options.indirectJumps)
         dependency.insert({j.target, j.parent});

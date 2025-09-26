@@ -277,8 +277,10 @@ public:
                         .variable = utils::format("temp_cond%d", tempCounter)
                     });
                 }
-                assert(p->readPrecondition.size() == 0);
-                p->readPrecondition.push_back(utils::format("temp_cond%d", tempCounter));
+                if (p->readPrecondition.size() == 0)
+                    p->readPrecondition.push_back(utils::format("temp_cond%d", tempCounter));
+                else
+                    p->readPrecondition = {"stop(\"xxx multi precond\")"};
                 tempCounter++;
             }
         }
@@ -464,6 +466,17 @@ public:
                 return callConv_t::callConvShiftStackFar;
             }
             return callConv_t::callConvFar;
+        }
+        else if ((int)req & (int)procRequest_t::callLong) // TODO: near | long
+        {
+            if (mOptions.stackShiftAlways)
+            {
+                if ((int)info->func.request & (int)procRequest_t::entry)
+                    return callConv_t::callConvNear;
+                else
+                    return callConv_t::callConvShiftStackLong;
+            }
+            assert(0);
         }
         else if ((int)req & (int)procRequest_t::callNear)
         {

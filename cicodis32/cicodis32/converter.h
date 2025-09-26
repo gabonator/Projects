@@ -73,6 +73,8 @@ public:
                 mCode.push_back("    sp -= 2;\n"); // TODO!!!
             if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
                 mCode.push_back("    sp -= 2;\n");
+            if (info->func.callConv == callConv_t::callConvShiftStackLong)
+                mCode.push_back("    esp -= 4;\n");
         }
         
         if (code.begin()->first != proc)
@@ -131,7 +133,6 @@ public:
                         case 's': save = convert[pinstr->mId].savesf; break;
                     }
                     //assert(!pinfo->instr->mTemplate.destructiveCarry);
-                    assert(save);
                     
                     std::string fName(flagName[flag->type]);
                                         
@@ -141,8 +142,11 @@ public:
                         post.push_back(std::string("    ") + fName + " = " + tempName + ";\n");
                         fName = tempName;
                     }
-                        
-                    mCode.push_back(std::string("    ") + fName + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
+                     
+                    if (!save)
+                        mCode.push_back(std::string("    ") + fName + " = stop(\"nosave\");\n");
+                    else
+                        mCode.push_back(std::string("    ") + fName + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
                 }
             }
 
@@ -201,8 +205,11 @@ public:
             }
             else
             {
-                printf("Conversion for '%s'@ %x:%x not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset);
-                assert(0);
+                mCode.push_back(utils::format("    stop(\"disassembly failed at %x:%x %s\");\n",
+                                              pinstr->mAddress.segment, pinstr->mAddress.offset, pinstr->AsString().c_str()));
+//                break;
+//                printf("Conversion for '%s'@ %x:%x not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset);
+//                assert(0);
             }
             
             mCode.insert(mCode.end(), post.begin(), post.end());
@@ -252,6 +259,8 @@ public:
                 selector = iformat(instr, info, func, "$rd0");
             else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
                 selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
+            else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
+                selector = iformat(instr, info, func, "$rd0");
             else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
                 selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
             else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
@@ -320,8 +329,8 @@ public:
         if (set == X86_INS_CMP && cond == X86_INS_JGE)
             return "($sig0)$rd0 >= ($sig0)$rd1 /*xxx*/";
 
-        assert(0);
-        return "";
+        //assert(0);
+        return "stop(\"preCondition\")";
     }
     std::string postCondition(shared<CapInstr> instr, x86_insn cond)
     {
@@ -345,7 +354,7 @@ public:
         if (set == X86_INS_CALL && cond == X86_INS_JBE)
             return "flags.carry || flags.zero";
         
-        if (set == X86_INS_OR && instr->ArgsEqual()) // test
+        if (set == X86_INS_OR && instr->ArgsEqual())
         {
             switch (cond)
             {
@@ -365,14 +374,27 @@ public:
                     assert(0);
             }
         }
-           
+        if (set == X86_INS_TEST && instr->ArgsEqual())
+        {
+            if (cond == X86_INS_JLE)
+                return "($sig0)$rd0 <= 0";
+            if (cond == X86_INS_JL)
+                return "($sig0)$rd0 < 0";
+            if (cond == X86_INS_JGE)
+                return "($sig0)$rd0 >= 0";
+            if (cond == X86_INS_JG)
+                return "($sig0)$rd0 > 0";
+            if (cond == X86_INS_JBE)
+                return "$rd0 <= 0 && stop(\"test, jbe\")";
+            if (cond == X86_INS_JA)
+                return "$rd0 > 0 && stop(\"test, ja\")";
+        }
+        
         if (set == X86_INS_SAHF)
             return "stop(\"sahf get flag\")";
-        if (set == X86_INS_TEST && cond == X86_INS_JLE)
-            return "($sig0)($rd0 & $rd1) <= 0";
 
-        assert(0);
-        return "";
+//        assert(0);
+        return "stop(\"postCondition\")";
     }
 
 //    std::string _condition(shared<CapInstr> instr, x86_insn cond)
@@ -656,6 +678,9 @@ public:
         if (allVisible)
             return "";
 
+        if (flag->lastSet.size()>1)
+            return "stop(\"lastset.size>1\")";
+            
         assert(flag->needed);
         assert(flag->lastSet.size() == 1);
         
@@ -724,6 +749,8 @@ public:
                 return "ES_SI";
             if (in == "byte ptr cs:[si]" || in == "word ptr cs:[si]")
                 return "CS_SI";
+            if (in == "dword ptr [esi]")
+                return "DS_ESI";
             assert(0);
             return "?";
         };
