@@ -533,6 +533,22 @@ public:
                 strcpy(replace, BuildCondition(instr, info, func).c_str());
                 assert(replace[0]);
             }
+            if (strcmp(tok, "boolcond") == 0)
+            {
+                std::string cond = BuildCondition(instr, info, func);
+                const char* condstr = cond.c_str();
+                if (strstr(condstr, " == ") || strstr(condstr, " != ") || strstr(condstr, " > ") ||
+                    strstr(condstr, " < ") || strstr(condstr, " >= ") || strstr(condstr, " <= ") ||
+                    condstr[0] == '!')
+                {
+                    strcpy(replace, cond.c_str());
+                    assert(replace[0]);
+                } else if (cond == "edx" || strstr(condstr, " & 0x"))
+                {
+                    snprintf(replace, sizeof(replace), "!!(%s)", cond.c_str());
+                } else
+                    assert(0);
+            }
             if (strcmp(tok, "target") == 0)
             {
                 assert(x86.op_count == 1);

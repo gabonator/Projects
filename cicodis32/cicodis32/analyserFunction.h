@@ -315,6 +315,8 @@ public:
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_SCASB)
                             continue;
+                        if (flag->type == 'z' && dep->instr->mId == X86_INS_SCASW)
+                            continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSB) // TODO: tables
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSW) // TODO: tables

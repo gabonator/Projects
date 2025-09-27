@@ -20,6 +20,7 @@ struct convert_t
     std::function<std::string(convert_args)> saveof;
     std::function<std::string(convert_args)> savesf;
     std::string flagCondition;
+    x86_insn conditionAs{X86_INS_INVALID};
     
 };
 
@@ -40,6 +41,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_MOV] = {.convert = [](convert_args){ return "$wr0 = $rd1;"; } },
     [X86_INS_MOVZX] = {.convert = [](convert_args){
         return "$wr0 = $rd1;"; } },
+    [X86_INS_MOVSX] = {.convert = [](convert_args){
+        return "$wr0 = ($sig1)$rd1;"; } },
     [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
         .flagCondition = "$zero"},
     [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
@@ -397,6 +400,9 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SCASB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }
     },
+    [X86_INS_SCASW] = {.convert = [](convert_args){ return "$string"; },
+        .zf = [](convert_args){ return "flags.zero"; }
+    },
     [X86_INS_MOVSB] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_STOSB] = {.convert = [](convert_args){ return "$string"; }},
     [X86_INS_STOSW] = {.convert = [](convert_args){ return "$string"; }},
@@ -409,7 +415,7 @@ convert_t convert[X86_INS_ENDING] = {
         .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CWDE] = {.convert = [](convert_args){ return func.arch == arch_t::arch16 ? "cbw();" : "cwde();"; } }, // CBW/CWDE
     [X86_INS_CDQ] = {.convert = [](convert_args){
-        return func.arch == arch_t::arch16 ? "dx = ax & 0x8000 ? 0xffff : 0x0000;" : "stop(\"cdq\");"; } }, // CWD/CWDE
+        return func.arch == arch_t::arch16 ? "dx = ax & 0x8000 ? 0xffff : 0x0000;" : "edx = (int32_t)eax < 0 ? -1 : 0;"; } }, // CWD/CWDE
     [X86_INS_NOP] = {.convert = [](convert_args){ return ""; } },
     [X86_INS_XCHG] = {.convert = [](convert_args){
         switch (instr->mDetail.operands[0].size)
@@ -465,6 +471,20 @@ convert_t convert[X86_INS_ENDING] = {
         .cf = [](convert_args){ return "stop()"; },},
     [X86_INS_AAM] = {.convert = [](convert_args){ return "stop(\"aam\");"; } },
     [X86_INS_AAA] = {.convert = [](convert_args){ return "stop(\"aaa\");"; } },
-    [X86_INS_SETNE] = {.convert = [](convert_args){ return "$wr0 = !($cond);"; },
-        .flagCondition = "$zero"},
+    [X86_INS_SETNE] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JNE /*.flagCondition = "$zero"*/},
+    [X86_INS_SETE] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JE /*.flagCondition = "$zero"*/},
+    [X86_INS_SETL] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JL},
+    [X86_INS_SETLE] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JLE},
+    [X86_INS_SETG] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JG},
+    [X86_INS_SETGE] = {.convert = [](convert_args){ return "$wr0 = $boolcond;"; },
+        .conditionAs = X86_INS_JGE},
+
+    [X86_INS_POPAL] = {.convert = [](convert_args){ return "edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4;\n    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();"; } },
+    [X86_INS_PUSHAL] = {.convert = [](convert_args){ return "etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx);\n    push32(etx); push32(ebp); push32(esi); push32(edi);"; } },
+    [X86_INS_LEAVE] = {.convert = [](convert_args){ return "esp = ebp; ebp = pop32();"; } },
 };

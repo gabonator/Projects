@@ -73,7 +73,9 @@ public:
             for (int i=0; i<dep->mDetail.op_count; i++)
                 if (Capstone->Intersects(dep->mDetail.operands[i], change))
                 {
-                    flag->dirty = true;
+//                    flag->dirty = true;
+                    flag->dirtyAfter = true;
+//                    flag->willSetDirty = true; /// CAREFULL!!!!  cmp al, 123; setg al
                     return;
                 }
         }

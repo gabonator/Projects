@@ -278,6 +278,10 @@ int main(int argc, char **argv) {
                 type = jumpTable_t::switch_e::CallDwords;
             else if (strType == "jumpfix")
                 type = jumpTable_t::switch_e::JumpFix;
+            else if (strType == "jump32")
+                type = jumpTable_t::switch_e::Jump32;
+            else if (strType == "call32")
+                type = jumpTable_t::switch_e::Call32;
             else
                 assert(0);
             

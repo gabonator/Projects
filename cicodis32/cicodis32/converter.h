@@ -397,95 +397,6 @@ public:
         return "stop(\"postCondition\")";
     }
 
-//    std::string _condition(shared<CapInstr> instr, x86_insn cond)
-//    {
-//        // todo: split precondition, postcondition
-//        x86_insn set = instr->mId;
-//        bool probe = ((set == X86_INS_OR || set == X86_INS_TEST) && instr->ArgsEqual()); // test !!
-//        if (probe)
-//        {
-//            switch (cond)
-//            {
-//                case X86_INS_JGE:
-//                        return "($sig0)$rd0 >= 0";
-//                case X86_INS_JG:
-//                        return "($sig0)$rd0 > 0";
-//                case X86_INS_JLE:
-//                        return "($sig0)$rd0 <= 0";
-//                case X86_INS_JL:
-//                        return "($sig0)$rd0 < 0";
-//                case X86_INS_JBE:
-//                        return "!$rd0"; // or, jbe?
-//                default:
-//                    assert(0);
-//            }
-//        }
-//            
-//        if (set == X86_INS_ADD && cond == X86_INS_JG)
-//            return "($sig0)$rd0 + ($sig0)$rd1 > 0";
-//        if (set == X86_INS_ADD && cond == X86_INS_JL)
-//            return "($sig0)$rd0 + ($sig0)$rd1 < 0";
-//        if (set == X86_INS_ADD && cond == X86_INS_JLE)
-//            return "($sig0)$rd0 + ($sig0)$rd1 <= 0";
-//        if (set == X86_INS_INC && cond == X86_INS_JLE)
-//            return "($sig0)$rd0 + 1 <= 0";
-//        
-//        if (set == X86_INS_SUB && cond == X86_INS_JG)
-//            return "($sig0)$rd0 - ($sig0)$rd1 > 0";
-//        if (set == X86_INS_SUB && cond == X86_INS_JLE)
-//            return "($sig0)$rd0 - ($sig0)$rd1 <= 0";
-//        if (set == X86_INS_SUB && cond == X86_INS_JA)
-//            return "$rd0 - $rd1 > 0";
-//        if (set == X86_INS_SUB && cond == X86_INS_JGE)
-//            return "($sig0)$rd0 - ($sig0)$rd1 >= 0";
-//        if (set == X86_INS_DEC && cond == X86_INS_JLE)
-//            return "($sig0)$rd0 - 1 <= 0";
-//        if (set == X86_INS_DEC && cond == X86_INS_JG)
-//            return "($sig0)$rd0 - 1 > 0";
-//
-//        // simple
-//        if (set == X86_INS_CMP && cond == X86_INS_JGE)
-//            return "($sig0)$rd0 >= ($sig0)$rd1";
-//        if (set == X86_INS_CMP && cond == X86_INS_JLE)
-//            return "($sig0)$rd0 <= ($sig0)$rd1";
-//        if (set == X86_INS_CMP && cond == X86_INS_JA)
-//            return "$rd0 > $rd1";
-//        if (set == X86_INS_CMP && cond == X86_INS_JG)
-//            return "($sig0)$rd0 > ($sig0)$rd1";
-//        if (set == X86_INS_CMP && cond == X86_INS_JL)
-//            return "($sig0)$rd0 < ($sig0)$rd1";
-//        if (set == X86_INS_CMP && cond == X86_INS_JBE)
-//            return "$rd0 <= $rd1";
-//
-//        if (set == X86_INS_CALL && cond == X86_INS_JA)
-//            return "!flags.carry && !flags.zero";
-//        if (set == X86_INS_CALL && cond == X86_INS_JBE)
-//            return "flags.carry || flags.zero";
-//
-////        if (set == X86_INS_OR && cond == X86_INS_JA) // cf=0, zf=?, ja: !cf & !zf
-////            return "!$rd0 /*ggg6*/ POST or/ja";
-////        if (set == X86_INS_OR && cond == X86_INS_JGE)
-////            return "($sig0)$rd0 >= 0 POST or/jge";
-////        if (set == X86_INS_OR && cond == X86_INS_JLE)
-////            return "($sig0)$rd0 <= 0 POST or/jle";
-////        if (set == X86_INS_OR && cond == X86_INS_JL)
-////            return "($sig0)$rd0 < 0 POST or/jl";
-////        if (set == X86_INS_OR && cond == X86_INS_JBE)
-////            return "!$rd0 POST or/jbe";
-////        if (set == X86_INS_DEC && cond == X86_INS_JG)
-////            return "($sig0)$rd0 > 0 POST dec/jg"; // check unbalanced POST!
-////        if (set == X86_INS_TEST && cond == X86_INS_JLE)
-////            return "($sig0)($rd0 & $rd1) <= 0 CHECK";
-////        if (set == X86_INS_OR && cond == X86_INS_JG)
-////            return "($sig0)$rd0 > 0 POST";
-////        if (set == X86_INS_DEC && cond == X86_INS_JLE)
-////            return "($sig0)$rd0 <= 0 POST dec/jle"; // POST!
-////        if (set == X86_INS_INC && cond == X86_INS_JLE)
-////            return "($sig0)$rd0 <= 0 POST inc/jle"; // POST!
-//
-//        assert(0);
-//        return "";
-//    }
     
     std::string InvertCondition(std::string cond)
     {
@@ -521,22 +432,18 @@ public:
     
     virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) override
     {
-        if (instr->mAddress.offset == 0xe13)
-        {
-            int f= 9;
-        }
         if (!info->readPrecondition.empty())
         {
             assert(info->readPrecondition.size() == 1);
             return info->readPrecondition[0];
         }
-        
+
         bool dirty = false;
         std::set<address_t> lastSet;
         int needFlags = 0; //info->flagZero.needed + info->flagCarry.needed + info->flagSign.needed + info->flagOverflow.needed;
         std::set<char> needType;
-        
         bool allVisible = false;
+        
         for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             if (flag->needed)
             {
@@ -561,10 +468,14 @@ public:
 //                allVisible &= lastSetInstr->GetFlag(*needType.begin()).visible;
             }
         }
+        
         if (allVisible)
         {
             convert_t cond = convert[instr->mId];
             std::string flagCondition = cond.flagCondition;
+            if (flagCondition.empty() && cond.conditionAs != X86_INS_INVALID)
+                flagCondition = convert[cond.conditionAs].flagCondition;
+
             char needFlag = *needType.begin();
 
             std::string value;
@@ -592,6 +503,8 @@ public:
             convert_t templ = convert[lastSetInstr->instr->mId];
             convert_t cond = convert[instr->mId];
             std::string flagCondition = cond.flagCondition;
+            if (flagCondition.empty() && cond.conditionAs != X86_INS_INVALID)
+                flagCondition = convert[cond.conditionAs].flagCondition;
             
             for (const instrInfo_t::instrInfoFlag_t* flag : info->Flags())
             {
@@ -661,7 +574,13 @@ public:
         {
             assert(lastSet.size() == 1);
             shared<instrInfo_t> lastSetInfo = mInfo->code.find(*lastSet.begin())->second;
-            return iformat(lastSetInfo->instr, lastSetInfo, func, postCondition(lastSetInfo->instr, instr->mId));
+            x86_insn condInsn = instr->mId;
+            
+            convert_t cond = convert[instr->mId];
+            if (cond.conditionAs != X86_INS_INVALID)
+                condInsn = cond.conditionAs;
+                
+            return iformat(lastSetInfo->instr, lastSetInfo, func, postCondition(lastSetInfo->instr, condInsn));
         }
 
         return "stop(\"build_condition_failed\")";
@@ -773,7 +692,7 @@ public:
             repeat = "for (flags.zero = 1; cx != 0 && flags.zero; --cx) ";
             templ = templ.substr(5);
         }
-        if (args[0] == "al")
+        if (args[0] == "al" || args[0] == "ax")
             return repeat + templ + "_inv<" + argToTemplate(args[1]) + ">("+args[0]+");";
         if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
             return repeat + templ + "<" + argToTemplate(args[0]) + ">("+args[1]+");";

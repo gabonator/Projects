@@ -100,7 +100,9 @@ struct instrInfo_t {
         // this instruction requires this flag for operation
         bool needed{false};
         // lastSet instructions were altered, so flag value extraction is not possible anymore
+        // dirty = flag cannot be recovered at the time when this instruction is being executed
         bool dirty{false};
+        bool dirtyAfter{false};
         // set of all instruction which modify any flags for this instruction
         std::set<address_t> lastSet;
         // set of instruction having an effect on this instruction (lastSet && needed)
@@ -210,7 +212,8 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         copy.type = other.type;
         copy.lastSet = !other.willSet.empty() ? other.willSet : other.lastSet;
         copy.dirty = !other.willSet.empty() ? other.willSetDirty : other.dirty; // TODO: check?
-//        copy.visible |= other.savedVisibly;
+        if (other.willSet.empty())
+            copy.dirty |= other.dirtyAfter;
         changed |= p->Merge(copy);
     }
     if (!processed)
