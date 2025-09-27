@@ -1,0 +1,16 @@
+{"id": "config", "loader": "LoaderLe", "executable": "WRMS.EXE", "architecture": "arch32", "loadAddress": 0x15e000, "stackShiftAlways": true}
+//{"id": "config", "verbose": true}
+//{"id": "config", "verboseAsm": true}
+//{"id": "config", "recursive":false, procList:["0000:1c7cc4"]}
+//procList:["0000:1c7cc4"], 
+
+{"id": "jumpTable", "addr": "160:1c8faf", "calls32": ["160:1c7f24", "160:1c9028", "160:1c92c7", "160:1cf330", "160:1cf378", "160:1cf168", "160:1c9d9f", "160:1c900d"]}
+{"id": "jumpTable", "addr": "160:1ce754", "calls32": ["160:1c9307"]}
+{"id": "jumpTable", "addr": "160:1966df", "table": "160:196660", "entries": 10, "type": "jump32", "selector": "eax"}
+{"id": "jumpTable", "addr": "160:1965d2", "table": "160:196500", "entries": 10, "type": "jump32", "selector": "ebp"}
+{"id": "jumpTable", "addr": "160:1979f9", "table": "160:1978f8", "entries": 6, "type": "jump32", "selector": "ebx"}
+{"id": "jumpTable", "addr": "160:19d837", "table": "160:1dd26a", "entries": 1, "type": "call32", "selector": "eax"}
+{"id": "jumpTable", "addr": "160:1b745b", "table": "160:1b73b1", "entries": 31, "type": "jump32", "selector": "ecx"}
+
+
+//{id:"config", "procList": ["0160:1ca557"], recursive:false, verboseAsm:true}

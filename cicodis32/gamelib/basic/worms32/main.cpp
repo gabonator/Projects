@@ -35,10 +35,25 @@ void sub_1c7c4c();
 
 CSdl sdl;
 
+extern int mouseX;
+extern int mouseY;
+extern int mouseB;
+
 void onKey(int k, int p)
 {
     if (k == SDL_SCANCODE_ESCAPE) exit(1);
 }
+void onMouseMove(int x, int y)
+{
+    mouseX = x/2;
+    mouseY = y/2;
+    
+}
+void onMouseButton(int b)
+{
+    mouseB = b;
+}
+
 class CVgaInstance : public CVga
 {
 public:
@@ -216,7 +231,7 @@ void memoryASet(int s, int o, int v)
 }
 void memoryASet16(int s, int o, int v)
 {
-    if (s == 0x168 && o == 0x3f4ed8)
+    if (s == 0x160 && o == 0x1bdc71)
     {
         int f = 9;
     }

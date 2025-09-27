@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <vector>
 
+int mouseX = 100;
+int mouseY = 100;
+int mouseB = 0;
+
 uint32_t eax;
 uint16_t& ax = *reinterpret_cast<uint16_t*>(&eax);
 uint8_t& al = *reinterpret_cast<uint8_t*>(&ax);
@@ -141,6 +145,10 @@ uint32_t sar32(uint32_t a, uint32_t b)
 
 bool stop(const char* msg = nullptr, const char* info = nullptr)
 {
+    if (msg && strstr(msg, "stack_unbalanced"))
+        return false;
+    if (msg && strstr(msg, "stack_below"))
+        return false;
     assert(0);
     return false;
 }
@@ -198,6 +206,12 @@ template <typename src> void scasb_inv(uint8_t b)
     src::Advance(1);
 }
 
+template <typename src> void scasw_inv(uint8_t w)
+{
+    flags.zero = src::Get16() == w;
+    src::Advance(2);
+}
+
 void out16(int, int) { stop(); }
 void out8(int, int);
 int in8(int port) {
@@ -219,8 +233,21 @@ void interruptFileHandler()
         char name[1024] = {0};
         std::vector<uint8_t> data;
     };
-    static fileslot_t slots[32];
-    static int slotCounter = 0;
+    
+    static fileslot_t slots[10];
+    //static int slotCounter = 0;
+    int freeSlot = -1;
+    for (int i=0; i<sizeof(slots)/sizeof(slots[0]); i++)
+    {
+        if (!slots[i].opened)
+        {
+            freeSlot = i;
+            break;
+        }
+    }
+    assert(freeSlot >= 0);
+    int slotCounter = freeSlot;
+    
     switch (ah)
     {
         case 0x3d:
@@ -250,7 +277,7 @@ void interruptFileHandler()
                 if (fullname[i] == '\\')
                     fullname[i] = '/';
             
-            assert(slotCounter < sizeof(slots)/sizeof(slots[0]));
+            //assert(slotCounter < sizeof(slots)/sizeof(slots[0]));
             
             std::vector<uint8_t> data = GetFileContents(fullname);
 
@@ -521,6 +548,17 @@ void interrupt(int i) {
     }
     if (i == 0x33)
     {
+        static int prevX = -1;
+        static int prevY = -1;
+        if (prevX == -1)
+        {
+            prevX = mouseX;
+            prevY = mouseY;
+        }
+        int deltaX = mouseX-prevX;
+        int deltaY = mouseY-prevY;
+        prevX = mouseX;
+        prevY = mouseY;
         switch (ax)
         {
             case 0:
@@ -531,11 +569,13 @@ void interrupt(int i) {
             case 0x08:
             case 0x1c:
             case 4:
+                //mouseX = cx;
+                //mouseY = dx;
                 return;
             case 3:
-                cx = 100;
-                dx = 100;
-                bx = 0;
+                cx = 512 + deltaX; //1000; //random()%200; //mouseX;
+                dx = 512 + deltaY; //1000; //mouseY;
+                bx = mouseB;
                 return;
         }
     }
@@ -656,5 +696,6 @@ uint16_t fnstsw() {stop(); return 0;}
 void fldcw(uint16_t) {stop();}
 void frndtint() {stop();}
 uint16_t fnstcw() {stop(); return 0;}
+void fld80(uint64_t) {stop();}
 }
 using namespace fpuinsns;

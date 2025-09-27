@@ -24,6 +24,7 @@ void sub_197391();
 void sub_1973e5();
 void sub_197664();
 void sub_1977cd();
+void sub_1978a8();
 void sub_197910();
 void sub_197b3b();
 void sub_197c71();
@@ -464,11 +465,45 @@ void sub_1b3780();
 void sub_1b396c();
 void sub_1b39a9();
 void sub_1b3a39();
+void sub_1b3a4f();
+void sub_1b3ab3();
+void sub_1b3b0f();
+void sub_1b3ccb();
+void sub_1b3df5();
 void sub_1b3e6c();
+void sub_1b3ea0();
+void sub_1b3f7d();
 void sub_1b403a();
+void sub_1b427c();
+void sub_1b42d9();
+void sub_1b4325();
 void sub_1b43e8();
+void sub_1b465a();
+void sub_1b4749();
 void sub_1b47fd();
 void sub_1b483f();
+void sub_1b48b1();
+void sub_1b4a40();
+void sub_1b4b45();
+void sub_1b51ce();
+void sub_1b56a0();
+void sub_1b5701();
+void sub_1b5768();
+void sub_1b57f4();
+void sub_1b5936();
+void sub_1b59e1();
+void sub_1b5b2f();
+void sub_1b5ba8();
+void sub_1b5cb1();
+void sub_1b5e5f();
+void sub_1b61c5();
+void sub_1b62ce();
+void sub_1b6995();
+void sub_1b6c08();
+void sub_1b6e6d();
+void sub_1b6f3d();
+void sub_1b7169();
+void sub_1b72f6();
 void sub_1b742d();
 void sub_1b7a0e();
 void sub_1b7a70();
@@ -986,7 +1021,7 @@ loc_196539: // 0160:196539
     edx += ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<2) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<2) & 0x80000000);
     edx <<= 3;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x03);
@@ -998,7 +1033,7 @@ loc_196539: // 0160:196539
     ecx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -1007,7 +1042,7 @@ loc_196539: // 0160:196539
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -1015,7 +1050,7 @@ loc_196539: // 0160:196539
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -1023,12 +1058,56 @@ loc_196539: // 0160:196539
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
-    indirectJump(cs, memoryAGet32(cs, stop("GetOpAddress"))); return; // 0160:1965d2;
-    // gap 108 bytes
+    switch (ebp)
+    {
+        case 0: goto loc_1965da;
+        case 1: goto loc_1965ef;
+        case 2: goto loc_19661b;
+        case 3: goto loc_19660a;
+        case 4: goto loc_19660a;
+        case 5: goto loc_19660a;
+        case 6: goto loc_19661b;
+        case 7: goto loc_1965da;
+        case 8: goto loc_1965ef;
+        case 9: goto loc_19662d;
+        default:
+            stop("ind 0160:1965d2");
+    }
+loc_1965da: // 0160:1965da
+    al = memoryAGet(ds, esp);
+    memoryASet(ds, ebx + 3783082, cl);
+    memoryASet(ds, ebx + 3783081, al);
+loc_1965e9: // 0160:1965e9
+    al = memoryAGet(ds, esp + 4);
+    goto loc_196640;
+loc_1965ef: // 0160:1965ef
+    al = memoryAGet(ds, esp + 4);
+    memoryASet(ds, ebx + 3783083, cl);
+    memoryASet(ds, ebx + 3783081, al);
+    al = memoryAGet(ds, esp);
+    memoryASet(ds, ebx + 3783082, al);
+    goto loc_196646;
+loc_19660a: // 0160:19660a
+    al = memoryAGet(ds, esp);
+    memoryASet(ds, ebx + 3783081, cl);
+    memoryASet(ds, ebx + 3783082, al);
+    goto loc_1965e9;
+loc_19661b: // 0160:19661b
+    ah = memoryAGet(ds, esp + 4);
+    memoryASet(ds, ebx + 3783081, cl);
+    memoryASet(ds, ebx + 3783082, ah);
+    goto loc_196640;
+loc_19662d: // 0160:19662d
+    al = memoryAGet(ds, esp);
+    memoryASet(ds, ebx + 3783082, cl);
+    memoryASet(ds, ebx + 3783081, al);
+    al = memoryAGet(ds, esp + 4);
+loc_196640: // 0160:196640
+    memoryASet(ds, ebx + 3783083, al);
 loc_196646: // 0160:196646
     ebx += 0x00000004;
     if ((int32_t)ebx < (int32_t)0x000002c0)
@@ -1069,8 +1148,110 @@ loc_1966cc: // 0160:1966cc
     memoryASet32(ds, 0x39bdc8, eax);
     if (eax > 0x00000009)
         goto loc_196864;
-    indirectJump(cs, memoryAGet32(cs, stop("GetOpAddress"))); return; // 0160:1966df;
-    // gap 381 bytes
+    switch (eax)
+    {
+        case 0: goto loc_1966e7;
+        case 1: goto loc_196705;
+        case 2: goto loc_196714;
+        case 3: goto loc_19675f;
+        case 4: goto loc_19679b;
+        case 5: goto loc_1967b9;
+        case 6: goto loc_1967d7;
+        case 7: goto loc_1967f2;
+        case 8: goto loc_19680d;
+        case 9: goto loc_196828;
+        default:
+            stop("ind 0160:1966df");
+    }
+loc_1966e7: // 0160:1966e7
+    edx = 0x0039b9a8;
+    eax = 0x001d1031;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d1046;
+    goto loc_19685f;
+loc_196705: // 0160:196705
+    edx = 0x0039b9a8;
+    eax = 0x001d1059;
+    goto loc_19685f;
+loc_196714: // 0160:196714
+    edx = 0x0039b9a8;
+    eax = 0x001d106b;
+    sub_19b431();
+    edx = 0x003731a8;
+    eax = 0x001d107d;
+    sub_19b431();
+    edx = 0x003875a8;
+    eax = 0x001d108f;
+    sub_19b431();
+    edx = 0x002af668;
+    eax = 0x001d10a1;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d10b0;
+    goto loc_19685f;
+loc_19675f: // 0160:19675f
+    edx = 0x0039b9a8;
+    eax = 0x001d10c0;
+    sub_19b431();
+    edx = 0x002af668;
+    eax = 0x001d10d2;
+    sub_19b431();
+    edx = 0x003731a8;
+    eax = 0x001d10e1;
+    sub_19b431();
+    edx = 0x003875a8;
+    eax = 0x001d10f1;
+    goto loc_19685f;
+loc_19679b: // 0160:19679b
+    edx = 0x0039b9a8;
+    eax = 0x001d1101;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d1115;
+    goto loc_19685f;
+loc_1967b9: // 0160:1967b9
+    edx = 0x0039b9a8;
+    eax = 0x001d1127;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d113a;
+    goto loc_19685f;
+loc_1967d7: // 0160:1967d7
+    edx = 0x0039b9a8;
+    eax = 0x001d114b;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d115e;
+    goto loc_19685f;
+loc_1967f2: // 0160:1967f2
+    edx = 0x0039b9a8;
+    eax = 0x001d116f;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d1180;
+    goto loc_19685f;
+loc_19680d: // 0160:19680d
+    edx = 0x0039b9a8;
+    eax = 0x001d118f;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d11a1;
+    goto loc_19685f;
+loc_196828: // 0160:196828
+    edx = 0x0039b9a8;
+    eax = 0x001d11b1;
+    sub_19b431();
+    edx = 0x003731a8;
+    eax = 0x001d107d;
+    sub_19b431();
+    edx = 0x003875a8;
+    eax = 0x001d108f;
+    sub_19b431();
+    edx = 0x00226b08;
+    eax = 0x001d11c5;
+loc_19685f: // 0160:19685f
+    sub_19b431();
 loc_196864: // 0160:196864
     ah = 0;
     esi = memoryAGet32(ds, 0x1dc030);
@@ -1206,7 +1387,7 @@ loc_196a7b: // 0160:196a7b
     ebp -= 0x00000055;
     eax = memoryAGet32(ds, 0x39efa8);
     memoryASet32(ds, 0x39efa4, ebp);
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_196a9b;
     edx = 0;
     memoryASet32(ds, 0x39efa0, edx);
@@ -1254,7 +1435,7 @@ void sub_196afc() // 0160:196afc +long
     eax = memoryAGet32(ds, 0x39efa8);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -1262,7 +1443,7 @@ void sub_196afc() // 0160:196afc +long
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -1328,7 +1509,7 @@ loc_196b8d: // 0160:196b8d
     edx = sar32(edx, 0x1f);
     idiv32(esi);
     esi = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_196bac;
     esi ^= eax;
 loc_196bac: // 0160:196bac
@@ -1436,7 +1617,7 @@ void sub_196ca9() // 0160:196ca9 +long
     memoryASet32(ds, esp + 8, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -1899,7 +2080,7 @@ void sub_1970f5() // 0160:1970f5 +long +stackDrop4
     memoryASet32(ds, esp, edx);
 loc_19710e: // 0160:19710e
     edi += memoryAGet32(ds, esp + 28);
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1971f5;
     if (edi >= 0x000003c0)
         goto loc_1971f5;
@@ -1923,8 +2104,7 @@ loc_19710e: // 0160:19710e
     eax = esi * 0x000003c0;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ebx;
     if (!eax)
@@ -1933,7 +2113,7 @@ loc_19710e: // 0160:19710e
     ecx = edx;
     ebx += edi;
 loc_19718a: // 0160:19718a
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_197274;
     if (edi >= 0x000003c0)
         goto loc_197274;
@@ -1950,13 +2130,12 @@ loc_19718a: // 0160:19718a
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_197274;
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_197274;
     ebx -= 0x000003c0;
     esi--;
@@ -1971,7 +2150,7 @@ loc_1971f5: // 0160:1971f5
     ebx += edi;
     ecx = eax + eax;
 loc_19720b: // 0160:19720b
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_197255;
     if (edi >= 0x000003c0)
         goto loc_197255;
@@ -1988,8 +2167,7 @@ loc_19720b: // 0160:19720b
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -2019,7 +2197,7 @@ loc_197274: // 0160:197274
     memoryASet32(ds, eax, edi);
     memoryASet32(ss, ebp, esi);
     ebx = esi + -4;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1972fc;
     if (edi >= 0x000003c0)
         goto loc_1972fc;
@@ -2038,7 +2216,7 @@ loc_197274: // 0160:197274
     eax = sar32(eax, 0x00000001);
     ecx <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
@@ -2049,8 +2227,7 @@ loc_197274: // 0160:197274
     edi += eax;
     eax = 0;
     al = memoryAGet(ds, edi + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -2064,7 +2241,7 @@ loc_1972fc: // 0160:1972fc
     edx <<= 16;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -2131,14 +2308,14 @@ void sub_197391() // 0160:197391 +long
     eax = edx;
     eax <<= 2;
     eax -= edx;
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
-    memoryASet32(ds, stop("GetOpAddress"), esi);
+    memoryASet32(ds, eax * 4 + 0x1e05c4, ebx);
+    memoryASet32(ds, eax * 4 + 0x1e05c0, esi);
     eax = edx;
     eax <<= 2;
     eax -= edx;
     ebx = edx + 1;
     memoryASet32(ds, 0x1dd226, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, eax * 4 + 0x1e05c8, ecx);
     eax = memoryAGet32(ds, 0x1dd226);
     edx = eax;
     ebx = 0x00000004;
@@ -2175,14 +2352,14 @@ loc_1973e5: // 0160:1973e5
     eax = edx;
     eax <<= 2;
     eax -= edx;
-    ebp = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    ebp = memoryAGet32(ds, eax * 4 + 0x1e05c4);
+    eax = memoryAGet32(ds, eax * 4 + 0x1e05c0);
     memoryASet32(ds, esp + 12, eax);
     eax = edx;
     eax <<= 2;
     eax -= edx;
     ebx = edx + 1;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1e05c8);
     memoryASet32(ds, 0x1dd22e, ebx);
     memoryASet32(ds, esp, eax);
     eax = memoryAGet32(ds, 0x1dd22e);
@@ -2297,7 +2474,7 @@ loc_19755d: // 0160:19755d
     edx = ebp;
     eax = ebp;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -2328,7 +2505,7 @@ loc_1975b4: // 0160:1975b4
     edx = ebp;
     eax = ebp;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -2356,7 +2533,7 @@ loc_1975e9: // 0160:1975e9
     edx = ebp;
     eax = ebp;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -2434,7 +2611,7 @@ loc_19769a: // 0160:19769a
     idiv32(ebx);
     memoryASet32(ds, 0x39bdd0, edx);
     edx++;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, edx * 4 + 0x1dc292);
     memoryASet32(ds, 0x39bdd0, edx);
     edx = 0x002032c8;
     sub_19731d();
@@ -2458,7 +2635,7 @@ loc_197722: // 0160:197722
     if (edx != 0x00000001)
         goto loc_197741;
     ebx = memoryAGet32(ds, 0x39bdd4);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_197741;
     ecx = ebx;
     ecx -= edx;
@@ -2486,7 +2663,7 @@ loc_197783: // 0160:197783
     edi = memoryAGet32(ds, 0x39bddc);
     edi -= 0x00000100;
     memoryASet32(ds, 0x39bddc, edi);
-    if (stop("postCondition"))
+    if ((int32_t)edi >= 0)
         goto loc_196658;
     eax = 0x00000002;
     memoryASet32(ds, 0x39bddc, ecx);
@@ -2583,6 +2760,57 @@ loc_198141: // 0160:198141
     ebx = pop32();
     esp += 4;
 }
+void sub_1978a8() // 0160:1978a8 +long +stackDrop4
+{
+    esp -= 4;
+    goto loc_1978a8;
+loc_197317: // 0160:197317
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    esp += 4;
+    esp += 4;
+    return;
+    // gap 1419 bytes
+loc_1978a8: // 0160:1978a8
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000008;
+    ebp = eax;
+    edi = edx;
+    esi = ebx;
+    memoryASet32(ds, esp, ecx);
+    edx = 0;
+    memoryASet32(ds, esp + 4, edx);
+    goto loc_1978e7;
+loc_1978bf: // 0160:1978bf
+    eax = edi;
+    edx = ebp;
+    ebx = 0;
+    goto loc_1978ce;
+loc_1978c7: // 0160:1978c7
+    ebx++;
+    cl = memoryAGet(ds, edx);
+    edx++;
+    memoryASet(ds, eax, cl);
+    eax++;
+loc_1978ce: // 0160:1978ce
+    if ((int32_t)ebx < (int32_t)esi)
+        goto loc_1978c7;
+    ecx = memoryAGet32(ds, esp + 24);
+    eax = memoryAGet32(ds, esp + 4);
+    ebp += 0x00000120;
+    eax++;
+    edi += ecx;
+    memoryASet32(ds, esp + 4, eax);
+loc_1978e7: // 0160:1978e7
+    eax = memoryAGet32(ds, esp + 4);
+    if ((int32_t)eax < (int32_t)memoryAGet32(ds, esp))
+        goto loc_1978bf;
+    esp += 0x00000008;
+    goto loc_197317;
+}
 void sub_197910() // 0160:197910 +long +stackDrop12
 {
     esp -= 4;
@@ -2605,7 +2833,7 @@ void sub_197910() // 0160:197910 +long +stackDrop12
     edx = sar32(edx, 0x1f);
     idiv32(memoryAGet32(ds, esp + 20));
     edx = memoryAGet32(ds, esp);
-    stop("imul edx * eax");
+    edx = (int32_t)edx * (int32_t)eax;
     memoryASet32(ds, esp + 44, edx);
     eax = memoryAGet32(ds, esi);
     edx = memoryAGet32(ds, edi);
@@ -2669,8 +2897,32 @@ loc_197983: // 0160:197983
     eax += 0x00000120;
     edx += edi;
     eax -= esi;
-    indirectJump(cs, memoryAGet32(cs, stop("GetOpAddress"))); return; // 0160:1979f9;
-    // gap 43 bytes
+    switch (ebx)
+    {
+        case 0: goto loc_197a01;
+        case 1: goto loc_197a35;
+        case 2: goto loc_197a63;
+        case 3: goto loc_197a90;
+        case 4: goto loc_197ac9;
+        case 5: goto loc_197afa;
+        default:
+            stop("ind 0160:1979f9");
+    }
+loc_197a01: // 0160:197a01
+    ecx = 0x0000000e;
+    edx = memoryAGet32(ds, esp + 16);
+    push32(ebp);
+    eax = 0x002ab828;
+    ebx = esi;
+    sub_1978a8();
+    ecx = 0x0000000e;
+    edx = memoryAGet32(ds, esp + 4);
+    push32(ebp);
+    eax = memoryAGet32(ds, esp + 16);
+loc_197a25: // 0160:197a25
+    ebx = edi;
+loc_197a27: // 0160:197a27
+    sub_1978a8();
 loc_197a2c: // 0160:197a2c
     esp += 0x00000018;
     ebp = pop32();
@@ -2678,6 +2930,86 @@ loc_197a2c: // 0160:197a2c
     esi = pop32();
     esp += 4;
     esp += 12;
+    return;
+loc_197a35: // 0160:197a35
+    ecx = 0x0000000e;
+    push32(ebp);
+    edx += 0x00000fc0;
+    ebx = esi;
+    memoryASet32(ds, esp + 4, edx);
+    edx = eax;
+    eax = memoryAGet32(ds, esp + 4);
+    sub_1978a8();
+    ecx = 0x0000000e;
+    edx = memoryAGet32(ds, esp + 8);
+    push32(ebp);
+    eax = 0x002aa903;
+    goto loc_197a25;
+loc_197a63: // 0160:197a63
+    ecx = 0x00000007;
+    edx = memoryAGet32(ds, esp + 16);
+    push32(ebp);
+    eax = 0x002ad7a8;
+    ebx = esi;
+    sub_1978a8();
+    eax = memoryAGet32(ds, esp + 12);
+    ecx = 0x00000007;
+    edx = memoryAGet32(ds, esp + 4);
+    push32(ebp);
+    ebx = edi;
+    eax += 0x00001f80;
+    goto loc_197a27;
+loc_197a90: // 0160:197a90
+    eax = memoryAGet32(ds, esp + 16);
+    push32(ebp);
+    ebx = esi;
+    eax += ecx;
+    ecx = 0x00000007;
+    memoryASet32(ds, esp + 4, eax);
+    edx = eax;
+    eax = 0x002adf88;
+    sub_1978a8();
+    edx = memoryAGet32(ds, esp);
+    eax = memoryAGet32(ds, esp + 12);
+    ecx = 0x00000007;
+    push32(ebp);
+    ebx = edi;
+    eax += 0x00002760;
+    edx += esi;
+    goto loc_197a27;
+loc_197ac9: // 0160:197ac9
+    ecx = 0x00000007;
+    push32(ebp);
+    edx += 0x00002f40;
+    ebx = esi;
+    memoryASet32(ds, esp + 4, edx);
+    edx = eax;
+    eax = memoryAGet32(ds, esp + 4);
+    sub_1978a8();
+    ecx = 0x00000007;
+    edx = memoryAGet32(ds, esp + 8);
+    push32(ebp);
+    eax = 0x002ac883;
+    goto loc_197a25;
+loc_197afa: // 0160:197afa
+    eax = memoryAGet32(ds, esp + 8);
+    push32(ebp);
+    edx += 0x00003720;
+    eax += ecx;
+    ebx = esi;
+    memoryASet32(ds, esp + 4, eax);
+    eax += 0x00000085;
+    memoryASet32(ds, esp + 24, edx);
+    eax -= esi;
+    ecx = 0x00000007;
+    edx = eax;
+    eax = memoryAGet32(ds, esp + 24);
+    sub_1978a8();
+    ecx = 0x00000007;
+    edx = memoryAGet32(ds, esp);
+    push32(ebp);
+    eax = 0x002ad063;
+    goto loc_197a25;
 }
 void sub_197b3b() // 0160:197b3b +long
 {
@@ -2899,7 +3231,7 @@ loc_197dc5: // 0160:197dc5
     eax = memoryAGet32(ds, 0x39efcc);
     if (eax == memoryAGet32(ds, 0x39eff0))
         goto loc_197efd;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_197ded;
     if ((int32_t)memoryAGet32(ds, 0x39efd0) > (int32_t)0x00000000)
         goto loc_197ded;
@@ -2922,14 +3254,14 @@ loc_197e07: // 0160:197e07
     edx += edx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
     ebp = memoryAGet32(ds, 0x39efd4);
     edi += 0x0000dc00;
     esi = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_197e62;
     esi = -esi;
     if ((int32_t)esi <= (int32_t)0x0000003d)
@@ -3104,7 +3436,7 @@ loc_197f7a: // 0160:197f7a
     esp -= 0x00000008;
     eax = memoryAGet32(ds, 0x3a7470);
     eax -= memoryAGet32(ds, 0x1dc01c);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_197f97;
     if ((int32_t)eax <= (int32_t)0x00000032)
         goto loc_197f99;
@@ -3130,7 +3462,7 @@ loc_197fd7: // 0160:197fd7
     esi = memoryAGet32(ds, 0x1dc018);
     esi -= eax;
     memoryASet32(ds, 0x1dc018, esi);
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_197fef;
     memoryASet32(ds, 0x1dc018, ebx);
 loc_197fef: // 0160:197fef
@@ -3151,7 +3483,7 @@ loc_197fef: // 0160:197fef
     eax = edx;
     ebp = 0x001e0a08;
     sub_197034();
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_198049;
     edx = -edx;
     eax = edx;
@@ -3437,7 +3769,7 @@ loc_19e865: // 0160:19e865
     esi <<= 2;
     edx = memoryAGet32(ds, 0x39f09c);
     esi += ebx;
-    eax += memoryAGet32(ds, edx*4 + 0x1dc242);
+    eax += memoryAGet32(ds, edx * 4 + 0x1dc242);
     ebx = edx + esi;
     ebx <<= 2;
     edx = eax + 1;
@@ -3461,7 +3793,7 @@ loc_19e8c0: // 0160:19e8c0
     eax = edx;
     edx = memoryAGet32(ds, 0x39f09c);
     edx += esi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 4 + 0x39e93a);
     if ((int32_t)edx <= (int32_t)0x00000009)
         goto loc_19e8de;
     edx = 0x00000009;
@@ -4097,7 +4429,7 @@ loc_198b1a: // 0160:198b1a
     edi = 0xffffffff;
     memoryASet32(ds, ebx + 3791902, ebp);
     memoryASet32(ds, ebx + 3791946, edi);
-    eax = memoryAGet32(ds, eax*4 + 0x1dc044);
+    eax = memoryAGet32(ds, eax * 4 + 0x1dc044);
     edx = 0x00000010;
     memoryASet32(ds, ebx + 3791930, eax);
     ebp = 0x00000096;
@@ -4452,7 +4784,7 @@ void sub_199062() // 0160:199062 +long
     ebx &= 0x0000003f;
     ecx = memoryAGet32(ds, 0x1df8d0);
     memoryASet32(ds, 0x1dd23e, ebx);
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_1990ea;
     if (memoryAGet32(ds, 0x1dc028) != 0x00000000)
         goto loc_1990ea;
@@ -4703,7 +5035,7 @@ void sub_199435() // 0160:199435 +long
     eax = 0;
     sub_1a9cc8();
     dl = 0x20;
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
+    ecx = memoryAGet32(ds, eax * 4 + 0x1dc2d6);
     eax = 0;
 loc_19944f: // 0160:19944f
     eax++;
@@ -4776,7 +5108,7 @@ loc_1994a3: // 0160:1994a3
     memoryASet32(ds, 0x1dc09c, ebx);
     memoryASet32(ds, 0x1dc0bc, ebx);
     memoryASet32(ds, 0x1dc0a0, edi);
-    if (stop("postCondition"))
+    if ((int32_t)ebp < 0)
         goto loc_1994e2;
     eax = 0;
     sub_1bb45a();
@@ -4956,13 +5288,13 @@ loc_199795: // 0160:199795
     eax = edx;
     eax <<= 2;
     eax += edx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd266);
     memoryASet32(ds, 0x1dd2ca, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26a);
     memoryASet32(ds, 0x1dd2ce, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26e);
     memoryASet32(ds, 0x1dd2d2, edx);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1dd276);
     memoryASet32(ds, 0x1dd2da, eax);
     edx = pop32();
     esp += 4;
@@ -4982,13 +5314,13 @@ loc_1997f1: // 0160:1997f1
     eax = edx;
     eax <<= 2;
     eax += edx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd266);
     memoryASet32(ds, 0x1dd2a2, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26a);
     memoryASet32(ds, 0x1dd2a6, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26e);
     memoryASet32(ds, 0x1dd2aa, edx);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1dd276);
     memoryASet32(ds, 0x1dd2b2, eax);
     edx = pop32();
     esp += 4;
@@ -5008,13 +5340,13 @@ loc_19984d: // 0160:19984d
     eax = edx;
     eax <<= 2;
     eax += edx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd266);
     memoryASet32(ds, 0x1dd31a, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26a);
     memoryASet32(ds, 0x1dd31e, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1dd26e);
     memoryASet32(ds, 0x1dd322, edx);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1dd276);
     memoryASet32(ds, 0x1dd32a, eax);
     edx = pop32();
     esp += 4;
@@ -5080,7 +5412,7 @@ void sub_199917() // 0160:199917 +long
 loc_199943: // 0160:199943
     edx = memoryAGet32(ds, eax + 1954422);
     edx += ecx;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, edx * 4 + 0x39e93a) == 0x00000000)
         goto loc_19995d;
     indirectCall(cs, memoryAGet32(ds, eax + 1954410)); // 0160:199955;
     goto loc_199988;
@@ -5239,11 +5571,11 @@ loc_199ae8: // 0160:199ae8
     eax <<= 2;
     ebx = memoryAGet32(ds, eax + 1954414);
     edx = memoryAGet32(ds, eax + 1954422);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_199b31;
     if (edx != 0xffffffff)
         goto loc_196658;
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_196658;
 loc_199b31: // 0160:199b31
     if (edx == 0xffffffff)
@@ -5255,7 +5587,7 @@ loc_199b31: // 0160:199b31
     eax <<= 2;
     eax += ebx;
     eax += edx;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_196658;
 loc_199b58: // 0160:199b58
     ebp = 0x00000002;
@@ -5332,7 +5664,7 @@ loc_199c0e: // 0160:199c0e
         goto loc_199c34;
     eax = 0x00000001;
 loc_199c34: // 0160:199c34
-    stop("imul eax * memoryAGet32(ds, 0x1dc09c)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, 0x1dc09c);
     ecx = memoryAGet32(ds, 0x1dc0a0);
     ecx += eax;
     memoryASet32(ds, 0x1dc0a0, ecx);
@@ -5477,7 +5809,7 @@ loc_199e24: // 0160:199e24
     eax = memoryAGet32(ds, 0x1dc0ac);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -5485,7 +5817,7 @@ loc_199e24: // 0160:199e24
     eax = memoryAGet32(ds, 0x1dc0b0);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -5550,7 +5882,7 @@ loc_199f04: // 0160:199f04
     eax = edx;
     eax <<= 2;
     eax += edx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1dd266);
     ecx = 0xffffffff;
     sub_19e929();
     memoryASet32(ds, 0x39bdd4, ecx);
@@ -5564,8 +5896,6 @@ loc_199f3a: // 0160:199f3a
 }
 void sub_199f56() // 0160:199f56 +long
 {
-    bool temp_cond0;
-
     esp -= 4;
     goto loc_199f56;
 loc_196659: // 0160:196659
@@ -5586,12 +5916,12 @@ loc_199f56: // 0160:199f56
     eax = memoryAGet32(ds, 0x39ef98);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
     edx = memoryAGet32(ds, 0x39bda8);
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, eax * 4 + 0x1df6ee);
     if (!edx)
         goto loc_199f87;
     ecx = edx + -1;
@@ -5603,12 +5933,10 @@ loc_199f87: // 0160:199f87
         goto loc_196659;
     eax = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     eax = memoryAGet32(ds, eax + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
-    temp_cond0 = stop("preCondition");
-    temp_cond0 = stop("preCondition");
-    stop("disassembly failed at 160:199fbb setg al");
+    al = (int32_t)eax > (int32_t)0x00000200;
     edx = memoryAGet32(ds, 0x39bde4);
     eax &= 0x000000ff;
     if (!edx)
@@ -5906,7 +6234,7 @@ loc_19a3c3: // 0160:19a3c3
     eax = memoryAGet32(ds, 0x39bddc);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -6130,7 +6458,7 @@ loc_19a716: // 0160:19a716
     esi += eax;
     memoryASet32(ds, 0x39f008, ebx);
     memoryASet32(ds, 0x39f00c, esi);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19a776;
     ebp = 0;
     memoryASet32(ds, 0x39f008, ebp);
@@ -6219,7 +6547,7 @@ loc_19a865: // 0160:19a865
     eax = memoryAGet32(ds, 0x39be00);
     eax -= memoryAGet32(ds, 0x39bdf4);
     eax <<= 3;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax > (int32_t)0x00000040)
@@ -6227,7 +6555,7 @@ loc_19a865: // 0160:19a865
     eax = memoryAGet32(ds, 0x39be04);
     eax -= memoryAGet32(ds, 0x39bdf0);
     eax <<= 3;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000040)
@@ -6250,7 +6578,7 @@ loc_19a8fd: // 0160:19a8fd
     if (memoryAGet32(ds, ebx + 3792018) != 0x00000000)
         goto loc_19a92a;
     eax = memoryAGet32(ds, ebx + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax > (int32_t)0x00000100)
@@ -6338,13 +6666,13 @@ loc_19a9dd: // 0160:19a9dd
     if (memoryAGet32(ds, ebx + 3791138) == 0x00000000)
         goto loc_19aa67;
     eax = memoryAGet32(ds, ebx + 3791154);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if (eax & 0xfffffe00)
         goto loc_19aa0e;
     eax = memoryAGet32(ds, ebx + 3791158);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if (!(eax & 0xfffffe00))
@@ -6390,13 +6718,13 @@ loc_19aa67: // 0160:19aa67
     ebx = 0;
 loc_19aa78: // 0160:19aa78
     eax = memoryAGet32(ds, ebx + 3790906);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if (eax & 0xffffff00)
         goto loc_19aa9c;
     eax = memoryAGet32(ds, ebx + 3790910);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if (!(eax & 0xffffff00))
@@ -6445,7 +6773,7 @@ loc_19aadd: // 0160:19aadd
     eax = sar32(eax, 0x00000001);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -6459,7 +6787,7 @@ loc_19aadd: // 0160:19aadd
     eax = sar32(eax, 0x00000001);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -6481,7 +6809,7 @@ loc_19abd1: // 0160:19abd1
         goto loc_19ac00;
     edx = memoryAGet32(ds, eax + 3792102);
     edx -= memoryAGet32(ds, eax + 3792106);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19ac00;
     edx = memoryAGet32(ds, eax + 3792102);
     edx--;
@@ -6537,7 +6865,7 @@ loc_19ac48: // 0160:19ac48
     push32(ebp);
     sub_196049();
     sub_19ac27();
-    sub_19b588(); //gabo skip!
+    sub_19b588();
     edx = memoryAGet32(ds, 0x1df5c0);
     eax = edx;
     eax <<= 5;
@@ -6548,7 +6876,7 @@ loc_19ac48: // 0160:19ac48
     eax += 0x00001388;
     sub_1b9c93();
     eax = 0x00000013;
-    sub_19b80e(); // gabo skip video set?
+    sub_19b80e();
     eax = 0;
     edx = 0x00000001;
     sub_1a413d();
@@ -6556,7 +6884,7 @@ loc_19ac48: // 0160:19ac48
     sub_19b153();
     sub_19b2ba();
     sub_198cff();
-    sub_19a69d();  /// splash
+    sub_19a69d();
     sub_1968c6();
     sub_198cff();
     memoryASet32(ds, 0x1dc030, edx);
@@ -6887,14 +7215,10 @@ loc_19b049: // 0160:19b049
     if (!eax)
         goto loc_19b014;
     ebx = memoryAGet32(ds, esp);
-    ecx = ebx + 1; // enty 160:1ca5d7
-    memoryASet32(ds, esp, ecx); // 160:19b059 "0160:0019B059"
-
+    ecx = ebx + 1;
+    memoryASet32(ds, esp, ecx);
     bl = memoryAGet(ds, ebx);
-    
-
     eax--;
-
     memoryASet(ds, edx, bl);
     edx++;
     goto loc_19b049;
@@ -6920,7 +7244,7 @@ loc_19b086: // 0160:19b086
     esi = pop32();
     ecx = pop32();
     ebx = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_19b091() // 0160:19b091 +long
@@ -7580,14 +7904,14 @@ loc_19b973: // 0160:19b973
     sub_1bdba0();
     esp += 0x00000030;
     eax = memoryAGet32(ds, esp + 52);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     edi += eax;
     eax = memoryAGet32(ds, esp + 12);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     ecx = memoryAGet32(ds, esp + 16);
     ecx += eax;
     eax = memoryAGet32(ds, esp + 56);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     ebp += eax;
     eax = 0x000000a8;
     eax -= esi;
@@ -7601,7 +7925,7 @@ loc_19b973: // 0160:19b973
     eax <<= 3;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -7691,7 +8015,7 @@ loc_19bada: // 0160:19bada
     eax = memoryAGet32(ds, esp + 64);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -7761,7 +8085,7 @@ loc_19bb79: // 0160:19bb79
     memoryASet32(ds, esp + 92, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -7821,7 +8145,7 @@ loc_19bbed: // 0160:19bbed
     eax <<= 3;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -7887,7 +8211,7 @@ loc_19bcb4: // 0160:19bcb4
     ebp += edx;
     memoryASet32(ds, esp + 36, eax);
 loc_19bd18: // 0160:19bd18
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_19bdd0;
     ebx = memoryAGet32(ds, esp + 80);
     ecx = memoryAGet32(ds, esp + 36);
@@ -7900,10 +8224,10 @@ loc_19bd18: // 0160:19bd18
     memoryASet32(ds, esp + 60, edx);
     eax += 0x00000100;
     edx = memoryAGet32(ds, esp);
-    stop("imul edx * eax");
+    edx = (int32_t)edx * (int32_t)eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8016,7 +8340,7 @@ void sub_19bdd9() // 0160:19bdd9 +long
     esi = 0x000000a8;
 loc_19be84: // 0160:19be84
     eax = memoryAGet32(ds, 0x39f23c);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     ebx = 0x00000009;
     edx = ecx;
     eax = sar32(eax, 0x10);
@@ -8063,15 +8387,15 @@ loc_19be84: // 0160:19be84
     sub_1c05c4();
     esp += 0x00000034;
     eax = memoryAGet32(ds, esp + 48);
-    stop("imul eax * memoryAGet32(ds, esp + 96)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, esp + 96);
     edx = memoryAGet32(ds, esp + 44);
     ebp += eax;
     eax = memoryAGet32(ds, esp + 48);
-    stop("imul eax * edx");
+    eax = (int32_t)eax * (int32_t)edx;
     ebx = memoryAGet32(ds, esp + 64);
     ebx += eax;
     eax = memoryAGet32(ds, esp + 128);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     edi += eax;
     eax = 0x000000a8;
     eax -= esi;
@@ -8114,16 +8438,16 @@ loc_19bf55: // 0160:19bf55
     sub_1c05c4();
     esp += 0x00000034;
     eax = memoryAGet32(ds, esp + 4);
-    stop("imul eax * memoryAGet32(ds, esp + 96)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, esp + 96);
     ecx = memoryAGet32(ds, esp + 44);
     ebp += eax;
     eax = memoryAGet32(ds, esp + 4);
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edx = memoryAGet32(ds, esp + 64);
     ebx = memoryAGet32(ds, esp + 128);
     edx += eax;
     eax = memoryAGet32(ds, esp + 8);
-    stop("imul eax * ebx");
+    eax = (int32_t)eax * (int32_t)ebx;
     ecx = memoryAGet32(ds, esp + 8);
     memoryASet32(ds, esp + 64, edx);
     esi -= ecx;
@@ -8159,14 +8483,14 @@ loc_19bf55: // 0160:19bf55
     sub_1c05c4();
     esp += 0x00000034;
     eax = memoryAGet32(ds, esp + 48);
-    stop("imul eax * memoryAGet32(ds, esp + 96)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, esp + 96);
     ebx = memoryAGet32(ds, esp + 48);
     ebp += eax;
     eax = ebx * 0x00000000;
     ecx = memoryAGet32(ds, esp + 64);
     ecx += eax;
     eax = memoryAGet32(ds, esp + 128);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     edi += eax;
     esi += memoryAGet32(ds, esp + 8);
     eax = 0x000000a8;
@@ -8193,7 +8517,7 @@ loc_19c078: // 0160:19c078
     eax <<= 3;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8253,7 +8577,6 @@ loc_19c10c: // 0160:19c10c
     esp += 0x00000034;
     edx = memoryAGet32(ds, esp + 40);
     edx = (int32_t)edx * (int32_t)memoryAGet32(ds, esp + 128);
-    //stop("imul edx * memoryAGet32(ds, esp + 128)");
     eax = memoryAGet32(ds, esp + 96);
     eax <<= 3;
     memoryASet32(ds, esp + 56, eax);
@@ -8285,7 +8608,7 @@ loc_19c1bb: // 0160:19c1bb
     eax = memoryAGet32(ds, esp + 84);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8331,7 +8654,7 @@ loc_19c20b: // 0160:19c20b
     sub_1c05c4();
     esp += 0x00000034;
     eax = memoryAGet32(ds, esp + 112);
-    stop("imul eax * memoryAGet32(ds, esp + 128)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, esp + 128);
     edx = memoryAGet32(ds, esp + 56);
     ecx = memoryAGet32(ds, esp + 120);
     ebp += edx;
@@ -8361,7 +8684,7 @@ loc_19c28c: // 0160:19c28c
     memoryASet32(ds, esp + 132, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8410,7 +8733,7 @@ loc_19c31a: // 0160:19c31a
     ecx = memoryAGet32(ds, esp + 128);
     ebp += eax;
     eax = memoryAGet32(ds, esp + 36);
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edi += eax;
     eax = memoryAGet32(ds, esp + 124);
     edx = memoryAGet32(ds, esp + 108);
@@ -8423,7 +8746,7 @@ loc_19c31a: // 0160:19c31a
     memoryASet32(ds, esp + 132, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8480,7 +8803,7 @@ loc_19c40a: // 0160:19c40a
     sub_1c05c4();
     esp += 0x00000034;
     edx = memoryAGet32(ds, esp + 32);
-    stop("imul edx * memoryAGet32(ds, esp + 128)");
+    edx = (int32_t)edx * (int32_t)memoryAGet32(ds, esp + 128);
     eax = memoryAGet32(ds, esp + 96);
     eax <<= 3;
     memoryASet32(ds, esp + 60, eax);
@@ -8492,7 +8815,7 @@ loc_19c40a: // 0160:19c40a
     memoryASet32(ds, esp + 52, eax);
     edi += edx;
 loc_19c48d: // 0160:19c48d
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_19c57f;
     ecx = memoryAGet32(ds, esp + 108);
     ebx = memoryAGet32(ds, esp + 52);
@@ -8505,10 +8828,10 @@ loc_19c48d: // 0160:19c48d
     memoryASet32(ds, esp + 88, edx);
     eax += 0x00000100;
     edx = memoryAGet32(ds, esp);
-    stop("imul edx * eax");
+    edx = (int32_t)edx * (int32_t)eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -8556,7 +8879,7 @@ loc_19c518: // 0160:19c518
     sub_1c05c4();
     esp += 0x00000034;
     eax = memoryAGet32(ds, esp + 116);
-    stop("imul eax * memoryAGet32(ds, esp + 128)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, esp + 128);
     ebp += memoryAGet32(ds, esp + 60);
     edi += eax;
     goto loc_19c48d;
@@ -8587,12 +8910,12 @@ void sub_19c58a() // 0160:19c58a +long +stackDrop8
     ecx -= eax;
     if (edx != 0x00010000)
         goto loc_19c691;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19c5fd;
     eax = ebx + edi;
     if ((int32_t)eax >= (int32_t)0x00000140)
         goto loc_19c5fd;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_19c5fd;
     eax = ecx + esi;
     if ((int32_t)eax >= (int32_t)0x000000a8)
@@ -8612,12 +8935,12 @@ loc_19c5f3: // 0160:19c5f3
     goto loc_19c7c1;
 loc_19c5fd: // 0160:19c5fd
     eax = ebx + edi;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_19c7c1;
     if ((int32_t)ebx >= (int32_t)0x00000140)
         goto loc_19c7c1;
     edx = ecx + esi;
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19c7c1;
     if ((int32_t)ecx >= (int32_t)0x000000a8)
         goto loc_19c7c1;
@@ -8632,7 +8955,7 @@ loc_19c639: // 0160:19c639
     eax -= 0x000000a8;
     esi -= eax;
 loc_19c64a: // 0160:19c64a
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19c658;
     eax = ebx;
     edi += ebx;
@@ -8640,7 +8963,7 @@ loc_19c64a: // 0160:19c64a
     ebx = 0;
     ebp += eax;
 loc_19c658: // 0160:19c658
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_19c674;
     eax = ecx;
     eax = -eax;
@@ -8693,12 +9016,12 @@ loc_19c691: // 0160:19c691
     edx = sar32(edx, 0x1f);
     idiv32(esi);
     esi = eax;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19c714;
     eax = ebx + edi;
     if ((int32_t)eax >= (int32_t)0x00000140)
         goto loc_19c714;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_19c714;
     eax = ecx + esi;
     if ((int32_t)eax >= (int32_t)0x000000a8)
@@ -8712,12 +9035,12 @@ loc_19c691: // 0160:19c691
     goto loc_19c7ae;
 loc_19c714: // 0160:19c714
     eax = ebx + edi;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_19c7c1;
     if ((int32_t)ebx >= (int32_t)0x00000140)
         goto loc_19c7c1;
     edx = ecx + esi;
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19c7c1;
     if ((int32_t)ecx >= (int32_t)0x000000a8)
         goto loc_19c7c1;
@@ -8732,20 +9055,20 @@ loc_19c750: // 0160:19c750
     eax -= 0x000000a8;
     esi -= eax;
 loc_19c761: // 0160:19c761
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19c778;
     eax = memoryAGet32(ds, 0x39f23c);
-    stop("imul eax * ebx");
+    eax = (int32_t)eax * (int32_t)ebx;
     eax = sar32(eax, 0x10);
     edi += ebx;
     eax = -eax;
     ebx = 0;
     ebp += eax;
 loc_19c778: // 0160:19c778
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_19c79d;
     eax = memoryAGet32(ds, 0x39f23c);
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     eax = sar32(eax, 0x10);
     eax = -eax;
     memoryASet32(ds, esp, eax);
@@ -8800,7 +9123,7 @@ loc_19c7f8: // 0160:19c7f8
     eax = memoryAGet32(ds, 0x39f250);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -8808,7 +9131,7 @@ loc_19c7f8: // 0160:19c7f8
     eax = memoryAGet32(ds, 0x39f08c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -8816,7 +9139,7 @@ loc_19c7f8: // 0160:19c7f8
     eax = memoryAGet32(ds, 0x39f254);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -8824,7 +9147,7 @@ loc_19c7f8: // 0160:19c7f8
     eax = memoryAGet32(ds, 0x39f088);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -8848,11 +9171,11 @@ loc_19c7f8: // 0160:19c7f8
     eax = sar32(eax, 0x10);
     ecx = ebx;
     edx -= eax;
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19c885;
     ecx ^= ebx;
 loc_19c885: // 0160:19c885
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_19c88b;
     edx = 0;
 loc_19c88b: // 0160:19c88b
@@ -8952,14 +9275,14 @@ loc_19c955: // 0160:19c955
 loc_19c9aa: // 0160:19c9aa
     eax = memoryAGet32(ds, 0x39f250);
     eax -= memoryAGet32(ds, 0x39f248);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebp = memoryAGet32(ds, 0x39f24c);
     ecx = eax;
     eax = memoryAGet32(ds, 0x39f254);
     eax -= ebp;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     eax += ecx;
@@ -9036,12 +9359,12 @@ void sub_19ca9b() // 0160:19ca9b +long
     eax += 0x00000020;
     eax &= 0x000000ff;
     ebx = memoryAGet32(ds, 0x39f084);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    stop("imul edx * ebx");
+    edx = memoryAGet32(ds, eax * 4 + 0x1d3c14);
+    edx = (int32_t)edx * (int32_t)ebx;
     memoryASet32(ds, 0x39f090, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -9056,10 +9379,10 @@ void sub_19ca9b() // 0160:19ca9b +long
     ebx &= 0x000000ff;
     ebx <<= 2;
     edx = memoryAGet32(ds, ebx + 1915924);
-    stop("imul edx * eax");
+    edx = (int32_t)edx * (int32_t)eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -9073,7 +9396,7 @@ void sub_19ca9b() // 0160:19ca9b +long
     edx <<= 5;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -9118,14 +9441,14 @@ void sub_19cb74() // 0160:19cb74 +long +stackDrop4
     eax = edx;
     eax <<= 2;
     eax += edx;
-    memoryASet32(ds, stop("GetOpAddress"), esi);
+    memoryASet32(ds, eax * 4 + 0x20c3c8, esi);
     edx = memoryAGet32(ds, esp + 12);
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x20c3cc, edi);
+    memoryASet32(ds, eax * 4 + 0x20c3d8, edx);
     edx = memoryAGet32(ds, 0x39bdc0);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x20c3d0, ebx);
     edx++;
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, eax * 4 + 0x20c3d4, ecx);
     memoryASet32(ds, 0x39bdc0, edx);
     edi = pop32();
     esi = pop32();
@@ -9155,7 +9478,7 @@ loc_19cbc0: // 0160:19cbc0
     push32(ebp);
 loc_19cbc6: // 0160:19cbc6
     edx = memoryAGet32(ds, 0x39bdc0);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19cc08;
     ebx = edx + -1;
     memoryASet32(ds, 0x39bdc0, ebx);
@@ -9185,24 +9508,24 @@ void sub_19cc15() // 0160:19cc15 +long +stackDrop16
     edi = memoryAGet32(ds, esp + 24);
     memoryASet32(ds, esp + 4, edx);
     edx = memoryAGet32(ds, esp + 28);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19cc49;
     esi = ebx + edi;
     if ((int32_t)esi >= (int32_t)0x00000140)
         goto loc_19cc49;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_19cc49;
     esi = ecx + edx;
     if ((int32_t)esi < (int32_t)0x000000a8)
         goto loc_19ccc4;
 loc_19cc49: // 0160:19cc49
     esi = ebx + edi;
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_19cceb;
     if ((int32_t)ebx >= (int32_t)0x00000140)
         goto loc_19cceb;
     ebp = ecx + edx;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_19cceb;
     if ((int32_t)ecx >= (int32_t)0x000000a8)
         goto loc_19cceb;
@@ -9217,7 +9540,7 @@ loc_19cc87: // 0160:19cc87
     esi -= 0x000000a8;
     edx -= esi;
 loc_19cc9a: // 0160:19cc9a
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19cca8;
     esi = ebx;
     edi += ebx;
@@ -9225,7 +9548,7 @@ loc_19cc9a: // 0160:19cc9a
     ebx = 0;
     eax += esi;
 loc_19cca8: // 0160:19cca8
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_19ccc4;
     esi = ecx;
     esi = -esi;
@@ -9401,7 +9724,7 @@ void sub_19ce55() // 0160:19ce55 +long
     eax = memoryAGet32(ds, edx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -9409,13 +9732,13 @@ void sub_19ce55() // 0160:19ce55 +long
     eax = memoryAGet32(ds, 0x39f250);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
     ebx -= eax;
     eax = ebx;
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19ce8e;
     eax ^= ebx;
 loc_19ce8e: // 0160:19ce8e
@@ -9446,7 +9769,7 @@ void sub_19ceb7() // 0160:19ceb7 +long
     eax = memoryAGet32(ds, 0x39f250);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -9454,12 +9777,12 @@ void sub_19ceb7() // 0160:19ceb7 +long
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     eax -= ecx;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_19cee7;
     eax = 0;
 loc_19cee7: // 0160:19cee7
@@ -9622,7 +9945,7 @@ loc_19d04d: // 0160:19d04d
     ebx = memoryAGet32(ds, 0x39eff4);
     ebx--;
     memoryASet32(ds, 0x39eff4, ebx);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19d0b0;
     memoryASet32(ds, 0x39eff4, esi);
 loc_19d0b0: // 0160:19d0b0
@@ -9666,7 +9989,7 @@ loc_19d0f3: // 0160:19d0f3
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -9676,7 +9999,7 @@ loc_19d0f3: // 0160:19d0f3
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -9684,7 +10007,7 @@ loc_19d0f3: // 0160:19d0f3
     eax -= 0x000001c0;
     ebx = memoryAGet32(ds, 0x39f248);
     memoryASet32(ds, 0x39f24c, eax);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_19d155;
     ecx = 0;
     memoryASet32(ds, 0x39f248, ecx);
@@ -9977,7 +10300,7 @@ loc_19d538: // 0160:19d538
     if ((int32_t)edi < (int32_t)0x00000004)
         goto loc_19d4e8;
     ebx = memoryAGet32(ds, esp + 4);
-    if ((int32_t)ebx<0)
+    if ((int32_t)ebx < 0)
         goto loc_19d553;
     eax = memoryAGet32(ds, esp);
     memoryASet32(ds, 0x39ef98, ebx);
@@ -10087,7 +10410,7 @@ loc_19d6a4: // 0160:19d6a4
     ebp = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += ebp;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_19d700;
     eax = ebx * 0x000000ac;
     ecx = memoryAGet32(ds, eax + 3792074);
@@ -10143,7 +10466,7 @@ loc_19d71a: // 0160:19d71a
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10152,7 +10475,7 @@ loc_19d71a: // 0160:19d71a
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10174,7 +10497,12 @@ loc_19d71a: // 0160:19d71a
     eax += edx;
     ebx = edi;
     edi = 0x0000004b;
-    indirectCall(cs, memoryAGet32(ds, stop("GetOpAddress"))); // 0160:19d837;
+    switch (eax)
+    {
+        case 0: sub_19eabf(); break;
+        default:
+            stop("ind 0160:19d837");
+    }
     memoryASet32(ds, 0x39f1a8, esi);
     memoryASet32(ds, 0x1dc040, edi);
     sub_1b7b8f();
@@ -10245,7 +10573,7 @@ loc_19d8d4: // 0160:19d8d4
     if ((int32_t)esi < (int32_t)0x00000004)
         goto loc_19d88a;
     ecx = memoryAGet32(ds, esp + 4);
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_19d8e3;
     ebx = ecx;
 loc_19d8e3: // 0160:19d8e3
@@ -10322,13 +10650,13 @@ loc_19da05: // 0160:19da05
     if (memoryAGet32(ds, 0x1dfc80) == 0x00000000)
         goto loc_19da28;
     sub_1a6de0();
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_19dac9;
 loc_19da28: // 0160:19da28
     eax = memoryAGet32(ds, 0x39f250);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -10337,7 +10665,7 @@ loc_19da28: // 0160:19da28
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10345,7 +10673,7 @@ loc_19da28: // 0160:19da28
     eax = memoryAGet32(ds, 0x39f254);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -10354,13 +10682,13 @@ loc_19da28: // 0160:19da28
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ecx * ecx");
+    ecx = (int32_t)ecx * (int32_t)ecx;
     eax -= esi;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     ecx += eax;
     if ((int32_t)ecx <= (int32_t)0x00010000)
         goto loc_19daa3;
@@ -10402,14 +10730,14 @@ loc_19dad1: // 0160:19dad1
     push32(edi);
     push32(ebp);
     edx = memoryAGet32(ds, 0x1dd53c);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19db24;
     ebx = edx + -1;
     memoryASet32(ds, 0x1dd53c, ebx);
     if (ebx)
         goto loc_19db24;
     edx = memoryAGet32(ds, 0x1dd538);
-    if (memoryAGet32(ds, stop("GetOpAddress")) != 0x00000000)
+    if (memoryAGet32(ds, edx * 4 + 0x1dd528) != 0x00000000)
         goto loc_19db24;
     edi = 0xffffffff;
     ebx = 0x000000ff;
@@ -10498,7 +10826,7 @@ loc_19dc68: // 0160:19dc68
     sub_19d5f1();
 loc_19dc72: // 0160:19dc72
     edx = memoryAGet32(ds, 0x39f0a8);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 4 + 0x1d4014);
     edx += edx;
     ebx = 0x00000003;
     eax = edx;
@@ -10517,7 +10845,7 @@ void sub_19dc9c() // 0160:19dc9c +long
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10527,7 +10855,7 @@ void sub_19dc9c() // 0160:19dc9c +long
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10553,7 +10881,7 @@ void sub_19dceb() // 0160:19dceb +long
     eax += memoryAGet32(ds, 0x39f09c);
     eax <<= 2;
     ebx = memoryAGet32(ds, eax + 3795258);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19dd1c;
     ecx = ebx + -1;
     memoryASet32(ds, eax + 3795258, ecx);
@@ -10620,7 +10948,7 @@ loc_19dd6c: // 0160:19dd6c
     eax = memoryAGet32(ds, 0x39ef98);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -10659,7 +10987,7 @@ void sub_19de2c() // 0160:19de2c +long
     eax <<= 2;
     eax += edx;
     eax += memoryAGet32(ds, 0x39f09c);
-    if ((int32_t)memoryAGet32(ds, stop("GetOpAddress")) < (int32_t)0x00000000)
+    if ((int32_t)memoryAGet32(ds, eax * 4 + 0x39e93a) < (int32_t)0x00000000)
         goto loc_19de68;
     eax = memoryAGet32(ds, 0x39f0a0);
     sub_19e906();
@@ -10696,7 +11024,7 @@ loc_19de6a: // 0160:19de6a
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10707,7 +11035,7 @@ loc_19de6a: // 0160:19de6a
     eax += eax;
     esi = memoryAGet32(ds, ebx + 3792050);
     ecx += eax;
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_19deb5;
     ecx--;
 loc_19deb5: // 0160:19deb5
@@ -10715,7 +11043,7 @@ loc_19deb5: // 0160:19deb5
     eax = memoryAGet32(ds, edx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -10726,7 +11054,7 @@ loc_19deb5: // 0160:19deb5
     ecx += 0x00000009;
     memoryASet32(ds, esp, eax);
 loc_19dee2: // 0160:19dee2
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19df46;
     if (esi >= 0x000003c0)
         goto loc_19df46;
@@ -10741,15 +11069,14 @@ loc_19dee2: // 0160:19dee2
     eax = esi;
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    ebp = memoryAGet16(ss, stop("GetOpAddress"));
+    ebp = memoryAGet16(ss, ebp + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     ebp &= eax;
     eax = ebx * 0x000003c0;
     al = memoryAGet(ds, esi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ebp;
     if (!eax)
@@ -10760,7 +11087,7 @@ loc_19df46: // 0160:19df46
     eax = 0;
 loc_19df48: // 0160:19df48
     edi |= eax;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19dfae;
     if (ecx >= 0x000003c0)
         goto loc_19dfae;
@@ -10775,15 +11102,14 @@ loc_19df48: // 0160:19df48
     eax = ecx;
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    ebp = memoryAGet16(ss, stop("GetOpAddress"));
+    ebp = memoryAGet16(ss, ebp + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     ebp &= eax;
     eax = ebx * 0x000003c0;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ebp;
     if (!eax)
@@ -10952,7 +11278,7 @@ loc_19e18e: // 0160:19e18e
     edi = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += edi;
-    if (memoryAGet32(ds, stop("GetOpAddress")) != 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) != 0x00000000)
         goto loc_19e85b;
     eax = memoryAGet32(ds, 0x39ef98);
     al &= 0xfc;
@@ -11013,7 +11339,7 @@ loc_19e2be: // 0160:19e2be
     eax <<= 2;
     eax -= edx;
     ecx = memoryAGet32(ds, 0x39ef98);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax = ecx * 0x000000ac;
     edx <<= 4;
     edx += ebp;
@@ -11034,7 +11360,7 @@ loc_19e32e: // 0160:19e32e
     eax <<= 2;
     eax -= edx;
     ebx = memoryAGet32(ds, 0x39ef98);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax = ebx * 0x000000ac;
     edx <<= 4;
     edx += ebp;
@@ -11268,7 +11594,7 @@ loc_19e79b: // 0160:19e79b
     ebx = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += ebx;
-    stop("disassembly failed at 160:19e80f sete al");
+    al = memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000;
     eax &= 0x000000ff;
     if (!eax)
         goto loc_19e85b;
@@ -11316,7 +11642,7 @@ loc_19e865: // 0160:19e865
     esi <<= 2;
     edx = memoryAGet32(ds, 0x39f09c);
     esi += ebx;
-    eax += memoryAGet32(ds, stop("GetOpAddress"));
+    eax += memoryAGet32(ds, edx * 4 + 0x1dc242);
     ebx = edx + esi;
     ebx <<= 2;
     edx = eax + 1;
@@ -11340,7 +11666,7 @@ loc_19e8c0: // 0160:19e8c0
     eax = edx;
     edx = memoryAGet32(ds, 0x39f09c);
     edx += esi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 4 + 0x39e93a);
     if ((int32_t)edx <= (int32_t)0x00000009)
         goto loc_19e8de;
     edx = 0x00000009;
@@ -11502,7 +11828,7 @@ loc_19e9f4: // 0160:19e9f4
     memoryASet32(ds, eax + 3792074, edx);
     eax = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     memoryASet32(ds, eax + 3792122, 0x00000001);
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_19ea86;
     memoryASet32(ds, 0x39f09c, ebx);
     eax = ecx;
@@ -12456,7 +12782,7 @@ loc_19f4d0: // 0160:19f4d0
     ecx = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += ecx;
-    esi = memoryAGet32(ds, stop("GetOpAddress"));
+    esi = memoryAGet32(ds, eax * 4 + 0x39e93a);
     if (esi)
         goto loc_19f4fb;
     memoryASet32(ds, 0x39f004, esi);
@@ -12496,7 +12822,7 @@ loc_19f50a: // 0160:19f50a
     eax = memoryAGet32(ds, ecx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12504,7 +12830,7 @@ loc_19f50a: // 0160:19f50a
     eax = memoryAGet32(ds, ecx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12516,7 +12842,7 @@ loc_19f50a: // 0160:19f50a
     eax = memoryAGet32(ds, ecx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12524,7 +12850,7 @@ loc_19f50a: // 0160:19f50a
     eax = memoryAGet32(ds, ecx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12575,7 +12901,7 @@ void sub_19f612() // 0160:19f612 +long
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12583,13 +12909,13 @@ void sub_19f612() // 0160:19f612 +long
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = memoryAGet32(ds, ebx + 3792050);
     esi = eax;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_19f664;
     memoryASet32(ds, esp + 20, 0x00000001);
     goto loc_19f66c;
@@ -12679,7 +13005,7 @@ loc_19f72e: // 0160:19f72e
 loc_19f76a: // 0160:19f76a
     eax = esi + -3;
     memoryASet32(ds, esp + 16, eax);
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_19f818;
     eax = memoryAGet32(ds, esp + 12) * 0x000000ac;
     ebx = memoryAGet32(ds, eax + 3792050);
@@ -12721,8 +13047,7 @@ loc_19f76a: // 0160:19f76a
     ebx += eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     ebx = memoryAGet32(ds, esp + 4);
     eax &= 0x000000ff;
     eax |= ebx;
@@ -12747,7 +13072,7 @@ loc_19f83f: // 0160:19f83f
     eax = memoryAGet32(ds, ecx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12822,7 +13147,7 @@ loc_19f8ec: // 0160:19f8ec
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12830,7 +13155,7 @@ loc_19f8ec: // 0160:19f8ec
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -12975,7 +13300,7 @@ loc_19fb13: // 0160:19fb13
     if (memoryAGet32(ds, eax + 3792074) != 0x00000010)
         goto loc_19fb6f;
     memoryASet32(ds, 0x39f02c, 0x00000008);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_19fb4f;
     eax = memoryAGet32(ds, 0x39efb8);
     ebx = eax + -1;
@@ -12985,7 +13310,7 @@ loc_19fb13: // 0160:19fb13
     eax = ebx + 32;
     memoryASet32(ds, 0x39efb8, eax);
 loc_19fb4f: // 0160:19fb4f
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_19fb6f;
     eax = memoryAGet32(ds, 0x39efb8);
     edx = eax + 1;
@@ -13043,7 +13368,7 @@ loc_19fc11: // 0160:19fc11
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax <<= 4;
     memoryASet32(ds, edx + 3792002, eax);
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
@@ -13051,14 +13376,14 @@ loc_19fc11: // 0160:19fc11
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc39a);
     memoryASet32(ds, edx + 3792158, eax);
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     ebx = memoryAGet32(ds, edx + 3792006);
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc39e);
     memoryASet32(ds, edx + 3792162, eax);
 loc_19fc8f: // 0160:19fc8f
     eax = 0x00000010;
@@ -13084,7 +13409,7 @@ loc_19fc8f: // 0160:19fc8f
     memoryASet32(ds, eax + 3792026, ebp);
     goto loc_19fd10;
 loc_19fd02: // 0160:19fd02
-    if (stop("postCondition"))
+    if ((int32_t)edi < 0)
         goto loc_19fd10;
     memoryASet32(ds, eax + 3792030, memoryAGet32(ds, eax + 3792030) - 0x00000600);
 loc_19fd10: // 0160:19fd10
@@ -13117,7 +13442,7 @@ loc_19fd16: // 0160:19fd16
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13125,7 +13450,7 @@ loc_19fd16: // 0160:19fd16
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13135,9 +13460,9 @@ loc_19fd16: // 0160:19fd16
     edi += 0x00000008;
     goto loc_19fdc2;
 loc_19fd51: // 0160:19fd51
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_19fdc0;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_19fdbc;
     if (ecx >= 0x000003c0)
         goto loc_19fdbc;
@@ -13162,8 +13487,7 @@ loc_19fd51: // 0160:19fd51
     eax = ebx * 0x000003c0;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= esi;
     if (!eax)
@@ -13251,7 +13575,7 @@ loc_19fe8d: // 0160:19fe8d
     eax = memoryAGet32(ds, 0x39ef98);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13262,7 +13586,7 @@ loc_19fe8d: // 0160:19fe8d
     ecx = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += ecx;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_19d332;
     if (memoryAGet32(ds, 0x39bde8) == 0x00000000)
         goto loc_19d332;
@@ -13357,7 +13681,7 @@ loc_1a0008: // 0160:1a0008
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13368,7 +13692,7 @@ loc_1a0008: // 0160:1a0008
     esi = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += esi;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_19d332;
     ebp = 0x00000001;
     eax = ebx;
@@ -13421,7 +13745,7 @@ void sub_1a0111() // 0160:1a0111 +long
     memoryASet32(ds, 0x39f058, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13429,7 +13753,7 @@ void sub_1a0111() // 0160:1a0111 +long
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13656,7 +13980,7 @@ loc_1a0415: // 0160:1a0415
     eax = memoryAGet32(ds, 0x39efc0);
     edx = eax + -1;
     memoryASet32(ds, 0x39efc0, edx);
-    if (stop("postCondition"))
+    if ((int32_t)eax > 0)
         goto loc_1a0467;
     eax = ecx * 0x000000ac;
     ebx = memoryAGet32(ds, eax + 3792062);
@@ -13687,7 +14011,7 @@ loc_1a048c: // 0160:1a048c
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -13698,7 +14022,7 @@ loc_1a048c: // 0160:1a048c
     ebp = memoryAGet32(ds, 0x39f09c);
     eax += esi;
     eax += ebp;
-    if (memoryAGet32(ds, stop("GetOpAddress")) != 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) != 0x00000000)
         goto loc_1a04f3;
     if (memoryAGet32(ds, 0x39f1b8) == 0x00000000)
         goto loc_1a0693;
@@ -13713,7 +14037,7 @@ loc_1a04f3: // 0160:1a04f3
         goto loc_1a0693;
     esi = ecx * 0x000000ac;
     eax = memoryAGet32(ds, esi + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000100)
@@ -13869,7 +14193,7 @@ loc_1a0742: // 0160:1a0742
     esi = memoryAGet32(ds, eax + 3792022);
     if ((int32_t)esi > (int32_t)0x00000200)
         goto loc_1a0895;
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1a0895;
     if (memoryAGet32(ds, 0x39eff4) == 0x00000000)
         goto loc_1a0895;
@@ -13914,7 +14238,7 @@ loc_1a07f2: // 0160:1a07f2
     eax = memoryAGet32(ds, esi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -13922,7 +14246,7 @@ loc_1a07f2: // 0160:1a07f2
     eax = memoryAGet32(ds, esi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -13987,7 +14311,7 @@ void sub_1a08f5() // 0160:1a08f5 +long
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14004,7 +14328,7 @@ void sub_1a08f5() // 0160:1a08f5 +long
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14215,7 +14539,7 @@ void sub_1a0bb0() // 0160:1a0bb0 +long
     edx = 0;
     ecx -= 0x00000008;
     memoryASet16(ds, 0x39ef86, dx);
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a0c77;
     if (ebx >= 0x000003c0)
         goto loc_1a0c77;
@@ -14225,14 +14549,13 @@ void sub_1a0bb0() // 0160:1a0bb0 +long
     eax <<= 6;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (!eax)
         goto loc_1a0c77;
     eax = esi * 0x000000ac;
     ebx = memoryAGet32(ds, eax + 3792022);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1a0c77;
     if (memoryAGet32(ds, 0x39f0fc) != 0x00000000)
         goto loc_1a0c35;
@@ -14241,9 +14564,9 @@ void sub_1a0bb0() // 0160:1a0bb0 +long
     memoryASet32(ds, eax + 3792022, edx);
 loc_1a0c35: // 0160:1a0c35
     eax = esi * 0x000000ac;
-    stop("disassembly failed at 160:1a0c42 setg al");
+    al = (int32_t)memoryAGet32(ds, eax + 3792022) > (int32_t)0x00000040;
     eax &= 0x000000ff;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if (!eax)
@@ -14260,7 +14583,7 @@ loc_1a0c35: // 0160:1a0c35
     sub_1b9c1d();
 loc_1a0c77: // 0160:1a0c77
     ecx = ebp + -4;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a0d00;
     eax = edi + -3;
     memoryASet32(ds, esp + 8, eax);
@@ -14281,7 +14604,7 @@ loc_1a0c77: // 0160:1a0c77
     eax = sar32(eax, 0x00000001);
     ebx <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
     ebx = ecx;
     ebx <<= 4;
     eax = 0;
@@ -14291,8 +14614,7 @@ loc_1a0c77: // 0160:1a0c77
     edx &= eax;
     al = memoryAGet(ds, edi + ebx + 3233189);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -14302,7 +14624,7 @@ loc_1a0c77: // 0160:1a0c77
         goto loc_1a0d8f;
 loc_1a0d00: // 0160:1a0d00
     ecx = ebp + -4;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a0df9;
     eax = edi + 4;
     memoryASet32(ds, esp, eax);
@@ -14322,7 +14644,7 @@ loc_1a0d00: // 0160:1a0d00
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     ebx <<= 6;
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
     ebx = ecx;
     eax &= 0x0000ffff;
     ebx <<= 4;
@@ -14333,8 +14655,7 @@ loc_1a0d00: // 0160:1a0d00
     edx &= eax;
     al = memoryAGet(ds, edi + ebx + 3233196);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -14392,7 +14713,7 @@ loc_1a0e30: // 0160:1a0e30
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14405,7 +14726,7 @@ loc_1a0e6e: // 0160:1a0e6e
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14419,7 +14740,7 @@ loc_1a0e8c: // 0160:1a0e8c
     edx = memoryAGet32(ds, edx + 3792038);
     eax = memoryAGet32(ds, eax + 3792038);
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14438,7 +14759,7 @@ loc_1a0e8c: // 0160:1a0e8c
     stop("stack_below", "0160:1a0edd");
     eax = memoryAGet32(ds, esp + 16);
     eax = memoryAGet32(ds, eax + 3792018);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000100)
@@ -14503,7 +14824,7 @@ loc_1a0fca: // 0160:1a0fca
 loc_1a0fd0: // 0160:1a0fd0
     ebx = esi * 0x000000ac;
     eax = memoryAGet32(ds, ebx + 3792018);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000380)
@@ -14520,7 +14841,7 @@ loc_1a1001: // 0160:1a1001
     eax = esi * 0x000000ac;
     if (memoryAGet32(ds, eax + 3792058) == 0x00000000)
         goto loc_1a1118;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1a107e;
     if (edi >= 0x000003c0)
         goto loc_1a107e;
@@ -14551,15 +14872,14 @@ loc_1a1001: // 0160:1a1001
     eax <<= 6;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ebx;
     if (eax)
         goto loc_1a10eb;
 loc_1a107e: // 0160:1a107e
     ebp++;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1a10e4;
     if (edi >= 0x000003c0)
         goto loc_1a10e4;
@@ -14578,7 +14898,7 @@ loc_1a107e: // 0160:1a107e
     eax = sar32(eax, 0x00000001);
     ebx <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
@@ -14589,8 +14909,7 @@ loc_1a107e: // 0160:1a107e
     edi += eax;
     eax = 0;
     al = memoryAGet(ds, edi + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -14601,13 +14920,13 @@ loc_1a10e4: // 0160:1a10e4
 loc_1a10eb: // 0160:1a10eb
     ebx = esi * 0x000000ac;
     eax = memoryAGet32(ds, ebx + 3792018);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000066)
         goto loc_1a1118;
     eax = memoryAGet32(ds, ebx + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000066)
@@ -14620,10 +14939,10 @@ loc_1a1118: // 0160:1a1118
         goto loc_1a1149;
     edi = memoryAGet32(ds, 0x39efe4);
     edx = memoryAGet32(ds, esi + 3792018);
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -14678,17 +14997,17 @@ loc_1a1150: // 0160:1a1150
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1a1201;
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14702,8 +15021,7 @@ loc_1a1150: // 0160:1a1150
     ebx += eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (eax)
         goto loc_1a1208;
@@ -14737,17 +15055,17 @@ loc_1a1227: // 0160:1a1227
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1a1313;
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14769,7 +15087,7 @@ loc_1a1227: // 0160:1a1227
     eax = sar32(eax, 0x00000001);
     esi <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, esi + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
@@ -14780,8 +15098,7 @@ loc_1a1227: // 0160:1a1227
     ebx += eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -14841,17 +15158,17 @@ loc_1a13ad: // 0160:1a13ad
     eax = memoryAGet32(ds, esi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax + 5;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a1479;
     eax = memoryAGet32(ds, esi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14869,7 +15186,7 @@ loc_1a13ad: // 0160:1a13ad
     eax = ebx;
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    ax = memoryAGet16(ss, stop("GetOpAddress"));
+    ax = memoryAGet16(ss, ebp + eax * 2 + 0x239808);
     ecx = ecx * 0x000003c0;
     edx = 0;
     eax &= 0x0000ffff;
@@ -14877,8 +15194,7 @@ loc_1a13ad: // 0160:1a13ad
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, ecx + ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -14920,7 +15236,7 @@ loc_1a14f2: // 0160:1a14f2
     eax = memoryAGet32(ds, esi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14928,7 +15244,7 @@ loc_1a14f2: // 0160:1a14f2
     eax = memoryAGet32(ds, esi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -14969,7 +15285,7 @@ loc_1a156c: // 0160:1a156c
     memoryASet16(ds, 0x39ef86, cx);
     ecx = ebp + 1;
     ebx = memoryAGet32(ds, esp + 12);
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a15e8;
     if (ebx >= 0x000003c0)
         goto loc_1a15e8;
@@ -14983,8 +15299,7 @@ loc_1a156c: // 0160:1a156c
     eax = ebx;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (eax)
         goto loc_1a15ef;
@@ -15005,7 +15320,7 @@ loc_1a1607: // 0160:1a1607
     eax = memoryAGet32(ds, esi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15013,7 +15328,7 @@ loc_1a1607: // 0160:1a1607
     eax = memoryAGet32(ds, esi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15108,7 +15423,7 @@ loc_1a1736: // 0160:1a1736
     memoryASet32(ds, 0x39f188, edx);
 loc_1a174a: // 0160:1a174a
     ebx = memoryAGet32(ds, esi + 3792026);
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_1a1766;
     if ((int32_t)ebx > (int32_t)0x00078000)
         goto loc_1a1766;
@@ -15206,7 +15521,7 @@ loc_1a186c: // 0160:1a186c
     edi = esi;
     edi <<= 2;
     edi -= esi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edi * 8 + 0x1dc38e);
     edx += 0x00000006;
     edx <<= 4;
     memoryASet32(ds, eax + 3792002, edx);
@@ -15242,7 +15557,7 @@ loc_1a18ec: // 0160:1a18ec
 loc_1a1910: // 0160:1a1910
     eax = ebp * 0x000000ac;
     eax = memoryAGet32(ds, eax + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax > (int32_t)0x00000066)
@@ -15258,7 +15573,7 @@ loc_1a193f: // 0160:1a193f
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax <<= 4;
     memoryASet32(ss, ebp + 3792006, esi);
     goto loc_1a199d;
@@ -15270,10 +15585,10 @@ loc_1a195e: // 0160:1a195e
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc39a);
     memoryASet32(ss, ebp + 3792158, edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc39e);
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     memoryASet32(ss, ebp + 3792162, edx);
     eax <<= 4;
 loc_1a199d: // 0160:1a199d
@@ -15318,7 +15633,7 @@ loc_1a19aa: // 0160:1a19aa
     edx = eax;
     edx = sar32(edx, 0x1f);
     memoryASet32(ds, ebx + 3792002, eax);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -15335,7 +15650,7 @@ loc_1a1a1e: // 0160:1a1a1e
     edx = eax;
     edx = sar32(edx, 0x1f);
     memoryASet32(ds, ebx + 3792002, eax);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -15358,7 +15673,7 @@ loc_1a1a79: // 0160:1a1a79
     edx--;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -15411,7 +15726,7 @@ loc_1a1aed: // 0160:1a1aed
         goto loc_1a1b92;
     goto loc_19cf96;
 loc_1a1afb: // 0160:1a1afb
-    if (stop("postCondition"))
+    if (edx <= 0)
         goto loc_1a1b09;
     if (edx == 0x00000006)
         goto loc_1a1b64;
@@ -15672,7 +15987,7 @@ loc_1a1e34: // 0160:1a1e34
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -15684,7 +15999,7 @@ loc_1a1e34: // 0160:1a1e34
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -15719,7 +16034,7 @@ loc_1a1ed5: // 0160:1a1ed5
     eax = memoryAGet32(ds, edx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15728,7 +16043,7 @@ loc_1a1ed5: // 0160:1a1ed5
     eax = memoryAGet32(ds, edx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15789,7 +16104,7 @@ loc_1a1ff8: // 0160:1a1ff8
     eax = ecx;
     eax <<= 2;
     eax -= ecx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax <<= 4;
     ebx = 0x00000032;
     memoryASet32(ds, esi + 3792002, eax);
@@ -15814,7 +16129,7 @@ loc_1a2060: // 0160:1a2060
     memoryASet32(ds, 0x39f230, edx);
     ebx = memoryAGet32(ds, eax + 3792050);
     edx = 0xfffff400;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1a2092;
     edx = 0x00000a00;
 loc_1a2092: // 0160:1a2092
@@ -15887,7 +16202,7 @@ void sub_1a21af() // 0160:1a21af +long
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15895,7 +16210,7 @@ void sub_1a21af() // 0160:1a21af +long
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15952,7 +16267,7 @@ loc_1a2223: // 0160:1a2223
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -15960,7 +16275,7 @@ loc_1a2223: // 0160:1a2223
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16018,14 +16333,14 @@ loc_1a2335: // 0160:1a2335
     eax = edx;
     eax <<= 2;
     eax -= edx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax = esi * 0x000000ac;
     edx += 0x00000006;
     edx <<= 4;
     if (edx != memoryAGet32(ds, eax + 3792002))
         goto loc_1a244d;
     ebx = ebp + 4;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1a23f0;
     if (edi >= 0x000003c0)
         goto loc_1a23f0;
@@ -16043,7 +16358,7 @@ loc_1a2335: // 0160:1a2335
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     ecx <<= 6;
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
     edx = 0;
     eax &= 0x0000ffff;
     dx = memoryAGet16(ds, 0x39ef86);
@@ -16054,8 +16369,7 @@ loc_1a2335: // 0160:1a2335
     eax <<= 6;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -16134,7 +16448,7 @@ loc_1a2492: // 0160:1a2492
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16142,7 +16456,7 @@ loc_1a2492: // 0160:1a2492
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16205,7 +16519,7 @@ loc_1a2510: // 0160:1a2510
     eax = memoryAGet32(ds, edi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16213,7 +16527,7 @@ loc_1a2510: // 0160:1a2510
     eax = memoryAGet32(ds, edi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16280,7 +16594,7 @@ loc_1a266b: // 0160:1a266b
     memoryASet32(ds, 0x39f038, memoryAGet32(ds, 0x39f038) + 1);
     ecx = memoryAGet32(ds, esp + 12);
     ecx += 0x00000006;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a2787;
     ebx = memoryAGet32(ds, esp + 4);
     ebx += esi;
@@ -16301,7 +16615,7 @@ loc_1a266b: // 0160:1a266b
     eax = sar32(eax, 0x00000001);
     edi <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, edi + eax * 2 + 0x239808);
     edi = ecx;
     eax = 0;
     edi <<= 4;
@@ -16311,7 +16625,7 @@ loc_1a266b: // 0160:1a266b
     edi <<= 6;
     edx = 0;
     dl = memoryAGet(ds, edi + ebx + 3233192);
-    stop("setne");
+    dl = edx != 0x00000080;
     edx &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -16360,7 +16674,7 @@ loc_1a27a5: // 0160:1a27a5
     ecx = memoryAGet32(ds, ebx + 3792022);
     ebx = memoryAGet32(ds, ebx + 3792018);
     sub_1ab614();
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1a27f5;
     if ((int32_t)esi >= (int32_t)0x000003b8)
         goto loc_1a27f5;
@@ -16376,7 +16690,7 @@ loc_1a27a5: // 0160:1a27a5
     sub_1afa94();
     goto loc_1a2838;
 loc_1a27f5: // 0160:1a27f5
-    if (stop("postCondition"))
+    if ((int32_t)esi > 0)
         goto loc_1a2821;
     push32(0x000003c0);
     push32(0x00000140);
@@ -16448,7 +16762,7 @@ loc_1a2910: // 0160:1a2910
     eax = memoryAGet32(ds, edx + 3792002);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -16456,7 +16770,7 @@ loc_1a2910: // 0160:1a2910
     ebx = edx;
     ebx <<= 2;
     ebx -= edx;
-    eax -= memoryAGet32(ds, stop("GetOpAddress"));
+    eax -= memoryAGet32(ds, ebx * 8 + 0x1dc38e);
     eax <<= 4;
     ebp = eax + -96;
     if (ecx != 0x00000001)
@@ -16543,7 +16857,7 @@ loc_1a2a6c: // 0160:1a2a6c
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16551,7 +16865,7 @@ loc_1a2a6c: // 0160:1a2a6c
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16613,7 +16927,7 @@ loc_1a2ba6: // 0160:1a2ba6
     ebx <<= 2;
     ebx -= edx;
     edx = esi * 0x000000ac;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, ebx * 8 + 0x1dc38e);
     eax += 0x00000006;
     eax <<= 4;
     if (eax != memoryAGet32(ds, edx + 3792002))
@@ -16629,7 +16943,7 @@ loc_1a2be4: // 0160:1a2be4
     ebx = edx;
     ebx <<= 2;
     ebx -= edx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, ebx * 8 + 0x1dc38e);
     ebx = esi * 0x000000ac;
     eax += 0x00000006;
     eax <<= 4;
@@ -16641,7 +16955,7 @@ loc_1a2be4: // 0160:1a2be4
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16650,7 +16964,7 @@ loc_1a2be4: // 0160:1a2be4
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -16766,7 +17080,7 @@ loc_1a2d85: // 0160:1a2d85
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax += 0x0000001c;
     edi = memoryAGet32(ds, edx + 3792002);
     eax <<= 4;
@@ -16785,7 +17099,7 @@ loc_1a2dca: // 0160:1a2dca
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax += 0x00000006;
     ebx = memoryAGet32(ds, edx + 3792002);
     eax <<= 4;
@@ -16804,7 +17118,7 @@ loc_1a2e0f: // 0160:1a2e0f
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax += 0x00000005;
     ebp = memoryAGet32(ds, edx + 3792002);
     eax <<= 4;
@@ -16850,30 +17164,30 @@ loc_1a2ea5: // 0160:1a2ea5
     edx <<= 2;
     edx -= ebx;
     ebp = memoryAGet32(ds, eax + 3792002);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 8 + 0x1dc396);
     ebx = memoryAGet32(ds, eax + 3792074);
     ebp += edx;
     edx = ebx;
     edx <<= 2;
     edx -= ebx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 8 + 0x1dc39a);
     ebx = memoryAGet32(ds, eax + 3792074);
     memoryASet32(ds, eax + 3792158, edx);
     edx = ebx;
     edx <<= 2;
     edx -= ebx;
     memoryASet32(ds, eax + 3792002, ebp);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 8 + 0x1dc39e);
     goto loc_1a2f34;
 loc_1a2f06: // 0160:1a2f06
     edx = esi;
     edx <<= 2;
     edx -= esi;
     edi = memoryAGet32(ds, eax + 3792002);
-    edi += memoryAGet32(ds, stop("GetOpAddress"));
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    edi += memoryAGet32(ds, edx * 8 + 0x1dc396);
+    ebx = memoryAGet32(ds, edx * 8 + 0x1dc39a);
     memoryASet32(ds, eax + 3792002, edi);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 8 + 0x1dc39e);
     memoryASet32(ds, eax + 3792158, ebx);
 loc_1a2f34: // 0160:1a2f34
     memoryASet32(ds, eax + 3792162, edx);
@@ -16894,7 +17208,7 @@ loc_1a2f6c: // 0160:1a2f6c
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc392);
     eax = ecx * 0x000000ac;
     edx <<= 4;
     if ((int32_t)edx > (int32_t)memoryAGet32(ds, eax + 3792002))
@@ -16915,7 +17229,7 @@ loc_1a2faf: // 0160:1a2faf
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc392);
     ebx -= 0x00000004;
     eax <<= 4;
     if ((int32_t)ebx > (int32_t)eax)
@@ -16929,7 +17243,7 @@ loc_1a2fdc: // 0160:1a2fdc
     eax = memoryAGet32(ds, ecx + 3792002);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -16937,7 +17251,7 @@ loc_1a2fdc: // 0160:1a2fdc
     eax = esi;
     eax <<= 2;
     eax -= esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc3a2);
     edi = memoryAGet32(ds, ecx + 3792002);
     eax <<= 4;
     if ((int32_t)eax > (int32_t)edi)
@@ -16977,10 +17291,10 @@ loc_1a3029: // 0160:1a3029
     eax <<= 2;
     eax -= ebp;
     ebx = memoryAGet32(ds, esi + 3792082);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    stop("imul edx * ebx");
+    edx = memoryAGet32(ds, eax * 8 + 0x1dc396);
+    edx = (int32_t)edx * (int32_t)ebx;
     ecx = memoryAGet32(ds, esi + 3792002);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     ecx += edx;
     eax <<= 4;
     memoryASet32(ds, esi + 3792002, ecx);
@@ -17005,7 +17319,7 @@ loc_1a30a8: // 0160:1a30a8
     eax = ebp;
     eax <<= 2;
     eax -= ebp;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax <<= 4;
     if (eax != memoryAGet32(ds, esi + 3792002))
         goto loc_1a30df;
@@ -17018,7 +17332,7 @@ loc_1a30df: // 0160:1a30df
     eax = ebp;
     eax <<= 2;
     eax -= ebp;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc38e);
     eax <<= 4;
     if (eax == memoryAGet32(ds, esi + 3792002))
         goto loc_1a310c;
@@ -17030,7 +17344,7 @@ loc_1a310c: // 0160:1a310c
     eax = memoryAGet32(ds, esi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -17038,7 +17352,7 @@ loc_1a310c: // 0160:1a310c
     eax = memoryAGet32(ds, esi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -17057,7 +17371,7 @@ loc_1a315f: // 0160:1a315f
     eax = memoryAGet32(ds, esi + 3792002);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -17065,8 +17379,8 @@ loc_1a315f: // 0160:1a315f
     eax = ebp;
     eax <<= 2;
     eax -= ebp;
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    ecx = memoryAGet32(ds, eax * 8 + 0x1dc39a);
+    eax = memoryAGet32(ds, eax * 8 + 0x1dc39e);
     memoryASet32(ds, esi + 3792158, ecx);
     memoryASet32(ds, esi + 3792162, eax);
     if (edi != memoryAGet32(ds, 0x39ef98))
@@ -17124,7 +17438,7 @@ void sub_1a3223() // 0160:1a3223 +long
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     edi = memoryAGet32(ds, edx + 3792050);
     ebx = 0xffffee00;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1a3247;
     ebx = 0x00000800;
 loc_1a3247: // 0160:1a3247
@@ -17155,17 +17469,17 @@ loc_1a3247: // 0160:1a3247
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax + -2;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a332a;
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -17179,8 +17493,7 @@ loc_1a3247: // 0160:1a3247
     ebx += eax;
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (eax)
         goto loc_1a333e;
@@ -17324,7 +17637,7 @@ void sub_1a3503() // 0160:1a3503 +long
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -17339,7 +17652,7 @@ loc_1a3549: // 0160:1a3549
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -17688,11 +18001,11 @@ loc_1a3970: // 0160:1a3970
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
-    memoryASet32(ds, stop("GetOpAddress"), 0x00000001);
+    memoryASet32(ds, eax * 4 + 0x1dd528, 0x00000001);
 loc_1a39b4: // 0160:1a39b4
     ecx++;
     ebx += 0x000000ac;
@@ -17826,7 +18139,7 @@ loc_1a3b61: // 0160:1a3b61
     ebp = memoryAGet32(ds, ecx + 3792110);
     ebp -= 0x00000170;
     memoryASet32(ds, ecx + 3792110, ebp);
-    if (stop("postCondition"))
+    if ((int32_t)ebp > 0)
         goto loc_1a3b8f;
     edx = 0;
     memoryASet32(ds, ecx + 3792110, edx);
@@ -17958,7 +18271,7 @@ loc_1a3d36: // 0160:1a3d36
     edx <<= 4;
     ebp = memoryAGet32(ds, ecx + 3792050);
     ebx = edi + edx;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1a3d76;
     eax = 0x0026e868;
     goto loc_1a3d7b;
@@ -18010,7 +18323,7 @@ loc_1a3dab: // 0160:1a3dab
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18024,7 +18337,7 @@ loc_1a3dea: // 0160:1a3dea
     eax = memoryAGet32(ds, edi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18045,7 +18358,7 @@ loc_1a3dea: // 0160:1a3dea
     eax = memoryAGet32(ds, edi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18088,7 +18401,7 @@ loc_1a3e90: // 0160:1a3e90
     eax = memoryAGet32(ds, edi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18096,7 +18409,7 @@ loc_1a3e90: // 0160:1a3e90
     eax = memoryAGet32(ds, edi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18144,7 +18457,7 @@ loc_1a3e90: // 0160:1a3e90
     eax = memoryAGet32(ds, edi + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18163,7 +18476,7 @@ loc_1a3e90: // 0160:1a3e90
     eax = memoryAGet32(ds, edi + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18217,7 +18530,7 @@ loc_1a3fc0: // 0160:1a3fc0
 loc_1a3fe9: // 0160:1a3fe9
     eax = memoryAGet32(ds, esi + 3792050);
     ebp = memoryAGet32(ds, esi + 3792170);
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1a4006;
     ebx = 0x00000003;
     ebx -= memoryAGet32(ds, esi + 3792158);
@@ -18231,7 +18544,7 @@ loc_1a401b: // 0160:1a401b
     eax = memoryAGet32(ds, esi + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18240,7 +18553,7 @@ loc_1a401b: // 0160:1a401b
     eax = memoryAGet32(ds, esi + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -18539,7 +18852,6 @@ loc_1a4350: // 0160:1a4350
     edx = 0;
     dl = memoryAGet(ds, ebx + 3783080);
     edx = (int32_t)edx * (int32_t)ebp;
-//    stop("imul edx * ebp");
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(esi);
@@ -18561,7 +18873,7 @@ loc_1a4375: // 0160:1a4375
     cl = memoryAGet(ds, ebx + 3783080);
     edi = memoryAGet32(ds, 0x1df650);
     edx -= ecx;
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     edi = 0x000000ff;
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -18650,7 +18962,7 @@ loc_1a4454: // 0160:1a4454
 loc_1a4458: // 0160:1a4458
     edx = 0;
     dl = memoryAGet(ds, ebx + 3834344);
-    stop("imul edx * ecx");
+    edx = (int32_t)edx * (int32_t)ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(ebp);
@@ -18684,7 +18996,7 @@ loc_1a449a: // 0160:1a449a
 loc_1a449c: // 0160:1a449c
     edx = 0;
     dl = memoryAGet(ds, ebx + 3834344);
-    stop("imul edx * ecx");
+    edx = (int32_t)edx * (int32_t)ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(esi);
@@ -18778,7 +19090,7 @@ loc_1a4552: // 0160:1a4552
     ebp = edi + eax;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<4) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<4) & 0x80000000);
     edx <<= 5;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x05);
@@ -18890,7 +19202,7 @@ void sub_1a4626() // 0160:1a4626 +long
     ebx = ecx;
     if ((int32_t)eax >= (int32_t)0x00000020)
         goto loc_1a46e6;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1a466f;
     ebp = eax;
     ebp <<= 2;
@@ -18916,7 +19228,7 @@ loc_1a466f: // 0160:1a466f
     edx = esi;
     edx <<= 2;
     edx += esi;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, edx * 4 + 0x3a7eec);
     memoryASet32(ds, esp, eax);
 loc_1a4686: // 0160:1a4686
     edi = ebx;
@@ -18936,9 +19248,9 @@ loc_1a4686: // 0160:1a4686
     edx <<= 2;
     edx += esi;
     eax = memoryAGet32(ds, esp);
-    memoryASet32(ds, stop("GetOpAddress"), ebp);
+    memoryASet32(ds, edx * 4 + 0x3a7ee8, ebp);
     edi = ebx;
-    memoryASet32(ds, stop("GetOpAddress"), eax);
+    memoryASet32(ds, edx * 4 + 0x3a7eec, eax);
     ecx = 0;
     ecx--;
     eax = 0;
@@ -18948,11 +19260,11 @@ loc_1a4686: // 0160:1a4686
     eax = ecx;
     eax <<= 2;
     eax += ecx;
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, edx * 4 + 0x3a7ef8, ebx);
     eax += eax;
     ecx = 0x0000000a;
-    memoryASet32(ds, stop("GetOpAddress"), eax);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, edx * 4 + 0x3a7ef0, eax);
+    memoryASet32(ds, edx * 4 + 0x3a7ef4, ecx);
 loc_1a46e6: // 0160:1a46e6
     esp += 0x00000004;
     ebp = pop32();
@@ -19244,7 +19556,7 @@ void sub_1a4932() // 0160:1a4932 +long
 loc_1a494a: // 0160:1a494a
     memoryASet32(ds, eax + 3834216, memoryAGet32(ds, eax + 3834216) - 1);
 loc_1a4950: // 0160:1a4950
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, ebx * 4 + 0x3a8168) == 0x00000000)
         goto loc_1a4978;
     edi = 0x00000001;
     eax = ebx;
@@ -19309,7 +19621,7 @@ void sub_1a49c6() // 0160:1a49c6 +long
     edx = eax;
     if (!eax)
         goto loc_1a4a05;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x3a8168) == 0x00000000)
         goto loc_1a49f9;
     memoryASet32(ds, 0x1df6b7, 0x00000001);
     sub_1a488e();
@@ -19344,7 +19656,7 @@ loc_1a4a17: // 0160:1a4a17
     eax += 0x000000aa;
     if (eax != 0x00000aa0)
         goto loc_1a4a0d;
-    stop("disassembly failed at 160:1a4a26 setge al");
+    al = (int32_t)edx >= (int32_t)0x00000002;
     eax &= 0x000000ff;
     edx = pop32();
     esp += 4;
@@ -19530,7 +19842,7 @@ loc_1a4c45: // 0160:1a4c45
     push32(edi);
     esi = eax;
     ecx = edx;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1a4c52;
     ecx = -ecx;
 loc_1a4c52: // 0160:1a4c52
@@ -19545,7 +19857,7 @@ loc_1a4c5e: // 0160:1a4c5e
 loc_1a4c63: // 0160:1a4c63
     if (!ecx)
         goto loc_1a4c8a;
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_1a4c8a;
     edx = ecx;
     eax = ecx;
@@ -19562,7 +19874,7 @@ loc_1a4c63: // 0160:1a4c63
     ecx = eax;
     goto loc_1a4c63;
 loc_1a4c8a: // 0160:1a4c8a
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_1a47d5;
     eax = ebx;
     ebx--;
@@ -19639,12 +19951,12 @@ loc_1a4d71: // 0160:1a4d71
         goto loc_1a4d87;
     eax++;
 loc_1a4d87: // 0160:1a4d87
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1a4d95;
     edx = memoryAGet32(ss, ebp + 1963806);
     memoryASet(ds, edx + eax, 0x2b);
 loc_1a4d95: // 0160:1a4d95
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1a4da1;
     edx = memoryAGet32(ss, ebp + 1963806);
     memoryASet(ds, edx + eax, 0x2d);
@@ -19785,7 +20097,7 @@ loc_1a4ef3: // 0160:1a4ef3
     ecx += esi;
     ecx <<= 2;
     ecx = memoryAGet32(ds, ecx + 3833512);
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, ecx * 4 + 0x1df71e);
     if ((int32_t)esi >= (int32_t)0x00000002)
         goto loc_1a4f22;
     eax = ecx * 0x000000aa;
@@ -19913,7 +20225,7 @@ loc_1a506e: // 0160:1a506e
     ecx = memoryAGet32(ds, 0x3bc044);
     ecx <<= 3;
     ecx += ebx;
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
+    ecx = memoryAGet32(ds, ecx * 4 + 0x3a7ea8);
     edx = ecx * 0x000000aa;
     if (memoryAGet32(ds, edx + 1959502) == 0x00000000)
         goto loc_1a5128;
@@ -20003,7 +20315,7 @@ loc_1a51e1: // 0160:1a51e1
     memoryASet32(ds, 0x1df594, 0x00000001);
 loc_1a51f4: // 0160:1a51f4
     eax = memoryAGet32(ds, 0x1df594);
-    if (stop("postCondition"))
+    if (eax <= 0 && stop("test, jbe"))
         goto loc_1a5204;
     if (eax == 0x00000001)
         goto loc_1a5210;
@@ -20062,7 +20374,7 @@ loc_1a5262: // 0160:1a5262
 loc_1a5281: // 0160:1a5281
     eax = memoryAGet32(ds, esp + 12);
     eax = memoryAGet32(ds, eax + 1963742);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1a5386;
     if (memoryAGet32(ds, 0x1dfc80) == 0x00000000)
         goto loc_1a52aa;
@@ -20072,10 +20384,10 @@ loc_1a5281: // 0160:1a5281
     goto loc_1a52bb;
 loc_1a52aa: // 0160:1a52aa
     ecx = memoryAGet32(ds, esp + 12);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1df314);
     memoryASet32(ds, ecx + 1963758, edx);
 loc_1a52bb: // 0160:1a52bb
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1df364);
     eax = eax * 0x000000aa;
     ecx = memoryAGet32(ds, esp + 12);
     memoryASet32(ds, esp + 24, eax);
@@ -20130,7 +20442,7 @@ loc_1a5363: // 0160:1a5363
     eax--;
     edx--;
 loc_1a5365: // 0160:1a5365
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1a5376;
     ecx = 0;
     cl = memoryAGet(ds, eax + 1950193);
@@ -20459,7 +20771,7 @@ loc_1a5614: // 0160:1a5614
     ebx = memoryAGet32(ds, 0x3bc048);
     edx = eax;
     eax = ebx * 0x000000aa;
-    stop("disassembly failed at 160:1a563f sete dl");
+    dl = !edx;
     edx &= 0x000000ff;
     memoryASet32(ds, esi + eax + 1959502, edx);
     eax += ebp;
@@ -20588,10 +20900,10 @@ loc_1a57a7: // 0160:1a57a7
     if (ecx != 0x00000014)
         goto loc_1a57a7;
     ebx = memoryAGet32(ds, 0x3bc048);
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, ebx * 4 + 0x1df314);
     edx = 0x00000024;
     eax = 0x000000a0;
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, ebx * 4 + 0x1df70e);
     sub_1a4760();
     ebx = 0x001d1de4;
     edx = 0x00000090;
@@ -20608,7 +20920,7 @@ loc_1a57a7: // 0160:1a57a7
     edx = memoryAGet32(ds, 0x3bc048);
     ebx = 0x00000003;
     eax = 0x001df6da;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, edx * 4 + 0x1df364);
     sub_1a4c45();
     ebx = 0x001df6d3;
     edx = 0x00000030;
@@ -20684,17 +20996,17 @@ loc_1a588e: // 0160:1a588e
     eax <<= 2;
     eax -= edx;
     edx = 0;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x1df3b4, edx);
+    memoryASet32(ds, eax * 8 + 0x1df3b8, edx);
+    memoryASet32(ds, eax * 8 + 0x1df3bc, edx);
+    memoryASet32(ds, eax * 8 + 0x1df3c0, edx);
+    memoryASet32(ds, eax * 8 + 0x1df3c4, edx);
+    memoryASet32(ds, eax * 8 + 0x1df3c8, edx);
     eax = memoryAGet32(ds, 0x3bc048);
     edx = 0x00000003;
     ebx = 0x00000064;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x1df314, edx);
+    memoryASet32(ds, eax * 4 + 0x1df364, ebx);
     goto loc_1a4dbf;
 }
 void sub_1a591a() // 0160:1a591a +long
@@ -20842,7 +21154,7 @@ void sub_1a5a79() // 0160:1a5a79 +long
 {
     esp -= 4;
     push32(ebx);
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1a5a8b;
     memoryASet(ds, eax, 0x20);
     memoryASet(ds, eax + 1, 0x4f);
@@ -20894,8 +21206,8 @@ loc_1a5ad5: // 0160:1a5ad5
 loc_1a5ada: // 0160:1a5ada
     if ((int32_t)eax >= (int32_t)0x00000012)
         goto loc_1a5af5;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1df776);
+    edx = memoryAGet32(ds, edx * 4 + 0x1df5d0);
     eax += 0x0000000b;
     sub_1a5a79();
 loc_1a5af5: // 0160:1a5af5
@@ -20926,14 +21238,14 @@ loc_1a5b21: // 0160:1a5b21
     sub_1a5aa6();
     edx = esi;
     eax = 0x00000050;
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, ecx * 4 + 0x1df776);
     ecx++;
     sub_1a4760();
     eax = ecx;
     sub_1a5aa6();
     edx = esi;
     eax = 0x000000f0;
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, ecx * 4 + 0x1df776);
     sub_1a4760();
     ecx++;
     esi += 0x0000000c;
@@ -21316,7 +21628,7 @@ loc_1a5ff7: // 0160:1a5ff7
     ebp = memoryAGet32(ds, 0x1df5c0);
     ebp += ecx;
     memoryASet32(ds, 0x1df5c0, ebp);
-    if (stop("postCondition"))
+    if ((int32_t)ebp >= 0)
         goto loc_1a602f;
     memoryASet32(ds, 0x1df5c0, 0x0000000a);
 loc_1a602f: // 0160:1a602f
@@ -22505,7 +22817,7 @@ void sub_1a6cdc() // 0160:1a6cdc +long
     if (memoryAGet32(ds, 0x39effc) == 0x00000000)
         goto loc_1a6d3e;
     edi = memoryAGet32(ds, 0x1df8d0);
-    if (stop("postCondition"))
+    if ((int32_t)edi < 0)
         goto loc_1a6d3e;
     if ((int32_t)memoryAGet32(ds, 0x1df5a8) >= (int32_t)0x00000023)
         goto loc_1a6d24;
@@ -22599,8 +22911,7 @@ void sub_1a6de0() // 0160:1a6de0 +long
     ebx = 0x00000032;
     edx = sar32(edx, 0x1f);
     idiv32(ebx);
-    flags.zero = !(eax & eax);
-    stop("disassembly failed at 160:1a6df5 sete al");
+    al = !eax;
     eax &= 0x000000ff;
     memoryASet32(ds, 0x1df8d8, eax);
     eax = memoryAGet32(ds, 0x1df8d0);
@@ -23163,7 +23474,7 @@ loc_1a7439: // 0160:1a7439
     if (!(eax & edx))
         goto loc_1a747c;
     ecx = memoryAGet32(ds, esi + 1963742);
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_1a747c;
     ecx = ecx * 0x000000aa;
     edx = edi;
@@ -23522,11 +23833,11 @@ loc_1a77dd: // 0160:1a77dd
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
-    eax = memoryAGet32(ds, stop("GetOpAddress")) * 0x000000aa;
+    eax = memoryAGet32(ds, eax * 4 + 0x1df6de) * 0x000000aa;
     memoryASet32(ds, esp + 128, 0x00000004);
     memoryASet32(ds, esp + 32, eax);
     edx = esi;
@@ -23971,7 +24282,7 @@ void sub_1a7e16() // 0160:1a7e16 +long
         goto loc_1a7e5f;
     if ((int32_t)eax > (int32_t)0x00000005)
         goto loc_1a7e5f;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1df75e);
     edx += 0x0000000d;
     memoryASet32(ds, 0x3bc034, edx);
     if (eax != 0x00000001)
@@ -23999,7 +24310,7 @@ loc_1a7e86: // 0160:1a7e86
     eax &= 0x000000ff;
     if (eax != 0x00000020)
         goto loc_1a7eae;
-    if (stop("postCondition"))
+    if ((int32_t)edx < 0)
         goto loc_1a7eae;
     ebp = edx + -1;
     memoryASet32(ds, 0x1df6cf, ebp);
@@ -24309,10 +24620,10 @@ loc_1a8258: // 0160:1a8258
 loc_1a8273: // 0160:1a8273
     ecx = memoryAGet32(ds, 0x3bc048);
     ebx = 0xffffffff;
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
+    ecx = memoryAGet32(ds, ecx * 4 + 0x1df314);
     eax = 0x00000006;
     edx = ebx;
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
+    ecx = memoryAGet32(ds, ecx * 4 + 0x1df70e);
     sub_1a4626();
     eax = 0x00000006;
     sub_1a49c6();
@@ -24373,7 +24684,7 @@ loc_1a834e: // 0160:1a834e
 loc_1a8369: // 0160:1a8369
     eax = memoryAGet32(ds, 0x3bc048);
     ebx = 0x00000003;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1df364);
     eax = 0x001df6da;
     sub_1a4c45();
     eax = 0x0000000a;
@@ -25101,7 +25412,7 @@ loc_1a89de: // 0160:1a89de
     eax = ebx;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25123,7 +25434,7 @@ loc_1a8a2a: // 0160:1a8a2a
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25151,7 +25462,7 @@ loc_1a8a78: // 0160:1a8a78
     edx = sar32(edx, 0x1f);
     memoryASet32(ds, ebx + 3832128, eax);
     eax = esi;
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25420,7 +25731,7 @@ loc_1a8eea: // 0160:1a8eea
     memoryASet32(ds, 0x1df6c3, edi);
 loc_1a8f0e: // 0160:1a8f0e
     ebx = memoryAGet32(ds, 0x1df6c3);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1a4dbf;
     ecx = memoryAGet32(ds, 0x1dd550);
     if (ecx == 0x00000002)
@@ -25539,7 +25850,7 @@ loc_1a905d: // 0160:1a905d
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25552,7 +25863,7 @@ loc_1a9078: // 0160:1a9078
     eax = memoryAGet32(ds, 0x1df996);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25663,7 +25974,7 @@ loc_1a9178: // 0160:1a9178
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -25779,7 +26090,7 @@ loc_1a92b5: // 0160:1a92b5
         goto loc_1a4dbf;
 loc_1a92d9: // 0160:1a92d9
     esi = memoryAGet32(ds, edx + 1963742);
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1a936a;
     eax = 0x00000001;
     cl = bl;
@@ -25857,7 +26168,7 @@ loc_1a937c: // 0160:1a937c
     if (memoryAGet32(ds, 0x1df5a8) == 0x00000023)
         goto loc_1a93f4;
     edx = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1a93b3;
     edx ^= eax;
 loc_1a93b3: // 0160:1a93b3
@@ -25905,7 +26216,7 @@ loc_1a941b: // 0160:1a941b
         goto loc_1a94a9;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<4) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<4) & 0x80000000);
     edx <<= 5;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x05);
@@ -25927,7 +26238,7 @@ loc_1a941b: // 0160:1a941b
     edx += eax;
     edx += edx;
     eax = ecx + edx;
-    if (stop("postCondition"))
+    if ((int32_t)ebp >= 0)
         goto loc_1a948d;
     ebx = ebp;
     ebx = -ebx;
@@ -25959,7 +26270,7 @@ loc_1a94a9: // 0160:1a94a9
         goto loc_1a4dbc;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<4) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<4) & 0x80000000);
     edx <<= 5;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x05);
@@ -25981,7 +26292,7 @@ loc_1a94a9: // 0160:1a94a9
     edx += eax;
     edx += edx;
     eax = esi + edx;
-    if (stop("postCondition"))
+    if ((int32_t)ebp >= 0)
         goto loc_1a951c;
     ebx = ebp;
     ebx = -ebx;
@@ -26202,7 +26513,7 @@ loc_1a972c: // 0160:1a972c
     edx = 0;
     memoryASet32(ds, 0x1df98a, edx);
     sub_1a8fd7();
-    stop("setne");
+    al = memoryAGet32(ds, 0x1dc02c) != 0x00000000;
     eax &= 0x000000ff;
     ecx = memoryAGet32(ds, 0x1dfc80);
     memoryASet32(ds, 0x1df598, eax);
@@ -26323,7 +26634,7 @@ loc_1a9933: // 0160:1a9933
     sub_1a5262();
 loc_1a9946: // 0160:1a9946
     sub_1a5c69();
-    stop("setne");
+    al = memoryAGet32(ds, 0x1df598) != 0x00000000;
     eax &= 0x000000ff;
     memoryASet32(ds, 0x1dc02c, eax);
     sub_1a8d71();
@@ -26396,7 +26707,7 @@ loc_1a99f6: // 0160:1a99f6
     esi += eax;
     memoryASet32(ds, 0x1df640, ecx);
     memoryASet32(ds, 0x1df644, esi);
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_1a9a1e;
     ebp = 0;
     memoryASet32(ds, 0x1df640, ebp);
@@ -26485,24 +26796,24 @@ loc_1a9b87: // 0160:1a9b87
     if (!ebx)
         goto loc_1a9c2f;
     ebx = memoryAGet32(ds, 0x1df66c);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1a9bd8;
     ecx = ebx + eax;
     memoryASet32(ds, 0x1df66c, ecx);
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1a9bd8;
     edi = 0;
     memoryASet32(ds, 0x1df66c, edi);
 loc_1a9bd8: // 0160:1a9bd8
     ebp = memoryAGet32(ds, 0x1df66c);
-    if (stop("postCondition"))
+    if ((int32_t)ebp >= 0)
         goto loc_1a9bea;
     ebx = ebp + 168;
     goto loc_1a9bef;
 loc_1a9bea: // 0160:1a9bea
     ebx = 0x000000a8;
 loc_1a9bef: // 0160:1a9bef
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1a9c13;
     edx = 0x000000a8;
     edx -= ebx;
@@ -26536,7 +26847,7 @@ loc_1a9c6b: // 0160:1a9c6b
     ebx = 0x000000a8;
     edx = memoryAGet32(ds, 0x1df66c);
     ebx -= edx;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1a4dbf;
     eax = edx;
     eax <<= 2;
@@ -26577,8 +26888,6 @@ void sub_1a9cc8() // 0160:1a9cc8 +long
     edx++;
     ebx &= 0x0000ffff;
     edx = (int32_t)edx * (int32_t)ebx;
-//    edx *= ebx;
-//    stop("imul edx * ebx");
     edx >>= 16;
     memoryASet32(ds, 0x39ef88, ebx);
     eax += edx;
@@ -26628,20 +26937,20 @@ void sub_1a9d32() // 0160:1a9d32 +long +stackDrop32
     esp -= 0x00000004;
     push32(eax);
     edi = ecx;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1a9d46;
     ecx = 0;
     edx = -edx;
     memoryASet32(ds, esp + 48, ecx);
 loc_1a9d46: // 0160:1a9d46
     eax = memoryAGet32(ds, esp + 36);
-    stop("imul eax * ebx");
+    eax = (int32_t)eax * (int32_t)ebx;
     eax += memoryAGet32(ds, esp);
     eax += edx;
     edx = memoryAGet32(ds, esp + 40);
     memoryASet32(ds, esp, eax);
     eax = memoryAGet32(ds, esp + 32);
-    stop("imul eax * edx");
+    eax = (int32_t)eax * (int32_t)edx;
     ebx = memoryAGet32(ds, esp + 24);
     edx = memoryAGet32(ds, esp + 28);
     eax += ebx;
@@ -26690,7 +26999,7 @@ loc_1a9dc9: // 0160:1a9dc9
 loc_1a9dcd: // 0160:1a9dcd
     if ((int32_t)esi >= (int32_t)edi)
         goto loc_1a9ddd;
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1a9ddd;
     if ((int32_t)esi < (int32_t)0x000003c0)
         goto loc_1a9d8b;
@@ -26710,7 +27019,7 @@ loc_1a9e00: // 0160:1a9e00
     eax = memoryAGet32(ds, esp + 4);
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp + 20))
         goto loc_1a9e19;
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1a9e19;
     if ((int32_t)eax < (int32_t)0x00000190)
         goto loc_1a9d7b;
@@ -26786,8 +27095,7 @@ loc_1a9fb6: // 0160:1a9fb6
     esi += 0x0002ae40;
     al = memoryAGet(ds, eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -26802,7 +27110,7 @@ loc_1aa015: // 0160:1aa015
 loc_1aa023: // 0160:1aa023
     eax = ebx;
     ebx--;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aa023;
     if (ecx >= 0x000003c0)
         goto loc_1aa023;
@@ -26822,8 +27130,7 @@ loc_1aa023: // 0160:1aa023
     ebx--;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -26838,7 +27145,7 @@ loc_1aa080: // 0160:1aa080
 loc_1aa08e: // 0160:1aa08e
     eax = ebx;
     ebx--;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aa0eb;
     if (ecx >= 0x000003c0)
         goto loc_1aa0eb;
@@ -26858,8 +27165,7 @@ loc_1aa08e: // 0160:1aa08e
     ebx--;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -26867,7 +27173,7 @@ loc_1aa08e: // 0160:1aa08e
 loc_1aa0eb: // 0160:1aa0eb
     eax = ebx + -5;
     ebx += 0x00000003;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aa231;
     if (ecx >= 0x000003c0)
         goto loc_1aa231;
@@ -26900,8 +27206,7 @@ loc_1aa0eb: // 0160:1aa0eb
     eax <<= 6;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ebp;
     if (!eax)
@@ -26911,7 +27216,7 @@ loc_1aa0eb: // 0160:1aa0eb
 loc_1aa177: // 0160:1aa177
     eax = ebx;
     ebx++;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aa177;
     if (ecx >= 0x000003c0)
         goto loc_1aa177;
@@ -26931,8 +27236,7 @@ loc_1aa177: // 0160:1aa177
     ebx++;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -26943,7 +27247,7 @@ loc_1aa1d6: // 0160:1aa1d6
 loc_1aa1d8: // 0160:1aa1d8
     eax = ebx;
     ebx++;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aa1d8;
     if (ecx >= 0x000003c0)
         goto loc_1aa1d8;
@@ -26963,8 +27267,7 @@ loc_1aa1d8: // 0160:1aa1d8
     ebx++;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -26991,7 +27294,7 @@ void sub_1aa241() // 0160:1aa241 +long
     edi = edx;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -26999,7 +27302,7 @@ void sub_1aa241() // 0160:1aa241 +long
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -27011,12 +27314,12 @@ loc_1aa26f: // 0160:1aa26f
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     eax -= esi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000018)
@@ -27024,12 +27327,12 @@ loc_1aa26f: // 0160:1aa26f
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     eax -= edi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000018)
@@ -27069,7 +27372,7 @@ void sub_1aa2cb() // 0160:1aa2cb +long
 loc_1aa2e9: // 0160:1aa2e9
     if ((int32_t)ebx >= (int32_t)0x0000014e)
         goto loc_1aa351;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1aa33b;
     if (esi >= 0x000003c0)
         goto loc_1aa33b;
@@ -27086,8 +27389,7 @@ loc_1aa2e9: // 0160:1aa2e9
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, ecx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -27306,7 +27608,7 @@ loc_1aa4ec: // 0160:1aa4ec
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     ebx = memoryAGet32(ds, esp);
@@ -27315,8 +27617,7 @@ loc_1aa4ec: // 0160:1aa4ec
     eax += memoryAGet32(ds, esp + 4);
     al = memoryAGet(ds, eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -27539,7 +27840,7 @@ void sub_1aa7e9() // 0160:1aa7e9 +long
     cl = memoryAGet(ds, esp + 4);
     ebx = 0x00000010;
     esi <<= cl;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1aa83d;
     ecx = eax;
     ebx += eax;
@@ -27571,7 +27872,7 @@ loc_1aa874: // 0160:1aa874
     if (edx >= 0x003155a8)
         goto loc_1aa92c;
     ecx = memoryAGet32(ds, esp);
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_1aa89e;
     edi = ecx;
     ebp += ecx;
@@ -27600,7 +27901,7 @@ loc_1aa8c0: // 0160:1aa8c0
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     eax += edi;
-    memoryASet16(ds, stop("GetOpAddress"), memoryAGet16(ds, stop("GetOpAddress")) | si);
+    memoryASet16(ds, eax * 2 + 0x239808, memoryAGet16(ds, eax * 2 + 0x239808) | si);
 loc_1aa8e0: // 0160:1aa8e0
     ecx--;
     ebx++;
@@ -27631,7 +27932,7 @@ loc_1aa8fd: // 0160:1aa8fd
     goto loc_1aa8e2;
 loc_1aa92c: // 0160:1aa92c
     edi = memoryAGet32(ds, esp);
-    if (stop("postCondition"))
+    if ((int32_t)edi >= 0)
         goto loc_1aa93e;
     ecx = edi;
     ebp += edi;
@@ -27671,7 +27972,7 @@ loc_1aa97a: // 0160:1aa97a
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     eax += edi;
-    memoryASet16(ds, stop("GetOpAddress"), memoryAGet16(ds, stop("GetOpAddress")) | si);
+    memoryASet16(ds, eax * 2 + 0x239808, memoryAGet16(ds, eax * 2 + 0x239808) | si);
 loc_1aa99a: // 0160:1aa99a
     ecx++;
     ebx++;
@@ -27721,7 +28022,7 @@ void sub_1aa9c8() // 0160:1aa9c8 +long
     ecx = eax;
     eax = 0x00000010;
     ecx ^= 0x0000ffff;
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1aaa19;
     eax += esi;
     esi = 0;
@@ -27744,7 +28045,7 @@ loc_1aaa2c: // 0160:1aaa2c
     ebx = edx;
 loc_1aaa52: // 0160:1aaa52
     edi = memoryAGet32(ds, esp + 8);
-    if (stop("postCondition"))
+    if ((int32_t)edi >= 0)
         goto loc_1aaa62;
     edx = 0;
     ebx += edi;
@@ -27849,7 +28150,7 @@ loc_1aab33: // 0160:1aab33
     eax = memoryAGet32(ds, ebx + 3792034);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -27858,7 +28159,7 @@ loc_1aab33: // 0160:1aab33
     eax = memoryAGet32(ds, ebx + 3792038);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -27874,12 +28175,12 @@ loc_1aab81: // 0160:1aab81
     if ((int32_t)edi >= (int32_t)0x000003c0)
         goto loc_1aabb2;
     eax = edi + 16;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aabb2;
     if ((int32_t)ecx >= (int32_t)0x00000190)
         goto loc_1aabb2;
     eax = ecx + 16;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aabb2;
     memoryASet32(ds, esp, 0x00000001);
     ebp = esi * 0x000000ac;
@@ -27984,7 +28285,7 @@ void sub_1aac75() // 0160:1aac75 +long
     eax <<= cl;
     eax ^= 0x0000ffff;
     memoryASet16(ds, 0x39ef86, ax);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1aacf9;
     if (edx >= 0x000003c0)
         goto loc_1aacf9;
@@ -28003,7 +28304,7 @@ void sub_1aac75() // 0160:1aac75 +long
     eax = sar32(eax, 0x00000001);
     ecx <<= 6;
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
@@ -28014,8 +28315,7 @@ void sub_1aac75() // 0160:1aac75 +long
     esi += eax;
     eax = 0;
     al = memoryAGet(ds, esi + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -28105,7 +28405,7 @@ loc_1aaedf: // 0160:1aaedf
     eax = memoryAGet32(ds, ebx + 3915876);
     ebp = memoryAGet32(ds, ebx + 3915868);
     memoryASet32(ds, esp + 8, eax);
-    stop("imul eax * ebp");
+    eax = (int32_t)eax * (int32_t)ebp;
     ecx = memoryAGet32(ds, esp);
     memoryASet32(ds, esp + 4, ebx);
     ecx--;
@@ -28123,11 +28423,11 @@ loc_1aaf22: // 0160:1aaf22
     memoryASet(ds, eax, cl);
     eax--;
 loc_1aaf29: // 0160:1aaf29
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1aaf22;
     ebp--;
 loc_1aaf2e: // 0160:1aaf2e
-    if (stop("postCondition"))
+    if ((int32_t)ebp < 0)
         goto loc_1aaedf;
     eax = memoryAGet32(ds, esp + 8);
     edx = memoryAGet32(ds, esp + 16);
@@ -28167,7 +28467,7 @@ void sub_1aaf5d() // 0160:1aaf5d +long +stackDrop8
     if ((int32_t)memoryAGet32(ds, 0x1dfa08) > (int32_t)0x000000ff)
         goto loc_1aaf8f;
     eax = ebx + 8;
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edx = 0x001f19c8;
     ecx = memoryAGet32(ds, 0x3be654);
     edx -= eax;
@@ -28184,16 +28484,16 @@ loc_1aafa8: // 0160:1aafa8
     eax = edx;
     eax <<= 2;
     eax -= edx;
-    memoryASet32(ds, stop("GetOpAddress"), edi);
+    memoryASet32(ds, eax * 8 + 0x3bc054, edi);
     edx = memoryAGet32(ds, esp);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x3bc058, ebx);
+    memoryASet32(ds, eax * 8 + 0x3bc050, edx);
     edx = memoryAGet32(ds, esp + 4);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x3bc05c, edx);
     edx = memoryAGet32(ds, esp + 24);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x3bc060, edx);
     edx = memoryAGet32(ds, esp + 28);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x3bc064, edx);
     eax = memoryAGet32(ds, 0x1dfa08);
     eax++;
     ebp = 0;
@@ -28453,14 +28753,14 @@ loc_1ab2ca: // 0160:1ab2ca
     ebx++;
     ecx &= 0x0fffffff;
     memoryASet32(ds, 0x1dfa18, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, ebx * 4 + 0x1f19c4, ecx);
     if (edx == ebp)
         goto loc_1ab310;
     ecx = edx;
     ebx++;
     ecx |= 0x10000000;
     memoryASet32(ds, 0x1dfa18, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, ebx * 4 + 0x1f19c4, ecx);
 loc_1ab310: // 0160:1ab310
     edx = memoryAGet32(ds, 0x39bdf0);
     if (edx == memoryAGet32(ds, 0x3be64c))
@@ -28470,7 +28770,7 @@ loc_1ab310: // 0160:1ab310
     ebx++;
     ecx |= 0x20000000;
     memoryASet32(ds, 0x1dfa18, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, ebx * 4 + 0x1f19c4, ecx);
 loc_1ab33a: // 0160:1ab33a
     edx = memoryAGet32(ds, 0x39bde8);
     if (edx == memoryAGet32(ds, 0x3be648))
@@ -28480,7 +28780,7 @@ loc_1ab33a: // 0160:1ab33a
     ebx++;
     ecx |= 0x30000000;
     memoryASet32(ds, 0x1dfa18, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, ebx * 4 + 0x1f19c4, ecx);
 loc_1ab364: // 0160:1ab364
     if (eax == memoryAGet32(ds, 0x3be644))
         goto loc_1ab388;
@@ -28489,7 +28789,7 @@ loc_1ab364: // 0160:1ab364
     ebx++;
     ecx |= 0x40000000;
     memoryASet32(ds, 0x1dfa18, ebx);
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, ebx * 4 + 0x1f19c4, ecx);
 loc_1ab388: // 0160:1ab388
     memoryASet32(ds, 0x3be644, eax);
     eax = memoryAGet32(ds, 0x39bdf4);
@@ -28516,53 +28816,53 @@ void sub_1ab3b0() // 0160:1ab3b0 +long
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, 0x1dfa1c))
         goto loc_1ab4d1;
     edx = memoryAGet32(ds, 0x39f238);
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, eax * 4 + 0x1f19c8);
     edx &= 0x0fffffff;
     if (edx != ebx)
         goto loc_1ab4bd;
     ecx = eax + 1;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, ecx * 4 + 0x1f19c8);
     eax &= 0xf0000000;
     memoryASet32(ds, 0x1dfa18, ecx);
     if (eax != 0x10000000)
         goto loc_1ab41b;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, ecx * 4 + 0x1f19c8);
     eax = ecx + 1;
     edx &= 0x0fffffff;
     memoryASet32(ds, 0x1dfa18, eax);
     memoryASet32(ds, 0x3be650, edx);
 loc_1ab41b: // 0160:1ab41b
     eax = memoryAGet32(ds, 0x1dfa18);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1f19c8);
     eax &= 0xf0000000;
     if (eax != 0x20000000)
         goto loc_1ab451;
     edx = memoryAGet32(ds, 0x1dfa18);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, edx * 4 + 0x1f19c8);
     edx++;
     eax &= 0x0fffffff;
     memoryASet32(ds, 0x1dfa18, edx);
     memoryASet32(ds, 0x3be64c, eax);
 loc_1ab451: // 0160:1ab451
     eax = memoryAGet32(ds, 0x1dfa18);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1f19c8);
     eax &= 0xf0000000;
     if (eax != 0x30000000)
         goto loc_1ab487;
     edx = memoryAGet32(ds, 0x1dfa18);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, edx * 4 + 0x1f19c8);
     edx++;
     eax &= 0x0fffffff;
     memoryASet32(ds, 0x1dfa18, edx);
     memoryASet32(ds, 0x3be648, eax);
 loc_1ab487: // 0160:1ab487
     eax = memoryAGet32(ds, 0x1dfa18);
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1f19c8);
     eax &= 0xf0000000;
     if (eax != 0x40000000)
         goto loc_1ab4bd;
     eax = memoryAGet32(ds, 0x1dfa18);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1f19c8);
     eax++;
     edx &= 0x0fffffff;
     memoryASet32(ds, 0x1dfa18, eax);
@@ -28673,12 +28973,12 @@ void sub_1ab614() // 0160:1ab614 +long
     eax = memoryAGet32(ds, 0x39be00);
     eax -= memoryAGet32(ds, 0x39bdf4);
     eax <<= 3;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebp = eax;
     eax = ebx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)ebp > (int32_t)eax)
@@ -28686,12 +28986,12 @@ void sub_1ab614() // 0160:1ab614 +long
     eax = memoryAGet32(ds, 0x39be04);
     eax -= memoryAGet32(ds, 0x39bdf0);
     eax <<= 3;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebp = eax;
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)ebp <= (int32_t)eax)
@@ -28732,7 +29032,7 @@ loc_1ab6d5: // 0160:1ab6d5
     eax = memoryAGet32(ds, 0x39f248);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -28740,13 +29040,13 @@ loc_1ab6d5: // 0160:1ab6d5
     eax = memoryAGet32(ds, 0x39f24c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
     edx = esi;
     edx <<= 2;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1ab716;
     esi -= 0x000000c0;
     if ((int32_t)esi <= (int32_t)ebp)
@@ -28763,7 +29063,7 @@ loc_1ab726: // 0160:1ab726
 loc_1ab72c: // 0160:1ab72c
     ebx = edi;
     ebx <<= 2;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1ab744;
     edi -= 0x00000048;
     if ((int32_t)edi <= (int32_t)eax)
@@ -28847,12 +29147,12 @@ loc_1ab7bc: // 0160:1ab7bc
         goto loc_1ababf;
 loc_1ab80e: // 0160:1ab80e
     eax = memoryAGet32(ds, esp + 32);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebp = eax;
     eax = memoryAGet32(ds, esp + 28);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)ebp <= (int32_t)eax)
@@ -28860,7 +29160,7 @@ loc_1ab80e: // 0160:1ab80e
     eax = memoryAGet32(ds, esp + 32);
     ebp = ecx;
     ecx = memoryAGet32(ds, esp + 28);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ecx <<= 16;
@@ -28873,7 +29173,7 @@ loc_1ab80e: // 0160:1ab80e
     memoryASet32(ds, esp + 28, eax);
     eax = memoryAGet32(ds, esp + 32);
     ebp <<= 16;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1ab864;
     memoryASet32(ds, esp + 24, 0x00000001);
     goto loc_1ab86c;
@@ -28889,7 +29189,7 @@ loc_1ab87a: // 0160:1ab87a
         goto loc_1aba25;
     ecx = ebp;
     ecx = sar32(ecx, 0x10);
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1ab90f;
     if (ebx >= 0x000003c0)
         goto loc_1ab90f;
@@ -28916,8 +29216,7 @@ loc_1ab87a: // 0160:1ab87a
     eax = ecx * 0x000003c0;
     al = memoryAGet(ds, ebx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -28944,7 +29243,7 @@ loc_1ab929: // 0160:1ab929
     ebp = ebx;
     ebx = ecx;
     ecx = memoryAGet32(ds, esp + 32);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ecx <<= 16;
@@ -28957,7 +29256,7 @@ loc_1ab929: // 0160:1ab929
     memoryASet32(ds, esp + 32, eax);
     eax = memoryAGet32(ds, esp + 28);
     ebp <<= 16;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1ab965;
     memoryASet32(ds, esp + 20, 0x00000001);
     goto loc_1ab96d;
@@ -28971,7 +29270,7 @@ loc_1ab96d: // 0160:1ab96d
 loc_1ab97b: // 0160:1ab97b
     if (ebx == memoryAGet32(ds, esp + 12))
         goto loc_1aba25;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1aba0b;
     ecx = ebp;
     ecx = sar32(ecx, 0x10);
@@ -29000,8 +29299,7 @@ loc_1ab97b: // 0160:1ab97b
     eax = ebx * 0x000003c0;
     al = memoryAGet(ds, ecx + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -29023,7 +29321,7 @@ loc_1aba0b: // 0160:1aba0b
     goto loc_1ab97b;
 loc_1aba25: // 0160:1aba25
     edx = memoryAGet32(ds, esp + 8);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1ababd;
     if (memoryAGet32(ds, esp + 4) >= 0x000003c0)
         goto loc_1ababd;
@@ -29058,8 +29356,7 @@ loc_1aba25: // 0160:1aba25
     eax += esi;
     al = memoryAGet(ds, eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= ecx;
     if (!eax)
@@ -29103,7 +29400,7 @@ loc_1abb02: // 0160:1abb02
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    if (memoryAGet32(ds, stop("GetOpAddress")) != 0x00000000)
+    if (memoryAGet32(ds, eax * 8 + 0x39eeb6) != 0x00000000)
         goto loc_1acf3b;
     if ((int32_t)ebx >= (int32_t)0x00000008)
         goto loc_1acf3b;
@@ -29114,11 +29411,11 @@ loc_1abb29: // 0160:1abb29
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x39eeb6, edi);
+    memoryASet32(ds, eax * 8 + 0x39eeba, edx);
     edx = 0;
     ecx = memoryAGet32(ds, 0x1df62c);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x39eebe, edx);
     if (!ecx)
         goto loc_1abb6d;
     edx = esi;
@@ -29136,10 +29433,10 @@ loc_1abb6d: // 0160:1abb6d
     eax = ebx;
     eax <<= 2;
     eax -= ebx;
-    memoryASet32(ds, stop("GetOpAddress"), esi);
+    memoryASet32(ds, eax * 8 + 0x39eec2, esi);
     edx = memoryAGet32(ds, esp + 16);
-    memoryASet32(ds, stop("GetOpAddress"), ebp);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 8 + 0x39eec6, ebp);
+    memoryASet32(ds, eax * 8 + 0x39eeca, edx);
     if ((int32_t)esi <= (int32_t)0x00000028)
         goto loc_1abbbb;
     eax = edi + -81920;
@@ -29177,9 +29474,9 @@ loc_1abc08: // 0160:1abc08
     memoryASet32(ds, 0x39f084, memoryAGet32(ds, 0x39f084) + 0x00000400);
     goto loc_1acf3b;
 loc_1abc17: // 0160:1abc17
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1abc2f;
-    stop("disassembly failed at 160:1abc21 setg al");
+    al = (int32_t)edi > (int32_t)0x00078000;
     eax &= 0x000000ff;
     if (!eax)
         goto loc_1acf3b;
@@ -29209,7 +29506,7 @@ void sub_1abc5e() // 0160:1abc5e +long
     edx = memoryAGet32(ds, 0x39ef94);
     edx -= 0x000000fa;
     memoryASet32(ds, 0x39ef94, edx);
-    if (stop("postCondition"))
+    if ((int32_t)edx > 0)
         goto loc_1abc7f;
     memoryASet32(ds, 0x39ef94, 0x00000001);
 loc_1abc7f: // 0160:1abc7f
@@ -29293,7 +29590,7 @@ void sub_1abd3c() // 0160:1abd3c +long
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -29361,7 +29658,7 @@ void sub_1abdc2() // 0160:1abdc2 +long
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -29369,7 +29666,7 @@ void sub_1abdc2() // 0160:1abdc2 +long
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -29425,7 +29722,7 @@ void sub_1abe6f() // 0160:1abe6f +long
     if (memoryAGet32(ds, ebx + 3792018) != 0x00000000)
         goto loc_1ac068;
     eax = memoryAGet32(ds, ebx + 3792022);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000100)
@@ -29469,7 +29766,7 @@ loc_1abf55: // 0160:1abf55
         goto loc_1abfa1;
     eax = memoryAGet32(ds, 0x39efb8);
     eax &= 0x000000e0;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     ebx = eax;
     ebx <<= 4;
     ebx -= eax;
@@ -29477,7 +29774,7 @@ loc_1abf55: // 0160:1abf55
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -29489,7 +29786,7 @@ loc_1abf55: // 0160:1abf55
 loc_1abfa1: // 0160:1abfa1
     eax = memoryAGet32(ds, 0x39efb8);
     eax &= 0x000000ff;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     ebx = eax;
     ebx <<= 4;
     ebx -= eax;
@@ -29497,7 +29794,7 @@ loc_1abfa1: // 0160:1abfa1
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -29506,7 +29803,7 @@ loc_1abfa1: // 0160:1abfa1
     eax += 0x00000040;
     eax &= 0x000000ff;
 loc_1abfdc: // 0160:1abfdc
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     ebx = eax;
     ebx <<= 4;
     ebx -= eax;
@@ -29514,17 +29811,17 @@ loc_1abfdc: // 0160:1abfdc
     edx = ebx;
     eax = ebx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
-    stop("imul eax * esi");
+    eax = (int32_t)eax * (int32_t)esi;
     memoryASet32(ds, 0x1cdfb0, eax);
     ebx = ecx * 0x000000ac;
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -29532,13 +29829,13 @@ loc_1abfdc: // 0160:1abfdc
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ebp = memoryAGet32(ds, ebx + 3792050);
     eax -= 0x00000006;
-    if (stop("postCondition"))
+    if ((int32_t)ebp > 0)
         goto loc_1ac042;
     ecx -= 0x00000008;
 loc_1ac042: // 0160:1ac042
@@ -29622,7 +29919,7 @@ void sub_1ac0e6() // 0160:1ac0e6 +long
     eax = memoryAGet32(ds, 0x39f014);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -29630,7 +29927,7 @@ void sub_1ac0e6() // 0160:1ac0e6 +long
     eax = memoryAGet32(ds, 0x39f010);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -29638,7 +29935,7 @@ void sub_1ac0e6() // 0160:1ac0e6 +long
     eax = memoryAGet32(ds, 0x39f018);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -29689,9 +29986,9 @@ loc_1ac195: // 0160:1ac195
     eax <<= 3;
     eax += edx;
     esi -= 0x00001800;
-    memoryASet32(ds, stop("GetOpAddress"), esi);
+    memoryASet32(ds, eax * 4 + 0x39e88a, esi);
     ebx = memoryAGet32(ds, 0x39efbc);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x39e8a2, ebx);
     if (ecx != 0x00000004)
         goto loc_1ac1da;
     memoryASet32(ds, 0x39f1c4, 0x0000007d);
@@ -29720,16 +30017,16 @@ loc_1ac218: // 0160:1ac218
     eax += edx;
     ecx -= 0x00000800;
     ebp = 0x0027d8a8;
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
-    memoryASet32(ds, stop("GetOpAddress"), ebp);
+    memoryASet32(ds, eax * 4 + 0x39e88a, ecx);
+    memoryASet32(ds, eax * 4 + 0x39e89e, ebp);
     ebx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     ebx = memoryAGet32(ds, ebx + 3792050);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x39e896, ebx);
     ebx = memoryAGet32(ds, 0x39f078);
     esi = 0x000000fa;
     ebx = -ebx;
-    memoryASet32(ds, stop("GetOpAddress"), esi);
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x39e8a2, esi);
+    memoryASet32(ds, eax * 4 + 0x39e89a, ebx);
     eax = edx;
     ebx = 0x000000ff;
     sub_19ce55();
@@ -29750,11 +30047,11 @@ loc_1ac2be: // 0160:1ac2be
     eax = memoryAGet32(ds, 0x39efac);
     edi = memoryAGet32(ds, 0x39efb0);
     eax -= 0x0000000f;
-    stop("imul eax * edi");
+    eax = (int32_t)eax * (int32_t)edi;
     edx = eax * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -29762,11 +30059,11 @@ loc_1ac2be: // 0160:1ac2be
     eax = memoryAGet32(ds, 0x39efac);
     ebp = memoryAGet32(ds, 0x39efb4);
     eax -= 0x0000000f;
-    stop("imul eax * ebp");
+    eax = (int32_t)eax * (int32_t)ebp;
     edx = eax * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -29800,7 +30097,7 @@ void sub_1ac6c2() // 0160:1ac6c2 +long +stackDrop4
     ebp = edi + -4;
     memoryASet32(ds, esp + 48, edx);
     ebx = memoryAGet32(ds, ebx);
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1ac7a9;
     if (eax >= 0x000003c0)
         goto loc_1ac7a9;
@@ -29836,13 +30133,12 @@ void sub_1ac6c2() // 0160:1ac6c2 +long +stackDrop4
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1ac7a9;
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1ac7a9;
     edx = ebx;
     edx = -edx;
@@ -29866,7 +30162,7 @@ void sub_1ac6c2() // 0160:1ac6c2 +long +stackDrop4
     goto loc_1ac872;
 loc_1ac7a9: // 0160:1ac7a9
     ebp = edi + 1;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1ac87a;
     if (esi >= 0x000003c0)
         goto loc_1ac87a;
@@ -29900,13 +30196,12 @@ loc_1ac7a9: // 0160:1ac7a9
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1ac87a;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1ac87a;
     edx = ebx;
     edx = -edx;
@@ -29920,7 +30215,7 @@ loc_1ac7a9: // 0160:1ac7a9
     edx = sar32(edx, 0x1f);
     idiv32(ebx);
     ebx = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1ac85b;
     if ((int32_t)eax <= (int32_t)0xfffffe80)
         goto loc_1ac85b;
@@ -29938,7 +30233,7 @@ loc_1ac872: // 0160:1ac872
     memoryASet32(ds, esp + 48, 0x00000001);
 loc_1ac87a: // 0160:1ac87a
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1ac90a;
     eax = esi + -1;
     memoryASet32(ds, esp + 36, eax);
@@ -29976,15 +30271,14 @@ loc_1ac87a: // 0160:1ac87a
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233191);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
         goto loc_1aca1c;
 loc_1ac90a: // 0160:1ac90a
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1ac995;
     eax = esi + -2;
     memoryASet32(ds, esp + 40, eax);
@@ -30020,15 +30314,14 @@ loc_1ac90a: // 0160:1ac90a
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233190);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
         goto loc_1aca1c;
 loc_1ac995: // 0160:1ac995
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1aca24;
     eax = esi + -3;
     memoryASet32(ds, esp + 8, eax);
@@ -30064,18 +30357,17 @@ loc_1ac995: // 0160:1ac995
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233189);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1aca24;
 loc_1aca1c: // 0160:1aca1c
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_1acbd3;
 loc_1aca24: // 0160:1aca24
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acaaf;
     eax = esi + 1;
     memoryASet32(ds, esp + 24, eax);
@@ -30111,15 +30403,14 @@ loc_1aca24: // 0160:1aca24
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233193);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
         goto loc_1acbcf;
 loc_1acaaf: // 0160:1acaaf
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acb3f;
     eax = esi + 2;
     memoryASet32(ds, esp + 28, eax);
@@ -30157,15 +30448,14 @@ loc_1acaaf: // 0160:1acaaf
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233194);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
         goto loc_1acbcf;
 loc_1acb3f: // 0160:1acb3f
     ebp = edi + -3;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acbf9;
     eax = esi + 3;
     memoryASet32(ds, esp + 12, eax);
@@ -30203,14 +30493,13 @@ loc_1acb3f: // 0160:1acb3f
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233195);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1acbf9;
 loc_1acbcf: // 0160:1acbcf
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1acbf9;
 loc_1acbd3: // 0160:1acbd3
     edx = ecx;
@@ -30230,7 +30519,7 @@ loc_1acbf9: // 0160:1acbf9
     if (memoryAGet32(ds, esp + 48) != 0x00000000)
         goto loc_1acec4;
     ebp = edi + 1;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acca0;
     eax = esi + -3;
     memoryASet32(ds, esp + 4, eax);
@@ -30268,19 +30557,18 @@ loc_1acbf9: // 0160:1acbf9
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233189);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1acca0;
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_1acca0;
-    if (stop("postCondition"))
+    if ((int32_t)ebx > 0)
         goto loc_1ace60;
 loc_1acca0: // 0160:1acca0
     ebp = edi + 1;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acd3c;
     eax = esi + 3;
     memoryASet32(ds, esp + 16, eax);
@@ -30318,19 +30606,18 @@ loc_1acca0: // 0160:1acca0
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233195);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1acd3c;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1acd3c;
-    if (stop("postCondition"))
+    if ((int32_t)ebx > 0)
         goto loc_1ace60;
 loc_1acd3c: // 0160:1acd3c
     ebp = edi + -4;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1acdd8;
     eax = esi + -3;
     memoryASet32(ds, esp + 32, eax);
@@ -30368,19 +30655,18 @@ loc_1acd3c: // 0160:1acd3c
     eax <<= 6;
     al = memoryAGet(ds, esi + eax + 3233189);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1acdd8;
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_1acdd8;
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_1ace60;
 loc_1acdd8: // 0160:1acdd8
     edi -= 0x00000004;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1acec4;
     ebp = esi + 3;
     if (ebp >= 0x000003c0)
@@ -30416,15 +30702,14 @@ loc_1acdd8: // 0160:1acdd8
     esi += eax;
     eax = 0;
     al = memoryAGet(ds, esi + 3233195);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
         goto loc_1acec4;
-    if ((int32_t)(ecx & ecx) <= 0)
+    if ((int32_t)ecx <= 0)
         goto loc_1acec4;
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1acec4;
 loc_1ace60: // 0160:1ace60
     ecx = -ecx;
@@ -30497,14 +30782,14 @@ loc_1acf05: // 0160:1acf05
     edx = ecx * 0x000000e6;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
     ecx = eax;
 loc_1acf1e: // 0160:1acf1e
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000066)
@@ -30639,7 +30924,7 @@ loc_1ad043: // 0160:1ad043
     edx -= esi;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -30648,12 +30933,12 @@ loc_1ad043: // 0160:1ad043
     ecx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ecx * ecx");
-    stop("imul eax * eax");
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    eax = (int32_t)eax * (int32_t)eax;
     eax += ecx;
     if ((int32_t)eax >= (int32_t)0x00002710)
         goto loc_1ad096;
@@ -30767,7 +31052,7 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = memoryAGet32(ds, esi + 3795078);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -30775,7 +31060,7 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = memoryAGet32(ds, esi + 3795082);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -30783,7 +31068,7 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = memoryAGet32(ds, esi + 3795086);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -30792,7 +31077,7 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = memoryAGet32(ds, esi + 3795090);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -30810,7 +31095,7 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = memoryAGet32(ds, esi + 3795106);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -30826,13 +31111,13 @@ loc_1ad1d1: // 0160:1ad1d1
     eax = 0x0000001d;
     sub_1b9c1d();
 loc_1ad297: // 0160:1ad297
-    if (stop("postCondition"))
+    if ((int32_t)ecx >= 0)
         goto loc_1ad29e;
     ecx += 0x00000002;
 loc_1ad29e: // 0160:1ad29e
     eax = memoryAGet32(ds, esi + 3795094);
     ecx <<= 4;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1ad2b3;
     ecx += 0x0027db28;
     goto loc_1ad2b9;
@@ -30893,7 +31178,7 @@ loc_1ad362: // 0160:1ad362
     eax = memoryAGet32(ds, 0x39f138);
     if (!eax)
         goto loc_1ad3d6;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1ad38a;
     edi = eax + -1;
     eax = 0x00286cf8;
@@ -30903,7 +31188,7 @@ loc_1ad362: // 0160:1ad362
     ecx = 0xffffffff;
     goto loc_1ad3aa;
 loc_1ad38a: // 0160:1ad38a
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1ad3b6;
     edi = eax + 1;
     eax = 0x00286d00;
@@ -30965,7 +31250,7 @@ loc_1ad443: // 0160:1ad443
     if (edi == memoryAGet32(ds, esi + 3795094))
         goto loc_1ad492;
     eax = edi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000100)
@@ -30976,7 +31261,7 @@ loc_1ad492: // 0160:1ad492
     if (edx == memoryAGet32(ds, esi + 3795098))
         goto loc_1ad4b6;
     eax = edx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000100)
@@ -31105,7 +31390,7 @@ loc_1ad60c: // 0160:1ad60c
         goto loc_1afe31;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -31115,14 +31400,14 @@ loc_1ad60c: // 0160:1ad60c
         goto loc_1ad676;
     edi = memoryAGet32(ds, 0x39e896);
     esi = eax;
-    if (stop("postCondition"))
+    if ((int32_t)edi >= 0)
         goto loc_1ad64a;
     esi = eax + -14;
 loc_1ad64a: // 0160:1ad64a
     eax = memoryAGet32(ds, ebx + 3795082);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -31137,7 +31422,7 @@ loc_1ad676: // 0160:1ad676
     eax = memoryAGet32(ds, 0x39e88a);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -31227,7 +31512,7 @@ loc_1ad70b: // 0160:1ad70b
         goto loc_1ad99f;
     goto loc_1afe30;
 loc_1ad797: // 0160:1ad797
-    if (stop("postCondition"))
+    if (esi > 0 && stop("test, ja"))
         goto loc_1ad91d;
     edx = 0x00287ea8;
     esi = memoryAGet32(ds, 0x1dfbc8);
@@ -31241,11 +31526,11 @@ loc_1ad7c0: // 0160:1ad7c0
     edx = memoryAGet32(ds, 0x39efac);
     edi = memoryAGet32(ds, 0x39efb0);
     edx -= 0x0000000f;
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     edx = edx * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -31253,11 +31538,11 @@ loc_1ad7c0: // 0160:1ad7c0
     eax = memoryAGet32(ds, 0x39efac);
     ebp = memoryAGet32(ds, 0x39efb4);
     eax -= 0x0000000f;
-    stop("imul eax * ebp");
+    eax = (int32_t)eax * (int32_t)ebp;
     edx = eax * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -31288,11 +31573,11 @@ loc_1ad855: // 0160:1ad855
     eax = memoryAGet32(ds, 0x39efac);
     edi = memoryAGet32(ds, 0x39efb0);
     eax -= 0x0000000f;
-    stop("imul eax * edi");
+    eax = (int32_t)eax * (int32_t)edi;
     edx = eax * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -31300,11 +31585,11 @@ loc_1ad855: // 0160:1ad855
     edx = memoryAGet32(ds, 0x39efac);
     ebp = memoryAGet32(ds, 0x39efb4);
     edx -= 0x0000000f;
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     edx = edx * 0x0000015d;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -31379,14 +31664,14 @@ loc_1ad99f: // 0160:1ad99f
 loc_1ad9c9: // 0160:1ad9c9
     eax = memoryAGet32(ds, 0x39efb8);
     eax &= 0x000000ff;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     eax = edx;
     eax <<= 4;
     eax -= edx;
     eax += eax;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -31394,18 +31679,18 @@ loc_1ad9c9: // 0160:1ad9c9
     eax = memoryAGet32(ds, 0x39efb8);
     eax += 0x00000040;
     eax &= 0x000000ff;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     eax = edx;
     eax <<= 4;
     eax -= edx;
     eax += eax;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
-    stop("imul eax * ebx");
+    eax = (int32_t)eax * (int32_t)ebx;
     ebx = eax;
     ebx <<= 2;
     ebx += eax;
@@ -31417,7 +31702,7 @@ loc_1ad9c9: // 0160:1ad9c9
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x39e752, ebx);
     edx = memoryAGet32(ds, 0x39efb4);
     ebx = edx;
     ebx <<= 2;
@@ -31428,7 +31713,7 @@ loc_1ad9c9: // 0160:1ad9c9
     ebx -= edx;
     edx = ebx;
     edx = -edx;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e756, edx);
     eax = ecx;
     ebx = 0x00000020;
     goto loc_1ad989;
@@ -31450,7 +31735,7 @@ loc_1adab1: // 0160:1adab1
     ebx += ecx;
     edx = memoryAGet32(ds, eax + 3792050);
     ebx <<= 2;
-    if (stop("postCondition"))
+    if ((int32_t)edx < 0)
         goto loc_1adaf9;
     eax = 0x00291068;
     esi = 0x00000600;
@@ -31472,13 +31757,13 @@ loc_1adb21: // 0160:1adb21
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    memoryASet32(ds, stop("GetOpAddress"), 0x00000014);
+    memoryASet32(ds, eax * 4 + 0x39e762, 0x00000014);
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     edx = memoryAGet32(ds, edx + 3792038);
     edx -= 0x00000600;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e746, edx);
     edx = 0;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e756, edx);
     goto loc_1afe30;
     // gap 8914 bytes
 loc_1afe30: // 0160:1afe30
@@ -31557,11 +31842,11 @@ loc_1adc67: // 0160:1adc67
     eax = memoryAGet32(ds, 0x39efb8);
     eax += ebx;
     eax &= 0x000000ff;
-    esi = memoryAGet32(ds, stop("GetOpAddress"));
+    esi = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     edx = esi * 0x0000001e;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
@@ -31570,16 +31855,16 @@ loc_1adc67: // 0160:1adc67
     eax += ebx;
     eax += 0x00000040;
     eax &= 0x000000ff;
-    edi = memoryAGet32(ds, stop("GetOpAddress"));
+    edi = memoryAGet32(ds, eax * 4 + 0x1d3c14);
     edx = edi * 0x0000001e;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<15) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<15) & 0x80000000);
     edx <<= 16;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x10);
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
-    stop("imul eax * memoryAGet32(ds, edx + 3792050)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, edx + 3792050);
     ebx = ecx * 0x00000024;
     eax = eax * 0x00000190;
     memoryASet32(ds, ebx + 3794770, eax);
@@ -31731,13 +32016,13 @@ loc_1ade17: // 0160:1ade17
     edx = memoryAGet32(ds, esp + 8);
     edi -= ebp;
     edi -= edx;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1ade87;
     edx = memoryAGet32(ds, esp + 16);
     ebp = ecx + 1;
     if ((int32_t)eax < (int32_t)edx)
         goto loc_1ade85;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp + 4))
@@ -31747,14 +32032,14 @@ loc_1ade85: // 0160:1ade85
 loc_1ade87: // 0160:1ade87
     if (!ecx)
         goto loc_1adeb7;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1adea8;
     eax = memoryAGet32(ds, esp + 28);
     ebp = ecx + 1;
     if ((int32_t)edi < (int32_t)eax)
         goto loc_1adea6;
     eax = edi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp))
@@ -31845,13 +32130,13 @@ loc_1adf2c: // 0160:1adf2c
     ebp = memoryAGet32(ds, esp + 8);
     edi -= edx;
     edi -= ebp;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1adf76;
     edx = memoryAGet32(ds, esp + 16);
     ebp = ebx + 1;
     if ((int32_t)eax < (int32_t)edx)
         goto loc_1adf74;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp + 4))
@@ -31861,14 +32146,14 @@ loc_1adf74: // 0160:1adf74
 loc_1adf76: // 0160:1adf76
     if (!ebx)
         goto loc_1adfbd;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1adf97;
     eax = memoryAGet32(ds, esp + 28);
     ebp = ebx + 1;
     if ((int32_t)edi < (int32_t)eax)
         goto loc_1adf95;
     eax = edi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp))
@@ -31914,7 +32199,7 @@ void sub_1ae085() // 0160:1ae085 +long
     ebx <<= 3;
     ebx += eax;
     eax = memoryAGet32(ds, 0x39f078);
-    memoryASet32(ds, stop("GetOpAddress"), memoryAGet32(ds, stop("GetOpAddress")) + eax);
+    memoryASet32(ds, ebx * 4 + 0x39e756, memoryAGet32(ds, ebx * 4 + 0x39e756) + eax);
     edx = memoryAGet32(ds, 0x39efcc);
     eax = edx;
     eax <<= 2;
@@ -31922,7 +32207,7 @@ void sub_1ae085() // 0160:1ae085 +long
     edx += edx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -31932,11 +32217,11 @@ void sub_1ae085() // 0160:1ae085 +long
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(esi);
-    esi = memoryAGet32(ds, stop("GetOpAddress"));
+    esi = memoryAGet32(ds, ebx * 4 + 0x39e752);
     esi += eax;
     eax = esi;
-    memoryASet32(ds, stop("GetOpAddress"), esi);
-    stop("cdq");
+    memoryASet32(ds, ebx * 4 + 0x39e752, esi);
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebx = eax;
@@ -31947,7 +32232,7 @@ loc_1ae0ed: // 0160:1ae0ed
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x39e756);
     edx += edx;
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -31963,7 +32248,7 @@ loc_1ae118: // 0160:1ae118
     ebx = ecx;
     ebx <<= 3;
     ebx += ecx;
-    if ((int32_t)memoryAGet32(ds, stop("GetOpAddress")) > (int32_t)0x00000000)
+    if ((int32_t)memoryAGet32(ds, ebx * 4 + 0x39e752) > (int32_t)0x00000000)
         goto loc_1ae12d;
     eax = -eax;
     goto loc_1ae130;
@@ -31977,7 +32262,7 @@ loc_1ae130: // 0160:1ae130
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e75a, edx);
     esi = pop32();
     edx = pop32();
     ecx = pop32();
@@ -31992,12 +32277,12 @@ void sub_1ae150() // 0160:1ae150 +long
     push32(esi);
     ebx = eax;
     ecx = edx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     esi = eax;
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)esi <= (int32_t)eax)
@@ -32007,7 +32292,7 @@ void sub_1ae150() // 0160:1ae150 +long
 loc_1ae16d: // 0160:1ae16d
     eax = ecx;
 loc_1ae16f: // 0160:1ae16f
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     esi = pop32();
@@ -32031,7 +32316,7 @@ void sub_1ae178() // 0160:1ae178 +long
     eax = memoryAGet32(ds, ebx + 3794754);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32039,7 +32324,7 @@ void sub_1ae178() // 0160:1ae178 +long
     eax = memoryAGet32(ds, ebx + 3794758);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32193,13 +32478,13 @@ loc_1ae3a8: // 0160:1ae3a8
     eax <<= 3;
     eax += ecx;
     edx = memoryAGet32(ds, 0x39f078);
-    memoryASet32(ds, stop("GetOpAddress"), memoryAGet32(ds, stop("GetOpAddress")) + edx);
+    memoryASet32(ds, eax * 4 + 0x39e756, memoryAGet32(ds, eax * 4 + 0x39e756) + edx);
 loc_1ae3bc: // 0160:1ae3bc
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
-    stop("cdq");
+    eax = memoryAGet32(ds, eax * 4 + 0x39e752);
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebx = eax;
@@ -32210,7 +32495,7 @@ loc_1ae3da: // 0160:1ae3da
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x39e756);
     edx += edx;
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -32226,7 +32511,7 @@ loc_1ae405: // 0160:1ae405
     ebx = ecx;
     ebx <<= 3;
     ebx += ecx;
-    if ((int32_t)memoryAGet32(ds, stop("GetOpAddress")) > (int32_t)0x00000000)
+    if ((int32_t)memoryAGet32(ds, ebx * 4 + 0x39e752) > (int32_t)0x00000000)
         goto loc_1ae41a;
     eax = -eax;
     goto loc_1ae41d;
@@ -32240,7 +32525,7 @@ loc_1ae41d: // 0160:1ae41d
     eax = ecx;
     eax <<= 3;
     eax += ecx;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e75a, edx);
     esp += 0x00000028;
     esi = pop32();
     edx = pop32();
@@ -32256,7 +32541,7 @@ void sub_1ae440() // 0160:1ae440 +long
     push32(edi);
     edi = eax;
     esi = edx;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1ae452;
     ecx = 0xffffffff;
     goto loc_1ae457;
@@ -32272,7 +32557,7 @@ loc_1ae464: // 0160:1ae464
     eax = 0xfffffe00;
     memoryASet32(ds, ebx + 2152396, esi);
     sub_1a9cc8();
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edx = 0x00000400;
     memoryASet32(ds, ebx + 2152400, eax);
     eax = 0xfffffc00;
@@ -32282,7 +32567,7 @@ loc_1ae464: // 0160:1ae464
     eax = 0;
     ebx += 0x00000012;
     sub_1a9cc8();
-    al = memoryAGet(ds, stop("GetOpAddress"));
+    al = memoryAGet(ds, eax * 4 + 0x268628);
     memoryASet(ds, ebx + 2152390, al);
     ah = 0;
     memoryASet(ds, ebx + 2152391, ah);
@@ -32305,7 +32590,7 @@ void sub_1ae4cd() // 0160:1ae4cd +long
     esp -= 0x00000018;
     sub_1add0c();
     edx = memoryAGet32(ds, 0x39f1c4);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1ae4ee;
     ebx = edx + -1;
     memoryASet32(ds, 0x39f1c4, ebx);
@@ -32342,7 +32627,7 @@ loc_1ae559: // 0160:1ae559
     eax = memoryAGet32(ds, esi + 3794762);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32350,7 +32635,7 @@ loc_1ae559: // 0160:1ae559
     eax = memoryAGet32(ds, esi + 3794766);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32358,7 +32643,7 @@ loc_1ae559: // 0160:1ae559
     eax = memoryAGet32(ds, esi + 3794754);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32366,7 +32651,7 @@ loc_1ae559: // 0160:1ae559
     eax = memoryAGet32(ds, esi + 3794758);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32489,7 +32774,7 @@ loc_1ae782: // 0160:1ae782
     edx -= ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32499,12 +32784,12 @@ loc_1ae782: // 0160:1ae782
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ecx * ecx");
-    stop("imul eax * eax");
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    eax = (int32_t)eax * (int32_t)eax;
     eax += ecx;
     if ((int32_t)eax > (int32_t)0x000057e4)
         goto loc_1ae81f;
@@ -32588,7 +32873,7 @@ loc_1ae933: // 0160:1ae933
     ecx = 0;
     edx = memoryAGet32(ds, esp);
     memoryASet16(ds, 0x39ef86, cx);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1ae97a;
     ebx = memoryAGet32(ds, esp + 4);
     if (ebx >= 0x000003c0)
@@ -32597,8 +32882,7 @@ loc_1ae933: // 0160:1ae933
     eax += ebx;
     al = memoryAGet(ds, eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (!eax)
         goto loc_1ae97a;
@@ -32624,7 +32908,7 @@ loc_1ae9ad: // 0160:1ae9ad
     edx = 0;
     ebp = memoryAGet32(ds, esp);
     memoryASet16(ds, 0x39ef86, dx);
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1ae9fd;
     if (memoryAGet32(ds, esp + 4) >= 0x000003c0)
         goto loc_1ae9fd;
@@ -32632,8 +32916,7 @@ loc_1ae9ad: // 0160:1ae9ad
     eax += memoryAGet32(ds, esp + 4);
     al = memoryAGet(ds, eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     if (!eax)
         goto loc_1ae9fd;
@@ -32667,7 +32950,7 @@ loc_1aea4d: // 0160:1aea4d
     eax = memoryAGet32(ds, esi + 3794770);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<9) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<9) & 0x80000000);
     edx <<= 10;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0a);
@@ -32677,7 +32960,7 @@ loc_1aea4d: // 0160:1aea4d
     memoryASet32(ds, esp + 4, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<9) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<9) & 0x80000000);
     edx <<= 10;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0a);
@@ -32776,7 +33059,7 @@ loc_1aeb65: // 0160:1aeb65
     eax = memoryAGet32(ds, esi + 3794758);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32784,7 +33067,7 @@ loc_1aeb65: // 0160:1aeb65
     eax = memoryAGet32(ds, esi + 3794754);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32832,7 +33115,7 @@ loc_1aec0b: // 0160:1aec0b
         goto loc_1aeca9;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32842,7 +33125,7 @@ loc_1aec0b: // 0160:1aec0b
     esi -= edx;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -32863,11 +33146,11 @@ loc_1aec0b: // 0160:1aec0b
     edx = sar32(edx, 0x1f);
     idiv32(ecx);
     ecx = eax;
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1aeca1;
     if ((int32_t)esi >= (int32_t)0x00000140)
         goto loc_1aeca1;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1aeca1;
     if ((int32_t)eax >= (int32_t)0x000000a8)
         goto loc_1aeca1;
@@ -32967,14 +33250,14 @@ loc_1aed2a: // 0160:1aed2a
     eax <<= 9;
     ecx += eax;
     eax = ebx + 16;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     memoryASet32(ds, esp + 20, eax);
     eax = memoryAGet32(ds, esp);
     edx = eax;
     edx = sar32(edx, 0x1f);
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    stop("imul ebx * ebx");
+    ebx = (int32_t)ebx * (int32_t)ebx;
     memoryASet32(ds, esp + 24, eax);
     eax = memoryAGet32(ds, esp);
     memoryASet32(ds, esp + 44, ebx);
@@ -33007,7 +33290,7 @@ loc_1aeda4: // 0160:1aeda4
     edx -= ebp;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33017,14 +33300,14 @@ loc_1aeda4: // 0160:1aeda4
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edx = ebp;
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     edi = eax;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     edx += eax;
     memoryASet32(ds, esp + 48, edx);
     eax = edx;
@@ -33035,12 +33318,12 @@ loc_1aeda4: // 0160:1aeda4
     edx = edx * 0x000000eb;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
     edx = memoryAGet32(ds, esp);
-    stop("imul edx * eax");
+    edx = (int32_t)edx * (int32_t)eax;
     memoryASet32(ds, 0x39ef82, 0x00000001);
     ebx = memoryAGet32(ds, esp + 44);
     eax = edx;
@@ -33075,7 +33358,7 @@ loc_1aee71: // 0160:1aee71
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33116,7 +33399,7 @@ loc_1aeef3: // 0160:1aeef3
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     edx = memoryAGet32(ds, esp + 40);
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     ebx <<= 4;
     edx <<= 9;
     memoryASet32(ds, ecx + 3792022, eax);
@@ -33124,7 +33407,7 @@ loc_1aeef3: // 0160:1aeef3
     edx = sar32(edx, 0x1f);
     idiv32(ebx);
     edx = memoryAGet32(ds, esp + 40);
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     ebp = memoryAGet32(ds, ecx + 3792018);
     edx <<= 9;
     ebp += eax;
@@ -33137,7 +33420,7 @@ loc_1aeef3: // 0160:1aeef3
     edx += eax;
     ebx = memoryAGet32(ds, ecx + 3792018);
     memoryASet32(ds, ecx + 3792022, edx);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1aef61;
     memoryASet32(ds, ecx + 3792050, 0x00000001);
     goto loc_1aef6b;
@@ -33147,17 +33430,17 @@ loc_1aef6b: // 0160:1aef6b
     eax = memoryAGet32(ds, ecx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edi = eax + -4;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1aeff1;
     eax = memoryAGet32(ds, ecx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33177,14 +33460,13 @@ loc_1aef6b: // 0160:1aef6b
     eax = sar32(eax, 0x00000001);
     edi = edi * 0x000003c0;
     edx = 0;
-    dx = memoryAGet16(ss, stop("GetOpAddress"));
+    dx = memoryAGet16(ss, ebp + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, edi + ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -33251,7 +33533,7 @@ loc_1af0e1: // 0160:1af0e1
     eax = 0x00000001;
     edx = memoryAGet32(ds, 0x39eff4);
     memoryASet32(ds, 0x39f0e8, eax);
-    if ((int32_t)(edx & edx) <= 0)
+    if ((int32_t)edx <= 0)
         goto loc_1af10d;
     ebx = 0x00000002;
     memoryASet32(ds, 0x39f0bc, eax);
@@ -33267,7 +33549,7 @@ loc_1af10d: // 0160:1af10d
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33358,10 +33640,10 @@ loc_1af1f8: // 0160:1af1f8
     eax <<= 9;
     ebp += eax;
     eax = ebx + 16;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     memoryASet32(ds, esp + 16, eax);
     eax = ebx;
-    stop("imul eax * ebx");
+    eax = (int32_t)eax * (int32_t)ebx;
     memoryASet32(ds, esp + 48, eax);
     eax = ebx;
     esi = memoryAGet32(ds, esp + 12);
@@ -33381,7 +33663,7 @@ loc_1af1f8: // 0160:1af1f8
     eax -= edx;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33398,7 +33680,7 @@ loc_1af28e: // 0160:1af28e
     eax -= ebx;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33408,14 +33690,14 @@ loc_1af28e: // 0160:1af28e
     ebp = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edx = ebp;
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     edi = eax;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     edx += eax;
     memoryASet32(ds, esp + 52, edx);
     eax = edx;
@@ -33426,7 +33708,7 @@ loc_1af28e: // 0160:1af28e
     ebx = edx;
     edx = memoryAGet32(ds, esp);
     ebx -= eax;
-    stop("imul edx * ebx");
+    edx = (int32_t)edx * (int32_t)ebx;
     ebx = memoryAGet32(ds, esp + 48);
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -33473,7 +33755,7 @@ loc_1af387: // 0160:1af387
     edi = memoryAGet32(ds, esp + 12);
     eax = memoryAGet32(ds, ecx + 3792026);
     eax -= edi;
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1af39d;
     ebp = memoryAGet32(ds, esp + 40);
     goto loc_1af3a6;
@@ -33485,7 +33767,7 @@ loc_1af3a6: // 0160:1af3a6
     edx = memoryAGet32(ds, esp + 8);
     eax = memoryAGet32(ds, ecx + 3792030);
     eax -= edx;
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1af3bc;
     edi = memoryAGet32(ds, esp + 40);
     goto loc_1af3c5;
@@ -33511,7 +33793,7 @@ loc_1af3ee: // 0160:1af3ee
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33537,7 +33819,7 @@ loc_1af443: // 0160:1af443
     sub_1ae150();
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33554,14 +33836,14 @@ loc_1af469: // 0160:1af469
     eax = sar32(eax, 0x00000001);
     ebx = ebx * 0x00000014;
     edx = memoryAGet32(ds, esp + 44);
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     memoryASet32(ds, ecx + 3792022, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(ebx);
     memoryASet32(ds, ecx + 3792018, memoryAGet32(ds, ecx + 3792018) + eax);
     edx = memoryAGet32(ds, esp + 44);
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(ebx);
@@ -33570,7 +33852,7 @@ loc_1af469: // 0160:1af469
     ebx += eax;
     edi = memoryAGet32(ds, ecx + 3792018);
     memoryASet32(ds, ecx + 3792022, ebx);
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1af4c9;
     memoryASet32(ds, ecx + 3792050, 0x00000001);
     goto loc_1af4d3;
@@ -33580,17 +33862,17 @@ loc_1af4d3: // 0160:1af4d3
     eax = memoryAGet32(ds, ecx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edi = eax + -4;
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1af55b;
     eax = memoryAGet32(ds, ecx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33610,13 +33892,13 @@ loc_1af4d3: // 0160:1af4d3
     eax = sar32(eax, 0x00000001);
     edi = edi * 0x000003c0;
     edx = 0;
-    dx = memoryAGet16(ss, stop("GetOpAddress"));
+    dx = memoryAGet16(ss, ebp + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     eax &= edx;
     edx = 0;
     dl = memoryAGet(ds, edi + ebx + 3233192);
-    stop("setne");
+    dl = edx != 0x00000080;
     edx &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -33634,7 +33916,7 @@ loc_1af565: // 0160:1af565
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33643,7 +33925,7 @@ loc_1af591: // 0160:1af591
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<2) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<2) & 0x80000000);
     edx <<= 3;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x03);
@@ -33711,7 +33993,7 @@ loc_1af685: // 0160:1af685
     ebx = 0x00000001;
     edi = memoryAGet32(ds, 0x39eff4);
     memoryASet32(ds, 0x39f0e8, ebx);
-    if ((int32_t)(edi & edi) <= 0)
+    if ((int32_t)edi <= 0)
         goto loc_1af6b2;
     ebp = 0x00000002;
     memoryASet32(ds, 0x39f0bc, ebx);
@@ -33727,7 +34009,7 @@ loc_1af6b2: // 0160:1af6b2
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -33799,7 +34081,7 @@ void sub_1af790() // 0160:1af790 +long
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     ebp = ebx;
-    stop("imul ebp * ebx");
+    ebp = (int32_t)ebp * (int32_t)ebx;
     ecx = memoryAGet32(ds, esp + 4);
     esi = memoryAGet32(ds, esp);
     eax <<= 9;
@@ -33817,7 +34099,7 @@ loc_1af7c8: // 0160:1af7c8
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33827,14 +34109,14 @@ loc_1af7c8: // 0160:1af7c8
     esi = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edi = esi;
-    stop("imul edi * esi");
+    edi = (int32_t)edi * (int32_t)esi;
     ecx = eax;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     edi += eax;
     if ((int32_t)edi >= (int32_t)ebp)
         goto loc_1af896;
@@ -33856,7 +34138,7 @@ loc_1af7c8: // 0160:1af7c8
     memoryASet32(ds, esp + 8, eax);
 loc_1af848: // 0160:1af848
     edx = esi;
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     esi = memoryAGet32(ds, esp + 8);
     edx <<= 9;
     esi <<= 4;
@@ -33864,7 +34146,7 @@ loc_1af848: // 0160:1af848
     edx = sar32(edx, 0x1f);
     idiv32(esi);
     edx = ecx;
-    stop("imul edx * edi");
+    edx = (int32_t)edx * (int32_t)edi;
     edx <<= 9;
     memoryASet32(ds, ebx + 3791154, eax);
     eax = edx;
@@ -33921,7 +34203,7 @@ loc_1af8ad: // 0160:1af8ad
     edx += eax;
     ebx += eax;
     eax = edi;
-    stop("imul eax * edi");
+    eax = (int32_t)eax * (int32_t)edi;
     memoryASet32(ds, esp, ebx);
     memoryASet32(ds, esp + 4, edx);
     ebp = memoryAGet32(ds, esp);
@@ -33936,7 +34218,7 @@ loc_1af8e6: // 0160:1af8e6
     edx -= esi;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -33945,21 +34227,21 @@ loc_1af8e6: // 0160:1af8e6
     ecx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     edx = ecx;
-    stop("imul edx * ecx");
+    edx = (int32_t)edx * (int32_t)ecx;
     esi = eax;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     eax += edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp + 8))
         goto loc_1af991;
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_1af947;
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     edx = edi;
@@ -33969,7 +34251,7 @@ loc_1af8e6: // 0160:1af8e6
     goto loc_1af958;
 loc_1af947: // 0160:1af947
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     edx = edi;
@@ -33982,7 +34264,7 @@ loc_1af958: // 0160:1af958
     eax = sar32(eax, 0x05);
     memoryASet32(ds, ebx + 3790906, eax);
     eax = esi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     edx = edi;
@@ -34024,7 +34306,7 @@ void sub_1af9a5() // 0160:1af9a5 +long
     ebx = eax;
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    stop("imul ebx * ebx");
+    ebx = (int32_t)ebx * (int32_t)ebx;
     edi = 0;
     esi = 0;
     edx = memoryAGet32(ds, esp + 4);
@@ -34041,7 +34323,7 @@ loc_1af9ec: // 0160:1af9ec
     edx -= ebp;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34051,12 +34333,12 @@ loc_1af9ec: // 0160:1af9ec
     ebx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ebx * ebx");
-    stop("imul eax * eax");
+    ebx = (int32_t)ebx * (int32_t)ebx;
+    eax = (int32_t)eax * (int32_t)eax;
     edx = memoryAGet32(ds, esp);
     eax += ebx;
     if ((int32_t)eax >= (int32_t)edx)
@@ -34103,11 +34385,11 @@ void sub_1afa94() // 0160:1afa94 +long +stackDrop16
     if ((int32_t)ebx > (int32_t)0x000003c0)
         goto loc_1afb90;
     eax = ebx + esi;
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1afb90;
     edx = memoryAGet32(ds, esp + 28);
     edx += ecx;
-    if (stop("postCondition"))
+    if ((int32_t)edx < 0)
         goto loc_1afb90;
     if ((int32_t)ecx > (int32_t)0x00000190)
         goto loc_1afb90;
@@ -34116,7 +34398,7 @@ void sub_1afa94() // 0160:1afa94 +long +stackDrop16
     esi = 0x000003c0;
     esi -= ebx;
 loc_1afae3: // 0160:1afae3
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1afaf5;
     edx = memoryAGet32(ds, esp + 4);
     edx -= ebx;
@@ -34133,10 +34415,10 @@ loc_1afaf5: // 0160:1afaf5
     memoryASet32(ds, esp + 28, eax);
 loc_1afb0d: // 0160:1afb0d
     ebp = memoryAGet32(ds, esp + 36);
-    stop("imul ecx * ebp");
+    ecx = (int32_t)ecx * (int32_t)ebp;
     edi += ecx;
     edi += ebx;
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1afb90;
     if (memoryAGet32(ds, 0x1dc0c4) == 0x00000000)
         goto loc_1afb40;
@@ -34227,7 +34509,7 @@ loc_1afbf0: // 0160:1afbf0
     if (ecx == 0x00000080)
         goto loc_1afc17;
     edi = memoryAGet32(ds, esp + 4);
-    if (ecx == memoryAGet32(ds, stop("GetOpAddress")))
+    if (ecx == memoryAGet32(ds, edi * 4 + 0x268628))
         goto loc_1afc17;
     ebx += 0x00000004;
     memoryASet32(ds, esp + 4, eax);
@@ -34256,7 +34538,7 @@ void sub_1afc31() // 0160:1afc31 +long
     push32(ebp);
     esi = eax;
     edi = edx;
-    memoryASet32(ds, stop("GetOpAddress"), 0x00000001);
+    memoryASet32(ds, ebx * 4 + 0x3be450, 0x00000001);
     ebx <<= 4;
     eax = ebx;
     eax <<= 2;
@@ -34335,7 +34617,7 @@ loc_1afcf3: // 0160:1afcf3
     eax = memoryAGet32(ds, ebx + 3922004);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34343,12 +34625,12 @@ loc_1afcf3: // 0160:1afcf3
     memoryASet32(ds, ebx + 3922012, ebp);
     ebp = 0x00000032;
     esi = eax;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1afdfb;
     eax = memoryAGet32(ds, ebx + 3922000);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34376,8 +34658,7 @@ loc_1afcf3: // 0160:1afcf3
     edi &= eax;
     eax = 0;
     al = memoryAGet(ds, ecx + esi + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edi;
     if (!eax)
@@ -34446,7 +34727,7 @@ loc_1afe3e: // 0160:1afe3e
     eax = memoryAGet32(ds, esi + 3922004);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34454,7 +34735,7 @@ loc_1afe3e: // 0160:1afe3e
     eax = memoryAGet32(ds, esi + 3922000);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34462,7 +34743,7 @@ loc_1afe3e: // 0160:1afe3e
     eax = memoryAGet32(ds, esi + 3922016);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -34476,7 +34757,7 @@ loc_1afea6: // 0160:1afea6
     eax = memoryAGet32(ds, esi + 3922004);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34484,7 +34765,7 @@ loc_1afea6: // 0160:1afea6
     eax = memoryAGet32(ds, esi + 3922000);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34492,7 +34773,7 @@ loc_1afea6: // 0160:1afea6
     eax = memoryAGet32(ds, esi + 3922016);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -34550,7 +34831,7 @@ loc_1aff44: // 0160:1aff44
     sub_1a9cc8();
     eax += ecx;
     ebx += 0x00000012;
-    al = memoryAGet(ds, stop("GetOpAddress"));
+    al = memoryAGet(ds, eax * 4 + 0x268628);
     memoryASet(ds, ebx + 2152390, al);
     ah = 0;
     memoryASet(ds, ebx + 2152391, ah);
@@ -34615,7 +34896,7 @@ loc_1affd7: // 0160:1affd7
     eax = memoryAGet32(ds, ebx + 2152396);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34623,12 +34904,12 @@ loc_1affd7: // 0160:1affd7
     memoryASet32(ds, ebx + 2152404, ebp);
     ebp = 0x00000032;
     esi = eax;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1b00fa;
     eax = memoryAGet32(ds, ebx + 2152392);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34656,8 +34937,7 @@ loc_1affd7: // 0160:1affd7
     edi &= eax;
     eax = 0;
     al = memoryAGet(ds, ecx + esi + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edi;
     if (!eax)
@@ -34716,18 +34996,18 @@ loc_1b010b: // 0160:1b010b
     esi = eax;
     esi <<= 2;
     esi -= eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ebp = eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34738,30 +35018,30 @@ loc_1b010b: // 0160:1b010b
     sub_1afb99();
     ecx = 0x00000040;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00004000;
     sub_1aff0f();
     ecx = 0x00000010;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00004000;
     sub_1afc31();
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax + -4;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34805,18 +35085,18 @@ loc_1b01ef: // 0160:1b01ef
     esi = eax;
     esi <<= 2;
     esi -= eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ebp = eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34827,30 +35107,30 @@ loc_1b01ef: // 0160:1b01ef
     sub_1afb99();
     ecx = 0x00000040;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00003000;
     sub_1aff0f();
     ecx = 0x0000000c;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00003000;
     sub_1afc31();
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax + 6;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34894,18 +35174,18 @@ loc_1b02ce: // 0160:1b02ce
     esi = eax;
     esi <<= 2;
     esi -= eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ebp = eax;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -34916,30 +35196,30 @@ loc_1b02ce: // 0160:1b02ce
     sub_1afb99();
     ecx = 0x00000020;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00001800;
     sub_1aff0f();
     ecx = 0x00000008;
     ebx = edi;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, esi * 8 + 0x39eeba);
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx += 0x00004000;
     eax += 0x00001800;
     sub_1afc31();
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeba);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = eax + 10;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 8 + 0x39eeb6);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35127,7 +35407,7 @@ loc_1b0578: // 0160:1b0578
     memoryASet32(ds, esp, ecx);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35135,7 +35415,7 @@ loc_1b0578: // 0160:1b0578
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35148,7 +35428,7 @@ loc_1b0578: // 0160:1b0578
     eax = 0x00299238;
     sub_1afa94();
     stop("stack_below", "0160:1b05c1");
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1b05d1;
     ecx = 0xffffffff;
     goto loc_1b05d6;
@@ -35163,7 +35443,7 @@ loc_1b05d6: // 0160:1b05d6
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<9) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<9) & 0x80000000);
     edx <<= 10;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0a);
@@ -35172,7 +35452,7 @@ loc_1b05d6: // 0160:1b05d6
     eax = memoryAGet32(ds, esp);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<9) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<9) & 0x80000000);
     edx <<= 10;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0a);
@@ -35188,7 +35468,7 @@ loc_1b0625: // 0160:1b0625
     eax = 0xfffffe00;
     memoryASet32(ds, ebx + 2152392, ebp);
     sub_1a9cc8();
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edx = 0x00000400;
     memoryASet32(ds, ebx + 2152400, eax);
     eax = 0xfffffc00;
@@ -35198,7 +35478,7 @@ loc_1b0625: // 0160:1b0625
     eax = 0;
     ebx += 0x00000012;
     sub_1a9cc8();
-    al = memoryAGet(ds, stop("GetOpAddress"));
+    al = memoryAGet(ds, eax * 4 + 0x268628);
     memoryASet(ds, ebx + 2152390, al);
     ah = 0;
     memoryASet(ds, ebx + 2152391, ah);
@@ -35257,7 +35537,7 @@ loc_1b06e9: // 0160:1b06e9
     edx = edi;
     eax = edi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35265,7 +35545,7 @@ loc_1b06e9: // 0160:1b06e9
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<11) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<11) & 0x80000000);
     edx <<= 12;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0c);
@@ -35275,7 +35555,7 @@ loc_1b06e9: // 0160:1b06e9
     ecx -= eax;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35283,7 +35563,7 @@ loc_1b06e9: // 0160:1b06e9
     edx = ebp;
     eax = ebp;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<11) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<11) & 0x80000000);
     edx <<= 12;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0c);
@@ -35297,7 +35577,7 @@ loc_1b06e9: // 0160:1b06e9
     eax = 0x00299228;
     sub_1afa94();
     stop("stack_below", "0160:1b075f");
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1b076f;
     ebp = 0xffffffff;
     goto loc_1b0774;
@@ -35307,7 +35587,7 @@ loc_1b0774: // 0160:1b0774
     ebx = 0;
     goto loc_1b078c;
 loc_1b0778: // 0160:1b0778
-    if (memoryAGet32(ds, stop("GetOpAddress")) != 0x00000000)
+    if (memoryAGet32(ds, ebx * 4 + 0x268608) != 0x00000000)
         goto loc_1b078b;
     memoryASet32(ds, esp + 4, ebx);
     ebx = 0x00000008;
@@ -35343,7 +35623,7 @@ loc_1b07da: // 0160:1b07da
     eax = 0xfffffe00;
     memoryASet32(ds, ebx + 2152396, edi);
     sub_1a9cc8();
-    stop("imul eax * ebp");
+    eax = (int32_t)eax * (int32_t)ebp;
     edx = 0x00000400;
     memoryASet32(ds, ebx + 2152400, eax);
     eax = 0xfffffc00;
@@ -35354,7 +35634,7 @@ loc_1b07da: // 0160:1b07da
     sub_1a9cc8();
     eax += memoryAGet32(ds, esp);
     ebx += 0x00000012;
-    al = memoryAGet(ds, stop("GetOpAddress"));
+    al = memoryAGet(ds, eax * 4 + 0x268628);
     memoryASet(ds, ebx + 2152390, al);
     ah = 0;
     ecx++;
@@ -35433,7 +35713,7 @@ loc_1b08e9: // 0160:1b08e9
     eax = memoryAGet32(ds, esi + 3796666);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35444,7 +35724,7 @@ loc_1b08e9: // 0160:1b08e9
     eax = memoryAGet32(ds, esi + 3796662);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35488,14 +35768,14 @@ loc_1b097e: // 0160:1b097e
     eax = edx;
     eax <<= 3;
     eax += edx;
-    memoryASet32(ds, stop("GetOpAddress"), ebx);
+    memoryASet32(ds, eax * 4 + 0x39d926, ebx);
     edi = 0;
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), edi);
-    memoryASet32(ds, stop("GetOpAddress"), 0x00000600);
+    memoryASet32(ds, eax * 4 + 0x39d922, ecx);
+    memoryASet32(ds, eax * 4 + 0x39d932, edi);
+    memoryASet32(ds, eax * 4 + 0x39d936, edi);
+    memoryASet32(ds, eax * 4 + 0x39d93a, edi);
+    memoryASet32(ds, eax * 4 + 0x39d942, edi);
+    memoryASet32(ds, eax * 4 + 0x39d93e, 0x00000600);
     edi = pop32();
     ecx = pop32();
     ebx = pop32();
@@ -35552,7 +35832,7 @@ loc_1b09cf: // 0160:1b09cf
     memoryASet32(ds, esi + 3791142, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35560,7 +35840,7 @@ loc_1b09cf: // 0160:1b09cf
     eax = memoryAGet32(ds, esi + 3791142);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35583,7 +35863,7 @@ loc_1b0a91: // 0160:1b0a91
     eax = memoryAGet32(ds, esi + 3791146);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35591,7 +35871,7 @@ loc_1b0a91: // 0160:1b0a91
     eax = memoryAGet32(ds, esi + 3791150);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35599,7 +35879,7 @@ loc_1b0a91: // 0160:1b0a91
     eax = memoryAGet32(ds, esi + 3791154);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<5) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<5) & 0x80000000);
     edx <<= 6;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x06);
@@ -35663,13 +35943,13 @@ loc_1b0af0: // 0160:1b0af0
     memoryASet32(ds, esi + 3791162, edx);
 loc_1b0ba2: // 0160:1b0ba2
     eax = memoryAGet32(ds, esp);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax > (int32_t)0x00000100)
         goto loc_1b0bc1;
     eax = memoryAGet32(ds, esp + 4);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000100)
@@ -35774,7 +36054,7 @@ loc_1b0cef: // 0160:1b0cef
     eax = memoryAGet32(ds, esi + 3791142);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35782,7 +36062,7 @@ loc_1b0cef: // 0160:1b0cef
     eax = memoryAGet32(ds, esi + 3791138);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35790,7 +36070,7 @@ loc_1b0cef: // 0160:1b0cef
     eax = memoryAGet32(ds, esi + 3791162);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -35857,7 +36137,7 @@ loc_1b0dd9: // 0160:1b0dd9
     eax = memoryAGet32(ds, esi + 3790898);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35865,7 +36145,7 @@ loc_1b0dd9: // 0160:1b0dd9
     eax = memoryAGet32(ds, esi + 3790902);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -35877,7 +36157,7 @@ loc_1b0dd9: // 0160:1b0dd9
         goto loc_1b0f3f;
     if (edi >= 0x000003c0)
         goto loc_1b0f3f;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1b0e8b;
     if (edi >= 0x000003c0)
         goto loc_1b0e8b;
@@ -35891,7 +36171,7 @@ loc_1b0dd9: // 0160:1b0dd9
     eax = edi;
     eax -= edx;
     eax = sar32(eax, 0x00000001);
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
     edx = 0;
     eax &= 0x0000ffff;
     dx = memoryAGet16(ds, 0x39ef86);
@@ -35899,15 +36179,14 @@ loc_1b0dd9: // 0160:1b0dd9
     eax = ebp * 0x000003c0;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     edx |= eax;
     if (edx)
         goto loc_1b0ef5;
 loc_1b0e8b: // 0160:1b0e8b
     ebx = ebp + 1;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1b0f3f;
     if (edi >= 0x000003c0)
         goto loc_1b0f3f;
@@ -35923,15 +36202,14 @@ loc_1b0e8b: // 0160:1b0e8b
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     edx = 0;
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
     eax = 0;
     ax = memoryAGet16(ds, 0x39ef86);
     edx &= eax;
     eax = ebx * 0x000003c0;
     al = memoryAGet(ds, edi + eax + 3233192);
     eax &= 0x000000ff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -36013,7 +36291,7 @@ loc_1b0f9b: // 0160:1b0f9b
     eax = memoryAGet32(ds, esi + 3790902);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36021,7 +36299,7 @@ loc_1b0f9b: // 0160:1b0f9b
     eax = memoryAGet32(ds, esi + 3790898);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36029,7 +36307,7 @@ loc_1b0f9b: // 0160:1b0f9b
     eax = memoryAGet32(ds, esi + 3790918);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -36043,7 +36321,7 @@ loc_1b1003: // 0160:1b1003
     eax = memoryAGet32(ds, esi + 3790902);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36051,7 +36329,7 @@ loc_1b1003: // 0160:1b1003
     eax = memoryAGet32(ds, esi + 3790898);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36059,7 +36337,7 @@ loc_1b1003: // 0160:1b1003
     eax = memoryAGet32(ds, esi + 3790918);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -36199,7 +36477,7 @@ loc_1b1169: // 0160:1b1169
     memoryASet32(ds, esi + 3795602, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36207,7 +36485,7 @@ loc_1b1169: // 0160:1b1169
     edx = ecx;
     eax = ecx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36219,7 +36497,7 @@ loc_1b1169: // 0160:1b1169
     memoryASet32(ds, esi + 3795614, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36227,7 +36505,7 @@ loc_1b1169: // 0160:1b1169
     eax = memoryAGet32(ds, esi + 3795606);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36235,7 +36513,7 @@ loc_1b1169: // 0160:1b1169
     if (ebp != memoryAGet32(ds, esi + 3795622))
         goto loc_1b1278;
     eax = memoryAGet32(ds, esi + 3795614);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000100)
@@ -36248,7 +36526,7 @@ loc_1b123b: // 0160:1b123b
     goto loc_1b127e;
 loc_1b1243: // 0160:1b1243
     eax = memoryAGet32(ds, esi + 3795610);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000100)
@@ -36311,13 +36589,13 @@ loc_1b127e: // 0160:1b127e
     memoryASet32(ds, esi + 3795618, eax);
 loc_1b1320: // 0160:1b1320
     eax = memoryAGet32(ds, esp);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax > (int32_t)0x00000100)
         goto loc_1b133f;
     eax = memoryAGet32(ds, esp + 4);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00000100)
@@ -36379,7 +36657,7 @@ loc_1b13b5: // 0160:1b13b5
     eax = memoryAGet32(ds, esi + 3795598);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36387,7 +36665,7 @@ loc_1b13b5: // 0160:1b13b5
     eax = memoryAGet32(ds, esi + 3795594);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36395,7 +36673,7 @@ loc_1b13b5: // 0160:1b13b5
     eax = memoryAGet32(ds, esi + 3795618);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<3) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<3) & 0x80000000);
     edx <<= 4;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x04);
@@ -36409,7 +36687,7 @@ loc_1b141d: // 0160:1b141d
     eax = memoryAGet32(ds, esi + 3795598);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36417,7 +36695,7 @@ loc_1b141d: // 0160:1b141d
     eax = memoryAGet32(ds, esi + 3795594);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -36485,7 +36763,7 @@ loc_1b14d6: // 0160:1b14d6
     eax &= 0x000000ff;
     if (eax == 0x00000080)
         goto loc_1b1549;
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1b1549;
     ebx = memoryAGet32(ds, esp + 4);
     ebx += ecx;
@@ -36505,8 +36783,7 @@ loc_1b14d6: // 0160:1b14d6
     eax = 0;
     al = memoryAGet(ds, ebx + 3233192);
     edx &= 0x0000ffff;
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (!eax)
@@ -36574,7 +36851,7 @@ loc_1b1589: // 0160:1b1589
     ebp = edi + 400;
     if ((int32_t)eax > (int32_t)ebp)
         goto loc_1b1625;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b15d6;
     ecx += edx;
     esi -= edx;
@@ -36586,7 +36863,7 @@ loc_1b15d6: // 0160:1b15d6
     ecx = 0x000003c0;
     ecx -= edx;
 loc_1b15e8: // 0160:1b15e8
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1b15f2;
     edi += eax;
     ebx -= eax;
@@ -36657,7 +36934,7 @@ void sub_1b162d() // 0160:1b162d +long
     memoryASet32(ds, 0x39f098, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36665,7 +36942,7 @@ void sub_1b162d() // 0160:1b162d +long
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36756,7 +37033,7 @@ loc_1b1722: // 0160:1b1722
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36764,7 +37041,7 @@ loc_1b1722: // 0160:1b1722
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36838,7 +37115,7 @@ loc_1b1884: // 0160:1b1884
     ebx = memoryAGet32(ds, 0x39f09c);
     eax += edx;
     eax += ebx;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_1afe31;
     esi = memoryAGet32(ds, 0x39bde8);
     if (!esi)
@@ -36882,7 +37159,7 @@ loc_1b190c: // 0160:1b190c
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36890,7 +37167,7 @@ loc_1b190c: // 0160:1b190c
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36947,12 +37224,12 @@ loc_1b199d: // 0160:1b199d
     esi += eax;
     eax = memoryAGet32(ds, 0x39f09c);
     eax += esi;
-    if (memoryAGet32(ds, stop("GetOpAddress")) == 0x00000000)
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
         goto loc_1afe30;
     eax = memoryAGet32(ds, 0x39f008);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -36960,7 +37237,7 @@ loc_1b199d: // 0160:1b199d
     eax = memoryAGet32(ds, 0x39f00c);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -37049,7 +37326,7 @@ loc_1b1b53: // 0160:1b1b53
     edx = eax;
     eax <<= 3;
     eax += edx;
-    ebx = memoryAGet32(ds, stop("GetOpAddress"));
+    ebx = memoryAGet32(ds, eax * 4 + 0x39e8e6);
     eax = edx;
     eax <<= 2;
     eax += edx;
@@ -37105,12 +37382,12 @@ loc_1b1bdb: // 0160:1b1bdb
     eax = memoryAGet32(ds, ebx + 3791138);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     eax -= edi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000018)
@@ -37118,12 +37395,12 @@ loc_1b1bdb: // 0160:1b1bdb
     eax = memoryAGet32(ds, ebx + 3791142);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     eax -= esi;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)0x00000018)
@@ -37163,7 +37440,7 @@ loc_1b1c8f: // 0160:1b1c8f
     eax = memoryAGet32(ds, esi + 3795154);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37171,7 +37448,7 @@ loc_1b1c8f: // 0160:1b1c8f
     eax = memoryAGet32(ds, esi + 3795150);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37186,7 +37463,7 @@ loc_1b1cec: // 0160:1b1cec
     eax = memoryAGet32(ds, esi + 3795154);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37194,7 +37471,7 @@ loc_1b1cec: // 0160:1b1cec
     eax = memoryAGet32(ds, esi + 3795150);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37240,7 +37517,7 @@ loc_1b1dfc: // 0160:1b1dfc
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37249,18 +37526,18 @@ loc_1b1dfc: // 0160:1b1dfc
     ecx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ebx = eax;
     eax = ecx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     memoryASet32(ds, esp, eax);
     eax = ebx;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp))
@@ -37281,7 +37558,7 @@ loc_1b1e6e: // 0160:1b1e6e
 loc_1b1e77: // 0160:1b1e77
     eax = ecx;
     ebx <<= 9;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ecx = eax;
@@ -37305,7 +37582,7 @@ loc_1b1ea5: // 0160:1b1ea5
 loc_1b1eae: // 0160:1b1eae
     eax = ebx;
     ecx <<= 9;
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     ebx = eax;
@@ -37368,7 +37645,7 @@ loc_1b1ed1: // 0160:1b1ed1
     memoryASet32(ds, 0x39f0dc, eax);
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37378,14 +37655,14 @@ loc_1b1ed1: // 0160:1b1ed1
     ebx = eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
     ecx = ebx;
-    stop("imul ecx * ebx");
+    ecx = (int32_t)ecx * (int32_t)ebx;
     edx = eax;
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     ecx += eax;
     memoryASet32(ds, esp, ecx);
     fild32(memoryAGet32(ds, esp));
@@ -37402,9 +37679,9 @@ loc_1b1fa1: // 0160:1b1fa1
     edx = sar32(edx, 0x1f);
     idiv32(ecx);
     eax += 0x00000800;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, eax * 4 + 0x1d8014);
     memoryASet32(ds, 0x1df9e4, eax);
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1b1fda;
     eax = 0x00001000;
     edi = memoryAGet32(ds, 0x1df9e4);
@@ -37480,7 +37757,7 @@ loc_1b2097: // 0160:1b2097
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37488,7 +37765,7 @@ loc_1b2097: // 0160:1b2097
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37502,7 +37779,7 @@ loc_1b2097: // 0160:1b2097
     edx <<= 4;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -37518,14 +37795,14 @@ loc_1b2097: // 0160:1b2097
     edx <<= 4;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
     edx = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     ebx = esi + 2;
     memoryASet32(ds, edx + 3792022, eax);
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1b21a3;
     if (ecx >= 0x000003c0)
         goto loc_1b21a3;
@@ -37543,7 +37820,7 @@ loc_1b2097: // 0160:1b2097
     eax -= edx;
     eax = sar32(eax, 0x00000001);
     esi <<= 6;
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, esi + eax * 2 + 0x239808);
     edx = 0;
     eax &= 0x0000ffff;
     dx = memoryAGet16(ds, 0x39ef86);
@@ -37554,8 +37831,7 @@ loc_1b2097: // 0160:1b2097
     ebx <<= 6;
     eax = 0;
     al = memoryAGet(ds, ecx + ebx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -37580,7 +37856,7 @@ loc_1b21e0: // 0160:1b21e0
     eax = memoryAGet32(ds, 0x39ef98) * 0x000000ac;
     memoryASet32(ds, eax + 3792162, ebp);
     eax = memoryAGet32(ds, 0x1df9f0);
-    stop("cdq");
+    edx = (int32_t)eax < 0 ? -1 : 0;
     eax ^= edx;
     eax -= edx;
     if ((int32_t)eax <= (int32_t)0x00002000)
@@ -37655,7 +37931,7 @@ loc_1b2706: // 0160:1b2706
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37663,7 +37939,7 @@ loc_1b2706: // 0160:1b2706
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37729,7 +38005,7 @@ loc_1b27ad: // 0160:1b27ad
     memoryASet32(ds, eax + 3796646, edx);
     memoryASet32(ds, 0x39f224, edi);
     memoryASet32(ds, eax + 3796634, ebp);
-    if ((int32_t)(ebp & ebp) <= 0)
+    if ((int32_t)ebp <= 0)
         goto loc_1b2844;
     memoryASet32(ds, eax + 3796658, 0x002a99d8);
     goto loc_1aaf55;
@@ -37753,7 +38029,7 @@ void sub_1b32d4() // 0160:1b32d4 +long
     eax = memoryAGet32(ds, 0x39ee8e);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37761,7 +38037,7 @@ void sub_1b32d4() // 0160:1b32d4 +long
     eax = memoryAGet32(ds, 0x39ee8a);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37824,7 +38100,7 @@ loc_1b331f: // 0160:1b331f
     ecx = 0;
     esi = memoryAGet32(ds, eax + 3792050);
     memoryASet32(ds, 0x1df9f0, ecx);
-    if ((int32_t)(esi & esi) <= 0)
+    if ((int32_t)esi <= 0)
         goto loc_1b33c8;
     memoryASet32(ds, 0x1df9e4, 0x00040000);
     goto loc_1b33d2;
@@ -37862,7 +38138,7 @@ loc_1b33df: // 0160:1b33df
     eax -= 0x000000fa;
     memoryASet32(ds, 0x39f064, ebp);
     memoryASet32(ds, 0x39ef94, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1b3480;
     memoryASet32(ds, 0x39ef94, esi);
 loc_1b3480: // 0160:1b3480
@@ -37901,7 +38177,7 @@ loc_1b348a: // 0160:1b348a
     eax = memoryAGet32(ds, ebx + 3792026);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37909,7 +38185,7 @@ loc_1b348a: // 0160:1b348a
     eax = memoryAGet32(ds, ebx + 3792030);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -37930,7 +38206,7 @@ loc_1b348a: // 0160:1b348a
     ebp = memoryAGet32(ds, esp);
     ecx += edi;
 loc_1b3506: // 0160:1b3506
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1b3555;
     if (edi >= 0x000003c0)
         goto loc_1b3555;
@@ -37948,8 +38224,7 @@ loc_1b3506: // 0160:1b3506
     edx &= eax;
     eax = 0;
     al = memoryAGet(ds, ecx + 3233192);
-    flags.zero = eax == 0x00000080;
-    stop("setne");
+    al = eax != 0x00000080;
     eax &= 0x000000ff;
     eax |= edx;
     if (eax)
@@ -37994,7 +38269,7 @@ void sub_1b3780() // 0160:1b3780 +long
     edx <<= 4;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -38009,7 +38284,7 @@ void sub_1b3780() // 0160:1b3780 +long
     edx <<= 4;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -38075,7 +38350,7 @@ void sub_1b39a9() // 0160:1b39a9 +long
     ecx = 0;
     goto loc_1b3a2f;
 loc_1b39bf: // 0160:1b39bf
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1b39c3;
     edi = -edi;
 loc_1b39c3: // 0160:1b39c3
@@ -38087,7 +38362,7 @@ loc_1b39c3: // 0160:1b39c3
     memoryASet32(ds, esp + 4, ecx);
     memoryASet32(ds, esp, esi);
 loc_1b39e3: // 0160:1b39e3
-    if (stop("postCondition"))
+    if ((int32_t)ebx < 0)
         goto loc_1b3a2d;
     if (edi == eax)
         goto loc_1b3a2d;
@@ -38146,6 +38421,309 @@ void sub_1b3a39() // 0160:1b3a39 +long
     edx = pop32();
     esp += 4;
 }
+void sub_1b3a4f() // 0160:1b3a4f +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    ebp = eax;
+    edi = edx;
+    esi = 0x7fffffff;
+    ebx = 0;
+loc_1b3a5f: // 0160:1b3a5f
+    edx = memoryAGet32(ds, ebx + 3791138);
+    if (!edx)
+        goto loc_1b3aa1;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = ebp;
+    ecx -= eax;
+    eax = memoryAGet32(ds, ebx + 3791142);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    edx = edi;
+    edx -= eax;
+    eax = edx;
+    eax = (int32_t)eax * (int32_t)edx;
+    eax += ecx;
+    if ((int32_t)eax >= (int32_t)esi)
+        goto loc_1b3aa1;
+    esi = eax;
+loc_1b3aa1: // 0160:1b3aa1
+    ebx += 0x00000024;
+    if (ebx != 0x00000360)
+        goto loc_1b3a5f;
+    eax = esi;
+    goto loc_1b3c2e;
+    // gap 379 bytes
+loc_1b3c2e: // 0160:1b3c2e
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b3ab3() // 0160:1b3ab3 +long
+{
+    esp -= 4;
+    goto loc_1b3ab3;
+loc_1b3aac: // 0160:1b3aac
+    eax = esi;
+    goto loc_1b3c2e;
+loc_1b3ab3: // 0160:1b3ab3
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    ebp = eax;
+    edi = edx;
+    esi = 0x7fffffff;
+    ebx = 0;
+loc_1b3ac3: // 0160:1b3ac3
+    edx = memoryAGet32(ds, ebx + 3795150);
+    if (!edx)
+        goto loc_1b3b05;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = ebp;
+    ecx -= eax;
+    eax = memoryAGet32(ds, ebx + 3795154);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    edx = edi;
+    edx -= eax;
+    eax = edx;
+    eax = (int32_t)eax * (int32_t)edx;
+    eax += ecx;
+    if ((int32_t)eax >= (int32_t)esi)
+        goto loc_1b3b05;
+    esi = eax;
+loc_1b3b05: // 0160:1b3b05
+    ebx += 0x00000024;
+    if (ebx != 0x0000006c)
+        goto loc_1b3ac3;
+    goto loc_1b3aac;
+    // gap 287 bytes
+loc_1b3c2e: // 0160:1b3c2e
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b3b0f() // 0160:1b3b0f +long
+{
+    esp -= 4;
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000008;
+    edi = eax;
+    memoryASet32(ds, esp, edx);
+    ebp = ebx;
+    esi = 0x7fffffff;
+    edx = 0;
+    ebx = 0;
+    memoryASet32(ds, esp + 4, edx);
+loc_1b3b2a: // 0160:1b3b2a
+    cl = memoryAGet(ds, esp + 4);
+    eax = 0x00000001;
+    eax <<= cl;
+    if (!(ebp & eax))
+        goto loc_1b3b7c;
+    edx = memoryAGet32(ds, ebx + 3792026);
+    if (!edx)
+        goto loc_1b3b7c;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = edi;
+    ecx -= eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    edx = memoryAGet32(ds, esp);
+    edx -= eax;
+    eax = edx;
+    eax = (int32_t)eax * (int32_t)edx;
+    eax += ecx;
+    if ((int32_t)eax >= (int32_t)esi)
+        goto loc_1b3b7c;
+    esi = eax;
+loc_1b3b7c: // 0160:1b3b7c
+    ecx = memoryAGet32(ds, esp + 4);
+    ecx++;
+    ebx += 0x000000ac;
+    memoryASet32(ds, esp + 4, ecx);
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b3b2a;
+    eax = esi;
+    goto loc_1b3d59;
+    // gap 450 bytes
+loc_1b3d59: // 0160:1b3d59
+    esp += 0x00000008;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    esp += 4;
+}
+void sub_1b3ccb() // 0160:1b3ccb +long
+{
+    esp -= 4;
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    push32(eax);
+    push32(edx);
+    edi = ebx;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ecx = 0;
+    ebx = 0;
+    ebp = eax;
+    goto loc_1b3d52;
+loc_1b3ced: // 0160:1b3ced
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (eax == ebp)
+        goto loc_1b3d4b;
+    edx = memoryAGet32(ds, ebx + 3792026);
+    if (!edx)
+        goto loc_1b3d4b;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = memoryAGet32(ds, esp + 4);
+    esi -= eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = (int32_t)esi * (int32_t)esi;
+    edx = memoryAGet32(ds, esp);
+    edx -= eax;
+    eax = edx;
+    eax = (int32_t)eax * (int32_t)edx;
+    eax += esi;
+    if ((int32_t)eax >= (int32_t)edi)
+        goto loc_1b3d4b;
+    eax = memoryAGet32(ds, ebx + 3792102);
+    goto loc_1b3d59;
+loc_1b3d4b: // 0160:1b3d4b
+    ebx += 0x000000ac;
+    ecx++;
+loc_1b3d52: // 0160:1b3d52
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b3ced;
+    eax = 0;
+loc_1b3d59: // 0160:1b3d59
+    esp += 0x00000008;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
+}
+void sub_1b3df5() // 0160:1b3df5 +long
+{
+    esp -= 4;
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    esi = eax;
+    edi = edx;
+    ecx = 0x7fffffff;
+    sub_1b3b0f();
+    if ((int32_t)eax >= (int32_t)ecx)
+        goto loc_1b3e0c;
+    ecx = eax;
+loc_1b3e0c: // 0160:1b3e0c
+    edx = edi;
+    eax = esi;
+    sub_1b3a4f();
+    if ((int32_t)eax >= (int32_t)ecx)
+        goto loc_1b3e1b;
+    ecx = eax;
+loc_1b3e1b: // 0160:1b3e1b
+    eax = esi;
+    eax = (int32_t)eax * (int32_t)esi;
+    if ((int32_t)eax >= (int32_t)ecx)
+        goto loc_1b3e26;
+    ecx = eax;
+loc_1b3e26: // 0160:1b3e26
+    eax = 0x000003c0;
+    eax -= esi;
+    esi = eax;
+    esi = (int32_t)esi * (int32_t)eax;
+    if ((int32_t)esi >= (int32_t)ecx)
+        goto loc_1b3e38;
+    ecx = esi;
+loc_1b3e38: // 0160:1b3e38
+    esi = 0x0000017e;
+    esi -= edi;
+    esi = (int32_t)esi * (int32_t)esi;
+    if ((int32_t)esi >= (int32_t)ecx)
+        goto loc_1b3e48;
+    ecx = esi;
+loc_1b3e48: // 0160:1b3e48
+    eax = ecx;
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    esp += 4;
+}
 void sub_1b3e6c() // 0160:1b3e6c +long
 {
     esp -= 4;
@@ -38158,12 +38736,154 @@ void sub_1b3e6c() // 0160:1b3e6c +long
     ebx += esi;
     edx++;
     ebx &= 0x0000ffff;
-    stop("imul edx * ebx");
+    edx = (int32_t)edx * (int32_t)ebx;
     edx = sar32(edx, 0x10);
     memoryASet32(ds, 0x1dfbd4, ebx);
     eax += edx;
     esi = pop32();
     ebx = pop32();
+    esp += 4;
+}
+void sub_1b3ea0() // 0160:1b3ea0 +long
+{
+    esp -= 4;
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    if (ecx)
+        goto loc_1b3f77;
+    ecx = memoryAGet32(ds, 0x3be7bc);
+    if (ecx == 0x00000006)
+        goto loc_1b3ebb;
+    if (ecx != 0x00000027)
+        goto loc_1b3ec0;
+loc_1b3ebb: // 0160:1b3ebb
+    ebx = 0x00000011;
+loc_1b3ec0: // 0160:1b3ec0
+    if ((int32_t)ebx >= (int32_t)0x00000011)
+        goto loc_1b3eca;
+    ebx = 0x00000011;
+loc_1b3eca: // 0160:1b3eca
+    if ((int32_t)ebx <= (int32_t)0x00000096)
+        goto loc_1b3ed7;
+    ebx = 0x00000095;
+loc_1b3ed7: // 0160:1b3ed7
+    ecx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    if (edx == memoryAGet32(ds, ecx + 3792050))
+        goto loc_1b3f07;
+    if ((int32_t)edx >= 0)
+        goto loc_1b3ef6;
+    memoryASet(ds, 0x3a72b7, 0x01);
+    goto loc_1b3efd;
+loc_1b3ef6: // 0160:1b3ef6
+    memoryASet(ds, 0x3a72b9, 0x01);
+loc_1b3efd: // 0160:1b3efd
+    memoryASet32(ds, 0x3be77c, 0x00000003);
+loc_1b3f07: // 0160:1b3f07
+    ecx = memoryAGet32(ds, 0x3be77c);
+    ecx &= 0x00000003;
+    memoryASet32(ds, 0x3be77c, ecx);
+    if (ecx)
+        goto loc_1b3f65;
+    edi = memoryAGet32(ds, 0x39efb8);
+    if (eax != edi)
+        goto loc_1b3f4d;
+    if ((int32_t)ebx > (int32_t)memoryAGet32(ds, 0x39efac))
+        goto loc_1b3f33;
+loc_1b3f2a: // 0160:1b3f2a
+    eax = 0x00000001;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    esp += 4;
+    return;
+loc_1b3f33: // 0160:1b3f33
+    cl = 0x01;
+    esi = memoryAGet32(ds, 0x3be7bc);
+    memoryASet(ds, 0x3a72a5, cl);
+    if (esi == 0x00000006)
+        goto loc_1b3f2a;
+    if (esi != 0x00000027)
+        goto loc_1b3f65;
+    goto loc_1b3f2a;
+loc_1b3f4d: // 0160:1b3f4d
+    if ((int32_t)eax <= (int32_t)edi)
+        goto loc_1b3f56;
+    memoryASet(ds, 0x3a72b4, 0x01);
+loc_1b3f56: // 0160:1b3f56
+    if ((int32_t)eax >= (int32_t)memoryAGet32(ds, 0x39efb8))
+        goto loc_1b3f65;
+    memoryASet(ds, 0x3a72bc, 0x01);
+loc_1b3f65: // 0160:1b3f65
+    ebp = memoryAGet32(ds, 0x3be77c);
+    if (!ebp)
+        goto loc_1b3f77;
+    eax = ebp + -1;
+    memoryASet32(ds, 0x3be77c, eax);
+loc_1b3f77: // 0160:1b3f77
+    eax = 0;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    esp += 4;
+}
+void sub_1b3f7d() // 0160:1b3f7d +long
+{
+    esp -= 4;
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    eax = memoryAGet32(ds, 0x39f238);
+    eax += 0x0000000a;
+    if ((int32_t)eax > (int32_t)memoryAGet32(ds, 0x3a7470))
+        goto loc_1b4035;
+loc_1b3f95: // 0160:1b3f95
+    eax = memoryAGet32(ds, 0x39f238);
+    if ((int32_t)eax >= (int32_t)memoryAGet32(ds, 0x3a7470))
+        goto loc_1b4030;
+    ecx = memoryAGet32(ds, 0x39f230);
+    if (!ecx)
+        goto loc_1b3fb9;
+    esi = ecx + -1;
+    memoryASet32(ds, 0x39f230, esi);
+loc_1b3fb9: // 0160:1b3fb9
+    edi = memoryAGet32(ds, 0x39ef94);
+    if (!edi)
+        goto loc_1b3ff9;
+    if (memoryAGet32(ds, 0x39f0bc) != 0x00000000)
+        goto loc_1b3ff9;
+    if (memoryAGet32(ds, 0x39f0a8) != 0x00000000)
+        goto loc_1b3ff9;
+    if (memoryAGet32(ds, 0x1dc028) != 0x00000000)
+        goto loc_1b3ff9;
+    if (memoryAGet32(ds, 0x1df5ac) == 0x00000046)
+        goto loc_1b3ff9;
+    if (memoryAGet32(ds, 0x39f1ac) != 0x00000000)
+        goto loc_1b3ff9;
+    esi = edi + -1;
+    memoryASet32(ds, 0x39ef94, esi);
+loc_1b3ff9: // 0160:1b3ff9
+    edi = memoryAGet32(ds, 0x39efa0);
+    if (!edi)
+        goto loc_1b400c;
+    ebp = edi + -1;
+    memoryASet32(ds, 0x39efa0, ebp);
+loc_1b400c: // 0160:1b400c
+    sub_19b5c8();
+    sub_197664();
+    sub_196a3e();
+    sub_19c91e();
+    sub_19af3f();
+    memoryASet32(ds, 0x39f238, memoryAGet32(ds, 0x39f238) + 1);
+    goto loc_1b3f95;
+loc_1b4030: // 0160:1b4030
+    sub_19a337();
+loc_1b4035: // 0160:1b4035
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
     esp += 4;
 }
 void sub_1b403a() // 0160:1b403a +long
@@ -38376,6 +39096,196 @@ loc_1b4276: // 0160:1b4276
     ecx = pop32();
     esp += 4;
 }
+void sub_1b427c() // 0160:1b427c +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    al &= 0xfc;
+    if ((int32_t)eax >= (int32_t)0x00000008)
+        goto loc_1b428c;
+loc_1b4285: // 0160:1b4285
+    edx = 0;
+    eax = edx;
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b428c: // 0160:1b428c
+    if ((int32_t)eax > (int32_t)0x000003b8)
+        goto loc_1b4285;
+    ecx = 0x003155a8;
+    ecx += eax;
+    eax = edx;
+    eax <<= 4;
+    eax -= edx;
+    eax <<= 6;
+    eax += ecx;
+loc_1b42a6: // 0160:1b42a6
+    ebx = memoryAGet32(ds, eax + -4);
+    if (ebx != 0x80808080)
+        goto loc_1b42cb;
+    if (ebx != memoryAGet32(ds, eax))
+        goto loc_1b42cb;
+    if (ebx != memoryAGet32(ds, eax + -8))
+        goto loc_1b42cb;
+    if (ebx != memoryAGet32(ds, eax + 4))
+        goto loc_1b42cb;
+    if ((int32_t)edx <= 0)
+        goto loc_1b42cb;
+    edx--;
+    eax -= 0x000003c0;
+    goto loc_1b42a6;
+loc_1b42cb: // 0160:1b42cb
+    if (edx)
+        goto loc_1b4285;
+    edx = 0x00000001;
+    eax = edx;
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b42d9() // 0160:1b42d9 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    al &= 0xfc;
+    if ((int32_t)eax >= (int32_t)0x00000008)
+        goto loc_1b42e9;
+loc_1b42e3: // 0160:1b42e3
+    eax = 0;
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b42e9: // 0160:1b42e9
+    if ((int32_t)eax > (int32_t)0x000003b8)
+        goto loc_1b42e3;
+    esi = 0x003155a8;
+    esi += eax;
+    eax = edx;
+    eax <<= 4;
+    eax -= edx;
+    eax <<= 6;
+    eax += esi;
+loc_1b4303: // 0160:1b4303
+    ecx = memoryAGet32(ds, eax + -4);
+    if (ecx != 0x80808080)
+        goto loc_1b431f;
+    if (ecx != memoryAGet32(ds, eax))
+        goto loc_1b431f;
+    if ((int32_t)edx <= 0)
+        goto loc_1b431f;
+    edx--;
+    ebx++;
+    eax -= 0x000003c0;
+    goto loc_1b4303;
+loc_1b431f: // 0160:1b431f
+    eax = ebx;
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b4325() // 0160:1b4325 +long
+{
+    esp -= 4;
+    goto loc_1b4325;
+loc_1b3c2b: // 0160:1b3c2b
+    esp += 0x00000008;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+    // gap 1777 bytes
+loc_1b4325: // 0160:1b4325
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000008;
+    ebx = eax;
+    edi = edx;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ecx = eax;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (ecx != eax)
+        goto loc_1b435d;
+loc_1b4356: // 0160:1b4356
+    eax = 0;
+    goto loc_1b3c2b;
+loc_1b435d: // 0160:1b435d
+    ebx = ebx * 0x000000ac;
+    memoryASet32(ds, esp + 4, eax);
+    ecx = 0;
+    edx = memoryAGet32(ds, ebx + 3792026);
+    ebp = memoryAGet32(ds, ebx + 3792030);
+    memoryASet32(ds, esp, edx);
+    ebx = 0;
+    goto loc_1b43d9;
+loc_1b437c: // 0160:1b437c
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (eax != memoryAGet32(ds, esp + 4))
+        goto loc_1b43d2;
+    esi = memoryAGet32(ds, ebx + 3792026);
+    if (!esi)
+        goto loc_1b43d2;
+    edx = memoryAGet32(ds, esp);
+    edx -= esi;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = eax;
+    edx = ebp;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = (int32_t)esi * (int32_t)esi;
+    eax = (int32_t)eax * (int32_t)eax;
+    esi += eax;
+    if ((int32_t)esi < (int32_t)edi)
+        goto loc_1b4356;
+loc_1b43d2: // 0160:1b43d2
+    ebx += 0x000000ac;
+    ecx++;
+loc_1b43d9: // 0160:1b43d9
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b437c;
+    eax = 0x00000001;
+    goto loc_1b3c2b;
+}
 void sub_1b43e8() // 0160:1b43e8 +long
 {
     esp -= 4;
@@ -38400,7 +39310,7 @@ loc_1b43e8: // 0160:1b43e8
     memoryASet32(ds, esp + 16, edx);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -38408,7 +39318,7 @@ loc_1b43e8: // 0160:1b43e8
     eax = memoryAGet32(ds, 0x1dfbc4);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -38437,7 +39347,7 @@ loc_1b4450: // 0160:1b4450
     edx -= ebp;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -38447,12 +39357,12 @@ loc_1b4450: // 0160:1b4450
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ebp * ebp");
-    stop("imul eax * eax");
+    ebp = (int32_t)ebp * (int32_t)ebp;
+    eax = (int32_t)eax * (int32_t)eax;
     edx = memoryAGet32(ds, esp + 16);
     eax += ebp;
     if ((int32_t)eax >= (int32_t)edx)
@@ -38460,7 +39370,7 @@ loc_1b4450: // 0160:1b4450
     edx = esi;
     eax = esi;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -38496,7 +39406,7 @@ loc_1b44e8: // 0160:1b44e8
     eax = memoryAGet32(ds, esp + 16);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -38510,7 +39420,7 @@ loc_1b450d: // 0160:1b450d
     edx -= esi;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -38520,12 +39430,12 @@ loc_1b450d: // 0160:1b450d
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul esi * esi");
-    stop("imul eax * eax");
+    esi = (int32_t)esi * (int32_t)esi;
+    eax = (int32_t)eax * (int32_t)eax;
     edx = memoryAGet32(ds, esp + 16);
     eax += esi;
     if ((int32_t)eax >= (int32_t)edx)
@@ -38542,7 +39452,7 @@ loc_1b455b: // 0160:1b455b
     eax = memoryAGet32(ds, esp + 16);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -38556,7 +39466,7 @@ loc_1b457b: // 0160:1b457b
     edx -= esi;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -38566,12 +39476,12 @@ loc_1b457b: // 0160:1b457b
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul esi * esi");
-    stop("imul eax * eax");
+    esi = (int32_t)esi * (int32_t)esi;
+    eax = (int32_t)eax * (int32_t)eax;
     edx = memoryAGet32(ds, esp + 16);
     eax += esi;
     if ((int32_t)eax >= (int32_t)edx)
@@ -38591,7 +39501,7 @@ loc_1b45ce: // 0160:1b45ce
     edx -= ebp;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -38601,13 +39511,13 @@ loc_1b45ce: // 0160:1b45ce
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul eax * eax");
+    eax = (int32_t)eax * (int32_t)eax;
     edx = esi;
-    stop("imul edx * edx");
+    edx = (int32_t)edx * (int32_t)edx;
     edx += eax;
     eax = 0;
     if ((int32_t)edx >= (int32_t)0x00010000)
@@ -38632,6 +39542,169 @@ loc_1b463f: // 0160:1b463f
 loc_1b4652: // 0160:1b4652
     esp += 0x00000014;
     goto loc_1b3c2e;
+}
+void sub_1b465a() // 0160:1b465a +long
+{
+    esp -= 4;
+    goto loc_1b465a;
+loc_1b3d57: // 0160:1b3d57
+    eax = 0;
+loc_1b3d59: // 0160:1b3d59
+    esp += 0x00000008;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
+    return;
+    // gap 2297 bytes
+loc_1b465a: // 0160:1b465a
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    push32(eax);
+    push32(edx);
+    edi = ebx;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ecx = 0;
+    ebx = 0;
+    ebp = eax;
+    goto loc_1b46e8;
+loc_1b467c: // 0160:1b467c
+    if (memoryAGet32(ds, ebx + 3792026) == 0x00000000)
+        goto loc_1b46e1;
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (eax != ebp)
+        goto loc_1b46e1;
+    edx = memoryAGet32(ds, esp + 4);
+    esi = memoryAGet32(ds, ebx + 3792026);
+    edx -= esi;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = memoryAGet32(ds, esp);
+    esi = eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = (int32_t)esi * (int32_t)esi;
+    eax = (int32_t)eax * (int32_t)eax;
+    eax += esi;
+    if ((int32_t)eax >= (int32_t)edi)
+        goto loc_1b46e1;
+    eax = 0x00000001;
+    goto loc_1b3d59;
+loc_1b46e1: // 0160:1b46e1
+    ebx += 0x000000ac;
+    ecx++;
+loc_1b46e8: // 0160:1b46e8
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b467c;
+    goto loc_1b3d57;
+}
+void sub_1b4749() // 0160:1b4749 +long
+{
+    esp -= 4;
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000004;
+    push32(eax);
+    push32(edx);
+    push32(ebx);
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edi = 0;
+    ebp = 0;
+    ecx = 0;
+    ebx = 0;
+    memoryASet32(ds, esp + 12, eax);
+loc_1b4771: // 0160:1b4771
+    if (memoryAGet32(ds, ebx + 3792026) == 0x00000000)
+        goto loc_1b47df;
+    edx = memoryAGet32(ds, esp + 8);
+    esi = memoryAGet32(ds, ebx + 3792026);
+    edx -= esi;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = memoryAGet32(ds, esp + 4);
+    esi = eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = (int32_t)esi * (int32_t)esi;
+    eax = (int32_t)eax * (int32_t)eax;
+    edx = memoryAGet32(ds, esp);
+    esi += eax;
+    if ((int32_t)esi >= (int32_t)edx)
+        goto loc_1b47df;
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax = memoryAGet32(ds, esp);
+    eax -= esi;
+    if (edx != memoryAGet32(ds, esp + 12))
+        goto loc_1b47dd;
+    edi += eax;
+    goto loc_1b47df;
+loc_1b47dd: // 0160:1b47dd
+    ebp += eax;
+loc_1b47df: // 0160:1b47df
+    ecx++;
+    ebx += 0x000000ac;
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b4771;
+    al = (int32_t)edi <= (int32_t)ebp;
+    eax &= 0x000000ff;
+    esp += 0x00000010;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
 }
 void sub_1b47fd() // 0160:1b47fd +long
 {
@@ -38694,7 +39767,7 @@ loc_1b4850: // 0160:1b4850
     edx -= ebp;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
@@ -38704,12 +39777,12 @@ loc_1b4850: // 0160:1b4850
     edx -= eax;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<8) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<8) & 0x80000000);
     edx <<= 9;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x09);
-    stop("imul ebp * ebp");
-    stop("imul eax * eax");
+    ebp = (int32_t)ebp * (int32_t)ebp;
+    eax = (int32_t)eax * (int32_t)eax;
     memoryASet32(ds, esp, memoryAGet32(ds, esp) + 1);
     eax += ebp;
     goto loc_1b4850;
@@ -38719,6 +39792,3637 @@ loc_1b48a7: // 0160:1b48a7
     ebp = pop32();
     edi = pop32();
     esi = pop32();
+    esp += 4;
+}
+void sub_1b48b1() // 0160:1b48b1 +long
+{
+    esp -= 4;
+    goto loc_1b48b1;
+loc_1b3c2e: // 0160:1b3c2e
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+    // gap 3197 bytes
+loc_1b48b1: // 0160:1b48b1
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000004;
+    ebp = eax;
+    memoryASet32(ds, esp, edx);
+    if (memoryAGet32(ds, 0x1dfbcc) == 0x00000000)
+        goto loc_1b4a38;
+    edx = ebp;
+    edx = memoryAGet32(ds, edx);
+    eax = memoryAGet32(ds, eax);
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = memoryAGet32(ds, esp);
+    esi = eax;
+    edx = memoryAGet32(ds, edx);
+    eax = memoryAGet32(ds, esp);
+    edx = sar32(edx, 0x1f);
+    eax = memoryAGet32(ds, eax);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = 0x00000001;
+    ebx = eax;
+    eax = 0;
+    sub_1b3e6c();
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    edx <<= 5;
+    if (!eax)
+        goto loc_1b4919;
+    eax = 0;
+    sub_1b3e6c();
+    esi -= eax;
+    goto loc_1b4920;
+loc_1b4919: // 0160:1b4919
+    sub_1b3e6c();
+    esi += eax;
+loc_1b4920: // 0160:1b4920
+    if ((int32_t)esi >= (int32_t)0x00000004)
+        goto loc_1b492a;
+    esi = 0x00000004;
+loc_1b492a: // 0160:1b492a
+    if ((int32_t)esi <= (int32_t)0x000003bc)
+        goto loc_1b4937;
+    esi = 0x000003bc;
+loc_1b4937: // 0160:1b4937
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = ebx;
+    ecx <<= 4;
+    ecx -= ebx;
+    ecx <<= 6;
+    ecx += esi;
+    edi = eax + eax;
+loc_1b4951: // 0160:1b4951
+    if ((int32_t)ebx <= 0)
+        goto loc_1b49a8;
+    if (esi >= 0x000003c0)
+        goto loc_1b49a8;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    edx = 0;
+    dx = memoryAGet16(ds, edi + eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = 0;
+    al = memoryAGet(ds, ecx + 3233192);
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b49a8;
+    if ((int32_t)ebx <= 0)
+        goto loc_1b49a8;
+    ecx -= 0x000003c0;
+    ebx--;
+    goto loc_1b4951;
+loc_1b49a8: // 0160:1b49a8
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = ebx;
+    ecx <<= 4;
+    ecx -= ebx;
+    ecx <<= 6;
+    ecx += esi;
+    edi = eax + eax;
+loc_1b49c2: // 0160:1b49c2
+    if ((int32_t)ebx <= 0)
+        goto loc_1b4a0c;
+    if (esi >= 0x000003c0)
+        goto loc_1b4a0c;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    edx = 0;
+    dx = memoryAGet16(ds, edi + eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = 0;
+    al = memoryAGet(ds, ecx + 3233192);
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (eax)
+        goto loc_1b4a13;
+loc_1b4a0c: // 0160:1b4a0c
+    eax = 0x00000001;
+    goto loc_1b4a15;
+loc_1b4a13: // 0160:1b4a13
+    eax = 0;
+loc_1b4a15: // 0160:1b4a15
+    if (!eax)
+        goto loc_1b4a2a;
+    if ((int32_t)ebx >= (int32_t)0x0000018f)
+        goto loc_1b4a2a;
+    ecx += 0x000003c0;
+    ebx++;
+    goto loc_1b49c2;
+loc_1b4a2a: // 0160:1b4a2a
+    eax = memoryAGet32(ds, esp);
+    esi <<= 9;
+    ebx <<= 9;
+    memoryASet32(ss, ebp, esi);
+    memoryASet32(ds, eax, ebx);
+loc_1b4a38: // 0160:1b4a38
+    esp += 0x00000004;
+    goto loc_1b3c2e;
+}
+void sub_1b4a40() // 0160:1b4a40 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    if (memoryAGet32(ds, 0x1dfbcc) == 0x00000000)
+        goto loc_1b4b40;
+    ebx = memoryAGet32(ds, 0x3be7bc);
+    if (ebx == 0x00000004)
+        goto loc_1b4a65;
+    if (ebx != 0x00000024)
+        goto loc_1b4b40;
+loc_1b4a65: // 0160:1b4a65
+    if (memoryAGet32(ds, 0x3be79c) == 0x00000000)
+        goto loc_1b4b40;
+    if (memoryAGet32(ds, 0x1dfbcc) != 0x00000001)
+        goto loc_1b4ad9;
+    if ((int32_t)memoryAGet32(ds, 0x3be794) <= (int32_t)0x00000096)
+        goto loc_1b4a9b;
+    edx = 0x00000019;
+    eax = 0;
+    sub_1b3e6c();
+    memoryASet32(ds, 0x3be794, memoryAGet32(ds, 0x3be794) - eax);
+    goto loc_1b4aad;
+loc_1b4a9b: // 0160:1b4a9b
+    edx = 0x00000019;
+    eax = 0;
+    sub_1b3e6c();
+    memoryASet32(ds, 0x3be794, memoryAGet32(ds, 0x3be794) + eax);
+loc_1b4aad: // 0160:1b4aad
+    eax = memoryAGet32(ds, 0x3be794);
+    edx = eax;
+    ebx = 0x00000019;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    if (!edx)
+        goto loc_1b4ad9;
+    ecx = memoryAGet32(ds, 0x3be794);
+    ecx -= edx;
+    memoryASet32(ds, 0x3be794, ecx);
+    esi = ecx + ebx;
+    memoryASet32(ds, 0x3be794, esi);
+loc_1b4ad9: // 0160:1b4ad9
+    if (memoryAGet32(ds, 0x1dfbcc) != 0x00000002)
+        goto loc_1b4b40;
+    if ((int32_t)memoryAGet32(ds, 0x3be794) <= (int32_t)0x00000096)
+        goto loc_1b4b02;
+    edx = 0x00000032;
+    eax = 0;
+    sub_1b3e6c();
+    memoryASet32(ds, 0x3be794, memoryAGet32(ds, 0x3be794) - eax);
+    goto loc_1b4b14;
+loc_1b4b02: // 0160:1b4b02
+    edx = 0x00000032;
+    eax = 0;
+    sub_1b3e6c();
+    memoryASet32(ds, 0x3be794, memoryAGet32(ds, 0x3be794) + eax);
+loc_1b4b14: // 0160:1b4b14
+    eax = memoryAGet32(ds, 0x3be794);
+    edx = eax;
+    ebx = 0x00000032;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    if (!edx)
+        goto loc_1b4b40;
+    ecx = memoryAGet32(ds, 0x3be794);
+    ecx -= edx;
+    memoryASet32(ds, 0x3be794, ecx);
+    esi = ecx + ebx;
+    memoryASet32(ds, 0x3be794, esi);
+loc_1b4b40: // 0160:1b4b40
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b4b45() // 0160:1b4b45 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000054;
+    edx = 0x7fffffff;
+    memoryASet32(ds, 0x3be7bc, eax);
+    ebx = 0;
+    memoryASet32(ds, 0x3be7a0, edx);
+    memoryASet32(ds, 0x3be79c, ebx);
+    memoryASet32(ds, 0x3be7ac, ebx);
+    if (eax != 0x00000004)
+        goto loc_1b4ba3;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e942) != 0x00000000)
+        goto loc_1b4ba3;
+    memoryASet32(ds, 0x3be7bc, 0x00000024);
+loc_1b4ba3: // 0160:1b4ba3
+    if (memoryAGet32(ds, 0x3be7bc) != 0x00000024)
+        goto loc_1b4bdb;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e946) != 0x00000000)
+        goto loc_1b4bdb;
+loc_1b4bd4: // 0160:1b4bd4
+    eax = 0;
+    goto loc_1b51c6;
+loc_1b4bdb: // 0160:1b4bdb
+    if (memoryAGet32(ds, 0x3be7bc) != 0x00000000)
+        goto loc_1b4c0c;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e93a) == 0x00000000)
+        goto loc_1b4bd4;
+loc_1b4c0c: // 0160:1b4c0c
+    if (memoryAGet32(ds, 0x3be7bc) != 0x00000000)
+        goto loc_1b4c51;
+    edx = memoryAGet32(ds, 0x39efcc);
+    eax = edx;
+    eax <<= 2;
+    edx += eax;
+    edx += edx;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<3) & 0x80000000);
+    edx <<= 4;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x04);
+    edx = eax;
+    edx <<= 9;
+    ebx = 0x0000004b;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    memoryASet32(ds, 0x3be78c, eax);
+    memoryASet32(ds, esp + 44, 0x00000010);
+    goto loc_1b4c62;
+loc_1b4c51: // 0160:1b4c51
+    edi = 0;
+    ebp = 0x00000008;
+    memoryASet32(ds, 0x3be78c, edi);
+    memoryASet32(ds, esp + 44, ebp);
+loc_1b4c62: // 0160:1b4c62
+    edx = 0x0000000a;
+    eax = memoryAGet32(ds, 0x39f078);
+    cl = memoryAGet(ds, 0x1dfbc4);
+    memoryASet32(ds, 0x3be790, eax);
+    eax = 0x00000001;
+    ebx = 0x00000014;
+    eax <<= cl;
+    memoryASet32(ds, esp, edx);
+    eax ^= 0x0000ffff;
+    memoryASet32(ds, esp + 48, ebx);
+    memoryASet16(ds, 0x39ef86, ax);
+loc_1b4c95: // 0160:1b4c95
+    if (memoryAGet32(ds, 0x3be7bc) == 0x00000000)
+        goto loc_1b4cc4;
+    eax = memoryAGet32(ds, esp);
+    if ((int32_t)eax < (int32_t)0x00000028)
+        goto loc_1b5119;
+    edx = eax;
+    ebx = 0x00000032;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    if ((int32_t)edx <= (int32_t)0x0000000a)
+        goto loc_1b4cc4;
+    if ((int32_t)edx < (int32_t)0x00000028)
+        goto loc_1b5119;
+loc_1b4cc4: // 0160:1b4cc4
+    edx = 0;
+    eax = memoryAGet32(ds, esp + 48);
+    memoryASet32(ds, esp + 76, edx);
+    memoryASet32(ds, esp + 56, eax);
+    memoryASet32(ds, esp + 60, edx);
+    memoryASet32(ds, esp + 72, edx);
+loc_1b4cda: // 0160:1b4cda
+    eax = memoryAGet32(ds, esp + 76);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = eax;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (ebx == eax)
+        goto loc_1b50ee;
+    eax = memoryAGet32(ds, esp + 72);
+    if (memoryAGet32(ds, eax + 3792026) == 0x00000000)
+        goto loc_1b50ee;
+    sub_1b3f7d();
+    eax = memoryAGet32(ds, esp + 72);
+    eax = memoryAGet32(ds, eax + 3792026);
+    memoryASet32(ds, esp + 40, eax);
+    eax = memoryAGet32(ds, esp + 72);
+    eax = memoryAGet32(ds, eax + 3792030);
+    edx = esp + 36;
+    memoryASet32(ds, esp + 36, eax);
+    eax = esp + 40;
+    sub_1b48b1();
+    edx = memoryAGet32(ds, esp + 40);
+    ebx = memoryAGet32(ds, 0x3be780);
+    edx -= ebx;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    eax = (int32_t)eax * (int32_t)eax;
+    if ((int32_t)eax >= (int32_t)0x00000900)
+        goto loc_1b4d87;
+    eax = memoryAGet32(ds, esp + 40);
+    if ((int32_t)eax >= (int32_t)ebx)
+        goto loc_1b4d7d;
+    edi = eax + 512;
+    memoryASet32(ds, esp + 40, edi);
+    goto loc_1b4d87;
+loc_1b4d7d: // 0160:1b4d7d
+    esi = eax + -512;
+    memoryASet32(ds, esp + 40, esi);
+loc_1b4d87: // 0160:1b4d87
+    ebp = memoryAGet32(ds, esp + 40);
+    if ((int32_t)ebp >= (int32_t)0x00002000)
+        goto loc_1b4d9d;
+    eax = ebp + 512;
+    memoryASet32(ds, esp + 40, eax);
+loc_1b4d9d: // 0160:1b4d9d
+    edx = memoryAGet32(ds, esp + 40);
+    if ((int32_t)edx <= (int32_t)0x00076000)
+        goto loc_1b4db3;
+    ebx = edx + -512;
+    memoryASet32(ds, esp + 40, ebx);
+loc_1b4db3: // 0160:1b4db3
+    edi = memoryAGet32(ds, esp);
+    edx = memoryAGet32(ds, 0x3be78c);
+    edx = (int32_t)edx * (int32_t)edi;
+    edx = (int32_t)edx * (int32_t)edi;
+    eax = memoryAGet32(ds, esp + 40);
+    eax -= memoryAGet32(ds, 0x3be780);
+    eax += eax;
+    eax -= edx;
+    edx = eax;
+    ecx = memoryAGet32(ds, esp + 56);
+    edx = sar32(edx, 0x1f);
+    idiv32(ecx);
+    memoryASet32(ds, esp + 68, eax);
+    eax = memoryAGet32(ds, 0x3be790);
+    eax = (int32_t)eax * (int32_t)edi;
+    eax = (int32_t)eax * (int32_t)edi;
+    ebx = memoryAGet32(ds, esp + 36);
+    ebx -= memoryAGet32(ds, 0x3be784);
+    edx = ebx + ebx;
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ecx);
+    memoryASet32(ds, esp + 64, eax);
+    eax = memoryAGet32(ds, esp + 68);
+    eax = (int32_t)eax * (int32_t)eax;
+    edx = memoryAGet32(ds, esp + 64);
+    edx = (int32_t)edx * (int32_t)edx;
+    eax += edx;
+    sub_1b39a9();
+    eax <<= 3;
+    edx = eax;
+    ebx = 0x0000015d;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    eax += 0x0000000f;
+    if ((int32_t)eax <= (int32_t)0x00000011)
+        goto loc_1b50ee;
+    if ((int32_t)eax >= (int32_t)0x0000008e)
+        goto loc_1b50ee;
+    eax = memoryAGet32(ds, esp + 68);
+    edx = esp + 28;
+    memoryASet32(ds, esp + 24, eax);
+    eax = memoryAGet32(ds, esp + 64);
+    ecx = 0;
+    memoryASet32(ds, esp + 20, eax);
+    eax = memoryAGet32(ds, 0x3be780);
+    memoryASet32(ds, esp + 80, ecx);
+    memoryASet32(ds, esp + 32, eax);
+    eax = memoryAGet32(ds, 0x3be784);
+    cl = memoryAGet(ds, esp + 76);
+    memoryASet32(ds, esp + 28, eax);
+    edi = eax;
+    eax = 0x00000001;
+    bx = memoryAGet16(ds, 0x39ef86);
+    eax <<= cl;
+    ecx = esp + 20;
+    ebx ^= eax;
+    eax = esp + 32;
+    memoryASet16(ds, 0x39ef86, bx);
+    ebx = esp + 24;
+    esi = memoryAGet32(ds, esp + 32);
+    sub_1b483f();
+    ebp = eax;
+    goto loc_1b4f73;
+loc_1b4ea4: // 0160:1b4ea4
+    esi = memoryAGet32(ds, esp + 32);
+    edi = memoryAGet32(ds, esp + 28);
+    eax = memoryAGet32(ds, esp + 24);
+    ecx = memoryAGet32(ds, esp + 24);
+    edx = esi + eax;
+    eax = memoryAGet32(ds, esp + 20);
+    memoryASet32(ds, esp + 32, edx);
+    ebx = edi + eax;
+    eax = memoryAGet32(ds, 0x3be78c);
+    edx = memoryAGet32(ds, esp + 20);
+    ecx += eax;
+    edx += memoryAGet32(ds, 0x3be790);
+    eax = memoryAGet32(ds, esp + 32);
+    memoryASet32(ds, esp + 20, edx);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 16, eax);
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 28, ebx);
+    memoryASet32(ds, esp + 24, ecx);
+    ebx = memoryAGet32(ds, esp + 44);
+    memoryASet32(ds, esp + 12, eax);
+    if ((int32_t)eax <= (int32_t)ebx)
+        goto loc_1b4f4c;
+    eax = esp + 4;
+    edx = edi;
+    push32(eax);
+    eax = esp + 12;
+    edx = sar32(edx, 0x1f);
+    push32(eax);
+    eax = edi;
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = eax;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = esp + 20;
+    ebx = eax;
+    eax = esp + 24;
+    sub_1ab7bc();
+    memoryASet32(ds, esp + 80, eax);
+loc_1b4f4c: // 0160:1b4f4c
+    ecx = memoryAGet32(ds, esp + 32);
+    if ((int32_t)ecx < (int32_t)0x00000800)
+        goto loc_1b4f6a;
+    if ((int32_t)ecx > (int32_t)0x00077800)
+        goto loc_1b4f6a;
+    if ((int32_t)memoryAGet32(ds, esp + 20) < (int32_t)0x00004000)
+        goto loc_1b4f72;
+loc_1b4f6a: // 0160:1b4f6a
+    memoryASet32(ds, esp + 80, 0x00000002);
+loc_1b4f72: // 0160:1b4f72
+    ebp++;
+loc_1b4f73: // 0160:1b4f73
+    if ((int32_t)ebp >= (int32_t)memoryAGet32(ds, esp))
+        goto loc_1b4f83;
+    if (memoryAGet32(ds, esp + 80) == 0x00000000)
+        goto loc_1b4ea4;
+loc_1b4f83: // 0160:1b4f83
+    cl = memoryAGet(ds, esp + 76);
+    eax = 0x00000001;
+    eax <<= cl;
+    cx = memoryAGet16(ds, 0x39ef86);
+    ecx ^= eax;
+    ebx = memoryAGet32(ds, esp + 80);
+    memoryASet16(ds, 0x39ef86, cx);
+    if (!ebx)
+        goto loc_1b4fae;
+    memoryASet32(ds, esp + 32, esi);
+    memoryASet32(ds, esp + 28, edi);
+loc_1b4fae: // 0160:1b4fae
+    edx = memoryAGet32(ds, esp + 40);
+    ecx = memoryAGet32(ds, esp + 32);
+    edx -= ecx;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = memoryAGet32(ds, esp + 28);
+    edx = memoryAGet32(ds, esp + 36);
+    edx -= esi;
+    ecx = eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    eax = (int32_t)eax * (int32_t)eax;
+    edi = memoryAGet32(ds, esp + 80);
+    ecx += eax;
+    if ((int32_t)edi >= (int32_t)0x00000002)
+        goto loc_1b50ee;
+    if ((int32_t)ecx < (int32_t)0x00000400)
+        goto loc_1b5013;
+    ebx = 0x00001000;
+    eax = memoryAGet32(ds, esp + 32);
+    edx = esi;
+    sub_1b4749();
+    if (!eax)
+        goto loc_1b50ee;
+loc_1b5013: // 0160:1b5013
+    eax = memoryAGet32(ds, 0x3be7a0);
+    if ((int32_t)ecx < (int32_t)eax)
+        goto loc_1b503d;
+    eax += 0x00000040;
+    if ((int32_t)ecx > (int32_t)eax)
+        goto loc_1b50ee;
+    eax = memoryAGet32(ds, esp + 60);
+    edx = memoryAGet32(ds, 0x3be7ac);
+    if ((int32_t)edx >= (int32_t)memoryAGet32(ds, eax + 3925604))
+        goto loc_1b50ee;
+loc_1b503d: // 0160:1b503d
+    if (memoryAGet32(ds, 0x3be7bc) == 0x00000000)
+        goto loc_1b506b;
+    if ((int32_t)ebp < (int32_t)0x00000028)
+        goto loc_1b50ee;
+    ebx = 0x00000032;
+    edx = ebp;
+    eax = ebp;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    if ((int32_t)edx <= (int32_t)0x0000000a)
+        goto loc_1b506b;
+    if ((int32_t)edx < (int32_t)0x00000028)
+        goto loc_1b50ee;
+loc_1b506b: // 0160:1b506b
+    eax = memoryAGet32(ds, esp + 76);
+    memoryASet32(ds, 0x3be7b8, eax);
+    eax = memoryAGet32(ds, esp + 60);
+    eax = memoryAGet32(ds, eax + 3925604);
+    memoryASet32(ds, 0x3be7ac, eax);
+    eax = memoryAGet32(ds, esp + 68);
+    memoryASet32(ds, 0x3be7a0, ecx);
+    memoryASet32(ds, 0x3be7a4, eax);
+    eax = memoryAGet32(ds, esp + 64);
+    ecx = memoryAGet32(ds, esp + 80);
+    memoryASet32(ds, 0x3be7a8, eax);
+    if (!ecx)
+        goto loc_1b50ab;
+    memoryASet32(ds, 0x3be794, ebp);
+    goto loc_1b50b3;
+loc_1b50ab: // 0160:1b50ab
+    eax = memoryAGet32(ds, esp);
+    memoryASet32(ds, 0x3be794, eax);
+loc_1b50b3: // 0160:1b50b3
+    esi = 0x00000001;
+    edi = memoryAGet32(ds, esp + 68);
+    memoryASet32(ds, 0x3be7b4, esi);
+    if ((int32_t)edi >= 0)
+        goto loc_1b50d2;
+    memoryASet32(ds, 0x3be788, 0xffffffff);
+    goto loc_1b50d8;
+loc_1b50d2: // 0160:1b50d2
+    memoryASet32(ds, 0x3be788, esi);
+loc_1b50d8: // 0160:1b50d8
+    eax = memoryAGet32(ds, esp);
+    memoryASet32(ds, 0x3be79c, eax);
+    eax = memoryAGet32(ds, esp + 72);
+    eax = memoryAGet32(ds, eax + 3792102);
+    memoryASet32(ds, esp + 52, eax);
+loc_1b50ee: // 0160:1b50ee
+    esi = memoryAGet32(ds, esp + 60);
+    edi = memoryAGet32(ds, esp + 72);
+    ebp = memoryAGet32(ds, esp + 76);
+    esi += 0x00000004;
+    edi += 0x000000ac;
+    ebp++;
+    memoryASet32(ds, esp + 60, esi);
+    memoryASet32(ds, esp + 72, edi);
+    memoryASet32(ds, esp + 76, ebp);
+    if ((int32_t)ebp < (int32_t)0x00000010)
+        goto loc_1b4cda;
+loc_1b5119: // 0160:1b5119
+    ecx = memoryAGet32(ds, esp + 48);
+    esi = memoryAGet32(ds, esp);
+    ecx += 0x00000014;
+    esi += 0x0000000a;
+    memoryASet32(ds, esp + 48, ecx);
+    memoryASet32(ds, esp, esi);
+    if ((int32_t)esi <= (int32_t)0x000000fa)
+        goto loc_1b4c95;
+    edx = 0x0000ffff;
+    ebp = memoryAGet32(ds, 0x3be7a0);
+    memoryASet16(ds, 0x39ef86, dx);
+    if ((int32_t)ebp >= (int32_t)0x00001000)
+        goto loc_1b515b;
+    if ((int32_t)ebp >= (int32_t)0x00000100)
+        goto loc_1b516e;
+loc_1b515b: // 0160:1b515b
+    if ((int32_t)memoryAGet32(ds, esp + 52) <= (int32_t)0x00000032)
+        goto loc_1b51bc;
+    if ((int32_t)memoryAGet32(ds, 0x3be7a0) >= (int32_t)0x00001000)
+        goto loc_1b51bc;
+loc_1b516e: // 0160:1b516e
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e946) == 0x00000000)
+        goto loc_1b51bc;
+    if (memoryAGet32(ds, 0x3be7bc) != 0x00000004)
+        goto loc_1b51bc;
+    edx = 0x00004000;
+    eax = memoryAGet32(ds, 0x3be7b8);
+    sub_1b4325();
+    if (!eax)
+        goto loc_1b51bc;
+    memoryASet32(ds, 0x3be7bc, 0x00000024);
+loc_1b51bc: // 0160:1b51bc
+    sub_1b4a40();
+    eax = memoryAGet32(ds, 0x3be79c);
+loc_1b51c6: // 0160:1b51c6
+    esp += 0x00000054;
+    goto loc_1b69f3;
+    // gap 6181 bytes
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b51ce() // 0160:1b51ce +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000058;
+    edi = esp + 12;
+    esi = 0x001b396d;
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    edi = esp;
+    esi = 0x001b3979;
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    edx = 0x7fffffff;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    memoryASet32(ds, 0x3be7a0, edx);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    ebx = 0;
+    eax <<= 2;
+    esi = 0x00000006;
+    eax += edx;
+    memoryASet32(ds, 0x3be79c, ebx);
+    eax <<= 2;
+    memoryASet32(ds, 0x3be7ac, ebx);
+    edi = memoryAGet32(ds, eax + 3795274);
+    memoryASet32(ds, 0x3be7bc, esi);
+    if (edi)
+        goto loc_1b524c;
+    if (memoryAGet32(ds, eax + 3795278) != 0x00000000)
+        goto loc_1b524c;
+    eax = 0;
+    goto loc_1b5698;
+loc_1b524c: // 0160:1b524c
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    ebx = 0;
+    eax += edx;
+    memoryASet32(ds, 0x3be78c, ebx);
+    esi = memoryAGet32(ds, eax * 4 + 0x39e93a);
+    memoryASet32(ds, 0x3be790, ebx);
+    if (esi)
+        goto loc_1b52ab;
+    eax = edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    if (memoryAGet32(ds, eax + 3795266) != 0x00000000)
+        goto loc_1b52ab;
+    if (memoryAGet32(ds, eax + 3795270) != 0x00000000)
+        goto loc_1b52ab;
+    eax = 0x00000001;
+    goto loc_1b52ad;
+loc_1b52ab: // 0160:1b52ab
+    eax = 0;
+loc_1b52ad: // 0160:1b52ad
+    if (memoryAGet32(ds, 0x3be768) != 0x00000000)
+        goto loc_1b52ba;
+    if (!eax)
+        goto loc_1b52ce;
+loc_1b52ba: // 0160:1b52ba
+    ecx = 0x000003e8;
+    esi = 0x00100000;
+    memoryASet32(ds, esp + 56, ecx);
+    memoryASet32(ds, esp + 52, esi);
+    goto loc_1b52e2;
+loc_1b52ce: // 0160:1b52ce
+    eax = memoryAGet32(ds, 0x1dfbcc);
+    edx = memoryAGet32(ds, esp + eax * 4 + 0xc);
+    eax = memoryAGet32(ds, esp + eax*4);
+    memoryASet32(ds, esp + 56, edx);
+    memoryASet32(ds, esp + 52, eax);
+loc_1b52e2: // 0160:1b52e2
+    eax = 0x00000001;
+    cl = memoryAGet(ds, 0x1dfbc4);
+    eax <<= cl;
+    eax ^= 0x0000ffff;
+    memoryASet16(ds, 0x39ef86, ax);
+    eax = memoryAGet32(ds, esp + 56);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edi = 0;
+    esi = 0;
+    memoryASet32(ds, esp + 76, edi);
+    memoryASet32(ds, esp + 72, edi);
+    memoryASet32(ds, esp + 48, eax);
+loc_1b5317: // 0160:1b5317
+    eax = memoryAGet32(ds, esp + 76);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = eax;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (ebx == eax)
+        goto loc_1b5639;
+    if (memoryAGet32(ds, esi + 3792026) == 0x00000000)
+        goto loc_1b5639;
+    sub_1b3f7d();
+    eax = memoryAGet32(ds, esi + 3792026);
+    memoryASet32(ds, esp + 44, eax);
+    eax = memoryAGet32(ds, esi + 3792030);
+    eax -= 0x00000400;
+    edx = esp + 40;
+    memoryASet32(ds, esp + 40, eax);
+    eax = esp + 44;
+    sub_1b48b1();
+    edx = memoryAGet32(ds, esp + 44);
+    ebx = memoryAGet32(ds, 0x3be780);
+    edx -= ebx;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edi = memoryAGet32(ds, 0x3be784);
+    edx = memoryAGet32(ds, esp + 40);
+    edx -= edi;
+    ecx = eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = ecx;
+    edx = (int32_t)edx * (int32_t)ecx;
+    ebx = eax;
+    eax = (int32_t)eax * (int32_t)eax;
+    eax += edx;
+    sub_1b39a9();
+    memoryASet32(ds, esp + 68, eax);
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b53e2;
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    edi = 0x00000005;
+    edx += edx;
+    edi -= edx;
+    edx = edi;
+    edx <<= 7;
+    if ((int32_t)eax < (int32_t)edx)
+        goto loc_1b53ef;
+loc_1b53e2: // 0160:1b53e2
+    if (memoryAGet32(ds, 0x3be768) == 0x00000000)
+        goto loc_1b5639;
+loc_1b53ef: // 0160:1b53ef
+    edx = ecx * 0x00002ee0;
+    edi = memoryAGet32(ds, esp + 68);
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(edi);
+    edx = ebx * 0x00002ee0;
+    edi = eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(memoryAGet32(ds, esp + 68));
+    memoryASet32(ds, esp + 80, eax);
+    if (!edi)
+        goto loc_1b5427;
+    edx = ecx;
+    edx <<= 9;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(edi);
+    goto loc_1b543b;
+loc_1b5427: // 0160:1b5427
+    if (!eax)
+        goto loc_1b543d;
+    edx = ebx;
+    edx <<= 9;
+    ebx = memoryAGet32(ds, esp + 80);
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+loc_1b543b: // 0160:1b543b
+    ebp = eax;
+loc_1b543d: // 0160:1b543d
+    if (ebp)
+        goto loc_1b5446;
+    ebp = 0x00000032;
+loc_1b5446: // 0160:1b5446
+    cl = memoryAGet(ds, esp + 76);
+    eax = 0x00000001;
+    eax <<= cl;
+    bx = memoryAGet16(ds, 0x39ef86);
+    memoryASet32(ds, esp + 84, eax);
+    ebx ^= eax;
+    eax = memoryAGet32(ds, esp + 44);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 28, eax);
+    eax = memoryAGet32(ds, esp + 40);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 24, eax);
+    eax = esp + 32;
+    push32(eax);
+    eax = esp + 40;
+    push32(eax);
+    eax = memoryAGet32(ds, 0x3be784);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = eax;
+    eax = memoryAGet32(ds, 0x3be780);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet16(ds, 0x39ef86, bx);
+    edx = esp + 32;
+    ebx = eax;
+    eax = esp + 36;
+    sub_1ab7bc();
+    cx = memoryAGet16(ds, 0x39ef86);
+    memoryASet32(ds, esp + 60, eax);
+    ecx ^= memoryAGet32(ds, esp + 84);
+    eax = memoryAGet32(ds, esp + 44);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ebx = eax;
+    eax = memoryAGet32(ds, esp + 40);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet16(ds, 0x39ef86, cx);
+    ebx -= memoryAGet32(ds, esp + 36);
+    edx = memoryAGet32(ds, esp + 32);
+    ecx = eax;
+    ecx -= edx;
+    if (!edi)
+        goto loc_1b552f;
+    edx = memoryAGet32(ds, esp + 36);
+    eax = memoryAGet32(ds, 0x3be780);
+    edx <<= 9;
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(edi);
+    goto loc_1b5549;
+loc_1b552f: // 0160:1b552f
+    if (memoryAGet32(ds, esp + 80) == 0x00000000)
+        goto loc_1b554d;
+    eax = memoryAGet32(ds, 0x3be784);
+    edx <<= 9;
+    edx -= eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(memoryAGet32(ds, esp + 80));
+loc_1b5549: // 0160:1b5549
+    memoryASet32(ds, esp + 64, eax);
+loc_1b554d: // 0160:1b554d
+    ebx = (int32_t)ebx * (int32_t)ebx;
+    ecx = (int32_t)ecx * (int32_t)ecx;
+    edx = memoryAGet32(ds, esp + 52);
+    ecx += ebx;
+    if ((int32_t)ecx >= (int32_t)edx)
+        goto loc_1b5639;
+    ebx = memoryAGet32(ds, esp + 56);
+    if ((int32_t)ebx < (int32_t)memoryAGet32(ds, esi + 3792102))
+        goto loc_1b5639;
+    edx = memoryAGet32(ds, esp + 32);
+    eax = memoryAGet32(ds, esp + 36);
+    ebx = 0x00000240;
+    edx <<= 9;
+    eax <<= 9;
+    sub_1b465a();
+    if (eax)
+        goto loc_1b5639;
+    eax = memoryAGet32(ds, 0x3be7a0);
+    if ((int32_t)ecx < (int32_t)eax)
+        goto loc_1b55b6;
+    if (ecx != eax)
+        goto loc_1b5639;
+    eax = memoryAGet32(ds, esp + 72);
+    ebx = memoryAGet32(ds, 0x3be7ac);
+    if ((int32_t)ebx >= (int32_t)memoryAGet32(ds, eax + 3925604))
+        goto loc_1b5639;
+loc_1b55b6: // 0160:1b55b6
+    eax = memoryAGet32(ds, esp + 72);
+    memoryASet32(ds, 0x3be7a0, ecx);
+    eax = memoryAGet32(ds, eax + 3925604);
+    memoryASet32(ds, 0x3be7a4, edi);
+    memoryASet32(ds, 0x3be7ac, eax);
+    eax = memoryAGet32(ds, esp + 80);
+    ecx = memoryAGet32(ds, esp + 60);
+    memoryASet32(ds, 0x3be7a8, eax);
+    if (!ecx)
+        goto loc_1b55ed;
+    eax = memoryAGet32(ds, esp + 64);
+    memoryASet32(ds, 0x3be794, eax);
+    goto loc_1b55f3;
+loc_1b55ed: // 0160:1b55ed
+    memoryASet32(ds, 0x3be794, ebp);
+loc_1b55f3: // 0160:1b55f3
+    eax = 0x00000001;
+    memoryASet32(ds, 0x3be7b4, eax);
+    if ((int32_t)edi >= 0)
+        goto loc_1b560d;
+    memoryASet32(ds, 0x3be788, 0xffffffff);
+    goto loc_1b5612;
+loc_1b560d: // 0160:1b560d
+    memoryASet32(ds, 0x3be788, eax);
+loc_1b5612: // 0160:1b5612
+    ecx = memoryAGet32(ds, esp + 48);
+    eax = memoryAGet32(ds, esi + 3792102);
+    memoryASet32(ds, 0x3be79c, ebp);
+    if ((int32_t)eax >= (int32_t)ecx)
+        goto loc_1b562f;
+    eax = 0;
+    memoryASet32(ds, 0x3be76c, eax);
+    goto loc_1b5639;
+loc_1b562f: // 0160:1b562f
+    memoryASet32(ds, 0x3be76c, 0x00000001);
+loc_1b5639: // 0160:1b5639
+    edx = memoryAGet32(ds, esp + 72);
+    ebx = memoryAGet32(ds, esp + 76);
+    esi += 0x000000ac;
+    edx += 0x00000004;
+    ebx++;
+    memoryASet32(ds, esp + 72, edx);
+    memoryASet32(ds, esp + 76, ebx);
+    if ((int32_t)ebx < (int32_t)0x00000010)
+        goto loc_1b5317;
+    edx = 0x0000ffff;
+    esi = memoryAGet32(ds, 0x1dfbcc);
+    memoryASet16(ds, 0x39ef86, dx);
+    if (esi != 0x00000002)
+        goto loc_1b5693;
+    edi = memoryAGet32(ds, 0x3be768);
+    if (edi)
+        goto loc_1b5693;
+    edx = 0x00000001;
+    eax = 0;
+    sub_1b3e6c();
+    if (!eax)
+        goto loc_1b5693;
+    memoryASet32(ds, 0x3be79c, edi);
+loc_1b5693: // 0160:1b5693
+    eax = memoryAGet32(ds, 0x3be79c);
+loc_1b5698: // 0160:1b5698
+    esp += 0x00000058;
+    goto loc_1b69f3;
+    // gap 4947 bytes
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b56a0() // 0160:1b56a0 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    ebx = memoryAGet32(ds, 0x3be7b4);
+    edx = memoryAGet32(ds, 0x3be794);
+    eax = memoryAGet32(ds, 0x3be7bc);
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b56fb;
+    edx = memoryAGet32(ds, 0x1dfbe0);
+    if (!edx)
+        goto loc_1b56d6;
+    ebx = edx + -1;
+    eax = 0;
+    memoryASet32(ds, 0x1dfbe0, ebx);
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b56d6: // 0160:1b56d6
+    ebx = memoryAGet32(ds, 0x3be798);
+    edx = memoryAGet32(ds, 0x3be788);
+    eax = memoryAGet32(ds, 0x3be7b0);
+    ecx = 0;
+    sub_1b3ea0();
+    if (!eax)
+        goto loc_1b56fb;
+    eax = 0x00000001;
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b56fb: // 0160:1b56fb
+    eax = 0;
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b5701() // 0160:1b5701 +long
+{
+    esp -= 4;
+    push32(edx);
+    edx = 0;
+    eax = 0;
+    memoryASet32(ds, 0x3be7bc, edx);
+    sub_1b4b45();
+    memoryASet32(ds, 0x3be75c, eax);
+    eax = memoryAGet32(ds, 0x3be7a4);
+    memoryASet32(ds, 0x3be744, eax);
+    eax = memoryAGet32(ds, 0x3be7a8);
+    memoryASet32(ds, 0x3be740, eax);
+    eax = memoryAGet32(ds, 0x3be78c);
+    memoryASet32(ds, 0x3be74c, eax);
+    eax = memoryAGet32(ds, 0x3be790);
+    memoryASet32(ds, 0x3be748, eax);
+    eax = memoryAGet32(ds, 0x3be7ac);
+    memoryASet32(ds, 0x3be73c, eax);
+    eax = memoryAGet32(ds, 0x3be794);
+    memoryASet32(ds, 0x3be754, eax);
+    eax = memoryAGet32(ds, 0x3be7a0);
+    memoryASet32(ds, 0x3be758, eax);
+    eax = memoryAGet32(ds, 0x3be788);
+    memoryASet32(ds, 0x3be750, eax);
+    edx = pop32();
+    esp += 4;
+}
+void sub_1b5768() // 0160:1b5768 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(edx);
+    edx = 0x00000004;
+    eax = edx;
+    memoryASet32(ds, 0x3be7bc, edx);
+    sub_1b4b45();
+    memoryASet32(ds, 0x3be764, eax);
+    eax = memoryAGet32(ds, 0x3be7a4);
+    memoryASet32(ds, 0x3be738, eax);
+    eax = memoryAGet32(ds, 0x3be7a8);
+    memoryASet32(ds, 0x3be6fc, eax);
+    eax = memoryAGet32(ds, 0x3be78c);
+    memoryASet32(ds, 0x3be6f0, eax);
+    eax = memoryAGet32(ds, 0x3be790);
+    memoryASet32(ds, 0x3be6f4, eax);
+    eax = memoryAGet32(ds, 0x3be7b4);
+    memoryASet32(ds, 0x3be724, eax);
+    eax = memoryAGet32(ds, 0x3be7ac);
+    memoryASet32(ds, 0x3be70c, eax);
+    eax = memoryAGet32(ds, 0x3be794);
+    memoryASet32(ds, 0x3be728, eax);
+    eax = memoryAGet32(ds, 0x3be7a0);
+    memoryASet32(ds, 0x3be72c, eax);
+    eax = memoryAGet32(ds, 0x3be788);
+    ebx = memoryAGet32(ds, 0x3be7bc);
+    memoryASet32(ds, 0x3be760, eax);
+    al = ebx == 0x00000024;
+    eax &= 0x000000ff;
+    memoryASet32(ds, 0x3be720, eax);
+    edx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b57f4() // 0160:1b57f4 +long
+{
+    esp -= 4;
+    push32(edx);
+    push32(ebp);
+    edx = 0x00000006;
+    memoryASet32(ds, 0x3be768, eax);
+    memoryASet32(ds, 0x3be7bc, edx);
+    sub_1b51ce();
+    memoryASet32(ds, 0x3be714, eax);
+    if (!eax)
+        goto loc_1b592e;
+    eax = memoryAGet32(ds, 0x3be7a4);
+    memoryASet32(ds, 0x3be734, eax);
+    eax = memoryAGet32(ds, 0x3be7a8);
+    memoryASet32(ds, 0x3be730, eax);
+    eax = memoryAGet32(ds, 0x3be78c);
+    memoryASet32(ds, 0x3be71c, eax);
+    eax = memoryAGet32(ds, 0x3be790);
+    memoryASet32(ds, 0x3be718, eax);
+    eax = memoryAGet32(ds, 0x3be7b4);
+    memoryASet32(ds, 0x3be700, eax);
+    eax = memoryAGet32(ds, 0x3be7ac);
+    memoryASet32(ds, 0x3be6ec, eax);
+    eax = memoryAGet32(ds, 0x3be794);
+    memoryASet32(ds, 0x3be704, eax);
+    eax = memoryAGet32(ds, 0x3be7a0);
+    memoryASet32(ds, 0x3be710, eax);
+    eax = memoryAGet32(ds, 0x3be788);
+    memoryASet32(ds, 0x3be708, eax);
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    al = memoryAGet32(ds, eax * 4 + 0x39e94a) == 0x00000000;
+    eax &= 0x000000ff;
+    memoryASet32(ds, 0x3be6f8, eax);
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    if (memoryAGet32(ds, eax + 3795274) == 0x00000000)
+        goto loc_1b58fc;
+    if (memoryAGet32(ds, eax + 3795278) == 0x00000000)
+        goto loc_1b58fc;
+    if (memoryAGet32(ds, 0x3be76c) == 0x00000000)
+        goto loc_1b58eb;
+    ebp = 0;
+    memoryASet32(ds, 0x3be6f8, ebp);
+    goto loc_1b58fc;
+loc_1b58eb: // 0160:1b58eb
+    edx = 0x00000001;
+    eax = 0;
+    sub_1b3e6c();
+    memoryASet32(ds, 0x3be6f8, eax);
+loc_1b58fc: // 0160:1b58fc
+    if (memoryAGet32(ds, 0x3be6f8) == 0x00000000)
+        goto loc_1b5911;
+    memoryASet32(ds, 0x3be7bc, 0x00000027);
+    goto loc_1b591b;
+loc_1b5911: // 0160:1b5911
+    memoryASet32(ds, 0x3be7bc, 0x00000006);
+loc_1b591b: // 0160:1b591b
+    if (memoryAGet32(ds, 0x3be768) == 0x00000000)
+        goto loc_1b592e;
+    memoryASet32(ds, 0x3be7bc, 0x00000006);
+loc_1b592e: // 0160:1b592e
+    eax = memoryAGet32(ds, 0x3be714);
+    ebp = pop32();
+    edx = pop32();
+    esp += 4;
+}
+void sub_1b5936() // 0160:1b5936 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    if ((int32_t)memoryAGet32(ds, 0x3be79c) <= (int32_t)0x00000000)
+        goto loc_1b59dc;
+    eax = memoryAGet32(ds, 0x3be7a4);
+    eax = (int32_t)eax * (int32_t)eax;
+    edx = memoryAGet32(ds, 0x3be7a8);
+    edx = (int32_t)edx * (int32_t)edx;
+    eax += edx;
+    sub_1b39a9();
+    edx = eax;
+    ecx = 0x0000015d;
+    edx <<= 3;
+    ebx = eax;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ecx);
+    esi = memoryAGet32(ds, 0x3be7a4);
+    eax += 0x0000000f;
+    edx = memoryAGet32(ds, 0x3be7a8);
+    memoryASet32(ds, 0x3be798, eax);
+    edx = -edx;
+    if (!esi)
+        goto loc_1b59bf;
+    edx <<= 11;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    edx = eax + 2048;
+    edx <<= 2;
+    edx = memoryAGet32(ds, edx + 1933332);
+    edx <<= 6;
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<9) & 0x80000000);
+    edx <<= 10;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x0a);
+    memoryASet32(ds, 0x3be7b0, eax);
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b59bf: // 0160:1b59bf
+    if ((int32_t)edx >= 0)
+        goto loc_1b59d2;
+    memoryASet32(ds, 0x3be7b0, 0xffffffc0);
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b59d2: // 0160:1b59d2
+    memoryASet32(ds, 0x3be7b0, 0x00000040);
+loc_1b59dc: // 0160:1b59dc
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b59e1() // 0160:1b59e1 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(edx);
+    push32(ebp);
+    eax = memoryAGet32(ds, 0x3be758);
+    edx = 0;
+    ebx = memoryAGet32(ds, 0x3be72c);
+    memoryASet32(ds, 0x3be79c, edx);
+    if (eax == ebx)
+        goto loc_1b5a05;
+    if ((int32_t)eax > (int32_t)0x00000040)
+        goto loc_1b5a3d;
+    if ((int32_t)ebx > (int32_t)0x00000040)
+        goto loc_1b5a3d;
+loc_1b5a05: // 0160:1b5a05
+    eax = memoryAGet32(ds, 0x3be73c);
+    if ((int32_t)eax <= (int32_t)memoryAGet32(ds, 0x3be70c))
+        goto loc_1b5a16;
+    eax = 0;
+    goto loc_1b5a1b;
+loc_1b5a16: // 0160:1b5a16
+    eax = 0x00000004;
+loc_1b5a1b: // 0160:1b5a1b
+    edx = memoryAGet32(ds, 0x3be73c);
+    if (edx != memoryAGet32(ds, 0x3be70c))
+        goto loc_1b5a4f;
+    edx = 0x00000001;
+    eax = 0;
+    sub_1b3e6c();
+    if (!eax)
+        goto loc_1b5a4a;
+loc_1b5a39: // 0160:1b5a39
+    eax = 0;
+    goto loc_1b5a4f;
+loc_1b5a3d: // 0160:1b5a3d
+    eax = memoryAGet32(ds, 0x3be758);
+    if ((int32_t)eax < (int32_t)memoryAGet32(ds, 0x3be72c))
+        goto loc_1b5a39;
+loc_1b5a4a: // 0160:1b5a4a
+    eax = 0x00000004;
+loc_1b5a4f: // 0160:1b5a4f
+    if (eax <= 0)
+        goto loc_1b5a5d;
+    if (eax == 0x00000004)
+        goto loc_1b5ab2;
+    goto loc_1b5b26;
+loc_1b5a5d: // 0160:1b5a5d
+    eax = memoryAGet32(ds, 0x3be744);
+    memoryASet32(ds, 0x3be7a4, eax);
+    eax = memoryAGet32(ds, 0x3be740);
+    memoryASet32(ds, 0x3be7a8, eax);
+    eax = memoryAGet32(ds, 0x3be74c);
+    memoryASet32(ds, 0x3be78c, eax);
+    eax = memoryAGet32(ds, 0x3be748);
+    memoryASet32(ds, 0x3be790, eax);
+    eax = memoryAGet32(ds, 0x3be754);
+    memoryASet32(ds, 0x3be794, eax);
+    eax = memoryAGet32(ds, 0x3be75c);
+    memoryASet32(ds, 0x3be79c, eax);
+    eax = memoryAGet32(ds, 0x3be758);
+    ebp = 0;
+    memoryASet32(ds, 0x3be7a0, eax);
+    eax = memoryAGet32(ds, 0x3be750);
+    memoryASet32(ds, 0x3be7bc, ebp);
+    goto loc_1b5b21;
+loc_1b5ab2: // 0160:1b5ab2
+    if (memoryAGet32(ds, 0x3be720) == 0x00000000)
+        goto loc_1b5ac7;
+    memoryASet32(ds, 0x3be7bc, 0x00000024);
+    goto loc_1b5acc;
+loc_1b5ac7: // 0160:1b5ac7
+    memoryASet32(ds, 0x3be7bc, eax);
+loc_1b5acc: // 0160:1b5acc
+    eax = memoryAGet32(ds, 0x3be738);
+    memoryASet32(ds, 0x3be7a4, eax);
+    eax = memoryAGet32(ds, 0x3be6fc);
+    memoryASet32(ds, 0x3be7a8, eax);
+    eax = memoryAGet32(ds, 0x3be6f0);
+    memoryASet32(ds, 0x3be78c, eax);
+    eax = memoryAGet32(ds, 0x3be6f4);
+    memoryASet32(ds, 0x3be790, eax);
+    eax = memoryAGet32(ds, 0x3be728);
+    memoryASet32(ds, 0x3be794, eax);
+    eax = memoryAGet32(ds, 0x3be724);
+    memoryASet32(ds, 0x3be7b4, eax);
+    eax = memoryAGet32(ds, 0x3be764);
+    memoryASet32(ds, 0x3be79c, eax);
+    eax = memoryAGet32(ds, 0x3be72c);
+    memoryASet32(ds, 0x3be7a0, eax);
+    eax = memoryAGet32(ds, 0x3be760);
+loc_1b5b21: // 0160:1b5b21
+    memoryASet32(ds, 0x3be788, eax);
+loc_1b5b26: // 0160:1b5b26
+    eax = memoryAGet32(ds, 0x3be79c);
+    ebp = pop32();
+    edx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b5b2f() // 0160:1b5b2f +long
+{
+    esp -= 4;
+    push32(edx);
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    if (memoryAGet32(ds, eax + 3795282) == 0x00000000)
+        goto loc_1b5b61;
+loc_1b5b5a: // 0160:1b5b5a
+    eax = 0x00000001;
+    edx = pop32();
+    esp += 4;
+    return;
+loc_1b5b61: // 0160:1b5b61
+    if (memoryAGet32(ds, eax + 3795286) != 0x00000000)
+        goto loc_1b5b5a;
+    if (memoryAGet32(ds, eax + 3795334) != 0x00000000)
+        goto loc_1b5b7c;
+    if (memoryAGet32(ds, eax + 3795294) != 0x00000000)
+        goto loc_1b5b5a;
+loc_1b5b7c: // 0160:1b5b7c
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e95a) != 0x00000000)
+        goto loc_1b5b5a;
+    eax = 0;
+    edx = pop32();
+    esp += 4;
+}
+void sub_1b5ba8() // 0160:1b5ba8 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(edi);
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    ebx = edx;
+    ebx <<= 2;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    ebx += edx;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    edx = memoryAGet32(ds, eax * 4 + 0x39e952);
+    ebx <<= 3;
+    if (!edx)
+        goto loc_1b5bfc;
+    ecx = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 20;
+    if ((int32_t)eax <= (int32_t)ecx)
+        goto loc_1b5bfc;
+loc_1b5bf2: // 0160:1b5bf2
+    eax = 0x00000001;
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b5bfc: // 0160:1b5bfc
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e956) == 0x00000000)
+        goto loc_1b5c31;
+    edi = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 30;
+    if ((int32_t)eax > (int32_t)edi)
+        goto loc_1b5bf2;
+loc_1b5c31: // 0160:1b5c31
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    if (memoryAGet32(ds, eax + 3795334) != 0x00000000)
+        goto loc_1b5c71;
+    if (memoryAGet32(ds, eax + 3795294) == 0x00000000)
+        goto loc_1b5c71;
+    ecx = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 50;
+    if ((int32_t)eax > (int32_t)ecx)
+        goto loc_1b5bf2;
+loc_1b5c71: // 0160:1b5c71
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e95a) == 0x00000000)
+        goto loc_1b5caa;
+    edi = memoryAGet32(ds, 0x3be6e0);
+    ebx += 0x00000046;
+    if ((int32_t)ebx > (int32_t)edi)
+        goto loc_1b5bf2;
+loc_1b5caa: // 0160:1b5caa
+    eax = 0;
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b5cb1() // 0160:1b5cb1 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(edi);
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    ebx = edx;
+    ebx <<= 2;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    ebx += edx;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    edx = memoryAGet32(ds, eax * 4 + 0x39e952);
+    ebx <<= 3;
+    if (!edx)
+        goto loc_1b5d29;
+    ecx = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 20;
+    if ((int32_t)eax <= (int32_t)ecx)
+        goto loc_1b5d29;
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = 0x00000019;
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b5e5a;
+    bl = 0x01;
+    eax = 0x00000001;
+    memoryASet(ds, 0x3a72a5, bl);
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b5d29: // 0160:1b5d29
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e956) == 0x00000000)
+        goto loc_1b5d8c;
+    edi = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 30;
+    if ((int32_t)eax <= (int32_t)edi)
+        goto loc_1b5d8c;
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = 0x00000022;
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b5e5a;
+    dh = 0x01;
+    eax = 0x00000001;
+    memoryASet(ds, 0x3a72a5, dh);
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b5d8c: // 0160:1b5d8c
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    if (memoryAGet32(ds, eax + 3795334) != 0x00000000)
+        goto loc_1b5dfa;
+    if (memoryAGet32(ds, eax + 3795294) == 0x00000000)
+        goto loc_1b5dfa;
+    ecx = memoryAGet32(ds, 0x3be6e0);
+    eax = ebx + 50;
+    if ((int32_t)eax <= (int32_t)ecx)
+        goto loc_1b5dfa;
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = 0x00000033;
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b5e5a;
+    dl = 0x01;
+    eax = 0x00000001;
+    memoryASet(ds, 0x3a72a5, dl);
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b5dfa: // 0160:1b5dfa
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e95a) == 0x00000000)
+        goto loc_1b5e58;
+    edi = memoryAGet32(ds, 0x3be6e0);
+    ebx += 0x00000046;
+    if ((int32_t)ebx <= (int32_t)edi)
+        goto loc_1b5e58;
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = 0x0000000b;
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b5e5a;
+    memoryASet(ds, 0x3a72a5, 0x01);
+    eax = 0x00000001;
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b5e58: // 0160:1b5e58
+    eax = 0;
+loc_1b5e5a: // 0160:1b5e5a
+    edi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b5e5f() // 0160:1b5e5f +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000010;
+    push32(eax);
+    sub_1b5b2f();
+    if (!eax)
+        goto loc_1b61bd;
+    ebx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    eax = memoryAGet32(ds, ebx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edi = eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = memoryAGet32(ds, 0x39eff8);
+    esi = eax;
+    eax = edx;
+    eax <<= 2;
+    eax -= edx;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebp = 0xffffffff;
+    cl = memoryAGet(ds, 0x1dfbc4);
+    memoryASet32(ds, 0x3be6e0, ebp);
+    memoryASet32(ds, 0x3be6e4, edi);
+    memoryASet32(ds, esp + 12, eax);
+    eax = 0x00000001;
+    memoryASet32(ds, 0x3be6e8, edi);
+    eax <<= cl;
+    ebx = 0x00000008;
+    eax ^= 0x0000ffff;
+    memoryASet32(ds, 0x3be6d4, ebx);
+    memoryASet16(ds, 0x39ef86, ax);
+    eax = 0x00000001;
+    memoryASet32(ds, 0x3be6d8, ebx);
+    memoryASet32(ds, esp + 16, eax);
+    ebp = 0;
+loc_1b5f13: // 0160:1b5f13
+    if (ebp == memoryAGet32(ds, esp + 16))
+        goto loc_1b616e;
+    if ((int32_t)edi <= 0)
+        goto loc_1b616e;
+    if ((int32_t)edi >= (int32_t)0x000003c0)
+        goto loc_1b616e;
+    if ((int32_t)esi >= (int32_t)0x0000017a)
+        goto loc_1b616e;
+    edx = esi + -8;
+    eax = edi;
+    sub_1b3a4f();
+    if ((int32_t)eax <= (int32_t)0x00000400)
+        goto loc_1b616e;
+    if ((int32_t)ebp >= (int32_t)memoryAGet32(ds, esp + 12))
+        goto loc_1b616e;
+    sub_1b3f7d();
+    if (memoryAGet32(ds, esp + 16) != 0x00000001)
+        goto loc_1b5fba;
+    ebx = 0x00000040;
+    edx = esi;
+    eax = edi;
+    sub_1b3ccb();
+    if (!eax)
+        goto loc_1b5fba;
+    edx = memoryAGet32(ds, esp);
+    memoryASet32(ds, 0x3be6e8, edi);
+    edx = -edx;
+    memoryASet32(ds, 0x3be6e0, eax);
+    memoryASet32(ds, esp, edx);
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    eax = ebp;
+    edx <<= 3;
+    ebx = memoryAGet32(ds, esp);
+    sub_1b3e6c();
+    eax = (int32_t)eax * (int32_t)ebx;
+    ecx = memoryAGet32(ds, 0x3be6e8);
+    ecx += eax;
+    eax = 0x00000002;
+    memoryASet32(ds, 0x3be6e8, ecx);
+    memoryASet32(ds, esp + 16, eax);
+loc_1b5fba: // 0160:1b5fba
+    edx = memoryAGet32(ds, esp);
+    edi += edx;
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    memoryASet32(ds, esp + 8, esi);
+    ebx = esi * 0x000003c0;
+    ebx += edi;
+    ecx = eax + eax;
+loc_1b5fd9: // 0160:1b5fd9
+    if ((int32_t)esi <= 0)
+        goto loc_1b6027;
+    if (edi >= 0x000003c0)
+        goto loc_1b6027;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    ax = memoryAGet16(ds, ecx + eax + 2332680);
+    edx = 0;
+    eax &= 0x0000ffff;
+    dx = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = 0;
+    al = memoryAGet(ds, ebx + 3233192);
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (eax)
+        goto loc_1b602e;
+loc_1b6027: // 0160:1b6027
+    eax = 0x00000001;
+    goto loc_1b6030;
+loc_1b602e: // 0160:1b602e
+    eax = ebp;
+loc_1b6030: // 0160:1b6030
+    if (!eax)
+        goto loc_1b6045;
+    if ((int32_t)esi >= (int32_t)0x00000190)
+        goto loc_1b6045;
+    ebx += 0x000003c0;
+    esi++;
+    goto loc_1b5fd9;
+loc_1b6045: // 0160:1b6045
+    ebx = memoryAGet32(ds, esp + 8);
+    eax = esi;
+    eax -= ebx;
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b6056;
+    memoryASet32(ds, esp + 16, ebp);
+loc_1b6056: // 0160:1b6056
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    memoryASet32(ds, esp + 4, esi);
+    ebx = esi * 0x000003c0;
+    ebx += edi;
+    ecx = eax + eax;
+loc_1b6070: // 0160:1b6070
+    if ((int32_t)esi <= 0)
+        goto loc_1b60c7;
+    if (edi >= 0x000003c0)
+        goto loc_1b60c7;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = 0;
+    al = memoryAGet(ds, ebx + 3233192);
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b60c7;
+    if ((int32_t)esi <= 0)
+        goto loc_1b60c7;
+    ebx -= 0x000003c0;
+    esi--;
+    goto loc_1b6070;
+loc_1b60c7: // 0160:1b60c7
+    eax = memoryAGet32(ds, esp + 4);
+    eax -= esi;
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b60d6;
+    memoryASet32(ds, esp + 16, ebp);
+loc_1b60d6: // 0160:1b60d6
+    ebx = esi + -8;
+    if ((int32_t)ebx <= 0)
+        goto loc_1b613c;
+    if (edi >= 0x000003c0)
+        goto loc_1b613c;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = eax * 0x000003c0;
+    edx = edi;
+    edx = sar32(edx, 0x1f);
+    eax = edi;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = ebx * 0x000003c0;
+    al = memoryAGet(ds, edi + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b613c;
+    memoryASet32(ds, esp + 16, ebp);
+loc_1b613c: // 0160:1b613c
+    ecx = memoryAGet32(ds, esp);
+    ebx = 0x003be778;
+    edx = esi;
+    push32(ecx);
+    eax = edi;
+    ecx = 0x003be774;
+    sub_1970f5();
+    if ((int32_t)eax <= (int32_t)0xfffe0000)
+        goto loc_1b6161;
+    if ((int32_t)eax <= (int32_t)0x00020000)
+        goto loc_1b6165;
+loc_1b6161: // 0160:1b6161
+    memoryASet32(ds, esp + 16, ebp);
+loc_1b6165: // 0160:1b6165
+    memoryASet32(ds, esp + 12, memoryAGet32(ds, esp + 12) - 1);
+    goto loc_1b5f13;
+loc_1b616e: // 0160:1b616e
+    edx = 0x0000ffff;
+    ecx = memoryAGet32(ds, 0x3be6e0);
+    memoryASet16(ds, 0x39ef86, dx);
+    if ((int32_t)ecx < 0)
+        goto loc_1b61bb;
+    eax = memoryAGet32(ds, 0x3be6e8);
+    eax -= edi;
+    memoryASet32(ds, 0x3be6dc, edi);
+    if ((int32_t)eax >= 0)
+        goto loc_1b6197;
+    eax = -eax;
+loc_1b6197: // 0160:1b6197
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    ebx = 0x00000040;
+    edx <<= 4;
+    ebx -= edx;
+    if ((int32_t)eax <= (int32_t)ebx)
+        goto loc_1b61bb;
+    sub_1b5ba8();
+    if (!eax)
+        goto loc_1b61bb;
+    eax = 0x00000001;
+    goto loc_1b61bd;
+loc_1b61bb: // 0160:1b61bb
+    eax = 0;
+loc_1b61bd: // 0160:1b61bd
+    esp += 0x00000014;
+    goto loc_1b69f3;
+    // gap 2094 bytes
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
+}
+void sub_1b61c5() // 0160:1b61c5 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    ebx = eax;
+    ecx = edx;
+    edx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    edi = memoryAGet32(ds, 0x3be6d4);
+    if ((int32_t)edi > 0)
+        goto loc_1b6248;
+    if (memoryAGet32(ds, edx + 3792062) != 0x00000000)
+        goto loc_1b6236;
+    if (memoryAGet32(ds, edx + 3792018) != 0x00000000)
+        goto loc_1b6236;
+    if (memoryAGet32(ds, edx + 3792022) != 0x00000000)
+        goto loc_1b6236;
+    if (memoryAGet32(ds, edx + 3792042) != 0x00000000)
+        goto loc_1b6236;
+    eax = memoryAGet32(ds, 0x3be6d8);
+    edx = eax + -1;
+    memoryASet32(ds, 0x3be6d8, edx);
+    if ((int32_t)eax > 0)
+        goto loc_1b62c7;
+    edi = 0x00000008;
+    eax = 0x00000001;
+    memoryASet32(ds, 0x3be6d4, edi);
+    memoryASet32(ds, 0x3be6d8, edi);
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b6236: // 0160:1b6236
+    esi = 0x00000008;
+    eax = 0;
+    memoryASet32(ds, 0x3be6d8, esi);
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b6248: // 0160:1b6248
+    eax = memoryAGet32(ds, edx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = edi + -1;
+    if ((int32_t)ecx <= 0)
+        goto loc_1b6293;
+    if ((int32_t)eax > (int32_t)memoryAGet32(ds, 0x3be6e4))
+        goto loc_1b6272;
+    memoryASet32(ds, 0x3be6d4, edx);
+    goto loc_1b627c;
+loc_1b6272: // 0160:1b6272
+    memoryASet32(ds, 0x3be6d4, 0x00000008);
+loc_1b627c: // 0160:1b627c
+    if ((int32_t)eax >= (int32_t)ebx)
+        goto loc_1b6289;
+    memoryASet(ds, 0x3a72b9, 0x01);
+    goto loc_1b62c2;
+loc_1b6289: // 0160:1b6289
+    edi = 0;
+    memoryASet32(ds, 0x3be6d4, edi);
+    goto loc_1b62c2;
+loc_1b6293: // 0160:1b6293
+    if ((int32_t)eax < (int32_t)memoryAGet32(ds, 0x3be6e4))
+        goto loc_1b62a3;
+    memoryASet32(ds, 0x3be6d4, edx);
+    goto loc_1b62ad;
+loc_1b62a3: // 0160:1b62a3
+    memoryASet32(ds, 0x3be6d4, 0x00000008);
+loc_1b62ad: // 0160:1b62ad
+    if ((int32_t)eax <= (int32_t)ebx)
+        goto loc_1b62ba;
+    memoryASet(ds, 0x3a72b7, 0x01);
+    goto loc_1b62c2;
+loc_1b62ba: // 0160:1b62ba
+    ebx = 0;
+    memoryASet32(ds, 0x3be6d4, ebx);
+loc_1b62c2: // 0160:1b62c2
+    memoryASet32(ds, 0x3be6e4, eax);
+loc_1b62c7: // 0160:1b62c7
+    eax = 0;
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b62ce() // 0160:1b62ce +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x0000002c;
+    push32(eax);
+    esi = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    ebx = memoryAGet32(ds, 0x1dfbec);
+    edi = memoryAGet32(ds, esi + 3792026);
+    esi = memoryAGet32(ds, esi + 3792030);
+    if (ebx)
+        goto loc_1b632a;
+    if ((int32_t)eax >= 0)
+        goto loc_1b632a;
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6c8, eax);
+    memoryASet32(ds, 0x3be6c0, eax);
+    eax = 0x00000008;
+    memoryASet32(ds, 0x3be6c4, ebx);
+    memoryASet32(ds, 0x3be6cc, eax);
+    memoryASet32(ds, 0x3be6d0, eax);
+loc_1b632a: // 0160:1b632a
+    edx = memoryAGet32(ds, 0x39eff8);
+    eax = edx;
+    eax <<= 2;
+    eax -= edx;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = memoryAGet32(ds, 0x1dfbec);
+    memoryASet32(ds, esp + 24, eax);
+    if (!ebx)
+        goto loc_1b6369;
+    ecx = 0x00000400;
+    edi = memoryAGet32(ds, 0x1dfbe4);
+    esi = memoryAGet32(ds, 0x1dfbe8);
+    memoryASet32(ds, esp + 24, ecx);
+    goto loc_1b6375;
+loc_1b6369: // 0160:1b6369
+    memoryASet32(ds, 0x1dfbe4, edi);
+    memoryASet32(ds, 0x1dfbe8, esi);
+loc_1b6375: // 0160:1b6375
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 44, edi);
+    edi = eax;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 40, esi);
+    esi = eax;
+    eax = edi;
+    ebp = memoryAGet32(ds, esp + 44);
+    eax <<= 9;
+    ebp -= eax;
+    eax = esi;
+    edx = memoryAGet32(ds, esp + 40);
+    eax <<= 9;
+    cl = memoryAGet(ds, 0x1dfbc4);
+    edx -= eax;
+    eax = 0x00000001;
+    eax <<= cl;
+    memoryASet32(ds, esp + 44, ebp);
+    eax ^= 0x0000ffff;
+    ebp = memoryAGet32(ds, esp);
+    memoryASet16(ds, 0x39ef86, ax);
+    eax = ebp * 0x000001e6;
+    ebx = 0;
+    memoryASet32(ds, esp + 28, ebx);
+    memoryASet32(ds, esp + 40, edx);
+    memoryASet32(ds, esp + 8, eax);
+    eax = ebp;
+    ecx = 0x00000001;
+    eax <<= 4;
+    memoryASet32(ds, esp + 36, ecx);
+    memoryASet32(ds, esp + 4, eax);
+    ebp = 0;
+loc_1b63fc: // 0160:1b63fc
+    if (ebp == memoryAGet32(ds, esp + 36))
+        goto loc_1b695b;
+    if ((int32_t)edi <= 0)
+        goto loc_1b695b;
+    if ((int32_t)edi >= (int32_t)0x000003c0)
+        goto loc_1b695b;
+    if ((int32_t)esi >= (int32_t)0x0000017a)
+        goto loc_1b695b;
+    edx = esi + -8;
+    eax = edi;
+    sub_1b3a4f();
+    if ((int32_t)eax <= (int32_t)0x00000400)
+        goto loc_1b695b;
+    if ((int32_t)ebp >= (int32_t)memoryAGet32(ds, esp + 24))
+        goto loc_1b695b;
+    ebx = memoryAGet32(ds, esp + 28);
+    sub_1b3f7d();
+    if (ebp != ebx)
+        goto loc_1b66c6;
+    if (ebx != memoryAGet32(ds, 0x1dfbec))
+        goto loc_1b64d7;
+    edx = esi;
+    eax = edi;
+    sub_1b3ab3();
+    if ((int32_t)eax >= (int32_t)0x00000040)
+        goto loc_1b6476;
+    memoryASet32(ds, 0x3be6c4, ebp);
+loc_1b6476: // 0160:1b6476
+    edx = esi;
+    ebx = 0;
+    eax = edi;
+    bx = memoryAGet16(ds, 0x39ef86);
+    sub_1b3df5();
+    ecx = eax;
+    ebx = eax;
+    edx = esi + -8;
+    eax = edi;
+    sub_1b427c();
+    if (!eax)
+        goto loc_1b64a0;
+    ebx = ecx + 268435456;
+loc_1b64a0: // 0160:1b64a0
+    edx = esi + -8;
+    eax = edi;
+    sub_1b42d9();
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b64b5;
+    ebx += 0x01000000;
+loc_1b64b5: // 0160:1b64b5
+    if ((int32_t)ebx <= (int32_t)memoryAGet32(ds, 0x3be6c4))
+        goto loc_1b64d7;
+    eax = memoryAGet32(ds, esp);
+    memoryASet32(ds, 0x3be6c0, edi);
+    memoryASet32(ds, 0x3be6bc, esi);
+    memoryASet32(ds, 0x3be6c4, ebx);
+    memoryASet32(ds, 0x3be6b8, eax);
+loc_1b64d7: // 0160:1b64d7
+    ebx = memoryAGet32(ds, esp);
+    edi += ebx;
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    memoryASet32(ds, esp + 20, esi);
+    ebx = esi * 0x000003c0;
+    ebx += edi;
+    ecx = eax + eax;
+loc_1b64f6: // 0160:1b64f6
+    if ((int32_t)esi <= 0)
+        goto loc_1b6542;
+    if (edi >= 0x000003c0)
+        goto loc_1b6542;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    eax &= edx;
+    edx = 0;
+    dl = memoryAGet(ds, ebx + 3233192);
+    dl = edx != 0x00000080;
+    edx &= 0x000000ff;
+    eax |= edx;
+    if (eax)
+        goto loc_1b6549;
+loc_1b6542: // 0160:1b6542
+    eax = 0x00000001;
+    goto loc_1b654b;
+loc_1b6549: // 0160:1b6549
+    eax = ebp;
+loc_1b654b: // 0160:1b654b
+    if (!eax)
+        goto loc_1b6560;
+    if ((int32_t)esi >= (int32_t)0x00000190)
+        goto loc_1b6560;
+    ebx += 0x000003c0;
+    esi++;
+    goto loc_1b64f6;
+loc_1b6560: // 0160:1b6560
+    ecx = memoryAGet32(ds, esp + 20);
+    eax = esi;
+    eax -= ecx;
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b6571;
+    memoryASet32(ds, esp + 36, ebp);
+loc_1b6571: // 0160:1b6571
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    memoryASet32(ds, esp + 16, esi);
+    ebx = esi * 0x000003c0;
+    ebx += edi;
+    ecx = eax + eax;
+loc_1b658b: // 0160:1b658b
+    if ((int32_t)esi <= 0)
+        goto loc_1b65e4;
+    if (edi >= 0x000003c0)
+        goto loc_1b65e4;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax = eax * 0x000003c0;
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    eax &= edx;
+    edx = 0;
+    dl = memoryAGet(ds, ebx + 3233192);
+    dl = edx != 0x00000080;
+    edx &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b65e4;
+    if ((int32_t)esi <= 0)
+        goto loc_1b65e4;
+    ebx -= 0x000003c0;
+    esi--;
+    goto loc_1b658b;
+loc_1b65e4: // 0160:1b65e4
+    eax = memoryAGet32(ds, esp + 16);
+    eax -= esi;
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b65f3;
+    memoryASet32(ds, esp + 36, ebp);
+loc_1b65f3: // 0160:1b65f3
+    ebx = esi + -8;
+    if ((int32_t)ebx <= 0)
+        goto loc_1b6659;
+    if (edi >= 0x000003c0)
+        goto loc_1b6659;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = eax * 0x000003c0;
+    edx = edi;
+    edx = sar32(edx, 0x1f);
+    eax = edi;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = ebx * 0x000003c0;
+    al = memoryAGet(ds, edi + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b6659;
+    memoryASet32(ds, esp + 36, ebp);
+loc_1b6659: // 0160:1b6659
+    if (ebp == memoryAGet32(ds, esp + 36))
+        goto loc_1b6884;
+    edx = memoryAGet32(ds, esp);
+    eax = memoryAGet32(ds, esp + 4);
+    ecx = 0x003be774;
+    ebx = 0x003be778;
+    push32(edx);
+    eax += edi;
+    edx = esi;
+    sub_1970f5();
+    if ((int32_t)eax > (int32_t)0xfffe0000)
+        goto loc_1b6884;
+    eax = edi;
+    ebx = memoryAGet32(ds, esp + 44);
+    eax <<= 9;
+    ecx = memoryAGet32(ds, esp + 40);
+    ebx += eax;
+    eax = esi;
+    edx = 0x00000001;
+    eax <<= 9;
+    memoryASet32(ds, esp + 28, edx);
+    ecx += eax;
+    eax = memoryAGet32(ds, esp + 8);
+    memoryASet32(ds, esp + 44, ebx);
+    memoryASet32(ds, esp + 12, eax);
+    eax = 0xfffffc01;
+    memoryASet32(ds, esp + 40, ecx);
+    memoryASet32(ds, esp + 32, eax);
+    goto loc_1b6884;
+loc_1b66c6: // 0160:1b66c6
+    eax = memoryAGet32(ds, esp + 32);
+    ecx = memoryAGet32(ds, esp + 40);
+    esi = memoryAGet32(ds, esp + 32);
+    ecx += eax;
+    eax = memoryAGet32(ds, 0x39f078);
+    edi = memoryAGet32(ds, esp + 44);
+    esi += eax;
+    eax = memoryAGet32(ds, esp + 12);
+    edi += eax;
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 44, edi);
+    edi = eax;
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 32, esi);
+    esi = eax;
+    ebx = eax + 1;
+    memoryASet32(ds, esp + 40, ecx);
+    if ((int32_t)ebx <= 0)
+        goto loc_1b67ad;
+    if (edi >= 0x000003c0)
+        goto loc_1b67ad;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = eax * 0x000003c0;
+    edx = edi;
+    edx = sar32(edx, 0x1f);
+    eax = edi;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = ebx * 0x000003c0;
+    al = memoryAGet(ds, edi + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b67ad;
+    edx = edi;
+    eax = edi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, esp + 44, memoryAGet32(ds, esp + 44) - eax);
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ebx = memoryAGet32(ds, esp + 40);
+    ebx -= eax;
+    memoryASet32(ds, esp + 28, ebp);
+    memoryASet32(ds, esp + 40, ebx);
+loc_1b67ad: // 0160:1b67ad
+    if ((int32_t)memoryAGet32(ds, esp + 32) > (int32_t)0x00000600)
+        goto loc_1b6880;
+    ebx = esi + -16;
+    if ((int32_t)ebx <= 0)
+        goto loc_1b681d;
+    if (edi >= 0x000003c0)
+        goto loc_1b681d;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ecx = eax * 0x000003c0;
+    edx = edi;
+    edx = sar32(edx, 0x1f);
+    eax = edi;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edx = 0;
+    dx = memoryAGet16(ds, ecx + eax * 2 + 0x239808);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = ebx * 0x000003c0;
+    al = memoryAGet(ds, edi + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (eax)
+        goto loc_1b6880;
+loc_1b681d: // 0160:1b681d
+    if ((int32_t)esi <= 0)
+        goto loc_1b6884;
+    if (edi >= 0x000003c0)
+        goto loc_1b6884;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ebx = eax * 0x000003c0;
+    edx = edi;
+    edx = sar32(edx, 0x1f);
+    eax = edi;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ax = memoryAGet16(ds, ebx + eax * 2 + 0x239808);
+    edx = 0;
+    eax &= 0x0000ffff;
+    dx = memoryAGet16(ds, 0x39ef86);
+    edx &= eax;
+    eax = esi * 0x000003c0;
+    al = memoryAGet(ds, edi + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= edx;
+    if (!eax)
+        goto loc_1b6884;
+loc_1b6880: // 0160:1b6880
+    memoryASet32(ds, esp + 36, ebp);
+loc_1b6884: // 0160:1b6884
+    if (ebp != memoryAGet32(ds, esp + 28))
+        goto loc_1b68b3;
+    ecx = memoryAGet32(ds, esp);
+    ebx = 0x003be778;
+    edx = esi;
+    push32(ecx);
+    eax = edi;
+    ecx = 0x003be774;
+    sub_1970f5();
+    if ((int32_t)eax <= (int32_t)0xfffe0000)
+        goto loc_1b68af;
+    if ((int32_t)eax <= (int32_t)0x00100000)
+        goto loc_1b68b3;
+loc_1b68af: // 0160:1b68af
+    memoryASet32(ds, esp + 36, ebp);
+loc_1b68b3: // 0160:1b68b3
+    eax = memoryAGet32(ds, esp + 24);
+    eax--;
+    edx = memoryAGet32(ds, 0x1dfbec);
+    memoryASet32(ds, esp + 24, eax);
+    if (ebp == edx)
+        goto loc_1b63fc;
+    eax = memoryAGet32(ds, 0x39f250);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = edi;
+    ebx -= eax;
+    eax = memoryAGet32(ds, 0x39f254);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = esi;
+    ecx = memoryAGet32(ds, esp);
+    edx -= eax;
+    eax = 0x000000ff;
+    if ((int32_t)ebp <= (int32_t)ecx)
+        goto loc_1b690f;
+    if ((int32_t)edi > (int32_t)memoryAGet32(ds, 0x3be6c0))
+        goto loc_1b690f;
+    eax = 0x000000fe;
+loc_1b690f: // 0160:1b690f
+    if ((int32_t)ebp >= (int32_t)memoryAGet32(ds, esp))
+        goto loc_1b6921;
+    if ((int32_t)edi < (int32_t)memoryAGet32(ds, 0x3be6c0))
+        goto loc_1b6921;
+    eax = 0x000000fe;
+loc_1b6921: // 0160:1b6921
+    if ((int32_t)ebx < 0)
+        goto loc_1b63fc;
+    if ((int32_t)ebx >= (int32_t)0x00000140)
+        goto loc_1b63fc;
+    if ((int32_t)edx < 0)
+        goto loc_1b63fc;
+    if ((int32_t)edx >= (int32_t)0x000000a8)
+        goto loc_1b63fc;
+    edx = edx * 0x00000140;
+    memoryASet(ds, edx + ebx + 2910632, al);
+    goto loc_1b63fc;
+loc_1b695b: // 0160:1b695b
+    memoryASet16(ds, 0x39ef86, 0xffff);
+    esp += 0x00000030;
+    goto loc_1b69f3;
+    // gap 135 bytes
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
+}
+void sub_1b6995() // 0160:1b6995 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000004;
+    ebx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    if ((int32_t)memoryAGet32(ds, 0x3be6cc) > (int32_t)0x00000000)
+        goto loc_1b6a09;
+    if (memoryAGet32(ds, ebx + 3792062) != 0x00000000)
+        goto loc_1b69fa;
+    if (memoryAGet32(ds, ebx + 3792018) != 0x00000000)
+        goto loc_1b69fa;
+    if (memoryAGet32(ds, ebx + 3792022) != 0x00000000)
+        goto loc_1b69fa;
+    if (memoryAGet32(ds, ebx + 3792042) != 0x00000000)
+        goto loc_1b69fa;
+    eax = memoryAGet32(ds, 0x3be6d0);
+    edx = eax + -1;
+    memoryASet32(ds, 0x3be6d0, edx);
+    if ((int32_t)eax > 0)
+        goto loc_1b6c01;
+    eax = 0x00000001;
+loc_1b69f0: // 0160:1b69f0
+    esp += 0x00000004;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b69fa: // 0160:1b69fa
+    ebp = 0x00000008;
+    eax = 0;
+    memoryASet32(ds, 0x3be6d0, ebp);
+    goto loc_1b69f0;
+loc_1b6a09: // 0160:1b6a09
+    eax = memoryAGet32(ds, ebx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ebp = memoryAGet32(ds, ebx + 3792062);
+    edi = eax;
+    if (!ebp)
+        goto loc_1b6a74;
+    if ((int32_t)memoryAGet32(ds, 0x3be6b8) <= (int32_t)0x00000000)
+        goto loc_1b6a58;
+    if ((int32_t)memoryAGet32(ds, ebx + 3792018) >= (int32_t)0x00000000)
+        goto loc_1b6a69;
+    eax = 0;
+    memoryASet32(ds, 0x3be6cc, eax);
+    goto loc_1b6a69;
+loc_1b6a58: // 0160:1b6a58
+    if ((int32_t)memoryAGet32(ds, ebx + 3792018) <= (int32_t)0x00000000)
+        goto loc_1b6a69;
+    edi ^= eax;
+    memoryASet32(ds, 0x3be6cc, edi);
+loc_1b6a69: // 0160:1b6a69
+    memoryASet32(ds, 0x3be6c8, esi);
+    goto loc_1b6c01;
+loc_1b6a74: // 0160:1b6a74
+    ecx = eax + 1;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ebp = eax;
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    ebx = ecx;
+    ebx <<= 4;
+    ebx -= ecx;
+    ebx <<= 6;
+    memoryASet32(ds, esp, ebx);
+    ebx = eax;
+    edx = ebp;
+    ebp = ebx;
+    ebx <<= 4;
+    ebx -= ebp;
+    edx += edx;
+    ebx <<= 6;
+    eax = memoryAGet32(ds, esp);
+    ebx += edx;
+    edx = memoryAGet32(ds, 0x3be6b8);
+    eax += esi;
+    if ((int32_t)edx <= 0)
+        goto loc_1b6b6f;
+    if ((int32_t)esi > (int32_t)memoryAGet32(ds, 0x3be6c8))
+        goto loc_1b6b0d;
+    if ((int32_t)ecx <= 0)
+        goto loc_1b6b17;
+    if (esi >= 0x000003c0)
+        goto loc_1b6b17;
+    ecx = 0;
+    cx = memoryAGet16(ds, ebx + 2332680);
+    ebx = 0;
+    bx = memoryAGet16(ds, 0x39ef86);
+    al = memoryAGet(ds, eax + 3233192);
+    ebx &= ecx;
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= ebx;
+    if (!eax)
+        goto loc_1b6b17;
+    memoryASet32(ds, 0x3be6cc, memoryAGet32(ds, 0x3be6cc) - 1);
+    goto loc_1b6b17;
+loc_1b6b0d: // 0160:1b6b0d
+    memoryASet32(ds, 0x3be6cc, 0x00000008);
+loc_1b6b17: // 0160:1b6b17
+    ebp = memoryAGet32(ds, 0x3be6c0);
+    if ((int32_t)esi >= (int32_t)ebp)
+        goto loc_1b6b63;
+    eax = ebp;
+    dh = 0x01;
+    eax -= esi;
+    memoryASet(ds, 0x3a72b9, dh);
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b6bfb;
+    push32(0x00000001);
+    ecx = 0x003be774;
+    ebx = 0x003be778;
+    eax = esi + 16;
+loc_1b6b45: // 0160:1b6b45
+    edx = edi;
+    sub_1970f5();
+    if ((int32_t)eax > (int32_t)0xfffe0000)
+        goto loc_1b6bfb;
+    memoryASet(ds, 0x3a7288, 0x01);
+    goto loc_1b6bfb;
+loc_1b6b63: // 0160:1b6b63
+    eax = 0;
+    memoryASet32(ds, 0x3be6cc, eax);
+    goto loc_1b6bfb;
+loc_1b6b6f: // 0160:1b6b6f
+    if ((int32_t)esi < (int32_t)memoryAGet32(ds, 0x3be6c8))
+        goto loc_1b6bbb;
+    if ((int32_t)ecx <= 0)
+        goto loc_1b6bc5;
+    if (esi >= 0x000003c0)
+        goto loc_1b6bc5;
+    edx = 0;
+    dx = memoryAGet16(ds, ebx + 2332680);
+    ebx = 0;
+    bx = memoryAGet16(ds, 0x39ef86);
+    al = memoryAGet(ds, eax + 3233192);
+    ebx &= edx;
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    ebx |= eax;
+    if (!ebx)
+        goto loc_1b6bc5;
+    memoryASet32(ds, 0x3be6cc, memoryAGet32(ds, 0x3be6cc) - 1);
+    goto loc_1b6bc5;
+loc_1b6bbb: // 0160:1b6bbb
+    memoryASet32(ds, 0x3be6cc, 0x00000008);
+loc_1b6bc5: // 0160:1b6bc5
+    ebx = memoryAGet32(ds, 0x3be6c0);
+    if ((int32_t)esi <= (int32_t)ebx)
+        goto loc_1b6bf3;
+    memoryASet(ds, 0x3a72b7, 0x01);
+    eax = esi;
+    eax -= ebx;
+    if ((int32_t)eax <= (int32_t)0x00000020)
+        goto loc_1b6bfb;
+    push32(0xffffffff);
+    ecx = 0x003be774;
+    ebx = 0x003be778;
+    eax = esi + -16;
+    goto loc_1b6b45;
+loc_1b6bf3: // 0160:1b6bf3
+    ecx = 0;
+    memoryASet32(ds, 0x3be6cc, ecx);
+loc_1b6bfb: // 0160:1b6bfb
+    memoryASet32(ds, 0x3be6c8, esi);
+loc_1b6c01: // 0160:1b6c01
+    eax = 0;
+    goto loc_1b69f0;
+}
+void sub_1b6c08() // 0160:1b6c08 +long
+{
+    esp -= 4;
+    goto loc_1b6c08;
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+    // gap 526 bytes
+loc_1b6c08: // 0160:1b6c08
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000018;
+    edi = esp;
+    esi = 0x001b3985;
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    edx = 0;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    memoryASet32(ds, esp + 20, edx);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    ebx = 0xffffffff;
+    ecx = memoryAGet32(ds, eax * 4 + 0x39e962);
+    memoryASet32(ds, esp + 16, ebx);
+    if (!ecx)
+        goto loc_1b6e63;
+    esi = 0;
+    ecx = 0;
+    edi = 0;
+loc_1b6c5d: // 0160:1b6c5d
+    if (memoryAGet32(ds, ecx + 3792026) == 0x00000000)
+        goto loc_1b6d0b;
+    edx = esi;
+    eax = esi;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = eax;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (ebx == eax)
+        goto loc_1b6d0b;
+    eax = memoryAGet32(ds, ecx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ebx = eax;
+    eax = memoryAGet32(ds, ecx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ebp = eax;
+    edx = eax + -8;
+    eax = ebx;
+    sub_1b427c();
+    if (!eax)
+        goto loc_1b6d0b;
+    eax = memoryAGet32(ds, 0x1dfbcc);
+    edx = ebp;
+    ebx <<= 9;
+    edx <<= 9;
+    eax = memoryAGet32(ds, esp + eax*4);
+    memoryASet32(ds, esp + 12, ebx);
+    ebx = eax;
+    eax = memoryAGet32(ds, esp + 12);
+    sub_1b465a();
+    if (eax)
+        goto loc_1b6d0b;
+    eax = memoryAGet32(ds, edi + 3925604);
+    edx = memoryAGet32(ds, esp + 20);
+    eax &= 0x0000ffff;
+    if ((int32_t)eax <= (int32_t)edx)
+        goto loc_1b6d0b;
+    memoryASet32(ds, esp + 20, eax);
+    memoryASet32(ds, esp + 16, esi);
+loc_1b6d0b: // 0160:1b6d0b
+    ecx += 0x000000ac;
+    esi++;
+    edi += 0x00000004;
+    if ((int32_t)esi < (int32_t)0x00000010)
+        goto loc_1b6c5d;
+    if ((int32_t)memoryAGet32(ds, esp + 20) < (int32_t)0x00000200)
+        goto loc_1b6e63;
+    eax = memoryAGet32(ds, esp + 16) * 0x000000ac;
+    edx = memoryAGet32(ds, eax + 3792026);
+    edi = 0x00000026;
+    memoryASet32(ds, 0x3be6b0, edx);
+    eax = memoryAGet32(ds, eax + 3792030);
+    edx = 0x003be6b4;
+    memoryASet32(ds, 0x3be6b4, eax);
+    eax = 0x003be6b0;
+    memoryASet32(ds, 0x3be7bc, edi);
+    sub_1b48b1();
+    eax = 0x00000032;
+    edx = 0x00000001;
+    memoryASet32(ds, 0x3be6ac, eax);
+    eax = memoryAGet32(ds, 0x39f078);
+    memoryASet32(ds, 0x3be7a8, edx);
+    memoryASet32(ds, 0x3be790, eax);
+    eax = memoryAGet32(ds, 0x3be6b4);
+    edx = memoryAGet32(ds, 0x3be790);
+    eax += 0x00005000;
+    edx += edx;
+    eax = (int32_t)eax * (int32_t)edx;
+    ebx = 0xffffb000;
+    eax++;
+    memoryASet32(ds, 0x3be784, ebx);
+    sub_1b39a9();
+    ecx = memoryAGet32(ds, 0x3be7a8);
+    edx = eax;
+    edx -= ecx;
+    ebx = memoryAGet32(ds, 0x3be790);
+    eax = edx;
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    memoryASet32(ds, 0x3be79c, eax);
+    memoryASet32(ds, 0x3be794, eax);
+    eax <<= 9;
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    edx = eax;
+    eax = memoryAGet32(ds, 0x3be6b0);
+    eax += edx;
+    esi = 0;
+    eax -= 0x00006000;
+    memoryASet32(ds, 0x3be78c, esi);
+    if ((int32_t)eax >= (int32_t)0x0003c000)
+        goto loc_1b6e0b;
+    ebp = 0xffffff00;
+    memoryASet32(ds, 0x3be6b0, eax);
+    eax += 0x00006000;
+    memoryASet32(ds, 0x3be7a4, ebp);
+    goto loc_1b6e29;
+loc_1b6e0b: // 0160:1b6e0b
+    eax = memoryAGet32(ds, 0x3be6b0);
+    eax -= edx;
+    edi = 0x00000100;
+    edx = eax + 24576;
+    memoryASet32(ds, 0x3be7a4, edi);
+    memoryASet32(ds, 0x3be6b0, edx);
+loc_1b6e29: // 0160:1b6e29
+    memoryASet32(ds, 0x3be780, eax);
+    eax = memoryAGet32(ds, 0x3be6b0);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6b0, eax);
+    eax = memoryAGet32(ds, 0x3be6b4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6b4, eax);
+    eax = 0x00000001;
+    goto loc_1b6e65;
+loc_1b6e63: // 0160:1b6e63
+    eax = 0;
+loc_1b6e65: // 0160:1b6e65
+    esp += 0x00000018;
+    goto loc_1b69f3;
+}
+void sub_1b6e6d() // 0160:1b6e6d +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(esi);
+    push32(edi);
+    ebx = eax;
+    ecx = ebx + -2;
+    edi = edx + -2;
+    eax = 0;
+    ebx = edi;
+    edi += 0x00000008;
+    goto loc_1b6eef;
+loc_1b6e82: // 0160:1b6e82
+    if ((int32_t)ebx <= 0)
+        goto loc_1b6eeb;
+    if (ecx >= 0x000003c0)
+        goto loc_1b6eeb;
+    edx = ebx;
+    eax = ebx;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    esi = eax * 0x000003c0;
+    edx = ecx;
+    edx = sar32(edx, 0x1f);
+    eax = ecx;
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    eax += eax;
+    eax += esi;
+    esi = 0;
+    si = memoryAGet16(ds, eax + 2332680);
+    eax = 0;
+    ax = memoryAGet16(ds, 0x39ef86);
+    esi &= eax;
+    eax = ebx * 0x000003c0;
+    al = memoryAGet(ds, ecx + eax + 3233192);
+    eax &= 0x000000ff;
+    al = eax != 0x00000080;
+    eax &= 0x000000ff;
+    eax |= esi;
+    if (!eax)
+        goto loc_1b6eeb;
+    eax = 0x00000001;
+    goto loc_1b6eed;
+loc_1b6eeb: // 0160:1b6eeb
+    eax = 0;
+loc_1b6eed: // 0160:1b6eed
+    ecx++;
+    ebx++;
+loc_1b6eef: // 0160:1b6eef
+    if ((int32_t)ebx >= (int32_t)edi)
+        goto loc_1b6ef7;
+    if (!eax)
+        goto loc_1b6e82;
+loc_1b6ef7: // 0160:1b6ef7
+    edi = pop32();
+    esi = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+}
+void sub_1b6f3d() // 0160:1b6f3d +long
+{
+    esp -= 4;
+    goto loc_1b6f3d;
+loc_1b6964: // 0160:1b6964
+    esp += 0x00000030;
+    goto loc_1b69f3;
+    // gap 135 bytes
+loc_1b69f3: // 0160:1b69f3
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    stop("stack_unbalanced");
+    esp += 4;
+    return;
+    // gap 1347 bytes
+loc_1b6f3d: // 0160:1b6f3d
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x0000002c;
+    push32(eax);
+    edi = esp + 4;
+    esi = 0x001b3991;
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    edi = esp + 16;
+    esi = 0x001b399d;
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    movsd<ES_EDI, DS_ESI>();
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edx = eax;
+    eax <<= 2;
+    eax += edx;
+    eax <<= 2;
+    eax += edx;
+    if (memoryAGet32(ds, eax * 4 + 0x39e966) == 0x00000000)
+        goto loc_1b7160;
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    eax = memoryAGet32(ds, esp + edx * 4 + 0x4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    eax -= edx;
+    eax = sar32(eax, 0x00000001);
+    esi = 0x00000001;
+    cl = memoryAGet(ds, 0x1dfbc4);
+    esi <<= cl;
+    ebx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    edi = eax;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = eax;
+    eax = memoryAGet32(ds, ebx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    si ^= 0xffff;
+    ebx = esi;
+    edx = ecx;
+    sub_1b3b0f();
+    if ((int32_t)eax < (int32_t)edi)
+        goto loc_1b6ffa;
+    if (memoryAGet32(ds, esp) == 0x00000001)
+        goto loc_1b7160;
+loc_1b6ffa: // 0160:1b6ffa
+    esi = 0x00000040;
+    ebp = 0x0000003e;
+    edi = 0;
+    eax = 0x00000042;
+    memoryASet32(ds, esp + 40, edi);
+    edi = 0x003155a8;
+    memoryASet32(ds, esp + 44, eax);
+    edi += esi;
+loc_1b701a: // 0160:1b701a
+    sub_1b3f7d();
+    ecx = 0x00000030;
+    eax = edi + 46080;
+loc_1b702a: // 0160:1b702a
+    if (!(memoryAGet32(ds, eax) & 0x80808080))
+        goto loc_1b7042;
+    if ((int32_t)ecx >= (int32_t)0x0000016e)
+        goto loc_1b7042;
+    ecx++;
+    eax += 0x000003c0;
+    goto loc_1b702a;
+loc_1b7042: // 0160:1b7042
+    if ((int32_t)ecx >= (int32_t)0x0000016e)
+        goto loc_1b70bd;
+    ecx -= 0x00000020;
+    if ((int32_t)ecx >= (int32_t)0x00000010)
+        goto loc_1b705b;
+    ecx = 0x00000010;
+loc_1b705b: // 0160:1b705b
+    eax = ecx * 0x000003c0;
+    if (memoryAGet32(ds, edi + eax) != 0x80808080)
+        goto loc_1b70bd;
+    edx = ecx + -2;
+    eax = ebp;
+    sub_1b6e6d();
+    if (eax)
+        goto loc_1b70bd;
+    ebx = 0x0000ffff;
+    edx = ecx;
+    eax = esi;
+    sub_1b3b0f();
+    ebx = eax;
+    if ((int32_t)ebx <= (int32_t)memoryAGet32(ds, esp + 40))
+        goto loc_1b70bd;
+    eax = memoryAGet32(ds, 0x1dfbcc);
+    eax <<= 2;
+    edx = ecx;
+    memoryASet32(ds, esp + 28, eax);
+    eax = esi;
+    sub_1b3a4f();
+    edx = memoryAGet32(ds, esp + 28);
+    if ((int32_t)eax <= (int32_t)memoryAGet32(ds, esp + edx + 16))
+        goto loc_1b70bd;
+    eax = memoryAGet32(ds, esp + 44);
+    memoryASet32(ds, esp + 32, ecx);
+    memoryASet32(ds, esp + 40, ebx);
+    memoryASet32(ds, esp + 36, eax);
+loc_1b70bd: // 0160:1b70bd
+    edx = memoryAGet32(ds, esp + 44);
+    edi += 0x00000004;
+    ebp += 0x00000004;
+    edx += 0x00000004;
+    esi += 0x00000004;
+    memoryASet32(ds, esp + 44, edx);
+    if ((int32_t)esi < (int32_t)0x00000380)
+        goto loc_1b701a;
+    edx = memoryAGet32(ds, 0x1dfbcc);
+    eax = memoryAGet32(ds, esp + edx * 4 + 0x4);
+    edx = eax;
+    ebx = memoryAGet32(ds, esp);
+    edx = sar32(edx, 0x1f);
+    idiv32(ebx);
+    if ((int32_t)eax >= (int32_t)memoryAGet32(ds, esp + 40))
+        goto loc_1b7160;
+    eax = memoryAGet32(ds, esp + 36);
+    eax -= 0x00000004;
+    eax <<= 9;
+    memoryASet32(ds, 0x3be6b0, eax);
+    eax = memoryAGet32(ds, esp + 32);
+    eax -= 0x00000002;
+    eax <<= 9;
+    memoryASet32(ds, 0x3be6b4, eax);
+    eax = memoryAGet32(ds, 0x3be6b0);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6b0, eax);
+    eax = memoryAGet32(ds, 0x3be6b4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    esi = 0x00000016;
+    edi = 0x00000032;
+    ecx = 0x00000001;
+    memoryASet32(ds, 0x3be7bc, esi);
+    memoryASet32(ds, 0x3be6ac, edi);
+    memoryASet32(ds, 0x3be6b4, eax);
+    goto loc_1b7162;
+loc_1b7160: // 0160:1b7160
+    ecx = 0;
+loc_1b7162: // 0160:1b7162
+    eax = ecx;
+    goto loc_1b6964;
+}
+void sub_1b7169() // 0160:1b7169 +long
+{
+    esp -= 4;
+    goto loc_1b7169;
+loc_1b69eb: // 0160:1b69eb
+    eax = 0x00000001;
+loc_1b69f0: // 0160:1b69f0
+    esp += 0x00000004;
+    ebp = pop32();
+    edi = pop32();
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+    // gap 519 bytes
+loc_1b6c01: // 0160:1b6c01
+    eax = 0;
+    goto loc_1b69f0;
+    // gap 1377 bytes
+loc_1b7169: // 0160:1b7169
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    push32(edi);
+    push32(ebp);
+    esp -= 0x00000004;
+    edx = 0xffffffff;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    memoryASet32(ds, esp, edx);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    ebx = eax;
+    eax <<= 2;
+    eax += ebx;
+    eax <<= 2;
+    eax += ebx;
+    ebx = memoryAGet32(ds, eax * 4 + 0x39e93e);
+    ebp = 0;
+    if (!ebx)
+        goto loc_1b6c01;
+    ebx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    ecx = eax + -5;
+    eax = memoryAGet32(ds, ebx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = ecx;
+    sub_1b427c();
+    if (!eax)
+        goto loc_1b69f0;
+    ecx = 0;
+    ebx = 0;
+    esi = 0;
+loc_1b71f1: // 0160:1b71f1
+    if (memoryAGet32(ds, ebx + 3792026) == 0x00000000)
+        goto loc_1b7264;
+    edx = ecx;
+    eax = ecx;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    edi = eax;
+    eax = memoryAGet32(ds, 0x1dfbc4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<1) & 0x80000000);
+    edx <<= 2;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x02);
+    if (edi == eax)
+        goto loc_1b7264;
+    eax = memoryAGet32(ds, ebx + 3792030);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edi = eax + -16;
+    eax = memoryAGet32(ds, ebx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    edx = edi;
+    sub_1b427c();
+    if (!eax)
+        goto loc_1b7264;
+    edi = memoryAGet32(ds, esi + 3925604);
+    if ((int32_t)ebp > (int32_t)edi)
+        goto loc_1b7264;
+    memoryASet32(ds, esp, ecx);
+    ebp = edi;
+loc_1b7264: // 0160:1b7264
+    ebx += 0x000000ac;
+    ecx++;
+    esi += 0x00000004;
+    if ((int32_t)ecx < (int32_t)0x00000010)
+        goto loc_1b71f1;
+    esi = memoryAGet32(ds, esp);
+    if ((int32_t)esi < 0)
+        goto loc_1b6c01;
+    eax = esi * 0x000000ac;
+    edi = 0x0000002b;
+    edx = 0x003be6b4;
+    ebx = memoryAGet32(ds, eax + 3792026);
+    eax = memoryAGet32(ds, eax + 3792030);
+    memoryASet32(ds, 0x3be7bc, edi);
+    memoryASet32(ds, 0x3be6b4, eax);
+    eax = 0x003be6b0;
+    memoryASet32(ds, 0x3be6b0, ebx);
+    sub_1b48b1();
+    memoryASet32(ds, 0x3be6ac, 0x00000032);
+    eax = memoryAGet32(ds, 0x3be6b0);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6b0, eax);
+    eax = memoryAGet32(ds, 0x3be6b4);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    memoryASet32(ds, 0x3be6b4, eax);
+    goto loc_1b69eb;
+}
+void sub_1b72f6() // 0160:1b72f6 +long
+{
+    esp -= 4;
+    push32(ebx);
+    push32(ecx);
+    push32(edx);
+    push32(esi);
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = memoryAGet32(ds, 0x3be7bc);
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b736f;
+    eax = memoryAGet32(ds, 0x3be6b0);
+    eax <<= 2;
+    memoryASet32(ds, 0x39f008, eax);
+    eax = memoryAGet32(ds, 0x3be6b4);
+    eax <<= 2;
+    memoryASet32(ds, 0x39f00c, eax);
+    eax = memoryAGet32(ds, 0x39be00);
+    memoryASet32(ds, 0x39bdf4, eax);
+    eax = memoryAGet32(ds, 0x39be04);
+    edx = memoryAGet32(ds, 0x3be6ac);
+    memoryASet32(ds, 0x39bdf0, eax);
+    if (!edx)
+        goto loc_1b7362;
+    esi = edx + -1;
+    ecx = 0;
+    eax = 0;
+    memoryASet32(ds, 0x39bde8, ecx);
+    memoryASet32(ds, 0x3be6ac, esi);
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
+    esp += 4;
+    return;
+loc_1b7362: // 0160:1b7362
+    ebx = 0x00000001;
+    memoryASet32(ds, 0x39bde8, ebx);
+    eax = ebx;
+loc_1b736f: // 0160:1b736f
+    esi = pop32();
+    edx = pop32();
+    ecx = pop32();
+    ebx = pop32();
     esp += 4;
 }
 void sub_1b742d() // 0160:1b742d +long
@@ -38748,9 +43452,383 @@ loc_1b742d: // 0160:1b742d
         goto loc_1b69f3;
     ecx = 0x0000001f;
     edi = 0x001b7375;
-    stop("disassembly failed at 160:1b744e repne scasw ax, word ptr es:[edi]");
+    for (flags.zero = 0; cx != 0 && !flags.zero; --cx) scasw_inv<ES_EDI>(ax);
     edx = memoryAGet32(ds, 0x1dfbc4) * 0x000000ac;
-    indirectJump(cs, memoryAGet32(cs, stop("GetOpAddress"))); return; // 0160:1b745b;
+    switch (ecx)
+    {
+        case 0: goto loc_1b69f3;
+        case 1: goto loc_1b7463;
+        case 2: goto loc_1b748f;
+        case 3: goto loc_1b74bb;
+        case 4: goto loc_1b74d5;
+        case 5: goto loc_1b74ef;
+        case 6: goto loc_1b7548;
+        case 7: goto loc_1b75b2;
+        case 8: goto loc_1b75d9;
+        case 9: goto loc_1b761f;
+        case 10: goto loc_1b7634;
+        case 11: goto loc_1b7649;
+        case 12: goto loc_1b772b;
+        case 13: goto loc_1b773f;
+        case 14: goto loc_1b7753;
+        case 15: goto loc_1b776f;
+        case 16: goto loc_1b7798;
+        case 17: goto loc_1b77b2;
+        case 18: goto loc_1b77c6;
+        case 19: goto loc_1b781b;
+        case 20: goto loc_1b785d;
+        case 21: goto loc_1b7882;
+        case 22: goto loc_1b78aa;
+        case 23: goto loc_1b78c6;
+        case 24: goto loc_1b78eb;
+        case 25: goto loc_1b78fa;
+        case 26: goto loc_1b7920;
+        case 27: goto loc_1b7963;
+        case 28: goto loc_1b7981;
+        case 29: goto loc_1b79a7;
+        case 30: goto loc_1b79ea;
+        default:
+            stop("ind 0160:1b745b");
+    }
+loc_1b7463: // 0160:1b7463
+    eax = 0xffffffff;
+    sub_1b5e5f();
+    if (!eax)
+        goto loc_1b7480;
+    memoryASet32(ds, 0x1dfbd0, 0x00000384);
+    goto loc_1b69f3;
+loc_1b7480: // 0160:1b7480
+    memoryASet32(ds, 0x1dfbd0, 0x00000002);
+    goto loc_1b69f3;
+loc_1b748f: // 0160:1b748f
+    eax = 0x00000001;
+    sub_1b5e5f();
+    if (!eax)
+        goto loc_1b74ac;
+    memoryASet32(ds, 0x1dfbd0, 0x000003b6);
+    goto loc_1b69f3;
+loc_1b74ac: // 0160:1b74ac
+    memoryASet32(ds, 0x1dfbd0, 0x00000005);
+    goto loc_1b69f3;
+loc_1b74bb: // 0160:1b74bb
+    eax = 0xffffffff;
+    ebx = 0x00000007;
+    sub_1b62ce();
+loc_1b74ca: // 0160:1b74ca
+    memoryASet32(ds, 0x1dfbd0, ebx);
+    goto loc_1b69f3;
+loc_1b74d5: // 0160:1b74d5
+    eax = 0x00000001;
+    edx = 0x00000008;
+    sub_1b62ce();
+loc_1b74e4: // 0160:1b74e4
+    memoryASet32(ds, 0x1dfbd0, edx);
+    goto loc_1b69f3;
+loc_1b74ef: // 0160:1b74ef
+    sub_1b6995();
+    if (!eax)
+        goto loc_1b69f3;
+    edi = memoryAGet32(ds, 0x1dfbc4);
+    eax = edi * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792026);
+    eax -= 0x00000200;
+    memoryASet32(ds, 0x3be780, eax);
+    eax = edi * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792030);
+    eax -= 0x00000c00;
+    esi = 0x00000008;
+    memoryASet32(ds, 0x3be784, eax);
+    eax = 0x00000009;
+    memoryASet32(ds, 0x1dfbe0, esi);
+loc_1b753e: // 0160:1b753e
+    memoryASet32(ds, 0x1dfbd0, eax);
+    goto loc_1b69f3;
+loc_1b7548: // 0160:1b7548
+    eax = 0x00000001;
+    sub_1b6f3d();
+    if (!eax)
+        goto loc_1b75a3;
+    edx = memoryAGet32(ds, 0x1dfbc4);
+    eax = edx * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792026);
+    eax -= 0x00000200;
+    memoryASet32(ds, 0x3be780, eax);
+    eax = edx * 0x000000ac;
+    ebp = 0x00000008;
+    ecx = 0x0000006e;
+    eax = memoryAGet32(ds, eax + 3792030);
+    memoryASet32(ds, 0x1dfbe0, ebp);
+loc_1b758e: // 0160:1b758e
+    eax -= 0x00000c00;
+    memoryASet32(ds, 0x1dfbd0, ecx);
+loc_1b7599: // 0160:1b7599
+    memoryASet32(ds, 0x3be784, eax);
+    goto loc_1b69f3;
+loc_1b75a3: // 0160:1b75a3
+    memoryASet32(ds, 0x1dfbd0, 0x0000000a);
+    goto loc_1b69f3;
+loc_1b75b2: // 0160:1b75b2
+    sub_1b6c08();
+    if (!eax)
+        goto loc_1b75ca;
+    memoryASet32(ds, 0x1dfbd0, 0x0000006e);
+    goto loc_1b69f3;
+loc_1b75ca: // 0160:1b75ca
+    memoryASet32(ds, 0x1dfbd0, 0x0000000b);
+    goto loc_1b69f3;
+loc_1b75d9: // 0160:1b75d9
+    eax = 0;
+    sub_1b57f4();
+    if (!eax)
+        goto loc_1b7610;
+    sub_1b5936();
+    if (memoryAGet32(ds, 0x3be7bc) == 0x00000006)
+        goto loc_1b7601;
+    memoryASet32(ds, 0x1dfbd0, 0x00000064);
+    goto loc_1b69f3;
+loc_1b7601: // 0160:1b7601
+    memoryASet32(ds, 0x1dfbd0, 0x000000c8);
+    goto loc_1b69f3;
+loc_1b7610: // 0160:1b7610
+    memoryASet32(ds, 0x1dfbd0, 0x0000005a);
+    goto loc_1b69f3;
+loc_1b761f: // 0160:1b761f
+    edi = 0x0000005b;
+    sub_1b5701();
+loc_1b7629: // 0160:1b7629
+    memoryASet32(ds, 0x1dfbd0, edi);
+    goto loc_1b69f3;
+loc_1b7634: // 0160:1b7634
+    esi = 0x0000005c;
+    sub_1b5768();
+loc_1b763e: // 0160:1b763e
+    memoryASet32(ds, 0x1dfbd0, esi);
+    goto loc_1b69f3;
+loc_1b7649: // 0160:1b7649
+    if ((int32_t)memoryAGet32(ds, 0x3be72c) <= (int32_t)0x00000400)
+        goto loc_1b7704;
+    if ((int32_t)memoryAGet32(ds, 0x3be758) <= (int32_t)0x00000400)
+        goto loc_1b7704;
+    sub_1b7169();
+    if (!eax)
+        goto loc_1b76ae;
+    eax = 0x00000008;
+    edx = memoryAGet32(ds, 0x1dfbc4);
+    memoryASet32(ds, 0x1dfbe0, eax);
+    eax = edx * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792026);
+    eax -= 0x00000200;
+    memoryASet32(ds, 0x3be780, eax);
+    eax = edx * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792030);
+    ecx = 0x000002bc;
+    goto loc_1b758e;
+loc_1b76ae: // 0160:1b76ae
+    eax = 0x00000002;
+    sub_1b6f3d();
+    if (!eax)
+        goto loc_1b7704;
+    esi = memoryAGet32(ds, 0x1dfbc4);
+    eax = esi * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792026);
+    eax -= 0x00000200;
+    memoryASet32(ds, 0x3be780, eax);
+    eax = esi * 0x000000ac;
+    ecx = 0x00000008;
+    ebp = 0x0000006e;
+    eax = memoryAGet32(ds, eax + 3792030);
+    memoryASet32(ds, 0x1dfbe0, ecx);
+    eax -= 0x00000c00;
+    memoryASet32(ds, 0x1dfbd0, ebp);
+    goto loc_1b7599;
+loc_1b7704: // 0160:1b7704
+    sub_1b59e1();
+    if (!eax)
+        goto loc_1b771c;
+    ebx = 0x00000064;
+    sub_1b5936();
+    goto loc_1b74ca;
+loc_1b771c: // 0160:1b771c
+    memoryASet32(ds, 0x1dfbd0, 0x00000320);
+    goto loc_1b69f3;
+loc_1b772b: // 0160:1b772b
+    sub_1b56a0();
+    if (!eax)
+        goto loc_1b69f3;
+    edi = 0;
+    goto loc_1b7629;
+loc_1b773f: // 0160:1b773f
+    sub_1b72f6();
+    if (!eax)
+        goto loc_1b69f3;
+    esi = 0;
+    goto loc_1b763e;
+loc_1b7753: // 0160:1b7753
+    sub_1b56a0();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x000000cd);
+    goto loc_1b69f3;
+loc_1b776f: // 0160:1b776f
+    if (memoryAGet32(ds, 0x39f230) != 0x00000000)
+        goto loc_1b69f3;
+    if (memoryAGet32(ds, 0x39eff4) == 0x00000000)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x000000d2);
+    goto loc_1b69f3;
+loc_1b7798: // 0160:1b7798
+    eax = 0xffffffff;
+    ebp = 0x000000dc;
+    sub_1b62ce();
+    memoryASet32(ds, 0x1dfbd0, ebp);
+    goto loc_1b69f3;
+loc_1b77b2: // 0160:1b77b2
+    eax = 0x00000001;
+    edi = 0x000000e6;
+    sub_1b62ce();
+    goto loc_1b7629;
+loc_1b77c6: // 0160:1b77c6
+    sub_1b6995();
+    if (!eax)
+        goto loc_1b69f3;
+    ebx = memoryAGet32(ds, 0x1dfbc4);
+    eax = ebx * 0x000000ac;
+    eax = memoryAGet32(ds, eax + 3792026);
+    eax -= 0x00000200;
+    memoryASet32(ds, 0x3be780, eax);
+    eax = ebx * 0x000000ac;
+    edx = 0x00000008;
+    esi = 0x000000f0;
+    eax = memoryAGet32(ds, eax + 3792030);
+    memoryASet32(ds, 0x1dfbe0, edx);
+    eax -= 0x00000c00;
+    memoryASet32(ds, 0x1dfbd0, esi);
+    goto loc_1b7599;
+loc_1b781b: // 0160:1b781b
+    eax = 0x00000001;
+    sub_1b57f4();
+    if (!eax)
+        goto loc_1b7843;
+    sub_1b5936();
+    ebp = 0x00000006;
+    eax = 0x00000064;
+    memoryASet32(ds, 0x3be7bc, ebp);
+    goto loc_1b753e;
+loc_1b7843: // 0160:1b7843
+    esi = 0xffffd120;
+    edi = 0x00000190;
+    memoryASet32(ds, 0x3be7a4, eax);
+    memoryASet32(ds, 0x3be7a8, esi);
+    goto loc_1b7629;
+loc_1b785d: // 0160:1b785d
+    ebx = 0x00000096;
+    edx = 0x00000001;
+    eax = 0x00000040;
+    ecx = 0;
+    sub_1b3ea0();
+    if (!eax)
+        goto loc_1b69f3;
+    ebx = 0;
+    goto loc_1b74ca;
+loc_1b7882: // 0160:1b7882
+    ebx = 0x00000001;
+    edx = 0x00000032;
+    eax = 0x0000003d;
+    sub_1b403a();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet(ds, 0x3a72a5, 0x01);
+    goto loc_1b69f3;
+loc_1b78aa: // 0160:1b78aa
+    sub_1b72f6();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x000002c6);
+    goto loc_1b69f3;
+loc_1b78c6: // 0160:1b78c6
+    ebx = 0x00000096;
+    edx = 0x00000001;
+    eax = 0x00000040;
+    ecx = 0;
+    sub_1b3ea0();
+    if (!eax)
+        goto loc_1b69f3;
+    eax = 0;
+    goto loc_1b753e;
+loc_1b78eb: // 0160:1b78eb
+    memoryASet32(ds, 0x1dfbd0, 0x000001f4);
+    goto loc_1b69f3;
+loc_1b78fa: // 0160:1b78fa
+    edx = 0xffffffff;
+    eax = memoryAGet32(ds, 0x3be6e8);
+    sub_1b61c5();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x00000389);
+    goto loc_1b69f3;
+loc_1b7920: // 0160:1b7920
+    eax = memoryAGet32(ds, edx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    eax -= memoryAGet32(ds, 0x3be6e8);
+    edx = (int32_t)eax < 0 ? -1 : 0;
+    eax ^= edx;
+    eax -= edx;
+    if ((int32_t)eax > (int32_t)0x00000002)
+        goto loc_1b74ac;
+    sub_1b5cb1();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x0000038e);
+    goto loc_1b69f3;
+loc_1b7963: // 0160:1b7963
+    edx = 0x00000001;
+    eax = memoryAGet32(ds, 0x3be6dc);
+    sub_1b61c5();
+    if (!eax)
+        goto loc_1b69f3;
+    edx = 0;
+    goto loc_1b74e4;
+loc_1b7981: // 0160:1b7981
+    edx = 0x00000001;
+    eax = memoryAGet32(ds, 0x3be6e8);
+    sub_1b61c5();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x000003bb);
+    goto loc_1b69f3;
+loc_1b79a7: // 0160:1b79a7
+    eax = memoryAGet32(ds, edx + 3792026);
+    edx = eax;
+    edx = sar32(edx, 0x1f);
+    flags.carry = !!((edx<<8) & 0x80000000);
+    edx <<= 9;
+    eax = eax - edx - flags.carry;
+    eax = sar32(eax, 0x09);
+    eax -= memoryAGet32(ds, 0x3be6e8);
+    edx = (int32_t)eax < 0 ? -1 : 0;
+    eax ^= edx;
+    eax -= edx;
+    if ((int32_t)eax > (int32_t)0x00000002)
+        goto loc_1b74ac;
+    sub_1b5cb1();
+    if (!eax)
+        goto loc_1b69f3;
+    memoryASet32(ds, 0x1dfbd0, 0x000003c0);
+    goto loc_1b69f3;
+loc_1b79ea: // 0160:1b79ea
+    edx = 0xffffffff;
+    eax = memoryAGet32(ds, 0x3be6dc);
+    sub_1b61c5();
+    if (!eax)
+        goto loc_1b69f3;
+    ecx = 0;
+    memoryASet32(ds, 0x1dfbd0, ecx);
+    goto loc_1b69f3;
 }
 void sub_1b7a0e() // 0160:1b7a0e +long
 {
@@ -38829,7 +43907,7 @@ void sub_1b7ace() // 0160:1b7ace +long
     esi = memoryAGet32(ds, 0x3be6a4);
     esi--;
     memoryASet32(ds, 0x3be6a4, esi);
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1b7b0a;
     eax = memoryAGet32(ds, eax);
     memoryASet32(ds, ebx, eax);
@@ -38852,13 +43930,13 @@ void sub_1b7b0e() // 0160:1b7b0e +long
     eax <<= 3;
     eax += edx;
     edx = memoryAGet32(ds, 0x3be780);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e742, edx);
     edx = memoryAGet32(ds, 0x3be784);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e746, edx);
     edx = memoryAGet32(ds, 0x3be7a4);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e752, edx);
     edx = memoryAGet32(ds, 0x3be7a8);
-    memoryASet32(ds, stop("GetOpAddress"), edx);
+    memoryASet32(ds, eax * 4 + 0x39e756, edx);
     edx = pop32();
     esp += 4;
 }
@@ -38898,11 +43976,11 @@ void sub_1b7b8f() // 0160:1b7b8f +long
     eax = memoryAGet32(ds, 0x39ef98);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
-    stop("disassembly failed at 160:1b7baa setl al");
+    al = (int32_t)memoryAGet32(ds, eax * 4 + 0x1df6ee) < (int32_t)0x00000003;
     eax &= 0x000000ff;
     edx = pop32();
     esp += 4;
@@ -38949,7 +44027,7 @@ loc_1b7c35: // 0160:1b7c35
     eax = memoryAGet32(ds, 0x39ef98);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<1) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<1) & 0x80000000);
     edx <<= 2;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x02);
@@ -39294,7 +44372,7 @@ void sub_1b819a() // 0160:1b819a +long
     push32(esi);
     ecx = eax;
     esi = ebx;
-    if (stop("postCondition"))
+    if ((int32_t)edx < 0)
         goto loc_1b81df;
     eax = edx;
     eax <<= 8;
@@ -39302,7 +44380,7 @@ void sub_1b819a() // 0160:1b819a +long
     eax <<= 15;
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -39322,7 +44400,7 @@ loc_1b81c9: // 0160:1b81c9
     edx = 0x00000009;
     sub_1b7f2d();
 loc_1b81df: // 0160:1b81df
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1b821f;
     edx = esi;
     edx <<= 8;
@@ -39330,7 +44408,7 @@ loc_1b81df: // 0160:1b81df
     edx <<= 15;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
@@ -39378,7 +44456,7 @@ void sub_1b8222() // 0160:1b8222 +long +stackDrop16
     eax += 0x00000008;
     memoryASet32(ds, esp + 24, esi);
     sub_1b7f5b();
-    if (stop("postCondition"))
+    if ((int32_t)ecx < 0)
         goto loc_1b826d;
     eax = memoryAGet32(ds, esp);
     edx = ecx;
@@ -39937,15 +45015,14 @@ loc_1b88f2: // 0160:1b88f2
     sub_1b883f();
     edx++;
 loc_1b88f8: // 0160:1b88f8
-    stop("disassembly failed at 160:1b88fb setl bl");
+    bl = (int32_t)edx < (int32_t)0x00000064;
     ecx = ebx;
     ecx &= 0x000000ff;
-    stop("setne");
+    bl = eax != 0x000000aa;
     ebx &= 0x000000ff;
     if (ecx & ebx)
         goto loc_1b88f2;
-    flags.zero = eax == 0x000000aa;
-    stop("disassembly failed at 160:1b891d sete al");
+    al = eax == 0x000000aa;
     eax &= 0x000000ff;
     edx = pop32();
     ecx = pop32();
@@ -39954,8 +45031,6 @@ loc_1b88f8: // 0160:1b88f8
 }
 void sub_1b8929() // 0160:1b8929 +long
 {
-    bool temp_cond0;
-
     esp -= 4;
     push32(ecx);
     push32(edx);
@@ -39964,21 +45039,17 @@ void sub_1b8929() // 0160:1b8929 +long
     memoryASet32(ds, 0x1dfc54, eax);
     sub_1b87da();
     memoryASet32(ds, 0x3f3d50, eax);
-    temp_cond0 = stop("preCondition");
-    temp_cond0 = stop("preCondition");
-    stop("disassembly failed at 160:1b8945 setge al");
+    al = (int32_t)eax >= (int32_t)0x00000200;
     eax &= 0x000000ff;
     memoryASet32(ds, 0x3f3d48, eax);
     eax = memoryAGet32(ds, 0x3f3d50);
     eax = sar32(eax, 0x08);
-    flags.zero = eax == 0x00000003;
-    stop("disassembly failed at 160:1b895d sete al");
+    al = eax == 0x00000003;
     eax &= 0x000000ff;
     memoryASet32(ds, 0x3f3d3c, eax);
     eax = memoryAGet32(ds, 0x3f3d50);
     eax = sar32(eax, 0x08);
-    flags.zero = eax == 0x00000004;
-    stop("disassembly failed at 160:1b8975 sete al");
+    al = eax == 0x00000004;
     eax &= 0x000000ff;
     edx = memoryAGet32(ds, 0x3f3d3c);
     memoryASet32(ds, 0x3f3d4c, eax);
@@ -40030,10 +45101,9 @@ loc_1b89d9: // 0160:1b89d9
     eax = 0;
     al = memoryAGet(ds, edx);
     ecx = 0;
-    flags.zero = eax == 0x00000020;
-    stop("setne");
+    al = eax != 0x00000020;
     cl = al;
-    stop("setne");
+    al = memoryAGet(ds, edx) != 0x00;
     eax &= 0x000000ff;
     if (!(ecx & eax))
         goto loc_1b89fe;
@@ -40589,7 +45659,7 @@ loc_1b9144: // 0160:1b9144
     edi = eax * 0x00000000;
 loc_1b9157: // 0160:1b9157
     edx = edi;
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     memoryASet32(ds, esp + 16, 0x00000320);
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -40610,7 +45680,7 @@ loc_1b9157: // 0160:1b9157
     esi = eax * 0xffffff80;
 loc_1b919d: // 0160:1b919d
     edx = esi;
-    stop("imul edx * ebp");
+    edx = (int32_t)edx * (int32_t)ebp;
     memoryASet32(ds, esp + 16, 0x00000320);
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -40621,7 +45691,7 @@ loc_1b919d: // 0160:1b919d
     edx = memoryAGet32(ds, esp + 8);
     memoryASet16(ds, ecx + 3940766, ax);
     esi += edx;
-    if (stop("postCondition"))
+    if ((int32_t)edi < 0)
         goto loc_1b919d;
     edi = memoryAGet32(ds, esp);
     eax = memoryAGet32(ds, esp + 4);
@@ -40677,7 +45747,7 @@ void sub_1b923b() // 0160:1b923b +long
     esi = edx;
     edx = eax;
     edx <<= 2;
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1b9255;
     esi = memoryAGet32(ds, edx + 3940736);
     goto loc_1b925b;
@@ -40754,11 +45824,11 @@ void sub_1b92e3() // 0160:1b92e3 +long
     push32(edi);
     push32(ebp);
     esi = eax;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b92f5;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x3c2140);
 loc_1b92f5: // 0160:1b92f5
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b92fb;
     edx = 0;
 loc_1b92fb: // 0160:1b92fb
@@ -40766,16 +45836,16 @@ loc_1b92fb: // 0160:1b92fb
         goto loc_1b9308;
     edx = 0x000000ff;
 loc_1b9308: // 0160:1b9308
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    stop("imul edx * ecx");
+    ecx = memoryAGet32(ds, esi * 4 + 0x3c2160);
+    memoryASet32(ds, esi * 4 + 0x3c2140, edx);
+    edx = (int32_t)edx * (int32_t)ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
-    ebp = memoryAGet32(ds, stop("GetOpAddress"));
+    ebp = memoryAGet32(ds, esi * 4 + 0x3c2140);
     edi = eax;
     ebp -= eax;
     if (memoryAGet32(ds, 0x1dfbf4) == 0x00000000)
@@ -40830,14 +45900,14 @@ void sub_1b939a() // 0160:1b939a +long
     esp -= 4;
     goto loc_1b939a;
 loc_1b9316: // 0160:1b9316
-    stop("imul edx * ecx");
+    edx = (int32_t)edx * (int32_t)ecx;
     eax = edx;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<7) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<7) & 0x80000000);
     edx <<= 8;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x08);
-    ebp = memoryAGet32(ds, stop("GetOpAddress"));
+    ebp = memoryAGet32(ds, esi * 4 + 0x3c2140);
     edi = eax;
     ebp -= eax;
     if (memoryAGet32(ds, 0x1dfbf4) == 0x00000000)
@@ -40894,11 +45964,11 @@ loc_1b939a: // 0160:1b939a
     push32(edi);
     push32(ebp);
     esi = eax;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b93ac;
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, eax * 4 + 0x3c2160);
 loc_1b93ac: // 0160:1b93ac
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b93b2;
     edx = 0;
 loc_1b93b2: // 0160:1b93b2
@@ -40906,9 +45976,9 @@ loc_1b93b2: // 0160:1b93b2
         goto loc_1b93bf;
     edx = 0x000000ff;
 loc_1b93bf: // 0160:1b93bf
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    ecx = memoryAGet32(ds, stop("GetOpAddress"));
+    memoryASet32(ds, esi * 4 + 0x3c2160, edx);
+    edx = memoryAGet32(ds, esi * 4 + 0x3c2140);
+    ecx = memoryAGet32(ds, esi * 4 + 0x3c2160);
     goto loc_1b9316;
 }
 void sub_1b93d9() // 0160:1b93d9 +long +stackDrop12
@@ -41424,12 +46494,12 @@ void sub_1b9817() // 0160:1b9817 +long +stackDrop4
 loc_1b984f: // 0160:1b984f
     eax = ebx;
     eax >>= 10;
-    stop("disassembly failed at 160:1b9854 movsx ecx, byte ptr [eax + ebp + 1]");
-    stop("disassembly failed at 160:1b9859 movsx esi, byte ptr [eax + ebp]");
+    ecx = (char)memoryAGet(ds, eax + ebp + 1);
+    esi = (char)memoryAGet(ds, eax + ebp);
     ecx -= esi;
     esi = ebx;
     esi &= 0x000003ff;
-    stop("imul ecx * esi");
+    ecx = (int32_t)ecx * (int32_t)esi;
     ecx >>= 10;
     al = memoryAGet(ds, eax + ebp);
     memoryASet32(ds, esp + 4, ecx);
@@ -41545,7 +46615,7 @@ loc_1b9996: // 0160:1b9996
     eax -= edx;
     memoryASet32(ds, esp, eax);
     eax = ebp;
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     memoryASet32(ds, esp + 12, 0x00000003);
     edx = 0;
     div32(memoryAGet32(ds, esp + 12));
@@ -41553,7 +46623,7 @@ loc_1b9996: // 0160:1b9996
     edi = memoryAGet32(ds, esp);
     ebp += edi;
     eax = ebp;
-    stop("imul eax * ecx");
+    eax = (int32_t)eax * (int32_t)ecx;
     edx = 0;
     edi = 0x00000003;
     div32(edi);
@@ -41607,7 +46677,7 @@ loc_1b9b6f: // 0160:1b9b6f
     ecx <<= 2;
     esi = memoryAGet32(ds, 0x1dfc7c);
     ecx -= eax;
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1b9b85;
     sub_1ba52c();
 loc_1b9b85: // 0160:1b9b85
@@ -41647,7 +46717,7 @@ loc_1b9bec: // 0160:1b9bec
     ebx = 0;
     sub_1b8061();
 loc_1b9c09: // 0160:1b9c09
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1b8c1b;
     eax = esi;
     sub_1bb45a();
@@ -41668,7 +46738,7 @@ void sub_1b9c1d() // 0160:1b9c1d +long
         goto loc_1b9c8e;
     push32(edx);
     edx = memoryAGet32(ds, 0x1df5bc);
-    stop("imul edx * ebx");
+    edx = (int32_t)edx * (int32_t)ebx;
     eax = memoryAGet32(ds, 0x1dfc84);
     eax++;
     eax &= 0x00000003;
@@ -41709,7 +46779,7 @@ loc_1b8c1c: // 0160:1b8c1c
     edx = pop32();
     ecx = pop32();
     ebx = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
     return;
     // gap 4209 bytes
@@ -41746,7 +46816,7 @@ loc_1b9cec: // 0160:1b9cec
     eax = memoryAGet32(ds, 0x1dfc68);
     edx = eax;
     edx = sar32(edx, 0x1f);
-    flags.carry = !!((edx<<9) & 0x80000000) & stop("xxx");
+    flags.carry = !!((edx<<9) & 0x80000000);
     edx <<= 10;
     eax = eax - edx - flags.carry;
     eax = sar32(eax, 0x0a);
@@ -41954,16 +47024,16 @@ void sub_1b9f2c() // 0160:1b9f2c +long
     push32(ecx);
     push32(esi);
     ecx = eax;
-    esi = memoryAGet32(ds, stop("GetOpAddress"));
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    stop("imul edx * esi");
+    esi = memoryAGet32(ds, eax * 4 + 0x3be980);
+    memoryASet32(ds, eax * 4 + 0x3beaa0, edx);
+    edx = (int32_t)edx * (int32_t)esi;
     esi = 0x000000ff;
     eax = edx;
     edx = sar32(edx, 0x1f);
     idiv32(esi);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    edx = memoryAGet32(ds, ecx * 4 + 0x3be940);
     edx += eax;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b9f5c;
     edx = 0;
 loc_1b9f5c: // 0160:1b9f5c
@@ -41983,7 +47053,7 @@ void sub_1b9f73() // 0160:1b9f73 +long
     push32(ebx);
     push32(ecx);
     ebx = eax;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1b9f7d;
     edx = 0;
 loc_1b9f7d: // 0160:1b9f7d
@@ -41997,12 +47067,12 @@ loc_1b9f8a: // 0160:1b9f8a
     memoryASet32(ds, eax + 3926720, edx);
     if ((int32_t)ebx >= (int32_t)ecx)
         goto loc_1b9fa8;
-    stop("imul edx * memoryAGet32(ds, 0x3f21cc)");
+    edx = (int32_t)edx * (int32_t)memoryAGet32(ds, 0x3f21cc);
     goto loc_1b9faf;
 loc_1b9fa8: // 0160:1b9fa8
-    stop("imul edx * memoryAGet32(ds, 0x3f21d4)");
+    edx = (int32_t)edx * (int32_t)memoryAGet32(ds, 0x3f21d4);
 loc_1b9faf: // 0160:1b9faf
-    stop("imul edx * memoryAGet32(ds, eax + 3926272)");
+    edx = (int32_t)edx * (int32_t)memoryAGet32(ds, eax + 3926272);
     ecx = 0x0000fe01;
     eax = edx;
     edx = sar32(edx, 0x1f);
@@ -42019,8 +47089,8 @@ void sub_1ba305() // 0160:1ba305 +long
     esp -= 4;
     push32(ebx);
     ebx = eax;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
+    memoryASet32(ds, eax * 4 + 0x3be900, edx);
+    edx = memoryAGet32(ds, eax * 4 + 0x3beac0);
     sub_1b9f73();
     ebx = pop32();
     esp += 4;
@@ -42035,9 +47105,9 @@ void sub_1ba31d() // 0160:1ba31d +long
     ecx = sar32(ecx, 0x08);
     edx &= 0x000000ff;
     ecx &= 0x000000ff;
-    memoryASet32(ds, stop("GetOpAddress"), edx);
-    edx = memoryAGet32(ds, stop("GetOpAddress"));
-    memoryASet32(ds, stop("GetOpAddress"), ecx);
+    memoryASet32(ds, eax * 4 + 0x3be980, edx);
+    edx = memoryAGet32(ds, eax * 4 + 0x3beaa0);
+    memoryASet32(ds, eax * 4 + 0x3be940, ecx);
     sub_1b9f2c();
     ecx = pop32();
     ebx = pop32();
@@ -42414,7 +47484,7 @@ loc_1bb474: // 0160:1bb474
     ebx = memoryAGet32(ds, 0x1dfc68);
     ebx -= eax;
     ebp = eax;
-    if (stop("postCondition"))
+    if ((int32_t)ebx >= 0)
         goto loc_1bb4d9;
     eax = 0x00000003;
     sub_19b80e();
@@ -42428,11 +47498,11 @@ loc_1bb474: // 0160:1bb474
 loc_1bb4d9: // 0160:1bb4d9
     sub_1ba52c();
     edx = 0x003e21a8;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 4 + 0x1dfc8c);
     edi = memoryAGet32(ds, 0x3f3d68);
     sub_19b431();
     edi += ebx;
-    eax = memoryAGet32(ds, stop("GetOpAddress"));
+    eax = memoryAGet32(ds, esi * 4 + 0x1dfcbc);
     edx = edi;
     sub_19b431();
     eax = 0x003e21a8;
@@ -42480,7 +47550,8 @@ void sub_1bc02f() // 0160:1bc02f +long
     push32(ebp);
     ebp = esp;
     push32(flagAsReg32());
-    stop("disassembly failed at 160:1bc033 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     flags.interrupts = 0;
     memoryASet32(ss, ebp + 32, memoryAGet32(ss, ebp + 32) & 0x000000ff);
     memoryASet32(ss, ebp + 36, memoryAGet32(ss, ebp + 36) & 0x000000ff);
@@ -43160,8 +48231,8 @@ loc_1bcb1e: // 0160:1bcb1e
     goto loc_1bcb20;
 loc_1bcb20: // 0160:1bcb20
     bl = memoryAGet(ds, 0x7fffffff);
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
-    dx = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx = memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc00f) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc00f, memoryAGet32(ds, 0x1bc00f) + 0x7fffffff);
     memoryASet32(ds, 0x1bcb22, memoryAGet32(ds, 0x1bcb22) + (0x7fffffff + flags.carry));
@@ -43169,8 +48240,8 @@ loc_1bcb20: // 0160:1bcb20
         goto loc_1bcd08;
 loc_1bcb5a: // 0160:1bcb5a
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc013) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc013, memoryAGet32(ds, 0x1bc013) + 0x7fffffff);
     memoryASet32(ds, 0x1bcb5c, memoryAGet32(ds, 0x1bcb5c) + (0x7fffffff + flags.carry));
@@ -43178,8 +48249,8 @@ loc_1bcb5a: // 0160:1bcb5a
         goto loc_1bcd35;
 loc_1bcb94: // 0160:1bcb94
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc017) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc017, memoryAGet32(ds, 0x1bc017) + 0x7fffffff);
     memoryASet32(ds, 0x1bcb96, memoryAGet32(ds, 0x1bcb96) + (0x7fffffff + flags.carry));
@@ -43187,8 +48258,8 @@ loc_1bcb94: // 0160:1bcb94
         goto loc_1bcd62;
 loc_1bcbce: // 0160:1bcbce
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc01b) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc01b, memoryAGet32(ds, 0x1bc01b) + 0x7fffffff);
     memoryASet32(ds, 0x1bcbd0, memoryAGet32(ds, 0x1bcbd0) + (0x7fffffff + flags.carry));
@@ -43196,8 +48267,8 @@ loc_1bcbce: // 0160:1bcbce
         goto loc_1bcd8f;
 loc_1bcc08: // 0160:1bcc08
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc01f) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc01f, memoryAGet32(ds, 0x1bc01f) + 0x7fffffff);
     memoryASet32(ds, 0x1bcc0a, memoryAGet32(ds, 0x1bcc0a) + (0x7fffffff + flags.carry));
@@ -43205,8 +48276,8 @@ loc_1bcc08: // 0160:1bcc08
         goto loc_1bcdbc;
 loc_1bcc42: // 0160:1bcc42
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc023) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc023, memoryAGet32(ds, 0x1bc023) + 0x7fffffff);
     memoryASet32(ds, 0x1bcc44, memoryAGet32(ds, 0x1bcc44) + (0x7fffffff + flags.carry));
@@ -43214,8 +48285,8 @@ loc_1bcc42: // 0160:1bcc42
         goto loc_1bcde9;
 loc_1bcc7c: // 0160:1bcc7c
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc027) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc027, memoryAGet32(ds, 0x1bc027) + 0x7fffffff);
     memoryASet32(ds, 0x1bcc7e, memoryAGet32(ds, 0x1bcc7e) + (0x7fffffff + flags.carry));
@@ -43223,8 +48294,8 @@ loc_1bcc7c: // 0160:1bcc7c
         goto loc_1bce16;
 loc_1bccb6: // 0160:1bccb6
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
-    dx += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
+    dx += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc02b) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc02b, memoryAGet32(ds, 0x1bc02b) + 0x7fffffff);
     memoryASet32(ds, 0x1bccb8, memoryAGet32(ds, 0x1bccb8) + (0x7fffffff + flags.carry));
@@ -43287,9 +48358,10 @@ loc_1bce43: // 0160:1bce43
     memoryASet32(ds, 0x1bccdc, 0x7fffffff);
     goto loc_1bccf0;
 loc_1bce70: // 0160:1bce70
-    stop("disassembly failed at 160:1bce70 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     flagsFromReg32(pop32());
-    stop("disassembly failed at 160:1bce72 leave ");
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
@@ -43299,7 +48371,8 @@ void sub_1bce74() // 0160:1bce74 +long
     push32(ebp);
     ebp = esp;
     push32(flagAsReg32());
-    stop("disassembly failed at 160:1bce78 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     flags.interrupts = 0;
     memoryASet32(ss, ebp + 32, memoryAGet32(ss, ebp + 32) & 0x000000ff);
     memoryASet32(ss, ebp + 36, memoryAGet32(ss, ebp + 36) & 0x000000ff);
@@ -43923,7 +48996,7 @@ loc_1bd889: // 0160:1bd889
     // gap 1 bytes
 loc_1bd88c: // 0160:1bd88c
     bl = memoryAGet(ds, 0x7fffffff);
-    ax = memoryAGet16(ds, stop("GetOpAddress"));
+    ax = memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc00f) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc00f, memoryAGet32(ds, 0x1bc00f) + 0x7fffffff);
     memoryASet32(ds, 0x1bd88e, memoryAGet32(ds, 0x1bd88e) + (0x7fffffff + flags.carry));
@@ -43931,7 +49004,7 @@ loc_1bd88c: // 0160:1bd88c
         goto loc_1bda2e;
 loc_1bd8be: // 0160:1bd8be
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc013) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc013, memoryAGet32(ds, 0x1bc013) + 0x7fffffff);
     memoryASet32(ds, 0x1bd8c0, memoryAGet32(ds, 0x1bd8c0) + (0x7fffffff + flags.carry));
@@ -43939,7 +49012,7 @@ loc_1bd8be: // 0160:1bd8be
         goto loc_1bda5b;
 loc_1bd8f0: // 0160:1bd8f0
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc017) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc017, memoryAGet32(ds, 0x1bc017) + 0x7fffffff);
     memoryASet32(ds, 0x1bd8f2, memoryAGet32(ds, 0x1bd8f2) + (0x7fffffff + flags.carry));
@@ -43947,7 +49020,7 @@ loc_1bd8f0: // 0160:1bd8f0
         goto loc_1bda88;
 loc_1bd922: // 0160:1bd922
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc01b) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc01b, memoryAGet32(ds, 0x1bc01b) + 0x7fffffff);
     memoryASet32(ds, 0x1bd924, memoryAGet32(ds, 0x1bd924) + (0x7fffffff + flags.carry));
@@ -43955,7 +49028,7 @@ loc_1bd922: // 0160:1bd922
         goto loc_1bdab5;
 loc_1bd954: // 0160:1bd954
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc01f) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc01f, memoryAGet32(ds, 0x1bc01f) + 0x7fffffff);
     memoryASet32(ds, 0x1bd956, memoryAGet32(ds, 0x1bd956) + (0x7fffffff + flags.carry));
@@ -43963,7 +49036,7 @@ loc_1bd954: // 0160:1bd954
         goto loc_1bdae2;
 loc_1bd986: // 0160:1bd986
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc023) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc023, memoryAGet32(ds, 0x1bc023) + 0x7fffffff);
     memoryASet32(ds, 0x1bd988, memoryAGet32(ds, 0x1bd988) + (0x7fffffff + flags.carry));
@@ -43971,7 +49044,7 @@ loc_1bd986: // 0160:1bd986
         goto loc_1bdb0f;
 loc_1bd9b8: // 0160:1bd9b8
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc027) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc027, memoryAGet32(ds, 0x1bc027) + 0x7fffffff);
     memoryASet32(ds, 0x1bd9ba, memoryAGet32(ds, 0x1bd9ba) + (0x7fffffff + flags.carry));
@@ -43979,7 +49052,7 @@ loc_1bd9b8: // 0160:1bd9b8
         goto loc_1bdb3c;
 loc_1bd9ea: // 0160:1bd9ea
     bl = memoryAGet(ds, 0x7fffffff);
-    ax += memoryAGet16(ds, stop("GetOpAddress"));
+    ax += memoryAGet16(ds, ebx * 2 + 0x7fffffff);
     flags.carry = (memoryAGet32(ds, 0x1bc02b) + 0x7fffffff) >= 0x100000000ull;
     memoryASet32(ds, 0x1bc02b, memoryAGet32(ds, 0x1bc02b) + 0x7fffffff);
     memoryASet32(ds, 0x1bd9ec, memoryAGet32(ds, 0x1bd9ec) + (0x7fffffff + flags.carry));
@@ -44041,9 +49114,10 @@ loc_1bdb69: // 0160:1bdb69
     memoryASet32(ds, 0x1bda08, 0x7fffffff);
     goto loc_1bda1c;
 loc_1bdb96: // 0160:1bdb96
-    stop("disassembly failed at 160:1bdb96 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     flagsFromReg32(pop32());
-    stop("disassembly failed at 160:1bdb98 leave ");
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
@@ -44052,7 +49126,8 @@ void sub_1bdba0() // 0160:1bdba0 +long
     esp -= 4;
     push32(ebp);
     ebp = esp;
-    stop("disassembly failed at 160:1bdba3 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     if ((int32_t)memoryAGet32(ss, ebp + 40) <= (int32_t)0x00000000)
         goto loc_1c05c1;
     if (memoryAGet32(ss, ebp + 24) == 0x000003c0)
@@ -44120,11 +49195,11 @@ loc_1bdc67: // 0160:1bdc67
     goto loc_1bdc6c;
     // gap 3 bytes
 loc_1bdc6c: // 0160:1bdc6c
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bdc6e));
     if (!(eax & 0x80808080))
         goto loc_1bdcea;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bdc7d));
     if (edx == 0x80808080)
         goto loc_1bdcae;
     if (dl & 0x80)
@@ -44150,7 +49225,7 @@ loc_1bdcae: // 0160:1bdcae
     if (!(eax & 0x80808080))
         goto loc_1bdcea;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bdcb9));
     if (edx == 0x80808080)
         goto loc_1bdcea;
     if (dl & 0x80)
@@ -44173,12 +49248,12 @@ loc_1bdce0: // 0160:1bdce0
 loc_1bdce7: // 0160:1bdce7
     eax = rol32(eax, 0x10);
 loc_1bdcea: // 0160:1bdcea
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bdcec), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bdcf2));
     if (!(eax & 0x80808080))
         goto loc_1bdd6e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bdd01));
     if (edx == 0x80808080)
         goto loc_1bdd32;
     if (dl & 0x80)
@@ -44204,7 +49279,7 @@ loc_1bdd32: // 0160:1bdd32
     if (!(eax & 0x80808080))
         goto loc_1bdd6e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bdd3d));
     if (edx == 0x80808080)
         goto loc_1bdd6e;
     if (dl & 0x80)
@@ -44227,12 +49302,12 @@ loc_1bdd64: // 0160:1bdd64
 loc_1bdd6b: // 0160:1bdd6b
     eax = rol32(eax, 0x10);
 loc_1bdd6e: // 0160:1bdd6e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bdd70), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bdd76));
     if (!(eax & 0x80808080))
         goto loc_1bddf2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bdd85));
     if (edx == 0x80808080)
         goto loc_1bddb6;
     if (dl & 0x80)
@@ -44258,7 +49333,7 @@ loc_1bddb6: // 0160:1bddb6
     if (!(eax & 0x80808080))
         goto loc_1bddf2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bddc1));
     if (edx == 0x80808080)
         goto loc_1bddf2;
     if (dl & 0x80)
@@ -44281,12 +49356,12 @@ loc_1bdde8: // 0160:1bdde8
 loc_1bddef: // 0160:1bddef
     eax = rol32(eax, 0x10);
 loc_1bddf2: // 0160:1bddf2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bddf4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bddfa));
     if (!(eax & 0x80808080))
         goto loc_1bde76;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bde09));
     if (edx == 0x80808080)
         goto loc_1bde3a;
     if (dl & 0x80)
@@ -44312,7 +49387,7 @@ loc_1bde3a: // 0160:1bde3a
     if (!(eax & 0x80808080))
         goto loc_1bde76;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bde45));
     if (edx == 0x80808080)
         goto loc_1bde76;
     if (dl & 0x80)
@@ -44335,12 +49410,12 @@ loc_1bde6c: // 0160:1bde6c
 loc_1bde73: // 0160:1bde73
     eax = rol32(eax, 0x10);
 loc_1bde76: // 0160:1bde76
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bde78), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bde7e));
     if (!(eax & 0x80808080))
         goto loc_1bdefa;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bde8d));
     if (edx == 0x80808080)
         goto loc_1bdebe;
     if (dl & 0x80)
@@ -44366,7 +49441,7 @@ loc_1bdebe: // 0160:1bdebe
     if (!(eax & 0x80808080))
         goto loc_1bdefa;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bdec9));
     if (edx == 0x80808080)
         goto loc_1bdefa;
     if (dl & 0x80)
@@ -44389,12 +49464,12 @@ loc_1bdef0: // 0160:1bdef0
 loc_1bdef7: // 0160:1bdef7
     eax = rol32(eax, 0x10);
 loc_1bdefa: // 0160:1bdefa
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bdefc), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bdf02));
     if (!(eax & 0x80808080))
         goto loc_1bdf7e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bdf11));
     if (edx == 0x80808080)
         goto loc_1bdf42;
     if (dl & 0x80)
@@ -44420,7 +49495,7 @@ loc_1bdf42: // 0160:1bdf42
     if (!(eax & 0x80808080))
         goto loc_1bdf7e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bdf4d));
     if (edx == 0x80808080)
         goto loc_1bdf7e;
     if (dl & 0x80)
@@ -44443,12 +49518,12 @@ loc_1bdf74: // 0160:1bdf74
 loc_1bdf7b: // 0160:1bdf7b
     eax = rol32(eax, 0x10);
 loc_1bdf7e: // 0160:1bdf7e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bdf80), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bdf86));
     if (!(eax & 0x80808080))
         goto loc_1be002;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bdf95));
     if (edx == 0x80808080)
         goto loc_1bdfc6;
     if (dl & 0x80)
@@ -44474,7 +49549,7 @@ loc_1bdfc6: // 0160:1bdfc6
     if (!(eax & 0x80808080))
         goto loc_1be002;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bdfd1));
     if (edx == 0x80808080)
         goto loc_1be002;
     if (dl & 0x80)
@@ -44497,12 +49572,12 @@ loc_1bdff8: // 0160:1bdff8
 loc_1bdfff: // 0160:1bdfff
     eax = rol32(eax, 0x10);
 loc_1be002: // 0160:1be002
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be004), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be00a));
     if (!(eax & 0x80808080))
         goto loc_1be086;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be019));
     if (edx == 0x80808080)
         goto loc_1be04a;
     if (dl & 0x80)
@@ -44528,7 +49603,7 @@ loc_1be04a: // 0160:1be04a
     if (!(eax & 0x80808080))
         goto loc_1be086;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be055));
     if (edx == 0x80808080)
         goto loc_1be086;
     if (dl & 0x80)
@@ -44551,12 +49626,12 @@ loc_1be07c: // 0160:1be07c
 loc_1be083: // 0160:1be083
     eax = rol32(eax, 0x10);
 loc_1be086: // 0160:1be086
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be088), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be08e));
     if (!(eax & 0x80808080))
         goto loc_1be10a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be09d));
     if (edx == 0x80808080)
         goto loc_1be0ce;
     if (dl & 0x80)
@@ -44582,7 +49657,7 @@ loc_1be0ce: // 0160:1be0ce
     if (!(eax & 0x80808080))
         goto loc_1be10a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be0d9));
     if (edx == 0x80808080)
         goto loc_1be10a;
     if (dl & 0x80)
@@ -44605,12 +49680,12 @@ loc_1be100: // 0160:1be100
 loc_1be107: // 0160:1be107
     eax = rol32(eax, 0x10);
 loc_1be10a: // 0160:1be10a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be10c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be112));
     if (!(eax & 0x80808080))
         goto loc_1be18e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be121));
     if (edx == 0x80808080)
         goto loc_1be152;
     if (dl & 0x80)
@@ -44636,7 +49711,7 @@ loc_1be152: // 0160:1be152
     if (!(eax & 0x80808080))
         goto loc_1be18e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be15d));
     if (edx == 0x80808080)
         goto loc_1be18e;
     if (dl & 0x80)
@@ -44659,12 +49734,12 @@ loc_1be184: // 0160:1be184
 loc_1be18b: // 0160:1be18b
     eax = rol32(eax, 0x10);
 loc_1be18e: // 0160:1be18e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be190), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be196));
     if (!(eax & 0x80808080))
         goto loc_1be212;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be1a5));
     if (edx == 0x80808080)
         goto loc_1be1d6;
     if (dl & 0x80)
@@ -44690,7 +49765,7 @@ loc_1be1d6: // 0160:1be1d6
     if (!(eax & 0x80808080))
         goto loc_1be212;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be1e1));
     if (edx == 0x80808080)
         goto loc_1be212;
     if (dl & 0x80)
@@ -44713,12 +49788,12 @@ loc_1be208: // 0160:1be208
 loc_1be20f: // 0160:1be20f
     eax = rol32(eax, 0x10);
 loc_1be212: // 0160:1be212
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be214), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be21a));
     if (!(eax & 0x80808080))
         goto loc_1be296;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be229));
     if (edx == 0x80808080)
         goto loc_1be25a;
     if (dl & 0x80)
@@ -44744,7 +49819,7 @@ loc_1be25a: // 0160:1be25a
     if (!(eax & 0x80808080))
         goto loc_1be296;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be265));
     if (edx == 0x80808080)
         goto loc_1be296;
     if (dl & 0x80)
@@ -44767,12 +49842,12 @@ loc_1be28c: // 0160:1be28c
 loc_1be293: // 0160:1be293
     eax = rol32(eax, 0x10);
 loc_1be296: // 0160:1be296
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be298), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be29e));
     if (!(eax & 0x80808080))
         goto loc_1be31a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be2ad));
     if (edx == 0x80808080)
         goto loc_1be2de;
     if (dl & 0x80)
@@ -44798,7 +49873,7 @@ loc_1be2de: // 0160:1be2de
     if (!(eax & 0x80808080))
         goto loc_1be31a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be2e9));
     if (edx == 0x80808080)
         goto loc_1be31a;
     if (dl & 0x80)
@@ -44821,12 +49896,12 @@ loc_1be310: // 0160:1be310
 loc_1be317: // 0160:1be317
     eax = rol32(eax, 0x10);
 loc_1be31a: // 0160:1be31a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be31c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be322));
     if (!(eax & 0x80808080))
         goto loc_1be39e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be331));
     if (edx == 0x80808080)
         goto loc_1be362;
     if (dl & 0x80)
@@ -44852,7 +49927,7 @@ loc_1be362: // 0160:1be362
     if (!(eax & 0x80808080))
         goto loc_1be39e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be36d));
     if (edx == 0x80808080)
         goto loc_1be39e;
     if (dl & 0x80)
@@ -44875,12 +49950,12 @@ loc_1be394: // 0160:1be394
 loc_1be39b: // 0160:1be39b
     eax = rol32(eax, 0x10);
 loc_1be39e: // 0160:1be39e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be3a0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be3a6));
     if (!(eax & 0x80808080))
         goto loc_1be422;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be3b5));
     if (edx == 0x80808080)
         goto loc_1be3e6;
     if (dl & 0x80)
@@ -44906,7 +49981,7 @@ loc_1be3e6: // 0160:1be3e6
     if (!(eax & 0x80808080))
         goto loc_1be422;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be3f1));
     if (edx == 0x80808080)
         goto loc_1be422;
     if (dl & 0x80)
@@ -44929,12 +50004,12 @@ loc_1be418: // 0160:1be418
 loc_1be41f: // 0160:1be41f
     eax = rol32(eax, 0x10);
 loc_1be422: // 0160:1be422
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be424), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be42a));
     if (!(eax & 0x80808080))
         goto loc_1be4a6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be439));
     if (edx == 0x80808080)
         goto loc_1be46a;
     if (dl & 0x80)
@@ -44960,7 +50035,7 @@ loc_1be46a: // 0160:1be46a
     if (!(eax & 0x80808080))
         goto loc_1be4a6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be475));
     if (edx == 0x80808080)
         goto loc_1be4a6;
     if (dl & 0x80)
@@ -44983,12 +50058,12 @@ loc_1be49c: // 0160:1be49c
 loc_1be4a3: // 0160:1be4a3
     eax = rol32(eax, 0x10);
 loc_1be4a6: // 0160:1be4a6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be4a8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be4ae));
     if (!(eax & 0x80808080))
         goto loc_1be52a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be4bd));
     if (edx == 0x80808080)
         goto loc_1be4ee;
     if (dl & 0x80)
@@ -45014,7 +50089,7 @@ loc_1be4ee: // 0160:1be4ee
     if (!(eax & 0x80808080))
         goto loc_1be52a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be4f9));
     if (edx == 0x80808080)
         goto loc_1be52a;
     if (dl & 0x80)
@@ -45037,12 +50112,12 @@ loc_1be520: // 0160:1be520
 loc_1be527: // 0160:1be527
     eax = rol32(eax, 0x10);
 loc_1be52a: // 0160:1be52a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be52c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be532));
     if (!(eax & 0x80808080))
         goto loc_1be5ae;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be541));
     if (edx == 0x80808080)
         goto loc_1be572;
     if (dl & 0x80)
@@ -45068,7 +50143,7 @@ loc_1be572: // 0160:1be572
     if (!(eax & 0x80808080))
         goto loc_1be5ae;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be57d));
     if (edx == 0x80808080)
         goto loc_1be5ae;
     if (dl & 0x80)
@@ -45091,12 +50166,12 @@ loc_1be5a4: // 0160:1be5a4
 loc_1be5ab: // 0160:1be5ab
     eax = rol32(eax, 0x10);
 loc_1be5ae: // 0160:1be5ae
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be5b0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be5b6));
     if (!(eax & 0x80808080))
         goto loc_1be632;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be5c5));
     if (edx == 0x80808080)
         goto loc_1be5f6;
     if (dl & 0x80)
@@ -45122,7 +50197,7 @@ loc_1be5f6: // 0160:1be5f6
     if (!(eax & 0x80808080))
         goto loc_1be632;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be601));
     if (edx == 0x80808080)
         goto loc_1be632;
     if (dl & 0x80)
@@ -45145,12 +50220,12 @@ loc_1be628: // 0160:1be628
 loc_1be62f: // 0160:1be62f
     eax = rol32(eax, 0x10);
 loc_1be632: // 0160:1be632
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be634), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be63a));
     if (!(eax & 0x80808080))
         goto loc_1be6b6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be649));
     if (edx == 0x80808080)
         goto loc_1be67a;
     if (dl & 0x80)
@@ -45176,7 +50251,7 @@ loc_1be67a: // 0160:1be67a
     if (!(eax & 0x80808080))
         goto loc_1be6b6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be685));
     if (edx == 0x80808080)
         goto loc_1be6b6;
     if (dl & 0x80)
@@ -45199,12 +50274,12 @@ loc_1be6ac: // 0160:1be6ac
 loc_1be6b3: // 0160:1be6b3
     eax = rol32(eax, 0x10);
 loc_1be6b6: // 0160:1be6b6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be6b8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be6be));
     if (!(eax & 0x80808080))
         goto loc_1be73a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be6cd));
     if (edx == 0x80808080)
         goto loc_1be6fe;
     if (dl & 0x80)
@@ -45230,7 +50305,7 @@ loc_1be6fe: // 0160:1be6fe
     if (!(eax & 0x80808080))
         goto loc_1be73a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be709));
     if (edx == 0x80808080)
         goto loc_1be73a;
     if (dl & 0x80)
@@ -45253,12 +50328,12 @@ loc_1be730: // 0160:1be730
 loc_1be737: // 0160:1be737
     eax = rol32(eax, 0x10);
 loc_1be73a: // 0160:1be73a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be73c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be742));
     if (!(eax & 0x80808080))
         goto loc_1be7be;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be751));
     if (edx == 0x80808080)
         goto loc_1be782;
     if (dl & 0x80)
@@ -45284,7 +50359,7 @@ loc_1be782: // 0160:1be782
     if (!(eax & 0x80808080))
         goto loc_1be7be;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be78d));
     if (edx == 0x80808080)
         goto loc_1be7be;
     if (dl & 0x80)
@@ -45307,12 +50382,12 @@ loc_1be7b4: // 0160:1be7b4
 loc_1be7bb: // 0160:1be7bb
     eax = rol32(eax, 0x10);
 loc_1be7be: // 0160:1be7be
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be7c0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be7c6));
     if (!(eax & 0x80808080))
         goto loc_1be842;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be7d5));
     if (edx == 0x80808080)
         goto loc_1be806;
     if (dl & 0x80)
@@ -45338,7 +50413,7 @@ loc_1be806: // 0160:1be806
     if (!(eax & 0x80808080))
         goto loc_1be842;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be811));
     if (edx == 0x80808080)
         goto loc_1be842;
     if (dl & 0x80)
@@ -45361,12 +50436,12 @@ loc_1be838: // 0160:1be838
 loc_1be83f: // 0160:1be83f
     eax = rol32(eax, 0x10);
 loc_1be842: // 0160:1be842
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be844), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be84a));
     if (!(eax & 0x80808080))
         goto loc_1be8c6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be859));
     if (edx == 0x80808080)
         goto loc_1be88a;
     if (dl & 0x80)
@@ -45392,7 +50467,7 @@ loc_1be88a: // 0160:1be88a
     if (!(eax & 0x80808080))
         goto loc_1be8c6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be895));
     if (edx == 0x80808080)
         goto loc_1be8c6;
     if (dl & 0x80)
@@ -45415,12 +50490,12 @@ loc_1be8bc: // 0160:1be8bc
 loc_1be8c3: // 0160:1be8c3
     eax = rol32(eax, 0x10);
 loc_1be8c6: // 0160:1be8c6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be8c8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be8ce));
     if (!(eax & 0x80808080))
         goto loc_1be94a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be8dd));
     if (edx == 0x80808080)
         goto loc_1be90e;
     if (dl & 0x80)
@@ -45446,7 +50521,7 @@ loc_1be90e: // 0160:1be90e
     if (!(eax & 0x80808080))
         goto loc_1be94a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be919));
     if (edx == 0x80808080)
         goto loc_1be94a;
     if (dl & 0x80)
@@ -45469,12 +50544,12 @@ loc_1be940: // 0160:1be940
 loc_1be947: // 0160:1be947
     eax = rol32(eax, 0x10);
 loc_1be94a: // 0160:1be94a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be94c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be952));
     if (!(eax & 0x80808080))
         goto loc_1be9ce;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be961));
     if (edx == 0x80808080)
         goto loc_1be992;
     if (dl & 0x80)
@@ -45500,7 +50575,7 @@ loc_1be992: // 0160:1be992
     if (!(eax & 0x80808080))
         goto loc_1be9ce;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1be99d));
     if (edx == 0x80808080)
         goto loc_1be9ce;
     if (dl & 0x80)
@@ -45523,12 +50598,12 @@ loc_1be9c4: // 0160:1be9c4
 loc_1be9cb: // 0160:1be9cb
     eax = rol32(eax, 0x10);
 loc_1be9ce: // 0160:1be9ce
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1be9d0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1be9d6));
     if (!(eax & 0x80808080))
         goto loc_1bea52;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1be9e5));
     if (edx == 0x80808080)
         goto loc_1bea16;
     if (dl & 0x80)
@@ -45554,7 +50629,7 @@ loc_1bea16: // 0160:1bea16
     if (!(eax & 0x80808080))
         goto loc_1bea52;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bea21));
     if (edx == 0x80808080)
         goto loc_1bea52;
     if (dl & 0x80)
@@ -45577,12 +50652,12 @@ loc_1bea48: // 0160:1bea48
 loc_1bea4f: // 0160:1bea4f
     eax = rol32(eax, 0x10);
 loc_1bea52: // 0160:1bea52
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bea54), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bea5a));
     if (!(eax & 0x80808080))
         goto loc_1bead6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bea69));
     if (edx == 0x80808080)
         goto loc_1bea9a;
     if (dl & 0x80)
@@ -45608,7 +50683,7 @@ loc_1bea9a: // 0160:1bea9a
     if (!(eax & 0x80808080))
         goto loc_1bead6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1beaa5));
     if (edx == 0x80808080)
         goto loc_1bead6;
     if (dl & 0x80)
@@ -45631,12 +50706,12 @@ loc_1beacc: // 0160:1beacc
 loc_1bead3: // 0160:1bead3
     eax = rol32(eax, 0x10);
 loc_1bead6: // 0160:1bead6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bead8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1beade));
     if (!(eax & 0x80808080))
         goto loc_1beb5a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1beaed));
     if (edx == 0x80808080)
         goto loc_1beb1e;
     if (dl & 0x80)
@@ -45662,7 +50737,7 @@ loc_1beb1e: // 0160:1beb1e
     if (!(eax & 0x80808080))
         goto loc_1beb5a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1beb29));
     if (edx == 0x80808080)
         goto loc_1beb5a;
     if (dl & 0x80)
@@ -45685,12 +50760,12 @@ loc_1beb50: // 0160:1beb50
 loc_1beb57: // 0160:1beb57
     eax = rol32(eax, 0x10);
 loc_1beb5a: // 0160:1beb5a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1beb5c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1beb62));
     if (!(eax & 0x80808080))
         goto loc_1bebde;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1beb71));
     if (edx == 0x80808080)
         goto loc_1beba2;
     if (dl & 0x80)
@@ -45716,7 +50791,7 @@ loc_1beba2: // 0160:1beba2
     if (!(eax & 0x80808080))
         goto loc_1bebde;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bebad));
     if (edx == 0x80808080)
         goto loc_1bebde;
     if (dl & 0x80)
@@ -45739,12 +50814,12 @@ loc_1bebd4: // 0160:1bebd4
 loc_1bebdb: // 0160:1bebdb
     eax = rol32(eax, 0x10);
 loc_1bebde: // 0160:1bebde
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bebe0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bebe6));
     if (!(eax & 0x80808080))
         goto loc_1bec62;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bebf5));
     if (edx == 0x80808080)
         goto loc_1bec26;
     if (dl & 0x80)
@@ -45770,7 +50845,7 @@ loc_1bec26: // 0160:1bec26
     if (!(eax & 0x80808080))
         goto loc_1bec62;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bec31));
     if (edx == 0x80808080)
         goto loc_1bec62;
     if (dl & 0x80)
@@ -45793,12 +50868,12 @@ loc_1bec58: // 0160:1bec58
 loc_1bec5f: // 0160:1bec5f
     eax = rol32(eax, 0x10);
 loc_1bec62: // 0160:1bec62
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bec64), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bec6a));
     if (!(eax & 0x80808080))
         goto loc_1bece6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bec79));
     if (edx == 0x80808080)
         goto loc_1becaa;
     if (dl & 0x80)
@@ -45824,7 +50899,7 @@ loc_1becaa: // 0160:1becaa
     if (!(eax & 0x80808080))
         goto loc_1bece6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1becb5));
     if (edx == 0x80808080)
         goto loc_1bece6;
     if (dl & 0x80)
@@ -45847,12 +50922,12 @@ loc_1becdc: // 0160:1becdc
 loc_1bece3: // 0160:1bece3
     eax = rol32(eax, 0x10);
 loc_1bece6: // 0160:1bece6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bece8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1becee));
     if (!(eax & 0x80808080))
         goto loc_1bed6a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1becfd));
     if (edx == 0x80808080)
         goto loc_1bed2e;
     if (dl & 0x80)
@@ -45878,7 +50953,7 @@ loc_1bed2e: // 0160:1bed2e
     if (!(eax & 0x80808080))
         goto loc_1bed6a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bed39));
     if (edx == 0x80808080)
         goto loc_1bed6a;
     if (dl & 0x80)
@@ -45901,12 +50976,12 @@ loc_1bed60: // 0160:1bed60
 loc_1bed67: // 0160:1bed67
     eax = rol32(eax, 0x10);
 loc_1bed6a: // 0160:1bed6a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bed6c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bed72));
     if (!(eax & 0x80808080))
         goto loc_1bedee;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bed81));
     if (edx == 0x80808080)
         goto loc_1bedb2;
     if (dl & 0x80)
@@ -45932,7 +51007,7 @@ loc_1bedb2: // 0160:1bedb2
     if (!(eax & 0x80808080))
         goto loc_1bedee;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bedbd));
     if (edx == 0x80808080)
         goto loc_1bedee;
     if (dl & 0x80)
@@ -45955,12 +51030,12 @@ loc_1bede4: // 0160:1bede4
 loc_1bedeb: // 0160:1bedeb
     eax = rol32(eax, 0x10);
 loc_1bedee: // 0160:1bedee
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bedf0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bedf6));
     if (!(eax & 0x80808080))
         goto loc_1bee72;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bee05));
     if (edx == 0x80808080)
         goto loc_1bee36;
     if (dl & 0x80)
@@ -45986,7 +51061,7 @@ loc_1bee36: // 0160:1bee36
     if (!(eax & 0x80808080))
         goto loc_1bee72;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bee41));
     if (edx == 0x80808080)
         goto loc_1bee72;
     if (dl & 0x80)
@@ -46009,12 +51084,12 @@ loc_1bee68: // 0160:1bee68
 loc_1bee6f: // 0160:1bee6f
     eax = rol32(eax, 0x10);
 loc_1bee72: // 0160:1bee72
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bee74), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bee7a));
     if (!(eax & 0x80808080))
         goto loc_1beef6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bee89));
     if (edx == 0x80808080)
         goto loc_1beeba;
     if (dl & 0x80)
@@ -46040,7 +51115,7 @@ loc_1beeba: // 0160:1beeba
     if (!(eax & 0x80808080))
         goto loc_1beef6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1beec5));
     if (edx == 0x80808080)
         goto loc_1beef6;
     if (dl & 0x80)
@@ -46063,12 +51138,12 @@ loc_1beeec: // 0160:1beeec
 loc_1beef3: // 0160:1beef3
     eax = rol32(eax, 0x10);
 loc_1beef6: // 0160:1beef6
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1beef8), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1beefe));
     if (!(eax & 0x80808080))
         goto loc_1bef7a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bef0d));
     if (edx == 0x80808080)
         goto loc_1bef3e;
     if (dl & 0x80)
@@ -46094,7 +51169,7 @@ loc_1bef3e: // 0160:1bef3e
     if (!(eax & 0x80808080))
         goto loc_1bef7a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bef49));
     if (edx == 0x80808080)
         goto loc_1bef7a;
     if (dl & 0x80)
@@ -46117,12 +51192,12 @@ loc_1bef70: // 0160:1bef70
 loc_1bef77: // 0160:1bef77
     eax = rol32(eax, 0x10);
 loc_1bef7a: // 0160:1bef7a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bef7c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bef82));
     if (!(eax & 0x80808080))
         goto loc_1beffe;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bef91));
     if (edx == 0x80808080)
         goto loc_1befc2;
     if (dl & 0x80)
@@ -46148,7 +51223,7 @@ loc_1befc2: // 0160:1befc2
     if (!(eax & 0x80808080))
         goto loc_1beffe;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1befcd));
     if (edx == 0x80808080)
         goto loc_1beffe;
     if (dl & 0x80)
@@ -46171,12 +51246,12 @@ loc_1beff4: // 0160:1beff4
 loc_1beffb: // 0160:1beffb
     eax = rol32(eax, 0x10);
 loc_1beffe: // 0160:1beffe
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf000), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf006));
     if (!(eax & 0x80808080))
         goto loc_1bf082;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf015));
     if (edx == 0x80808080)
         goto loc_1bf046;
     if (dl & 0x80)
@@ -46202,7 +51277,7 @@ loc_1bf046: // 0160:1bf046
     if (!(eax & 0x80808080))
         goto loc_1bf082;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf051));
     if (edx == 0x80808080)
         goto loc_1bf082;
     if (dl & 0x80)
@@ -46225,12 +51300,12 @@ loc_1bf078: // 0160:1bf078
 loc_1bf07f: // 0160:1bf07f
     eax = rol32(eax, 0x10);
 loc_1bf082: // 0160:1bf082
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf084), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf08a));
     if (!(eax & 0x80808080))
         goto loc_1bf106;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf099));
     if (edx == 0x80808080)
         goto loc_1bf0ca;
     if (dl & 0x80)
@@ -46256,7 +51331,7 @@ loc_1bf0ca: // 0160:1bf0ca
     if (!(eax & 0x80808080))
         goto loc_1bf106;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf0d5));
     if (edx == 0x80808080)
         goto loc_1bf106;
     if (dl & 0x80)
@@ -46279,12 +51354,12 @@ loc_1bf0fc: // 0160:1bf0fc
 loc_1bf103: // 0160:1bf103
     eax = rol32(eax, 0x10);
 loc_1bf106: // 0160:1bf106
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf108), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf10e));
     if (!(eax & 0x80808080))
         goto loc_1bf18a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf11d));
     if (edx == 0x80808080)
         goto loc_1bf14e;
     if (dl & 0x80)
@@ -46310,7 +51385,7 @@ loc_1bf14e: // 0160:1bf14e
     if (!(eax & 0x80808080))
         goto loc_1bf18a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf159));
     if (edx == 0x80808080)
         goto loc_1bf18a;
     if (dl & 0x80)
@@ -46333,12 +51408,12 @@ loc_1bf180: // 0160:1bf180
 loc_1bf187: // 0160:1bf187
     eax = rol32(eax, 0x10);
 loc_1bf18a: // 0160:1bf18a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf18c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf192));
     if (!(eax & 0x80808080))
         goto loc_1bf20e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf1a1));
     if (edx == 0x80808080)
         goto loc_1bf1d2;
     if (dl & 0x80)
@@ -46364,7 +51439,7 @@ loc_1bf1d2: // 0160:1bf1d2
     if (!(eax & 0x80808080))
         goto loc_1bf20e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf1dd));
     if (edx == 0x80808080)
         goto loc_1bf20e;
     if (dl & 0x80)
@@ -46387,12 +51462,12 @@ loc_1bf204: // 0160:1bf204
 loc_1bf20b: // 0160:1bf20b
     eax = rol32(eax, 0x10);
 loc_1bf20e: // 0160:1bf20e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf210), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf216));
     if (!(eax & 0x80808080))
         goto loc_1bf292;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf225));
     if (edx == 0x80808080)
         goto loc_1bf256;
     if (dl & 0x80)
@@ -46418,7 +51493,7 @@ loc_1bf256: // 0160:1bf256
     if (!(eax & 0x80808080))
         goto loc_1bf292;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf261));
     if (edx == 0x80808080)
         goto loc_1bf292;
     if (dl & 0x80)
@@ -46441,12 +51516,12 @@ loc_1bf288: // 0160:1bf288
 loc_1bf28f: // 0160:1bf28f
     eax = rol32(eax, 0x10);
 loc_1bf292: // 0160:1bf292
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf294), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf29a));
     if (!(eax & 0x80808080))
         goto loc_1bf316;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf2a9));
     if (edx == 0x80808080)
         goto loc_1bf2da;
     if (dl & 0x80)
@@ -46472,7 +51547,7 @@ loc_1bf2da: // 0160:1bf2da
     if (!(eax & 0x80808080))
         goto loc_1bf316;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf2e5));
     if (edx == 0x80808080)
         goto loc_1bf316;
     if (dl & 0x80)
@@ -46495,12 +51570,12 @@ loc_1bf30c: // 0160:1bf30c
 loc_1bf313: // 0160:1bf313
     eax = rol32(eax, 0x10);
 loc_1bf316: // 0160:1bf316
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf318), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf31e));
     if (!(eax & 0x80808080))
         goto loc_1bf39a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf32d));
     if (edx == 0x80808080)
         goto loc_1bf35e;
     if (dl & 0x80)
@@ -46526,7 +51601,7 @@ loc_1bf35e: // 0160:1bf35e
     if (!(eax & 0x80808080))
         goto loc_1bf39a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf369));
     if (edx == 0x80808080)
         goto loc_1bf39a;
     if (dl & 0x80)
@@ -46549,12 +51624,12 @@ loc_1bf390: // 0160:1bf390
 loc_1bf397: // 0160:1bf397
     eax = rol32(eax, 0x10);
 loc_1bf39a: // 0160:1bf39a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf39c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf3a2));
     if (!(eax & 0x80808080))
         goto loc_1bf41e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf3b1));
     if (edx == 0x80808080)
         goto loc_1bf3e2;
     if (dl & 0x80)
@@ -46580,7 +51655,7 @@ loc_1bf3e2: // 0160:1bf3e2
     if (!(eax & 0x80808080))
         goto loc_1bf41e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf3ed));
     if (edx == 0x80808080)
         goto loc_1bf41e;
     if (dl & 0x80)
@@ -46603,12 +51678,12 @@ loc_1bf414: // 0160:1bf414
 loc_1bf41b: // 0160:1bf41b
     eax = rol32(eax, 0x10);
 loc_1bf41e: // 0160:1bf41e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf420), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf426));
     if (!(eax & 0x80808080))
         goto loc_1bf4a2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf435));
     if (edx == 0x80808080)
         goto loc_1bf466;
     if (dl & 0x80)
@@ -46634,7 +51709,7 @@ loc_1bf466: // 0160:1bf466
     if (!(eax & 0x80808080))
         goto loc_1bf4a2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf471));
     if (edx == 0x80808080)
         goto loc_1bf4a2;
     if (dl & 0x80)
@@ -46657,12 +51732,12 @@ loc_1bf498: // 0160:1bf498
 loc_1bf49f: // 0160:1bf49f
     eax = rol32(eax, 0x10);
 loc_1bf4a2: // 0160:1bf4a2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf4a4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf4aa));
     if (!(eax & 0x80808080))
         goto loc_1bf526;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf4b9));
     if (edx == 0x80808080)
         goto loc_1bf4ea;
     if (dl & 0x80)
@@ -46688,7 +51763,7 @@ loc_1bf4ea: // 0160:1bf4ea
     if (!(eax & 0x80808080))
         goto loc_1bf526;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf4f5));
     if (edx == 0x80808080)
         goto loc_1bf526;
     if (dl & 0x80)
@@ -46711,12 +51786,12 @@ loc_1bf51c: // 0160:1bf51c
 loc_1bf523: // 0160:1bf523
     eax = rol32(eax, 0x10);
 loc_1bf526: // 0160:1bf526
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf528), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf52e));
     if (!(eax & 0x80808080))
         goto loc_1bf5aa;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf53d));
     if (edx == 0x80808080)
         goto loc_1bf56e;
     if (dl & 0x80)
@@ -46742,7 +51817,7 @@ loc_1bf56e: // 0160:1bf56e
     if (!(eax & 0x80808080))
         goto loc_1bf5aa;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf579));
     if (edx == 0x80808080)
         goto loc_1bf5aa;
     if (dl & 0x80)
@@ -46765,12 +51840,12 @@ loc_1bf5a0: // 0160:1bf5a0
 loc_1bf5a7: // 0160:1bf5a7
     eax = rol32(eax, 0x10);
 loc_1bf5aa: // 0160:1bf5aa
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf5ac), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf5b2));
     if (!(eax & 0x80808080))
         goto loc_1bf62e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf5c1));
     if (edx == 0x80808080)
         goto loc_1bf5f2;
     if (dl & 0x80)
@@ -46796,7 +51871,7 @@ loc_1bf5f2: // 0160:1bf5f2
     if (!(eax & 0x80808080))
         goto loc_1bf62e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf5fd));
     if (edx == 0x80808080)
         goto loc_1bf62e;
     if (dl & 0x80)
@@ -46819,12 +51894,12 @@ loc_1bf624: // 0160:1bf624
 loc_1bf62b: // 0160:1bf62b
     eax = rol32(eax, 0x10);
 loc_1bf62e: // 0160:1bf62e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf630), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf636));
     if (!(eax & 0x80808080))
         goto loc_1bf6b2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf645));
     if (edx == 0x80808080)
         goto loc_1bf676;
     if (dl & 0x80)
@@ -46850,7 +51925,7 @@ loc_1bf676: // 0160:1bf676
     if (!(eax & 0x80808080))
         goto loc_1bf6b2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf681));
     if (edx == 0x80808080)
         goto loc_1bf6b2;
     if (dl & 0x80)
@@ -46873,12 +51948,12 @@ loc_1bf6a8: // 0160:1bf6a8
 loc_1bf6af: // 0160:1bf6af
     eax = rol32(eax, 0x10);
 loc_1bf6b2: // 0160:1bf6b2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf6b4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf6ba));
     if (!(eax & 0x80808080))
         goto loc_1bf736;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf6c9));
     if (edx == 0x80808080)
         goto loc_1bf6fa;
     if (dl & 0x80)
@@ -46904,7 +51979,7 @@ loc_1bf6fa: // 0160:1bf6fa
     if (!(eax & 0x80808080))
         goto loc_1bf736;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf705));
     if (edx == 0x80808080)
         goto loc_1bf736;
     if (dl & 0x80)
@@ -46927,12 +52002,12 @@ loc_1bf72c: // 0160:1bf72c
 loc_1bf733: // 0160:1bf733
     eax = rol32(eax, 0x10);
 loc_1bf736: // 0160:1bf736
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf738), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf73e));
     if (!(eax & 0x80808080))
         goto loc_1bf7ba;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf74d));
     if (edx == 0x80808080)
         goto loc_1bf77e;
     if (dl & 0x80)
@@ -46958,7 +52033,7 @@ loc_1bf77e: // 0160:1bf77e
     if (!(eax & 0x80808080))
         goto loc_1bf7ba;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf789));
     if (edx == 0x80808080)
         goto loc_1bf7ba;
     if (dl & 0x80)
@@ -46981,12 +52056,12 @@ loc_1bf7b0: // 0160:1bf7b0
 loc_1bf7b7: // 0160:1bf7b7
     eax = rol32(eax, 0x10);
 loc_1bf7ba: // 0160:1bf7ba
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf7bc), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf7c2));
     if (!(eax & 0x80808080))
         goto loc_1bf83e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf7d1));
     if (edx == 0x80808080)
         goto loc_1bf802;
     if (dl & 0x80)
@@ -47012,7 +52087,7 @@ loc_1bf802: // 0160:1bf802
     if (!(eax & 0x80808080))
         goto loc_1bf83e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf80d));
     if (edx == 0x80808080)
         goto loc_1bf83e;
     if (dl & 0x80)
@@ -47035,12 +52110,12 @@ loc_1bf834: // 0160:1bf834
 loc_1bf83b: // 0160:1bf83b
     eax = rol32(eax, 0x10);
 loc_1bf83e: // 0160:1bf83e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf840), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf846));
     if (!(eax & 0x80808080))
         goto loc_1bf8c2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf855));
     if (edx == 0x80808080)
         goto loc_1bf886;
     if (dl & 0x80)
@@ -47066,7 +52141,7 @@ loc_1bf886: // 0160:1bf886
     if (!(eax & 0x80808080))
         goto loc_1bf8c2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf891));
     if (edx == 0x80808080)
         goto loc_1bf8c2;
     if (dl & 0x80)
@@ -47089,12 +52164,12 @@ loc_1bf8b8: // 0160:1bf8b8
 loc_1bf8bf: // 0160:1bf8bf
     eax = rol32(eax, 0x10);
 loc_1bf8c2: // 0160:1bf8c2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf8c4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf8ca));
     if (!(eax & 0x80808080))
         goto loc_1bf946;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf8d9));
     if (edx == 0x80808080)
         goto loc_1bf90a;
     if (dl & 0x80)
@@ -47120,7 +52195,7 @@ loc_1bf90a: // 0160:1bf90a
     if (!(eax & 0x80808080))
         goto loc_1bf946;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf915));
     if (edx == 0x80808080)
         goto loc_1bf946;
     if (dl & 0x80)
@@ -47143,12 +52218,12 @@ loc_1bf93c: // 0160:1bf93c
 loc_1bf943: // 0160:1bf943
     eax = rol32(eax, 0x10);
 loc_1bf946: // 0160:1bf946
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf948), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf94e));
     if (!(eax & 0x80808080))
         goto loc_1bf9ca;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf95d));
     if (edx == 0x80808080)
         goto loc_1bf98e;
     if (dl & 0x80)
@@ -47174,7 +52249,7 @@ loc_1bf98e: // 0160:1bf98e
     if (!(eax & 0x80808080))
         goto loc_1bf9ca;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bf999));
     if (edx == 0x80808080)
         goto loc_1bf9ca;
     if (dl & 0x80)
@@ -47197,12 +52272,12 @@ loc_1bf9c0: // 0160:1bf9c0
 loc_1bf9c7: // 0160:1bf9c7
     eax = rol32(eax, 0x10);
 loc_1bf9ca: // 0160:1bf9ca
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bf9cc), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bf9d2));
     if (!(eax & 0x80808080))
         goto loc_1bfa4e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bf9e1));
     if (edx == 0x80808080)
         goto loc_1bfa12;
     if (dl & 0x80)
@@ -47228,7 +52303,7 @@ loc_1bfa12: // 0160:1bfa12
     if (!(eax & 0x80808080))
         goto loc_1bfa4e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfa1d));
     if (edx == 0x80808080)
         goto loc_1bfa4e;
     if (dl & 0x80)
@@ -47251,12 +52326,12 @@ loc_1bfa44: // 0160:1bfa44
 loc_1bfa4b: // 0160:1bfa4b
     eax = rol32(eax, 0x10);
 loc_1bfa4e: // 0160:1bfa4e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfa50), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfa56));
     if (!(eax & 0x80808080))
         goto loc_1bfad2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfa65));
     if (edx == 0x80808080)
         goto loc_1bfa96;
     if (dl & 0x80)
@@ -47282,7 +52357,7 @@ loc_1bfa96: // 0160:1bfa96
     if (!(eax & 0x80808080))
         goto loc_1bfad2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfaa1));
     if (edx == 0x80808080)
         goto loc_1bfad2;
     if (dl & 0x80)
@@ -47305,12 +52380,12 @@ loc_1bfac8: // 0160:1bfac8
 loc_1bfacf: // 0160:1bfacf
     eax = rol32(eax, 0x10);
 loc_1bfad2: // 0160:1bfad2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfad4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfada));
     if (!(eax & 0x80808080))
         goto loc_1bfb56;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfae9));
     if (edx == 0x80808080)
         goto loc_1bfb1a;
     if (dl & 0x80)
@@ -47336,7 +52411,7 @@ loc_1bfb1a: // 0160:1bfb1a
     if (!(eax & 0x80808080))
         goto loc_1bfb56;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfb25));
     if (edx == 0x80808080)
         goto loc_1bfb56;
     if (dl & 0x80)
@@ -47359,12 +52434,12 @@ loc_1bfb4c: // 0160:1bfb4c
 loc_1bfb53: // 0160:1bfb53
     eax = rol32(eax, 0x10);
 loc_1bfb56: // 0160:1bfb56
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfb58), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfb5e));
     if (!(eax & 0x80808080))
         goto loc_1bfbda;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfb6d));
     if (edx == 0x80808080)
         goto loc_1bfb9e;
     if (dl & 0x80)
@@ -47390,7 +52465,7 @@ loc_1bfb9e: // 0160:1bfb9e
     if (!(eax & 0x80808080))
         goto loc_1bfbda;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfba9));
     if (edx == 0x80808080)
         goto loc_1bfbda;
     if (dl & 0x80)
@@ -47413,12 +52488,12 @@ loc_1bfbd0: // 0160:1bfbd0
 loc_1bfbd7: // 0160:1bfbd7
     eax = rol32(eax, 0x10);
 loc_1bfbda: // 0160:1bfbda
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfbdc), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfbe2));
     if (!(eax & 0x80808080))
         goto loc_1bfc5e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfbf1));
     if (edx == 0x80808080)
         goto loc_1bfc22;
     if (dl & 0x80)
@@ -47444,7 +52519,7 @@ loc_1bfc22: // 0160:1bfc22
     if (!(eax & 0x80808080))
         goto loc_1bfc5e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfc2d));
     if (edx == 0x80808080)
         goto loc_1bfc5e;
     if (dl & 0x80)
@@ -47467,12 +52542,12 @@ loc_1bfc54: // 0160:1bfc54
 loc_1bfc5b: // 0160:1bfc5b
     eax = rol32(eax, 0x10);
 loc_1bfc5e: // 0160:1bfc5e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfc60), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfc66));
     if (!(eax & 0x80808080))
         goto loc_1bfce2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfc75));
     if (edx == 0x80808080)
         goto loc_1bfca6;
     if (dl & 0x80)
@@ -47498,7 +52573,7 @@ loc_1bfca6: // 0160:1bfca6
     if (!(eax & 0x80808080))
         goto loc_1bfce2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfcb1));
     if (edx == 0x80808080)
         goto loc_1bfce2;
     if (dl & 0x80)
@@ -47521,12 +52596,12 @@ loc_1bfcd8: // 0160:1bfcd8
 loc_1bfcdf: // 0160:1bfcdf
     eax = rol32(eax, 0x10);
 loc_1bfce2: // 0160:1bfce2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfce4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfcea));
     if (!(eax & 0x80808080))
         goto loc_1bfd66;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfcf9));
     if (edx == 0x80808080)
         goto loc_1bfd2a;
     if (dl & 0x80)
@@ -47552,7 +52627,7 @@ loc_1bfd2a: // 0160:1bfd2a
     if (!(eax & 0x80808080))
         goto loc_1bfd66;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfd35));
     if (edx == 0x80808080)
         goto loc_1bfd66;
     if (dl & 0x80)
@@ -47575,12 +52650,12 @@ loc_1bfd5c: // 0160:1bfd5c
 loc_1bfd63: // 0160:1bfd63
     eax = rol32(eax, 0x10);
 loc_1bfd66: // 0160:1bfd66
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfd68), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfd6e));
     if (!(eax & 0x80808080))
         goto loc_1bfdea;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfd7d));
     if (edx == 0x80808080)
         goto loc_1bfdae;
     if (dl & 0x80)
@@ -47606,7 +52681,7 @@ loc_1bfdae: // 0160:1bfdae
     if (!(eax & 0x80808080))
         goto loc_1bfdea;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfdb9));
     if (edx == 0x80808080)
         goto loc_1bfdea;
     if (dl & 0x80)
@@ -47629,12 +52704,12 @@ loc_1bfde0: // 0160:1bfde0
 loc_1bfde7: // 0160:1bfde7
     eax = rol32(eax, 0x10);
 loc_1bfdea: // 0160:1bfdea
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfdec), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfdf2));
     if (!(eax & 0x80808080))
         goto loc_1bfe6e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfe01));
     if (edx == 0x80808080)
         goto loc_1bfe32;
     if (dl & 0x80)
@@ -47660,7 +52735,7 @@ loc_1bfe32: // 0160:1bfe32
     if (!(eax & 0x80808080))
         goto loc_1bfe6e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfe3d));
     if (edx == 0x80808080)
         goto loc_1bfe6e;
     if (dl & 0x80)
@@ -47683,12 +52758,12 @@ loc_1bfe64: // 0160:1bfe64
 loc_1bfe6b: // 0160:1bfe6b
     eax = rol32(eax, 0x10);
 loc_1bfe6e: // 0160:1bfe6e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfe70), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfe76));
     if (!(eax & 0x80808080))
         goto loc_1bfef2;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bfe85));
     if (edx == 0x80808080)
         goto loc_1bfeb6;
     if (dl & 0x80)
@@ -47714,7 +52789,7 @@ loc_1bfeb6: // 0160:1bfeb6
     if (!(eax & 0x80808080))
         goto loc_1bfef2;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bfec1));
     if (edx == 0x80808080)
         goto loc_1bfef2;
     if (dl & 0x80)
@@ -47737,12 +52812,12 @@ loc_1bfee8: // 0160:1bfee8
 loc_1bfeef: // 0160:1bfeef
     eax = rol32(eax, 0x10);
 loc_1bfef2: // 0160:1bfef2
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfef4), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bfefa));
     if (!(eax & 0x80808080))
         goto loc_1bff76;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bff09));
     if (edx == 0x80808080)
         goto loc_1bff3a;
     if (dl & 0x80)
@@ -47768,7 +52843,7 @@ loc_1bff3a: // 0160:1bff3a
     if (!(eax & 0x80808080))
         goto loc_1bff76;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bff45));
     if (edx == 0x80808080)
         goto loc_1bff76;
     if (dl & 0x80)
@@ -47791,12 +52866,12 @@ loc_1bff6c: // 0160:1bff6c
 loc_1bff73: // 0160:1bff73
     eax = rol32(eax, 0x10);
 loc_1bff76: // 0160:1bff76
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bff78), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1bff7e));
     if (!(eax & 0x80808080))
         goto loc_1bfffa;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1bff8d));
     if (edx == 0x80808080)
         goto loc_1bffbe;
     if (dl & 0x80)
@@ -47822,7 +52897,7 @@ loc_1bffbe: // 0160:1bffbe
     if (!(eax & 0x80808080))
         goto loc_1bfffa;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1bffc9));
     if (edx == 0x80808080)
         goto loc_1bfffa;
     if (dl & 0x80)
@@ -47845,12 +52920,12 @@ loc_1bfff0: // 0160:1bfff0
 loc_1bfff7: // 0160:1bfff7
     eax = rol32(eax, 0x10);
 loc_1bfffa: // 0160:1bfffa
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1bfffc), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c0002));
     if (!(eax & 0x80808080))
         goto loc_1c007e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0011));
     if (edx == 0x80808080)
         goto loc_1c0042;
     if (dl & 0x80)
@@ -47876,7 +52951,7 @@ loc_1c0042: // 0160:1c0042
     if (!(eax & 0x80808080))
         goto loc_1c007e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c004d));
     if (edx == 0x80808080)
         goto loc_1c007e;
     if (dl & 0x80)
@@ -47899,12 +52974,12 @@ loc_1c0074: // 0160:1c0074
 loc_1c007b: // 0160:1c007b
     eax = rol32(eax, 0x10);
 loc_1c007e: // 0160:1c007e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0080), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c0086));
     if (!(eax & 0x80808080))
         goto loc_1c0102;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0095));
     if (edx == 0x80808080)
         goto loc_1c00c6;
     if (dl & 0x80)
@@ -47930,7 +53005,7 @@ loc_1c00c6: // 0160:1c00c6
     if (!(eax & 0x80808080))
         goto loc_1c0102;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c00d1));
     if (edx == 0x80808080)
         goto loc_1c0102;
     if (dl & 0x80)
@@ -47953,12 +53028,12 @@ loc_1c00f8: // 0160:1c00f8
 loc_1c00ff: // 0160:1c00ff
     eax = rol32(eax, 0x10);
 loc_1c0102: // 0160:1c0102
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0104), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c010a));
     if (!(eax & 0x80808080))
         goto loc_1c0186;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0119));
     if (edx == 0x80808080)
         goto loc_1c014a;
     if (dl & 0x80)
@@ -47984,7 +53059,7 @@ loc_1c014a: // 0160:1c014a
     if (!(eax & 0x80808080))
         goto loc_1c0186;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c0155));
     if (edx == 0x80808080)
         goto loc_1c0186;
     if (dl & 0x80)
@@ -48007,12 +53082,12 @@ loc_1c017c: // 0160:1c017c
 loc_1c0183: // 0160:1c0183
     eax = rol32(eax, 0x10);
 loc_1c0186: // 0160:1c0186
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0188), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c018e));
     if (!(eax & 0x80808080))
         goto loc_1c020a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c019d));
     if (edx == 0x80808080)
         goto loc_1c01ce;
     if (dl & 0x80)
@@ -48038,7 +53113,7 @@ loc_1c01ce: // 0160:1c01ce
     if (!(eax & 0x80808080))
         goto loc_1c020a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c01d9));
     if (edx == 0x80808080)
         goto loc_1c020a;
     if (dl & 0x80)
@@ -48061,12 +53136,12 @@ loc_1c0200: // 0160:1c0200
 loc_1c0207: // 0160:1c0207
     eax = rol32(eax, 0x10);
 loc_1c020a: // 0160:1c020a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c020c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c0212));
     if (!(eax & 0x80808080))
         goto loc_1c028e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0221));
     if (edx == 0x80808080)
         goto loc_1c0252;
     if (dl & 0x80)
@@ -48092,7 +53167,7 @@ loc_1c0252: // 0160:1c0252
     if (!(eax & 0x80808080))
         goto loc_1c028e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c025d));
     if (edx == 0x80808080)
         goto loc_1c028e;
     if (dl & 0x80)
@@ -48115,12 +53190,12 @@ loc_1c0284: // 0160:1c0284
 loc_1c028b: // 0160:1c028b
     eax = rol32(eax, 0x10);
 loc_1c028e: // 0160:1c028e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0290), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c0296));
     if (!(eax & 0x80808080))
         goto loc_1c0312;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c02a5));
     if (edx == 0x80808080)
         goto loc_1c02d6;
     if (dl & 0x80)
@@ -48146,7 +53221,7 @@ loc_1c02d6: // 0160:1c02d6
     if (!(eax & 0x80808080))
         goto loc_1c0312;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c02e1));
     if (edx == 0x80808080)
         goto loc_1c0312;
     if (dl & 0x80)
@@ -48169,12 +53244,12 @@ loc_1c0308: // 0160:1c0308
 loc_1c030f: // 0160:1c030f
     eax = rol32(eax, 0x10);
 loc_1c0312: // 0160:1c0312
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0314), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c031a));
     if (!(eax & 0x80808080))
         goto loc_1c0396;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0329));
     if (edx == 0x80808080)
         goto loc_1c035a;
     if (dl & 0x80)
@@ -48200,7 +53275,7 @@ loc_1c035a: // 0160:1c035a
     if (!(eax & 0x80808080))
         goto loc_1c0396;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c0365));
     if (edx == 0x80808080)
         goto loc_1c0396;
     if (dl & 0x80)
@@ -48223,12 +53298,12 @@ loc_1c038c: // 0160:1c038c
 loc_1c0393: // 0160:1c0393
     eax = rol32(eax, 0x10);
 loc_1c0396: // 0160:1c0396
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0398), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c039e));
     if (!(eax & 0x80808080))
         goto loc_1c041a;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c03ad));
     if (edx == 0x80808080)
         goto loc_1c03de;
     if (dl & 0x80)
@@ -48254,7 +53329,7 @@ loc_1c03de: // 0160:1c03de
     if (!(eax & 0x80808080))
         goto loc_1c041a;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c03e9));
     if (edx == 0x80808080)
         goto loc_1c041a;
     if (dl & 0x80)
@@ -48277,12 +53352,12 @@ loc_1c0410: // 0160:1c0410
 loc_1c0417: // 0160:1c0417
     eax = rol32(eax, 0x10);
 loc_1c041a: // 0160:1c041a
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c041c), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c0422));
     if (!(eax & 0x80808080))
         goto loc_1c049e;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0431));
     if (edx == 0x80808080)
         goto loc_1c0462;
     if (dl & 0x80)
@@ -48308,7 +53383,7 @@ loc_1c0462: // 0160:1c0462
     if (!(eax & 0x80808080))
         goto loc_1c049e;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c046d));
     if (edx == 0x80808080)
         goto loc_1c049e;
     if (dl & 0x80)
@@ -48331,12 +53406,12 @@ loc_1c0494: // 0160:1c0494
 loc_1c049b: // 0160:1c049b
     eax = rol32(eax, 0x10);
 loc_1c049e: // 0160:1c049e
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c04a0), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c04a6));
     if (!(eax & 0x80808080))
         goto loc_1c0522;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c04b5));
     if (edx == 0x80808080)
         goto loc_1c04e6;
     if (dl & 0x80)
@@ -48362,7 +53437,7 @@ loc_1c04e6: // 0160:1c04e6
     if (!(eax & 0x80808080))
         goto loc_1c0522;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c04f1));
     if (edx == 0x80808080)
         goto loc_1c0522;
     if (dl & 0x80)
@@ -48385,12 +53460,12 @@ loc_1c0518: // 0160:1c0518
 loc_1c051f: // 0160:1c051f
     eax = rol32(eax, 0x10);
 loc_1c0522: // 0160:1c0522
-    memoryASet32(ds, edi + 2147483647, eax);
-    eax = memoryAGet32(ds, ecx + 2147483647);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c0524), eax);
+    eax = memoryAGet32(ds, ecx + memoryAGet32(cs, 0x1c052a));
     if (!(eax & 0x80808080))
         goto loc_1c05a6;
     edx = eax;
-    eax = memoryAGet32(ds, ebx + 2147483647);
+    eax = memoryAGet32(ds, ebx + memoryAGet32(cs, 0x1c0539));
     if (edx == 0x80808080)
         goto loc_1c056a;
     if (dl & 0x80)
@@ -48416,7 +53491,7 @@ loc_1c056a: // 0160:1c056a
     if (!(eax & 0x80808080))
         goto loc_1c05a6;
     edx = eax;
-    eax = memoryAGet32(ds, esi + 2147483647);
+    eax = memoryAGet32(ds, esi + memoryAGet32(cs, 0x1c0575));
     if (edx == 0x80808080)
         goto loc_1c05a6;
     if (dl & 0x80)
@@ -48439,7 +53514,7 @@ loc_1c059c: // 0160:1c059c
 loc_1c05a3: // 0160:1c05a3
     eax = rol32(eax, 0x10);
 loc_1c05a6: // 0160:1c05a6
-    memoryASet32(ds, edi + 2147483647, eax);
+    memoryASet32(ds, edi + memoryAGet32(cs, 0x1c05a8), eax);
     ecx += memoryAGet32(ss, ebp + 24);
     ebx += memoryAGet32(ss, ebp + 28);
     esi += memoryAGet32(ss, ebp + 32);
@@ -48448,8 +53523,9 @@ loc_1c05a6: // 0160:1c05a6
     if (memoryAGet32(ss, ebp + 40))
         goto loc_1bdc6c;
 loc_1c05c1: // 0160:1c05c1
-    stop("disassembly failed at 160:1c05c1 popal ");
-    stop("disassembly failed at 160:1c05c2 leave ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
@@ -48459,7 +53535,8 @@ void sub_1c05c4() // 0160:1c05c4 +long
     push32(ebp);
     ebp = esp;
     esp += 0xfffffffc;
-    stop("disassembly failed at 160:1c05ca pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     if (memoryAGet32(ss, ebp + 24) == 0x000003c0)
         goto loc_1c05d8;
     memoryASet32(ss, ebp + 24, memoryAGet32(ss, ebp + 24) - 0x00000004);
@@ -48567,13 +53644,13 @@ loc_1c0705: // 0160:1c0705
     goto loc_1c0708;
     // gap 1 bytes
 loc_1c0708: // 0160:1c0708
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c070a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0710));
     if (!(eax & 0x00008080))
         goto loc_1c0767;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c071f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0725));
     if (dx == 0x8080)
         goto loc_1c073e;
     if (dl & 0x80)
@@ -48587,8 +53664,8 @@ loc_1c073e: // 0160:1c073e
     if (!(ax & 0x8080))
         goto loc_1c0767;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0748));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c074e));
     if (dx == 0x8080)
         goto loc_1c0767;
     if (dl & 0x80)
@@ -48600,13 +53677,13 @@ loc_1c0760: // 0160:1c0760
     ah = dh;
 loc_1c0767: // 0160:1c0767
     memoryASet16(ds, edi, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0770));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0776));
     if (!(eax & 0x00008080))
         goto loc_1c07cd;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0785));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c078b));
     if (dx == 0x8080)
         goto loc_1c07a4;
     if (dl & 0x80)
@@ -48620,8 +53697,8 @@ loc_1c07a4: // 0160:1c07a4
     if (!(ax & 0x8080))
         goto loc_1c07cd;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c07ae));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c07b4));
     if (dx == 0x8080)
         goto loc_1c07cd;
     if (dl & 0x80)
@@ -48633,13 +53710,13 @@ loc_1c07c6: // 0160:1c07c6
     ah = dh;
 loc_1c07cd: // 0160:1c07cd
     memoryASet16(ds, edi + 2, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c07d6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c07dc));
     if (!(eax & 0x00008080))
         goto loc_1c0833;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c07eb));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c07f1));
     if (dx == 0x8080)
         goto loc_1c080a;
     if (dl & 0x80)
@@ -48653,8 +53730,8 @@ loc_1c080a: // 0160:1c080a
     if (!(ax & 0x8080))
         goto loc_1c0833;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0814));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c081a));
     if (dx == 0x8080)
         goto loc_1c0833;
     if (dl & 0x80)
@@ -48666,13 +53743,13 @@ loc_1c082c: // 0160:1c082c
     ah = dh;
 loc_1c0833: // 0160:1c0833
     memoryASet16(ds, edi + 4, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c083c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0842));
     if (!(eax & 0x00008080))
         goto loc_1c0899;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0851));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0857));
     if (dx == 0x8080)
         goto loc_1c0870;
     if (dl & 0x80)
@@ -48686,8 +53763,8 @@ loc_1c0870: // 0160:1c0870
     if (!(ax & 0x8080))
         goto loc_1c0899;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c087a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0880));
     if (dx == 0x8080)
         goto loc_1c0899;
     if (dl & 0x80)
@@ -48699,13 +53776,13 @@ loc_1c0892: // 0160:1c0892
     ah = dh;
 loc_1c0899: // 0160:1c0899
     memoryASet16(ds, edi + 6, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c08a2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c08a8));
     if (!(eax & 0x00008080))
         goto loc_1c08ff;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c08b7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c08bd));
     if (dx == 0x8080)
         goto loc_1c08d6;
     if (dl & 0x80)
@@ -48719,8 +53796,8 @@ loc_1c08d6: // 0160:1c08d6
     if (!(ax & 0x8080))
         goto loc_1c08ff;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c08e0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c08e6));
     if (dx == 0x8080)
         goto loc_1c08ff;
     if (dl & 0x80)
@@ -48732,13 +53809,13 @@ loc_1c08f8: // 0160:1c08f8
     ah = dh;
 loc_1c08ff: // 0160:1c08ff
     memoryASet16(ds, edi + 8, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0908));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c090e));
     if (!(eax & 0x00008080))
         goto loc_1c0965;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c091d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0923));
     if (dx == 0x8080)
         goto loc_1c093c;
     if (dl & 0x80)
@@ -48752,8 +53829,8 @@ loc_1c093c: // 0160:1c093c
     if (!(ax & 0x8080))
         goto loc_1c0965;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0946));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c094c));
     if (dx == 0x8080)
         goto loc_1c0965;
     if (dl & 0x80)
@@ -48765,13 +53842,13 @@ loc_1c095e: // 0160:1c095e
     ah = dh;
 loc_1c0965: // 0160:1c0965
     memoryASet16(ds, edi + 10, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c096e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0974));
     if (!(eax & 0x00008080))
         goto loc_1c09cb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0983));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0989));
     if (dx == 0x8080)
         goto loc_1c09a2;
     if (dl & 0x80)
@@ -48785,8 +53862,8 @@ loc_1c09a2: // 0160:1c09a2
     if (!(ax & 0x8080))
         goto loc_1c09cb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c09ac));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c09b2));
     if (dx == 0x8080)
         goto loc_1c09cb;
     if (dl & 0x80)
@@ -48798,13 +53875,13 @@ loc_1c09c4: // 0160:1c09c4
     ah = dh;
 loc_1c09cb: // 0160:1c09cb
     memoryASet16(ds, edi + 12, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c09d4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c09da));
     if (!(eax & 0x00008080))
         goto loc_1c0a31;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c09e9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c09ef));
     if (dx == 0x8080)
         goto loc_1c0a08;
     if (dl & 0x80)
@@ -48818,8 +53895,8 @@ loc_1c0a08: // 0160:1c0a08
     if (!(ax & 0x8080))
         goto loc_1c0a31;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0a12));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0a18));
     if (dx == 0x8080)
         goto loc_1c0a31;
     if (dl & 0x80)
@@ -48831,13 +53908,13 @@ loc_1c0a2a: // 0160:1c0a2a
     ah = dh;
 loc_1c0a31: // 0160:1c0a31
     memoryASet16(ds, edi + 14, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0a3a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0a40));
     if (!(eax & 0x00008080))
         goto loc_1c0a97;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0a4f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0a55));
     if (dx == 0x8080)
         goto loc_1c0a6e;
     if (dl & 0x80)
@@ -48851,8 +53928,8 @@ loc_1c0a6e: // 0160:1c0a6e
     if (!(ax & 0x8080))
         goto loc_1c0a97;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0a78));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0a7e));
     if (dx == 0x8080)
         goto loc_1c0a97;
     if (dl & 0x80)
@@ -48864,13 +53941,13 @@ loc_1c0a90: // 0160:1c0a90
     ah = dh;
 loc_1c0a97: // 0160:1c0a97
     memoryASet16(ds, edi + 16, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0aa0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0aa6));
     if (!(eax & 0x00008080))
         goto loc_1c0afd;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0ab5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0abb));
     if (dx == 0x8080)
         goto loc_1c0ad4;
     if (dl & 0x80)
@@ -48884,8 +53961,8 @@ loc_1c0ad4: // 0160:1c0ad4
     if (!(ax & 0x8080))
         goto loc_1c0afd;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0ade));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0ae4));
     if (dx == 0x8080)
         goto loc_1c0afd;
     if (dl & 0x80)
@@ -48897,13 +53974,13 @@ loc_1c0af6: // 0160:1c0af6
     ah = dh;
 loc_1c0afd: // 0160:1c0afd
     memoryASet16(ds, edi + 18, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0b06));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0b0c));
     if (!(eax & 0x00008080))
         goto loc_1c0b63;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0b1b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0b21));
     if (dx == 0x8080)
         goto loc_1c0b3a;
     if (dl & 0x80)
@@ -48917,8 +53994,8 @@ loc_1c0b3a: // 0160:1c0b3a
     if (!(ax & 0x8080))
         goto loc_1c0b63;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0b44));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0b4a));
     if (dx == 0x8080)
         goto loc_1c0b63;
     if (dl & 0x80)
@@ -48930,13 +54007,13 @@ loc_1c0b5c: // 0160:1c0b5c
     ah = dh;
 loc_1c0b63: // 0160:1c0b63
     memoryASet16(ds, edi + 20, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0b6c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0b72));
     if (!(eax & 0x00008080))
         goto loc_1c0bc9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0b81));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0b87));
     if (dx == 0x8080)
         goto loc_1c0ba0;
     if (dl & 0x80)
@@ -48950,8 +54027,8 @@ loc_1c0ba0: // 0160:1c0ba0
     if (!(ax & 0x8080))
         goto loc_1c0bc9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0baa));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0bb0));
     if (dx == 0x8080)
         goto loc_1c0bc9;
     if (dl & 0x80)
@@ -48963,13 +54040,13 @@ loc_1c0bc2: // 0160:1c0bc2
     ah = dh;
 loc_1c0bc9: // 0160:1c0bc9
     memoryASet16(ds, edi + 22, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0bd2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0bd8));
     if (!(eax & 0x00008080))
         goto loc_1c0c2f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0be7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0bed));
     if (dx == 0x8080)
         goto loc_1c0c06;
     if (dl & 0x80)
@@ -48983,8 +54060,8 @@ loc_1c0c06: // 0160:1c0c06
     if (!(ax & 0x8080))
         goto loc_1c0c2f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0c10));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0c16));
     if (dx == 0x8080)
         goto loc_1c0c2f;
     if (dl & 0x80)
@@ -48996,13 +54073,13 @@ loc_1c0c28: // 0160:1c0c28
     ah = dh;
 loc_1c0c2f: // 0160:1c0c2f
     memoryASet16(ds, edi + 24, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0c38));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0c3e));
     if (!(eax & 0x00008080))
         goto loc_1c0c95;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0c4d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0c53));
     if (dx == 0x8080)
         goto loc_1c0c6c;
     if (dl & 0x80)
@@ -49016,8 +54093,8 @@ loc_1c0c6c: // 0160:1c0c6c
     if (!(ax & 0x8080))
         goto loc_1c0c95;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0c76));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0c7c));
     if (dx == 0x8080)
         goto loc_1c0c95;
     if (dl & 0x80)
@@ -49029,13 +54106,13 @@ loc_1c0c8e: // 0160:1c0c8e
     ah = dh;
 loc_1c0c95: // 0160:1c0c95
     memoryASet16(ds, edi + 26, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0c9e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0ca4));
     if (!(eax & 0x00008080))
         goto loc_1c0cfb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0cb3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0cb9));
     if (dx == 0x8080)
         goto loc_1c0cd2;
     if (dl & 0x80)
@@ -49049,8 +54126,8 @@ loc_1c0cd2: // 0160:1c0cd2
     if (!(ax & 0x8080))
         goto loc_1c0cfb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0cdc));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0ce2));
     if (dx == 0x8080)
         goto loc_1c0cfb;
     if (dl & 0x80)
@@ -49062,13 +54139,13 @@ loc_1c0cf4: // 0160:1c0cf4
     ah = dh;
 loc_1c0cfb: // 0160:1c0cfb
     memoryASet16(ds, edi + 28, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0d04));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0d0a));
     if (!(eax & 0x00008080))
         goto loc_1c0d61;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0d19));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0d1f));
     if (dx == 0x8080)
         goto loc_1c0d38;
     if (dl & 0x80)
@@ -49082,8 +54159,8 @@ loc_1c0d38: // 0160:1c0d38
     if (!(ax & 0x8080))
         goto loc_1c0d61;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0d42));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0d48));
     if (dx == 0x8080)
         goto loc_1c0d61;
     if (dl & 0x80)
@@ -49095,13 +54172,13 @@ loc_1c0d5a: // 0160:1c0d5a
     ah = dh;
 loc_1c0d61: // 0160:1c0d61
     memoryASet16(ds, edi + 30, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0d6a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0d70));
     if (!(eax & 0x00008080))
         goto loc_1c0dc7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0d7f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0d85));
     if (dx == 0x8080)
         goto loc_1c0d9e;
     if (dl & 0x80)
@@ -49115,8 +54192,8 @@ loc_1c0d9e: // 0160:1c0d9e
     if (!(ax & 0x8080))
         goto loc_1c0dc7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0da8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0dae));
     if (dx == 0x8080)
         goto loc_1c0dc7;
     if (dl & 0x80)
@@ -49128,13 +54205,13 @@ loc_1c0dc0: // 0160:1c0dc0
     ah = dh;
 loc_1c0dc7: // 0160:1c0dc7
     memoryASet16(ds, edi + 32, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0dd0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0dd6));
     if (!(eax & 0x00008080))
         goto loc_1c0e2d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0de5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0deb));
     if (dx == 0x8080)
         goto loc_1c0e04;
     if (dl & 0x80)
@@ -49148,8 +54225,8 @@ loc_1c0e04: // 0160:1c0e04
     if (!(ax & 0x8080))
         goto loc_1c0e2d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0e0e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0e14));
     if (dx == 0x8080)
         goto loc_1c0e2d;
     if (dl & 0x80)
@@ -49161,13 +54238,13 @@ loc_1c0e26: // 0160:1c0e26
     ah = dh;
 loc_1c0e2d: // 0160:1c0e2d
     memoryASet16(ds, edi + 34, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0e36));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0e3c));
     if (!(eax & 0x00008080))
         goto loc_1c0e93;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0e4b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0e51));
     if (dx == 0x8080)
         goto loc_1c0e6a;
     if (dl & 0x80)
@@ -49181,8 +54258,8 @@ loc_1c0e6a: // 0160:1c0e6a
     if (!(ax & 0x8080))
         goto loc_1c0e93;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0e74));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0e7a));
     if (dx == 0x8080)
         goto loc_1c0e93;
     if (dl & 0x80)
@@ -49194,13 +54271,13 @@ loc_1c0e8c: // 0160:1c0e8c
     ah = dh;
 loc_1c0e93: // 0160:1c0e93
     memoryASet16(ds, edi + 36, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0e9c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0ea2));
     if (!(eax & 0x00008080))
         goto loc_1c0ef9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0eb1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0eb7));
     if (dx == 0x8080)
         goto loc_1c0ed0;
     if (dl & 0x80)
@@ -49214,8 +54291,8 @@ loc_1c0ed0: // 0160:1c0ed0
     if (!(ax & 0x8080))
         goto loc_1c0ef9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0eda));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0ee0));
     if (dx == 0x8080)
         goto loc_1c0ef9;
     if (dl & 0x80)
@@ -49227,13 +54304,13 @@ loc_1c0ef2: // 0160:1c0ef2
     ah = dh;
 loc_1c0ef9: // 0160:1c0ef9
     memoryASet16(ds, edi + 38, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0f02));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0f08));
     if (!(eax & 0x00008080))
         goto loc_1c0f5f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0f17));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0f1d));
     if (dx == 0x8080)
         goto loc_1c0f36;
     if (dl & 0x80)
@@ -49247,8 +54324,8 @@ loc_1c0f36: // 0160:1c0f36
     if (!(ax & 0x8080))
         goto loc_1c0f5f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0f40));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0f46));
     if (dx == 0x8080)
         goto loc_1c0f5f;
     if (dl & 0x80)
@@ -49260,13 +54337,13 @@ loc_1c0f58: // 0160:1c0f58
     ah = dh;
 loc_1c0f5f: // 0160:1c0f5f
     memoryASet16(ds, edi + 40, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0f68));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0f6e));
     if (!(eax & 0x00008080))
         goto loc_1c0fc5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0f7d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0f83));
     if (dx == 0x8080)
         goto loc_1c0f9c;
     if (dl & 0x80)
@@ -49280,8 +54357,8 @@ loc_1c0f9c: // 0160:1c0f9c
     if (!(ax & 0x8080))
         goto loc_1c0fc5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0fa6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c0fac));
     if (dx == 0x8080)
         goto loc_1c0fc5;
     if (dl & 0x80)
@@ -49293,13 +54370,13 @@ loc_1c0fbe: // 0160:1c0fbe
     ah = dh;
 loc_1c0fc5: // 0160:1c0fc5
     memoryASet16(ds, edi + 42, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0fce));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c0fd4));
     if (!(eax & 0x00008080))
         goto loc_1c102b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0fe3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c0fe9));
     if (dx == 0x8080)
         goto loc_1c1002;
     if (dl & 0x80)
@@ -49313,8 +54390,8 @@ loc_1c1002: // 0160:1c1002
     if (!(ax & 0x8080))
         goto loc_1c102b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c100c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1012));
     if (dx == 0x8080)
         goto loc_1c102b;
     if (dl & 0x80)
@@ -49326,13 +54403,13 @@ loc_1c1024: // 0160:1c1024
     ah = dh;
 loc_1c102b: // 0160:1c102b
     memoryASet16(ds, edi + 44, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1034));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c103a));
     if (!(eax & 0x00008080))
         goto loc_1c1091;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1049));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c104f));
     if (dx == 0x8080)
         goto loc_1c1068;
     if (dl & 0x80)
@@ -49346,8 +54423,8 @@ loc_1c1068: // 0160:1c1068
     if (!(ax & 0x8080))
         goto loc_1c1091;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1072));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1078));
     if (dx == 0x8080)
         goto loc_1c1091;
     if (dl & 0x80)
@@ -49359,13 +54436,13 @@ loc_1c108a: // 0160:1c108a
     ah = dh;
 loc_1c1091: // 0160:1c1091
     memoryASet16(ds, edi + 46, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c109a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c10a0));
     if (!(eax & 0x00008080))
         goto loc_1c10f7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c10af));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c10b5));
     if (dx == 0x8080)
         goto loc_1c10ce;
     if (dl & 0x80)
@@ -49379,8 +54456,8 @@ loc_1c10ce: // 0160:1c10ce
     if (!(ax & 0x8080))
         goto loc_1c10f7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c10d8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c10de));
     if (dx == 0x8080)
         goto loc_1c10f7;
     if (dl & 0x80)
@@ -49392,13 +54469,13 @@ loc_1c10f0: // 0160:1c10f0
     ah = dh;
 loc_1c10f7: // 0160:1c10f7
     memoryASet16(ds, edi + 48, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1100));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1106));
     if (!(eax & 0x00008080))
         goto loc_1c115d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1115));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c111b));
     if (dx == 0x8080)
         goto loc_1c1134;
     if (dl & 0x80)
@@ -49412,8 +54489,8 @@ loc_1c1134: // 0160:1c1134
     if (!(ax & 0x8080))
         goto loc_1c115d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c113e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1144));
     if (dx == 0x8080)
         goto loc_1c115d;
     if (dl & 0x80)
@@ -49425,13 +54502,13 @@ loc_1c1156: // 0160:1c1156
     ah = dh;
 loc_1c115d: // 0160:1c115d
     memoryASet16(ds, edi + 50, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1166));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c116c));
     if (!(eax & 0x00008080))
         goto loc_1c11c3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c117b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1181));
     if (dx == 0x8080)
         goto loc_1c119a;
     if (dl & 0x80)
@@ -49445,8 +54522,8 @@ loc_1c119a: // 0160:1c119a
     if (!(ax & 0x8080))
         goto loc_1c11c3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c11a4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c11aa));
     if (dx == 0x8080)
         goto loc_1c11c3;
     if (dl & 0x80)
@@ -49458,13 +54535,13 @@ loc_1c11bc: // 0160:1c11bc
     ah = dh;
 loc_1c11c3: // 0160:1c11c3
     memoryASet16(ds, edi + 52, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c11cc));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c11d2));
     if (!(eax & 0x00008080))
         goto loc_1c1229;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c11e1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c11e7));
     if (dx == 0x8080)
         goto loc_1c1200;
     if (dl & 0x80)
@@ -49478,8 +54555,8 @@ loc_1c1200: // 0160:1c1200
     if (!(ax & 0x8080))
         goto loc_1c1229;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c120a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1210));
     if (dx == 0x8080)
         goto loc_1c1229;
     if (dl & 0x80)
@@ -49491,13 +54568,13 @@ loc_1c1222: // 0160:1c1222
     ah = dh;
 loc_1c1229: // 0160:1c1229
     memoryASet16(ds, edi + 54, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1232));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1238));
     if (!(eax & 0x00008080))
         goto loc_1c128f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1247));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c124d));
     if (dx == 0x8080)
         goto loc_1c1266;
     if (dl & 0x80)
@@ -49511,8 +54588,8 @@ loc_1c1266: // 0160:1c1266
     if (!(ax & 0x8080))
         goto loc_1c128f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1270));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1276));
     if (dx == 0x8080)
         goto loc_1c128f;
     if (dl & 0x80)
@@ -49524,13 +54601,13 @@ loc_1c1288: // 0160:1c1288
     ah = dh;
 loc_1c128f: // 0160:1c128f
     memoryASet16(ds, edi + 56, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1298));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c129e));
     if (!(eax & 0x00008080))
         goto loc_1c12f5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c12ad));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c12b3));
     if (dx == 0x8080)
         goto loc_1c12cc;
     if (dl & 0x80)
@@ -49544,8 +54621,8 @@ loc_1c12cc: // 0160:1c12cc
     if (!(ax & 0x8080))
         goto loc_1c12f5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c12d6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c12dc));
     if (dx == 0x8080)
         goto loc_1c12f5;
     if (dl & 0x80)
@@ -49557,13 +54634,13 @@ loc_1c12ee: // 0160:1c12ee
     ah = dh;
 loc_1c12f5: // 0160:1c12f5
     memoryASet16(ds, edi + 58, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c12fe));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1304));
     if (!(eax & 0x00008080))
         goto loc_1c135b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1313));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1319));
     if (dx == 0x8080)
         goto loc_1c1332;
     if (dl & 0x80)
@@ -49577,8 +54654,8 @@ loc_1c1332: // 0160:1c1332
     if (!(ax & 0x8080))
         goto loc_1c135b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c133c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1342));
     if (dx == 0x8080)
         goto loc_1c135b;
     if (dl & 0x80)
@@ -49590,13 +54667,13 @@ loc_1c1354: // 0160:1c1354
     ah = dh;
 loc_1c135b: // 0160:1c135b
     memoryASet16(ds, edi + 60, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1364));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c136a));
     if (!(eax & 0x00008080))
         goto loc_1c13c1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1379));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c137f));
     if (dx == 0x8080)
         goto loc_1c1398;
     if (dl & 0x80)
@@ -49610,8 +54687,8 @@ loc_1c1398: // 0160:1c1398
     if (!(ax & 0x8080))
         goto loc_1c13c1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c13a2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c13a8));
     if (dx == 0x8080)
         goto loc_1c13c1;
     if (dl & 0x80)
@@ -49623,13 +54700,13 @@ loc_1c13ba: // 0160:1c13ba
     ah = dh;
 loc_1c13c1: // 0160:1c13c1
     memoryASet16(ds, edi + 62, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c13ca));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c13d0));
     if (!(eax & 0x00008080))
         goto loc_1c1427;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c13df));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c13e5));
     if (dx == 0x8080)
         goto loc_1c13fe;
     if (dl & 0x80)
@@ -49643,8 +54720,8 @@ loc_1c13fe: // 0160:1c13fe
     if (!(ax & 0x8080))
         goto loc_1c1427;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1408));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c140e));
     if (dx == 0x8080)
         goto loc_1c1427;
     if (dl & 0x80)
@@ -49656,13 +54733,13 @@ loc_1c1420: // 0160:1c1420
     ah = dh;
 loc_1c1427: // 0160:1c1427
     memoryASet16(ds, edi + 64, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1430));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1436));
     if (!(eax & 0x00008080))
         goto loc_1c148d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1445));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c144b));
     if (dx == 0x8080)
         goto loc_1c1464;
     if (dl & 0x80)
@@ -49676,8 +54753,8 @@ loc_1c1464: // 0160:1c1464
     if (!(ax & 0x8080))
         goto loc_1c148d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c146e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1474));
     if (dx == 0x8080)
         goto loc_1c148d;
     if (dl & 0x80)
@@ -49689,13 +54766,13 @@ loc_1c1486: // 0160:1c1486
     ah = dh;
 loc_1c148d: // 0160:1c148d
     memoryASet16(ds, edi + 66, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1496));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c149c));
     if (!(eax & 0x00008080))
         goto loc_1c14f3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c14ab));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c14b1));
     if (dx == 0x8080)
         goto loc_1c14ca;
     if (dl & 0x80)
@@ -49709,8 +54786,8 @@ loc_1c14ca: // 0160:1c14ca
     if (!(ax & 0x8080))
         goto loc_1c14f3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c14d4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c14da));
     if (dx == 0x8080)
         goto loc_1c14f3;
     if (dl & 0x80)
@@ -49722,13 +54799,13 @@ loc_1c14ec: // 0160:1c14ec
     ah = dh;
 loc_1c14f3: // 0160:1c14f3
     memoryASet16(ds, edi + 68, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c14fc));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1502));
     if (!(eax & 0x00008080))
         goto loc_1c1559;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1511));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1517));
     if (dx == 0x8080)
         goto loc_1c1530;
     if (dl & 0x80)
@@ -49742,8 +54819,8 @@ loc_1c1530: // 0160:1c1530
     if (!(ax & 0x8080))
         goto loc_1c1559;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c153a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1540));
     if (dx == 0x8080)
         goto loc_1c1559;
     if (dl & 0x80)
@@ -49755,13 +54832,13 @@ loc_1c1552: // 0160:1c1552
     ah = dh;
 loc_1c1559: // 0160:1c1559
     memoryASet16(ds, edi + 70, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1562));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1568));
     if (!(eax & 0x00008080))
         goto loc_1c15bf;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1577));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c157d));
     if (dx == 0x8080)
         goto loc_1c1596;
     if (dl & 0x80)
@@ -49775,8 +54852,8 @@ loc_1c1596: // 0160:1c1596
     if (!(ax & 0x8080))
         goto loc_1c15bf;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c15a0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c15a6));
     if (dx == 0x8080)
         goto loc_1c15bf;
     if (dl & 0x80)
@@ -49788,13 +54865,13 @@ loc_1c15b8: // 0160:1c15b8
     ah = dh;
 loc_1c15bf: // 0160:1c15bf
     memoryASet16(ds, edi + 72, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c15c8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c15ce));
     if (!(eax & 0x00008080))
         goto loc_1c1625;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c15dd));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c15e3));
     if (dx == 0x8080)
         goto loc_1c15fc;
     if (dl & 0x80)
@@ -49808,8 +54885,8 @@ loc_1c15fc: // 0160:1c15fc
     if (!(ax & 0x8080))
         goto loc_1c1625;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1606));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c160c));
     if (dx == 0x8080)
         goto loc_1c1625;
     if (dl & 0x80)
@@ -49821,13 +54898,13 @@ loc_1c161e: // 0160:1c161e
     ah = dh;
 loc_1c1625: // 0160:1c1625
     memoryASet16(ds, edi + 74, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c162e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1634));
     if (!(eax & 0x00008080))
         goto loc_1c168b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1643));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1649));
     if (dx == 0x8080)
         goto loc_1c1662;
     if (dl & 0x80)
@@ -49841,8 +54918,8 @@ loc_1c1662: // 0160:1c1662
     if (!(ax & 0x8080))
         goto loc_1c168b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c166c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1672));
     if (dx == 0x8080)
         goto loc_1c168b;
     if (dl & 0x80)
@@ -49854,13 +54931,13 @@ loc_1c1684: // 0160:1c1684
     ah = dh;
 loc_1c168b: // 0160:1c168b
     memoryASet16(ds, edi + 76, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1694));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c169a));
     if (!(eax & 0x00008080))
         goto loc_1c16f1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c16a9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c16af));
     if (dx == 0x8080)
         goto loc_1c16c8;
     if (dl & 0x80)
@@ -49874,8 +54951,8 @@ loc_1c16c8: // 0160:1c16c8
     if (!(ax & 0x8080))
         goto loc_1c16f1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c16d2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c16d8));
     if (dx == 0x8080)
         goto loc_1c16f1;
     if (dl & 0x80)
@@ -49887,13 +54964,13 @@ loc_1c16ea: // 0160:1c16ea
     ah = dh;
 loc_1c16f1: // 0160:1c16f1
     memoryASet16(ds, edi + 78, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c16fa));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1700));
     if (!(eax & 0x00008080))
         goto loc_1c1757;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c170f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1715));
     if (dx == 0x8080)
         goto loc_1c172e;
     if (dl & 0x80)
@@ -49907,8 +54984,8 @@ loc_1c172e: // 0160:1c172e
     if (!(ax & 0x8080))
         goto loc_1c1757;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1738));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c173e));
     if (dx == 0x8080)
         goto loc_1c1757;
     if (dl & 0x80)
@@ -49920,13 +54997,13 @@ loc_1c1750: // 0160:1c1750
     ah = dh;
 loc_1c1757: // 0160:1c1757
     memoryASet16(ds, edi + 80, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1760));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1766));
     if (!(eax & 0x00008080))
         goto loc_1c17bd;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1775));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c177b));
     if (dx == 0x8080)
         goto loc_1c1794;
     if (dl & 0x80)
@@ -49940,8 +55017,8 @@ loc_1c1794: // 0160:1c1794
     if (!(ax & 0x8080))
         goto loc_1c17bd;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c179e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c17a4));
     if (dx == 0x8080)
         goto loc_1c17bd;
     if (dl & 0x80)
@@ -49953,13 +55030,13 @@ loc_1c17b6: // 0160:1c17b6
     ah = dh;
 loc_1c17bd: // 0160:1c17bd
     memoryASet16(ds, edi + 82, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c17c6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c17cc));
     if (!(eax & 0x00008080))
         goto loc_1c1823;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c17db));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c17e1));
     if (dx == 0x8080)
         goto loc_1c17fa;
     if (dl & 0x80)
@@ -49973,8 +55050,8 @@ loc_1c17fa: // 0160:1c17fa
     if (!(ax & 0x8080))
         goto loc_1c1823;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1804));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c180a));
     if (dx == 0x8080)
         goto loc_1c1823;
     if (dl & 0x80)
@@ -49986,13 +55063,13 @@ loc_1c181c: // 0160:1c181c
     ah = dh;
 loc_1c1823: // 0160:1c1823
     memoryASet16(ds, edi + 84, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c182c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1832));
     if (!(eax & 0x00008080))
         goto loc_1c1889;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1841));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1847));
     if (dx == 0x8080)
         goto loc_1c1860;
     if (dl & 0x80)
@@ -50006,8 +55083,8 @@ loc_1c1860: // 0160:1c1860
     if (!(ax & 0x8080))
         goto loc_1c1889;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c186a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1870));
     if (dx == 0x8080)
         goto loc_1c1889;
     if (dl & 0x80)
@@ -50019,13 +55096,13 @@ loc_1c1882: // 0160:1c1882
     ah = dh;
 loc_1c1889: // 0160:1c1889
     memoryASet16(ds, edi + 86, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1892));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1898));
     if (!(eax & 0x00008080))
         goto loc_1c18ef;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c18a7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c18ad));
     if (dx == 0x8080)
         goto loc_1c18c6;
     if (dl & 0x80)
@@ -50039,8 +55116,8 @@ loc_1c18c6: // 0160:1c18c6
     if (!(ax & 0x8080))
         goto loc_1c18ef;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c18d0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c18d6));
     if (dx == 0x8080)
         goto loc_1c18ef;
     if (dl & 0x80)
@@ -50052,13 +55129,13 @@ loc_1c18e8: // 0160:1c18e8
     ah = dh;
 loc_1c18ef: // 0160:1c18ef
     memoryASet16(ds, edi + 88, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c18f8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c18fe));
     if (!(eax & 0x00008080))
         goto loc_1c1955;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c190d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1913));
     if (dx == 0x8080)
         goto loc_1c192c;
     if (dl & 0x80)
@@ -50072,8 +55149,8 @@ loc_1c192c: // 0160:1c192c
     if (!(ax & 0x8080))
         goto loc_1c1955;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1936));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c193c));
     if (dx == 0x8080)
         goto loc_1c1955;
     if (dl & 0x80)
@@ -50085,13 +55162,13 @@ loc_1c194e: // 0160:1c194e
     ah = dh;
 loc_1c1955: // 0160:1c1955
     memoryASet16(ds, edi + 90, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c195e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1964));
     if (!(eax & 0x00008080))
         goto loc_1c19bb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1973));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1979));
     if (dx == 0x8080)
         goto loc_1c1992;
     if (dl & 0x80)
@@ -50105,8 +55182,8 @@ loc_1c1992: // 0160:1c1992
     if (!(ax & 0x8080))
         goto loc_1c19bb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c199c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c19a2));
     if (dx == 0x8080)
         goto loc_1c19bb;
     if (dl & 0x80)
@@ -50118,13 +55195,13 @@ loc_1c19b4: // 0160:1c19b4
     ah = dh;
 loc_1c19bb: // 0160:1c19bb
     memoryASet16(ds, edi + 92, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c19c4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c19ca));
     if (!(eax & 0x00008080))
         goto loc_1c1a21;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c19d9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c19df));
     if (dx == 0x8080)
         goto loc_1c19f8;
     if (dl & 0x80)
@@ -50138,8 +55215,8 @@ loc_1c19f8: // 0160:1c19f8
     if (!(ax & 0x8080))
         goto loc_1c1a21;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1a02));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1a08));
     if (dx == 0x8080)
         goto loc_1c1a21;
     if (dl & 0x80)
@@ -50151,13 +55228,13 @@ loc_1c1a1a: // 0160:1c1a1a
     ah = dh;
 loc_1c1a21: // 0160:1c1a21
     memoryASet16(ds, edi + 94, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1a2a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1a30));
     if (!(eax & 0x00008080))
         goto loc_1c1a87;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1a3f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1a45));
     if (dx == 0x8080)
         goto loc_1c1a5e;
     if (dl & 0x80)
@@ -50171,8 +55248,8 @@ loc_1c1a5e: // 0160:1c1a5e
     if (!(ax & 0x8080))
         goto loc_1c1a87;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1a68));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1a6e));
     if (dx == 0x8080)
         goto loc_1c1a87;
     if (dl & 0x80)
@@ -50184,13 +55261,13 @@ loc_1c1a80: // 0160:1c1a80
     ah = dh;
 loc_1c1a87: // 0160:1c1a87
     memoryASet16(ds, edi + 96, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1a90));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1a96));
     if (!(eax & 0x00008080))
         goto loc_1c1aed;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1aa5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1aab));
     if (dx == 0x8080)
         goto loc_1c1ac4;
     if (dl & 0x80)
@@ -50204,8 +55281,8 @@ loc_1c1ac4: // 0160:1c1ac4
     if (!(ax & 0x8080))
         goto loc_1c1aed;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ace));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ad4));
     if (dx == 0x8080)
         goto loc_1c1aed;
     if (dl & 0x80)
@@ -50217,13 +55294,13 @@ loc_1c1ae6: // 0160:1c1ae6
     ah = dh;
 loc_1c1aed: // 0160:1c1aed
     memoryASet16(ds, edi + 98, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1af6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1afc));
     if (!(eax & 0x00008080))
         goto loc_1c1b53;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1b0b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1b11));
     if (dx == 0x8080)
         goto loc_1c1b2a;
     if (dl & 0x80)
@@ -50237,8 +55314,8 @@ loc_1c1b2a: // 0160:1c1b2a
     if (!(ax & 0x8080))
         goto loc_1c1b53;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1b34));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1b3a));
     if (dx == 0x8080)
         goto loc_1c1b53;
     if (dl & 0x80)
@@ -50250,13 +55327,13 @@ loc_1c1b4c: // 0160:1c1b4c
     ah = dh;
 loc_1c1b53: // 0160:1c1b53
     memoryASet16(ds, edi + 100, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1b5c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1b62));
     if (!(eax & 0x00008080))
         goto loc_1c1bb9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1b71));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1b77));
     if (dx == 0x8080)
         goto loc_1c1b90;
     if (dl & 0x80)
@@ -50270,8 +55347,8 @@ loc_1c1b90: // 0160:1c1b90
     if (!(ax & 0x8080))
         goto loc_1c1bb9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1b9a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ba0));
     if (dx == 0x8080)
         goto loc_1c1bb9;
     if (dl & 0x80)
@@ -50283,13 +55360,13 @@ loc_1c1bb2: // 0160:1c1bb2
     ah = dh;
 loc_1c1bb9: // 0160:1c1bb9
     memoryASet16(ds, edi + 102, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1bc2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1bc8));
     if (!(eax & 0x00008080))
         goto loc_1c1c1f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1bd7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1bdd));
     if (dx == 0x8080)
         goto loc_1c1bf6;
     if (dl & 0x80)
@@ -50303,8 +55380,8 @@ loc_1c1bf6: // 0160:1c1bf6
     if (!(ax & 0x8080))
         goto loc_1c1c1f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1c00));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1c06));
     if (dx == 0x8080)
         goto loc_1c1c1f;
     if (dl & 0x80)
@@ -50316,13 +55393,13 @@ loc_1c1c18: // 0160:1c1c18
     ah = dh;
 loc_1c1c1f: // 0160:1c1c1f
     memoryASet16(ds, edi + 104, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1c28));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1c2e));
     if (!(eax & 0x00008080))
         goto loc_1c1c85;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1c3d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1c43));
     if (dx == 0x8080)
         goto loc_1c1c5c;
     if (dl & 0x80)
@@ -50336,8 +55413,8 @@ loc_1c1c5c: // 0160:1c1c5c
     if (!(ax & 0x8080))
         goto loc_1c1c85;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1c66));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1c6c));
     if (dx == 0x8080)
         goto loc_1c1c85;
     if (dl & 0x80)
@@ -50349,13 +55426,13 @@ loc_1c1c7e: // 0160:1c1c7e
     ah = dh;
 loc_1c1c85: // 0160:1c1c85
     memoryASet16(ds, edi + 106, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1c8e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1c94));
     if (!(eax & 0x00008080))
         goto loc_1c1ceb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1ca3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1ca9));
     if (dx == 0x8080)
         goto loc_1c1cc2;
     if (dl & 0x80)
@@ -50369,8 +55446,8 @@ loc_1c1cc2: // 0160:1c1cc2
     if (!(ax & 0x8080))
         goto loc_1c1ceb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ccc));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1cd2));
     if (dx == 0x8080)
         goto loc_1c1ceb;
     if (dl & 0x80)
@@ -50382,13 +55459,13 @@ loc_1c1ce4: // 0160:1c1ce4
     ah = dh;
 loc_1c1ceb: // 0160:1c1ceb
     memoryASet16(ds, edi + 108, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1cf4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1cfa));
     if (!(eax & 0x00008080))
         goto loc_1c1d51;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1d09));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1d0f));
     if (dx == 0x8080)
         goto loc_1c1d28;
     if (dl & 0x80)
@@ -50402,8 +55479,8 @@ loc_1c1d28: // 0160:1c1d28
     if (!(ax & 0x8080))
         goto loc_1c1d51;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1d32));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1d38));
     if (dx == 0x8080)
         goto loc_1c1d51;
     if (dl & 0x80)
@@ -50415,13 +55492,13 @@ loc_1c1d4a: // 0160:1c1d4a
     ah = dh;
 loc_1c1d51: // 0160:1c1d51
     memoryASet16(ds, edi + 110, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1d5a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1d60));
     if (!(eax & 0x00008080))
         goto loc_1c1db7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1d6f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1d75));
     if (dx == 0x8080)
         goto loc_1c1d8e;
     if (dl & 0x80)
@@ -50435,8 +55512,8 @@ loc_1c1d8e: // 0160:1c1d8e
     if (!(ax & 0x8080))
         goto loc_1c1db7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1d98));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1d9e));
     if (dx == 0x8080)
         goto loc_1c1db7;
     if (dl & 0x80)
@@ -50448,13 +55525,13 @@ loc_1c1db0: // 0160:1c1db0
     ah = dh;
 loc_1c1db7: // 0160:1c1db7
     memoryASet16(ds, edi + 112, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1dc0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1dc6));
     if (!(eax & 0x00008080))
         goto loc_1c1e1d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1dd5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1ddb));
     if (dx == 0x8080)
         goto loc_1c1df4;
     if (dl & 0x80)
@@ -50468,8 +55545,8 @@ loc_1c1df4: // 0160:1c1df4
     if (!(ax & 0x8080))
         goto loc_1c1e1d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1dfe));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1e04));
     if (dx == 0x8080)
         goto loc_1c1e1d;
     if (dl & 0x80)
@@ -50481,13 +55558,13 @@ loc_1c1e16: // 0160:1c1e16
     ah = dh;
 loc_1c1e1d: // 0160:1c1e1d
     memoryASet16(ds, edi + 114, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1e26));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1e2c));
     if (!(eax & 0x00008080))
         goto loc_1c1e83;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1e3b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1e41));
     if (dx == 0x8080)
         goto loc_1c1e5a;
     if (dl & 0x80)
@@ -50501,8 +55578,8 @@ loc_1c1e5a: // 0160:1c1e5a
     if (!(ax & 0x8080))
         goto loc_1c1e83;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1e64));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1e6a));
     if (dx == 0x8080)
         goto loc_1c1e83;
     if (dl & 0x80)
@@ -50514,13 +55591,13 @@ loc_1c1e7c: // 0160:1c1e7c
     ah = dh;
 loc_1c1e83: // 0160:1c1e83
     memoryASet16(ds, edi + 116, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1e8c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1e92));
     if (!(eax & 0x00008080))
         goto loc_1c1ee9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1ea1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1ea7));
     if (dx == 0x8080)
         goto loc_1c1ec0;
     if (dl & 0x80)
@@ -50534,8 +55611,8 @@ loc_1c1ec0: // 0160:1c1ec0
     if (!(ax & 0x8080))
         goto loc_1c1ee9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1eca));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ed0));
     if (dx == 0x8080)
         goto loc_1c1ee9;
     if (dl & 0x80)
@@ -50547,13 +55624,13 @@ loc_1c1ee2: // 0160:1c1ee2
     ah = dh;
 loc_1c1ee9: // 0160:1c1ee9
     memoryASet16(ds, edi + 118, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1ef2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1ef8));
     if (!(eax & 0x00008080))
         goto loc_1c1f4f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1f07));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1f0d));
     if (dx == 0x8080)
         goto loc_1c1f26;
     if (dl & 0x80)
@@ -50567,8 +55644,8 @@ loc_1c1f26: // 0160:1c1f26
     if (!(ax & 0x8080))
         goto loc_1c1f4f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1f30));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1f36));
     if (dx == 0x8080)
         goto loc_1c1f4f;
     if (dl & 0x80)
@@ -50580,13 +55657,13 @@ loc_1c1f48: // 0160:1c1f48
     ah = dh;
 loc_1c1f4f: // 0160:1c1f4f
     memoryASet16(ds, edi + 120, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1f58));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1f5e));
     if (!(eax & 0x00008080))
         goto loc_1c1fb5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1f6d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1f73));
     if (dx == 0x8080)
         goto loc_1c1f8c;
     if (dl & 0x80)
@@ -50600,8 +55677,8 @@ loc_1c1f8c: // 0160:1c1f8c
     if (!(ax & 0x8080))
         goto loc_1c1fb5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1f96));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1f9c));
     if (dx == 0x8080)
         goto loc_1c1fb5;
     if (dl & 0x80)
@@ -50613,13 +55690,13 @@ loc_1c1fae: // 0160:1c1fae
     ah = dh;
 loc_1c1fb5: // 0160:1c1fb5
     memoryASet16(ds, edi + 122, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1fbe));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c1fc4));
     if (!(eax & 0x00008080))
         goto loc_1c201b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1fd3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c1fd9));
     if (dx == 0x8080)
         goto loc_1c1ff2;
     if (dl & 0x80)
@@ -50633,8 +55710,8 @@ loc_1c1ff2: // 0160:1c1ff2
     if (!(ax & 0x8080))
         goto loc_1c201b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c1ffc));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2002));
     if (dx == 0x8080)
         goto loc_1c201b;
     if (dl & 0x80)
@@ -50646,13 +55723,13 @@ loc_1c2014: // 0160:1c2014
     ah = dh;
 loc_1c201b: // 0160:1c201b
     memoryASet16(ds, edi + 124, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2024));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c202a));
     if (!(eax & 0x00008080))
         goto loc_1c2081;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2039));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c203f));
     if (dx == 0x8080)
         goto loc_1c2058;
     if (dl & 0x80)
@@ -50666,8 +55743,8 @@ loc_1c2058: // 0160:1c2058
     if (!(ax & 0x8080))
         goto loc_1c2081;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2062));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2068));
     if (dx == 0x8080)
         goto loc_1c2081;
     if (dl & 0x80)
@@ -50679,13 +55756,13 @@ loc_1c207a: // 0160:1c207a
     ah = dh;
 loc_1c2081: // 0160:1c2081
     memoryASet16(ds, edi + 126, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c208a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2090));
     if (!(eax & 0x00008080))
         goto loc_1c20e7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c209f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c20a5));
     if (dx == 0x8080)
         goto loc_1c20be;
     if (dl & 0x80)
@@ -50699,8 +55776,8 @@ loc_1c20be: // 0160:1c20be
     if (!(ax & 0x8080))
         goto loc_1c20e7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c20c8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c20ce));
     if (dx == 0x8080)
         goto loc_1c20e7;
     if (dl & 0x80)
@@ -50712,13 +55789,13 @@ loc_1c20e0: // 0160:1c20e0
     ah = dh;
 loc_1c20e7: // 0160:1c20e7
     memoryASet16(ds, edi + 128, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c20f0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c20f6));
     if (!(eax & 0x00008080))
         goto loc_1c214d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2105));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c210b));
     if (dx == 0x8080)
         goto loc_1c2124;
     if (dl & 0x80)
@@ -50732,8 +55809,8 @@ loc_1c2124: // 0160:1c2124
     if (!(ax & 0x8080))
         goto loc_1c214d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c212e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2134));
     if (dx == 0x8080)
         goto loc_1c214d;
     if (dl & 0x80)
@@ -50745,13 +55822,13 @@ loc_1c2146: // 0160:1c2146
     ah = dh;
 loc_1c214d: // 0160:1c214d
     memoryASet16(ds, edi + 130, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2156));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c215c));
     if (!(eax & 0x00008080))
         goto loc_1c21b3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c216b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2171));
     if (dx == 0x8080)
         goto loc_1c218a;
     if (dl & 0x80)
@@ -50765,8 +55842,8 @@ loc_1c218a: // 0160:1c218a
     if (!(ax & 0x8080))
         goto loc_1c21b3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2194));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c219a));
     if (dx == 0x8080)
         goto loc_1c21b3;
     if (dl & 0x80)
@@ -50778,13 +55855,13 @@ loc_1c21ac: // 0160:1c21ac
     ah = dh;
 loc_1c21b3: // 0160:1c21b3
     memoryASet16(ds, edi + 132, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c21bc));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c21c2));
     if (!(eax & 0x00008080))
         goto loc_1c2219;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c21d1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c21d7));
     if (dx == 0x8080)
         goto loc_1c21f0;
     if (dl & 0x80)
@@ -50798,8 +55875,8 @@ loc_1c21f0: // 0160:1c21f0
     if (!(ax & 0x8080))
         goto loc_1c2219;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c21fa));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2200));
     if (dx == 0x8080)
         goto loc_1c2219;
     if (dl & 0x80)
@@ -50811,13 +55888,13 @@ loc_1c2212: // 0160:1c2212
     ah = dh;
 loc_1c2219: // 0160:1c2219
     memoryASet16(ds, edi + 134, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2222));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2228));
     if (!(eax & 0x00008080))
         goto loc_1c227f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2237));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c223d));
     if (dx == 0x8080)
         goto loc_1c2256;
     if (dl & 0x80)
@@ -50831,8 +55908,8 @@ loc_1c2256: // 0160:1c2256
     if (!(ax & 0x8080))
         goto loc_1c227f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2260));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2266));
     if (dx == 0x8080)
         goto loc_1c227f;
     if (dl & 0x80)
@@ -50844,13 +55921,13 @@ loc_1c2278: // 0160:1c2278
     ah = dh;
 loc_1c227f: // 0160:1c227f
     memoryASet16(ds, edi + 136, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2288));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c228e));
     if (!(eax & 0x00008080))
         goto loc_1c22e5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c229d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c22a3));
     if (dx == 0x8080)
         goto loc_1c22bc;
     if (dl & 0x80)
@@ -50864,8 +55941,8 @@ loc_1c22bc: // 0160:1c22bc
     if (!(ax & 0x8080))
         goto loc_1c22e5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c22c6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c22cc));
     if (dx == 0x8080)
         goto loc_1c22e5;
     if (dl & 0x80)
@@ -50877,13 +55954,13 @@ loc_1c22de: // 0160:1c22de
     ah = dh;
 loc_1c22e5: // 0160:1c22e5
     memoryASet16(ds, edi + 138, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c22ee));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c22f4));
     if (!(eax & 0x00008080))
         goto loc_1c234b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2303));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2309));
     if (dx == 0x8080)
         goto loc_1c2322;
     if (dl & 0x80)
@@ -50897,8 +55974,8 @@ loc_1c2322: // 0160:1c2322
     if (!(ax & 0x8080))
         goto loc_1c234b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c232c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2332));
     if (dx == 0x8080)
         goto loc_1c234b;
     if (dl & 0x80)
@@ -50910,13 +55987,13 @@ loc_1c2344: // 0160:1c2344
     ah = dh;
 loc_1c234b: // 0160:1c234b
     memoryASet16(ds, edi + 140, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2354));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c235a));
     if (!(eax & 0x00008080))
         goto loc_1c23b1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2369));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c236f));
     if (dx == 0x8080)
         goto loc_1c2388;
     if (dl & 0x80)
@@ -50930,8 +56007,8 @@ loc_1c2388: // 0160:1c2388
     if (!(ax & 0x8080))
         goto loc_1c23b1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2392));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2398));
     if (dx == 0x8080)
         goto loc_1c23b1;
     if (dl & 0x80)
@@ -50943,13 +56020,13 @@ loc_1c23aa: // 0160:1c23aa
     ah = dh;
 loc_1c23b1: // 0160:1c23b1
     memoryASet16(ds, edi + 142, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c23ba));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c23c0));
     if (!(eax & 0x00008080))
         goto loc_1c2417;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c23cf));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c23d5));
     if (dx == 0x8080)
         goto loc_1c23ee;
     if (dl & 0x80)
@@ -50963,8 +56040,8 @@ loc_1c23ee: // 0160:1c23ee
     if (!(ax & 0x8080))
         goto loc_1c2417;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c23f8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c23fe));
     if (dx == 0x8080)
         goto loc_1c2417;
     if (dl & 0x80)
@@ -50976,13 +56053,13 @@ loc_1c2410: // 0160:1c2410
     ah = dh;
 loc_1c2417: // 0160:1c2417
     memoryASet16(ds, edi + 144, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2420));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2426));
     if (!(eax & 0x00008080))
         goto loc_1c247d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2435));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c243b));
     if (dx == 0x8080)
         goto loc_1c2454;
     if (dl & 0x80)
@@ -50996,8 +56073,8 @@ loc_1c2454: // 0160:1c2454
     if (!(ax & 0x8080))
         goto loc_1c247d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c245e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2464));
     if (dx == 0x8080)
         goto loc_1c247d;
     if (dl & 0x80)
@@ -51009,13 +56086,13 @@ loc_1c2476: // 0160:1c2476
     ah = dh;
 loc_1c247d: // 0160:1c247d
     memoryASet16(ds, edi + 146, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2486));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c248c));
     if (!(eax & 0x00008080))
         goto loc_1c24e3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c249b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c24a1));
     if (dx == 0x8080)
         goto loc_1c24ba;
     if (dl & 0x80)
@@ -51029,8 +56106,8 @@ loc_1c24ba: // 0160:1c24ba
     if (!(ax & 0x8080))
         goto loc_1c24e3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c24c4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c24ca));
     if (dx == 0x8080)
         goto loc_1c24e3;
     if (dl & 0x80)
@@ -51042,13 +56119,13 @@ loc_1c24dc: // 0160:1c24dc
     ah = dh;
 loc_1c24e3: // 0160:1c24e3
     memoryASet16(ds, edi + 148, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c24ec));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c24f2));
     if (!(eax & 0x00008080))
         goto loc_1c2549;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2501));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2507));
     if (dx == 0x8080)
         goto loc_1c2520;
     if (dl & 0x80)
@@ -51062,8 +56139,8 @@ loc_1c2520: // 0160:1c2520
     if (!(ax & 0x8080))
         goto loc_1c2549;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c252a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2530));
     if (dx == 0x8080)
         goto loc_1c2549;
     if (dl & 0x80)
@@ -51075,13 +56152,13 @@ loc_1c2542: // 0160:1c2542
     ah = dh;
 loc_1c2549: // 0160:1c2549
     memoryASet16(ds, edi + 150, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2552));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2558));
     if (!(eax & 0x00008080))
         goto loc_1c25af;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2567));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c256d));
     if (dx == 0x8080)
         goto loc_1c2586;
     if (dl & 0x80)
@@ -51095,8 +56172,8 @@ loc_1c2586: // 0160:1c2586
     if (!(ax & 0x8080))
         goto loc_1c25af;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2590));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2596));
     if (dx == 0x8080)
         goto loc_1c25af;
     if (dl & 0x80)
@@ -51108,13 +56185,13 @@ loc_1c25a8: // 0160:1c25a8
     ah = dh;
 loc_1c25af: // 0160:1c25af
     memoryASet16(ds, edi + 152, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c25b8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c25be));
     if (!(eax & 0x00008080))
         goto loc_1c2615;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c25cd));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c25d3));
     if (dx == 0x8080)
         goto loc_1c25ec;
     if (dl & 0x80)
@@ -51128,8 +56205,8 @@ loc_1c25ec: // 0160:1c25ec
     if (!(ax & 0x8080))
         goto loc_1c2615;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c25f6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c25fc));
     if (dx == 0x8080)
         goto loc_1c2615;
     if (dl & 0x80)
@@ -51141,13 +56218,13 @@ loc_1c260e: // 0160:1c260e
     ah = dh;
 loc_1c2615: // 0160:1c2615
     memoryASet16(ds, edi + 154, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c261e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2624));
     if (!(eax & 0x00008080))
         goto loc_1c267b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2633));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2639));
     if (dx == 0x8080)
         goto loc_1c2652;
     if (dl & 0x80)
@@ -51161,8 +56238,8 @@ loc_1c2652: // 0160:1c2652
     if (!(ax & 0x8080))
         goto loc_1c267b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c265c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2662));
     if (dx == 0x8080)
         goto loc_1c267b;
     if (dl & 0x80)
@@ -51174,13 +56251,13 @@ loc_1c2674: // 0160:1c2674
     ah = dh;
 loc_1c267b: // 0160:1c267b
     memoryASet16(ds, edi + 156, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2684));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c268a));
     if (!(eax & 0x00008080))
         goto loc_1c26e1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2699));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c269f));
     if (dx == 0x8080)
         goto loc_1c26b8;
     if (dl & 0x80)
@@ -51194,8 +56271,8 @@ loc_1c26b8: // 0160:1c26b8
     if (!(ax & 0x8080))
         goto loc_1c26e1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c26c2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c26c8));
     if (dx == 0x8080)
         goto loc_1c26e1;
     if (dl & 0x80)
@@ -51207,13 +56284,13 @@ loc_1c26da: // 0160:1c26da
     ah = dh;
 loc_1c26e1: // 0160:1c26e1
     memoryASet16(ds, edi + 158, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c26ea));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c26f0));
     if (!(eax & 0x00008080))
         goto loc_1c2747;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c26ff));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2705));
     if (dx == 0x8080)
         goto loc_1c271e;
     if (dl & 0x80)
@@ -51227,8 +56304,8 @@ loc_1c271e: // 0160:1c271e
     if (!(ax & 0x8080))
         goto loc_1c2747;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2728));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c272e));
     if (dx == 0x8080)
         goto loc_1c2747;
     if (dl & 0x80)
@@ -51240,13 +56317,13 @@ loc_1c2740: // 0160:1c2740
     ah = dh;
 loc_1c2747: // 0160:1c2747
     memoryASet16(ds, edi + 160, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2750));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2756));
     if (!(eax & 0x00008080))
         goto loc_1c27ad;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2765));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c276b));
     if (dx == 0x8080)
         goto loc_1c2784;
     if (dl & 0x80)
@@ -51260,8 +56337,8 @@ loc_1c2784: // 0160:1c2784
     if (!(ax & 0x8080))
         goto loc_1c27ad;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c278e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2794));
     if (dx == 0x8080)
         goto loc_1c27ad;
     if (dl & 0x80)
@@ -51273,13 +56350,13 @@ loc_1c27a6: // 0160:1c27a6
     ah = dh;
 loc_1c27ad: // 0160:1c27ad
     memoryASet16(ds, edi + 162, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c27b6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c27bc));
     if (!(eax & 0x00008080))
         goto loc_1c2813;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c27cb));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c27d1));
     if (dx == 0x8080)
         goto loc_1c27ea;
     if (dl & 0x80)
@@ -51293,8 +56370,8 @@ loc_1c27ea: // 0160:1c27ea
     if (!(ax & 0x8080))
         goto loc_1c2813;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c27f4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c27fa));
     if (dx == 0x8080)
         goto loc_1c2813;
     if (dl & 0x80)
@@ -51306,13 +56383,13 @@ loc_1c280c: // 0160:1c280c
     ah = dh;
 loc_1c2813: // 0160:1c2813
     memoryASet16(ds, edi + 164, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c281c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2822));
     if (!(eax & 0x00008080))
         goto loc_1c2879;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2831));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2837));
     if (dx == 0x8080)
         goto loc_1c2850;
     if (dl & 0x80)
@@ -51326,8 +56403,8 @@ loc_1c2850: // 0160:1c2850
     if (!(ax & 0x8080))
         goto loc_1c2879;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c285a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2860));
     if (dx == 0x8080)
         goto loc_1c2879;
     if (dl & 0x80)
@@ -51339,13 +56416,13 @@ loc_1c2872: // 0160:1c2872
     ah = dh;
 loc_1c2879: // 0160:1c2879
     memoryASet16(ds, edi + 166, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2882));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2888));
     if (!(eax & 0x00008080))
         goto loc_1c28df;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2897));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c289d));
     if (dx == 0x8080)
         goto loc_1c28b6;
     if (dl & 0x80)
@@ -51359,8 +56436,8 @@ loc_1c28b6: // 0160:1c28b6
     if (!(ax & 0x8080))
         goto loc_1c28df;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c28c0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c28c6));
     if (dx == 0x8080)
         goto loc_1c28df;
     if (dl & 0x80)
@@ -51372,13 +56449,13 @@ loc_1c28d8: // 0160:1c28d8
     ah = dh;
 loc_1c28df: // 0160:1c28df
     memoryASet16(ds, edi + 168, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c28e8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c28ee));
     if (!(eax & 0x00008080))
         goto loc_1c2945;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c28fd));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2903));
     if (dx == 0x8080)
         goto loc_1c291c;
     if (dl & 0x80)
@@ -51392,8 +56469,8 @@ loc_1c291c: // 0160:1c291c
     if (!(ax & 0x8080))
         goto loc_1c2945;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2926));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c292c));
     if (dx == 0x8080)
         goto loc_1c2945;
     if (dl & 0x80)
@@ -51405,13 +56482,13 @@ loc_1c293e: // 0160:1c293e
     ah = dh;
 loc_1c2945: // 0160:1c2945
     memoryASet16(ds, edi + 170, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c294e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2954));
     if (!(eax & 0x00008080))
         goto loc_1c29ab;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2963));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2969));
     if (dx == 0x8080)
         goto loc_1c2982;
     if (dl & 0x80)
@@ -51425,8 +56502,8 @@ loc_1c2982: // 0160:1c2982
     if (!(ax & 0x8080))
         goto loc_1c29ab;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c298c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2992));
     if (dx == 0x8080)
         goto loc_1c29ab;
     if (dl & 0x80)
@@ -51438,13 +56515,13 @@ loc_1c29a4: // 0160:1c29a4
     ah = dh;
 loc_1c29ab: // 0160:1c29ab
     memoryASet16(ds, edi + 172, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c29b4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c29ba));
     if (!(eax & 0x00008080))
         goto loc_1c2a11;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c29c9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c29cf));
     if (dx == 0x8080)
         goto loc_1c29e8;
     if (dl & 0x80)
@@ -51458,8 +56535,8 @@ loc_1c29e8: // 0160:1c29e8
     if (!(ax & 0x8080))
         goto loc_1c2a11;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c29f2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c29f8));
     if (dx == 0x8080)
         goto loc_1c2a11;
     if (dl & 0x80)
@@ -51471,13 +56548,13 @@ loc_1c2a0a: // 0160:1c2a0a
     ah = dh;
 loc_1c2a11: // 0160:1c2a11
     memoryASet16(ds, edi + 174, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2a1a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2a20));
     if (!(eax & 0x00008080))
         goto loc_1c2a77;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2a2f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2a35));
     if (dx == 0x8080)
         goto loc_1c2a4e;
     if (dl & 0x80)
@@ -51491,8 +56568,8 @@ loc_1c2a4e: // 0160:1c2a4e
     if (!(ax & 0x8080))
         goto loc_1c2a77;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2a58));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2a5e));
     if (dx == 0x8080)
         goto loc_1c2a77;
     if (dl & 0x80)
@@ -51504,13 +56581,13 @@ loc_1c2a70: // 0160:1c2a70
     ah = dh;
 loc_1c2a77: // 0160:1c2a77
     memoryASet16(ds, edi + 176, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2a80));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2a86));
     if (!(eax & 0x00008080))
         goto loc_1c2add;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2a95));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2a9b));
     if (dx == 0x8080)
         goto loc_1c2ab4;
     if (dl & 0x80)
@@ -51524,8 +56601,8 @@ loc_1c2ab4: // 0160:1c2ab4
     if (!(ax & 0x8080))
         goto loc_1c2add;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2abe));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2ac4));
     if (dx == 0x8080)
         goto loc_1c2add;
     if (dl & 0x80)
@@ -51537,13 +56614,13 @@ loc_1c2ad6: // 0160:1c2ad6
     ah = dh;
 loc_1c2add: // 0160:1c2add
     memoryASet16(ds, edi + 178, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2ae6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2aec));
     if (!(eax & 0x00008080))
         goto loc_1c2b43;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2afb));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2b01));
     if (dx == 0x8080)
         goto loc_1c2b1a;
     if (dl & 0x80)
@@ -51557,8 +56634,8 @@ loc_1c2b1a: // 0160:1c2b1a
     if (!(ax & 0x8080))
         goto loc_1c2b43;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2b24));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2b2a));
     if (dx == 0x8080)
         goto loc_1c2b43;
     if (dl & 0x80)
@@ -51570,13 +56647,13 @@ loc_1c2b3c: // 0160:1c2b3c
     ah = dh;
 loc_1c2b43: // 0160:1c2b43
     memoryASet16(ds, edi + 180, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2b4c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2b52));
     if (!(eax & 0x00008080))
         goto loc_1c2ba9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2b61));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2b67));
     if (dx == 0x8080)
         goto loc_1c2b80;
     if (dl & 0x80)
@@ -51590,8 +56667,8 @@ loc_1c2b80: // 0160:1c2b80
     if (!(ax & 0x8080))
         goto loc_1c2ba9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2b8a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2b90));
     if (dx == 0x8080)
         goto loc_1c2ba9;
     if (dl & 0x80)
@@ -51603,13 +56680,13 @@ loc_1c2ba2: // 0160:1c2ba2
     ah = dh;
 loc_1c2ba9: // 0160:1c2ba9
     memoryASet16(ds, edi + 182, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2bb2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2bb8));
     if (!(eax & 0x00008080))
         goto loc_1c2c0f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2bc7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2bcd));
     if (dx == 0x8080)
         goto loc_1c2be6;
     if (dl & 0x80)
@@ -51623,8 +56700,8 @@ loc_1c2be6: // 0160:1c2be6
     if (!(ax & 0x8080))
         goto loc_1c2c0f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2bf0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2bf6));
     if (dx == 0x8080)
         goto loc_1c2c0f;
     if (dl & 0x80)
@@ -51636,13 +56713,13 @@ loc_1c2c08: // 0160:1c2c08
     ah = dh;
 loc_1c2c0f: // 0160:1c2c0f
     memoryASet16(ds, edi + 184, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2c18));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2c1e));
     if (!(eax & 0x00008080))
         goto loc_1c2c75;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2c2d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2c33));
     if (dx == 0x8080)
         goto loc_1c2c4c;
     if (dl & 0x80)
@@ -51656,8 +56733,8 @@ loc_1c2c4c: // 0160:1c2c4c
     if (!(ax & 0x8080))
         goto loc_1c2c75;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2c56));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2c5c));
     if (dx == 0x8080)
         goto loc_1c2c75;
     if (dl & 0x80)
@@ -51669,13 +56746,13 @@ loc_1c2c6e: // 0160:1c2c6e
     ah = dh;
 loc_1c2c75: // 0160:1c2c75
     memoryASet16(ds, edi + 186, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2c7e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2c84));
     if (!(eax & 0x00008080))
         goto loc_1c2cdb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2c93));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2c99));
     if (dx == 0x8080)
         goto loc_1c2cb2;
     if (dl & 0x80)
@@ -51689,8 +56766,8 @@ loc_1c2cb2: // 0160:1c2cb2
     if (!(ax & 0x8080))
         goto loc_1c2cdb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2cbc));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2cc2));
     if (dx == 0x8080)
         goto loc_1c2cdb;
     if (dl & 0x80)
@@ -51702,13 +56779,13 @@ loc_1c2cd4: // 0160:1c2cd4
     ah = dh;
 loc_1c2cdb: // 0160:1c2cdb
     memoryASet16(ds, edi + 188, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2ce4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2cea));
     if (!(eax & 0x00008080))
         goto loc_1c2d41;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2cf9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2cff));
     if (dx == 0x8080)
         goto loc_1c2d18;
     if (dl & 0x80)
@@ -51722,8 +56799,8 @@ loc_1c2d18: // 0160:1c2d18
     if (!(ax & 0x8080))
         goto loc_1c2d41;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2d22));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2d28));
     if (dx == 0x8080)
         goto loc_1c2d41;
     if (dl & 0x80)
@@ -51735,13 +56812,13 @@ loc_1c2d3a: // 0160:1c2d3a
     ah = dh;
 loc_1c2d41: // 0160:1c2d41
     memoryASet16(ds, edi + 190, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2d4a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2d50));
     if (!(eax & 0x00008080))
         goto loc_1c2da7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2d5f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2d65));
     if (dx == 0x8080)
         goto loc_1c2d7e;
     if (dl & 0x80)
@@ -51755,8 +56832,8 @@ loc_1c2d7e: // 0160:1c2d7e
     if (!(ax & 0x8080))
         goto loc_1c2da7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2d88));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2d8e));
     if (dx == 0x8080)
         goto loc_1c2da7;
     if (dl & 0x80)
@@ -51768,13 +56845,13 @@ loc_1c2da0: // 0160:1c2da0
     ah = dh;
 loc_1c2da7: // 0160:1c2da7
     memoryASet16(ds, edi + 192, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2db0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2db6));
     if (!(eax & 0x00008080))
         goto loc_1c2e0d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2dc5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2dcb));
     if (dx == 0x8080)
         goto loc_1c2de4;
     if (dl & 0x80)
@@ -51788,8 +56865,8 @@ loc_1c2de4: // 0160:1c2de4
     if (!(ax & 0x8080))
         goto loc_1c2e0d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2dee));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2df4));
     if (dx == 0x8080)
         goto loc_1c2e0d;
     if (dl & 0x80)
@@ -51801,13 +56878,13 @@ loc_1c2e06: // 0160:1c2e06
     ah = dh;
 loc_1c2e0d: // 0160:1c2e0d
     memoryASet16(ds, edi + 194, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2e16));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2e1c));
     if (!(eax & 0x00008080))
         goto loc_1c2e73;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2e2b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2e31));
     if (dx == 0x8080)
         goto loc_1c2e4a;
     if (dl & 0x80)
@@ -51821,8 +56898,8 @@ loc_1c2e4a: // 0160:1c2e4a
     if (!(ax & 0x8080))
         goto loc_1c2e73;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2e54));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2e5a));
     if (dx == 0x8080)
         goto loc_1c2e73;
     if (dl & 0x80)
@@ -51834,13 +56911,13 @@ loc_1c2e6c: // 0160:1c2e6c
     ah = dh;
 loc_1c2e73: // 0160:1c2e73
     memoryASet16(ds, edi + 196, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2e7c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2e82));
     if (!(eax & 0x00008080))
         goto loc_1c2ed9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2e91));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2e97));
     if (dx == 0x8080)
         goto loc_1c2eb0;
     if (dl & 0x80)
@@ -51854,8 +56931,8 @@ loc_1c2eb0: // 0160:1c2eb0
     if (!(ax & 0x8080))
         goto loc_1c2ed9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2eba));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2ec0));
     if (dx == 0x8080)
         goto loc_1c2ed9;
     if (dl & 0x80)
@@ -51867,13 +56944,13 @@ loc_1c2ed2: // 0160:1c2ed2
     ah = dh;
 loc_1c2ed9: // 0160:1c2ed9
     memoryASet16(ds, edi + 198, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2ee2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2ee8));
     if (!(eax & 0x00008080))
         goto loc_1c2f3f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2ef7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2efd));
     if (dx == 0x8080)
         goto loc_1c2f16;
     if (dl & 0x80)
@@ -51887,8 +56964,8 @@ loc_1c2f16: // 0160:1c2f16
     if (!(ax & 0x8080))
         goto loc_1c2f3f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2f20));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2f26));
     if (dx == 0x8080)
         goto loc_1c2f3f;
     if (dl & 0x80)
@@ -51900,13 +56977,13 @@ loc_1c2f38: // 0160:1c2f38
     ah = dh;
 loc_1c2f3f: // 0160:1c2f3f
     memoryASet16(ds, edi + 200, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2f48));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2f4e));
     if (!(eax & 0x00008080))
         goto loc_1c2fa5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2f5d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2f63));
     if (dx == 0x8080)
         goto loc_1c2f7c;
     if (dl & 0x80)
@@ -51920,8 +56997,8 @@ loc_1c2f7c: // 0160:1c2f7c
     if (!(ax & 0x8080))
         goto loc_1c2fa5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2f86));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2f8c));
     if (dx == 0x8080)
         goto loc_1c2fa5;
     if (dl & 0x80)
@@ -51933,13 +57010,13 @@ loc_1c2f9e: // 0160:1c2f9e
     ah = dh;
 loc_1c2fa5: // 0160:1c2fa5
     memoryASet16(ds, edi + 202, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2fae));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c2fb4));
     if (!(eax & 0x00008080))
         goto loc_1c300b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2fc3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c2fc9));
     if (dx == 0x8080)
         goto loc_1c2fe2;
     if (dl & 0x80)
@@ -51953,8 +57030,8 @@ loc_1c2fe2: // 0160:1c2fe2
     if (!(ax & 0x8080))
         goto loc_1c300b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2fec));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c2ff2));
     if (dx == 0x8080)
         goto loc_1c300b;
     if (dl & 0x80)
@@ -51966,13 +57043,13 @@ loc_1c3004: // 0160:1c3004
     ah = dh;
 loc_1c300b: // 0160:1c300b
     memoryASet16(ds, edi + 204, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3014));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c301a));
     if (!(eax & 0x00008080))
         goto loc_1c3071;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3029));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c302f));
     if (dx == 0x8080)
         goto loc_1c3048;
     if (dl & 0x80)
@@ -51986,8 +57063,8 @@ loc_1c3048: // 0160:1c3048
     if (!(ax & 0x8080))
         goto loc_1c3071;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3052));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3058));
     if (dx == 0x8080)
         goto loc_1c3071;
     if (dl & 0x80)
@@ -51999,13 +57076,13 @@ loc_1c306a: // 0160:1c306a
     ah = dh;
 loc_1c3071: // 0160:1c3071
     memoryASet16(ds, edi + 206, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c307a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3080));
     if (!(eax & 0x00008080))
         goto loc_1c30d7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c308f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3095));
     if (dx == 0x8080)
         goto loc_1c30ae;
     if (dl & 0x80)
@@ -52019,8 +57096,8 @@ loc_1c30ae: // 0160:1c30ae
     if (!(ax & 0x8080))
         goto loc_1c30d7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c30b8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c30be));
     if (dx == 0x8080)
         goto loc_1c30d7;
     if (dl & 0x80)
@@ -52032,13 +57109,13 @@ loc_1c30d0: // 0160:1c30d0
     ah = dh;
 loc_1c30d7: // 0160:1c30d7
     memoryASet16(ds, edi + 208, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c30e0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c30e6));
     if (!(eax & 0x00008080))
         goto loc_1c313d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c30f5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c30fb));
     if (dx == 0x8080)
         goto loc_1c3114;
     if (dl & 0x80)
@@ -52052,8 +57129,8 @@ loc_1c3114: // 0160:1c3114
     if (!(ax & 0x8080))
         goto loc_1c313d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c311e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3124));
     if (dx == 0x8080)
         goto loc_1c313d;
     if (dl & 0x80)
@@ -52065,13 +57142,13 @@ loc_1c3136: // 0160:1c3136
     ah = dh;
 loc_1c313d: // 0160:1c313d
     memoryASet16(ds, edi + 210, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3146));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c314c));
     if (!(eax & 0x00008080))
         goto loc_1c31a3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c315b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3161));
     if (dx == 0x8080)
         goto loc_1c317a;
     if (dl & 0x80)
@@ -52085,8 +57162,8 @@ loc_1c317a: // 0160:1c317a
     if (!(ax & 0x8080))
         goto loc_1c31a3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3184));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c318a));
     if (dx == 0x8080)
         goto loc_1c31a3;
     if (dl & 0x80)
@@ -52098,13 +57175,13 @@ loc_1c319c: // 0160:1c319c
     ah = dh;
 loc_1c31a3: // 0160:1c31a3
     memoryASet16(ds, edi + 212, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c31ac));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c31b2));
     if (!(eax & 0x00008080))
         goto loc_1c3209;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c31c1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c31c7));
     if (dx == 0x8080)
         goto loc_1c31e0;
     if (dl & 0x80)
@@ -52118,8 +57195,8 @@ loc_1c31e0: // 0160:1c31e0
     if (!(ax & 0x8080))
         goto loc_1c3209;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c31ea));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c31f0));
     if (dx == 0x8080)
         goto loc_1c3209;
     if (dl & 0x80)
@@ -52131,13 +57208,13 @@ loc_1c3202: // 0160:1c3202
     ah = dh;
 loc_1c3209: // 0160:1c3209
     memoryASet16(ds, edi + 214, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3212));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3218));
     if (!(eax & 0x00008080))
         goto loc_1c326f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3227));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c322d));
     if (dx == 0x8080)
         goto loc_1c3246;
     if (dl & 0x80)
@@ -52151,8 +57228,8 @@ loc_1c3246: // 0160:1c3246
     if (!(ax & 0x8080))
         goto loc_1c326f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3250));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3256));
     if (dx == 0x8080)
         goto loc_1c326f;
     if (dl & 0x80)
@@ -52164,13 +57241,13 @@ loc_1c3268: // 0160:1c3268
     ah = dh;
 loc_1c326f: // 0160:1c326f
     memoryASet16(ds, edi + 216, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3278));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c327e));
     if (!(eax & 0x00008080))
         goto loc_1c32d5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c328d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3293));
     if (dx == 0x8080)
         goto loc_1c32ac;
     if (dl & 0x80)
@@ -52184,8 +57261,8 @@ loc_1c32ac: // 0160:1c32ac
     if (!(ax & 0x8080))
         goto loc_1c32d5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c32b6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c32bc));
     if (dx == 0x8080)
         goto loc_1c32d5;
     if (dl & 0x80)
@@ -52197,13 +57274,13 @@ loc_1c32ce: // 0160:1c32ce
     ah = dh;
 loc_1c32d5: // 0160:1c32d5
     memoryASet16(ds, edi + 218, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c32de));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c32e4));
     if (!(eax & 0x00008080))
         goto loc_1c333b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c32f3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c32f9));
     if (dx == 0x8080)
         goto loc_1c3312;
     if (dl & 0x80)
@@ -52217,8 +57294,8 @@ loc_1c3312: // 0160:1c3312
     if (!(ax & 0x8080))
         goto loc_1c333b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c331c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3322));
     if (dx == 0x8080)
         goto loc_1c333b;
     if (dl & 0x80)
@@ -52230,13 +57307,13 @@ loc_1c3334: // 0160:1c3334
     ah = dh;
 loc_1c333b: // 0160:1c333b
     memoryASet16(ds, edi + 220, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3344));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c334a));
     if (!(eax & 0x00008080))
         goto loc_1c33a1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3359));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c335f));
     if (dx == 0x8080)
         goto loc_1c3378;
     if (dl & 0x80)
@@ -52250,8 +57327,8 @@ loc_1c3378: // 0160:1c3378
     if (!(ax & 0x8080))
         goto loc_1c33a1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3382));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3388));
     if (dx == 0x8080)
         goto loc_1c33a1;
     if (dl & 0x80)
@@ -52263,13 +57340,13 @@ loc_1c339a: // 0160:1c339a
     ah = dh;
 loc_1c33a1: // 0160:1c33a1
     memoryASet16(ds, edi + 222, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c33aa));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c33b0));
     if (!(eax & 0x00008080))
         goto loc_1c3407;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c33bf));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c33c5));
     if (dx == 0x8080)
         goto loc_1c33de;
     if (dl & 0x80)
@@ -52283,8 +57360,8 @@ loc_1c33de: // 0160:1c33de
     if (!(ax & 0x8080))
         goto loc_1c3407;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c33e8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c33ee));
     if (dx == 0x8080)
         goto loc_1c3407;
     if (dl & 0x80)
@@ -52296,13 +57373,13 @@ loc_1c3400: // 0160:1c3400
     ah = dh;
 loc_1c3407: // 0160:1c3407
     memoryASet16(ds, edi + 224, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3410));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3416));
     if (!(eax & 0x00008080))
         goto loc_1c346d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3425));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c342b));
     if (dx == 0x8080)
         goto loc_1c3444;
     if (dl & 0x80)
@@ -52316,8 +57393,8 @@ loc_1c3444: // 0160:1c3444
     if (!(ax & 0x8080))
         goto loc_1c346d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c344e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3454));
     if (dx == 0x8080)
         goto loc_1c346d;
     if (dl & 0x80)
@@ -52329,13 +57406,13 @@ loc_1c3466: // 0160:1c3466
     ah = dh;
 loc_1c346d: // 0160:1c346d
     memoryASet16(ds, edi + 226, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3476));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c347c));
     if (!(eax & 0x00008080))
         goto loc_1c34d3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c348b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3491));
     if (dx == 0x8080)
         goto loc_1c34aa;
     if (dl & 0x80)
@@ -52349,8 +57426,8 @@ loc_1c34aa: // 0160:1c34aa
     if (!(ax & 0x8080))
         goto loc_1c34d3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c34b4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c34ba));
     if (dx == 0x8080)
         goto loc_1c34d3;
     if (dl & 0x80)
@@ -52362,13 +57439,13 @@ loc_1c34cc: // 0160:1c34cc
     ah = dh;
 loc_1c34d3: // 0160:1c34d3
     memoryASet16(ds, edi + 228, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c34dc));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c34e2));
     if (!(eax & 0x00008080))
         goto loc_1c3539;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c34f1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c34f7));
     if (dx == 0x8080)
         goto loc_1c3510;
     if (dl & 0x80)
@@ -52382,8 +57459,8 @@ loc_1c3510: // 0160:1c3510
     if (!(ax & 0x8080))
         goto loc_1c3539;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c351a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3520));
     if (dx == 0x8080)
         goto loc_1c3539;
     if (dl & 0x80)
@@ -52395,13 +57472,13 @@ loc_1c3532: // 0160:1c3532
     ah = dh;
 loc_1c3539: // 0160:1c3539
     memoryASet16(ds, edi + 230, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3542));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3548));
     if (!(eax & 0x00008080))
         goto loc_1c359f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3557));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c355d));
     if (dx == 0x8080)
         goto loc_1c3576;
     if (dl & 0x80)
@@ -52415,8 +57492,8 @@ loc_1c3576: // 0160:1c3576
     if (!(ax & 0x8080))
         goto loc_1c359f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3580));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3586));
     if (dx == 0x8080)
         goto loc_1c359f;
     if (dl & 0x80)
@@ -52428,13 +57505,13 @@ loc_1c3598: // 0160:1c3598
     ah = dh;
 loc_1c359f: // 0160:1c359f
     memoryASet16(ds, edi + 232, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c35a8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c35ae));
     if (!(eax & 0x00008080))
         goto loc_1c3605;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c35bd));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c35c3));
     if (dx == 0x8080)
         goto loc_1c35dc;
     if (dl & 0x80)
@@ -52448,8 +57525,8 @@ loc_1c35dc: // 0160:1c35dc
     if (!(ax & 0x8080))
         goto loc_1c3605;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c35e6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c35ec));
     if (dx == 0x8080)
         goto loc_1c3605;
     if (dl & 0x80)
@@ -52461,13 +57538,13 @@ loc_1c35fe: // 0160:1c35fe
     ah = dh;
 loc_1c3605: // 0160:1c3605
     memoryASet16(ds, edi + 234, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c360e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3614));
     if (!(eax & 0x00008080))
         goto loc_1c366b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3623));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3629));
     if (dx == 0x8080)
         goto loc_1c3642;
     if (dl & 0x80)
@@ -52481,8 +57558,8 @@ loc_1c3642: // 0160:1c3642
     if (!(ax & 0x8080))
         goto loc_1c366b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c364c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3652));
     if (dx == 0x8080)
         goto loc_1c366b;
     if (dl & 0x80)
@@ -52494,13 +57571,13 @@ loc_1c3664: // 0160:1c3664
     ah = dh;
 loc_1c366b: // 0160:1c366b
     memoryASet16(ds, edi + 236, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3674));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c367a));
     if (!(eax & 0x00008080))
         goto loc_1c36d1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3689));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c368f));
     if (dx == 0x8080)
         goto loc_1c36a8;
     if (dl & 0x80)
@@ -52514,8 +57591,8 @@ loc_1c36a8: // 0160:1c36a8
     if (!(ax & 0x8080))
         goto loc_1c36d1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c36b2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c36b8));
     if (dx == 0x8080)
         goto loc_1c36d1;
     if (dl & 0x80)
@@ -52527,13 +57604,13 @@ loc_1c36ca: // 0160:1c36ca
     ah = dh;
 loc_1c36d1: // 0160:1c36d1
     memoryASet16(ds, edi + 238, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c36da));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c36e0));
     if (!(eax & 0x00008080))
         goto loc_1c3737;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c36ef));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c36f5));
     if (dx == 0x8080)
         goto loc_1c370e;
     if (dl & 0x80)
@@ -52547,8 +57624,8 @@ loc_1c370e: // 0160:1c370e
     if (!(ax & 0x8080))
         goto loc_1c3737;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3718));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c371e));
     if (dx == 0x8080)
         goto loc_1c3737;
     if (dl & 0x80)
@@ -52560,13 +57637,13 @@ loc_1c3730: // 0160:1c3730
     ah = dh;
 loc_1c3737: // 0160:1c3737
     memoryASet16(ds, edi + 240, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3740));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3746));
     if (!(eax & 0x00008080))
         goto loc_1c379d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3755));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c375b));
     if (dx == 0x8080)
         goto loc_1c3774;
     if (dl & 0x80)
@@ -52580,8 +57657,8 @@ loc_1c3774: // 0160:1c3774
     if (!(ax & 0x8080))
         goto loc_1c379d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c377e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3784));
     if (dx == 0x8080)
         goto loc_1c379d;
     if (dl & 0x80)
@@ -52593,13 +57670,13 @@ loc_1c3796: // 0160:1c3796
     ah = dh;
 loc_1c379d: // 0160:1c379d
     memoryASet16(ds, edi + 242, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c37a6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c37ac));
     if (!(eax & 0x00008080))
         goto loc_1c3803;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c37bb));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c37c1));
     if (dx == 0x8080)
         goto loc_1c37da;
     if (dl & 0x80)
@@ -52613,8 +57690,8 @@ loc_1c37da: // 0160:1c37da
     if (!(ax & 0x8080))
         goto loc_1c3803;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c37e4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c37ea));
     if (dx == 0x8080)
         goto loc_1c3803;
     if (dl & 0x80)
@@ -52626,13 +57703,13 @@ loc_1c37fc: // 0160:1c37fc
     ah = dh;
 loc_1c3803: // 0160:1c3803
     memoryASet16(ds, edi + 244, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c380c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3812));
     if (!(eax & 0x00008080))
         goto loc_1c3869;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3821));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3827));
     if (dx == 0x8080)
         goto loc_1c3840;
     if (dl & 0x80)
@@ -52646,8 +57723,8 @@ loc_1c3840: // 0160:1c3840
     if (!(ax & 0x8080))
         goto loc_1c3869;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c384a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3850));
     if (dx == 0x8080)
         goto loc_1c3869;
     if (dl & 0x80)
@@ -52659,13 +57736,13 @@ loc_1c3862: // 0160:1c3862
     ah = dh;
 loc_1c3869: // 0160:1c3869
     memoryASet16(ds, edi + 246, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3872));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3878));
     if (!(eax & 0x00008080))
         goto loc_1c38cf;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3887));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c388d));
     if (dx == 0x8080)
         goto loc_1c38a6;
     if (dl & 0x80)
@@ -52679,8 +57756,8 @@ loc_1c38a6: // 0160:1c38a6
     if (!(ax & 0x8080))
         goto loc_1c38cf;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c38b0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c38b6));
     if (dx == 0x8080)
         goto loc_1c38cf;
     if (dl & 0x80)
@@ -52692,13 +57769,13 @@ loc_1c38c8: // 0160:1c38c8
     ah = dh;
 loc_1c38cf: // 0160:1c38cf
     memoryASet16(ds, edi + 248, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c38d8));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c38de));
     if (!(eax & 0x00008080))
         goto loc_1c3935;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c38ed));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c38f3));
     if (dx == 0x8080)
         goto loc_1c390c;
     if (dl & 0x80)
@@ -52712,8 +57789,8 @@ loc_1c390c: // 0160:1c390c
     if (!(ax & 0x8080))
         goto loc_1c3935;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3916));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c391c));
     if (dx == 0x8080)
         goto loc_1c3935;
     if (dl & 0x80)
@@ -52725,13 +57802,13 @@ loc_1c392e: // 0160:1c392e
     ah = dh;
 loc_1c3935: // 0160:1c3935
     memoryASet16(ds, edi + 250, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c393e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3944));
     if (!(eax & 0x00008080))
         goto loc_1c399b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3953));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3959));
     if (dx == 0x8080)
         goto loc_1c3972;
     if (dl & 0x80)
@@ -52745,8 +57822,8 @@ loc_1c3972: // 0160:1c3972
     if (!(ax & 0x8080))
         goto loc_1c399b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c397c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3982));
     if (dx == 0x8080)
         goto loc_1c399b;
     if (dl & 0x80)
@@ -52758,13 +57835,13 @@ loc_1c3994: // 0160:1c3994
     ah = dh;
 loc_1c399b: // 0160:1c399b
     memoryASet16(ds, edi + 252, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c39a4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c39aa));
     if (!(eax & 0x00008080))
         goto loc_1c3a01;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c39b9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c39bf));
     if (dx == 0x8080)
         goto loc_1c39d8;
     if (dl & 0x80)
@@ -52778,8 +57855,8 @@ loc_1c39d8: // 0160:1c39d8
     if (!(ax & 0x8080))
         goto loc_1c3a01;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c39e2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c39e8));
     if (dx == 0x8080)
         goto loc_1c3a01;
     if (dl & 0x80)
@@ -52791,13 +57868,13 @@ loc_1c39fa: // 0160:1c39fa
     ah = dh;
 loc_1c3a01: // 0160:1c3a01
     memoryASet16(ds, edi + 254, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3a0a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3a10));
     if (!(eax & 0x00008080))
         goto loc_1c3a67;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3a1f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3a25));
     if (dx == 0x8080)
         goto loc_1c3a3e;
     if (dl & 0x80)
@@ -52811,8 +57888,8 @@ loc_1c3a3e: // 0160:1c3a3e
     if (!(ax & 0x8080))
         goto loc_1c3a67;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3a48));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3a4e));
     if (dx == 0x8080)
         goto loc_1c3a67;
     if (dl & 0x80)
@@ -52824,13 +57901,13 @@ loc_1c3a60: // 0160:1c3a60
     ah = dh;
 loc_1c3a67: // 0160:1c3a67
     memoryASet16(ds, edi + 256, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3a70));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3a76));
     if (!(eax & 0x00008080))
         goto loc_1c3acd;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3a85));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3a8b));
     if (dx == 0x8080)
         goto loc_1c3aa4;
     if (dl & 0x80)
@@ -52844,8 +57921,8 @@ loc_1c3aa4: // 0160:1c3aa4
     if (!(ax & 0x8080))
         goto loc_1c3acd;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3aae));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3ab4));
     if (dx == 0x8080)
         goto loc_1c3acd;
     if (dl & 0x80)
@@ -52857,13 +57934,13 @@ loc_1c3ac6: // 0160:1c3ac6
     ah = dh;
 loc_1c3acd: // 0160:1c3acd
     memoryASet16(ds, edi + 258, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3ad6));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3adc));
     if (!(eax & 0x00008080))
         goto loc_1c3b33;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3aeb));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3af1));
     if (dx == 0x8080)
         goto loc_1c3b0a;
     if (dl & 0x80)
@@ -52877,8 +57954,8 @@ loc_1c3b0a: // 0160:1c3b0a
     if (!(ax & 0x8080))
         goto loc_1c3b33;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3b14));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3b1a));
     if (dx == 0x8080)
         goto loc_1c3b33;
     if (dl & 0x80)
@@ -52890,13 +57967,13 @@ loc_1c3b2c: // 0160:1c3b2c
     ah = dh;
 loc_1c3b33: // 0160:1c3b33
     memoryASet16(ds, edi + 260, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3b3c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3b42));
     if (!(eax & 0x00008080))
         goto loc_1c3b99;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3b51));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3b57));
     if (dx == 0x8080)
         goto loc_1c3b70;
     if (dl & 0x80)
@@ -52910,8 +57987,8 @@ loc_1c3b70: // 0160:1c3b70
     if (!(ax & 0x8080))
         goto loc_1c3b99;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3b7a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3b80));
     if (dx == 0x8080)
         goto loc_1c3b99;
     if (dl & 0x80)
@@ -52923,13 +58000,13 @@ loc_1c3b92: // 0160:1c3b92
     ah = dh;
 loc_1c3b99: // 0160:1c3b99
     memoryASet16(ds, edi + 262, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3ba2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3ba8));
     if (!(eax & 0x00008080))
         goto loc_1c3bff;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3bb7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3bbd));
     if (dx == 0x8080)
         goto loc_1c3bd6;
     if (dl & 0x80)
@@ -52943,8 +58020,8 @@ loc_1c3bd6: // 0160:1c3bd6
     if (!(ax & 0x8080))
         goto loc_1c3bff;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3be0));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3be6));
     if (dx == 0x8080)
         goto loc_1c3bff;
     if (dl & 0x80)
@@ -52956,13 +58033,13 @@ loc_1c3bf8: // 0160:1c3bf8
     ah = dh;
 loc_1c3bff: // 0160:1c3bff
     memoryASet16(ds, edi + 264, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3c08));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3c0e));
     if (!(eax & 0x00008080))
         goto loc_1c3c65;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3c1d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3c23));
     if (dx == 0x8080)
         goto loc_1c3c3c;
     if (dl & 0x80)
@@ -52976,8 +58053,8 @@ loc_1c3c3c: // 0160:1c3c3c
     if (!(ax & 0x8080))
         goto loc_1c3c65;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3c46));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3c4c));
     if (dx == 0x8080)
         goto loc_1c3c65;
     if (dl & 0x80)
@@ -52989,13 +58066,13 @@ loc_1c3c5e: // 0160:1c3c5e
     ah = dh;
 loc_1c3c65: // 0160:1c3c65
     memoryASet16(ds, edi + 266, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3c6e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3c74));
     if (!(eax & 0x00008080))
         goto loc_1c3ccb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3c83));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3c89));
     if (dx == 0x8080)
         goto loc_1c3ca2;
     if (dl & 0x80)
@@ -53009,8 +58086,8 @@ loc_1c3ca2: // 0160:1c3ca2
     if (!(ax & 0x8080))
         goto loc_1c3ccb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3cac));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3cb2));
     if (dx == 0x8080)
         goto loc_1c3ccb;
     if (dl & 0x80)
@@ -53022,13 +58099,13 @@ loc_1c3cc4: // 0160:1c3cc4
     ah = dh;
 loc_1c3ccb: // 0160:1c3ccb
     memoryASet16(ds, edi + 268, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3cd4));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3cda));
     if (!(eax & 0x00008080))
         goto loc_1c3d31;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3ce9));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3cef));
     if (dx == 0x8080)
         goto loc_1c3d08;
     if (dl & 0x80)
@@ -53042,8 +58119,8 @@ loc_1c3d08: // 0160:1c3d08
     if (!(ax & 0x8080))
         goto loc_1c3d31;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3d12));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3d18));
     if (dx == 0x8080)
         goto loc_1c3d31;
     if (dl & 0x80)
@@ -53055,13 +58132,13 @@ loc_1c3d2a: // 0160:1c3d2a
     ah = dh;
 loc_1c3d31: // 0160:1c3d31
     memoryASet16(ds, edi + 270, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3d3a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3d40));
     if (!(eax & 0x00008080))
         goto loc_1c3d97;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3d4f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3d55));
     if (dx == 0x8080)
         goto loc_1c3d6e;
     if (dl & 0x80)
@@ -53075,8 +58152,8 @@ loc_1c3d6e: // 0160:1c3d6e
     if (!(ax & 0x8080))
         goto loc_1c3d97;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3d78));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3d7e));
     if (dx == 0x8080)
         goto loc_1c3d97;
     if (dl & 0x80)
@@ -53088,13 +58165,13 @@ loc_1c3d90: // 0160:1c3d90
     ah = dh;
 loc_1c3d97: // 0160:1c3d97
     memoryASet16(ds, edi + 272, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3da0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3da6));
     if (!(eax & 0x00008080))
         goto loc_1c3dfd;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3db5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3dbb));
     if (dx == 0x8080)
         goto loc_1c3dd4;
     if (dl & 0x80)
@@ -53108,8 +58185,8 @@ loc_1c3dd4: // 0160:1c3dd4
     if (!(ax & 0x8080))
         goto loc_1c3dfd;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3dde));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3de4));
     if (dx == 0x8080)
         goto loc_1c3dfd;
     if (dl & 0x80)
@@ -53121,13 +58198,13 @@ loc_1c3df6: // 0160:1c3df6
     ah = dh;
 loc_1c3dfd: // 0160:1c3dfd
     memoryASet16(ds, edi + 274, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3e06));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3e0c));
     if (!(eax & 0x00008080))
         goto loc_1c3e63;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3e1b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3e21));
     if (dx == 0x8080)
         goto loc_1c3e3a;
     if (dl & 0x80)
@@ -53141,8 +58218,8 @@ loc_1c3e3a: // 0160:1c3e3a
     if (!(ax & 0x8080))
         goto loc_1c3e63;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3e44));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3e4a));
     if (dx == 0x8080)
         goto loc_1c3e63;
     if (dl & 0x80)
@@ -53154,13 +58231,13 @@ loc_1c3e5c: // 0160:1c3e5c
     ah = dh;
 loc_1c3e63: // 0160:1c3e63
     memoryASet16(ds, edi + 276, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3e6c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3e72));
     if (!(eax & 0x00008080))
         goto loc_1c3ec9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3e81));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3e87));
     if (dx == 0x8080)
         goto loc_1c3ea0;
     if (dl & 0x80)
@@ -53174,8 +58251,8 @@ loc_1c3ea0: // 0160:1c3ea0
     if (!(ax & 0x8080))
         goto loc_1c3ec9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3eaa));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3eb0));
     if (dx == 0x8080)
         goto loc_1c3ec9;
     if (dl & 0x80)
@@ -53187,13 +58264,13 @@ loc_1c3ec2: // 0160:1c3ec2
     ah = dh;
 loc_1c3ec9: // 0160:1c3ec9
     memoryASet16(ds, edi + 278, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3ed2));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3ed8));
     if (!(eax & 0x00008080))
         goto loc_1c3f2f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3ee7));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3eed));
     if (dx == 0x8080)
         goto loc_1c3f06;
     if (dl & 0x80)
@@ -53207,8 +58284,8 @@ loc_1c3f06: // 0160:1c3f06
     if (!(ax & 0x8080))
         goto loc_1c3f2f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3f10));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3f16));
     if (dx == 0x8080)
         goto loc_1c3f2f;
     if (dl & 0x80)
@@ -53220,13 +58297,13 @@ loc_1c3f28: // 0160:1c3f28
     ah = dh;
 loc_1c3f2f: // 0160:1c3f2f
     memoryASet16(ds, edi + 280, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3f38));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3f3e));
     if (!(eax & 0x00008080))
         goto loc_1c3f95;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3f4d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3f53));
     if (dx == 0x8080)
         goto loc_1c3f6c;
     if (dl & 0x80)
@@ -53240,8 +58317,8 @@ loc_1c3f6c: // 0160:1c3f6c
     if (!(ax & 0x8080))
         goto loc_1c3f95;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3f76));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3f7c));
     if (dx == 0x8080)
         goto loc_1c3f95;
     if (dl & 0x80)
@@ -53253,13 +58330,13 @@ loc_1c3f8e: // 0160:1c3f8e
     ah = dh;
 loc_1c3f95: // 0160:1c3f95
     memoryASet16(ds, edi + 282, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3f9e));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c3fa4));
     if (!(eax & 0x00008080))
         goto loc_1c3ffb;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3fb3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c3fb9));
     if (dx == 0x8080)
         goto loc_1c3fd2;
     if (dl & 0x80)
@@ -53273,8 +58350,8 @@ loc_1c3fd2: // 0160:1c3fd2
     if (!(ax & 0x8080))
         goto loc_1c3ffb;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3fdc));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c3fe2));
     if (dx == 0x8080)
         goto loc_1c3ffb;
     if (dl & 0x80)
@@ -53286,13 +58363,13 @@ loc_1c3ff4: // 0160:1c3ff4
     ah = dh;
 loc_1c3ffb: // 0160:1c3ffb
     memoryASet16(ds, edi + 284, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4004));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c400a));
     if (!(eax & 0x00008080))
         goto loc_1c4061;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4019));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c401f));
     if (dx == 0x8080)
         goto loc_1c4038;
     if (dl & 0x80)
@@ -53306,8 +58383,8 @@ loc_1c4038: // 0160:1c4038
     if (!(ax & 0x8080))
         goto loc_1c4061;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4042));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4048));
     if (dx == 0x8080)
         goto loc_1c4061;
     if (dl & 0x80)
@@ -53319,13 +58396,13 @@ loc_1c405a: // 0160:1c405a
     ah = dh;
 loc_1c4061: // 0160:1c4061
     memoryASet16(ds, edi + 286, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c406a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4070));
     if (!(eax & 0x00008080))
         goto loc_1c40c7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c407f));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4085));
     if (dx == 0x8080)
         goto loc_1c409e;
     if (dl & 0x80)
@@ -53339,8 +58416,8 @@ loc_1c409e: // 0160:1c409e
     if (!(ax & 0x8080))
         goto loc_1c40c7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c40a8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c40ae));
     if (dx == 0x8080)
         goto loc_1c40c7;
     if (dl & 0x80)
@@ -53352,13 +58429,13 @@ loc_1c40c0: // 0160:1c40c0
     ah = dh;
 loc_1c40c7: // 0160:1c40c7
     memoryASet16(ds, edi + 288, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c40d0));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c40d6));
     if (!(eax & 0x00008080))
         goto loc_1c412d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c40e5));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c40eb));
     if (dx == 0x8080)
         goto loc_1c4104;
     if (dl & 0x80)
@@ -53372,8 +58449,8 @@ loc_1c4104: // 0160:1c4104
     if (!(ax & 0x8080))
         goto loc_1c412d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c410e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4114));
     if (dx == 0x8080)
         goto loc_1c412d;
     if (dl & 0x80)
@@ -53385,13 +58462,13 @@ loc_1c4126: // 0160:1c4126
     ah = dh;
 loc_1c412d: // 0160:1c412d
     memoryASet16(ds, edi + 290, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4136));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c413c));
     if (!(eax & 0x00008080))
         goto loc_1c4193;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c414b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4151));
     if (dx == 0x8080)
         goto loc_1c416a;
     if (dl & 0x80)
@@ -53405,8 +58482,8 @@ loc_1c416a: // 0160:1c416a
     if (!(ax & 0x8080))
         goto loc_1c4193;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4174));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c417a));
     if (dx == 0x8080)
         goto loc_1c4193;
     if (dl & 0x80)
@@ -53418,13 +58495,13 @@ loc_1c418c: // 0160:1c418c
     ah = dh;
 loc_1c4193: // 0160:1c4193
     memoryASet16(ds, edi + 292, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c419c));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c41a2));
     if (!(eax & 0x00008080))
         goto loc_1c41f9;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c41b1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c41b7));
     if (dx == 0x8080)
         goto loc_1c41d0;
     if (dl & 0x80)
@@ -53438,8 +58515,8 @@ loc_1c41d0: // 0160:1c41d0
     if (!(ax & 0x8080))
         goto loc_1c41f9;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c41da));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c41e0));
     if (dx == 0x8080)
         goto loc_1c41f9;
     if (dl & 0x80)
@@ -53451,13 +58528,13 @@ loc_1c41f2: // 0160:1c41f2
     ah = dh;
 loc_1c41f9: // 0160:1c41f9
     memoryASet16(ds, edi + 294, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4202));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4208));
     if (!(eax & 0x00008080))
         goto loc_1c425f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4217));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c421d));
     if (dx == 0x8080)
         goto loc_1c4236;
     if (dl & 0x80)
@@ -53471,8 +58548,8 @@ loc_1c4236: // 0160:1c4236
     if (!(ax & 0x8080))
         goto loc_1c425f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4240));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4246));
     if (dx == 0x8080)
         goto loc_1c425f;
     if (dl & 0x80)
@@ -53484,13 +58561,13 @@ loc_1c4258: // 0160:1c4258
     ah = dh;
 loc_1c425f: // 0160:1c425f
     memoryASet16(ds, edi + 296, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4268));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c426e));
     if (!(eax & 0x00008080))
         goto loc_1c42c5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c427d));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4283));
     if (dx == 0x8080)
         goto loc_1c429c;
     if (dl & 0x80)
@@ -53504,8 +58581,8 @@ loc_1c429c: // 0160:1c429c
     if (!(ax & 0x8080))
         goto loc_1c42c5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c42a6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c42ac));
     if (dx == 0x8080)
         goto loc_1c42c5;
     if (dl & 0x80)
@@ -53517,13 +58594,13 @@ loc_1c42be: // 0160:1c42be
     ah = dh;
 loc_1c42c5: // 0160:1c42c5
     memoryASet16(ds, edi + 298, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c42ce));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c42d4));
     if (!(eax & 0x00008080))
         goto loc_1c432b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c42e3));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c42e9));
     if (dx == 0x8080)
         goto loc_1c4302;
     if (dl & 0x80)
@@ -53537,8 +58614,8 @@ loc_1c4302: // 0160:1c4302
     if (!(ax & 0x8080))
         goto loc_1c432b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c430c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4312));
     if (dx == 0x8080)
         goto loc_1c432b;
     if (dl & 0x80)
@@ -53550,13 +58627,13 @@ loc_1c4324: // 0160:1c4324
     ah = dh;
 loc_1c432b: // 0160:1c432b
     memoryASet16(ds, edi + 300, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4334));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c433a));
     if (!(eax & 0x00008080))
         goto loc_1c4391;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4349));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c434f));
     if (dx == 0x8080)
         goto loc_1c4368;
     if (dl & 0x80)
@@ -53570,8 +58647,8 @@ loc_1c4368: // 0160:1c4368
     if (!(ax & 0x8080))
         goto loc_1c4391;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4372));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4378));
     if (dx == 0x8080)
         goto loc_1c4391;
     if (dl & 0x80)
@@ -53583,13 +58660,13 @@ loc_1c438a: // 0160:1c438a
     ah = dh;
 loc_1c4391: // 0160:1c4391
     memoryASet16(ds, edi + 302, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c439a));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c43a0));
     if (!(eax & 0x00008080))
         goto loc_1c43f7;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c43af));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c43b5));
     if (dx == 0x8080)
         goto loc_1c43ce;
     if (dl & 0x80)
@@ -53603,8 +58680,8 @@ loc_1c43ce: // 0160:1c43ce
     if (!(ax & 0x8080))
         goto loc_1c43f7;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c43d8));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c43de));
     if (dx == 0x8080)
         goto loc_1c43f7;
     if (dl & 0x80)
@@ -53616,13 +58693,13 @@ loc_1c43f0: // 0160:1c43f0
     ah = dh;
 loc_1c43f7: // 0160:1c43f7
     memoryASet16(ds, edi + 304, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4400));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4406));
     if (!(eax & 0x00008080))
         goto loc_1c445d;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4415));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c441b));
     if (dx == 0x8080)
         goto loc_1c4434;
     if (dl & 0x80)
@@ -53636,8 +58713,8 @@ loc_1c4434: // 0160:1c4434
     if (!(ax & 0x8080))
         goto loc_1c445d;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c443e));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4444));
     if (dx == 0x8080)
         goto loc_1c445d;
     if (dl & 0x80)
@@ -53649,13 +58726,13 @@ loc_1c4456: // 0160:1c4456
     ah = dh;
 loc_1c445d: // 0160:1c445d
     memoryASet16(ds, edi + 306, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4466));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c446c));
     if (!(eax & 0x00008080))
         goto loc_1c44c3;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c447b));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4481));
     if (dx == 0x8080)
         goto loc_1c449a;
     if (dl & 0x80)
@@ -53669,8 +58746,8 @@ loc_1c449a: // 0160:1c449a
     if (!(ax & 0x8080))
         goto loc_1c44c3;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c44a4));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c44aa));
     if (dx == 0x8080)
         goto loc_1c44c3;
     if (dl & 0x80)
@@ -53682,13 +58759,13 @@ loc_1c44bc: // 0160:1c44bc
     ah = dh;
 loc_1c44c3: // 0160:1c44c3
     memoryASet16(ds, edi + 308, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c44cc));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c44d2));
     if (!(eax & 0x00008080))
         goto loc_1c4529;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c44e1));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c44e7));
     if (dx == 0x8080)
         goto loc_1c4500;
     if (dl & 0x80)
@@ -53702,8 +58779,8 @@ loc_1c4500: // 0160:1c4500
     if (!(ax & 0x8080))
         goto loc_1c4529;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c450a));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4510));
     if (dx == 0x8080)
         goto loc_1c4529;
     if (dl & 0x80)
@@ -53715,13 +58792,13 @@ loc_1c4522: // 0160:1c4522
     ah = dh;
 loc_1c4529: // 0160:1c4529
     memoryASet16(ds, edi + 310, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4532));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4538));
     if (!(eax & 0x00008080))
         goto loc_1c458f;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4547));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c454d));
     if (dx == 0x8080)
         goto loc_1c4566;
     if (dl & 0x80)
@@ -53735,8 +58812,8 @@ loc_1c4566: // 0160:1c4566
     if (!(ax & 0x8080))
         goto loc_1c458f;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4570));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4576));
     if (dx == 0x8080)
         goto loc_1c458f;
     if (dl & 0x80)
@@ -53748,13 +58825,13 @@ loc_1c4588: // 0160:1c4588
     ah = dh;
 loc_1c458f: // 0160:1c458f
     memoryASet16(ds, edi + 312, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4598));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c459e));
     if (!(eax & 0x00008080))
         goto loc_1c45f5;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c45ad));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c45b3));
     if (dx == 0x8080)
         goto loc_1c45cc;
     if (dl & 0x80)
@@ -53768,8 +58845,8 @@ loc_1c45cc: // 0160:1c45cc
     if (!(ax & 0x8080))
         goto loc_1c45f5;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c45d6));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c45dc));
     if (dx == 0x8080)
         goto loc_1c45f5;
     if (dl & 0x80)
@@ -53781,13 +58858,13 @@ loc_1c45ee: // 0160:1c45ee
     ah = dh;
 loc_1c45f5: // 0160:1c45f5
     memoryASet16(ds, edi + 314, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c45fe));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4604));
     if (!(eax & 0x00008080))
         goto loc_1c465b;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4613));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4619));
     if (dx == 0x8080)
         goto loc_1c4632;
     if (dl & 0x80)
@@ -53801,8 +58878,8 @@ loc_1c4632: // 0160:1c4632
     if (!(ax & 0x8080))
         goto loc_1c465b;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c463c));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c4642));
     if (dx == 0x8080)
         goto loc_1c465b;
     if (dl & 0x80)
@@ -53814,13 +58891,13 @@ loc_1c4654: // 0160:1c4654
     ah = dh;
 loc_1c465b: // 0160:1c465b
     memoryASet16(ds, edi + 316, ax);
-    al = memoryAGet(ds, ecx + 2147483647);
-    ah = memoryAGet(ds, ecx + 2147483647);
+    al = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c4664));
+    ah = memoryAGet(ds, ecx + memoryAGet32(cs, 0x1c466a));
     if (!(eax & 0x00008080))
         goto loc_1c46c1;
     edx = eax;
-    al = memoryAGet(ds, ebx + 2147483647);
-    ah = memoryAGet(ds, ebx + 2147483647);
+    al = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c4679));
+    ah = memoryAGet(ds, ebx + memoryAGet32(cs, 0x1c467f));
     if (dx == 0x8080)
         goto loc_1c4698;
     if (dl & 0x80)
@@ -53834,8 +58911,8 @@ loc_1c4698: // 0160:1c4698
     if (!(ax & 0x8080))
         goto loc_1c46c1;
     edx = eax;
-    al = memoryAGet(ds, esi + 2147483647);
-    ah = memoryAGet(ds, esi + 2147483647);
+    al = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c46a2));
+    ah = memoryAGet(ds, esi + memoryAGet32(cs, 0x1c46a8));
     if (dx == 0x8080)
         goto loc_1c46c1;
     if (dl & 0x80)
@@ -53863,15 +58940,17 @@ loc_1c46e5: // 0160:1c46e5
     if (memoryAGet32(ss, ebp + 40))
         goto loc_1c0708;
 loc_1c46f1: // 0160:1c46f1
-    stop("disassembly failed at 160:1c46f1 popal ");
-    stop("disassembly failed at 160:1c46f2 leave ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1c4758() // 0160:1c4758 +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c4758 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     ecx = 0x000000a8;
@@ -54046,13 +59125,15 @@ loc_1c4768: // 0160:1c4768
     ecx--;
     if (ecx)
         goto loc_1c4768;
-    stop("disassembly failed at 160:1c4a79 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c4a7b() // 0160:1c4a7b +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c4a7b pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     ch = 0xa8;
@@ -54193,13 +59274,15 @@ loc_1c4a89: // 0160:1c4a89
     ch--;
     if (ch)
         goto loc_1c4a89;
-    stop("disassembly failed at 160:1c4d1c popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c4d1e() // 0160:1c4d1e +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c4d1e pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     ebx = 0x00000000;
@@ -54225,7 +59308,8 @@ loc_1c4d3c: // 0160:1c4d3c
     ebx++;
     if (ebx != 0x00000004)
         goto loc_1c4d28;
-    stop("disassembly failed at 160:1c4d5f popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c4d61() // 0160:1c4d61 +long
@@ -54234,7 +59318,8 @@ void sub_1c4d61() // 0160:1c4d61 +long
     push32(ebp);
     ebp = esp;
     esp += 0xfffffffc;
-    stop("disassembly failed at 160:1c4d67 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     memoryASet32(ss, ebp + -4, ebx);
@@ -54265,15 +59350,17 @@ loc_1c4d86: // 0160:1c4d86
     ebx++;
     if (ebx != 0x00000004)
         goto loc_1c4d74;
-    stop("disassembly failed at 160:1c4daa popal ");
-    stop("disassembly failed at 160:1c4dab leave ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1c4e46() // 0160:1c4e46 +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c4e46 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     if (!ebx)
         goto loc_1c4e73;
     if (!ecx)
@@ -54299,7 +59386,8 @@ loc_1c4e61: // 0160:1c4e61
     if (ecx)
         goto loc_1c4e55;
 loc_1c4e73: // 0160:1c4e73
-    stop("disassembly failed at 160:1c4e73 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c4e75() // 0160:1c4e75 +long
@@ -54308,7 +59396,8 @@ void sub_1c4e75() // 0160:1c4e75 +long
     push32(ebp);
     ebp = esp;
     esp += 0xffffffec;
-    stop("disassembly failed at 160:1c4e7b pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     eax = memoryAGet32(ss, ebp + 24);
     eax <<= 16;
     memoryASet32(ss, ebp + -16, eax);
@@ -54362,15 +59451,17 @@ loc_1c4ee8: // 0160:1c4ee8
     if (memoryAGet32(ss, ebp + 20))
         goto loc_1c4eb4;
 loc_1c4ef0: // 0160:1c4ef0
-    stop("disassembly failed at 160:1c4ef0 popal ");
-    stop("disassembly failed at 160:1c4ef1 leave ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+    esp = ebp; ebp = pop32();
     stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1c4ef3() // 0160:1c4ef3 +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c4ef3 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     ecx = 0x00000009;
@@ -56626,13 +61717,15 @@ loc_1c636b: // 0160:1c636b
     ecx--;
     if (ecx)
         goto loc_1c4f04;
-    stop("disassembly failed at 160:1c6384 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c6386() // 0160:1c6386 +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c6386 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     ecx = ebx;
@@ -58888,13 +63981,15 @@ loc_1c79e1: // 0160:1c79e1
     ecx--;
     if (ecx)
         goto loc_1c6394;
-    stop("disassembly failed at 160:1c79f4 popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c79f6() // 0160:1c79f6 +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c79f6 pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     eax = memoryAGet32(ds, esi);
@@ -58929,13 +64024,15 @@ void sub_1c79f6() // 0160:1c79f6 +long
     memoryASet32(ds, edi + 4480, eax);
     eax = memoryAGet32(ds, esi + 3364);
     memoryASet32(ds, edi + 4484, eax);
-    stop("disassembly failed at 160:1c7aad popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c7aaf() // 0160:1c7aaf +long
 {
     esp -= 4;
-    stop("disassembly failed at 160:1c7aaf pushal ");
+    etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx); 
+    push32(etx); push32(ebp); push32(esi); push32(edi);
     esi = eax;
     edi = edx;
     if ((int32_t)ebx <= (int32_t)0x00000000)
@@ -59014,7 +64111,8 @@ loc_1c7b49: // 0160:1c7b49
     if (ebx)
         goto loc_1c7ac5;
 loc_1c7b5c: // 0160:1c7b5c
-    stop("disassembly failed at 160:1c7b5c popal ");
+    edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
     esp += 4;
 }
 void sub_1c7b60() // 0160:1c7b60 +long
@@ -59240,7 +64338,6 @@ loc_1c7dc2: // 0160:1c7dc2
     al = 0x00;
     ah = 0x00;
 loc_1c7dd9: // 0160:1c7dd9
-    assert(al==1&&ah==0);
     memoryASet(ds, 0x1dfd4a, al);
     memoryASet(ds, 0x1dfd4b, ah);
     es = ebx;
@@ -59341,7 +64438,7 @@ loc_1c7f00: // 0160:1c7f00
     interrupt(0x21);
     stop("terminating");
 }
-void sub_1c7edd() // 0160:1c7edd +long error message
+void sub_1c7edd() // 0160:1c7edd +long
 {
     esp -= 4;
     push32(edx);
@@ -59725,7 +64822,7 @@ loc_1c81aa: // 0160:1c81aa
     push32(0x00000000);
     goto loc_1c81db;
 loc_1c81ae: // 0160:1c81ae
-    stop("setne");
+    al = !!(memoryAGet(ds, ecx + 12) & 0x01);
     eax &= 0x000000ff;
     eax += 0x00000021;
     if (dl != 0x61)
@@ -59776,7 +64873,7 @@ loc_1c8223: // 0160:1c8223
     eax = ecx;
     edi = pop32();
     esi = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1c822f() // 0160:1c822f +long
@@ -59862,7 +64959,7 @@ void sub_1c8322() // 0160:1c8322 +long
         goto loc_1c836f;
     if (ebx)
         goto loc_1c8352;
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1c8352;
 loc_1c8348: // 0160:1c8348
     eax = 0x00000009;
@@ -60178,7 +65275,6 @@ void sub_1c8590() // 0160:1c8590 +long
     goto loc_1c8753;
 loc_1c85ba: // 0160:1c85ba
     ebx = (int32_t)ebx * (int32_t)edx;
-//    stop("imul ebx * edx");
     if (ebx)
         goto loc_1c85c8;
     eax = ebx;
@@ -60214,7 +65310,7 @@ loc_1c85fc: // 0160:1c85fc
     push32(edi);
     eax = ecx;
     ecx >>= 2;
-    for (flags.zero = 0; cx != 0 && !flags.zero; --cx) movsd<ES_EDI, DS_ESI>(); // TODO!!!!
+    for (flags.zero = 0; cx != 0 && !flags.zero; --cx) movsd<ES_EDI, DS_ESI>();
     cl = al;
     cl &= 0x03;
     for (flags.zero = 0; cx != 0 && !flags.zero; --cx) movsb<ES_EDI, DS_ESI>();
@@ -60337,7 +65433,7 @@ loc_1c8753: // 0160:1c8753
     ebp = pop32();
     edi = pop32();
     esi = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1c875a() // 0160:1c875a +long
@@ -60514,7 +65610,7 @@ void sub_1c8bb1() // 0160:1c8bb1 +long
     esi = eax;
     if (!eax)
         goto loc_1c8bca;
-    if (eax <= 0xffd4) // TODO CICO 0xffffffd4 -> 0xffd4
+    if (eax <= 0xffd4)
         goto loc_1c8bd1;
 loc_1c8bca: // 0160:1c8bca
     eax = 0;
@@ -60535,7 +65631,6 @@ loc_1c8bf0: // 0160:1c8bf0
     if (eax <= memoryAGet32(ds, 0x1dfd14))
         goto loc_1c8c10;
     ecx = memoryAGet32(ds, 0x1dfd10);
-//    assert(ecx == 0x15d008);
     if (ecx)
         goto loc_1c8c48;
 loc_1c8c02: // 0160:1c8c02
@@ -60548,7 +65643,7 @@ loc_1c8c10: // 0160:1c8c10
 loc_1c8c14: // 0160:1c8c14
     edx = ds;
     eax = ebp;
-    memoryASet32(ds, 0x1dfd10, ecx); // ecx=15d008
+    memoryASet32(ds, 0x1dfd10, ecx);
     edx &= 0x0000ffff;
     eax = esi;
     ebx = ecx;
@@ -60568,10 +65663,8 @@ loc_1c8c48: // 0160:1c8c48
         goto loc_1c8c14;
     if (memoryAGet(ds, esp) != 0x00)
         goto loc_1c8c5d;
-//    assert(esi == 0x39); // 0x0e
     eax = esi;
     sub_1ca413();
-    assert(eax == 1);
     if (eax)
         goto loc_1c8c72;
 loc_1c8c5d: // 0160:1c8c5d
@@ -60685,7 +65778,6 @@ void sub_1c8d0b() // 0160:1c8d0b +long
     memoryASet32(ds, ebx + 20, eax);
     eax = 0;
     al = memoryAGet(ds, esp + 5);
-    assert(al == 9);
     eax--;
     memoryASet32(ds, ebx + 16, eax);
     eax = 0;
@@ -60775,13 +65867,13 @@ loc_1c8e02: // 0160:1c8e02
     idiv32(ecx);
     esi += eax;
 loc_1c8e13: // 0160:1c8e13
-    if ((int32_t)edi>=0)
+    if ((int32_t)edi >= 0)
         goto loc_1c8e1d;
     esi--;
     edi += 0x0000000c;
     goto loc_1c8e13;
 loc_1c8e1d: // 0160:1c8e1d
-    if ((int32_t)esi<0)
+    if ((int32_t)esi < 0)
         goto loc_1c8df8;
     eax = esi + 1900;
     sub_1ca9b0();
@@ -60800,8 +65892,7 @@ loc_1c8e35: // 0160:1c8e35
     ecx = sar32(ecx, 0x02);
     eax += edx;
     edx = eax + ecx;
-    eax = (int32_t)memoryAGet16(ds, ebx+edi*2);
-//    stop("disassembly failed at 160:1c8e51 movsx eax, word ptr [ebx + edi*2]");
+    eax = (short)memoryAGet16(ds, ebx + edi*2);
     edi = memoryAGet32(ss, ebp + 12);
     eax += edx;
     edi += eax;
@@ -60860,9 +65951,9 @@ loc_1c8ed1: // 0160:1c8ed1
         goto loc_1c8efb;
     eax = memoryAGet32(ds, 0x1e0020);
     esi -= 0x00015180;
-    if ((int32_t)(eax & eax) <= 0)
+    if ((int32_t)eax <= 0)
         goto loc_1c8df8;
-    if (stop("postCondition"))
+    if ((int32_t)esi >= 0)
         goto loc_1c8f19;
     goto loc_1c8df8;
 loc_1c8efb: // 0160:1c8efb
@@ -61017,7 +66108,7 @@ loc_1c8fed: // 0160:1c8fed
     push(ds);
     es = pop();
     push32(edx);
-    indirectCall(cs, eax); // 0160:1c8fff; //1cf1e0
+    indirectCall(cs, eax); // 0160:1c8fff;
     edx = pop32();
 loc_1c9002: // 0160:1c9002
     memoryASet(ds, ebx, 0x02);
@@ -61425,7 +66516,7 @@ loc_1c9493: // 0160:1c9493
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     memoryASet32(ds, esp + 4, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1c94cb;
     ebx = edi;
     ah = 0x3e;
@@ -61464,7 +66555,7 @@ loc_1c9507: // 0160:1c9507
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     memoryASet32(ds, esp + 4, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1c94ba;
     ebx = memoryAGet32(ds, esp + 4);
     ah = 0x3e;
@@ -61472,7 +66563,7 @@ loc_1c9507: // 0160:1c9507
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     memoryASet32(ds, esp + 4, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1c94ba;
     al = memoryAGet(ds, esp);
     ch = memoryAGet(ds, esp + 44);
@@ -61483,7 +66574,7 @@ loc_1c9507: // 0160:1c9507
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     memoryASet32(ds, esp + 4, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1c94ba;
     edi = 0;
     di = memoryAGet16(ds, esp + 4);
@@ -62160,7 +67251,7 @@ void sub_1c9dd1() // 0160:1c9dd1 +long
     push32(esi);
     if (!eax)
         goto loc_1c9e04;
-    stop("imul eax * memoryAGet32(ds, 0x3f3eb4)");
+    eax = (int32_t)eax * (int32_t)memoryAGet32(ds, 0x3f3eb4);
     esi = 0x000003e8;
     eax += 0x000001f4;
     edx = 0;
@@ -62636,7 +67727,7 @@ loc_1ca28c: // 0160:1ca28c
     ebx = pop32();
     esp += 4;
 }
-void sub_1ca291() // 0160:1ca291 +long allocator
+void sub_1ca291() // 0160:1ca291 +long
 {
     esp -= 4;
     push32(ebx);
@@ -62687,7 +67778,7 @@ loc_1ca2f4: // 0160:1ca2f4
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     edx = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1ca359;
     ebx = memoryAGet32(ds, esp);
     ebx >>= 4;
@@ -62705,7 +67796,7 @@ loc_1ca2f4: // 0160:1ca2f4
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
     es = pop();
-    if (stop("postCondition"))
+    if ((int32_t)esi < 0)
         goto loc_1ca359;
     ah = 0x00;
     al = 0x06;
@@ -62728,7 +67819,7 @@ loc_1ca35b: // 0160:1ca35b
     edx = pop32();
     ecx = pop32();
     ebx = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1ca364() // 0160:1ca364 +long
@@ -62742,7 +67833,7 @@ loc_1ca35b: // 0160:1ca35b
     edx = pop32();
     ecx = pop32();
     ebx = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
     return;
 loc_1ca364: // 0160:1ca364
@@ -62825,7 +67916,6 @@ void sub_1ca413() // 0160:1ca413 +long
     push32(eax);
     if (memoryAGet(ds, 0x1dfd4a) != 0x01)
         goto loc_1ca42b;
-    assert(memoryAGet(ds, 0x1dfd4b) == 0);
     if (memoryAGet(ds, 0x1dfd4b) == 0x00)
         goto loc_1ca434;
 loc_1ca42b: // 0160:1ca42b
@@ -62942,7 +68032,7 @@ loc_1ca54e: // 0160:1ca54e
     edx = pop32();
     ecx = pop32();
     ebx = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_1ca557() // 0160:1ca557 +long
@@ -62996,7 +68086,7 @@ loc_1ca5ad: // 0160:1ca5ad
     dh &= 0xf0;
     dl = 0;
     memoryASet32(ds, ebx, edx);
-    //stop("setne");
+    al = !!(edx);
     eax &= 0x000000ff;
     esi = pop32();
     edx = pop32();
@@ -63016,15 +68106,13 @@ void sub_1ca5d2() // 0160:1ca5d2 +long
     push(es);
     push32(ebx);
     push(ds);
-    //assert(esp == 0x3f4ed8);
     push32(edx);
     sub_1ca60a();
     push(ds);
     push32(edi);
     ebp = esp;
     edi = memoryAGet32(ss, ebp + 8);
-    ds = memoryAGet16(ss, ebp + 12); // 168:3f4ed8
-    assert(ds == 0x168);
+    ds = memoryAGet16(ss, ebp + 12);
     memoryASet32(ds, edi, eax);
     memoryASet32(ds, edi + 4, ebx);
     memoryASet32(ds, edi + 8, ecx);
@@ -63065,7 +68153,7 @@ void sub_1ca60a() // 0160:1ca60a +long +returnCarry
         default:
             assert(0);
     }
-//    assert(0); // code continues 160:1ca62f?? NO!
+
 //    stop("stack_unbalanced");
     esp += 4;
 }
@@ -63124,13 +68212,13 @@ void sub_1ca9eb() // 0160:1ca9eb +long
     if (!eax)
         goto loc_1caa22;
     eax = memoryAGet32(ds, ebx + 16);
-    esi = memoryAGet32(ds, eax*2 + 0x1d23f6);
-    eax = memoryAGet32(ds, eax*2 + 0x1d23f4);
+    esi = memoryAGet32(ds, eax * 2 + 0x1d23f6);
+    eax = memoryAGet32(ds, eax * 2 + 0x1d23f4);
     goto loc_1caa33;
 loc_1caa22: // 0160:1caa22
     eax = memoryAGet32(ds, ebx + 16);
-    esi = memoryAGet32(ds, eax*2 + 0x1d23dc);
-    eax = memoryAGet32(ds, eax*2 + 0x1d23da);
+    esi = memoryAGet32(ds, eax * 2 + 0x1d23dc);
+    eax = memoryAGet32(ds, eax * 2 + 0x1d23da);
 loc_1caa33: // 0160:1caa33
     esi = sar32(esi, 0x10);
     eax = sar32(eax, 0x10);
@@ -63366,8 +68454,7 @@ loc_1cac81: // 0160:1cac81
     eax = ecx;
     edx = ebx;
     sub_1cadab();
-    flags.zero = !(eax & eax);
-    stop("disassembly failed at 160:1cac93 sete al");
+    al = !eax;
     edi = al;
 loc_1cac99: // 0160:1cac99
     if (edi)
@@ -63534,7 +68621,7 @@ void sub_1caddb() // 0160:1caddb +long
     eax = ebx;
     if (edx >= 0x0000a8c0)
         goto loc_1cae08;
-    if ((int32_t)(ebx & ebx) <= 0)
+    if ((int32_t)ebx <= 0)
         goto loc_1cae08;
     esi = edx + 86400;
     esi -= ebx;
@@ -63590,7 +68677,7 @@ loc_1cae17: // 0160:1cae17
     eax += ebx;
     ebx = edi;
     ebx -= eax;
-    if (edx <= 0)
+    if (edx <= 0 && stop("test, jbe"))
         goto loc_1cae7e;
     eax = edx + -1;
     eax >>= 2;
@@ -63627,8 +68714,7 @@ loc_1caeb6: // 0160:1caeb6
     eax++;
 loc_1caece: // 0160:1caece
     memoryASet32(ds, ecx + 16, eax);
-    eax = (int16_t)memoryAGet16(ds, esi+eax*2);
-//    stop("disassembly failed at 160:1caed1 movsx eax, word ptr [esi + eax*2]");
+    eax = (short)memoryAGet16(ds, esi + eax*2);
     ebx -= eax;
     edx = 0;
     ebx++;
@@ -63777,7 +68863,7 @@ loc_1cafa0: // 0160:1cafa0
     push32(edi);
     eax = ecx;
     ecx >>= 2;
-    movsd<ES_EDI, DS_ESI>();
+    for (flags.zero = 0; cx != 0 && !flags.zero; --cx) movsd<ES_EDI, DS_ESI>();
     cl = al;
     cl &= 0x03;
     for (flags.zero = 0; cx != 0 && !flags.zero; --cx) movsb<ES_EDI, DS_ESI>();
@@ -64068,7 +69154,7 @@ void sub_1ce68e() // 0160:1ce68e +long
     fld1();
     stop("disassembly failed at 160:1ce695 fldz ");
     stop("disassembly failed at 160:1ce697 fdivp st(1)");
-    //fld80(st(0));
+    fld80(st(0));
     stop("disassembly failed at 160:1ce69b fchs ");
     stop("disassembly failed at 160:1ce69d fcompp ");
     ax = fnstsw();
@@ -64230,7 +69316,7 @@ loc_1ce7ff: // 0160:1ce7ff
     eax = memoryAGet32(ds, esp + 44);
     eax--;
     memoryASet32(ds, esp + 44, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1ce81c;
     edx = 0;
     eax = esp + 40;
@@ -64268,7 +69354,7 @@ loc_1ce861: // 0160:1ce861
     eax = memoryAGet32(ds, esp + 44);
     eax--;
     memoryASet32(ds, esp + 44, eax);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1ce87e;
     edx = 0;
     eax = esp + 40;
@@ -64384,7 +69470,7 @@ loc_1ce97e: // 0160:1ce97e
     memoryASet32(ds, esi, edx);
     edx = memoryAGet32(ds, edx + -4);
     memoryASet32(ds, ebx + 4, edx);
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1ce9a4;
     edi = edx;
     dh = memoryAGet(ds, ebx + 20);
@@ -64407,7 +69493,7 @@ loc_1ce9a5: // 0160:1ce9a5
     memoryASet32(ds, esi, edx);
     edx = memoryAGet32(ds, edx + -4);
     memoryASet32(ds, ebx + 8, edx);
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1ce9d6;
     memoryASet32(ds, ebx + 8, 0xffffffff);
 loc_1ce9d6: // 0160:1ce9d6
@@ -64660,7 +69746,7 @@ loc_1ceb4b: // 0160:1ceb4b
         goto loc_1ceb43;
     edx = eax + ebp;
 loc_1ceb52: // 0160:1ceb52
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1ceb5d;
     eax--;
     memoryASet(ds, edx, 0x30);
@@ -64686,7 +69772,7 @@ void sub_1ceb6c() // 0160:1ceb6c +long
     ecx = eax;
     esi = ebx;
     memoryASet32(ds, esp, edx);
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1ceb88;
     edx = -edx;
     ecx = eax + 1;
@@ -64995,7 +70081,7 @@ loc_1cee18: // 0160:1cee18
     eax += 0x00000004;
     memoryASet32(ds, edx, eax);
     edx = edi;
-    stop("disassembly failed at 160:1cee25 movsx eax, word ptr [eax - 4]");
+    eax = (short)memoryAGet16(ds, eax + -4);
     goto loc_1cee11;
 loc_1cee2b: // 0160:1cee2b
     ebp = memoryAGet32(ds, edx);
@@ -65279,10 +70365,9 @@ void sub_1cf0bb() // 0160:1cf0bb +long
     al = 0x00;
     ah = 0x44;
     interrupt(0x21);
-//    edx = rcl32(edx, 0x00000001);
-//    edx = ror32(edx, 0x00000001);
-//    //stop("setne");
-    eax = 0; // gabo!
+    edx = rcl32(edx, 0x00000001);
+    edx = ror32(edx, 0x00000001);
+    al = !!(dl & 0x80);
     eax &= 0x000000ff;
     edx = pop32();
     ecx = pop32();
@@ -65376,8 +70461,7 @@ void sub_1cf168() // 0160:1cf168 +long
     goto loc_1cf1cf;
 loc_1cf18c: // 0160:1cf18c
     eax = 0x00000008;
-    sub_1c8bb1(); //
-//    assert(eax == 0x15d090);
+    sub_1c8bb1();
     ebx = eax;
     if (eax)
         goto loc_1cf1bb;
@@ -65431,7 +70515,7 @@ void sub_1cf243() // 0160:1cf243 +long
     edx <<= 16;
     dx = ax;
     edi = edx;
-    if (stop("postCondition"))
+    if ((int32_t)edx >= 0)
         goto loc_1cf287;
     eax = 0;
     ax = dx;
@@ -65449,7 +70533,7 @@ loc_1cf287: // 0160:1cf287
     esi = eax;
     edi = eax;
     edx = eax;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1cf2a7;
     eax = 0;
     ax = si;
@@ -65478,7 +70562,7 @@ void sub_1cf2bf() // 0160:1cf2bf +long
     interrupt(0x21);
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1cf2da;
     eax &= 0x0000ffff;
     sub_1c9e15();
@@ -65580,7 +70664,6 @@ loc_1cf3bb: // 0160:1cf3bb
         goto loc_1cf3c4;
     eax = 0x00000001;
 loc_1cf3c4: // 0160:1cf3c4
-    assert(eax == 0x39 && bx == 0x39 && cx == 3);
     sub_1c8bb1();
     edx = eax;
     ebx = eax;
@@ -65679,7 +70762,7 @@ loc_1cf546: // 0160:1cf546
     eax <<= 31;
     edi &= 0x0000ffff;
     edi |= eax;
-    if (stop("postCondition"))
+    if ((int32_t)edi >= 0)
         goto loc_1cf570;
     es = edi;
     ebx = ebp;
@@ -65687,7 +70770,7 @@ loc_1cf546: // 0160:1cf546
     interrupt(0x21);
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
-    if (stop("postCondition"))
+    if ((int32_t)eax < 0)
         goto loc_1cf582;
 loc_1cf570: // 0160:1cf570
     eax = ds;
@@ -65698,7 +70781,7 @@ loc_1cf576: // 0160:1cf576
     interrupt(0x21);
     eax = rcl32(eax, 0x00000001);
     eax = ror32(eax, 0x00000001);
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1cf5c5;
 loc_1cf582: // 0160:1cf582
     sub_1cf0af();
@@ -65733,7 +70816,7 @@ loc_1cf5d3: // 0160:1cf5d3
     es = pop();
     goto loc_1cf515;
 }
-void sub_1cfb4f() // 0160:1cfb4f +long error
+void sub_1cfb4f() // 0160:1cfb4f +long
 {
     esp -= 4;
     push32(ebx);
@@ -65746,7 +70829,7 @@ void sub_1cfb4f() // 0160:1cfb4f +long error
         goto loc_1cfb69;
     eax = ebx;
     edx = ecx;
-    sub_1c7edd(); // error message
+    sub_1c7edd();
 loc_1cfb69: // 0160:1cfb69
     ecx = pop32();
     ebx = pop32();
@@ -65800,7 +70883,7 @@ void sub_1cfbdb() // 0160:1cfbdb +long
     ecx = edx;
     if (ebx != 0x0000000a)
         goto loc_1cfbed;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1cfbed;
     eax = -eax;
     memoryASet(ds, edx, 0x2d);
@@ -65858,7 +70941,7 @@ void sub_1cfc64() // 0160:1cfc64 +long
     ecx = edx;
     if (ebx != 0x0000000a)
         goto loc_1cfc76;
-    if (stop("postCondition"))
+    if ((int32_t)eax >= 0)
         goto loc_1cfc76;
     eax = -eax;
     memoryASet(ds, edx, 0x2d);
@@ -65911,8 +70994,7 @@ int GetProcAt(int seg, int ofs)
     int map[] = {
         0x196010, 0x160, 0x196010, 0x160, 0x19602a, 0x19602a, 0x160, 0x19602a, 0x160, 0x196049, 
         0x196049, 0x160, 0x196049, 0x160, 0x196500, 0x196049, 0x160, 0x196658, 0x160, 0x19665f, 
-        0x196528, 0x160, 0x196528, 0x160, 0x1965da, 0x196528, 0x160, 0x196646, 0x160, 0x19665f, 
-        0x196688, 0x160, 0x196688, 0x160, 0x1966e7, 0x196688, 0x160, 0x196864, 0x160, 0x1968a6, 
+        0x196528, 0x160, 0x196528, 0x160, 0x19665f, 0x196688, 0x160, 0x196688, 0x160, 0x1968a6, 
         0x1968c6, 0x160, 0x1968c6, 0x160, 0x1969ec, 0x1969ec, 0x160, 0x1969ec, 0x160, 0x196a3e, 
         0x196a3e, 0x160, 0x196a3e, 0x160, 0x196afc, 0x196afc, 0x160, 0x196afc, 0x160, 0x196b5f, 
         0x196b5f, 0x160, 0x196b5f, 0x160, 0x196b84, 0x196b5f, 0x160, 0x196b89, 0x160, 0x196b8c, 
@@ -65928,356 +71010,381 @@ int GetProcAt(int seg, int ofs)
         0x1973e5, 0x160, 0x196658, 0x160, 0x19665f, 0x1973e5, 0x160, 0x1973e5, 0x160, 0x197664, 
         0x197664, 0x160, 0x196658, 0x160, 0x19665f, 0x197664, 0x160, 0x197664, 0x160, 0x1977cd, 
         0x1977cd, 0x160, 0x1977cd, 0x160, 0x1978a8, 0x1977cd, 0x160, 0x198141, 0x160, 0x198147, 
-        0x197910, 0x160, 0x197910, 0x160, 0x197a01, 0x197910, 0x160, 0x197a2c, 0x160, 0x197a35, 
-        0x197b3b, 0x160, 0x196659, 0x160, 0x19665f, 0x197b3b, 0x160, 0x197b3b, 0x160, 0x197c71, 
-        0x197c71, 0x160, 0x197c71, 0x160, 0x197ce5, 0x197c71, 0x160, 0x197cea, 0x160, 0x197d30, 
-        0x197c71, 0x160, 0x197d35, 0x160, 0x197d4e, 0x197c71, 0x160, 0x197d53, 0x160, 0x197d77, 
-        0x197c71, 0x160, 0x198141, 0x160, 0x198147, 0x197d77, 0x160, 0x197d77, 0x160, 0x197f05, 
-        0x197d77, 0x160, 0x198141, 0x160, 0x198146, 0x197f05, 0x160, 0x196658, 0x160, 0x19665f, 
-        0x197f05, 0x160, 0x196f8f, 0x160, 0x196f97, 0x197f05, 0x160, 0x197f05, 0x160, 0x197f7a, 
-        0x197f7a, 0x160, 0x196655, 0x160, 0x19665f, 0x197f7a, 0x160, 0x197f7a, 0x160, 0x1980de, 
-        0x1980de, 0x160, 0x1980de, 0x160, 0x1980f9, 0x1980f9, 0x160, 0x1980f9, 0x160, 0x198147, 
-        0x198147, 0x160, 0x19813e, 0x160, 0x19818b, 0x19818b, 0x160, 0x196659, 0x160, 0x19665f, 
-        0x19818b, 0x160, 0x19818b, 0x160, 0x19823d, 0x19823d, 0x160, 0x19823d, 0x160, 0x1982da, 
-        0x1982da, 0x160, 0x1982da, 0x160, 0x1982e5, 0x1982da, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
-        0x1982da, 0x160, 0x19e865, 0x160, 0x19e8ec, 0x1982e5, 0x160, 0x1982e5, 0x160, 0x198554, 
-        0x198554, 0x160, 0x196658, 0x160, 0x19665f, 0x198554, 0x160, 0x198554, 0x160, 0x198725, 
-        0x198725, 0x160, 0x198725, 0x160, 0x19878d, 0x19878d, 0x160, 0x196658, 0x160, 0x19665f, 
-        0x19878d, 0x160, 0x19878d, 0x160, 0x198b0e, 0x198b0e, 0x160, 0x196658, 0x160, 0x19665f, 
-        0x198b0e, 0x160, 0x198b0e, 0x160, 0x198cd4, 0x198cd4, 0x160, 0x198cd4, 0x160, 0x198cff, 
-        0x198cff, 0x160, 0x196658, 0x160, 0x19665f, 0x198cff, 0x160, 0x198cff, 0x160, 0x198efd, 
-        0x198efd, 0x160, 0x198efd, 0x160, 0x198f64, 0x198f64, 0x160, 0x196658, 0x160, 0x19665f, 
-        0x198f64, 0x160, 0x198f64, 0x160, 0x199062, 0x199062, 0x160, 0x199062, 0x160, 0x1990e5, 
-        0x199062, 0x160, 0x1990ea, 0x160, 0x1990ee, 0x199163, 0x160, 0x196659, 0x160, 0x19665f, 
-        0x199163, 0x160, 0x199163, 0x160, 0x1992d0, 0x1992d0, 0x160, 0x1992d0, 0x160, 0x199313, 
-        0x19934d, 0x160, 0x19934d, 0x160, 0x199435, 0x199435, 0x160, 0x199435, 0x160, 0x1994a3, 
-        0x1994a3, 0x160, 0x196658, 0x160, 0x19665f, 0x1994a3, 0x160, 0x1994a3, 0x160, 0x199775, 
-        0x199775, 0x160, 0x199775, 0x160, 0x1997d1, 0x1997d1, 0x160, 0x1997d1, 0x160, 0x19982d, 
-        0x19982d, 0x160, 0x19982d, 0x160, 0x199889, 0x199889, 0x160, 0x199889, 0x160, 0x199917, 
-        0x199917, 0x160, 0x199917, 0x160, 0x199993, 0x199993, 0x160, 0x199993, 0x160, 0x1999e9, 
-        0x1999e9, 0x160, 0x1999e9, 0x160, 0x199ab8, 0x199ab8, 0x160, 0x199ab8, 0x160, 0x199ae8, 
-        0x199ae8, 0x160, 0x196658, 0x160, 0x19665f, 0x199ae8, 0x160, 0x199ae8, 0x160, 0x199c0e, 
-        0x199c0e, 0x160, 0x196658, 0x160, 0x19665f, 0x199c0e, 0x160, 0x199c0e, 0x160, 0x199dd1, 
-        0x199dd1, 0x160, 0x196658, 0x160, 0x19665f, 0x199dd1, 0x160, 0x199dd1, 0x160, 0x199f56, 
-        0x199f56, 0x160, 0x196659, 0x160, 0x19665f, 0x199f56, 0x160, 0x199f56, 0x160, 0x19a0dc, 
-        0x19a0dc, 0x160, 0x19a0dc, 0x160, 0x19a217, 0x19a217, 0x160, 0x19a217, 0x160, 0x19a255, 
-        0x19a217, 0x160, 0x19a25a, 0x160, 0x19a2a3, 0x19a217, 0x160, 0x19a2a8, 0x160, 0x19a2ac, 
-        0x19a2ac, 0x160, 0x19a2ac, 0x160, 0x19a32e, 0x19a2ac, 0x160, 0x19a333, 0x160, 0x19a337, 
-        0x19a337, 0x160, 0x19a337, 0x160, 0x19a526, 0x19a526, 0x160, 0x19a526, 0x160, 0x19a5b1, 
-        0x19a640, 0x160, 0x19a640, 0x160, 0x19a69d, 0x19a69d, 0x160, 0x19a69d, 0x160, 0x19a6d2, 
-        0x19a6d2, 0x160, 0x198141, 0x160, 0x198147, 0x19a6d2, 0x160, 0x19a6d2, 0x160, 0x19a865, 
-        0x19a865, 0x160, 0x196658, 0x160, 0x19665f, 0x19a865, 0x160, 0x19a865, 0x160, 0x19ab49, 
-        0x19abcd, 0x160, 0x19abcd, 0x160, 0x19ac27, 0x19ac27, 0x160, 0x19ac27, 0x160, 0x19ac48, 
-        0x19ac48, 0x160, 0x196658, 0x160, 0x19665f, 0x19ac48, 0x160, 0x19ac48, 0x160, 0x19af26, 
-        0x19af26, 0x160, 0x19af26, 0x160, 0x19af3f, 0x19af3f, 0x160, 0x19af3f, 0x160, 0x19af54, 
-        0x19af54, 0x160, 0x19af54, 0x160, 0x19af98, 0x19af98, 0x160, 0x19af98, 0x160, 0x19afcd, 
-        0x19afcd, 0x160, 0x19afcd, 0x160, 0x19aff6, 0x19aff6, 0x160, 0x19aff6, 0x160, 0x19b090, 
-        0x19b091, 0x160, 0x19b091, 0x160, 0x19b0d1, 0x19b153, 0x160, 0x19b153, 0x160, 0x19b1d2, 
-        0x19b1d2, 0x160, 0x19b1d2, 0x160, 0x19b1f5, 0x19b1f5, 0x160, 0x19b1f5, 0x160, 0x19b200, 
-        0x19b200, 0x160, 0x19b200, 0x160, 0x19b22b, 0x19b2ba, 0x160, 0x19b2ba, 0x160, 0x19b31e, 
-        0x19b31e, 0x160, 0x19b31e, 0x160, 0x19b33a, 0x19b33a, 0x160, 0x19b33a, 0x160, 0x19b38b, 
-        0x19b38b, 0x160, 0x19b38b, 0x160, 0x19b431, 0x19b431, 0x160, 0x19b08b, 0x160, 0x19b091, 
-        0x19b431, 0x160, 0x19b431, 0x160, 0x19b50c, 0x19b55e, 0x160, 0x19b55e, 0x160, 0x19b588, 
-        0x19b588, 0x160, 0x19b588, 0x160, 0x19b5c8, 0x19b5c8, 0x160, 0x19b5c2, 0x160, 0x19b66a, 
-        0x19b66a, 0x160, 0x19b66a, 0x160, 0x19b679, 0x19b679, 0x160, 0x19b679, 0x160, 0x19b766, 
-        0x19b766, 0x160, 0x19b766, 0x160, 0x19b794, 0x19b794, 0x160, 0x19af92, 0x160, 0x19af98, 
-        0x19b794, 0x160, 0x19b794, 0x160, 0x19b80e, 0x19b80e, 0x160, 0x19b5c2, 0x160, 0x19b5c8, 
-        0x19b80e, 0x160, 0x19b80e, 0x160, 0x19b82f, 0x19b8ca, 0x160, 0x19b8ca, 0x160, 0x19bdd8, 
-        0x19bdd9, 0x160, 0x19bdd9, 0x160, 0x19c589, 0x19c58a, 0x160, 0x19c58a, 0x160, 0x19c7ca, 
-        0x19c7ca, 0x160, 0x19c7ca, 0x160, 0x19c91e, 0x19c7ca, 0x160, 0x19ca95, 0x160, 0x19ca9b, 
-        0x19c91e, 0x160, 0x19c91e, 0x160, 0x19ca9b, 0x19ca9b, 0x160, 0x19ca9b, 0x160, 0x19cb51, 
-        0x19cb51, 0x160, 0x19cb51, 0x160, 0x19cb74, 0x19cb74, 0x160, 0x19cb74, 0x160, 0x19cbc0, 
-        0x19cbc0, 0x160, 0x19ca94, 0x160, 0x19ca9b, 0x19cbc0, 0x160, 0x19cbc0, 0x160, 0x19cc15, 
-        0x19cc15, 0x160, 0x19cc15, 0x160, 0x19ccf4, 0x19ccf4, 0x160, 0x19ccf4, 0x160, 0x19cd59, 
-        0x19cd59, 0x160, 0x19cd59, 0x160, 0x19cdc5, 0x19cdc5, 0x160, 0x19cdc5, 0x160, 0x19cde3, 
-        0x19cde3, 0x160, 0x19cde3, 0x160, 0x19ce21, 0x19ce21, 0x160, 0x19ce21, 0x160, 0x19ce55, 
-        0x19ce55, 0x160, 0x19ce55, 0x160, 0x19ceb7, 0x19ceb7, 0x160, 0x19ceb7, 0x160, 0x19cf11, 
-        0x19cf11, 0x160, 0x19cf11, 0x160, 0x19cf9d, 0x19cf9d, 0x160, 0x19cf96, 0x160, 0x19d0f3, 
-        0x19d0f3, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19d0f3, 0x160, 0x19d0f3, 0x160, 0x19d1d6, 
-        0x19d1d6, 0x160, 0x19d1d6, 0x160, 0x19d338, 0x19d338, 0x160, 0x19d338, 0x160, 0x19d389, 
-        0x19d389, 0x160, 0x19d389, 0x160, 0x19d416, 0x19d416, 0x160, 0x19d416, 0x160, 0x19d4cb, 
-        0x19d4cb, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x19d4cb, 0x160, 0x19d4cb, 0x160, 0x19d55b, 
-        0x19d55b, 0x160, 0x19d55b, 0x160, 0x19d5f1, 0x19d5f1, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x19d5f1, 0x160, 0x19d5f1, 0x160, 0x19d86c, 0x19d86c, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x19d86c, 0x160, 0x19d86c, 0x160, 0x19dad1, 0x19dad1, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x19dad1, 0x160, 0x19dad1, 0x160, 0x19dc9c, 0x19dc9c, 0x160, 0x19dc9c, 0x160, 0x19dceb, 
-        0x19dceb, 0x160, 0x19dceb, 0x160, 0x19dd20, 0x19dd20, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
-        0x19dd20, 0x160, 0x19dd20, 0x160, 0x19de2c, 0x19de2c, 0x160, 0x19de2c, 0x160, 0x19de6a, 
-        0x19de6a, 0x160, 0x19cf93, 0x160, 0x19cf9d, 0x19de6a, 0x160, 0x19de6a, 0x160, 0x19dfc7, 
-        0x19dfc7, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19dfc7, 0x160, 0x19dfc7, 0x160, 0x19e865, 
-        0x19e865, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x19e865, 0x160, 0x19e865, 0x160, 0x19e8ec, 
-        0x19e8ec, 0x160, 0x19e8ec, 0x160, 0x19e906, 0x19e906, 0x160, 0x19e906, 0x160, 0x19e929, 
-        0x19e929, 0x160, 0x19e929, 0x160, 0x19e96d, 0x19e96d, 0x160, 0x19e96d, 0x160, 0x19e997, 
-        0x19e997, 0x160, 0x19e997, 0x160, 0x19e9d5, 0x19e9d5, 0x160, 0x19e9d5, 0x160, 0x19eabf, 
-        0x19eabf, 0x160, 0x19eabf, 0x160, 0x19ead2, 0x19eabf, 0x160, 0x19eb43, 0x160, 0x19eb4c, 
-        0x19ead2, 0x160, 0x19ead2, 0x160, 0x19eb13, 0x19ead2, 0x160, 0x19eb43, 0x160, 0x19eb4c, 
-        0x19eb13, 0x160, 0x19eb13, 0x160, 0x19eb2c, 0x19eb13, 0x160, 0x19eb43, 0x160, 0x19eb4c, 
-        0x19eb2c, 0x160, 0x19eb2c, 0x160, 0x19eb4c, 0x19eb4c, 0x160, 0x19eb3e, 0x160, 0x19eb60, 
-        0x19eb60, 0x160, 0x19eb60, 0x160, 0x19eb98, 0x19eb60, 0x160, 0x19ec4a, 0x160, 0x19ec53, 
-        0x19eb98, 0x160, 0x19eb98, 0x160, 0x19ebc0, 0x19ebc0, 0x160, 0x19ebc0, 0x160, 0x19ebd9, 
-        0x19ebc0, 0x160, 0x19ec4a, 0x160, 0x19ec53, 0x19ebd9, 0x160, 0x19ebd9, 0x160, 0x19ec33, 
-        0x19ec33, 0x160, 0x19ec33, 0x160, 0x19ec53, 0x19ec53, 0x160, 0x19ec53, 0x160, 0x19ec81, 
-        0x19ec81, 0x160, 0x19ec45, 0x160, 0x19ec53, 0x19ec81, 0x160, 0x19ec81, 0x160, 0x19ec95, 
-        0x19ec95, 0x160, 0x19ec95, 0x160, 0x19ecf9, 0x19ecf9, 0x160, 0x19ecf0, 0x160, 0x19ed3a, 
-        0x19ed3a, 0x160, 0x19ec2a, 0x160, 0x19ec33, 0x19ed3a, 0x160, 0x19ed3a, 0x160, 0x19ed7f, 
-        0x19ed7f, 0x160, 0x19ed7f, 0x160, 0x19edc0, 0x19edc0, 0x160, 0x19edc0, 0x160, 0x19ede8, 
-        0x19ede7, 0x160, 0x19ede7, 0x160, 0x19ede8, 0x19ede8, 0x160, 0x19ec2a, 0x160, 0x19ec33, 
-        0x19ede8, 0x160, 0x19ede8, 0x160, 0x19ee35, 0x19ee35, 0x160, 0x19ec2a, 0x160, 0x19ec33, 
-        0x19ee35, 0x160, 0x19ee35, 0x160, 0x19ee93, 0x19ee93, 0x160, 0x19ecf0, 0x160, 0x19ecf9, 
-        0x19ee93, 0x160, 0x19ee93, 0x160, 0x19eeac, 0x19eeac, 0x160, 0x19eeac, 0x160, 0x19eed3, 
-        0x19eed3, 0x160, 0x19eed3, 0x160, 0x19eefa, 0x19eefa, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x19eefa, 0x160, 0x19eefa, 0x160, 0x19f50a, 0x19f50a, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
-        0x19f50a, 0x160, 0x19de02, 0x160, 0x19de0c, 0x19f50a, 0x160, 0x19f50a, 0x160, 0x19f612, 
-        0x19f612, 0x160, 0x19f612, 0x160, 0x19f8bd, 0x19f8bd, 0x160, 0x19f8b7, 0x160, 0x19fa00, 
-        0x19fa00, 0x160, 0x19fa00, 0x160, 0x19fb74, 0x19fb74, 0x160, 0x19fb74, 0x160, 0x19fd16, 
-        0x19fd16, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x19fd16, 0x160, 0x19fd16, 0x160, 0x19fdd1, 
-        0x19fdd1, 0x160, 0x19d332, 0x160, 0x19d338, 0x19fdd1, 0x160, 0x19fdd1, 0x160, 0x19ffe1, 
-        0x19ffe1, 0x160, 0x19d332, 0x160, 0x19d338, 0x19ffe1, 0x160, 0x19ffe1, 0x160, 0x1a0111, 
-        0x1a0111, 0x160, 0x1a0111, 0x160, 0x1a01b1, 0x1a01b1, 0x160, 0x19fd10, 0x160, 0x19fd16, 
-        0x1a01b1, 0x160, 0x1a01b1, 0x160, 0x1a0265, 0x1a0265, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a0265, 0x160, 0x1a0265, 0x160, 0x1a08f5, 0x1a08f5, 0x160, 0x1a08f5, 0x160, 0x1a0a8e, 
-        0x1a0a8f, 0x160, 0x1a0a8f, 0x160, 0x1a0ac5, 0x1a0ac5, 0x160, 0x1a0ac5, 0x160, 0x1a0ae9, 
-        0x1a0ae9, 0x160, 0x1a0ae9, 0x160, 0x1a0b1f, 0x1a0b1f, 0x160, 0x1a0b1f, 0x160, 0x1a0b6b, 
-        0x1a0b6b, 0x160, 0x1a0b62, 0x160, 0x1a0bb0, 0x1a0bb0, 0x160, 0x1a0bb0, 0x160, 0x1a0edd, 
-        0x1a0bb0, 0x160, 0x1a0ee2, 0x160, 0x1a1150, 0x1a1150, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a1150, 0x160, 0x1a1150, 0x160, 0x1a178b, 0x1a178b, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a178b, 0x160, 0x1a178b, 0x160, 0x1a19aa, 0x1a19aa, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a19aa, 0x160, 0x1a19aa, 0x160, 0x1a1ab7, 0x1a1ab7, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a1ab7, 0x160, 0x1a1ab7, 0x160, 0x1a1c1b, 0x1a1c1b, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a1c1b, 0x160, 0x1a1c1b, 0x160, 0x1a21af, 0x1a21af, 0x160, 0x1a21af, 0x160, 0x1a221e, 
-        0x1a21af, 0x160, 0x1a221f, 0x160, 0x1a2222, 0x1a2223, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 
-        0x1a2223, 0x160, 0x1a2223, 0x160, 0x1a2467, 0x1a2467, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a2467, 0x160, 0x1a2467, 0x160, 0x1a2510, 0x1a2510, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a2510, 0x160, 0x1a1783, 0x160, 0x1a178b, 0x1a2510, 0x160, 0x1a2510, 0x160, 0x1a2846, 
-        0x1a28a1, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 0x1a28a1, 0x160, 0x1a28a1, 0x160, 0x1a2cc8, 
-        0x1a2cc8, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 0x1a2cc8, 0x160, 0x1a2cc8, 0x160, 0x1a3029, 
-        0x1a3029, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 0x1a3029, 0x160, 0x1a3029, 0x160, 0x1a31e0, 
-        0x1a31e0, 0x160, 0x1a31e0, 0x160, 0x1a3223, 0x1a3223, 0x160, 0x1a3223, 0x160, 0x1a33f1, 
-        0x1a33f1, 0x160, 0x1a33f1, 0x160, 0x1a3484, 0x1a3484, 0x160, 0x1a3484, 0x160, 0x1a3503, 
-        0x1a3503, 0x160, 0x1a3503, 0x160, 0x1a35e4, 0x1a35e4, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
-        0x1a35e4, 0x160, 0x1a35e4, 0x160, 0x1a3660, 0x1a3660, 0x160, 0x1a3660, 0x160, 0x1a3924, 
-        0x1a3924, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a3924, 0x160, 0x1a3924, 0x160, 0x1a39f0, 
-        0x1a39f0, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a39f0, 0x160, 0x1a39f0, 0x160, 0x1a3dab, 
-        0x1a3dab, 0x160, 0x19cf96, 0x160, 0x19cf9a, 0x1a3dab, 0x160, 0x19cf9b, 0x160, 0x19cf9c, 
-        0x1a3dab, 0x160, 0x1a3dab, 0x160, 0x1a3fb3, 0x1a3fb3, 0x160, 0x19cf93, 0x160, 0x19cf9d, 
-        0x1a3fb3, 0x160, 0x1a3fb3, 0x160, 0x1a408b, 0x1a40e4, 0x160, 0x1a40e4, 0x160, 0x1a40f3, 
-        0x1a40f3, 0x160, 0x1a40d5, 0x160, 0x1a40e4, 0x1a40f3, 0x160, 0x1a40f3, 0x160, 0x1a40fa, 
-        0x1a413d, 0x160, 0x1a413d, 0x160, 0x1a4196, 0x1a4196, 0x160, 0x1a4196, 0x160, 0x1a41bf, 
-        0x1a41bf, 0x160, 0x1a41bf, 0x160, 0x1a41da, 0x1a41d7, 0x160, 0x1a41d7, 0x160, 0x1a41da, 
-        0x1a41da, 0x160, 0x1a41da, 0x160, 0x1a41ee, 0x1a41ee, 0x160, 0x1a41ee, 0x160, 0x1a4206, 
-        0x1a4206, 0x160, 0x1a41f9, 0x160, 0x1a4210, 0x1a4210, 0x160, 0x1a4210, 0x160, 0x1a4261, 
-        0x1a4261, 0x160, 0x1a41f9, 0x160, 0x1a4206, 0x1a4261, 0x160, 0x1a4261, 0x160, 0x1a426e, 
-        0x1a426e, 0x160, 0x1a426e, 0x160, 0x1a4288, 0x1a4288, 0x160, 0x1a4288, 0x160, 0x1a4408, 
-        0x1a4288, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a4408, 0x160, 0x1a4286, 0x160, 0x1a4288, 
-        0x1a4408, 0x160, 0x1a4408, 0x160, 0x1a4432, 0x1a4432, 0x160, 0x1a4432, 0x160, 0x1a448f, 
-        0x1a448f, 0x160, 0x1a448f, 0x160, 0x1a44d2, 0x1a44d2, 0x160, 0x1a44d2, 0x160, 0x1a44ff, 
-        0x1a44ff, 0x160, 0x1a44ff, 0x160, 0x1a45ae, 0x1a45ae, 0x160, 0x1a45ae, 0x160, 0x1a45e9, 
-        0x1a45e9, 0x160, 0x1a45e9, 0x160, 0x1a4626, 0x1a4626, 0x160, 0x1a4626, 0x160, 0x1a46ed, 
-        0x1a46ed, 0x160, 0x1a46ed, 0x160, 0x1a4760, 0x1a4760, 0x160, 0x1a4760, 0x160, 0x1a47d9, 
-        0x1a47d9, 0x160, 0x1a45a8, 0x160, 0x1a45ae, 0x1a47d9, 0x160, 0x1a47d9, 0x160, 0x1a484f, 
-        0x1a484f, 0x160, 0x1a484f, 0x160, 0x1a488e, 0x1a488e, 0x160, 0x1a488e, 0x160, 0x1a4932, 
-        0x1a488e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a4932, 0x160, 0x1a4932, 0x160, 0x1a4983, 
-        0x1a4983, 0x160, 0x1a4983, 0x160, 0x1a499a, 0x1a499a, 0x160, 0x1a499a, 0x160, 0x1a49c6, 
-        0x1a49c6, 0x160, 0x1a49c6, 0x160, 0x1a4a08, 0x1a4a08, 0x160, 0x1a4a08, 0x160, 0x1a4a30, 
-        0x1a4a30, 0x160, 0x1a4a30, 0x160, 0x1a4b85, 0x1a4a30, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a4b85, 0x160, 0x1a4b85, 0x160, 0x1a4c10, 0x1a4b85, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a4b85, 0x160, 0x1a5969, 0x160, 0x1a5973, 0x1a4b85, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
-        0x1a4c10, 0x160, 0x1a4c10, 0x160, 0x1a4c45, 0x1a4c45, 0x160, 0x1a47d5, 0x160, 0x1a47d9, 
-        0x1a4c45, 0x160, 0x1a4c45, 0x160, 0x1a4c9b, 0x1a4c9b, 0x160, 0x1a4c9b, 0x160, 0x1a4dc6, 
-        0x1a4dc6, 0x160, 0x1a4dbf, 0x160, 0x1a4ebf, 0x1a4ebf, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
-        0x1a4ebf, 0x160, 0x1a4ebf, 0x160, 0x1a4f9d, 0x1a4f9d, 0x160, 0x1a4f9d, 0x160, 0x1a501b, 
-        0x1a501b, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a501b, 0x160, 0x1a501b, 0x160, 0x1a5262, 
-        0x1a5262, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5262, 0x160, 0x1a5262, 0x160, 0x1a541a, 
-        0x1a541a, 0x160, 0x1a541a, 0x160, 0x1a543c, 0x1a543c, 0x160, 0x1a543c, 0x160, 0x1a5460, 
-        0x1a5460, 0x160, 0x1a5460, 0x160, 0x1a5541, 0x1a5541, 0x160, 0x1a492a, 0x160, 0x1a4932, 
-        0x1a5541, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5541, 0x160, 0x1a5541, 0x160, 0x1a55b1, 
-        0x1a55b1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a55b1, 0x160, 0x1a55b1, 0x160, 0x1a56f7, 
-        0x1a56f7, 0x160, 0x1a56f7, 0x160, 0x1a5723, 0x1a5723, 0x160, 0x1a5723, 0x160, 0x1a5767, 
-        0x1a5767, 0x160, 0x1a5767, 0x160, 0x1a5862, 0x1a5767, 0x160, 0x1a5b6b, 0x160, 0x1a5b7a, 
-        0x1a5862, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5862, 0x160, 0x1a5862, 0x160, 0x1a591a, 
-        0x1a591a, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a591a, 0x160, 0x1a591a, 0x160, 0x1a5973, 
-        0x1a591a, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a5973, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a5973, 0x160, 0x1a5973, 0x160, 0x1a5a09, 0x1a5973, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
-        0x1a5a09, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a5a09, 0x160, 0x1a5a09, 0x160, 0x1a5a79, 
-        0x1a5a79, 0x160, 0x1a5a79, 0x160, 0x1a5aa6, 0x1a5aa6, 0x160, 0x1a5aa6, 0x160, 0x1a5af8, 
-        0x1a5af8, 0x160, 0x1a5af8, 0x160, 0x1a5b7a, 0x1a5b7a, 0x160, 0x1a5b7a, 0x160, 0x1a5bab, 
-        0x1a5bab, 0x160, 0x1a5bab, 0x160, 0x1a5bde, 0x1a5c69, 0x160, 0x1a5bde, 0x160, 0x1a5d2f, 
-        0x1a5d2f, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5d2f, 0x160, 0x1a5d2f, 0x160, 0x1a5d8b, 
-        0x1a5d8b, 0x160, 0x1a5d8b, 0x160, 0x1a5df1, 0x1a5e0f, 0x160, 0x1a5e0f, 0x160, 0x1a5e27, 
-        0x1a5e0f, 0x160, 0x1a5ee8, 0x160, 0x1a5eec, 0x1a5eec, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 
-        0x1a5eec, 0x160, 0x1a5eec, 0x160, 0x1a5f40, 0x1a5f40, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a5f40, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a5f40, 0x160, 0x1a5f40, 0x160, 0x1a5f9f, 
-        0x1a5f9f, 0x160, 0x1a5f9f, 0x160, 0x1a60a8, 0x1a60a8, 0x160, 0x1a60a8, 0x160, 0x1a60fb, 
-        0x1a60fb, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a60fb, 0x160, 0x1a60fb, 0x160, 0x1a6163, 
-        0x1a6163, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a6163, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a6163, 0x160, 0x1a6163, 0x160, 0x1a619d, 0x1a619d, 0x160, 0x1a619d, 0x160, 0x1a626e, 
-        0x1a626e, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 0x1a626e, 0x160, 0x1a626e, 0x160, 0x1a62b7, 
-        0x1a62b7, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a62b7, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a62b7, 0x160, 0x1a62b7, 0x160, 0x1a62f1, 0x1a63ad, 0x160, 0x1a63ad, 0x160, 0x1a63f0, 
-        0x1a63f0, 0x160, 0x1a63f0, 0x160, 0x1a645e, 0x1a645e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a645e, 0x160, 0x1a5957, 0x160, 0x1a5973, 0x1a645e, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
-        0x1a645e, 0x160, 0x1a645e, 0x160, 0x1a64a0, 0x1a64a0, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a64a0, 0x160, 0x1a56ef, 0x160, 0x1a56f7, 0x1a64a0, 0x160, 0x1a64a0, 0x160, 0x1a66c0, 
-        0x1a66c0, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 0x1a66c0, 0x160, 0x1a66c0, 0x160, 0x1a671d, 
-        0x1a671d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a671d, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a671d, 0x160, 0x1a671d, 0x160, 0x1a675c, 0x1a675c, 0x160, 0x1a675c, 0x160, 0x1a679f, 
-        0x1a679f, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a679f, 0x160, 0x1a5952, 0x160, 0x1a5973, 
-        0x1a679f, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a679f, 0x160, 0x1a679f, 0x160, 0x1a6813, 
-        0x1a6813, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a6813, 0x160, 0x1a5a68, 0x160, 0x1a5a79, 
-        0x1a6813, 0x160, 0x1a6813, 0x160, 0x1a6877, 0x1a68a3, 0x160, 0x1a68a3, 0x160, 0x1a68ba, 
-        0x1a68a3, 0x160, 0x1a6a2b, 0x160, 0x1a6a30, 0x1a6a30, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
-        0x1a6a30, 0x160, 0x1a6154, 0x160, 0x1a6163, 0x1a6a30, 0x160, 0x1a6a30, 0x160, 0x1a6aa9, 
-        0x1a6aa9, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a6aa9, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a6aa9, 0x160, 0x1a6aa9, 0x160, 0x1a6ae3, 0x1a6ae3, 0x160, 0x1a6ae3, 0x160, 0x1a6b49, 
-        0x1a6b49, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 0x1a6b49, 0x160, 0x1a6b49, 0x160, 0x1a6b97, 
-        0x1a6b97, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a6b97, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a6b97, 0x160, 0x1a6b97, 0x160, 0x1a6bd1, 0x1a6bd1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a6bd1, 0x160, 0x1a6bd1, 0x160, 0x1a6cdc, 0x1a6cdc, 0x160, 0x1a6cdc, 0x160, 0x1a6d43, 
-        0x1a6d43, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a6d43, 0x160, 0x1a6d43, 0x160, 0x1a6dd0, 
-        0x1a6dd0, 0x160, 0x1a6dd0, 0x160, 0x1a6de0, 0x1a6de0, 0x160, 0x1a6de0, 0x160, 0x1a6e11, 
-        0x1a6e11, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a6e11, 0x160, 0x1a6e11, 0x160, 0x1a6ea9, 
-        0x1a6ea9, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a6ea9, 0x160, 0x1a6e9f, 0x160, 0x1a6f7e, 
-        0x1a6f7e, 0x160, 0x1a6f7e, 0x160, 0x1a6fee, 0x1a6fee, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a6fee, 0x160, 0x1a6fee, 0x160, 0x1a705e, 0x1a705e, 0x160, 0x1a705e, 0x160, 0x1a710d, 
-        0x1a710d, 0x160, 0x1a6fdc, 0x160, 0x1a6fee, 0x1a710d, 0x160, 0x1a710d, 0x160, 0x1a7176, 
-        0x1a7176, 0x160, 0x1a7176, 0x160, 0x1a71d2, 0x1a71d2, 0x160, 0x1a71d2, 0x160, 0x1a7205, 
-        0x1a7205, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a7205, 0x160, 0x1a59fe, 0x160, 0x1a5a09, 
-        0x1a7205, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a7205, 0x160, 0x1a7205, 0x160, 0x1a725c, 
-        0x1a725c, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a725c, 0x160, 0x1a725c, 0x160, 0x1a73f7, 
-        0x1a73f7, 0x160, 0x1a45a8, 0x160, 0x1a45ad, 0x1a73f7, 0x160, 0x1a73f7, 0x160, 0x1a7497, 
-        0x1a7497, 0x160, 0x1a7497, 0x160, 0x1a7548, 0x1a7548, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a7548, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a7548, 0x160, 0x1a7548, 0x160, 0x1a7582, 
-        0x1a7582, 0x160, 0x1a7582, 0x160, 0x1a75c5, 0x1a75c5, 0x160, 0x1a7535, 0x160, 0x1a7548, 
-        0x1a75c5, 0x160, 0x1a75c5, 0x160, 0x1a761d, 0x1a761d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a761d, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a761d, 0x160, 0x1a761d, 0x160, 0x1a7657, 
-        0x1a7657, 0x160, 0x1a7657, 0x160, 0x1a768f, 0x1a76bf, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a76bf, 0x160, 0x1a76bf, 0x160, 0x1a7927, 0x1a76bf, 0x160, 0x1a796e, 0x160, 0x1a79ad, 
-        0x1a76bf, 0x160, 0x1a7a40, 0x160, 0x1a7a65, 0x1a76bf, 0x160, 0x1a7a84, 0x160, 0x1a7af5, 
-        0x1a7af5, 0x160, 0x1a7af5, 0x160, 0x1a7b52, 0x1a7bba, 0x160, 0x1a7bba, 0x160, 0x1a7ca1, 
-        0x1a7ca1, 0x160, 0x1a7ca1, 0x160, 0x1a7ccd, 0x1a7d1f, 0x160, 0x1a7d1f, 0x160, 0x1a7d4b, 
-        0x1a7d4b, 0x160, 0x1a5b6b, 0x160, 0x1a5b7a, 0x1a7d4b, 0x160, 0x1a7d4b, 0x160, 0x1a7dac, 
-        0x1a7dac, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a7dac, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
-        0x1a7dac, 0x160, 0x1a7dac, 0x160, 0x1a7de6, 0x1a7de6, 0x160, 0x1a7de6, 0x160, 0x1a7e16, 
-        0x1a7e16, 0x160, 0x1a7e16, 0x160, 0x1a7efc, 0x1a7f44, 0x160, 0x1a7f44, 0x160, 0x1a7f75, 
-        0x1a7f75, 0x160, 0x1a7f75, 0x160, 0x1a7fb4, 0x1a7fb4, 0x160, 0x1a7fb4, 0x160, 0x1a8011, 
-        0x1a8011, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a8011, 0x160, 0x1a8011, 0x160, 0x1a8157, 
-        0x1a8178, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a8178, 0x160, 0x1a8178, 0x160, 0x1a83f1, 
-        0x1a83f1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a83f1, 0x160, 0x1a6ccb, 0x160, 0x1a6cdc, 
-        0x1a83f1, 0x160, 0x1a83f1, 0x160, 0x1a84f3, 0x1a84f3, 0x160, 0x1a84f3, 0x160, 0x1a8545, 
-        0x1a8545, 0x160, 0x1a8545, 0x160, 0x1a86f4, 0x1a86f4, 0x160, 0x1a60a2, 0x160, 0x1a60a8, 
-        0x1a86f4, 0x160, 0x1a7b52, 0x160, 0x1a7bba, 0x1a86f4, 0x160, 0x1a86f4, 0x160, 0x1a87d4, 
-        0x1a87d4, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a87d4, 0x160, 0x1a87d4, 0x160, 0x1a881e, 
-        0x1a881e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a881e, 0x160, 0x1a881e, 0x160, 0x1a88d5, 
-        0x1a88d5, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a88d5, 0x160, 0x1a88d5, 0x160, 0x1a8984, 
-        0x1a8984, 0x160, 0x1a8984, 0x160, 0x1a89de, 0x1a89de, 0x160, 0x1a4dbf, 0x160, 0x1a4dc5, 
-        0x1a89de, 0x160, 0x1a89de, 0x160, 0x1a8b51, 0x1a8b51, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a8b51, 0x160, 0x1a8b51, 0x160, 0x1a8c57, 0x1a8d71, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a8d71, 0x160, 0x1a8d71, 0x160, 0x1a8fd7, 0x1a8fd7, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
-        0x1a8fd7, 0x160, 0x1a8fd7, 0x160, 0x1a9122, 0x1a9122, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a9122, 0x160, 0x1a8b49, 0x160, 0x1a8b51, 0x1a9122, 0x160, 0x1a9122, 0x160, 0x1a9280, 
-        0x1a92b5, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a92b5, 0x160, 0x1a92b5, 0x160, 0x1a937c, 
-        0x1a937c, 0x160, 0x1a4dbc, 0x160, 0x1a4dc6, 0x1a937c, 0x160, 0x1a937c, 0x160, 0x1a953d, 
-        0x1a953d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a953d, 0x160, 0x1a953d, 0x160, 0x1a9702, 
-        0x1a9702, 0x160, 0x1a9702, 0x160, 0x1a972c, 0x1a972c, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a972c, 0x160, 0x1a972c, 0x160, 0x1a9969, 0x1a9969, 0x160, 0x1a9969, 0x160, 0x1a999d, 
-        0x1a999d, 0x160, 0x1a4489, 0x160, 0x1a448f, 0x1a999d, 0x160, 0x1a999d, 0x160, 0x1a9a89, 
-        0x1a9b45, 0x160, 0x1a9b45, 0x160, 0x1a9b6a, 0x1a9b6a, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
-        0x1a9b6a, 0x160, 0x1a9b6a, 0x160, 0x1a9caa, 0x1a9caa, 0x160, 0x1a9caa, 0x160, 0x1a9cc8, 
-        0x1a9cc8, 0x160, 0x1a9cc8, 0x160, 0x1a9cfc, 0x1a9cfc, 0x160, 0x1a9cfc, 0x160, 0x1a9d32, 
-        0x1a9d32, 0x160, 0x1a9d32, 0x160, 0x1a9e1e, 0x1a9ef6, 0x160, 0x1a9ef6, 0x160, 0x1a9f0b, 
-        0x1a9f6e, 0x160, 0x1a9f6e, 0x160, 0x1aa241, 0x1aa241, 0x160, 0x1aa241, 0x160, 0x1aa2cb, 
-        0x1aa2cb, 0x160, 0x1aa2cb, 0x160, 0x1aa365, 0x1aa2cb, 0x160, 0x1aa4d0, 0x160, 0x1aa4d6, 
-        0x1aa365, 0x160, 0x1aa365, 0x160, 0x1aa4d6, 0x1aa4d6, 0x160, 0x1aa4cc, 0x160, 0x1aa5ff, 
-        0x1aa617, 0x160, 0x1aa4cf, 0x160, 0x1aa4d6, 0x1aa617, 0x160, 0x1aa617, 0x160, 0x1aa6f5, 
-        0x1aa6f5, 0x160, 0x1aa6f5, 0x160, 0x1aa739, 0x1aa739, 0x160, 0x1aa739, 0x160, 0x1aa77b, 
-        0x1aa77b, 0x160, 0x1aa77b, 0x160, 0x1aa7bd, 0x1aa7bd, 0x160, 0x1aa7bd, 0x160, 0x1aa7e9, 
-        0x1aa7e9, 0x160, 0x1aa7e9, 0x160, 0x1aa9c7, 0x1aa9c8, 0x160, 0x1aa9c8, 0x160, 0x1aaaf1, 
-        0x1aa9c8, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1aaaf1, 0x160, 0x1aaaf1, 0x160, 0x1aac35, 
-        0x1aaaf1, 0x160, 0x1afe2d, 0x160, 0x1afe37, 0x1aac35, 0x160, 0x1aac35, 0x160, 0x1aac47, 
-        0x1aac47, 0x160, 0x1aac47, 0x160, 0x1aac71, 0x1aac75, 0x160, 0x1aac75, 0x160, 0x1aad07, 
-        0x1aad07, 0x160, 0x1aad07, 0x160, 0x1aad47, 0x1aae8f, 0x160, 0x1aae8f, 0x160, 0x1aaeb4, 
-        0x1aaeb4, 0x160, 0x1aaeb4, 0x160, 0x1aaf5d, 0x1aaeb4, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1aaf5d, 0x160, 0x1aaf5d, 0x160, 0x1ab045, 0x1ab048, 0x160, 0x1ab048, 0x160, 0x1ab0bd, 
-        0x1ab0bd, 0x160, 0x1ab0bd, 0x160, 0x1ab1a0, 0x1ab1a0, 0x160, 0x1ab1a0, 0x160, 0x1ab28b, 
-        0x1ab28b, 0x160, 0x1ab28b, 0x160, 0x1ab3b0, 0x1ab3b0, 0x160, 0x1ab3b0, 0x160, 0x1ab4d5, 
-        0x1ab4d5, 0x160, 0x1ab4d5, 0x160, 0x1ab614, 0x1ab4d5, 0x160, 0x1afe31, 0x160, 0x1afe37, 
-        0x1ab614, 0x160, 0x1ab614, 0x160, 0x1ab7bc, 0x1ab7bc, 0x160, 0x1ab042, 0x160, 0x1ab048, 
-        0x1ab7bc, 0x160, 0x1ab7bc, 0x160, 0x1abac7, 0x1abac7, 0x160, 0x1abac7, 0x160, 0x1abc5e, 
-        0x1abac7, 0x160, 0x1acf3b, 0x160, 0x1acf41, 0x1abc5e, 0x160, 0x1abc5e, 0x160, 0x1abc81, 
-        0x1abc81, 0x160, 0x1abc81, 0x160, 0x1abcdb, 0x1abcdb, 0x160, 0x1abcdb, 0x160, 0x1abd3c, 
-        0x1abd3c, 0x160, 0x1abd3c, 0x160, 0x1abdc2, 0x1abd3c, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1abdc2, 0x160, 0x1abdc2, 0x160, 0x1abe6f, 0x1abdc2, 0x160, 0x1afe31, 0x160, 0x1afe37, 
-        0x1abe6f, 0x160, 0x1abe6f, 0x160, 0x1ac076, 0x1ac076, 0x160, 0x1ac076, 0x160, 0x1ac0ac, 
-        0x1ac0ac, 0x160, 0x1ac0ac, 0x160, 0x1ac0e6, 0x1ac0e6, 0x160, 0x1ac0e6, 0x160, 0x1ac14b, 
-        0x1ac14b, 0x160, 0x1ac14b, 0x160, 0x1ac319, 0x1ac14b, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1ac6c2, 0x160, 0x1ac6c2, 0x160, 0x1acf41, 0x1acf41, 0x160, 0x1acf41, 0x160, 0x1acf83, 
-        0x1acf85, 0x160, 0x1acf85, 0x160, 0x1acfbc, 0x1acfbe, 0x160, 0x1acfbe, 0x160, 0x1ad021, 
-        0x1ad023, 0x160, 0x1ad023, 0x160, 0x1ad0a9, 0x1ad023, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1ad0a9, 0x160, 0x1ad0a9, 0x160, 0x1ad60c, 0x1ad0a9, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1ad60c, 0x160, 0x1abe65, 0x160, 0x1abe6f, 0x1ad60c, 0x160, 0x1ad60c, 0x160, 0x1ad6ac, 
-        0x1ad60c, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1ad6ac, 0x160, 0x1ad6ac, 0x160, 0x1adb5e, 
-        0x1ad6ac, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1adb5e, 0x160, 0x1adb5e, 0x160, 0x1add0c, 
-        0x1adb5e, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1add0c, 0x160, 0x1add0c, 0x160, 0x1addbd, 
-        0x1addbd, 0x160, 0x1addbd, 0x160, 0x1aded3, 0x1aded4, 0x160, 0x1adecd, 0x160, 0x1aded3, 
-        0x1aded4, 0x160, 0x1aded4, 0x160, 0x1adfd8, 0x1ae085, 0x160, 0x1ae085, 0x160, 0x1ae150, 
-        0x1ae150, 0x160, 0x1ae150, 0x160, 0x1ae178, 0x1ae178, 0x160, 0x1ae178, 0x160, 0x1ae440, 
-        0x1ae440, 0x160, 0x1ae440, 0x160, 0x1ae4cd, 0x1ae4cd, 0x160, 0x1ae4cd, 0x160, 0x1aeb5f, 
-        0x1ae4cd, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1aeb5f, 0x160, 0x1aeb5f, 0x160, 0x1aebd1, 
-        0x1aebd1, 0x160, 0x1aebd1, 0x160, 0x1aecd8, 0x1aebd1, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1aecd8, 0x160, 0x1acf38, 0x160, 0x1acf3e, 0x1aecd8, 0x160, 0x1aecd8, 0x160, 0x1af1f8, 
-        0x1af1f8, 0x160, 0x1acf3b, 0x160, 0x1acf3e, 0x1af1f8, 0x160, 0x1af1f8, 0x160, 0x1af790, 
-        0x1af790, 0x160, 0x1af790, 0x160, 0x1af8ac, 0x1af8ad, 0x160, 0x1af8a5, 0x160, 0x1af8ac, 
-        0x1af8ad, 0x160, 0x1af8ad, 0x160, 0x1af9a5, 0x1af9a5, 0x160, 0x1af9a5, 0x160, 0x1afa94, 
-        0x1afa94, 0x160, 0x1afa94, 0x160, 0x1afb99, 0x1afb99, 0x160, 0x1afb99, 0x160, 0x1afc31, 
-        0x1afc31, 0x160, 0x1afc31, 0x160, 0x1afcc3, 0x1afcc3, 0x160, 0x1afcc3, 0x160, 0x1afe37, 
-        0x1afe37, 0x160, 0x1afe31, 0x160, 0x1aff0f, 0x1aff0f, 0x160, 0x1aff0f, 0x160, 0x1affa8, 
-        0x1affa8, 0x160, 0x1afe25, 0x160, 0x1afe37, 0x1affa8, 0x160, 0x1affa8, 0x160, 0x1b010b, 
-        0x1b010b, 0x160, 0x1afe30, 0x160, 0x1afe32, 0x1b010b, 0x160, 0x1afe33, 0x160, 0x1afe36, 
-        0x1b010b, 0x160, 0x1b010b, 0x160, 0x1b01ef, 0x1b01ef, 0x160, 0x1afe30, 0x160, 0x1afe32, 
-        0x1b01ef, 0x160, 0x1afe33, 0x160, 0x1afe36, 0x1b01ef, 0x160, 0x1b01e5, 0x160, 0x1b02ce, 
-        0x1b02ce, 0x160, 0x1afe30, 0x160, 0x1afe32, 0x1b02ce, 0x160, 0x1afe33, 0x160, 0x1afe36, 
-        0x1b02ce, 0x160, 0x1b01e5, 0x160, 0x1b01ef, 0x1b02ce, 0x160, 0x1b02ce, 0x160, 0x1b03ad, 
-        0x1b03ad, 0x160, 0x1aaae9, 0x160, 0x1aaaf1, 0x1b03ad, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b03ad, 0x160, 0x1b03ad, 0x160, 0x1b0578, 0x1b0578, 0x160, 0x1acf3c, 0x160, 0x1acf3e, 
-        0x1b0578, 0x160, 0x1b0578, 0x160, 0x1b05c1, 0x1b0578, 0x160, 0x1b05c6, 0x160, 0x1b06c0, 
-        0x1b0578, 0x160, 0x1b06c5, 0x160, 0x1b06e9, 0x1b06e9, 0x160, 0x1acf3c, 0x160, 0x1acf3e, 
-        0x1b06e9, 0x160, 0x1b06e9, 0x160, 0x1b075f, 0x1b06e9, 0x160, 0x1b0764, 0x160, 0x1b087f, 
-        0x1b06e9, 0x160, 0x1b0884, 0x160, 0x1b08a8, 0x1b08a8, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b08a8, 0x160, 0x1b08a8, 0x160, 0x1b0956, 0x1b0956, 0x160, 0x1b0956, 0x160, 0x1b09c0, 
-        0x1b09c0, 0x160, 0x1aeb57, 0x160, 0x1aeb5f, 0x1b09c0, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b09c0, 0x160, 0x1b09c0, 0x160, 0x1b0ce8, 0x1b0ce8, 0x160, 0x1afe31, 0x160, 0x1afe37, 
-        0x1b0ce8, 0x160, 0x1b0ce8, 0x160, 0x1b0d5d, 0x1b0d5d, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b0d5d, 0x160, 0x1b0d5d, 0x160, 0x1b0f94, 0x1b0f94, 0x160, 0x1afe31, 0x160, 0x1afe37, 
-        0x1b0f94, 0x160, 0x1b0f94, 0x160, 0x1b106c, 0x1b106c, 0x160, 0x1b106c, 0x160, 0x1b1153, 
-        0x1b1153, 0x160, 0x1aeb57, 0x160, 0x1aeb5f, 0x1b1153, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b1153, 0x160, 0x1b1153, 0x160, 0x1b13ae, 0x1b13ae, 0x160, 0x1afe31, 0x160, 0x1afe37, 
-        0x1b13ae, 0x160, 0x1b13ae, 0x160, 0x1b1477, 0x1b1477, 0x160, 0x1acf3b, 0x160, 0x1acf41, 
-        0x1b1477, 0x160, 0x1b1477, 0x160, 0x1b1589, 0x1b1589, 0x160, 0x1afb93, 0x160, 0x1afb99, 
-        0x1b1589, 0x160, 0x1b1589, 0x160, 0x1b1620, 0x1b1589, 0x160, 0x1b1625, 0x160, 0x1b162d, 
-        0x1b162d, 0x160, 0x1b162d, 0x160, 0x1b1714, 0x1b162d, 0x160, 0x1b1719, 0x160, 0x1b1720, 
-        0x1b1722, 0x160, 0x1afc2a, 0x160, 0x1afc2f, 0x1b1722, 0x160, 0x1b1722, 0x160, 0x1b183d, 
-        0x1b1722, 0x160, 0x1b1842, 0x160, 0x1b1875, 0x1b1722, 0x160, 0x1b187a, 0x160, 0x1b1884, 
-        0x1b1884, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1b1884, 0x160, 0x1b1884, 0x160, 0x1b199d, 
-        0x1b199d, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b199d, 0x160, 0x1b199d, 0x160, 0x1b1ae5, 
-        0x1b1b53, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b1b53, 0x160, 0x1b1b53, 0x160, 0x1b1bcf, 
-        0x1b1bcf, 0x160, 0x1b1bcf, 0x160, 0x1b1c30, 0x1b1c2f, 0x160, 0x1b1c2f, 0x160, 0x1b1c30, 
-        0x1b1c89, 0x160, 0x1b1c89, 0x160, 0x1b1d43, 0x1b1dfc, 0x160, 0x1ab042, 0x160, 0x1ab048, 
-        0x1b1dfc, 0x160, 0x1b1dfc, 0x160, 0x1b1ed1, 0x1b1ed1, 0x160, 0x1afe2d, 0x160, 0x1afe34, 
-        0x1b1ed1, 0x160, 0x1afe35, 0x160, 0x1afe36, 0x1b1ed1, 0x160, 0x1b1ed1, 0x160, 0x1b2062, 
-        0x1b2062, 0x160, 0x1b2062, 0x160, 0x1b2097, 0x1b2097, 0x160, 0x1afe30, 0x160, 0x1afe37, 
-        0x1b2097, 0x160, 0x1b2097, 0x160, 0x1b22a7, 0x1b2507, 0x160, 0x1b2507, 0x160, 0x1b2508, 
-        0x1b2706, 0x160, 0x1aaf55, 0x160, 0x1aaf5d, 0x1b2706, 0x160, 0x1afe30, 0x160, 0x1afe32, 
-        0x1b2706, 0x160, 0x1afe33, 0x160, 0x1afe36, 0x1b2706, 0x160, 0x1b2706, 0x160, 0x1b2853, 
-        0x1b2c74, 0x160, 0x1b2c74, 0x160, 0x1b2c75, 0x1b32d4, 0x160, 0x1b32d4, 0x160, 0x1b331f, 
-        0x1b331f, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b331f, 0x160, 0x1b331f, 0x160, 0x1b348a, 
-        0x1b348a, 0x160, 0x1afe2d, 0x160, 0x1afe37, 0x1b348a, 0x160, 0x1b348a, 0x160, 0x1b3589, 
-        0x1b3780, 0x160, 0x1b3780, 0x160, 0x1b38b7, 0x1b396c, 0x160, 0x1b396c, 0x160, 0x1b396d, 
-        0x1b39a9, 0x160, 0x1b39a9, 0x160, 0x1b3a39, 0x1b39a9, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
-        0x1b3a39, 0x160, 0x1b3a39, 0x160, 0x1b3a4f, 0x1b3e6c, 0x160, 0x1b3e6c, 0x160, 0x1b3ea0, 
-        0x1b403a, 0x160, 0x1b403a, 0x160, 0x1b427c, 0x1b43e8, 0x160, 0x1b3c2e, 0x160, 0x1b3c34, 
-        0x1b43e8, 0x160, 0x1b43e8, 0x160, 0x1b465a, 0x1b47fd, 0x160, 0x1b47fd, 0x160, 0x1b483f, 
-        0x1b483f, 0x160, 0x1b483f, 0x160, 0x1b48b1, 0x1b742d, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
-        0x1b742d, 0x160, 0x1b742d, 0x160, 0x1b7463, 0x1b7a0e, 0x160, 0x1b7a0e, 0x160, 0x1b7a70, 
+        0x1978a8, 0x160, 0x197317, 0x160, 0x19731d, 0x1978a8, 0x160, 0x1978a8, 0x160, 0x1978f8, 
+        0x197910, 0x160, 0x197910, 0x160, 0x197b3b, 0x197b3b, 0x160, 0x196659, 0x160, 0x19665f, 
+        0x197b3b, 0x160, 0x197b3b, 0x160, 0x197c71, 0x197c71, 0x160, 0x197c71, 0x160, 0x197ce5, 
+        0x197c71, 0x160, 0x197cea, 0x160, 0x197d30, 0x197c71, 0x160, 0x197d35, 0x160, 0x197d4e, 
+        0x197c71, 0x160, 0x197d53, 0x160, 0x197d77, 0x197c71, 0x160, 0x198141, 0x160, 0x198147, 
+        0x197d77, 0x160, 0x197d77, 0x160, 0x197f05, 0x197d77, 0x160, 0x198141, 0x160, 0x198146, 
+        0x197f05, 0x160, 0x196658, 0x160, 0x19665f, 0x197f05, 0x160, 0x196f8f, 0x160, 0x196f97, 
+        0x197f05, 0x160, 0x197f05, 0x160, 0x197f7a, 0x197f7a, 0x160, 0x196655, 0x160, 0x19665f, 
+        0x197f7a, 0x160, 0x197f7a, 0x160, 0x1980de, 0x1980de, 0x160, 0x1980de, 0x160, 0x1980f9, 
+        0x1980f9, 0x160, 0x1980f9, 0x160, 0x198147, 0x198147, 0x160, 0x19813e, 0x160, 0x19818b, 
+        0x19818b, 0x160, 0x196659, 0x160, 0x19665f, 0x19818b, 0x160, 0x19818b, 0x160, 0x19823d, 
+        0x19823d, 0x160, 0x19823d, 0x160, 0x1982da, 0x1982da, 0x160, 0x1982da, 0x160, 0x1982e5, 
+        0x1982da, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x1982da, 0x160, 0x19e865, 0x160, 0x19e8ec, 
+        0x1982e5, 0x160, 0x1982e5, 0x160, 0x198554, 0x198554, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x198554, 0x160, 0x198554, 0x160, 0x198725, 0x198725, 0x160, 0x198725, 0x160, 0x19878d, 
+        0x19878d, 0x160, 0x196658, 0x160, 0x19665f, 0x19878d, 0x160, 0x19878d, 0x160, 0x198b0e, 
+        0x198b0e, 0x160, 0x196658, 0x160, 0x19665f, 0x198b0e, 0x160, 0x198b0e, 0x160, 0x198cd4, 
+        0x198cd4, 0x160, 0x198cd4, 0x160, 0x198cff, 0x198cff, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x198cff, 0x160, 0x198cff, 0x160, 0x198efd, 0x198efd, 0x160, 0x198efd, 0x160, 0x198f64, 
+        0x198f64, 0x160, 0x196658, 0x160, 0x19665f, 0x198f64, 0x160, 0x198f64, 0x160, 0x199062, 
+        0x199062, 0x160, 0x199062, 0x160, 0x1990e5, 0x199062, 0x160, 0x1990ea, 0x160, 0x1990ee, 
+        0x199163, 0x160, 0x196659, 0x160, 0x19665f, 0x199163, 0x160, 0x199163, 0x160, 0x1992d0, 
+        0x1992d0, 0x160, 0x1992d0, 0x160, 0x199313, 0x19934d, 0x160, 0x19934d, 0x160, 0x199435, 
+        0x199435, 0x160, 0x199435, 0x160, 0x1994a3, 0x1994a3, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x1994a3, 0x160, 0x1994a3, 0x160, 0x199775, 0x199775, 0x160, 0x199775, 0x160, 0x1997d1, 
+        0x1997d1, 0x160, 0x1997d1, 0x160, 0x19982d, 0x19982d, 0x160, 0x19982d, 0x160, 0x199889, 
+        0x199889, 0x160, 0x199889, 0x160, 0x199917, 0x199917, 0x160, 0x199917, 0x160, 0x199993, 
+        0x199993, 0x160, 0x199993, 0x160, 0x1999e9, 0x1999e9, 0x160, 0x1999e9, 0x160, 0x199ab8, 
+        0x199ab8, 0x160, 0x199ab8, 0x160, 0x199ae8, 0x199ae8, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x199ae8, 0x160, 0x199ae8, 0x160, 0x199c0e, 0x199c0e, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x199c0e, 0x160, 0x199c0e, 0x160, 0x199dd1, 0x199dd1, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x199dd1, 0x160, 0x199dd1, 0x160, 0x199f56, 0x199f56, 0x160, 0x196659, 0x160, 0x19665f, 
+        0x199f56, 0x160, 0x199f56, 0x160, 0x19a0dc, 0x19a0dc, 0x160, 0x19a0dc, 0x160, 0x19a217, 
+        0x19a217, 0x160, 0x19a217, 0x160, 0x19a255, 0x19a217, 0x160, 0x19a25a, 0x160, 0x19a2a3, 
+        0x19a217, 0x160, 0x19a2a8, 0x160, 0x19a2ac, 0x19a2ac, 0x160, 0x19a2ac, 0x160, 0x19a32e, 
+        0x19a2ac, 0x160, 0x19a333, 0x160, 0x19a337, 0x19a337, 0x160, 0x19a337, 0x160, 0x19a526, 
+        0x19a526, 0x160, 0x19a526, 0x160, 0x19a5b1, 0x19a640, 0x160, 0x19a640, 0x160, 0x19a69d, 
+        0x19a69d, 0x160, 0x19a69d, 0x160, 0x19a6d2, 0x19a6d2, 0x160, 0x198141, 0x160, 0x198147, 
+        0x19a6d2, 0x160, 0x19a6d2, 0x160, 0x19a865, 0x19a865, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x19a865, 0x160, 0x19a865, 0x160, 0x19ab49, 0x19abcd, 0x160, 0x19abcd, 0x160, 0x19ac27, 
+        0x19ac27, 0x160, 0x19ac27, 0x160, 0x19ac48, 0x19ac48, 0x160, 0x196658, 0x160, 0x19665f, 
+        0x19ac48, 0x160, 0x19ac48, 0x160, 0x19af26, 0x19af26, 0x160, 0x19af26, 0x160, 0x19af3f, 
+        0x19af3f, 0x160, 0x19af3f, 0x160, 0x19af54, 0x19af54, 0x160, 0x19af54, 0x160, 0x19af98, 
+        0x19af98, 0x160, 0x19af98, 0x160, 0x19afcd, 0x19afcd, 0x160, 0x19afcd, 0x160, 0x19aff6, 
+        0x19aff6, 0x160, 0x19aff6, 0x160, 0x19b090, 0x19b091, 0x160, 0x19b091, 0x160, 0x19b0d1, 
+        0x19b153, 0x160, 0x19b153, 0x160, 0x19b1d2, 0x19b1d2, 0x160, 0x19b1d2, 0x160, 0x19b1f5, 
+        0x19b1f5, 0x160, 0x19b1f5, 0x160, 0x19b200, 0x19b200, 0x160, 0x19b200, 0x160, 0x19b22b, 
+        0x19b2ba, 0x160, 0x19b2ba, 0x160, 0x19b31e, 0x19b31e, 0x160, 0x19b31e, 0x160, 0x19b33a, 
+        0x19b33a, 0x160, 0x19b33a, 0x160, 0x19b38b, 0x19b38b, 0x160, 0x19b38b, 0x160, 0x19b431, 
+        0x19b431, 0x160, 0x19b08b, 0x160, 0x19b091, 0x19b431, 0x160, 0x19b431, 0x160, 0x19b50c, 
+        0x19b55e, 0x160, 0x19b55e, 0x160, 0x19b588, 0x19b588, 0x160, 0x19b588, 0x160, 0x19b5c8, 
+        0x19b5c8, 0x160, 0x19b5c2, 0x160, 0x19b66a, 0x19b66a, 0x160, 0x19b66a, 0x160, 0x19b679, 
+        0x19b679, 0x160, 0x19b679, 0x160, 0x19b766, 0x19b766, 0x160, 0x19b766, 0x160, 0x19b794, 
+        0x19b794, 0x160, 0x19af92, 0x160, 0x19af98, 0x19b794, 0x160, 0x19b794, 0x160, 0x19b80e, 
+        0x19b80e, 0x160, 0x19b5c2, 0x160, 0x19b5c8, 0x19b80e, 0x160, 0x19b80e, 0x160, 0x19b82f, 
+        0x19b8ca, 0x160, 0x19b8ca, 0x160, 0x19bdd8, 0x19bdd9, 0x160, 0x19bdd9, 0x160, 0x19c589, 
+        0x19c58a, 0x160, 0x19c58a, 0x160, 0x19c7ca, 0x19c7ca, 0x160, 0x19c7ca, 0x160, 0x19c91e, 
+        0x19c7ca, 0x160, 0x19ca95, 0x160, 0x19ca9b, 0x19c91e, 0x160, 0x19c91e, 0x160, 0x19ca9b, 
+        0x19ca9b, 0x160, 0x19ca9b, 0x160, 0x19cb51, 0x19cb51, 0x160, 0x19cb51, 0x160, 0x19cb74, 
+        0x19cb74, 0x160, 0x19cb74, 0x160, 0x19cbc0, 0x19cbc0, 0x160, 0x19ca94, 0x160, 0x19ca9b, 
+        0x19cbc0, 0x160, 0x19cbc0, 0x160, 0x19cc15, 0x19cc15, 0x160, 0x19cc15, 0x160, 0x19ccf4, 
+        0x19ccf4, 0x160, 0x19ccf4, 0x160, 0x19cd59, 0x19cd59, 0x160, 0x19cd59, 0x160, 0x19cdc5, 
+        0x19cdc5, 0x160, 0x19cdc5, 0x160, 0x19cde3, 0x19cde3, 0x160, 0x19cde3, 0x160, 0x19ce21, 
+        0x19ce21, 0x160, 0x19ce21, 0x160, 0x19ce55, 0x19ce55, 0x160, 0x19ce55, 0x160, 0x19ceb7, 
+        0x19ceb7, 0x160, 0x19ceb7, 0x160, 0x19cf11, 0x19cf11, 0x160, 0x19cf11, 0x160, 0x19cf9d, 
+        0x19cf9d, 0x160, 0x19cf96, 0x160, 0x19d0f3, 0x19d0f3, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
+        0x19d0f3, 0x160, 0x19d0f3, 0x160, 0x19d1d6, 0x19d1d6, 0x160, 0x19d1d6, 0x160, 0x19d338, 
+        0x19d338, 0x160, 0x19d338, 0x160, 0x19d389, 0x19d389, 0x160, 0x19d389, 0x160, 0x19d416, 
+        0x19d416, 0x160, 0x19d416, 0x160, 0x19d4cb, 0x19d4cb, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
+        0x19d4cb, 0x160, 0x19d4cb, 0x160, 0x19d55b, 0x19d55b, 0x160, 0x19d55b, 0x160, 0x19d5f1, 
+        0x19d5f1, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19d5f1, 0x160, 0x19d5f1, 0x160, 0x19d86c, 
+        0x19d86c, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19d86c, 0x160, 0x19d86c, 0x160, 0x19dad1, 
+        0x19dad1, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19dad1, 0x160, 0x19dad1, 0x160, 0x19dc9c, 
+        0x19dc9c, 0x160, 0x19dc9c, 0x160, 0x19dceb, 0x19dceb, 0x160, 0x19dceb, 0x160, 0x19dd20, 
+        0x19dd20, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x19dd20, 0x160, 0x19dd20, 0x160, 0x19de2c, 
+        0x19de2c, 0x160, 0x19de2c, 0x160, 0x19de6a, 0x19de6a, 0x160, 0x19cf93, 0x160, 0x19cf9d, 
+        0x19de6a, 0x160, 0x19de6a, 0x160, 0x19dfc7, 0x19dfc7, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
+        0x19dfc7, 0x160, 0x19dfc7, 0x160, 0x19e865, 0x19e865, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
+        0x19e865, 0x160, 0x19e865, 0x160, 0x19e8ec, 0x19e8ec, 0x160, 0x19e8ec, 0x160, 0x19e906, 
+        0x19e906, 0x160, 0x19e906, 0x160, 0x19e929, 0x19e929, 0x160, 0x19e929, 0x160, 0x19e96d, 
+        0x19e96d, 0x160, 0x19e96d, 0x160, 0x19e997, 0x19e997, 0x160, 0x19e997, 0x160, 0x19e9d5, 
+        0x19e9d5, 0x160, 0x19e9d5, 0x160, 0x19eabf, 0x19eabf, 0x160, 0x19eabf, 0x160, 0x19ead2, 
+        0x19eabf, 0x160, 0x19eb43, 0x160, 0x19eb4c, 0x19ead2, 0x160, 0x19ead2, 0x160, 0x19eb13, 
+        0x19ead2, 0x160, 0x19eb43, 0x160, 0x19eb4c, 0x19eb13, 0x160, 0x19eb13, 0x160, 0x19eb2c, 
+        0x19eb13, 0x160, 0x19eb43, 0x160, 0x19eb4c, 0x19eb2c, 0x160, 0x19eb2c, 0x160, 0x19eb4c, 
+        0x19eb4c, 0x160, 0x19eb3e, 0x160, 0x19eb60, 0x19eb60, 0x160, 0x19eb60, 0x160, 0x19eb98, 
+        0x19eb60, 0x160, 0x19ec4a, 0x160, 0x19ec53, 0x19eb98, 0x160, 0x19eb98, 0x160, 0x19ebc0, 
+        0x19ebc0, 0x160, 0x19ebc0, 0x160, 0x19ebd9, 0x19ebc0, 0x160, 0x19ec4a, 0x160, 0x19ec53, 
+        0x19ebd9, 0x160, 0x19ebd9, 0x160, 0x19ec33, 0x19ec33, 0x160, 0x19ec33, 0x160, 0x19ec53, 
+        0x19ec53, 0x160, 0x19ec53, 0x160, 0x19ec81, 0x19ec81, 0x160, 0x19ec45, 0x160, 0x19ec53, 
+        0x19ec81, 0x160, 0x19ec81, 0x160, 0x19ec95, 0x19ec95, 0x160, 0x19ec95, 0x160, 0x19ecf9, 
+        0x19ecf9, 0x160, 0x19ecf0, 0x160, 0x19ed3a, 0x19ed3a, 0x160, 0x19ec2a, 0x160, 0x19ec33, 
+        0x19ed3a, 0x160, 0x19ed3a, 0x160, 0x19ed7f, 0x19ed7f, 0x160, 0x19ed7f, 0x160, 0x19edc0, 
+        0x19edc0, 0x160, 0x19edc0, 0x160, 0x19ede8, 0x19ede7, 0x160, 0x19ede7, 0x160, 0x19ede8, 
+        0x19ede8, 0x160, 0x19ec2a, 0x160, 0x19ec33, 0x19ede8, 0x160, 0x19ede8, 0x160, 0x19ee35, 
+        0x19ee35, 0x160, 0x19ec2a, 0x160, 0x19ec33, 0x19ee35, 0x160, 0x19ee35, 0x160, 0x19ee93, 
+        0x19ee93, 0x160, 0x19ecf0, 0x160, 0x19ecf9, 0x19ee93, 0x160, 0x19ee93, 0x160, 0x19eeac, 
+        0x19eeac, 0x160, 0x19eeac, 0x160, 0x19eed3, 0x19eed3, 0x160, 0x19eed3, 0x160, 0x19eefa, 
+        0x19eefa, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x19eefa, 0x160, 0x19eefa, 0x160, 0x19f50a, 
+        0x19f50a, 0x160, 0x19cf97, 0x160, 0x19cf9d, 0x19f50a, 0x160, 0x19de02, 0x160, 0x19de0c, 
+        0x19f50a, 0x160, 0x19f50a, 0x160, 0x19f612, 0x19f612, 0x160, 0x19f612, 0x160, 0x19f8bd, 
+        0x19f8bd, 0x160, 0x19f8b7, 0x160, 0x19fa00, 0x19fa00, 0x160, 0x19fa00, 0x160, 0x19fb74, 
+        0x19fb74, 0x160, 0x19fb74, 0x160, 0x19fd16, 0x19fd16, 0x160, 0x19cf97, 0x160, 0x19cf9d, 
+        0x19fd16, 0x160, 0x19fd16, 0x160, 0x19fdd1, 0x19fdd1, 0x160, 0x19d332, 0x160, 0x19d338, 
+        0x19fdd1, 0x160, 0x19fdd1, 0x160, 0x19ffe1, 0x19ffe1, 0x160, 0x19d332, 0x160, 0x19d338, 
+        0x19ffe1, 0x160, 0x19ffe1, 0x160, 0x1a0111, 0x1a0111, 0x160, 0x1a0111, 0x160, 0x1a01b1, 
+        0x1a01b1, 0x160, 0x19fd10, 0x160, 0x19fd16, 0x1a01b1, 0x160, 0x1a01b1, 0x160, 0x1a0265, 
+        0x1a0265, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a0265, 0x160, 0x1a0265, 0x160, 0x1a08f5, 
+        0x1a08f5, 0x160, 0x1a08f5, 0x160, 0x1a0a8e, 0x1a0a8f, 0x160, 0x1a0a8f, 0x160, 0x1a0ac5, 
+        0x1a0ac5, 0x160, 0x1a0ac5, 0x160, 0x1a0ae9, 0x1a0ae9, 0x160, 0x1a0ae9, 0x160, 0x1a0b1f, 
+        0x1a0b1f, 0x160, 0x1a0b1f, 0x160, 0x1a0b6b, 0x1a0b6b, 0x160, 0x1a0b62, 0x160, 0x1a0bb0, 
+        0x1a0bb0, 0x160, 0x1a0bb0, 0x160, 0x1a0edd, 0x1a0bb0, 0x160, 0x1a0ee2, 0x160, 0x1a1150, 
+        0x1a1150, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a1150, 0x160, 0x1a1150, 0x160, 0x1a178b, 
+        0x1a178b, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a178b, 0x160, 0x1a178b, 0x160, 0x1a19aa, 
+        0x1a19aa, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a19aa, 0x160, 0x1a19aa, 0x160, 0x1a1ab7, 
+        0x1a1ab7, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a1ab7, 0x160, 0x1a1ab7, 0x160, 0x1a1c1b, 
+        0x1a1c1b, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a1c1b, 0x160, 0x1a1c1b, 0x160, 0x1a21af, 
+        0x1a21af, 0x160, 0x1a21af, 0x160, 0x1a221e, 0x1a21af, 0x160, 0x1a221f, 0x160, 0x1a2222, 
+        0x1a2223, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 0x1a2223, 0x160, 0x1a2223, 0x160, 0x1a2467, 
+        0x1a2467, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a2467, 0x160, 0x1a2467, 0x160, 0x1a2510, 
+        0x1a2510, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a2510, 0x160, 0x1a1783, 0x160, 0x1a178b, 
+        0x1a2510, 0x160, 0x1a2510, 0x160, 0x1a2846, 0x1a28a1, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 
+        0x1a28a1, 0x160, 0x1a28a1, 0x160, 0x1a2cc8, 0x1a2cc8, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 
+        0x1a2cc8, 0x160, 0x1a2cc8, 0x160, 0x1a3029, 0x1a3029, 0x160, 0x19f8b7, 0x160, 0x19f8bd, 
+        0x1a3029, 0x160, 0x1a3029, 0x160, 0x1a31e0, 0x1a31e0, 0x160, 0x1a31e0, 0x160, 0x1a3223, 
+        0x1a3223, 0x160, 0x1a3223, 0x160, 0x1a33f1, 0x1a33f1, 0x160, 0x1a33f1, 0x160, 0x1a3484, 
+        0x1a3484, 0x160, 0x1a3484, 0x160, 0x1a3503, 0x1a3503, 0x160, 0x1a3503, 0x160, 0x1a35e4, 
+        0x1a35e4, 0x160, 0x19cf96, 0x160, 0x19cf9d, 0x1a35e4, 0x160, 0x1a35e4, 0x160, 0x1a3660, 
+        0x1a3660, 0x160, 0x1a3660, 0x160, 0x1a3924, 0x1a3924, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
+        0x1a3924, 0x160, 0x1a3924, 0x160, 0x1a39f0, 0x1a39f0, 0x160, 0x19cf96, 0x160, 0x19cf9d, 
+        0x1a39f0, 0x160, 0x1a39f0, 0x160, 0x1a3dab, 0x1a3dab, 0x160, 0x19cf96, 0x160, 0x19cf9a, 
+        0x1a3dab, 0x160, 0x19cf9b, 0x160, 0x19cf9c, 0x1a3dab, 0x160, 0x1a3dab, 0x160, 0x1a3fb3, 
+        0x1a3fb3, 0x160, 0x19cf93, 0x160, 0x19cf9d, 0x1a3fb3, 0x160, 0x1a3fb3, 0x160, 0x1a408b, 
+        0x1a40e4, 0x160, 0x1a40e4, 0x160, 0x1a40f3, 0x1a40f3, 0x160, 0x1a40d5, 0x160, 0x1a40e4, 
+        0x1a40f3, 0x160, 0x1a40f3, 0x160, 0x1a40fa, 0x1a413d, 0x160, 0x1a413d, 0x160, 0x1a4196, 
+        0x1a4196, 0x160, 0x1a4196, 0x160, 0x1a41bf, 0x1a41bf, 0x160, 0x1a41bf, 0x160, 0x1a41da, 
+        0x1a41d7, 0x160, 0x1a41d7, 0x160, 0x1a41da, 0x1a41da, 0x160, 0x1a41da, 0x160, 0x1a41ee, 
+        0x1a41ee, 0x160, 0x1a41ee, 0x160, 0x1a4206, 0x1a4206, 0x160, 0x1a41f9, 0x160, 0x1a4210, 
+        0x1a4210, 0x160, 0x1a4210, 0x160, 0x1a4261, 0x1a4261, 0x160, 0x1a41f9, 0x160, 0x1a4206, 
+        0x1a4261, 0x160, 0x1a4261, 0x160, 0x1a426e, 0x1a426e, 0x160, 0x1a426e, 0x160, 0x1a4288, 
+        0x1a4288, 0x160, 0x1a4288, 0x160, 0x1a4408, 0x1a4288, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a4408, 0x160, 0x1a4286, 0x160, 0x1a4288, 0x1a4408, 0x160, 0x1a4408, 0x160, 0x1a4432, 
+        0x1a4432, 0x160, 0x1a4432, 0x160, 0x1a448f, 0x1a448f, 0x160, 0x1a448f, 0x160, 0x1a44d2, 
+        0x1a44d2, 0x160, 0x1a44d2, 0x160, 0x1a44ff, 0x1a44ff, 0x160, 0x1a44ff, 0x160, 0x1a45ae, 
+        0x1a45ae, 0x160, 0x1a45ae, 0x160, 0x1a45e9, 0x1a45e9, 0x160, 0x1a45e9, 0x160, 0x1a4626, 
+        0x1a4626, 0x160, 0x1a4626, 0x160, 0x1a46ed, 0x1a46ed, 0x160, 0x1a46ed, 0x160, 0x1a4760, 
+        0x1a4760, 0x160, 0x1a4760, 0x160, 0x1a47d9, 0x1a47d9, 0x160, 0x1a45a8, 0x160, 0x1a45ae, 
+        0x1a47d9, 0x160, 0x1a47d9, 0x160, 0x1a484f, 0x1a484f, 0x160, 0x1a484f, 0x160, 0x1a488e, 
+        0x1a488e, 0x160, 0x1a488e, 0x160, 0x1a4932, 0x1a488e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a4932, 0x160, 0x1a4932, 0x160, 0x1a4983, 0x1a4983, 0x160, 0x1a4983, 0x160, 0x1a499a, 
+        0x1a499a, 0x160, 0x1a499a, 0x160, 0x1a49c6, 0x1a49c6, 0x160, 0x1a49c6, 0x160, 0x1a4a08, 
+        0x1a4a08, 0x160, 0x1a4a08, 0x160, 0x1a4a30, 0x1a4a30, 0x160, 0x1a4a30, 0x160, 0x1a4b85, 
+        0x1a4a30, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a4b85, 0x160, 0x1a4b85, 0x160, 0x1a4c10, 
+        0x1a4b85, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a4b85, 0x160, 0x1a5969, 0x160, 0x1a5973, 
+        0x1a4b85, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a4c10, 0x160, 0x1a4c10, 0x160, 0x1a4c45, 
+        0x1a4c45, 0x160, 0x1a47d5, 0x160, 0x1a47d9, 0x1a4c45, 0x160, 0x1a4c45, 0x160, 0x1a4c9b, 
+        0x1a4c9b, 0x160, 0x1a4c9b, 0x160, 0x1a4dc6, 0x1a4dc6, 0x160, 0x1a4dbf, 0x160, 0x1a4ebf, 
+        0x1a4ebf, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a4ebf, 0x160, 0x1a4ebf, 0x160, 0x1a4f9d, 
+        0x1a4f9d, 0x160, 0x1a4f9d, 0x160, 0x1a501b, 0x1a501b, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a501b, 0x160, 0x1a501b, 0x160, 0x1a5262, 0x1a5262, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a5262, 0x160, 0x1a5262, 0x160, 0x1a541a, 0x1a541a, 0x160, 0x1a541a, 0x160, 0x1a543c, 
+        0x1a543c, 0x160, 0x1a543c, 0x160, 0x1a5460, 0x1a5460, 0x160, 0x1a5460, 0x160, 0x1a5541, 
+        0x1a5541, 0x160, 0x1a492a, 0x160, 0x1a4932, 0x1a5541, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a5541, 0x160, 0x1a5541, 0x160, 0x1a55b1, 0x1a55b1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a55b1, 0x160, 0x1a55b1, 0x160, 0x1a56f7, 0x1a56f7, 0x160, 0x1a56f7, 0x160, 0x1a5723, 
+        0x1a5723, 0x160, 0x1a5723, 0x160, 0x1a5767, 0x1a5767, 0x160, 0x1a5767, 0x160, 0x1a5862, 
+        0x1a5767, 0x160, 0x1a5b6b, 0x160, 0x1a5b7a, 0x1a5862, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a5862, 0x160, 0x1a5862, 0x160, 0x1a591a, 0x1a591a, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a591a, 0x160, 0x1a591a, 0x160, 0x1a5973, 0x1a591a, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
+        0x1a5973, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5973, 0x160, 0x1a5973, 0x160, 0x1a5a09, 
+        0x1a5973, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a5a09, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a5a09, 0x160, 0x1a5a09, 0x160, 0x1a5a79, 0x1a5a79, 0x160, 0x1a5a79, 0x160, 0x1a5aa6, 
+        0x1a5aa6, 0x160, 0x1a5aa6, 0x160, 0x1a5af8, 0x1a5af8, 0x160, 0x1a5af8, 0x160, 0x1a5b7a, 
+        0x1a5b7a, 0x160, 0x1a5b7a, 0x160, 0x1a5bab, 0x1a5bab, 0x160, 0x1a5bab, 0x160, 0x1a5bde, 
+        0x1a5c69, 0x160, 0x1a5bde, 0x160, 0x1a5d2f, 0x1a5d2f, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a5d2f, 0x160, 0x1a5d2f, 0x160, 0x1a5d8b, 0x1a5d8b, 0x160, 0x1a5d8b, 0x160, 0x1a5df1, 
+        0x1a5e0f, 0x160, 0x1a5e0f, 0x160, 0x1a5e27, 0x1a5e0f, 0x160, 0x1a5ee8, 0x160, 0x1a5eec, 
+        0x1a5eec, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 0x1a5eec, 0x160, 0x1a5eec, 0x160, 0x1a5f40, 
+        0x1a5f40, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a5f40, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
+        0x1a5f40, 0x160, 0x1a5f40, 0x160, 0x1a5f9f, 0x1a5f9f, 0x160, 0x1a5f9f, 0x160, 0x1a60a8, 
+        0x1a60a8, 0x160, 0x1a60a8, 0x160, 0x1a60fb, 0x1a60fb, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a60fb, 0x160, 0x1a60fb, 0x160, 0x1a6163, 0x1a6163, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a6163, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a6163, 0x160, 0x1a6163, 0x160, 0x1a619d, 
+        0x1a619d, 0x160, 0x1a619d, 0x160, 0x1a626e, 0x1a626e, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 
+        0x1a626e, 0x160, 0x1a626e, 0x160, 0x1a62b7, 0x1a62b7, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a62b7, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a62b7, 0x160, 0x1a62b7, 0x160, 0x1a62f1, 
+        0x1a63ad, 0x160, 0x1a63ad, 0x160, 0x1a63f0, 0x1a63f0, 0x160, 0x1a63f0, 0x160, 0x1a645e, 
+        0x1a645e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a645e, 0x160, 0x1a5957, 0x160, 0x1a5973, 
+        0x1a645e, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 0x1a645e, 0x160, 0x1a645e, 0x160, 0x1a64a0, 
+        0x1a64a0, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a64a0, 0x160, 0x1a56ef, 0x160, 0x1a56f7, 
+        0x1a64a0, 0x160, 0x1a64a0, 0x160, 0x1a66c0, 0x1a66c0, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 
+        0x1a66c0, 0x160, 0x1a66c0, 0x160, 0x1a671d, 0x1a671d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a671d, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a671d, 0x160, 0x1a671d, 0x160, 0x1a675c, 
+        0x1a675c, 0x160, 0x1a675c, 0x160, 0x1a679f, 0x1a679f, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a679f, 0x160, 0x1a5952, 0x160, 0x1a5973, 0x1a679f, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
+        0x1a679f, 0x160, 0x1a679f, 0x160, 0x1a6813, 0x1a6813, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a6813, 0x160, 0x1a5a68, 0x160, 0x1a5a79, 0x1a6813, 0x160, 0x1a6813, 0x160, 0x1a6877, 
+        0x1a68a3, 0x160, 0x1a68a3, 0x160, 0x1a68ba, 0x1a68a3, 0x160, 0x1a6a2b, 0x160, 0x1a6a30, 
+        0x1a6a30, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a6a30, 0x160, 0x1a6154, 0x160, 0x1a6163, 
+        0x1a6a30, 0x160, 0x1a6a30, 0x160, 0x1a6aa9, 0x1a6aa9, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a6aa9, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a6aa9, 0x160, 0x1a6aa9, 0x160, 0x1a6ae3, 
+        0x1a6ae3, 0x160, 0x1a6ae3, 0x160, 0x1a6b49, 0x1a6b49, 0x160, 0x1a5b61, 0x160, 0x1a5b7a, 
+        0x1a6b49, 0x160, 0x1a6b49, 0x160, 0x1a6b97, 0x1a6b97, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a6b97, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a6b97, 0x160, 0x1a6b97, 0x160, 0x1a6bd1, 
+        0x1a6bd1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a6bd1, 0x160, 0x1a6bd1, 0x160, 0x1a6cdc, 
+        0x1a6cdc, 0x160, 0x1a6cdc, 0x160, 0x1a6d43, 0x1a6d43, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a6d43, 0x160, 0x1a6d43, 0x160, 0x1a6dd0, 0x1a6dd0, 0x160, 0x1a6dd0, 0x160, 0x1a6de0, 
+        0x1a6de0, 0x160, 0x1a6de0, 0x160, 0x1a6e11, 0x1a6e11, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a6e11, 0x160, 0x1a6e11, 0x160, 0x1a6ea9, 0x1a6ea9, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a6ea9, 0x160, 0x1a6e9f, 0x160, 0x1a6f7e, 0x1a6f7e, 0x160, 0x1a6f7e, 0x160, 0x1a6fee, 
+        0x1a6fee, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a6fee, 0x160, 0x1a6fee, 0x160, 0x1a705e, 
+        0x1a705e, 0x160, 0x1a705e, 0x160, 0x1a710d, 0x1a710d, 0x160, 0x1a6fdc, 0x160, 0x1a6fee, 
+        0x1a710d, 0x160, 0x1a710d, 0x160, 0x1a7176, 0x1a7176, 0x160, 0x1a7176, 0x160, 0x1a71d2, 
+        0x1a71d2, 0x160, 0x1a71d2, 0x160, 0x1a7205, 0x1a7205, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a7205, 0x160, 0x1a59fe, 0x160, 0x1a5a09, 0x1a7205, 0x160, 0x1a5d7c, 0x160, 0x1a5d8b, 
+        0x1a7205, 0x160, 0x1a7205, 0x160, 0x1a725c, 0x1a725c, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a725c, 0x160, 0x1a725c, 0x160, 0x1a73f7, 0x1a73f7, 0x160, 0x1a45a8, 0x160, 0x1a45ad, 
+        0x1a73f7, 0x160, 0x1a73f7, 0x160, 0x1a7497, 0x1a7497, 0x160, 0x1a7497, 0x160, 0x1a7548, 
+        0x1a7548, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a7548, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
+        0x1a7548, 0x160, 0x1a7548, 0x160, 0x1a7582, 0x1a7582, 0x160, 0x1a7582, 0x160, 0x1a75c5, 
+        0x1a75c5, 0x160, 0x1a7535, 0x160, 0x1a7548, 0x1a75c5, 0x160, 0x1a75c5, 0x160, 0x1a761d, 
+        0x1a761d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a761d, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 
+        0x1a761d, 0x160, 0x1a761d, 0x160, 0x1a7657, 0x1a7657, 0x160, 0x1a7657, 0x160, 0x1a768f, 
+        0x1a76bf, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a76bf, 0x160, 0x1a76bf, 0x160, 0x1a7927, 
+        0x1a76bf, 0x160, 0x1a796e, 0x160, 0x1a79ad, 0x1a76bf, 0x160, 0x1a7a40, 0x160, 0x1a7a65, 
+        0x1a76bf, 0x160, 0x1a7a84, 0x160, 0x1a7af5, 0x1a7af5, 0x160, 0x1a7af5, 0x160, 0x1a7b52, 
+        0x1a7bba, 0x160, 0x1a7bba, 0x160, 0x1a7ca1, 0x1a7ca1, 0x160, 0x1a7ca1, 0x160, 0x1a7ccd, 
+        0x1a7d1f, 0x160, 0x1a7d1f, 0x160, 0x1a7d4b, 0x1a7d4b, 0x160, 0x1a5b6b, 0x160, 0x1a5b7a, 
+        0x1a7d4b, 0x160, 0x1a7d4b, 0x160, 0x1a7dac, 0x1a7dac, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a7dac, 0x160, 0x1a5d64, 0x160, 0x1a5d8b, 0x1a7dac, 0x160, 0x1a7dac, 0x160, 0x1a7de6, 
+        0x1a7de6, 0x160, 0x1a7de6, 0x160, 0x1a7e16, 0x1a7e16, 0x160, 0x1a7e16, 0x160, 0x1a7efc, 
+        0x1a7f44, 0x160, 0x1a7f44, 0x160, 0x1a7f75, 0x1a7f75, 0x160, 0x1a7f75, 0x160, 0x1a7fb4, 
+        0x1a7fb4, 0x160, 0x1a7fb4, 0x160, 0x1a8011, 0x1a8011, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a8011, 0x160, 0x1a8011, 0x160, 0x1a8157, 0x1a8178, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 
+        0x1a8178, 0x160, 0x1a8178, 0x160, 0x1a83f1, 0x1a83f1, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a83f1, 0x160, 0x1a6ccb, 0x160, 0x1a6cdc, 0x1a83f1, 0x160, 0x1a83f1, 0x160, 0x1a84f3, 
+        0x1a84f3, 0x160, 0x1a84f3, 0x160, 0x1a8545, 0x1a8545, 0x160, 0x1a8545, 0x160, 0x1a86f4, 
+        0x1a86f4, 0x160, 0x1a60a2, 0x160, 0x1a60a8, 0x1a86f4, 0x160, 0x1a7b52, 0x160, 0x1a7bba, 
+        0x1a86f4, 0x160, 0x1a86f4, 0x160, 0x1a87d4, 0x1a87d4, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a87d4, 0x160, 0x1a87d4, 0x160, 0x1a881e, 0x1a881e, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a881e, 0x160, 0x1a881e, 0x160, 0x1a88d5, 0x1a88d5, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a88d5, 0x160, 0x1a88d5, 0x160, 0x1a8984, 0x1a8984, 0x160, 0x1a8984, 0x160, 0x1a89de, 
+        0x1a89de, 0x160, 0x1a4dbf, 0x160, 0x1a4dc5, 0x1a89de, 0x160, 0x1a89de, 0x160, 0x1a8b51, 
+        0x1a8b51, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a8b51, 0x160, 0x1a8b51, 0x160, 0x1a8c57, 
+        0x1a8d71, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a8d71, 0x160, 0x1a8d71, 0x160, 0x1a8fd7, 
+        0x1a8fd7, 0x160, 0x1a4dc0, 0x160, 0x1a4dc6, 0x1a8fd7, 0x160, 0x1a8fd7, 0x160, 0x1a9122, 
+        0x1a9122, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a9122, 0x160, 0x1a8b49, 0x160, 0x1a8b51, 
+        0x1a9122, 0x160, 0x1a9122, 0x160, 0x1a9280, 0x1a92b5, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a92b5, 0x160, 0x1a92b5, 0x160, 0x1a937c, 0x1a937c, 0x160, 0x1a4dbc, 0x160, 0x1a4dc6, 
+        0x1a937c, 0x160, 0x1a937c, 0x160, 0x1a953d, 0x1a953d, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 
+        0x1a953d, 0x160, 0x1a953d, 0x160, 0x1a9702, 0x1a9702, 0x160, 0x1a9702, 0x160, 0x1a972c, 
+        0x1a972c, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a972c, 0x160, 0x1a972c, 0x160, 0x1a9969, 
+        0x1a9969, 0x160, 0x1a9969, 0x160, 0x1a999d, 0x1a999d, 0x160, 0x1a4489, 0x160, 0x1a448f, 
+        0x1a999d, 0x160, 0x1a999d, 0x160, 0x1a9a89, 0x1a9b45, 0x160, 0x1a9b45, 0x160, 0x1a9b6a, 
+        0x1a9b6a, 0x160, 0x1a4dbf, 0x160, 0x1a4dc6, 0x1a9b6a, 0x160, 0x1a9b6a, 0x160, 0x1a9caa, 
+        0x1a9caa, 0x160, 0x1a9caa, 0x160, 0x1a9cc8, 0x1a9cc8, 0x160, 0x1a9cc8, 0x160, 0x1a9cfc, 
+        0x1a9cfc, 0x160, 0x1a9cfc, 0x160, 0x1a9d32, 0x1a9d32, 0x160, 0x1a9d32, 0x160, 0x1a9e1e, 
+        0x1a9ef6, 0x160, 0x1a9ef6, 0x160, 0x1a9f0b, 0x1a9f6e, 0x160, 0x1a9f6e, 0x160, 0x1aa241, 
+        0x1aa241, 0x160, 0x1aa241, 0x160, 0x1aa2cb, 0x1aa2cb, 0x160, 0x1aa2cb, 0x160, 0x1aa365, 
+        0x1aa2cb, 0x160, 0x1aa4d0, 0x160, 0x1aa4d6, 0x1aa365, 0x160, 0x1aa365, 0x160, 0x1aa4d6, 
+        0x1aa4d6, 0x160, 0x1aa4cc, 0x160, 0x1aa5ff, 0x1aa617, 0x160, 0x1aa4cf, 0x160, 0x1aa4d6, 
+        0x1aa617, 0x160, 0x1aa617, 0x160, 0x1aa6f5, 0x1aa6f5, 0x160, 0x1aa6f5, 0x160, 0x1aa739, 
+        0x1aa739, 0x160, 0x1aa739, 0x160, 0x1aa77b, 0x1aa77b, 0x160, 0x1aa77b, 0x160, 0x1aa7bd, 
+        0x1aa7bd, 0x160, 0x1aa7bd, 0x160, 0x1aa7e9, 0x1aa7e9, 0x160, 0x1aa7e9, 0x160, 0x1aa9c7, 
+        0x1aa9c8, 0x160, 0x1aa9c8, 0x160, 0x1aaaf1, 0x1aa9c8, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1aaaf1, 0x160, 0x1aaaf1, 0x160, 0x1aac35, 0x1aaaf1, 0x160, 0x1afe2d, 0x160, 0x1afe37, 
+        0x1aac35, 0x160, 0x1aac35, 0x160, 0x1aac47, 0x1aac47, 0x160, 0x1aac47, 0x160, 0x1aac71, 
+        0x1aac75, 0x160, 0x1aac75, 0x160, 0x1aad07, 0x1aad07, 0x160, 0x1aad07, 0x160, 0x1aad47, 
+        0x1aae8f, 0x160, 0x1aae8f, 0x160, 0x1aaeb4, 0x1aaeb4, 0x160, 0x1aaeb4, 0x160, 0x1aaf5d, 
+        0x1aaeb4, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1aaf5d, 0x160, 0x1aaf5d, 0x160, 0x1ab045, 
+        0x1ab048, 0x160, 0x1ab048, 0x160, 0x1ab0bd, 0x1ab0bd, 0x160, 0x1ab0bd, 0x160, 0x1ab1a0, 
+        0x1ab1a0, 0x160, 0x1ab1a0, 0x160, 0x1ab28b, 0x1ab28b, 0x160, 0x1ab28b, 0x160, 0x1ab3b0, 
+        0x1ab3b0, 0x160, 0x1ab3b0, 0x160, 0x1ab4d5, 0x1ab4d5, 0x160, 0x1ab4d5, 0x160, 0x1ab614, 
+        0x1ab4d5, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1ab614, 0x160, 0x1ab614, 0x160, 0x1ab7bc, 
+        0x1ab7bc, 0x160, 0x1ab042, 0x160, 0x1ab048, 0x1ab7bc, 0x160, 0x1ab7bc, 0x160, 0x1abac7, 
+        0x1abac7, 0x160, 0x1abac7, 0x160, 0x1abc5e, 0x1abac7, 0x160, 0x1acf3b, 0x160, 0x1acf41, 
+        0x1abc5e, 0x160, 0x1abc5e, 0x160, 0x1abc81, 0x1abc81, 0x160, 0x1abc81, 0x160, 0x1abcdb, 
+        0x1abcdb, 0x160, 0x1abcdb, 0x160, 0x1abd3c, 0x1abd3c, 0x160, 0x1abd3c, 0x160, 0x1abdc2, 
+        0x1abd3c, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1abdc2, 0x160, 0x1abdc2, 0x160, 0x1abe6f, 
+        0x1abdc2, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1abe6f, 0x160, 0x1abe6f, 0x160, 0x1ac076, 
+        0x1ac076, 0x160, 0x1ac076, 0x160, 0x1ac0ac, 0x1ac0ac, 0x160, 0x1ac0ac, 0x160, 0x1ac0e6, 
+        0x1ac0e6, 0x160, 0x1ac0e6, 0x160, 0x1ac14b, 0x1ac14b, 0x160, 0x1ac14b, 0x160, 0x1ac319, 
+        0x1ac14b, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1ac6c2, 0x160, 0x1ac6c2, 0x160, 0x1acf41, 
+        0x1acf41, 0x160, 0x1acf41, 0x160, 0x1acf83, 0x1acf85, 0x160, 0x1acf85, 0x160, 0x1acfbc, 
+        0x1acfbe, 0x160, 0x1acfbe, 0x160, 0x1ad021, 0x1ad023, 0x160, 0x1ad023, 0x160, 0x1ad0a9, 
+        0x1ad023, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1ad0a9, 0x160, 0x1ad0a9, 0x160, 0x1ad60c, 
+        0x1ad0a9, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1ad60c, 0x160, 0x1abe65, 0x160, 0x1abe6f, 
+        0x1ad60c, 0x160, 0x1ad60c, 0x160, 0x1ad6ac, 0x1ad60c, 0x160, 0x1afe31, 0x160, 0x1afe37, 
+        0x1ad6ac, 0x160, 0x1ad6ac, 0x160, 0x1adb5e, 0x1ad6ac, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1adb5e, 0x160, 0x1adb5e, 0x160, 0x1add0c, 0x1adb5e, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1add0c, 0x160, 0x1add0c, 0x160, 0x1addbd, 0x1addbd, 0x160, 0x1addbd, 0x160, 0x1aded3, 
+        0x1aded4, 0x160, 0x1adecd, 0x160, 0x1aded3, 0x1aded4, 0x160, 0x1aded4, 0x160, 0x1adfd8, 
+        0x1ae085, 0x160, 0x1ae085, 0x160, 0x1ae150, 0x1ae150, 0x160, 0x1ae150, 0x160, 0x1ae178, 
+        0x1ae178, 0x160, 0x1ae178, 0x160, 0x1ae440, 0x1ae440, 0x160, 0x1ae440, 0x160, 0x1ae4cd, 
+        0x1ae4cd, 0x160, 0x1ae4cd, 0x160, 0x1aeb5f, 0x1ae4cd, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1aeb5f, 0x160, 0x1aeb5f, 0x160, 0x1aebd1, 0x1aebd1, 0x160, 0x1aebd1, 0x160, 0x1aecd8, 
+        0x1aebd1, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1aecd8, 0x160, 0x1acf38, 0x160, 0x1acf3e, 
+        0x1aecd8, 0x160, 0x1aecd8, 0x160, 0x1af1f8, 0x1af1f8, 0x160, 0x1acf3b, 0x160, 0x1acf3e, 
+        0x1af1f8, 0x160, 0x1af1f8, 0x160, 0x1af790, 0x1af790, 0x160, 0x1af790, 0x160, 0x1af8ac, 
+        0x1af8ad, 0x160, 0x1af8a5, 0x160, 0x1af8ac, 0x1af8ad, 0x160, 0x1af8ad, 0x160, 0x1af9a5, 
+        0x1af9a5, 0x160, 0x1af9a5, 0x160, 0x1afa94, 0x1afa94, 0x160, 0x1afa94, 0x160, 0x1afb99, 
+        0x1afb99, 0x160, 0x1afb99, 0x160, 0x1afc31, 0x1afc31, 0x160, 0x1afc31, 0x160, 0x1afcc3, 
+        0x1afcc3, 0x160, 0x1afcc3, 0x160, 0x1afe37, 0x1afe37, 0x160, 0x1afe31, 0x160, 0x1aff0f, 
+        0x1aff0f, 0x160, 0x1aff0f, 0x160, 0x1affa8, 0x1affa8, 0x160, 0x1afe25, 0x160, 0x1afe37, 
+        0x1affa8, 0x160, 0x1affa8, 0x160, 0x1b010b, 0x1b010b, 0x160, 0x1afe30, 0x160, 0x1afe32, 
+        0x1b010b, 0x160, 0x1afe33, 0x160, 0x1afe36, 0x1b010b, 0x160, 0x1b010b, 0x160, 0x1b01ef, 
+        0x1b01ef, 0x160, 0x1afe30, 0x160, 0x1afe32, 0x1b01ef, 0x160, 0x1afe33, 0x160, 0x1afe36, 
+        0x1b01ef, 0x160, 0x1b01e5, 0x160, 0x1b02ce, 0x1b02ce, 0x160, 0x1afe30, 0x160, 0x1afe32, 
+        0x1b02ce, 0x160, 0x1afe33, 0x160, 0x1afe36, 0x1b02ce, 0x160, 0x1b01e5, 0x160, 0x1b01ef, 
+        0x1b02ce, 0x160, 0x1b02ce, 0x160, 0x1b03ad, 0x1b03ad, 0x160, 0x1aaae9, 0x160, 0x1aaaf1, 
+        0x1b03ad, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b03ad, 0x160, 0x1b03ad, 0x160, 0x1b0578, 
+        0x1b0578, 0x160, 0x1acf3c, 0x160, 0x1acf3e, 0x1b0578, 0x160, 0x1b0578, 0x160, 0x1b05c1, 
+        0x1b0578, 0x160, 0x1b05c6, 0x160, 0x1b06c0, 0x1b0578, 0x160, 0x1b06c5, 0x160, 0x1b06e9, 
+        0x1b06e9, 0x160, 0x1acf3c, 0x160, 0x1acf3e, 0x1b06e9, 0x160, 0x1b06e9, 0x160, 0x1b075f, 
+        0x1b06e9, 0x160, 0x1b0764, 0x160, 0x1b087f, 0x1b06e9, 0x160, 0x1b0884, 0x160, 0x1b08a8, 
+        0x1b08a8, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b08a8, 0x160, 0x1b08a8, 0x160, 0x1b0956, 
+        0x1b0956, 0x160, 0x1b0956, 0x160, 0x1b09c0, 0x1b09c0, 0x160, 0x1aeb57, 0x160, 0x1aeb5f, 
+        0x1b09c0, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b09c0, 0x160, 0x1b09c0, 0x160, 0x1b0ce8, 
+        0x1b0ce8, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1b0ce8, 0x160, 0x1b0ce8, 0x160, 0x1b0d5d, 
+        0x1b0d5d, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b0d5d, 0x160, 0x1b0d5d, 0x160, 0x1b0f94, 
+        0x1b0f94, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1b0f94, 0x160, 0x1b0f94, 0x160, 0x1b106c, 
+        0x1b106c, 0x160, 0x1b106c, 0x160, 0x1b1153, 0x1b1153, 0x160, 0x1aeb57, 0x160, 0x1aeb5f, 
+        0x1b1153, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b1153, 0x160, 0x1b1153, 0x160, 0x1b13ae, 
+        0x1b13ae, 0x160, 0x1afe31, 0x160, 0x1afe37, 0x1b13ae, 0x160, 0x1b13ae, 0x160, 0x1b1477, 
+        0x1b1477, 0x160, 0x1acf3b, 0x160, 0x1acf41, 0x1b1477, 0x160, 0x1b1477, 0x160, 0x1b1589, 
+        0x1b1589, 0x160, 0x1afb93, 0x160, 0x1afb99, 0x1b1589, 0x160, 0x1b1589, 0x160, 0x1b1620, 
+        0x1b1589, 0x160, 0x1b1625, 0x160, 0x1b162d, 0x1b162d, 0x160, 0x1b162d, 0x160, 0x1b1714, 
+        0x1b162d, 0x160, 0x1b1719, 0x160, 0x1b1720, 0x1b1722, 0x160, 0x1afc2a, 0x160, 0x1afc2f, 
+        0x1b1722, 0x160, 0x1b1722, 0x160, 0x1b183d, 0x1b1722, 0x160, 0x1b1842, 0x160, 0x1b1875, 
+        0x1b1722, 0x160, 0x1b187a, 0x160, 0x1b1884, 0x1b1884, 0x160, 0x1afe31, 0x160, 0x1afe37, 
+        0x1b1884, 0x160, 0x1b1884, 0x160, 0x1b199d, 0x1b199d, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1b199d, 0x160, 0x1b199d, 0x160, 0x1b1ae5, 0x1b1b53, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1b1b53, 0x160, 0x1b1b53, 0x160, 0x1b1bcf, 0x1b1bcf, 0x160, 0x1b1bcf, 0x160, 0x1b1c30, 
+        0x1b1c2f, 0x160, 0x1b1c2f, 0x160, 0x1b1c30, 0x1b1c89, 0x160, 0x1b1c89, 0x160, 0x1b1d43, 
+        0x1b1dfc, 0x160, 0x1ab042, 0x160, 0x1ab048, 0x1b1dfc, 0x160, 0x1b1dfc, 0x160, 0x1b1ed1, 
+        0x1b1ed1, 0x160, 0x1afe2d, 0x160, 0x1afe34, 0x1b1ed1, 0x160, 0x1afe35, 0x160, 0x1afe36, 
+        0x1b1ed1, 0x160, 0x1b1ed1, 0x160, 0x1b2062, 0x1b2062, 0x160, 0x1b2062, 0x160, 0x1b2097, 
+        0x1b2097, 0x160, 0x1afe30, 0x160, 0x1afe37, 0x1b2097, 0x160, 0x1b2097, 0x160, 0x1b22a7, 
+        0x1b2507, 0x160, 0x1b2507, 0x160, 0x1b2508, 0x1b2706, 0x160, 0x1aaf55, 0x160, 0x1aaf5d, 
+        0x1b2706, 0x160, 0x1afe30, 0x160, 0x1afe32, 0x1b2706, 0x160, 0x1afe33, 0x160, 0x1afe36, 
+        0x1b2706, 0x160, 0x1b2706, 0x160, 0x1b2853, 0x1b2c74, 0x160, 0x1b2c74, 0x160, 0x1b2c75, 
+        0x1b32d4, 0x160, 0x1b32d4, 0x160, 0x1b331f, 0x1b331f, 0x160, 0x1afe30, 0x160, 0x1afe37, 
+        0x1b331f, 0x160, 0x1b331f, 0x160, 0x1b348a, 0x1b348a, 0x160, 0x1afe2d, 0x160, 0x1afe37, 
+        0x1b348a, 0x160, 0x1b348a, 0x160, 0x1b3589, 0x1b3780, 0x160, 0x1b3780, 0x160, 0x1b38b7, 
+        0x1b396c, 0x160, 0x1b396c, 0x160, 0x1b396d, 0x1b39a9, 0x160, 0x1b39a9, 0x160, 0x1b3a39, 
+        0x1b39a9, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 0x1b3a39, 0x160, 0x1b3a39, 0x160, 0x1b3a4f, 
+        0x1b3a4f, 0x160, 0x1b3a4f, 0x160, 0x1b3ab3, 0x1b3a4f, 0x160, 0x1b3c2e, 0x160, 0x1b3c34, 
+        0x1b3ab3, 0x160, 0x1b3aac, 0x160, 0x1b3b0f, 0x1b3ab3, 0x160, 0x1b3c2e, 0x160, 0x1b3c34, 
+        0x1b3b0f, 0x160, 0x1b3b0f, 0x160, 0x1b3b97, 0x1b3b0f, 0x160, 0x1b3d59, 0x160, 0x1b3d61, 
+        0x1b3ccb, 0x160, 0x1b3ccb, 0x160, 0x1b3d60, 0x1b3df5, 0x160, 0x1b3df5, 0x160, 0x1b3e4e, 
+        0x1b3e6c, 0x160, 0x1b3e6c, 0x160, 0x1b3ea0, 0x1b3ea0, 0x160, 0x1b3ea0, 0x160, 0x1b3f7d, 
+        0x1b3f7d, 0x160, 0x1b3f7d, 0x160, 0x1b403a, 0x1b403a, 0x160, 0x1b403a, 0x160, 0x1b427c, 
+        0x1b427c, 0x160, 0x1b427c, 0x160, 0x1b42d9, 0x1b42d9, 0x160, 0x1b42d9, 0x160, 0x1b4325, 
+        0x1b4325, 0x160, 0x1b3c2b, 0x160, 0x1b3c34, 0x1b4325, 0x160, 0x1b4325, 0x160, 0x1b43e8, 
+        0x1b43e8, 0x160, 0x1b3c2e, 0x160, 0x1b3c34, 0x1b43e8, 0x160, 0x1b43e8, 0x160, 0x1b465a, 
+        0x1b465a, 0x160, 0x1b3d57, 0x160, 0x1b3d60, 0x1b465a, 0x160, 0x1b465a, 0x160, 0x1b46f2, 
+        0x1b4749, 0x160, 0x1b4749, 0x160, 0x1b47fc, 0x1b47fd, 0x160, 0x1b47fd, 0x160, 0x1b483f, 
+        0x1b483f, 0x160, 0x1b483f, 0x160, 0x1b48b1, 0x1b48b1, 0x160, 0x1b3c2e, 0x160, 0x1b3c34, 
+        0x1b48b1, 0x160, 0x1b48b1, 0x160, 0x1b4a40, 0x1b4a40, 0x160, 0x1b4a40, 0x160, 0x1b4b45, 
+        0x1b4b45, 0x160, 0x1b4b45, 0x160, 0x1b51ce, 0x1b4b45, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
+        0x1b51ce, 0x160, 0x1b51ce, 0x160, 0x1b56a0, 0x1b51ce, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
+        0x1b56a0, 0x160, 0x1b56a0, 0x160, 0x1b5701, 0x1b5701, 0x160, 0x1b5701, 0x160, 0x1b5768, 
+        0x1b5768, 0x160, 0x1b5768, 0x160, 0x1b57f4, 0x1b57f4, 0x160, 0x1b57f4, 0x160, 0x1b5936, 
+        0x1b5936, 0x160, 0x1b5936, 0x160, 0x1b59e1, 0x1b59e1, 0x160, 0x1b59e1, 0x160, 0x1b5b2f, 
+        0x1b5b2f, 0x160, 0x1b5b2f, 0x160, 0x1b5ba8, 0x1b5ba8, 0x160, 0x1b5ba8, 0x160, 0x1b5cb1, 
+        0x1b5cb1, 0x160, 0x1b5cb1, 0x160, 0x1b5e5f, 0x1b5e5f, 0x160, 0x1b5e5f, 0x160, 0x1b61c5, 
+        0x1b5e5f, 0x160, 0x1b69f3, 0x160, 0x1b69f9, 0x1b61c5, 0x160, 0x1b61c5, 0x160, 0x1b62ce, 
+        0x1b62ce, 0x160, 0x1b62ce, 0x160, 0x1b696c, 0x1b62ce, 0x160, 0x1b69f3, 0x160, 0x1b69f9, 
+        0x1b6995, 0x160, 0x1b6995, 0x160, 0x1b6c08, 0x1b6c08, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
+        0x1b6c08, 0x160, 0x1b6c08, 0x160, 0x1b6e6d, 0x1b6e6d, 0x160, 0x1b6e6d, 0x160, 0x1b6efc, 
+        0x1b6f3d, 0x160, 0x1b6964, 0x160, 0x1b696c, 0x1b6f3d, 0x160, 0x1b69f3, 0x160, 0x1b69f9, 
+        0x1b6f3d, 0x160, 0x1b6f3d, 0x160, 0x1b7169, 0x1b7169, 0x160, 0x1b69eb, 0x160, 0x1b69fa, 
+        0x1b7169, 0x160, 0x1b6c01, 0x160, 0x1b6c08, 0x1b7169, 0x160, 0x1b7169, 0x160, 0x1b72f6, 
+        0x1b72f6, 0x160, 0x1b72f6, 0x160, 0x1b7374, 0x1b742d, 0x160, 0x1b69f3, 0x160, 0x1b69fa, 
+        0x1b742d, 0x160, 0x1b742d, 0x160, 0x1b7a0e, 0x1b7a0e, 0x160, 0x1b7a0e, 0x160, 0x1b7a70, 
         0x1b7a70, 0x160, 0x1b7a70, 0x160, 0x1b7ace, 0x1b7ace, 0x160, 0x1b7ace, 0x160, 0x1b7b0e, 
         0x1b7b0e, 0x160, 0x1b7b0e, 0x160, 0x1b7b4c, 0x1b7b4c, 0x160, 0x1b7b4c, 0x160, 0x1b7b8f, 
         0x1b7b8f, 0x160, 0x1b7b8f, 0x160, 0x1b7bb4, 0x1b7bb4, 0x160, 0x1b7bb4, 0x160, 0x1b7c94, 

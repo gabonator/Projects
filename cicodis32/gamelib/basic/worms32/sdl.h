@@ -14,6 +14,8 @@ typedef uint32_t Uint32;
 #include <vector>
 
 void onKey(int k, int p);
+void onMouseMove(int x, int y);
+void onMouseButton(int b);
 
 class CSdl
 {
@@ -87,6 +89,20 @@ public:
                 
         while( SDL_PollEvent( &event ) )
         {
+            if (SDL_MOUSEMOTION == event.type)
+            {
+                onMouseMove(event.motion.x, event.motion.y);
+            }
+            if (SDL_MOUSEBUTTONDOWN == event.type)
+            {
+                onMouseButton(event.button.button);
+            }
+            if (SDL_MOUSEBUTTONUP == event.type)
+            {
+                onMouseButton(0);
+            }
+
+
             if (SDL_KEYDOWN == event.type)
             {
                 lastKey = event.key.keysym.scancode;

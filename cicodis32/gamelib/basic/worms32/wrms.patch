@@ -1,0 +1,72 @@
+diff --git a/wrms.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/wrms.cpp
+index c053e6c..6872383 100644
+--- a/wrms.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/wrms.cpp
+@@ -10499,7 +10499,7 @@ loc_19d71a: // 0160:19d71a
+     edi = 0x0000004b;
+     switch (eax)
+     {
+-        case 0x19eabf: sub_19eabf(); break;
++        case 0: sub_19eabf(); break;
+         default:
+             stop("ind 0160:19d837");
+     }
+@@ -15726,7 +15726,7 @@ loc_1a1aed: // 0160:1a1aed
+         goto loc_1a1b92;
+     goto loc_19cf96;
+ loc_1a1afb: // 0160:1a1afb
+-    if (edx <= 0 && stop("test, jbe"))
++    if (edx <= 0)
+         goto loc_1a1b09;
+     if (edx == 0x00000006)
+         goto loc_1a1b64;
+@@ -18932,6 +18932,7 @@ loc_1a4408: // 0160:1a4408
+     memoryASet32(ds, 0x1df65c, edx);
+     memoryASet32(ds, 0x1df654, eax);
+ loc_1a441a: // 0160:1a441a
++    sync();
+     eax = memoryAGet32(ds, 0x1df650);
+     if (eax == memoryAGet32(ds, 0x1df654))
+         goto loc_1a4286;
+@@ -65609,7 +65610,7 @@ void sub_1c8bb1() // 0160:1c8bb1 +long
+     esi = eax;
+     if (!eax)
+         goto loc_1c8bca;
+-    if (eax <= 0xffffffd4)
++    if (eax <= 0xffd4)
+         goto loc_1c8bd1;
+ loc_1c8bca: // 0160:1c8bca
+     eax = 0;
+@@ -66134,6 +66135,7 @@ void sub_1c900d() // 0160:1c900d +long
+ }
+ void sub_1c9028() // 0160:1c9028 +long
+ {
++    return;
+     esp -= 4;
+     push(es);
+     push32(ecx);
+@@ -66318,6 +66320,7 @@ loc_1c92ad: // 0160:1c92ad
+ }
+ void sub_1c92c7() // 0160:1c92c7 +long
+ {
++    return;
+     esp -= 4;
+     push32(edx);
+     ah = memoryAGet(ds, 0x1dfcfc);
+@@ -68143,7 +68146,15 @@ void sub_1ca60a() // 0160:1ca60a +long +returnCarry
+     esi = memoryAGet32(ds, edi + 16);
+     edi = memoryAGet32(ds, edi + 20);
+     ds = ebp;
+-    stop("stack_unbalanced");
++    switch (memoryAGet16(cs, pop32()))
++    {
++        case 0x33cd: interrupt(0x33); break;
++        case 0x10cd: interrupt(0x10); break;
++        default:
++            assert(0);
++    }
++
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1ca9b0() // 0160:1ca9b0 +long
