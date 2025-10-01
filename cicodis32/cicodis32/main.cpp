@@ -241,6 +241,28 @@ int main(int argc, char **argv) {
             
             options.jumpTables.push_back(jt);
         } else
+        if (json["id"] == "jumpTable" && json["jumps32"])
+        {
+            std::vector<uint32_t> targets;
+            std::vector<int> elements;
+
+            address_t instruction = address_t::fromString(json["addr"].GetString());
+            CJson(json["jumps32"]).ForEach([&](const CSubstring& v)
+            {
+                address_t target = address_t::fromString(CJson(v).GetString());
+                assert(target.segment == instruction.segment);
+                targets.push_back(target.offset);
+                elements.push_back((int)elements.size());
+            });
+            uint32_t* ptargets = new uint32_t[targets.size()];
+            memcpy(ptargets, &targets[0], sizeof(uint32_t) * targets.size());
+            
+            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
+                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
+                .type = jumpTable_t::switch_e::Jump32, .useCaseOffset = true, .elements = elements});
+            
+            options.jumpTables.push_back(jt);
+        } else
         if (json["id"] == "jumpTable")
         {
             address_t instruction = address_t::fromString(json["addr"].GetString());
@@ -346,9 +368,6 @@ int main(int argc, char **argv) {
     bool anyIndirectTable = false;
     for (auto t : options.jumpTables)
     {
-//        int fileoffset{0};
-//        int filestep{0};
-//        int filecount{0};
         if (t->fileoffset)
             t->baseptr = loader->GetBufferAt(t->fileoffset);
         if (t->filecount)

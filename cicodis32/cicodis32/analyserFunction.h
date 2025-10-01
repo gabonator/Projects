@@ -321,6 +321,8 @@ public:
                             continue;
                         if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSW) // TODO: tables
                             continue;
+                        if (flag->type == 'z' && dep->instr->mId == X86_INS_CMPSD) // TODO: tables
+                            continue;
                         if (flag->type == 'c' && dep->instr->mId == X86_INS_INT)
                             continue;
                         if (dep->instr->mId == X86_INS_POPF)

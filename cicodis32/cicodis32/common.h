@@ -163,6 +163,11 @@ struct jumpTable_t {
     {
         if (minaddr == 0)
             return true;
+        if (type == Jump32)
+        {
+            uint32_t* parts = (uint32_t*)baseptr;
+            return parts[elements[i]] >= minaddr;
+        }
         assert(type == CallWords || type == JumpWords || type == Jump32);
         uint16_t* parts = (uint16_t*)baseptr;
         return parts[elements[i]] >= minaddr;
@@ -197,8 +202,10 @@ struct jumpTable_t {
             case Call32:
                 return format("case 0x%x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
             case Jump32:
-                assert(!useCaseOffset);
-                return format("case %d: goto loc_%x;", i, GetTarget(i).linearOffset());
+                if (useCaseOffset)
+                    return format("case 0x%x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());
+                else
+                    return format("case %d: goto loc_%x;", i, GetTarget(i).linearOffset());
             default:
                 assert(0);
                 return "stop(/*3*/);";

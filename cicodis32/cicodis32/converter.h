@@ -426,6 +426,8 @@ public:
             return "!"+cond;
         if (cond == "!!($rd0 & $msb0)")
             return "!($rd0 & $msb0)";
+        if (cond == "!!($rd0 & $rd1 & $msb0)")
+            return "!($rd0 & $rd1 & $msb0)";
         assert(0);
         return "!(" + cond+ ")";
     }
@@ -629,7 +631,7 @@ public:
         return lvalue + " = " + rvalue;
     }
 
-    virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) override
+    virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) override
     {
         auto replace = [](const char* in, const char* s, const char* r)
         {
@@ -679,17 +681,26 @@ public:
         assert(args.size() == 2);
         if (templ.starts_with("rep_"))
         {
-            repeat = "for (; cx != 0; --cx) ";
+            if (func.arch == arch_t::arch16)
+                repeat = "for (; cx != 0; --cx) ";
+            else
+                repeat = "for (; ecx != 0; --ecx) ";
             templ = templ.substr(4);
         }
         if (templ.starts_with("repne_"))
         {
-            repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx) ";
+            if (func.arch == arch_t::arch16)
+                repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx) ";
+            else
+                repeat = "for (flags.zero = 0; ecx != 0 && !flags.zero; --ecx) ";
             templ = templ.substr(6);
         }
         if (templ.starts_with("repe_"))
         {
-            repeat = "for (flags.zero = 1; cx != 0 && flags.zero; --cx) ";
+            if (func.arch == arch_t::arch16)
+                repeat = "for (flags.zero = 1; cx != 0 && flags.zero; --cx) ";
+            else
+                repeat = "for (flags.zero = 1; ecx != 0 && flags.zero; --ecx) ";
             templ = templ.substr(5);
         }
         if (args[0] == "al" || args[0] == "ax")

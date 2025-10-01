@@ -10,7 +10,7 @@ class Formatter {
     
 public:
     virtual std::string BuildCondition(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) = 0;
-    virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info) = 0;
+    virtual std::string BuildStringOp(shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func) = 0;
     
     void SetOffsetMask(uint64_t mask)
     {
@@ -89,9 +89,17 @@ public:
         {
             snprintf(offset, 32, "%s * %d + 0x%llx", Capstone->ToString(op.mem.index), op.mem.scale, op.mem.disp);
         }
+        else if (op.mem.base == X86_REG_INVALID && op.mem.index != X86_REG_INVALID && op.mem.scale != 1 && op.mem.disp == 0)
+        {
+            snprintf(offset, 32, "%s * %d", Capstone->ToString(op.mem.index), op.mem.scale);
+        }
         else if (op.mem.base != X86_REG_INVALID && op.mem.index != X86_REG_INVALID && op.mem.scale != 1 && op.mem.disp != 0)
         {
-            snprintf(offset, 32, "%s + %s * %d + 0x%llx", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), op.mem.scale, op.mem.disp);
+            if ((int32_t)op.mem.disp < 0)
+                snprintf(offset, 32, "%s + %s * %d - 0x%llx", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), op.mem.scale, -op.mem.disp);
+            else
+                snprintf(offset, 32, "%s + %s * %d + 0x%llx", Capstone->ToString(op.mem.base), Capstone->ToString(op.mem.index), op.mem.scale, op.mem.disp);
+
         }
         else
         {
@@ -218,7 +226,7 @@ public:
         if (fmt_ == "")
             return "";
         if (fmt_ == "$string")
-            return BuildStringOp(instr, info);
+            return BuildStringOp(instr, info, func);
         
         const cs_x86& x86 = instr->mDetail;
         assert(fmt_.length() < 128);
@@ -500,6 +508,24 @@ public:
                         assert(0);
                 }
             }
+            if (strcmp(tok, "large0") == 0)
+            {
+                assert(x86.op_count >= 1);
+                switch (x86.operands[0].size)
+                {
+                    case 1:
+                        strcpy(replace, " ");
+                        break;
+                    case 2:
+                        strcpy(replace, " ");
+                        break;
+                    case 4:
+                        strcpy(replace, "(uint64_t)");
+                        break;
+                    default:
+                        assert(0);
+                }
+            }
             if (strcmp(tok, "overflow0") == 0)
             {
                 assert(x86.op_count >= 1);
@@ -543,7 +569,7 @@ public:
                 {
                     strcpy(replace, cond.c_str());
                     assert(replace[0]);
-                } else if (cond == "edx" || strstr(condstr, " & 0x"))
+                } else if (cond == "edx" || cond == "eax" || strstr(condstr, " & 0x"))
                 {
                     snprintf(replace, sizeof(replace), "!!(%s)", cond.c_str());
                 } else
@@ -622,6 +648,12 @@ public:
                 assert(x86.op_count >= 2);
                 snprintf(replace, sizeof(replace), "%d", x86.operands[1].size*8);
             }
+            if (strcmp(tok, "cx") == 0)
+            {
+                strcpy(replace, func.arch == arch_t::arch16 ? "cx" : "ecx");
+            }
+
+
 //            if (strcmp(tok, "realmode") == 0)
 //            {
 //                if (mOffsetMask == -1)
@@ -650,6 +682,8 @@ public:
             }
 
             assert(replace[0]);
+            if (strcmp(replace, " ") == 0)
+                strcpy(replace, "");
             char temp[128];
             memcpy(temp, fmt, (p-1)-fmt);
             temp[p-1-fmt] = 0;
@@ -658,6 +692,7 @@ public:
             strcpy(fmt, temp);
             if (p-fmt>=strlen(fmt))
                 break;
+            p--;
         }
         
         return fmt;

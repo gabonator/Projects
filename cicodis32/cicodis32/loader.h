@@ -370,7 +370,8 @@ class LoaderLe : public Loader {
     public:
         enum {
             SOURCE_16BIT_OFFSET_FIXUP = 5,
-            SOURCE_32BIT_OFFSET_FIXUP = 7
+            SOURCE_32BIT_OFFSET_FIXUP = 7,
+            SOURCE_16BIT_SELECTOR_FIXUP = 2,
         };
 
     private:
@@ -387,6 +388,10 @@ class LoaderLe : public Loader {
         {
             return buffer[1];
         }
+        bool isInternalTarget() {
+            return (getFlags() & 0x3) == 0;
+        }
+
         int getSourceOffset() const
         {
             return buffer[2] | (buffer[3] << 8);
@@ -410,6 +415,8 @@ class LoaderLe : public Loader {
                         default: assert(0);
                     }
                     break;
+                case SOURCE_16BIT_SELECTOR_FIXUP:
+                    return 0;
                 default:
                     assert(0);
             }
@@ -429,7 +436,20 @@ class LoaderLe : public Loader {
                         default: assert(0);
                     }
                     break;
+                case SOURCE_16BIT_SELECTOR_FIXUP:
+                    return 5;
                 default:
+                    printf("reloc=%x / %x \n", getSourceType(), getFlags());
+                    for (int i=0; i<30; i++)
+                        printf("%02x ", buffer[i]);
+
+                    // 02 00 [2d 0b] 02
+                    // 02 00 a1 0a 02
+                    // 02 00 e9 08 02
+                    
+                    // 07 10 [68 0d] 02 [d0 2b 10 00]
+                    // 07 10 62 0d 02 d0
+                    printf("\n");
                     assert(0);
             }
             return 0;
@@ -545,7 +565,8 @@ public:
         // Parse header
         assert(mHeader.magic[0] == 'L' && mHeader.magic[1] == 'E');
         std::vector<uint32_t> bases;
-        loadAddress = 0x196000;
+        //loadAddress = 0x196000;
+        loadAddress = 0x1a8000;
         int curAddress = loadAddress;
         
         for (int i=0; i<mHeader.objcnt; i++)
@@ -627,6 +648,7 @@ public:
                                 pageData[fixup.getSourceOffset()+3] = value>>24;
                             break;
                         case Fixup_t::SOURCE_16BIT_OFFSET_FIXUP:
+                        case Fixup_t::SOURCE_16BIT_SELECTOR_FIXUP:
                             // TODO: check!
                             value = fixup.getTargetOffset() + mObjects[fixup.getObjectNumber()-1].base;
                             if (fixup.getSourceOffset() >= 0 && fixup.getSourceOffset() < pageSize)
@@ -643,10 +665,10 @@ public:
             mMemoryObjects.push_back(obj);
         }
         
-        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/wrms1.bin", "wb");
+        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm21.bin", "wb");
         fwrite(mMemoryObjects[0].data, 1, mMemoryObjects[0].size, f);
         fclose(f);
-        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/wrms2.bin", "wb");
+        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm22.bin", "wb");
         fwrite(mMemoryObjects[1].data, 1, mMemoryObjects[1].size, f);
         fclose(f);
         
@@ -727,8 +749,34 @@ public:
     }
     virtual std::string GetMain() override
     {
-        return "";
-    }
+        return format(R"(void init()
+{
+    ds = 0x0168;
+    cs = 0x%04x;
+    es = 0x0028;
+    ss = 0x0168;
+    esp = 0x%x;
+    // Overlay1: base 0x%x size 0x%x
+    // Overlay2: base 0x%x size 0x%x
+}
+
+void sub_%x();
+
+void start()
+{
+    // eip = 0x%x
+    sub_%x(); // %04x:%x (%x+%x)
+}
+)",
+     GetEntry().segment,
+    mMemoryObjects[mHeader.stackobj-1].base + mHeader.esp,
+     mMemoryObjects[0].base, mMemoryObjects[0].size,
+     mMemoryObjects[1].base, mMemoryObjects[1].size,
+    GetEntry().linearOffset(),
+    mHeader.eip,
+     GetEntry().linearOffset(), GetEntry().segment, GetEntry().offset,
+        mMemoryObjects[mHeader.startobj-1].base, mHeader.eip);
+}
 //    virtual std::string GetFooter() override
 //    {
 //        return "";

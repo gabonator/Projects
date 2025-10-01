@@ -24,6 +24,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_RET] = { .continuous = false, .ret = true },
     [X86_INS_RETF] = { .continuous = false, .ret = true /*, .stack = -2*/ },
     [X86_INS_IRET] = { .continuous = false, .ret = true },
+    [X86_INS_IRETD] = { .continuous = false, .ret = true },
     [X86_INS_JMP] = {
         .continuous = false,
         .simpleJump = true,
