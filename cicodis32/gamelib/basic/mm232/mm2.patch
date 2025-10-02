@@ -1,0 +1,319 @@
+diff --git a/mm2.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/mm2.cpp
+index d11a1b3..a0061e6 100644
+--- a/mm2.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/mm2.cpp
+@@ -3536,7 +3536,7 @@ loc_1a8ce3: // 0160:1a8ce3
+     memoryASet16(ds, 0x20c830, memoryAGet16(ds, 0x20c830) + 0x0001);
+     al = memoryAGet(ds, 0x20c82e);
+     al <<= 1;
+-    if (!!al && stop())
++    if (!!al)
+         goto loc_1a8d0a;
+     al = 0x01;
+ loc_1a8d0a: // 0160:1a8d0a
+@@ -13625,10 +13625,10 @@ loc_1a9591: // 0160:1a9591
+     eax = memoryAGet32(ds, 0x2eeb68);
+     ecx = eax;
+     eax -= memoryAGet32(ds, 0x2eeb70);
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
++//    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
++//    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+     eax -= memoryAGet32(ds, 0x2eeb74);
+-    if (stop("xxx multi precond"))
++    if ((int32_t)eax <= 0)
+         goto loc_1a975a;
+     memoryASet32(ds, 0x2eeb68, eax);
+     ebx = 0x00000140;
+@@ -13648,10 +13648,8 @@ loc_1a9612: // 0160:1a9612
+     ecx = memoryAGet32(ds, 0x2eeb64);
+     eax = ecx;
+     ecx -= memoryAGet32(ds, 0x2eeb78);
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+     ecx -= memoryAGet32(ds, 0x2eeb7c);
+-    if (stop("xxx multi precond"))
++    if ((int32_t)ecx < 0)
+         goto loc_1a975a;
+     memoryASet32(ds, 0x2eeb64, ecx);
+     memoryASet32(ds, 0x2eeb60, 0x00000054);
+@@ -14323,10 +14321,10 @@ loc_1a9591: // 0160:1a9591
+     eax = memoryAGet32(ds, 0x2eeb68);
+     ecx = eax;
+     eax -= memoryAGet32(ds, 0x2eeb70);
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
++//    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0; // CICO BUG
++//    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+     eax -= memoryAGet32(ds, 0x2eeb74);
+-    if (stop("xxx multi precond"))
++    if ((int32_t)eax <= 0)
+         goto loc_1a975a;
+     memoryASet32(ds, 0x2eeb68, eax);
+     ebx = 0x00000140;
+@@ -14346,10 +14344,10 @@ loc_1a9612: // 0160:1a9612
+     ecx = memoryAGet32(ds, 0x2eeb64);
+     eax = ecx;
+     ecx -= memoryAGet32(ds, 0x2eeb78);
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
++//    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
++//    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+     ecx -= memoryAGet32(ds, 0x2eeb7c);
+-    if (stop("xxx multi precond"))
++    if ((int32_t)ecx <= 0)
+         goto loc_1a975a;
+     memoryASet32(ds, 0x2eeb64, ecx);
+     memoryASet32(ds, 0x2eeb60, 0x00000054);
+@@ -15028,10 +15026,8 @@ loc_1a90fd: // 0160:1a90fd
+     eax = memoryAGet32(ds, 0x2eeb68);
+     ecx = eax;
+     eax -= memoryAGet32(ds, 0x2eeb70);
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+-    temp_cond0 = (int32_t)eax - (int32_t)memoryAGet32(ds, 0x2eeb74) <= 0;
+     eax -= memoryAGet32(ds, 0x2eeb74);
+-    if (stop("xxx multi precond"))
++    if ((int32_t)eax <= 0)
+         goto loc_1a92c9;
+     memoryASet32(ds, 0x2eeb68, eax);
+     ebx = 0x00000140;
+@@ -15051,10 +15047,8 @@ loc_1a917e: // 0160:1a917e
+     ecx = memoryAGet32(ds, 0x2eeb64);
+     eax = ecx;
+     ecx -= memoryAGet32(ds, 0x2eeb78);
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+-    temp_cond1 = (int32_t)ecx - (int32_t)memoryAGet32(ds, 0x2eeb7c) <= 0;
+     ecx -= memoryAGet32(ds, 0x2eeb7c);
+-    if (stop("xxx multi precond"))
++    if ((ecx)<=0)
+         goto loc_1a92c9;
+     memoryASet32(ds, 0x2eeb64, ecx);
+     memoryASet32(ds, 0x2eeb60, 0x00000054);
+@@ -24588,7 +24582,7 @@ loc_1b63c2: // 0160:1b63c2
+     al = 0x02;
+     ah = 0x0f;
+     out16(dx, ax);
+-    sp += 2;
++    esp += 2;
+ }
+ void sub_1b63d3() // 0160:1b63d3 +long
+ {
+@@ -60930,60 +60924,45 @@ loc_1cd75c: // 0160:1cd75c
+         case 0x1b28d3: goto loc_1b28d3;
+         case 0x1b290d: goto loc_1b290d;
+         case 0x1b2984: goto loc_1b2984;
+-        default:
+-            stop("ind 0160:1cd7b2");
+-    }
+-    switch (edi)
+-    {
+-        case 0x1b29a8: goto loc_1b29a8;
+-        case 0x1b2710: goto loc_1b2710;
+-        case 0x1b2724: goto loc_1b2724;
+-        case 0x1b2755: goto loc_1b2755;
+-        case 0x1b2782: goto loc_1b2782;
+-        case 0x1b27b8: goto loc_1b27b8;
+-        case 0x1b27f2: goto loc_1b27f2;
+-        case 0x1b2829: goto loc_1b2829;
+-        case 0x1b2863: goto loc_1b2863;
+-        case 0x1b2899: goto loc_1b2899;
+-        case 0x1b28d3: goto loc_1b28d3;
+-        case 0x1b290d: goto loc_1b290d;
+-        case 0x1b2984: goto loc_1b2984;
+-        default:
+-            stop("ind 0160:1cd7b2");
+-    }
+-    switch (edi)
+-    {
+-        case 0x1b2710: goto loc_1b2710;
++        //case 0x1b2710: goto loc_1b2710;
+         case 0x1b2947: goto loc_1b2947;
+-        case 0x1b2724: goto loc_1b2724;
+-        case 0x1b2755: goto loc_1b2755;
+-        case 0x1b2782: goto loc_1b2782;
+-        case 0x1b27b8: goto loc_1b27b8;
+-        case 0x1b27f2: goto loc_1b27f2;
+-        case 0x1b2829: goto loc_1b2829;
+-        case 0x1b2863: goto loc_1b2863;
+-        case 0x1b2899: goto loc_1b2899;
+-        case 0x1b28d3: goto loc_1b28d3;
+-        case 0x1b290d: goto loc_1b290d;
++//        case 0x1b2724: goto loc_1b2724;
++//        case 0x1b2755: goto loc_1b2755;
++//        case 0x1b2782: goto loc_1b2782;
++//        case 0x1b27b8: goto loc_1b27b8;
++//        case 0x1b27f2: goto loc_1b27f2;
++//        case 0x1b2829: goto loc_1b2829;
++//        case 0x1b2863: goto loc_1b2863;
++//        case 0x1b2899: goto loc_1b2899;
++//        case 0x1b28d3: goto loc_1b28d3;
++//        case 0x1b290d: goto loc_1b290d;
+         case 0x1b2961: goto loc_1b2961;
+-        default:
+-            stop("ind 0160:1cd7b2");
+-    }
+-    switch (edi)
+-    {
+         case 0x1b2954: goto loc_1b2954;
+-        case 0x1b2710: goto loc_1b2710;
+-        case 0x1b2724: goto loc_1b2724;
+-        case 0x1b2755: goto loc_1b2755;
+-        case 0x1b2782: goto loc_1b2782;
+-        case 0x1b27b8: goto loc_1b27b8;
+-        case 0x1b27f2: goto loc_1b27f2;
+-        case 0x1b2829: goto loc_1b2829;
+-        case 0x1b2863: goto loc_1b2863;
+-        case 0x1b2899: goto loc_1b2899;
+-        case 0x1b28d3: goto loc_1b28d3;
+-        case 0x1b290d: goto loc_1b290d;
+-        case 0x1b2961: goto loc_1b2961;
++//        case 0x1b2710: goto loc_1b2710;
++//        case 0x1b2724: goto loc_1b2724;
++//        case 0x1b2755: goto loc_1b2755;
++//        case 0x1b2782: goto loc_1b2782;
++//        case 0x1b27b8: goto loc_1b27b8;
++//        case 0x1b27f2: goto loc_1b27f2;
++//        case 0x1b2829: goto loc_1b2829;
++//        case 0x1b2863: goto loc_1b2863;
++//        case 0x1b2899: goto loc_1b2899;
++//        case 0x1b28d3: goto loc_1b28d3;
++//        case 0x1b290d: goto loc_1b290d;
++//        case 0x1b2961: goto loc_1b2961;
++        case 0x1b29a8: goto loc_1b29a8;
++//        case 0x1b2710: goto loc_1b2710;
++//        case 0x1b2724: goto loc_1b2724;
++//        case 0x1b2755: goto loc_1b2755;
++//        case 0x1b2782: goto loc_1b2782;
++//        case 0x1b27b8: goto loc_1b27b8;
++//        case 0x1b27f2: goto loc_1b27f2;
++//        case 0x1b2829: goto loc_1b2829;
++//        case 0x1b2863: goto loc_1b2863;
++//        case 0x1b2899: goto loc_1b2899;
++//        case 0x1b28d3: goto loc_1b28d3;
++//        case 0x1b290d: goto loc_1b290d;
++//        case 0x1b2984: goto loc_1b2984;
+         default:
+             stop("ind 0160:1cd7b2");
+     }
+@@ -60993,24 +60972,10 @@ loc_1cd7b4: // 0160:1cd7b4
+     switch (edi)
+     {
+         case 0x1b2710: goto loc_1b2710;
+-        default:
+-            stop("ind 0160:1cd7bd");
+-    }
+-    switch (edi)
+-    {
+-        case 0x1b29a8: goto loc_1b29a8;
+-        default:
+-            stop("ind 0160:1cd7bd");
+-    }
+-    switch (edi)
+-    {
+-        case 0x1b2710: goto loc_1b2710;
+-        default:
+-            stop("ind 0160:1cd7bd");
+-    }
+-    switch (edi)
+-    {
++//        case 0x1b2710: goto loc_1b2710;
+         case 0x1b2954: goto loc_1b2954;
++        case 0x1b29a8: goto loc_1b29a8;
++        case 0x1b2947: goto loc_1b2947;
+         default:
+             stop("ind 0160:1cd7bd");
+     }
+@@ -62522,7 +62487,6 @@ loc_1c79a2: // 0160:1c79a2
+     edx = pop32();
+     ecx = pop32();
+     ebx = pop32();
+-    stop("lastset.size>1");
+     esp += 4;
+     return;
+     // gap 27800 bytes
+@@ -84673,6 +84637,7 @@ void sub_1e0dd0()
+ 
+ void sub_1e0e80() // 0160:1e0e80 +long
+ {
++    return;
+     esp -= 4;
+     push32(ebx);
+     push32(edx);
+@@ -85847,7 +85812,7 @@ loc_1e1e2d: // 0160:1e1e2d
+     ebp = pop32();
+     edi = pop32();
+     esi = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+     return;
+ loc_1e1e55: // 0160:1e1e55
+@@ -89005,7 +88970,7 @@ loc_1e49af: // 0160:1e49af
+     edx = pop32();
+     ecx = pop32();
+     ebx = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1e49b8() // 0160:1e49b8 +long
+@@ -89019,7 +88984,7 @@ loc_1e49af: // 0160:1e49af
+     edx = pop32();
+     ecx = pop32();
+     ebx = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+     return;
+ loc_1e49b8: // 0160:1e49b8
+@@ -89218,7 +89183,7 @@ loc_1e4ba2: // 0160:1e4ba2
+     edx = pop32();
+     ecx = pop32();
+     ebx = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1e4bab() // 0160:1e4bab +long
+@@ -89665,7 +89630,15 @@ void sub_1e4eee() // 0160:1e4eee +long +returnCarry
+     esi = memoryAGet32(ds, edi + 16);
+     edi = memoryAGet32(ds, edi + 20);
+     ds = ebp;
+-    stop("stack_unbalanced");
++//    printf("ii %x\n", memoryAGet16(cs, pop32()));
++    switch (memoryAGet16(cs, pop32()))
++    {
++        case 0x33cd: interrupt(0x33); break;
++        case 0x10cd: interrupt(0x10); break;
++        case 0x31cd: interrupt(0x31); break;
++        default:
++            assert(0);
++    }
+     esp += 4;
+ }
+ void sub_1e5294() // 0160:1e5294 +long
+@@ -90015,6 +89988,7 @@ void sub_1e5600() // 0160:1e5600 +long
+ }
+ void sub_1e561c() // 0160:1e561c +long
+ {
++    return;
+     esp -= 4;
+     push(es);
+     push32(ecx);
+@@ -90199,6 +90173,7 @@ loc_1e58a1: // 0160:1e58a1
+ }
+ void sub_1e58bb() // 0160:1e58bb +long
+ {
++    return;
+     esp -= 4;
+     push32(edx);
+     ah = memoryAGet(ds, 0x20a50c);
+@@ -94327,7 +94302,7 @@ loc_1eb0f7: // 0160:1eb0f7
+     ebp = pop32();
+     esi = pop32();
+     ecx = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1eb10b() // 0160:1eb10b +long
