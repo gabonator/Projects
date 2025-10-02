@@ -71,7 +71,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_INT] = { .savedVisiblyCarry = true }, // TODO, add isr mask?
     [X86_INS_AND] = { },
     [X86_INS_PUSHFD] = { .stack = +4 },
-    [X86_INS_POPFD] = { .stack = -4 },
+    [X86_INS_POPFD] = { .stack = -4, .savedVisiblyZero = true, .savedVisiblyCarry = true },
     [X86_INS_PUSHF] = { .stack = +2},
     [X86_INS_POPF] = { .stack = -2, .savedVisiblyCarry = true },
     [X86_INS_CMP] = { },

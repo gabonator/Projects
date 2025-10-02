@@ -394,7 +394,7 @@ class LoaderLe : public Loader {
 
         int getSourceOffset() const
         {
-            return buffer[2] | (buffer[3] << 8);
+            return (int16_t)(buffer[2] | (buffer[3] << 8));
         }
         int getObjectNumber() const
         {
@@ -627,12 +627,17 @@ public:
             {
                 int pageIndex = leObj.pageTableIndex+i-1;
                 LEPage_t page = mPages[pageIndex];
-                uint32_t pageOffset = mHeader.datapage + (page.dataOffset-1)*mHeader.pagesize;
-                uint32_t pageSize = std::min((i+1)*mHeader.pagesize, leObj.size);
+                uint32_t pageFileOffset = mHeader.datapage + (page.dataOffset-1)*mHeader.pagesize;
+                uint32_t pageSize = std::min(mHeader.pagesize, leObj.size - (i)*mHeader.pagesize);
                 uint8_t* pageData = obj.data + i*mHeader.pagesize;
-                memcpy(pageData, mMzData + pageOffset, pageSize);
+                memcpy(pageData, mMzData + pageFileOffset, pageSize);
+                
                 for (const Fixup_t& fixup : mFixups[pageIndex])
                 {
+                    if (fixup.getSourceOffset() + pageFileOffset == 0x38ffe)
+                    {
+                        int f = 9;
+                    }
                     uint32_t value = 0;
                     switch (fixup.getSourceType())
                     {

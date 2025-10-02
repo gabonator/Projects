@@ -292,6 +292,7 @@ public:
     bool verboseAsm{false};
     bool printProcAddress{false};
     bool printLabelAddress{false};
+    bool printOpcodes{true};
     
     address_t overlayBase;
     std::vector<uint8_t> overlayBytes;

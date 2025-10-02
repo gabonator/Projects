@@ -746,6 +746,8 @@ public:
                 }
             }
             snprintf(disasm, sizeof(disasm), "%s %s", p->mMnemonic, p->mOperands);
+            if (mOptions.printOpcodes)
+                printf("%-20s ", p->GetBytes().c_str());
             printf("// %3d ", pi->stack);
             printf("%s%x %x:%x %-30s %s%s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, disasm, depends, provides);
         }
