@@ -42,18 +42,11 @@ int main(int argc, char **argv) {
     options.printLabelAddress = true;
 //    options.verboseAsm = true;
 
-#if 1
     assert(argc==2);
     std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
     assert(!optFile.empty());
     
-    const char* strJson = (const char*)&optFile[0]; //R"({"id": "config", "loader": "LoaderMz", "executable": "KEEN4.EXE", "architecture": "arch16", "loadAddres": 0x01ed0})";
-#else
-    std::string strJson = R"({"id": "config", "loader": "LoaderMz", "executable": "KEEN4.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "verboseAsm": false}
-//{"id": "config", "recursive": false, "relocations": false, "verboseAsm": true, "procList": ["01ed:35e1"]}
-{"id": "indirectCall", "proc": "01ed:12a3"}
-{"id": "inject", "addr": "01ed:35e1", "text": "//quiet"})";
-#endif
+    const char* strJson = (const char*)&optFile[0];
 
     for (std::string line : utils::split(strJson, "\n"))
     {

@@ -74,6 +74,8 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_POPFD] = { .stack = -4, .savedVisiblyZero = true, .savedVisiblyCarry = true },
     [X86_INS_PUSHF] = { .stack = +2},
     [X86_INS_POPF] = { .stack = -2, .savedVisiblyCarry = true },
+    [X86_INS_PUSHAL] = { .stack = +8*4 },
+    [X86_INS_POPAL] = { .stack = -8*4 },
     [X86_INS_CMP] = { },
     [X86_INS_MOVZX] = { },
     
@@ -634,7 +636,7 @@ public:
                
                 std::shared_ptr<CapInstr> instr = Capstone->Disasm(addr.second);
                 assert(instr);
-                if (instr->mAddress == a && instr->IsDirectJump())
+                if (instr->mAddress == a && instr->IsDirectJump() && !instr->IsConditionalJump())
                 {
                     // dont trace stubs
                     stub = *instr->mNext.begin();

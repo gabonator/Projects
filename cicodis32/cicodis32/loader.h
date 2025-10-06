@@ -501,6 +501,7 @@ class LoaderLe : public Loader {
     std::vector<LEPage_t> mPages;
     std::vector<std::vector<Fixup_t>> mFixups;
     std::vector<MemoryObject_t> mMemoryObjects;
+    std::string mName;
     
 private:
     uint32_t swap32(uint32_t val) {
@@ -525,25 +526,10 @@ public:
     
     virtual bool LoadFile(const char *filename, int loadAddress) override
     {
+        mName = filename;
         mLoadAddress = loadAddress;
-//        FILE *f = fopen(filename, "rb");
-//        if (!f) {
-//            perror("fopen");
-//            return false;
-//        }
-//        
-//        fseek(f, 0, SEEK_END);
-//        mFileSize = ftell(f);
-//        rewind(f);
-//        
-//        mMzData = (uint8_t*)malloc(mFileSize);
-//        if (!mMzData) {
-//            perror("malloc");
-//            fclose(f);
-//            return false;
-//        }
+        mBytes = GetFileContents(mName);
         
-        mBytes = GetFileContents(filename);
         if (mBytes.empty())
         {
             perror("open failed");
@@ -566,7 +552,8 @@ public:
         assert(mHeader.magic[0] == 'L' && mHeader.magic[1] == 'E');
         std::vector<uint32_t> bases;
         //loadAddress = 0x196000;
-        loadAddress = 0x1a8000;
+        //loadAddress = 0x1a8000;
+        //loadAddress = 0x197000;
         int curAddress = loadAddress;
         
         for (int i=0; i<mHeader.objcnt; i++)
@@ -670,12 +657,27 @@ public:
             mMemoryObjects.push_back(obj);
         }
         
-        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm21.bin", "wb");
-        fwrite(mMemoryObjects[0].data, 1, mMemoryObjects[0].size, f);
-        fclose(f);
-        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm22.bin", "wb");
-        fwrite(mMemoryObjects[1].data, 1, mMemoryObjects[1].size, f);
-        fclose(f);
+        
+        //
+        size_t lastSlash = mName.find_last_of("/\\");
+        std::string filenameWithExt = mName.substr(lastSlash + 1);
+        size_t lastDot = filenameWithExt.find_last_of('.');
+        std::string key = filenameWithExt.substr(0, lastDot);
+        
+        for (int i=0; i<mMemoryObjects.size(); i++)
+        {
+            char outname[1024];
+            snprintf(outname, sizeof(outname), "%s_%d.bin", key.c_str(), i+1);
+            FILE *f = fopen(outname, "wb");
+            fwrite(mMemoryObjects[i].data, 1, mMemoryObjects[i].size, f);
+            fclose(f);
+        }
+//        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm21.bin", "wb");
+//        fwrite(mMemoryObjects[0].data, 1, mMemoryObjects[0].size, f);
+//        fclose(f);
+//        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm22.bin", "wb");
+//        fwrite(mMemoryObjects[1].data, 1, mMemoryObjects[1].size, f);
+//        fclose(f);
         
         // dump
 //        uint8_t buffer[0x1e000 + 67424] = {0};

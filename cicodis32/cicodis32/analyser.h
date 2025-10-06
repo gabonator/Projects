@@ -321,6 +321,11 @@ public:
             int f = 9;
         }
         int stackChange = instr->mTemplate.stack;
+        
+        // push/pop shifts esp by 32
+        if (mOptions.arch == arch_t::arch32 && abs(stackChange) == 2)
+            stackChange *= 2;
+        
         if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
         {
 //            if (info->procRequest & procRequest_t::nearAsFar)
@@ -333,7 +338,7 @@ public:
         }
         
         if (instr->mDetail.op_count >= 1 && instr->mDetail.operands[0].type == X86_OP_REG &&
-            instr->mDetail.operands[0].reg == X86_REG_SP)
+            (instr->mDetail.operands[0].reg == X86_REG_SP || instr->mDetail.operands[0].reg == X86_REG_ESP))
         {
             switch (instr->mId)
             {
@@ -391,6 +396,9 @@ public:
                         stackChange += instr->Imm();
                     else
                         stackChange = 111;
+                    break;
+                case X86_INS_LEA:
+                    stackChange = 333;
                     break;
                 default:
                     assert(0);

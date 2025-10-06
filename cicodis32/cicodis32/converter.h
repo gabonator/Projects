@@ -65,6 +65,11 @@ public:
         if (anyTemp)
             mCode.push_back("\n");
 
+        std::string injectstr;
+        const auto& injectit = mOptions.inject.find(proc);
+        if (injectit != mOptions.inject.end())
+            mCode.push_back(std::string("    ") + injectit->second + "\n");
+
         if (!((int)info->func.request & (int)procRequest_t::callIsolated))
         {
             if (info->func.callConv == callConv_t::callConvShiftStackNear)
@@ -104,9 +109,12 @@ public:
             }
 
             std::string injectstr;
-            const auto& injectit = mOptions.inject.find(p.first);
-            if (injectit != mOptions.inject.end())
-                injectstr = injectit->second;
+            if (p.first != proc)
+            {
+                const auto& injectit = mOptions.inject.find(p.first);
+                if (injectit != mOptions.inject.end())
+                    injectstr = injectit->second;
+            }
             
             if (injectstr == "//remove")
             {
@@ -385,9 +393,9 @@ public:
             if (cond == X86_INS_JG)
                 return "($sig0)$rd0 > 0";
             if (cond == X86_INS_JBE)
-                return "$rd0 <= 0 && stop(\"test, jbe\")";
+                return "$rd0 <= 0"; // check
             if (cond == X86_INS_JA)
-                return "$rd0 > 0 && stop(\"test, ja\")";
+                return "$rd0 > 0"; // check
         }
         
         if (set == X86_INS_SAHF)
@@ -450,7 +458,7 @@ public:
             if (flag->needed)
             {
                 if (flag->lastSet.empty())
-                    return "stop(\"problem-73\")";
+                    return utils::format("stop(\"%s - flag.%c not set yet\")", instr->mMnemonic, flag->type);
                 assert(!flag->lastSet.empty());
                 needFlags++;
                 dirty |= flag->dirty;
