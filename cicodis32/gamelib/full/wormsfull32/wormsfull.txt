@@ -12,7 +12,8 @@
 //{"id": "jumpTable", "addr": "160:1b745b", "table": "160:1b73b1", "entries": 31, "type": "jump32", "selector": "ecx"}
 
 
-//{"id": "config", "verbose": true, "procList":["0160:1ad1ca", "160:1984fb"], "recursive": false }
+//19c6e0
+//{"id": "config", "verbose": true, "procList":["0160:19c6e0", "160:1cbd08"], "recursive": false }
 //{"id": "config", "verbose": true, verboseAsm: true, "procList":["0160:1cb786"], "recursive": false }
 
 
@@ -42,6 +43,16 @@
 {"id": "jumpTable", "addr": "160:198e01", "table": "160:198d00", "entries": 6, "type": "jump32", "selector": "ebx"}
 {"id": "jumpTable", "addr": "160:1bb274", "table": "160:1bb1ca", "entries": 31, "type": "jump32", "selector": "ecx"}
 
-{"id": "jumpTable", "addr": "160:19ecec", "calls32":["160:19ff9b"]}
-//{"id": "jumpTable", "addr": "160:19ecec", "table": "160:1e1316", "entries": [0, 10], "type": "call32", "selector": "eax"}
+{"id": "jumpTable", "addr": "160:19ecec", "calls32":["160:19ff9b", "160:1a02c4", "160:19ffae", "160:1a0171", "160:19ffef", "160:1a025b", "160:1a010f", "160:1a015d", "160:1a0008", "160:1a003c", "160:1a0216", "160:1a00b5", "160:1a0074", "160:1a009c", "160:1a0335", "160:1a0311", "160:1a0359", "160:1a012f", "160:1a03b7", "160:19ff9b", "160:19ff9b", "160:19ff9b", "160:1a03d0", "160:1a03f7", "160:1a01d5", "160:1a029c", "160:1a0028", "160:1a0171", "160:1a025b", "160:1a003c"]}
 
+
+//{"id": "jumpTable", "addr": "160:19ecec", "table": "160:1e1316", "entries": [0, 10], "type": "call32", "selector": "eax"}
+//{"id": "jumpTable", "addr": "160:19b03f", "table": "160:1E1316", "entries": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145], "type": "call32", "selector": "eax"}
+// 26 sheep, 25 minigun, 24 banana
+{"id": "jumpTable", "addr": "160:19b03f", "calls32":["160:19ff9b", "160:1a02c4", "160:19ffae", "160:1a0171", "160:19ffef", "160:1a025b", "160:1a010f", "160:1a015d", "160:1a0008", "160:1a003c", "160:1a0216", "160:1a00b5", "160:1a0074", "160:1a009c", "160:1a0335", "160:1a0311", "160:1a0359", "160:1a012f", "160:1a03b7", "160:19ff9b", "160:19ff9b", "160:19ff9b", "160:1a03d0", "160:1a03f7", "160:1a01d5", "160:1a029c", "160:1a0028", "160:1a0171", "160:1a025b", "160:1a003c"]}
+
+
+{"id": "jumpTable", "addr": "0160:1a83a9", "table": "160:1A836D", "entries": 11, "type": "jump32", "selector": "eax/4"}
+{"id": "jumpTable", "addr": "0160:1a8694", "table": "160:1A85D9", "entries": 11, "type": "jump32", "selector": "ecx/4"}
+{"id": "jumpTable", "addr": "0160:1a74fa", "table": "160:1A74CD", "entries": 7, "type": "jump32", "selector": "esi/4"}
+{"id": "jumpTable", "addr": "0160:1a7722", "table": "160:1A7685", "entries": 7, "type": "jump32", "selector": "edi/4"}

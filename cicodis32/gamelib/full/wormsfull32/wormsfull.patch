@@ -1,0 +1,241 @@
+diff --git a/wormsfull.clean b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/wormsfull.cpp
+index e9084ee..52b1730 100644
+--- a/wormsfull.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cico32run/cico32run/wormsfull.cpp
+@@ -1082,7 +1082,7 @@ loc_19730b: // 0160:19730b
+     eax = 0x001d5036;
+     edx = ecx;
+     memoryASet32(ds, 0x1e006c, ecx);
+-    sub_19714b();
++    //sub_19714b();
+     edx = 0x00000008;
+     eax = 0;
+     sub_1ab709();
+@@ -4211,6 +4211,7 @@ loc_19fd41: // 0160:19fd41
+     ebx = edx + esi;
+     ebx <<= 2;
+     edx = eax + 1;
++    memoryASet32(ds, ebx + 3806726, 3);
+     edi = memoryAGet32(ds, ebx + 3806726);
+     ecx = eax + 2;
+     if (edi)
+@@ -6127,7 +6128,7 @@ loc_19b014: // 0160:19b014
+     eax += edx;
+     eax <<= 2;
+     if ((int32_t)memoryAGet32(ds, eax + 1970970) < (int32_t)0x00000000)
+-        goto loc_19b04b;
++        goto loc_19b04b;    
+     switch (memoryAGet32(ds, eax + 1970966))
+     {
+         case 0x19ff9b: sub_19ff9b(); break;
+@@ -6885,7 +6886,7 @@ loc_19bb2a: // 0160:19bb2a
+     if (memoryAGet32(ds, 0x1e0098) == 0x00000000)
+         goto loc_19bb6e;
+     eax = memoryAGet32(ds, 0x39eac8);
+-    ebx = memoryAGet32(ds, 0x39eab0);
++    ebx = memoryAGet32(ds, 0x39eab0); // mouse delta
+     ecx = memoryAGet32(ds, 0x1e0088);
+     eax -= ebx;
+     esi = memoryAGet32(ds, 0x39eab4);
+@@ -6894,8 +6895,8 @@ loc_19bb2a: // 0160:19bb2a
+     edi = memoryAGet32(ds, 0x1e008c);
+     eax -= esi;
+     edi += eax;
+-    memoryASet32(ds, 0x1e0088, ecx);
+-    memoryASet32(ds, 0x1e008c, edi);
++//    memoryASet32(ds, 0x1e0088, ecx); // mouse select weapon
++//    memoryASet32(ds, 0x1e008c, edi);
+ loc_19bb6e: // 0160:19bb6e
+     if (memoryAGet32(ds, 0x3a1cd0) == 0x00000000)
+         goto loc_199549;
+@@ -7022,7 +7023,7 @@ loc_19bd26: // 0160:19bd26
+     edx = memoryAGet32(ds, 0x1e3ac0);
+     if (!edx)
+         goto loc_19bd39;
+-    ebx = edx + -1;
++    ebx = edx + -1 + random()%10;
+     memoryASet32(ds, 0x1e3ac0, ebx);
+ loc_19bd39: // 0160:19bd39
+     if (memoryAGet32(ds, 0x1e36dc) == 0x00000000)
+@@ -7364,7 +7365,7 @@ loc_19c147: // 0160:19c147
+     ebx = 0x0039e670;
+     eax = 0;
+     memoryASet32(ds, 0x1e36f8, ebx);
+-    sub_1a593a();
++    //sub_1a593a(); // GABO CHECK!
+     ebx = 0x00000046;
+     edx = 0;
+ loc_19c176: // 0160:19c176
+@@ -7378,6 +7379,7 @@ loc_19c176: // 0160:19c176
+ loc_19c197: // 0160:19c197
+     eax = memoryAGet32(ds, 0x3a1f04);
+ loc_19c19c: // 0160:19c19c
++    memoryASet32(ds, 0x3aa13c, memoryAGet32(ds, 0x3aa13c)+2);
+     sync();
+     if (eax == memoryAGet32(ds, 0x3aa13c))
+         goto loc_19c19c;
+@@ -8150,11 +8152,11 @@ loc_19ca7d: // 0160:19ca7d
+     edx = esp;
+     sub_1cc76a();
+     eax = memoryAGet32(ds, 0x39eac8);
+-    memoryASet32(ds, 0x39eab0, eax);
++    memoryASet32(ds, 0x39eab0, eax); // mouse dx
+     eax = memoryAGet32(ds, 0x39eac4);
+-    memoryASet32(ds, 0x39eab4, eax);
++    memoryASet32(ds, 0x39eab4, eax); // mouse dy
+     eax = memoryAGet32(ds, 0x39eac0);
+-    memoryASet32(ds, 0x39ea94, eax);
++    memoryASet32(ds, 0x39ea94, eax); // mouse btn
+     eax = memoryAGet32(ds, 0x39ea8c);
+     memoryASet32(ds, 0x39eaac, eax);
+     eax = 0;
+@@ -9786,8 +9788,8 @@ loc_19de0a: // 0160:19de0a
+     esi = memoryAGet32(ds, 0x3a1f18);
+     eax <<= 3;
+     esi += eax;
+-    memoryASet32(ds, 0x3a1f14, edx);
+-    memoryASet32(ds, 0x3a1f18, esi);
++    memoryASet32(ds, 0x3a1f14, edx); // mouse scroll pos x
++    memoryASet32(ds, 0x3a1f18, esi); // mouse scroll pos x
+ loc_19de5f: // 0160:19de5f
+     eax = memoryAGet32(ds, 0x3a1f1c);
+     eax -= memoryAGet32(ds, 0x3a1f14);
+@@ -11013,7 +11015,7 @@ loc_19ebcf: // 0160:19ebcf
+     eax += edx;
+     ebx = edi;
+     edi = 0x0000004b;
+-    switch (memoryAGet32(ds, eax * 4 + 0x1e1316))
++    switch (memoryAGet32(ds, eax * 4 + 0x1e1316)) // TODO [15]
+     {
+         case 0x19ff9b: sub_19ff9b(); break;
+         case 0x1a02c4: sub_1a02c4(); break;
+@@ -19518,6 +19520,15 @@ loc_1a593a: // 0160:1a593a
+     memoryASet32(ds, 0x1e3708, edx);
+     memoryASet32(ds, 0x1e3700, eax);
+ loc_1a594c: // 0160:1a594c
++    {
++        static int c=0;
++        if (++c%10 == 0)
++        {
++            memoryASet32(ds, 0x1e36fc, (memoryAGet32(ds, 0x1e36fc)+5)&255);
++            memoryASet32(ds, 0x3aa13c, memoryAGet32(ds, 0x3aa13c)+1);
++//            sync();
++        }
++    }
+     eax = memoryAGet32(ds, 0x1e36fc);
+     if (eax == memoryAGet32(ds, 0x1e3700))
+         goto loc_1a57b8;
+@@ -28080,7 +28091,7 @@ loc_1ab3de: // 0160:1ab3de
+     if (edx)
+         goto loc_1a59bb;
+     eax = memoryAGet32(ds, 0x39eac8);
+-    eax -= memoryAGet32(ds, 0x39eab0);
++    eax -= memoryAGet32(ds, 0x39eab0); // delta
+     ecx = memoryAGet32(ds, 0x39eab4);
+     ebx = eax;
+     eax = memoryAGet32(ds, 0x39eac4);
+@@ -28101,8 +28112,8 @@ loc_1ab431: // 0160:1ab431
+ loc_1ab437: // 0160:1ab437
+     ecx = memoryAGet32(ds, 0x1e36ec);
+     esi = memoryAGet32(ds, 0x1e36f0);
+-    ecx += ebx;
+-    esi += eax;
++    ecx += ebx; // mouse pos X shift
++    esi += eax; // mouse pos Y shift
+     memoryASet32(ds, 0x1e36ec, ecx);
+     memoryASet32(ds, 0x1e36f0, esi);
+     if ((int32_t)ecx >= 0)
+@@ -40854,10 +40865,11 @@ loc_1b4b55: // 0160:1b4b55
+     eax = (int32_t)eax * (int32_t)eax;
+     ecx += eax;
+     memoryASet32(ds, esp, ecx);
+-    fild32(memoryAGet32(ds, esp));
+-    stop("disassembly failed at 160:1b4c05 fsqrt ");
+-    sub_1cb9f2();
+-    memoryASet32(ds, 0x3a1d28, fistp32());
++//    fild32(memoryAGet32(ds, esp));
++//    stop("disassembly failed at 160:1b4c05 fsqrt ");
++//    sub_1cb9f2();
++//    memoryASet32(ds, 0x3a1d28, fistp32());
++    memoryASet32(ds, 0x3a1d28, sqrt(memoryAGet32(ds, esp)));
+     if (memoryAGet32(ds, 0x3a1d28) != 0x00000000)
+         goto loc_1b4c25;
+     memoryASet32(ds, 0x3a1d28, 0x00000001);
+@@ -53048,6 +53060,7 @@ loc_1be1a9: // 0160:1be1a9
+ }
+ void sub_1bf310() // 0160:1bf310 +long
+ {
++    return; // gabo check
+     esp -= 4;
+     push32(ebx);
+     push32(ecx);
+@@ -53881,6 +53894,9 @@ void sub_1bfd80() // 0160:1bfd80 +long
+ }
+ void sub_1bfdbf() // 0160:1bfdbf +long
+ {
++    if (memoryAGet32(ss, esp+8) > memoryAGet32(ss, esp+4))
++        playSound(ds, memoryAGet32(ss, esp+4), memoryAGet32(ss, esp+8)-memoryAGet32(ss, esp+4), 16000, "s8");
++    return;
+     esp -= 4;
+     push32(ebp);
+     ebp = esp;
+@@ -54697,7 +54713,7 @@ loc_1c0c00: // 0160:1c0c00
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     flagsFromReg32(pop32());
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++    //stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1c0c04() // 0160:1c0c04 +long
+@@ -59861,7 +59877,7 @@ loc_1c4351: // 0160:1c4351
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1c4354() // 0160:1c4354 +long
+@@ -65278,7 +65294,7 @@ loc_1c8481: // 0160:1c8481
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1c84e8() // 0160:1c84e8 +long
+@@ -65789,7 +65805,7 @@ loc_1c8c80: // 0160:1c8c80
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_1c8c83() // 0160:1c8c83 +long
+@@ -76195,7 +76211,14 @@ void sub_1cee02() // 0160:1cee02 +long +returnCarry
+     esi = memoryAGet32(ds, edi + 16);
+     edi = memoryAGet32(ds, edi + 20);
+     ds = ebp;
+-    stop("stack_unbalanced");
++    switch (memoryAGet16(cs, pop32()))
++    {
++        case 0x31cd: interrupt(0x31); break;
++        case 0x33cd: interrupt(0x33); break;
++        case 0x10cd: interrupt(0x10); break;
++        default:
++            assert(0);
++    }
+     esp += 4;
+ }
+ void sub_1cf1cd() // 0160:1cf1cd +long
+@@ -76328,6 +76351,7 @@ loc_1cf2da: // 0160:1cf2da
+ }
+ void sub_1cf2db() // 0160:1cf2db +long
+ {
++    return; // gabo check
+     esp -= 4;
+     push32(0x000000b4);
+     sub_1d3388();
