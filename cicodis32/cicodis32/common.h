@@ -163,7 +163,7 @@ struct jumpTable_t {
     {
         if (minaddr == 0)
             return true;
-        if (type == Jump32)
+        if (type == Jump32 || type == Call32)
         {
             uint32_t* parts = (uint32_t*)baseptr;
             return parts[elements[i]] >= minaddr;
@@ -200,7 +200,10 @@ struct jumpTable_t {
 //            case CallWordsByOfs:
                 return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
             case Call32:
-                return format("case 0x%x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
+                if (useCaseOffset)
+                    return format("case 0x%x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
+                else
+                    return format("case %d: sub_%x(); break;", i, GetTarget(i).linearOffset());
             case Jump32:
                 if (useCaseOffset)
                     return format("case 0x%x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());

@@ -147,6 +147,14 @@ public:
             else
                 assert(0);
         }
+//        if (strstr(offset, "0x7fffffff"))
+//        {
+//            // worms
+//            if (strcmp(offset+3, " + 2147483647") == 0 && info->instr->mSize == 6)
+//                snprintf(offset+3, /*sizeof(offset)-2*/ 64, " + memoryAGet32(cs, 0x%x)", info->instr->mAddress.linearOffset()+2);
+//            else
+//                assert(0);
+//        }
     }
     
     std::string ToCString(const cs_x86_op& op, shared<instrInfo_t> info, const funcInfo_t& func)
