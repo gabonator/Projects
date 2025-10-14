@@ -1,0 +1,41 @@
+//{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x197000, "stackShiftAlways": true}
+{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x197000, "loadAddressShift":-0x187000, "stackShiftAlways": true}
+
+//{"id": "jumpTable", "addr": "160:1de7a7", "calls32": ["160:1dcd14", "160:1deabf", "160:1e4380", "160:1e43c8", "160:1e41b8", "160:1df597", "160:1de805"]}
+{"id": "jumpTable", "addr": "160:1cd7a7", "calls32": ["160:1cbd14", "160:1cdabf", "160:1d3380", "160:1d33c8", "160:1d31b8", "160:1ce597", "160:1cd805"]}
+
+
+{"id": "inject", "addr": "0160:1cd820", "text": "return;"}
+{"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
+
+
+
+{"id": "jumpTable", "addr": "160:1ccb9a", "calls32":["160:1cdaff", "160:1cb8ee"]}
+{"id": "jumpTable", "addr": "160:1ccd12", "calls32":["160:1cdaff", "160:1cb8ee"]}
+{"id": "jumpTable", "addr": "160:1ccd31", "calls32":["160:1cdaff", "160:1cb8ee"]}
+{"id": "jumpTable", "addr": "160:1ccd6a", "calls32":["160:1cdaff", "160:1cb8ee"]}
+{"id": "jumpTable", "addr": "160:1cbd44", "calls32":["160:1cbd40"]}
+{"id": "jumpTable", "addr": "160:1cbd4a", "calls32":["160:1cbd40"]}
+{"id": "jumpTable", "addr": "160:1cbd5c", "calls32":["160:1cbd40"]}
+{"id": "jumpTable", "addr": "160:1cbd62", "calls32":["160:1cbd40"]}
+{"id": "jumpTable", "addr": "160:1cd7f7", "calls32":["160:1d3230"]}
+
+{"id": "jumpTable", "addr": "160:197a7f", "table": "160:1979ec", "entries": 10, "type": "jump32", "selector": "eax"}
+{"id": "jumpTable", "addr": "160:19795e", "table": "160:19788c", "entries": 10, "type": "jump32", "selector": "ebp"}
+{"id": "jumpTable", "addr": "160:1aca97", "table": "160:1ac9c3", "entries": 10, "type": "jump32", "selector": "eax"}
+{"id": "jumpTable", "addr": "160:198e01", "table": "160:198d00", "entries": 6, "type": "jump32", "selector": "ebx"}
+{"id": "jumpTable", "addr": "160:1bb274", "table": "160:1bb1ca", "entries": 31, "type": "jump32", "selector": "ecx"}
+
+{"id": "jumpTable", "addr": "160:19ecec", "calls32":["160:19ff9b", "160:1a02c4", "160:19ffae", "160:1a0171", "160:19ffef", "160:1a025b", "160:1a010f", "160:1a015d", "160:1a0008", "160:1a003c", "160:1a0216", "160:1a00b5", "160:1a0074", "160:1a009c", "160:1a0335", "160:1a0311", "160:1a0359", "160:1a012f", "160:1a03b7", "160:19ff9b", "160:19ff9b", "160:19ff9b", "160:1a03d0", "160:1a03f7", "160:1a01d5", "160:1a029c", "160:1a0028", "160:1a0171", "160:1a025b", "160:1a003c"]}
+
+
+//{"id": "jumpTable", "addr": "160:19ecec", "table": "160:1e1316", "entries": [0, 10], "type": "call32", "selector": "eax"}
+//{"id": "jumpTable", "addr": "160:19b03f", "table": "160:1E1316", "entries": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145], "type": "call32", "selector": "eax"}
+// 26 sheep, 25 minigun, 24 banana
+{"id": "jumpTable", "addr": "160:19b03f", "calls32":["160:19ff9b", "160:1a02c4", "160:19ffae", "160:1a0171", "160:19ffef", "160:1a025b", "160:1a010f", "160:1a015d", "160:1a0008", "160:1a003c", "160:1a0216", "160:1a00b5", "160:1a0074", "160:1a009c", "160:1a0335", "160:1a0311", "160:1a0359", "160:1a012f", "160:1a03b7", "160:19ff9b", "160:19ff9b", "160:19ff9b", "160:1a03d0", "160:1a03f7", "160:1a01d5", "160:1a029c", "160:1a0028", "160:1a0171", "160:1a025b", "160:1a003c"]}
+
+
+{"id": "jumpTable", "addr": "0160:1a83a9", "table": "160:1A836D", "entries": 11, "type": "jump32", "selector": "eax/4"}
+{"id": "jumpTable", "addr": "0160:1a8694", "table": "160:1A85D9", "entries": 11, "type": "jump32", "selector": "ecx/4"}
+{"id": "jumpTable", "addr": "0160:1a74fa", "table": "160:1A74CD", "entries": 7, "type": "jump32", "selector": "esi/4"}
+{"id": "jumpTable", "addr": "0160:1a7722", "table": "160:1A7685", "entries": 7, "type": "jump32", "selector": "edi/4"}
