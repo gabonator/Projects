@@ -538,8 +538,6 @@ public:
         mFileSize = mBytes.size();
         mMzData = &mBytes[0];
         
-//        fread(mMzData, 1, mFileSize, f);
-//        fclose(f);
         assert(mMzData[0] == 'M' && mMzData[1] == 'Z');
         
         uint32_t new_header_offset = *((uint32_t*)(mMzData+0x3c));
@@ -551,9 +549,6 @@ public:
         // Parse header
         assert(mHeader.magic[0] == 'L' && mHeader.magic[1] == 'E');
         std::vector<uint32_t> bases;
-        //loadAddress = 0x196000;
-        //loadAddress = 0x1a8000;
-        //loadAddress = 0x197000;
         int curAddress = loadAddress;
         
         for (int i=0; i<mHeader.objcnt; i++)
@@ -582,13 +577,6 @@ public:
                 Fixup_t fixup(mLeData + mHeader.frectab + o);
                 pageFixups.push_back(fixup);
                 o += fixup.getSize();
-//
-//                uint8_t* test = mLeData + mHeader.frectab + o;
-//                LEFixup_t fixup = *(LEFixup_t*)(mLeData + mHeader.frectab + o);
-//                assert(fixup.sourceType == 7);
-//                assert(sizeof(LEFixup_t) == 7);
-//                o += sizeof(LEFixup_t);
-//                pageFixups.push_back(fixup);
             }
             mFixups.push_back(pageFixups);
         }
@@ -621,10 +609,6 @@ public:
                 
                 for (const Fixup_t& fixup : mFixups[pageIndex])
                 {
-                    if (fixup.getSourceOffset() + pageFileOffset == 0x38ffe)
-                    {
-                        int f = 9;
-                    }
                     uint32_t value = 0;
                     switch (fixup.getSourceType())
                     {
@@ -656,9 +640,8 @@ public:
             }
             mMemoryObjects.push_back(obj);
         }
-        
-        
-        //
+                
+        // export relocated overlays
         size_t lastSlash = mName.find_last_of("/\\");
         std::string filenameWithExt = mName.substr(lastSlash + 1);
         size_t lastDot = filenameWithExt.find_last_of('.');
@@ -672,59 +655,11 @@ public:
             fwrite(mMemoryObjects[i].data, 1, mMemoryObjects[i].size, f);
             fclose(f);
         }
-//        FILE *f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm21.bin", "wb");
-//        fwrite(mMemoryObjects[0].data, 1, mMemoryObjects[0].size, f);
-//        fclose(f);
-//        f = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/jit3/mm22.bin", "wb");
-//        fwrite(mMemoryObjects[1].data, 1, mMemoryObjects[1].size, f);
-//        fclose(f);
-        
-        // dump
-//        uint8_t buffer[0x1e000 + 67424] = {0};
-//        memcpy(buffer, mMemoryObjects[0].data, mMemoryObjects[0].size);
-//        memcpy(buffer+0x1e000, mMemoryObjects[1].data, mMemoryObjects[1].size);
-//        FILE* ff = fopen("/Users/gabrielvalky/Documents/git/Projects/cicodis32/leutils/test", "wb");
-//        fwrite(buffer, 1, sizeof(buffer), ff);
-//        fclose(ff);
     }
     
     virtual std::string GetFooter() override
     {
-        std::string strReloc = "void fixReloc(uint16_t seg)\n{\n";
-        for (const LEObject_t& leObj : mObjects)
-        {
-            for (int i=0; i<leObj.pageCount; i++)
-            {
-                int pageIndex = leObj.pageTableIndex+i-1;
-                LEPage_t page = mPages[pageIndex];
-                uint32_t pageOffset = mHeader.datapage + (page.dataOffset-1)*mHeader.pagesize;
-                uint32_t pageSize = std::min((i+1)*mHeader.pagesize, leObj.size);
-//                uint8_t* pageData = obj.data + i*mHeader.pagesize;
-//                memcpy(pageData, mMzData + pageOffset, pageSize);
-                for (const Fixup_t& fixup : mFixups[pageIndex])
-                {
-                    
-                }
-
-            }
-        }
-        /*
-        for (int i=0; i<header->relocations; i++)
-        {
-            MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
-            int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
-            uint16_t* addr = (uint16_t*)&buffer[linearOffset];
-            if (reloc->segment == 0)
-                strReloc += format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
-                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
-            else
-                strReloc += format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x; lin=%x\n",
-                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset);
-        }
-*/
-        strReloc += "}\n";
-        
-        return strReloc;
+        return "";
     }
 
     virtual bool InRange(address_t addr, int size = 0) override
@@ -756,6 +691,12 @@ public:
     }
     virtual std::string GetMain() override
     {
+        // export relocated overlays
+        size_t lastSlash = mName.find_last_of("/\\");
+        std::string filenameWithExt = mName.substr(lastSlash + 1);
+        size_t lastDot = filenameWithExt.find_last_of('.');
+        std::string key = filenameWithExt.substr(0, lastDot);
+        // TODO: fix 160/168 addresses
         return format(R"(void init()
 {
     ds = 0x0168;
@@ -763,31 +704,25 @@ public:
     es = 0x0028;
     ss = 0x0168;
     esp = 0x%x;
-    // Overlay1: base 0x%x size 0x%x
-    // Overlay2: base 0x%x size 0x%x
+    loadOverlay("%s_1", 0x%x);
+    loadOverlay("%s_2", 0x%x);
 }
 
 void sub_%x();
 
 void start()
 {
-    // eip = 0x%x
-    sub_%x(); // %04x:%x (%x+%x)
+    sub_%x();
 }
 )",
-     GetEntry().segment,
+    GetEntry().segment,
     mMemoryObjects[mHeader.stackobj-1].base + mHeader.esp,
-     mMemoryObjects[0].base, mMemoryObjects[0].size,
-     mMemoryObjects[1].base, mMemoryObjects[1].size,
+    key.c_str(), mMemoryObjects[0].base,
+    key.c_str(), mMemoryObjects[1].base,
     GetEntry().linearOffset(),
-    mHeader.eip,
-     GetEntry().linearOffset(), GetEntry().segment, GetEntry().offset,
-        mMemoryObjects[mHeader.startobj-1].base, mHeader.eip);
+    GetEntry().linearOffset());
 }
-//    virtual std::string GetFooter() override
-//    {
-//        return "";
-//    }
+
     void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
     {
         assert(0);

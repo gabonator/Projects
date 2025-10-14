@@ -130,6 +130,8 @@ public:
     
     bool operator == (const char* comp)
     {
+        if (strlen(comp) != mnLength)
+            return false;
         return strncmp(GetBuffer(), comp, strlen(comp)) == 0;
     }
 };
@@ -154,9 +156,16 @@ public:
         char temp[32];
         mString.ToString(temp, COUNT(temp));
 
-        if (temp[0] == '0' && temp[1] == 'x')
+        char* p = temp;
+        bool neg = false;
+        if (*p == '-')
         {
-            char* p = temp+2;
+            p++;
+            neg = true;
+        }
+        if (p[0] == '0' && p[1] == 'x')
+        {
+            p += 2;
             int aux = 0;
             while (*p)
             {
@@ -169,18 +178,9 @@ public:
                     aux |= *p - 'a' + 10;
                 p++;
             }
-            return aux;
-        } else if (temp[0] == '-' || (temp[0] >= '0' && temp[0] <= '9'))
+            return neg ? -aux : aux;
+        } else if (p[0] >= '0' && p[0] <= '9')
         {
-            bool neg = false;
-            
-            char* p = temp;
-            if (*p == '-')
-            {
-                neg = true;
-                p++;
-            }
-            
             int aux = 0;
             while (*p)
             {
@@ -190,7 +190,6 @@ public:
                 p++;
             }
             return neg ? -aux : aux;
-
         }
         assert(0);
         return 0;
@@ -400,6 +399,19 @@ private:
     {
         if (!s)
             return false;
+
+        if (s[0] == '-' && s[1] == '0' && s[2] == 'x')
+        {
+            int i;
+            for (i=3; i<s.Length(); i++)
+                if ((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'a' && s[i] <= 'f') || (s[i] >= 'A' && s[i] <= 'F'))
+                    continue;
+                else
+                    break;
+            
+            callback(s.TakeFirst(i));
+            return true;
+        }
 
         if (s[0] == '0' && s[1] == 'x')
         {

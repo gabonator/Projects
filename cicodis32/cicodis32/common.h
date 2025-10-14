@@ -266,6 +266,7 @@ public:
     bool relocations{true};
     bool declarations{true};
     int loadAddress{0x10000};
+    int loadAddressShift{0};
     arch_t arch{arch_t::archNone};
     bool simpleStack{false};
     bool stackShiftAlways{false};

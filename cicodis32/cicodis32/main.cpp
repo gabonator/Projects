@@ -56,6 +56,8 @@ int main(int argc, char **argv) {
         if (json["id"] == "config")
         {
             json.ForEach([&](const CSubstring& k, const CSubstring& v){
+                char temp[1024];
+                k.ToString(temp, 1024);
                 if (k == "id")
                     return;
                 if (k == "loader")
@@ -66,6 +68,8 @@ int main(int argc, char **argv) {
                     options.arch = arch_t::arch16;
                 else if (k == "architecture" && v == "arch32")
                     options.arch = arch_t::arch32;
+                else if (k == "loadAddressShift")
+                    options.loadAddressShift = CConversion(v).ToInt();
                 else if (k == "loadAddress")
                     options.loadAddress = CConversion(v).ToInt();
                 else if (k == "start" && v == "false")
@@ -120,7 +124,6 @@ int main(int argc, char **argv) {
                         options.terminators.insert(address_t::fromString(CJson(v).GetString()));
                     });
                 }
-
                 else
                 {
                     char temp1[128];
@@ -344,10 +347,44 @@ int main(int argc, char **argv) {
         loader.reset(new LoaderLe);
     else
         assert(0);
-    
-//    for (int i=2; i<argc; i++)
-//        options.indirects.insert(address_t::fromString(argv[i]));
-    
+        
+    if (options.loadAddressShift != 0)
+    {
+        options.loadAddress += options.loadAddressShift;
+        
+        std::map<address_t, std::string> injectShift;
+        for (auto [addr, inject] : options.inject)
+            injectShift.insert({address_t{addr.segment, addr.offset + options.loadAddressShift}, inject});
+        options.inject = injectShift;
+        
+        std::set<address_t> marksShift;
+        for (auto addr : options.marks)
+            marksShift.insert({addr.segment, addr.offset + options.loadAddressShift});
+        options.marks = marksShift;
+
+        assert(options.procList.size() == 0);
+        assert(options.isolateLabels.size() == 0);
+        assert(options.terminators.size() == 0);
+        assert(options.procModifiers.size() == 0);
+        assert(options.procModifiersStack.size() == 0);
+        for (auto jt : options.jumpTables)
+        {
+            if (jt->table.isValid())
+                jt->table.offset += options.loadAddressShift;
+            if (jt->instruction.isValid())
+                jt->instruction.offset += options.loadAddressShift;
+            if (jt->baseptr)
+            {
+                assert(jt->type == jumpTable_t::switch_e::Call32 || jt->type == jumpTable_t::switch_e::Jump32);
+                uint32_t* ptr = (uint32_t*)jt->baseptr;
+                for (int e : jt->elements)
+                    ptr[e] += options.loadAddressShift;
+            }
+        }
+        assert(options.indirectCalls.size() == 0);
+        assert(options.indirectJumps.size() == 0);
+    }
+
     if (!loader->LoadFile(options.exec, options.loadAddress))
     {
         printf("Cannot open file %s\n", options.exec);
@@ -356,7 +393,6 @@ int main(int argc, char **argv) {
     if (options.overlayBase)
         loader->Overlay(options.overlayBase, options.overlayBytes);
     Capstone->Set(loader, options);
-
     
     bool anyIndirectTable = false;
     for (auto t : options.jumpTables)
