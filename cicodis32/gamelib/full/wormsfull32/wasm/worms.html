@@ -1,0 +1,44 @@
+<canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:960px; height:600px;"></canvas>
+<script src="wasmapp.js"></script>
+<script>
+"use strict"
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+let fsCurrent = {name:null, data:null}
+
+function fsRequest(name)
+{
+  if (name == fsCurrent.name)
+    return Promise.resolve(fsCurrent.data);
+  var fullPath = name != "app.wasm" ? "DOS/" + name : name
+  return fetch(fullPath)
+    .then(x=>x.arrayBuffer())
+    .then(x=>{
+      fsCurrent.data = new Uint8Array(x);
+      fsCurrent.name = name;
+    })
+    .catch(x=>{
+      fsCurrent.data = null;
+      fsCurrent.name = name;
+    })
+    .then(x=>fsCurrent.data)
+}
+
+var game = new WasmApp(fsRequest);
+game.load().then(() => {
+  var frameBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appFrameBuffer.value>>2], 320 * 200 * 4);
+
+  game.symbols.appMain();
+  setInterval(() => {
+    const img = new ImageData(frameBuffer, 320, 200);
+    ctx.putImageData(img, 0, 0);
+    if (game.sleeping)
+      game.asyncifyResume();
+  }, 50)
+})
+
+
+</script>
