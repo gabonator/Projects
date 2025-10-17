@@ -15,9 +15,9 @@ uint32_t mVideoPixels[320*200];
 uint32_t* appFrameBuffer = mVideoPixels;
 
 int allocatorBase = 0x400000 - 0x187000;
-int mouseX;
-int mouseY;
-int mouseB;
+int mouseX = 0;
+int mouseY = 0;
+int mouseB = 0;
 
 // javascript imports
 extern "C" {
@@ -25,6 +25,7 @@ extern "C" {
   void apiPrint(char* msg);
   int apiOpen(char* name);
   int apiRead(char* name, int readofs, int readlen, int targetofs);
+  int apiSound(int ofs, int len);
 };
 
 //
@@ -33,35 +34,8 @@ void loadOverlay(const char* image, int base)
 {
   apiPrint((char*)__FUNCTION__);
   apiOpen((char*)image);
-  apiPrint((char*)"pre sleep");
   emscripten_sleep(0);
-  apiPrint((char*)"post sleep");
   apiRead((char*)image, 0, -1, base);
-}
-
-
-/*
-void out16(int, int)
-{
-  apiPrint((char*)__FUNCTION__);
-}
-
-void out8(int, int)
-{
-  apiPrint((char*)__FUNCTION__);
-}
-*/
-void memoryVideoSet(int s, int o, int v)
-{
-//  if (o % 10000 == 0)
-//    printf("vid %x %x\n", o, v);
-  video[o-0xa0000] = v;
-}
-void memoryVideoSet32(int s, int o, uint32_t v)
-{
-//  if (o % 10000 == 0)
-//    printf("vid32 %x %x\n", o, v);
-  *((uint32_t*)&video[o-0xa0000]) = v;
 }
 
 void sync()
@@ -74,43 +48,10 @@ void sync()
   emscripten_sleep(1);
 }
 
-/*void interrupt(int i)
-{
-  apiPrint((char*)__FUNCTION__);
-}
-int in8(int port)
-{
-  apiPrint((char*)__FUNCTION__);
-  return 0;
-}
-int in16(int port)
-{
-  apiPrint((char*)__FUNCTION__);
-  return 0;
-}
-*/
 void playSound(int seg, uint32_t ofs, int len, int samplerate, const char* fmt)
 {
-  apiPrint((char*)__FUNCTION__);
+  apiSound(ofs, len);
 }
-
-/*
-uint8_t memoryPspGet(int s, int o)
-{
-  apiPrint((char*)__FUNCTION__);
-  return 0;
-}
-uint16_t memoryPspGet16(int s, int o)
-{
-  apiPrint((char*)__FUNCTION__);
-  return 0;
-}
-uint32_t memoryPspGet32(int s, int o)
-{
-  apiPrint((char*)__FUNCTION__);
-  return 0;
-}
-*/
 
 uint8_t memoryPspGet(int s, int o)
 {

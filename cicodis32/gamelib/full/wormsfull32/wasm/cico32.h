@@ -90,6 +90,17 @@ uint64_t memoryAGet64(int s, int o)
 #define memoryAGet16(s, o) *((uint16_t*)(o))
 #define memoryAGet32(s, o) *((uint32_t*)(o))
 
+extern uint8_t video[320*200];
+
+static inline void memoryVideoSet(int s, int o, int v)
+{
+  video[o-0xa0000] = v;
+}
+static inline void memoryVideoSet32(int s, int o, uint32_t v)
+{
+  *((uint32_t*)&video[o-0xa0000]) = v;
+}
+
 void memoryVideoSet(int s, int o, int v);
 void memoryVideoSet32(int s, int o, uint32_t v);
 

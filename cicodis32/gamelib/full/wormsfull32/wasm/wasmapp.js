@@ -6,6 +6,8 @@ class WasmApp
   {
     this.memory = null;
     this.HEAPU32 = null;
+    this.HEAPS8 = null;
+    this.HEAPU8 = null;
     this.requestFile = requestFile;
     this.appImports = imports || [];
     this.asyncFirst = true;
@@ -53,6 +55,8 @@ class WasmApp
       this.symbols = output.instance.exports;
       this.memory = new Uint8Array(this.symbols.memory.buffer);
       this.HEAP32 = new Int32Array(this.symbols.memory.buffer);
+      this.HEAPS8 = new Int8Array(this.symbols.memory.buffer);
+      this.HEAPU8 = new Uint8Array(this.symbols.memory.buffer);
       if (this.symbols["__wasm_call_ctors"]) 
         this.symbols["__wasm_call_ctors"]();
     });
