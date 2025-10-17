@@ -37,6 +37,7 @@ struct flags_t {
 flags_t flags;
 
 void loadOverlay(const char*, int);
+/*
 void memoryASet(int s, int o, int v);
 void memoryASet16(int s, int o, int v);
 void memoryASet32(int s, int o, uint32_t v);
@@ -45,6 +46,49 @@ uint8_t memoryAGet(int s, int o);
 uint16_t memoryAGet16(int s, int o);
 uint32_t memoryAGet32(int s, int o);
 uint64_t memoryAGet64(int s, int o);
+*/
+/*
+void memoryASet(int s, int o, int v)
+{
+  *((uint8_t*)o) = v;
+}
+void memoryASet16(int s, int o, int v)
+{
+  *((uint16_t*)o) = v;
+}
+void memoryASet32(int s, int o, uint32_t v)
+{
+  *((uint32_t*)o) = v;
+}
+void memoryASet64(int s, int o, uint64_t v)
+{
+  *((uint64_t*)o) = v;
+}
+uint8_t memoryAGet(int s, int o)
+{
+  return *((uint8_t*)o);
+}
+uint16_t memoryAGet16(int s, int o)
+{
+  return *((uint16_t*)o);
+}
+uint32_t memoryAGet32(int s, int o)
+{
+  return *((uint32_t*)o);
+}
+uint64_t memoryAGet64(int s, int o)
+{
+  return *((uint64_t*)o);
+}
+*/
+
+#define memoryASet(s, o, v) *((uint8_t*)(o)) = v
+#define memoryASet16(s, o, v) *((uint16_t*)(o)) = v
+#define memoryASet32(s, o, v) *((uint32_t*)(o)) = v
+#define memoryASet64(s, o, v) *((uint64_t*)(o)) = v
+#define memoryAGet(s, o) *((uint8_t*)(o))
+#define memoryAGet16(s, o) *((uint16_t*)(o))
+#define memoryAGet32(s, o) *((uint32_t*)(o))
 
 void memoryVideoSet(int s, int o, int v);
 void memoryVideoSet32(int s, int o, uint32_t v);
@@ -92,9 +136,9 @@ struct MemAuto {
     static uint8_t Get8(int s, int o) { return memoryAGet(s, o); }
     static uint16_t Get16(int s, int o) { return memoryAGet16(s, o); }
     static uint32_t Get32(int s, int o) { return memoryAGet32(s, o); }
-    static void Set8(int s, int o, uint8_t v) { return memoryASet(s, o, v); }
-    static void Set16(int s, int o, uint16_t v) { return memoryASet16(s, o, v); }
-    static void Set32(int s, int o, uint32_t v) { return memoryASet32(s, o, v); }
+    static void Set8(int s, int o, uint8_t v) { memoryASet(s, o, v); }
+    static void Set16(int s, int o, uint16_t v) { memoryASet16(s, o, v); }
+    static void Set32(int s, int o, uint32_t v) { memoryASet32(s, o, v); }
 };
 
 struct MemPsp {

@@ -40,49 +40,6 @@ void loadOverlay(const char* image, int base)
 }
 
 
-void memoryASet(int s, int o, int v)
-{
-  *((uint8_t*)o) = v;
-}
-void memoryASet16(int s, int o, int v)
-{
-  *((uint16_t*)o) = v;
-}
-void memoryASet32(int s, int o, uint32_t v)
-{
-  *((uint32_t*)o) = v;
-}
-void memoryASet64(int s, int o, uint64_t v)
-{
-  *((uint64_t*)o) = v;
-}
-uint8_t memoryAGet(int s, int o)
-{
-//  char temp[128];
-//  sprintf(temp, "read8[%x:%x]=%x", s, o, *((uint8_t*)o));
-//  apiPrint(temp);
-  return *((uint8_t*)o);
-}
-uint16_t memoryAGet16(int s, int o)
-{
-//  char temp[128];
-//  sprintf(temp, "read16[%x:%x]=%x", s, o, *((uint16_t*)o));
-//  apiPrint(temp);
-  return *((uint16_t*)o);
-}
-uint32_t memoryAGet32(int s, int o)
-{
-//  char temp[128];
-//  sprintf(temp, "read32[%x:%x]=%x", s, o, *((uint32_t*)o));
-//  apiPrint(temp);
-
-  return *((uint32_t*)o);
-}
-uint64_t memoryAGet64(int s, int o)
-{
-  return *((uint64_t*)o);
-}
-
 /*
 void out16(int, int)
 {

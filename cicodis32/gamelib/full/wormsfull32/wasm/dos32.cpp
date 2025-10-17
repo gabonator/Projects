@@ -44,10 +44,20 @@ struct flags_t {
 
 extern flags_t flags;
 
+/*
 uint8_t memoryAGet(int s, int o);
 uint16_t memoryAGet16(int s, int o);
 uint32_t memoryAGet32(int s, int o);
 uint64_t memoryAGet64(int s, int o);
+*/
+#define memoryASet(s, o, v) *((uint8_t*)(o)) = v
+#define memoryASet16(s, o, v) *((uint16_t*)(o)) = v
+#define memoryASet32(s, o, v) *((uint32_t*)(o)) = v
+#define memoryASet64(s, o, v) *((uint64_t*)(o)) = v
+#define memoryAGet(s, o) *((uint8_t*)(o))
+#define memoryAGet16(s, o) *((uint16_t*)(o))
+#define memoryAGet32(s, o) *((uint32_t*)(o))
+
 
 void out16(int, int);
 void out8(int, int);
