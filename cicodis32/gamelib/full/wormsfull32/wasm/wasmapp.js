@@ -15,7 +15,7 @@ class WasmApp
     this.currentFile = null;
   }
 
-  load()
+  load(bin)
   {
     var WASM_PAGE_SIZE = 65536;
     var TOTAL_MEMORY = 65536;
@@ -48,8 +48,7 @@ class WasmApp
     for (var i in this.appImports)
       env[i] = this.appImports[i];
 
-    return this.requestFile("app.wasm")
-      .then(bin => WebAssembly.instantiate(bin, {env: env, wasi_snapshot_preview1: env}))
+    return WebAssembly.instantiate(bin, {env: env, wasi_snapshot_preview1: env})
       .then(output => 
     {
       this.symbols = output.instance.exports;

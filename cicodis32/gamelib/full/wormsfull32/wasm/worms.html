@@ -1,5 +1,6 @@
 <canvas id="canvas" width="320" height="200" style="border: 1px solid #d0d0d0; width:960px; height:600px;"></canvas>
 <script src="wasmapp.js"></script>
+<script src="fflate.js"></script>
 <script>
 "use strict"
 
@@ -8,7 +9,16 @@ var ctx = canvas.getContext('2d');
 var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
 let fsCurrent = {name:null, data:null}
+let archive = null;
 
+function fsRequest(name)
+{
+  if (name == fsCurrent.name)
+    return Promise.resolve(fsCurrent.data);
+  fsCurrent = {data: archive[name], name:name}
+  return Promise.resolve(fsCurrent.data)
+}
+/*
 function fsRequest(name)
 {
   if (name == fsCurrent.name)
@@ -26,21 +36,30 @@ function fsRequest(name)
     })
     .then(x=>fsCurrent.data)
 }
+*/
 
 var game = new WasmApp(fsRequest, {apiSound:play8BitPCM});
-game.load().then(() => {
-  var frameBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appFrameBuffer.value>>2], 320 * 200 * 4);
+fetch("app.wasm")
+  .then(x => x.arrayBuffer())
+  .then(x => game.load(x))
+  .then(() => fetch("worms.zip"))
+  .then(x => x.arrayBuffer())
+  .then(x => archive = fflate.unzipSync(new Uint8Array(x)))
+  .then(() => {
+    var frameBuffer = new Uint8ClampedArray(game.memory.buffer, game.HEAP32[game.symbols.appFrameBuffer.value>>2], 320 * 200 * 4);
 
-  game.symbols.appMain();
-  setInterval(() => {
-    const img = new ImageData(frameBuffer, 320, 200);
-    ctx.putImageData(img, 0, 0);
-    if (game.sleeping)
-      game.asyncifyResume();
-  }, 50)
-})
+    game.symbols.appMain();
+    setInterval(() => {
+      const img = new ImageData(frameBuffer, 320, 200);
+      ctx.putImageData(img, 0, 0);
+      if (game.sleeping)
+        game.asyncifyResume();
+    }, 50)
+  })
 
 // mouse
+let mouseAccumulatorX = 0;
+let mouseAccumulatorY = 0;
 
 document.addEventListener("click", () => {
   if (!document.pointerLockElement)
@@ -60,8 +79,15 @@ function updatePosition(event) {
   if (!game.symbols)
     return;
 
-  game.HEAP32[game.symbols.mouseX.value>>2] += event.movementX;
-  game.HEAP32[game.symbols.mouseY.value>>2] += event.movementY;
+  let speed = 2;
+  mouseAccumulatorX += event.movementX;
+  mouseAccumulatorY += event.movementY;
+  let mouseDivX = Math.floor(mouseAccumulatorX/speed);
+  let mouseDivY = Math.floor(mouseAccumulatorY/speed);
+  mouseAccumulatorX -= mouseDivX*speed;
+  mouseAccumulatorY -= mouseDivY*speed;
+  game.HEAP32[game.symbols.mouseX.value>>2] += mouseDivX;
+  game.HEAP32[game.symbols.mouseY.value>>2] += mouseDivY;
 }
 
 document.addEventListener("pointerlockchange", () => {

@@ -2,7 +2,7 @@
 mkdir -p build
 cd build 
 
-cp ../*.cpp ../*.h ../*.html ../*.js .
+cp ../*.cpp ../*.h ../*.html ../*.js ../*.zip .
 
 PATH=$PATH:~/Documents/git/ext/emsdk/upstream/emscripten
 PATH=$PATH:~/Documents/git/ext/emsdk/upstream/bin
@@ -21,4 +21,4 @@ emcc $INCLUDES $SOURCE -gsource-map -O0 --std=c++11 $CONFIGURATION $DEFINES --so
 rm app.js
 
 # release
-#rm *.cpp *.h *.map app.wasm
+rm *.cpp *.h *.map
