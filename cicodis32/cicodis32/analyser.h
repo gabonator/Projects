@@ -214,6 +214,10 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
         copy.dirty = !other.willSet.empty() ? other.willSetDirty : other.dirty; // TODO: check?
         if (other.willSet.empty())
             copy.dirty |= other.dirtyAfter;
+        if (copy.dirty)
+        {
+            int f = 9;
+        }
         changed |= p->Merge(copy);
     }
     if (!processed)
@@ -345,13 +349,13 @@ public:
                 case X86_INS_MOV:
                     // TODO: not very smart
                     stackChange = 111;
-                    if (instr->mDetail.operands[1].type == X86_OP_REG && instr->mDetail.operands[1].reg == X86_REG_BP)
+                    if (instr->mDetail.operands[1].type == X86_OP_REG && (instr->mDetail.operands[1].reg == X86_REG_BP || instr->mDetail.operands[1].reg == X86_REG_EBP) )
                     {
                         bool saved = false;
                         int sum = 0;
                         for (const auto& [addr, i] : code)
                         {
-                            if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "sp, bp") == 0)
+                            if (i->instr->mId == X86_INS_MOV && (strcmp(i->instr->mOperands, "sp, bp") == 0 || strcmp(i->instr->mOperands, "esp, ebp") == 0))
                             {
 //                                if (addr != instr->mAddress)
 //                                    saved = false;
@@ -359,7 +363,7 @@ public:
                             }
                             if (!saved)
                                 sum += i->stackRel;
-                            if (i->instr->mId == X86_INS_MOV && strcmp(i->instr->mOperands, "bp, sp") == 0)
+                            if (i->instr->mId == X86_INS_MOV && (strcmp(i->instr->mOperands, "bp, sp") == 0 || strcmp(i->instr->mOperands, "ebp, esp") == 0))
                                 saved = true;
                             if (!saved)
                             {

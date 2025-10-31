@@ -39,7 +39,13 @@ public:
         {
             // second iteration
             for (const auto& [addr, p] : info->code)
+            {
                 p->processed = false;
+                p->savePrecondition.clear();
+                p->readPrecondition.clear();
+//                for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
+//                    p->lastSet.clear();
+            }
         }
         info->func.request = req;
         info->func.callConv = GetCallConvention(info);

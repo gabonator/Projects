@@ -83,7 +83,12 @@ public:
 
     void applyFlags(shared<CapInstr> instr, uint64_t modifyMask, instrInfo_t::instrInfoFlag_t* flag)
     {
-        if (instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL || (instr->mDetail.eflags & modifyMask))
+        
+        if (instr->mId == X86_INS_SAHF)
+        {
+            int f = 9;
+        }
+        if (/*instr->mId == X86_INS_SAHF ||*/ instr->mId == X86_INS_INT || instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL || (instr->mDetail.eflags & modifyMask))
         {
             if (verbose)
                 printf("(set %cf) ", flag->type);

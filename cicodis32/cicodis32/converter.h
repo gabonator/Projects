@@ -198,9 +198,7 @@ public:
             if (mOptions.GetJumpTables(pinstr->mAddress).size())
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
-                // TODO!
-                for (shared<jumpTable_t> jt : mOptions.GetJumpTables(pinstr->mAddress))
-                    DumpIndirectTable(jt, pinstr, pinfo, info->func);
+                DumpIndirectTables(pinfo, info->func);
             } else
             if (convert[pinstr->mId].convert)
             {
@@ -256,47 +254,68 @@ public:
         return tempNames;
     }
 
-    void DumpIndirectTable(shared<jumpTable_t> jt, shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func)
+    void DumpIndirectTables(shared<instrInfo_t> info, const funcInfo_t& func)
     {
         std::set<int> dupl;
-        
-        std::string selector = jt->selector;
-        if (selector.empty())
-        {
-            if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
-                selector = iformat(instr, info, func, "$rd0");
-            else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
-                selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
-            else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
-                selector = iformat(instr, info, func, "$rd0");
-            else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
-                selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
-            else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
-                selector = iformat(instr, info, func, "$rd0");
-            else if (instr->mId == X86_INS_LJMP && instr->mDetail.op_count == 1)
-                selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
-            else
-                assert(0);
-        }
+        std::string selector;
+        bool first = true;
 
-        mCode.push_back(format("    switch (%s)\n", selector.c_str()));
-        mCode.push_back(format("    {\n"));
-        for (int i=0; i<jt->GetSize(); i++)
-            if (jt->IsValid(i))
+        for (shared<jumpTable_t> jt : mOptions.GetJumpTables(info->instr->mAddress))
+//            DumpIndirectTable(jt, info->instr, info, func);
+//    }
+//
+//    void DumpIndirectTable(shared<jumpTable_t> jt, shared<CapInstr> instr, shared<instrInfo_t> info, const funcInfo_t& func)
+//    {
+        {
+            shared<CapInstr> instr = info->instr;
+            if (selector.empty())
+                selector = jt->selector;
+            
+            if (selector.empty())
             {
-                if (jt->useCaseOffset)
-                {
-                    int addr = jt->GetTarget(i).linearOffset();
-                    if (dupl.find(addr) != dupl.end())
-                        continue;
-                    dupl.insert(addr);
-                }
-                
-                mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
+                if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
+                    selector = iformat(instr, info, func, "$rd0");
+                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
+                    selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
+                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
+                    selector = iformat(instr, info, func, "$rd0");
+                else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
+                    selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
+                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
+                    selector = iformat(instr, info, func, "$rd0");
+                else if (instr->mId == X86_INS_LJMP && instr->mDetail.op_count == 1)
+                    selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
+                else
+                    assert(0);
             }
+            
+            // multiple tables must use the same selector
+            assert(jt->selector.empty() || selector == jt->selector);
+                    
+            if (first)
+            {
+                mCode.push_back(format("    switch (%s)\n", selector.c_str()));
+                mCode.push_back(format("    {\n"));
+                first = false;
+            }
+            
+            for (int i=0; i<jt->GetSize(); i++)
+                if (jt->IsValid(i))
+                {
+                    if (jt->useCaseOffset)
+                    {
+                        int addr = jt->GetTarget(i).linearOffset();
+                        if (dupl.find(addr) != dupl.end())
+                            continue;
+                        dupl.insert(addr);
+                    }
+                    
+                    mCode.push_back(format("        %s\n", jt->GetCase(i).c_str()));
+                }
+        }
         mCode.push_back(format("        default:\n"));
         mCode.push_back(format("            printf(\"unhandled: %%x\\n\", %s);\n", selector.c_str()));
-        mCode.push_back(format("            stop(\"ind %04x:%04x\");\n", jt->instruction.segment, jt->instruction.offset));
+        mCode.push_back(format("            stop(\"ind %04x:%04x\");\n", info->instr->mAddress.segment, info->instr->mAddress.offset));
         mCode.push_back(format("    }\n"));
     }
     std::string preCondition(shared<CapInstr> instr, x86_insn cond)
@@ -322,6 +341,8 @@ public:
             return "($sig0)$rd0 - ($sig0)$rd1 < 0";
         if (set == X86_INS_SUB && cond == X86_INS_JA)
             return "$rd0 - $rd1 > 0";
+        if (set == X86_INS_SUB && cond == X86_INS_JBE)
+            return "$rd0 - $rd1 <= 0";
         if (set == X86_INS_SUB && cond == X86_INS_JGE)
             return "($sig0)$rd0 - ($sig0)$rd1 >= 0";
         if (set == X86_INS_DEC && cond == X86_INS_JL)
@@ -335,6 +356,8 @@ public:
         if (set == X86_INS_NEG && cond == X86_INS_JLE)
             return "($sig0)$rd0 <= 0";
 
+        if (set == X86_INS_CMP && cond == X86_INS_JL)
+            return "($sig0)$rd0 < ($sig0)$rd1";
         if (set == X86_INS_CMP && cond == X86_INS_JGE)
             return "($sig0)$rd0 >= ($sig0)$rd1 /*xxx*/";
 
@@ -400,7 +423,7 @@ public:
         }
         
         if (set == X86_INS_SAHF)
-            return "stop(\"sahf get flag\")";
+            return format("stop(\"sahf get flag %s %s\")", Capstone->ToString(instr->mId), Capstone->ToString(cond));
 
 //        assert(0);
         return "stop(\"postCondition\")";
@@ -609,7 +632,7 @@ public:
             return "";
 
         if (flag->lastSet.size()>1)
-            return "stop(\"lastset.size>1\")";
+            return "stop(\"lastset.size>1\")"; // TODO: mm2: save & call 0160:1e5734
             
         assert(flag->needed);
         assert(flag->lastSet.size() == 1);

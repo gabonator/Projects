@@ -18,25 +18,6 @@ function fsRequest(name)
   fsCurrent = {data: archive[name], name:name}
   return Promise.resolve(fsCurrent.data)
 }
-/*
-function fsRequest(name)
-{
-  if (name == fsCurrent.name)
-    return Promise.resolve(fsCurrent.data);
-  var fullPath = name != "app.wasm" ? "DOS/" + name : name
-  return fetch(fullPath)
-    .then(x=>x.arrayBuffer())
-    .then(x=>{
-      fsCurrent.data = new Uint8Array(x);
-      fsCurrent.name = name;
-    })
-    .catch(x=>{
-      fsCurrent.data = null;
-      fsCurrent.name = name;
-    })
-    .then(x=>fsCurrent.data)
-}
-*/
 
 var game = new WasmApp(fsRequest, {apiSound:play8BitPCM});
 fetch("app.wasm")
@@ -101,8 +82,9 @@ document.addEventListener("pointerlockchange", () => {
 });
 
 // sound
+const audioCtx = new window.AudioContext();
+
 function play8BitPCM(ofs, len) {
-  const audioCtx = new window.AudioContext();
   const audioBuffer = audioCtx.createBuffer(1, len, 16000);
   const floatData = audioBuffer.getChannelData(0);
 

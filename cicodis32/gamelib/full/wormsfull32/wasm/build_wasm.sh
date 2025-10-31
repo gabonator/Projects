@@ -2,7 +2,7 @@
 mkdir -p build
 cd build 
 
-cp ../*.cpp ../*.h ../*.html ../*.js ../*.zip .
+cp ../*.cpp ../*.h ../*.html ../*.png ../*.js ../*.zip .
 
 PATH=$PATH:~/Documents/git/ext/emsdk/upstream/emscripten
 PATH=$PATH:~/Documents/git/ext/emsdk/upstream/bin

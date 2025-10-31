@@ -375,8 +375,13 @@ convert_t convert[X86_INS_ENDING] = {
     // float
     [X86_INS_FLD] = {.convert = [](convert_args){ return "fld$width0($rd0);"; } },
     [X86_INS_FILD] = {.convert = [](convert_args){ return "fild$width0($rd0);"; } },
+    [X86_INS_FLDLN2] = {.convert = [](convert_args){ return "fldln2();"; } },
+    [X86_INS_FLDL2E] = {.convert = [](convert_args){ return "fldl2e();"; } },
     [X86_INS_FMUL] = {.convert = [](convert_args){ return "fmul$width0($rd0);"; } },
+    [X86_INS_FMULP] = {.convert = [](convert_args){ return "fmulp$width0($rd0);"; } },
     [X86_INS_FDIV] = {.convert = [](convert_args){ return "fdiv$width0($rd0);"; } },
+    [X86_INS_FDIVRP] = {.convert = [](convert_args){ return "fdivrp$width0($rd0);"; } },
+    [X86_INS_FDIVP] = {.convert = [](convert_args){ return "fdivp$width0($rd0);"; } },
     [X86_INS_FADD] = {.convert = [](convert_args){
         if (strcmp(instr->mMnemonic, "fadd") == 0)
             return "fadd$width0($rd0);";
@@ -385,15 +390,25 @@ convert_t convert[X86_INS_ENDING] = {
         else
             assert(0);
     } },
+    [X86_INS_FNINIT] = {.convert = [](convert_args){ return "fninit();"; } },
+    [X86_INS_FST] = {.convert = [](convert_args){ return "$wr0 = fst$width0();"; } },
     [X86_INS_FSTP] = {.convert = [](convert_args){ return "$wr0 = fstp$width0();"; } },
     [X86_INS_FLD1] = {.convert = [](convert_args){ return "fld1();"; } },
+    [X86_INS_FLDZ] = {.convert = [](convert_args){ return "fldz();"; } },
+    [X86_INS_F2XM1] = {.convert = [](convert_args){ return "f2xm1();"; } },
+    [X86_INS_FSCALE] = {.convert = [](convert_args){ return "fscale();"; } },
+    [X86_INS_FSUB] = {.convert = [](convert_args){ return "fsub$width0($rd0);"; } },
     [X86_INS_FSUBR] = {.convert = [](convert_args){ return "fsubr$width0($rd0);"; } },
     [X86_INS_FSUBP] = {.convert = [](convert_args){ return "fsubp$width0($rd0);"; } },
-    [X86_INS_FCOMP] = {.convert = [](convert_args){
-        return "fcomp$width0($rd0);"; } },
+    [X86_INS_FCOM] = {.convert = [](convert_args){ return "fcomp$width0($rd0);"; } },
+    [X86_INS_FCOMP] = {.convert = [](convert_args){ return "fcomp$width0($rd0);"; } },
+    [X86_INS_FCOMPP] = {.convert = [](convert_args){ return "fcompp();"; } },
     [X86_INS_FISTP] = {.convert = [](convert_args){ return "$wr0 = fistp$width0();"; } },
     [X86_INS_FNSTSW] = {.convert = [](convert_args){ return "$wr0 = fnstsw();"; } },
     [X86_INS_FCOS] = {.convert = [](convert_args){ return "fcos();"; } },
+    [X86_INS_FABS] = {.convert = [](convert_args){ return "fabs();"; } },
+    [X86_INS_FYL2X] = {.convert = [](convert_args){ return "fyl2x();"; } },
+    [X86_INS_FCHS] = {.convert = [](convert_args){ return "fchs();"; } },
     [X86_INS_WAIT] = {.convert = [](convert_args){ return ""; } },
     [X86_INS_FXCH] = {.convert = [](convert_args){ return "fxch($rd0);"; } },
     [X86_INS_FPREM] = {.convert = [](convert_args){ return "fprem();"; } },
@@ -401,6 +416,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_FLDCW] = {.convert = [](convert_args){ return "fldcw($rd0);"; } },
     [X86_INS_FRNDINT] = {.convert = [](convert_args){ return "frndtint();"; },
         .cf = [](convert_args){ return "stop(\"frndtint - cf\")"; } },
+    [X86_INS_FTST] = {.convert = [](convert_args){ return "ftst();"; } },
 
     [X86_INS_SCASB] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }
