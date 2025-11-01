@@ -1,0 +1,47 @@
+{"id": "config", "loader": "LoaderLe", "executable": "mm2.zip/MM2.EXE", "architecture": "arch32", "loadAddress": 0x1a8000, "stackShiftAlways": true}
+
+{"id": "config", "procList": ["160:1a8a9b", "160:1a88e4"]}
+//{id:"config", recursive:false, procList:["160:1a88e4"], verboseAsm:true, verbose:true}
+
+{"id": "jumpTable", "addr": "160:1e4cb3", "calls32": ["160:1e3d50", "160:1e58bb", "160:1eadc9", "160:1e749c", "160:1e5600", "160:1e4d10"]}
+{"id": "jumpTable", "addr": "0160:1e6316", "calls32": ["160:1e3d6a"]}
+{"id": "jumpTable", "addr": "0160:1e6529", "calls32": ["160:1e3d6a"]}
+{"id": "jumpTable", "addr": "0160:1e646a", "calls32": ["0160:1e3d93"]}
+{"id": "jumpTable", "addr": "0160:1dfc85", "table": "160:1dfc6c", "entries": 5, "type": "jump32", "selector": "eax"}
+{"id": "jumpTable", "addr": "0160:1e6b41", "calls32": ["160:1e43e1"]}
+{"id": "jumpTable", "addr": "0160:1e6cd8", "calls32": ["160:1e43e1"]}
+
+{"id": "jumpTable", "addr": "0160:1da3e7", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1da402", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1da41c", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1da436", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1da465", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1da44d", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
+
+{"id": "config", "isolate": ["0160:1b6269"]}
+
+
+{"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec60c", "entries": 20, "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec660", "entries": 20, "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec6b4", "entries": 20, "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec708", "entries": 20, "type": "jump32", "useCaseOffset": true}
+
+{"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec60c", "entries": [20], "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec660", "entries": [20], "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec6b4", "entries": [20], "type": "jump32", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec708", "entries": [20], "type": "jump32", "useCaseOffset": true}
+
+{"id": "jumpTable", "addr": "0160:1d71e8", "table": "160:2088e4", "entries": 60, "type": "jump32", "useCaseOffset": true, "filterMin":1}
+{"id": "jumpTable", "addr": "0160:1d1db5", "table": "160:2089d4", "entries": 60, "type": "jump32", "useCaseOffset": true, "filterMin":1}
+
+{"id": "inject", "addr": "0160:1e561c", "text": "return;"}
+{"id": "inject", "addr": "0160:1e58bb", "text": "return;"}
+{"id": "inject", "addr": "0160:1a88e7", "text": "//comment"}
+{"id": "inject", "addr": "0160:1a88eb", "text": "ax = 0x0168;"}
+
+// timer interrupt
+{"id": "inject", "addr": "0160:1a8a18", "text": "esp += 4; return;"}
+{"id": "inject", "addr": "0160:1a8a9a", "text": "esp += 4; return;"}
+{"id": "inject", "addr": "0160:1a8a52", "text": "//comment"} // indirect call, check
+{"id": "inject", "addr": "0160:1a8a90", "text": "//comment"}
+{"id": "inject", "addr": "0160:1a8a91", "text": "//comment"} // indirect call, check
