@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<script>
+"use strict";
+
+const bezier = new CubicBezier(0.65,0.32,0.82,0.75);
+let source = [[1384, 544],  [1563, 549],  [1549, 678],  [1376, 667]]; // small frame
+let dest = [[1065+2, 412+2.5],  [1648+1, 419],  [1621+10, 849],  [1054+10, 827+4]]; // large frame
+const duration = 5;
+
+class CubicBezier {
+  constructor(cx1, cy1, cx2, cy2) {
+    this.cx1 = cx1;
+    this.cy1 = cy1;
+    this.cx2 = cx2;
+    this.cy2 = cy2;
+  }
+
+  cubic(t, p0, p1, p2, p3) {
+    const u = 1 - t;
+    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
+  }
+
+  cubicDxDt(t, p1, p2) {
+    return 3*(1-t)*(1-t)*(p1-0) + 6*(1-t)*t*(p2-p1) + 3*t*t*(1-p2);
+  }
+
+  solveTforX(xTarget, eps=1e-5, maxIter=10) {
+    let t = xTarget;
+    for(let i=0;i<maxIter;i++){
+      const x = this.cubic(t,0,this.cx1,this.cx2,1);
+      const dxdt = this.cubicDxDt(t,this.cx1,this.cx2);
+      if(Math.abs(x-xTarget)<eps) return t;
+      if(Math.abs(dxdt)<1e-6) break;
+      t -= (x-xTarget)/dxdt;
+    }
+    return t;
+  }
+
+  transform(x) {
+    const t = this.solveTforX(x);
+    return this.cubic(t, 0, this.cy1, this.cy2, 1);
+  }
+
+  ease(t) {
+    return this.transform(t);
+  }
+}
+
+class Homography {
+  static mul(A,B){
+    const C = new Array(9);
+    for(let r=0;r<3;r++) for(let c=0;c<3;c++)
+      C[r*3+c] = A[r*3+0]*B[0*3+c]+A[r*3+1]*B[1*3+c]+A[r*3+2]*B[2*3+c];
+    return C;
+  }
+
+  static invert(H){
+    const m=[[H[0],H[1],H[2]],[H[3],H[4],H[5]],[H[6],H[7],H[8]]];
+    const det = m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+              - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+              + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+    if(Math.abs(det)<1e-12) throw new Error("Singular");
+    const invdet = 1/det;
+    const inv = [
+      (m[1][1]*m[2][2]-m[1][2]*m[2][1])*invdet,
+      (m[0][2]*m[2][1]-m[0][1]*m[2][2])*invdet,
+      (m[0][1]*m[1][2]-m[0][2]*m[1][1])*invdet,
+      (m[1][2]*m[2][0]-m[1][0]*m[2][2])*invdet,
+      (m[0][0]*m[2][2]-m[0][2]*m[2][0])*invdet,
+      (m[0][2]*m[1][0]-m[0][0]*m[1][2])*invdet,
+      (m[1][0]*m[2][1]-m[1][1]*m[2][0])*invdet,
+      (m[0][1]*m[2][0]-m[0][0]*m[2][1])*invdet,
+      (m[0][0]*m[1][1]-m[0][1]*m[1][0])*invdet
+    ];
+    return inv.map(v=>v/inv[8]);
+  }
+
+  static blend(A,B,u){
+    return A.map((v,i)=>v*(1-u)+B[i]*u);
+  }
+
+  static computeH(src, dst){
+    const M=Array.from({length:8},()=>Array(8).fill(0));
+    const b=Array(8).fill(0);
+    for(let i=0;i<4;i++){
+      const [x,y]=src[i]; const [X,Y]=dst[i];
+      const rX=2*i;
+      M[rX][0]=x; M[rX][1]=y; M[rX][2]=1;
+      M[rX][3]=0; M[rX][4]=0; M[rX][5]=0;
+      M[rX][6]=-X*x; M[rX][7]=-X*y; b[rX]=X;
+      const rY=rX+1;
+      M[rY][0]=0; M[rY][1]=0; M[rY][2]=0;
+      M[rY][3]=x; M[rY][4]=y; M[rY][5]=1;
+      M[rY][6]=-Y*x; M[rY][7]=-Y*y; b[rY]=Y;
+    }
+    const sol = this.solveLinearSystem(M,b);
+    return [sol[0],sol[1],sol[2],sol[3],sol[4],sol[5],sol[6],sol[7],1];
+  }
+
+  static solveLinearSystem(M,b){
+    const n=M.length;
+    const A=M.map((row,i)=>[...row,b[i]]);
+    for(let i=0;i<n;i++){
+      let piv=i,maxval=Math.abs(A[i][i]);
+      for(let r=i+1;r<n;r++){
+        if(Math.abs(A[r][i])>maxval){maxval=Math.abs(A[r][i]);piv=r;}
+      }
+      if(maxval<1e-15) throw new Error("Singular");
+      if(piv!==i){[A[i],A[piv]]=[A[piv],A[i]];}
+      const diag=A[i][i]; for(let c=i;c<=n;c++) A[i][c]/=diag;
+      for(let r=i+1;r<n;r++){
+        const f=A[r][i]; if(f===0) continue;
+        for(let c=i;c<=n;c++) A[r][c]-=f*A[i][c];
+      }
+    }
+    const x=new Array(n).fill(0);
+    for(let i=n-1;i>=0;i--){
+      let s=A[i][n];
+      for(let j=i+1;j<n;j++) s-=A[i][j]*x[j];
+      x[i]=s/A[i][i];
+    }
+    return x;
+  }
+}
+
+class CSSGenerator {
+  constructor(bezier, homographies, time=1, step=10){
+    this.bezier = bezier;
+    this.Hs = {H2:homographies[0], H1:homographies[1], H0:homographies[2], H00:homographies[3]}
+    this.step = step;
+    this.time = time;
+  }
+
+  static HtoCSS(H){
+    const [h11,h12,h13,h21,h22,h23,h31,h32,h33]=H.map(x=>x.toPrecision(4));
+    return `matrix3d(${h11},${h21},0,${h31},${h12},${h22},0,${h32},0,0,1,0,${h13},${h23},0,${h33})`;
+  }
+
+  generateZoom(id, src, dst){ 
+    let css="@keyframes "+id+" {\n";
+    for(let p=0;p<=100;p+=this.step){
+      const u=this.bezier.ease(p/100);
+      css+=`  ${p}% {transform: ${CSSGenerator.HtoCSS(Homography.blend(src,dst,u))}}\n`;
+    }
+    css+="}\n";
+    return css;
+  }
+
+  generateZoom3(){
+    let css="@keyframes zoom3 {\n";
+    let prev=true;
+    for(let p=0;p<=100;p+=this.step){
+      const u=this.bezier.ease(p/100);
+      if(p<=70){
+        css+=`  ${p}% {transform: ${CSSGenerator.HtoCSS(Homography.blend(this.Hs.H0,this.Hs.H00,u))}}\n`;
+      } else {
+        // do the wrap around earlier so it won't be seen during blending of main layer
+        if(prev){prev=false; const u0=this.bezier.ease((p-this.step)/100); css+=`  ${p-this.step}.001% {transform: ${CSSGenerator.HtoCSS(Homography.blend(this.Hs.H1,this.Hs.H0,u0))}}\n`; }
+        css+=`  ${p}% {transform: ${CSSGenerator.HtoCSS(Homography.blend(this.Hs.H1,this.Hs.H0,u))}}\n`;
+      }
+    }
+    css+="}\n";
+    return css;
+  }
+
+  generateHTML(css){
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {background:black; transform:scale(0.5); position:fixed;}
+img {position:absolute; left:0; top:0; transform-origin:0 0;}
+img:nth-of-type(3){animation:zoom1 ${this.time}s linear infinite, fade1 ${this.time}s linear infinite;}
+img:nth-of-type(2){animation:zoom2 ${this.time}s linear infinite;}
+img:nth-of-type(1){animation:zoom3 ${this.time}s linear infinite, fade3 ${this.time}s linear infinite;}
+${css}
+@keyframes fade1 {70%{opacity:1}100%{opacity:0}}
+@keyframes fade3 {60%{opacity:1}70%{opacity:0}71%{opacity:0}72%{opacity:1}}
+</style>
+</head>
+<body>
+<img src="b.jpg">
+<img src="b.jpg">
+<img src="b.jpg">
+</body>
+</html>
+`;
+  }
+
+  generateFullHTML(){
+    const css = this.generateZoom("zoom1", this.Hs.H1,this.Hs.H0) + 
+      this.generateZoom("zoom2", this.Hs.H2,this.Hs.H1) + 
+      this.generateZoom3();
+    return this.generateHTML(css);
+  }
+}
+
+// Instantiate classes and write output
+const Transform = Homography.computeH(source, dest);
+const Hs = [
+  Homography.invert(Transform), // small
+  [1, 0, 0, 0, 1, 0, 0, 0, 1], // identity
+  Transform, // normal
+  Homography.mul(Transform, Transform), // large
+];
+
+const cssGen = new CSSGenerator(bezier, Hs, duration);
+console.log(cssGen.generateFullHTML());
+document.write(cssGen.generateFullHTML());
+</script>
+</html>
