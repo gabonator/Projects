@@ -1,31 +1,15 @@
-//{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x15e000, "stackShiftAlways": true}
-//{"id": "jumpTable", "addr": "160:1de7a7", "calls32": ["160:1dcd14", "160:1deabf", "160:1e4380", "160:1e43c8", "160:1e41b8", "160:1df597", "160:1de805"]}
+//{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x197000, "stackShiftAlways": true}
 
+// Careful! We are shifting data to range 4e000..270840 
+// with loadAddressShift attribute which overlaps video RAM at a0000..afa00
+// We need to separate data/video writes for compact memory layout
+{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x197000, "loadAddressShift":-0x187000, "stackShiftAlways": true}
 
-
-//{"id": "jumpTable", "addr": "160:1c8faf", "calls32": ["160:1c7f24", "160:1c9028", "160:1c92c7", "160:1cf330", "160:1cf378", "160:1cf168", "160:1c9d9f", "160:1c900d"]}
-//{"id": "jumpTable", "addr": "160:1ce754", "calls32": ["160:1c9307"]}
-//{"id": "jumpTable", "addr": "160:1966df", "table": "160:196660", "entries": 10, "type": "jump32", "selector": "eax"}
-//{"id": "jumpTable", "addr": "160:1965d2", "table": "160:196500", "entries": 10, "type": "jump32", "selector": "ebp"}
-//{"id": "jumpTable", "addr": "160:1979f9", "table": "160:1978f8", "entries": 6, "type": "jump32", "selector": "ebx"}
-//{"id": "jumpTable", "addr": "160:19d837", "table": "160:1dd26a", "entries": [0], "type": "call32", "selector": "eax"} // add 15!
-//{"id": "jumpTable", "addr": "160:1b745b", "table": "160:1b73b1", "entries": 31, "type": "jump32", "selector": "ecx"}
-
-
-//19c6e0
-//{"id": "config", "verbose": true, "procList":["0160:19c6e0", "160:1cbd08"], "recursive": false }
-//{"id": "config", "verbose": true, verboseAsm: true, "procList":["0160:1cb786"], "recursive": false }
-
-
-{"id": "config", "loader": "LoaderLe", "executable": "worms.zip/WRMS.EXE", "architecture": "arch32", "loadAddress": 0x197000, "stackShiftAlways": true}
 //{"id": "jumpTable", "addr": "160:1de7a7", "calls32": ["160:1dcd14", "160:1deabf", "160:1e4380", "160:1e43c8", "160:1e41b8", "160:1df597", "160:1de805"]}
 {"id": "jumpTable", "addr": "160:1cd7a7", "calls32": ["160:1cbd14", "160:1cdabf", "160:1d3380", "160:1d33c8", "160:1d31b8", "160:1ce597", "160:1cd805"]}
 
-
 {"id": "inject", "addr": "0160:1cd820", "text": "return;"}
 {"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
-
-
 
 {"id": "jumpTable", "addr": "160:1ccb9a", "calls32":["160:1cdaff", "160:1cb8ee"]}
 {"id": "jumpTable", "addr": "160:1ccd12", "calls32":["160:1cdaff", "160:1cb8ee"]}
@@ -56,3 +40,42 @@
 {"id": "jumpTable", "addr": "0160:1a8694", "table": "160:1A85D9", "entries": 11, "type": "jump32", "selector": "ecx/4"}
 {"id": "jumpTable", "addr": "0160:1a74fa", "table": "160:1A74CD", "entries": 7, "type": "jump32", "selector": "esi/4"}
 {"id": "jumpTable", "addr": "0160:1a7722", "table": "160:1A7685", "entries": 7, "type": "jump32", "selector": "edi/4"}
+
+{"id": "inject", "addr": "0160:1BFDBF", "text": "return;"}
+{"id": "inject", "addr": "0160:1BF310", "text": "return;"}
+{"id": "inject", "addr": "0160:1CF2DB", "text": "return;"}
+
+// memory hints, TODO: compares strings, should be address to take loadAddressShift into account
+{id:"hint", label:"loc_11c66", pattern: "ds, eax", type:"video"}
+{id:"hint", label:"loc_11c7f", pattern: "ds, eax", type:"video"}
+{id:"hint", label:"loc_122a6", pattern: "ds, edx", type:"video"}
+{id:"hint", label:"loc_122be", pattern: "ds, eax", type:"video"}
+{id:"hint", label:"loc_1251e", pattern: "ds, edx", type:"video"}
+{id:"hint", label:"loc_12569", pattern: "ds, edx", type:"video"}
+//{id:"hint", label:"loc_18d41", pattern: "ds, ebx", type:"video"}
+{id:"hint", label:"loc_17018", pattern: "ds, edx", type:"video"}
+{id:"hint", label:"loc_414f8", pattern: "ds, edi", type:"video"}
+{id:"hint", label:"loc_44ba1", pattern: "es", type:"psp"}
+{id:"hint", label:"loc_44bc9", pattern: "es, edi", type:"psp"}
+{id:"hint", label:"loc_44c30", pattern: "ds, esi", type:"psp"}
+{id:"hint", label:"loc_44c45", pattern: "ds, esi", type:"psp"}
+{id:"hint", label:"loc_44c53", pattern: "ds, esi", type:"psp"}
+{id:"hint", label:"loc_4c3f3", pattern: "es", type:"psp"}
+{id:"hint", label:"loc_4c3f8", pattern: "es", type:"psp"}
+{id:"hint", label:"loc_4c447", pattern: "es", type:"psp"}
+{id:"hint", label:"loc_4c456", pattern: "es", type:"psp"}
+{id:"hint", label:"loc_4d973", pattern: "ds, eax", type:"video"}
+{id:"hint", label:"*", pattern: "*", type:"memory"}
+
+// wasm local variables workaround
+{"id": "inject", "addr": "0160:1C4354", "text": "void (*inner)();"}
+{"id": "inject", "addr": "0160:1C4498", "text": "inner = []() {"}
+{"id": "inject", "addr": "0160:1C845B", "text": "}; inner();"}
+
+// sync
+//{"id": "inject", "addr": "0160:19C19C", "text": "memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+2);"}
+
+{"id": "inject", "addr": "0160:19714B", "text": "return;"}
+
+{"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
+{"id": "inject", "addr": "0160:1970F2", "text": "return;"}

@@ -82,13 +82,13 @@ uint64_t memoryAGet64(int s, int o)
 }
 */
 
-#define memoryASet(s, o, v) *((uint8_t*)(o)) = v
-#define memoryASet16(s, o, v) *((uint16_t*)(o)) = v
-#define memoryASet32(s, o, v) *((uint32_t*)(o)) = v
-#define memoryASet64(s, o, v) *((uint64_t*)(o)) = v
-#define memoryAGet(s, o) *((uint8_t*)(o))
-#define memoryAGet16(s, o) *((uint16_t*)(o))
-#define memoryAGet32(s, o) *((uint32_t*)(o))
+#define memorySet(s, o, v) *((uint8_t*)(o)) = v
+#define memorySet16(s, o, v) *((uint16_t*)(o)) = v
+#define memorySet32(s, o, v) *((uint32_t*)(o)) = v
+#define memorySet64(s, o, v) *((uint64_t*)(o)) = v
+#define memoryGet(s, o) *((uint8_t*)(o))
+#define memoryGet16(s, o) *((uint16_t*)(o))
+#define memoryGet32(s, o) *((uint32_t*)(o))
 
 extern uint8_t video[320*200];
 
@@ -117,7 +117,7 @@ void memorySkipSet32(int s, int o, uint32_t v) {}
 
 uint32_t pop32()
 {
-  uint32_t aux = memoryAGet32(ss, esp);
+  uint32_t aux = memoryGet32(ss, esp);
   esp += 4;
   return aux;
 }
@@ -125,13 +125,13 @@ uint32_t pop32()
 void push32(uint32_t w)
 {
   esp -= 4;
-  memoryASet32(ss, esp, w);
+  memorySet32(ss, esp, w);
   assert(esp > 0);
 }
 
 uint16_t pop()
 {
-  uint16_t aux = memoryAGet16(ss, esp);
+  uint16_t aux = memoryGet16(ss, esp);
   esp += 4;
   return aux;
 }
@@ -139,10 +139,11 @@ uint16_t pop()
 void push(uint16_t w)
 {
   esp -= 4;
-  memoryASet32(ss, esp, w);
+  memorySet32(ss, esp, w);
   assert(esp > 0);
 }
 
+/*
 struct MemAuto {
     static uint8_t Get8(int s, int o) { return memoryAGet(s, o); }
     static uint16_t Get16(int s, int o) { return memoryAGet16(s, o); }
@@ -150,6 +151,16 @@ struct MemAuto {
     static void Set8(int s, int o, uint8_t v) { memoryASet(s, o, v); }
     static void Set16(int s, int o, uint16_t v) { memoryASet16(s, o, v); }
     static void Set32(int s, int o, uint32_t v) { memoryASet32(s, o, v); }
+};
+*/
+
+struct MemMemory {
+    static uint8_t Get8(int s, int o) { return memoryGet(s, o); }
+    static uint16_t Get16(int s, int o) { return memoryGet16(s, o); }
+    static uint32_t Get32(int s, int o) { return memoryGet32(s, o); }
+    static void Set8(int s, int o, uint8_t v) { memorySet(s, o, v); }
+    static void Set16(int s, int o, uint16_t v) { memorySet16(s, o, v); }
+    static void Set32(int s, int o, uint32_t v) { memorySet32(s, o, v); }
 };
 
 struct MemPsp {
@@ -178,9 +189,9 @@ template <typename Mem> struct Mem_ES_EDI  {
   static void Advance(int n) { edi += flags.direction ? -n : n; }
 };
 
-using ES_EDI = Mem_ES_EDI<MemAuto>;
+using ES_EDI = Mem_ES_EDI<MemMemory>;
 using ES_EDI_PSP = Mem_ES_EDI<MemPsp>;
-using DS_ESI = Mem_DS_ESI<MemAuto>;
+using DS_ESI = Mem_DS_ESI<MemMemory>;
 using DS_ESI_PSP = Mem_DS_ESI<MemPsp>;
 
 template <typename dst, typename src> void movsw()
@@ -468,7 +479,14 @@ uint16_t fnstcw() {stop(); return 0;}
 void fld80(uint64_t) {stop();}
 void fprem() {stop();}
 void fxch(uint64_t) {stop();}
-}
+void fninit() {stop();}
+void fcompp() {stop();}
+void fchs() {stop();}
+void fdivp80(uint16_t v) {stop();}
+void fldz() {stop();}
+uint32_t fst32() {stop(); return 0;}
+void fsub32(uint32_t v) {stop();}
+}           
 using namespace fpuinsns;
 
 void out16(int, int);
