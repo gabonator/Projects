@@ -248,6 +248,76 @@ struct indirectJump_t
     address_t origin;
 };
 
+struct hint_t
+{
+    bool string;
+    std::string label;
+    std::string pattern;
+    enum class hintType_t {
+        invalid,
+        video,
+        psp,
+        memory,
+        bios
+    } type;
+    
+    bool isValid() const
+    {
+        return !label.empty();
+    }
+    
+    std::string getTypeAsString() const
+    {
+        switch (type)
+        {
+            case hintType_t::video:
+                return string ? "VIDEO": "Video";
+            case hintType_t::psp:
+                return string ? "PSP" : "Psp";
+            case hintType_t::memory:
+                return "";
+            case hintType_t::bios:
+                return string ? "BIOS" : "Bios";
+            default:
+                assert(0);
+                return "";
+        }
+    }
+    static hintType_t typeFromString(const std::string& s)
+    {
+        if (s == "video")
+            return hintType_t::video;
+        if (s == "psp")
+            return hintType_t::psp;
+        if (s == "memory")
+            return hintType_t::memory;
+        if (s == "bios")
+            return hintType_t::bios;
+        return hintType_t::invalid;
+    }
+    std::string getPattern() const
+    {
+        if (string)
+            return pattern;
+        return std::string("(") + pattern;
+    }
+    std::string replaceFrom() const
+    {
+        if (string)
+            return pattern;
+        else
+            return "memoryA";
+    }
+    std::string replaceTo() const
+    {
+        if (string)
+            return pattern + "_" + getTypeAsString();
+        else
+            return std::string("memory") + getTypeAsString();
+    }
+
+};
+
 class Options {
 public:
     //-jumptable 1000:104e 1000:105a 35 callwords bx"
@@ -271,6 +341,7 @@ public:
     bool simpleStack{false};
     bool stackShiftAlways{false};
     bool jit{false};
+    bool usePrintf{false};
     
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;
@@ -282,6 +353,8 @@ public:
     std::set<address_t> marks;
     std::vector<indirectJump_t> indirectCalls;
     std::vector<indirectJump_t> indirectJumps;
+    std::map<std::string, std::vector<hint_t>> memHints;
+    hint_t memHintDefault;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {
         std::vector<shared<jumpTable_t>> aux;

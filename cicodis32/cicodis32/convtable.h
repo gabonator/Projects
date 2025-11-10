@@ -83,7 +83,7 @@ convert_t convert[X86_INS_ENDING] = {
         if (func.callConv == callConv_t::callConvShiftStackLong)
             aux.push_back("esp += 4;");
         if (func.callConv == callConv_t::callConvShiftStackNear)
-            aux.push_back("sp += 2;"); // TODO: on all exit paths!!!
+            aux.push_back("sp += 2a;"); // TODO: on all exit paths!!!
         if (instr->Imm() != 0)
         {
             if (func.arch == arch_t::arch16)
@@ -322,7 +322,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHL] = {.convert = [](convert_args){
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
     },
-            .zf = [](convert_args){ return "!$rd0 && stop()"; },
+            .zf = [](convert_args){ return "!$rd0"; },
             .savecf = [](convert_args){
                 if (instr->Imm() == 1)
                     return std::string("!!($rd0 & $msb0)");

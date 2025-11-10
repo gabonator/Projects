@@ -704,8 +704,8 @@ public:
     es = 0x0028;
     ss = 0x0168;
     esp = 0x%x;
-    loadOverlay("%s_1", 0x%x);
-    loadOverlay("%s_2", 0x%x);
+    loadOverlay("%s_1.bin", 0x%x);
+    loadOverlay("%s_2.bin", 0x%x);
 }
 
 void sub_%x();

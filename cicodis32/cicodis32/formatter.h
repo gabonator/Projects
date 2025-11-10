@@ -138,6 +138,7 @@ public:
                 strcpy(segment, Capstone->ToString(op.mem.segment));
         }
         
+        // TODO: per game hacks, code overwrite
         
         if (strstr(offset, "2147483647"))
         {
@@ -149,7 +150,7 @@ public:
         }
 //        if (strstr(offset, "0x7fffffff"))
 //        {
-//            // worms
+//            // worms sound
 //            if (strcmp(offset+3, " + 2147483647") == 0 && info->instr->mSize == 6)
 //                snprintf(offset+3, /*sizeof(offset)-2*/ 64, " + memoryAGet32(cs, 0x%x)", info->instr->mAddress.linearOffset()+2);
 //            else

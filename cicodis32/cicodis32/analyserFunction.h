@@ -225,13 +225,19 @@ public:
                         {
                             case 'z':
                                 if (p->instr->IsDirectCall())
+                                {
                                     r = (procRequest_t)((int)r | (int)procRequest_t::returnZero);
+                                    flag->visible = true;
+                                }
                                 else
                                     p->stop = "callee must return zero";
                                 break;
                             case 'c':
                                 if (p->instr->IsDirectCall())
+                                {
                                     r = (procRequest_t)((int)r | (int)procRequest_t::returnCarry);
+                                    flag->visible = true;
+                                }
                                 else
                                     p->stop = "callee must return carry";
                                 break;
@@ -437,6 +443,8 @@ public:
                     }
                     if (i->instr->mId == X86_INS_RET)
                     {
+                        if (mOptions.stackShiftAlways && (int)req & (int)procRequest_t::callLong)
+                            return callConv_t::callConvShiftStackLong; // TODO: cleanup
                         if (mOptions.stackShiftAlways)
                             return callConv_t::callConvShiftStackNear;
                         return callConv_t::callConvNear;

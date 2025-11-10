@@ -86,6 +86,8 @@ public:
             mCode.push_back(format("    goto loc_%x;\n", proc.linearOffset()));
 
         address_t next;
+        const std::vector<hint_t>* pMemoryHints = nullptr;
+
         for (const auto& p : code)
         {
             if (next && p.first != next)
@@ -99,13 +101,20 @@ public:
             
             if (verbose)
                 printf("/*%x %s %s*/\n", p.second->instr->mAddress.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
-
+            
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
             {
-                if (mOptions.printProcAddress)
-                    mCode.push_back(format("loc_%x: // %04x:%04x\n", pinstr->mAddress.linearOffset(), pinstr->mAddress.segment, pinstr->mAddress.offset));
+                std::string label = format("loc_%x", pinstr->mAddress.linearOffset());
+                auto hintIt = mOptions.memHints.find(label);
+                if (hintIt != mOptions.memHints.end())
+                    pMemoryHints = &hintIt->second;
                 else
-                    mCode.push_back(format("loc_%x:\n", pinstr->mAddress.linearOffset()));
+                    pMemoryHints = nullptr;
+                
+                if (mOptions.printProcAddress)
+                    mCode.push_back(format("%s: // %04x:%04x\n", label.c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset));
+                else
+                    mCode.push_back(label+":\n");
             }
 
             std::string injectstr;
@@ -122,7 +131,7 @@ public:
                 continue;
             }
             if (!injectstr.empty() && injectstr != "//quiet" && injectstr != "//comment" && injectstr != "//remove")
-                mCode.push_back(std::string("    ") + injectit->second + "\n");
+                mCode.push_back(std::string("    ") + injectstr + "\n");
 
             std::vector<std::string> post;
             for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
@@ -154,7 +163,11 @@ public:
                     if (!save)
                         mCode.push_back(std::string("    ") + fName + " = stop(\"nosave\");\n");
                     else
-                        mCode.push_back(std::string("    ") + fName + " = " + iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func)) + ";\n");
+                    {
+                        std::string cmd = iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func));
+                        PostProcessMemoryHint(pMemoryHints, cmd);
+                        mCode.push_back(std::string("    ") + fName + " = " + cmd + ";\n");
+                    }
                 }
             }
 
@@ -162,7 +175,11 @@ public:
             {
 //                assert(pinfo->savePrezcondition.size()==1);
                 for (const auto& prec : pinfo->savePrecondition)
-                    mCode.push_back("    " + prec.variable + " = " + iformat(pinstr, pinfo, info->func, preCondition(pinstr, prec.readOp)) + ";\n");
+                {
+                    std::string cmd = iformat(pinstr, pinfo, info->func, preCondition(pinstr, prec.readOp));
+                    PostProcessMemoryHint(pMemoryHints, cmd);
+                    mCode.push_back("    " + prec.variable + " = " + cmd + ";\n");
+                }
             }
 
             if (pinfo->infiniteLoop)
@@ -198,13 +215,14 @@ public:
             if (mOptions.GetJumpTables(pinstr->mAddress).size())
             {
                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
-                DumpIndirectTables(pinfo, info->func);
+                DumpIndirectTables(pMemoryHints, pinfo, info->func);
             } else
             if (convert[pinstr->mId].convert)
             {
                 std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
                 if (injectstr == "//comment")
                     command = "// " + utils::replace(command, "\n", "");
+                PostProcessMemoryHint(pMemoryHints, command);
                 
                 if (command.size())
                     mCode.push_back("    " + command + "\n");
@@ -237,6 +255,25 @@ public:
         mCode.push_back("}\n");
     }
     
+    void PostProcessMemoryHint(const std::vector<hint_t>* pMemoryHints, std::string& command)
+    {
+        if (pMemoryHints)
+        {
+            for (hint_t hint : *pMemoryHints)
+            {
+                size_t pf = command.find(hint.getPattern());
+                if (pf != std::string::npos)
+                    command = utils::replace(command, hint.replaceFrom(), hint.replaceTo());
+            }
+        }
+        if (mOptions.memHintDefault.isValid())
+        {
+            size_t pf = command.find("memoryA");
+            if (pf != std::string::npos)
+                command = utils::replace(command, "memoryA", mOptions.memHintDefault.replaceTo());
+        }
+    }
+    
     std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
     {
         std::set<std::string> tempNames;
@@ -254,7 +291,7 @@ public:
         return tempNames;
     }
 
-    void DumpIndirectTables(shared<instrInfo_t> info, const funcInfo_t& func)
+    void DumpIndirectTables(const std::vector<hint_t>* pMemoryHints, shared<instrInfo_t> info, const funcInfo_t& func)
     {
         std::set<int> dupl;
         std::string selector;
@@ -292,6 +329,8 @@ public:
             // multiple tables must use the same selector
             assert(jt->selector.empty() || selector == jt->selector);
                     
+            PostProcessMemoryHint(pMemoryHints, selector);
+            
             if (first)
             {
                 mCode.push_back(format("    switch (%s)\n", selector.c_str()));
@@ -314,7 +353,8 @@ public:
                 }
         }
         mCode.push_back(format("        default:\n"));
-        mCode.push_back(format("            printf(\"unhandled: %%x\\n\", %s);\n", selector.c_str()));
+        if (mOptions.usePrintf)
+            mCode.push_back(format("            printf(\"unhandled: %%x\\n\", %s);\n", selector.c_str()));
         mCode.push_back(format("            stop(\"ind %04x:%04x\");\n", info->instr->mAddress.segment, info->instr->mAddress.offset));
         mCode.push_back(format("    }\n"));
     }
@@ -360,6 +400,9 @@ public:
             return "($sig0)$rd0 < ($sig0)$rd1";
         if (set == X86_INS_CMP && cond == X86_INS_JGE)
             return "($sig0)$rd0 >= ($sig0)$rd1 /*xxx*/";
+
+        if (set == X86_INS_SHR && cond == X86_INS_JBE)
+            return "($rd0 >> $rd1) <= 0";
 
         //assert(0);
         return "stop(\"preCondition\")";
@@ -423,7 +466,7 @@ public:
         }
         
         if (set == X86_INS_SAHF)
-            return format("stop(\"sahf get flag %s %s\")", Capstone->ToString(instr->mId), Capstone->ToString(cond));
+            return format("stop(\"%s get flag %s\")", Capstone->ToString(instr->mId), Capstone->ToString(cond));
 
 //        assert(0);
         return "stop(\"postCondition\")";

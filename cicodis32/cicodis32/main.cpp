@@ -330,6 +330,36 @@ int main(int argc, char **argv) {
                 options.overlayBytes.push_back(b);
             });
         }
+        else if (json["id"] == "hint" && json["label"])
+        {
+            hint_t hint{
+                .string = false,
+                .label = json["label"].GetString(),
+                .pattern = json["pattern"].GetString(),
+                .type = hint_t::typeFromString(json["type"].GetString())
+            };
+
+            if (hint.label == "*")
+            {
+                options.memHintDefault = hint;
+            } else
+            {
+                auto& vect = options.memHints[hint.label];
+                vect.push_back(hint);
+                
+                hint.string = true;
+                if (hint.pattern == "ds, esi")
+                {
+                    hint.pattern = "DS_ESI";
+                    vect.push_back(hint);
+                }
+                if (hint.pattern == "es, edi")
+                {
+                    hint.pattern = "ES_EDI";
+                    vect.push_back(hint);
+                }
+            }
+        }
         else {
             printf("Wrong json: '%s'\n", line.c_str());
             assert(0);
