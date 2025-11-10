@@ -1,5 +1,7 @@
 # Homography seamless zooming
 
+[Live demo here!](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/Homography/final.html)
+
 This script takes two set of coordinates and calculates homography matrix which transforms them from the initial position into the target position. In my case it was the photo frame on the laptop and photo frame in the mirrored screen.
 This matrix is then used to build simple HTML with CSS to make a seamless animation without any javascript code.
 
