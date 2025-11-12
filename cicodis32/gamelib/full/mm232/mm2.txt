@@ -18,13 +18,15 @@
 {"id": "jumpTable", "addr": "0160:1da465", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
 {"id": "jumpTable", "addr": "0160:1da44d", "table": "160:1da1d0", "entries": 52, "type": "jump32", "selector": "edx", "filterMin":1}
 
-{"id": "config", "isolate": ["0160:1b6269"]}
+//{"id": "config", "isolate": ["0160:1b6269"]}
 
 
 {"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec60c", "entries": 20, "type": "jump32", "useCaseOffset": true}
 {"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec660", "entries": 20, "type": "jump32", "useCaseOffset": true}
 {"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec6b4", "entries": 20, "type": "jump32", "useCaseOffset": true}
 {"id": "jumpTable", "addr": "0160:1cd7b2", "table": "160:1ec708", "entries": 20, "type": "jump32", "useCaseOffset": true}
+
+
 
 {"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec60c", "entries": [20], "type": "jump32", "useCaseOffset": true}
 {"id": "jumpTable", "addr": "0160:1cd7bd", "table": "160:1ec660", "entries": [20], "type": "jump32", "useCaseOffset": true}
@@ -45,3 +47,6 @@
 {"id": "inject", "addr": "0160:1a8a52", "text": "//comment"} // indirect call, check
 {"id": "inject", "addr": "0160:1a8a90", "text": "//comment"}
 {"id": "inject", "addr": "0160:1a8a91", "text": "//comment"} // indirect call, check
+
+{"id": "inject", "addr": "0160:1df990", "text": "return;"}
+{"id": "inject", "addr": "0160:1dfc80", "text": "return;"}
