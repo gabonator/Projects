@@ -1,0 +1,88 @@
+diff --git a/wormsfull.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/gamelib/full/wormsfull32/wasm/wormsfull.cpp
+index 72b6511..6f48a5b 100644
+--- a/wormsfull.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/gamelib/full/wormsfull32/wasm/wormsfull.cpp
+@@ -7375,6 +7375,7 @@ loc_15176: // 0160:15176
+ loc_15197: // 0160:15197
+     eax = memoryGet32(ds, 0x21af04);
+ loc_1519c: // 0160:1519c
++    memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+2);
+     sync();
+     if (eax == memoryGet32(ds, 0x22313c))
+         goto loc_1519c;
+@@ -19514,6 +19515,14 @@ loc_1e93a: // 0160:1e93a
+     memorySet32(ds, 0x5c708, edx);
+     memorySet32(ds, 0x5c700, eax);
+ loc_1e94c: // 0160:1e94c
++    {
++        static int c=0;
++        if (++c%10 == 0)
++        {
++            memorySet32(ds, 0x5c6fc, (memoryGet32(ds, 0x5c6fc)+5)&255);
++            memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+1);
++        }
++    }
+     eax = memoryGet32(ds, 0x5c6fc);
+     if (eax == memoryGet32(ds, 0x5c700))
+         goto loc_1e7b8;
+@@ -53872,6 +53881,8 @@ void sub_38d80() // 0160:38d80 +long
+ }
+ void sub_38dbf() // 0160:38dbf +long
+ {
++    if (memoryGet32(ss, esp+8) > memoryGet32(ss, esp+4))
++        playSound(ds, memoryGet32(ss, esp+4), memoryGet32(ss, esp+8)-memoryGet32(ss, esp+4), 16000, "s8");
+     return;
+     esp -= 4;
+     push32(ebp);
+@@ -59853,7 +59864,7 @@ loc_3d351: // 0160:3d351
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_3d354() // 0160:3d354 +long
+@@ -65273,7 +65284,7 @@ loc_41481: // 0160:41481
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_414e8() // 0160:414e8 +long
+@@ -65784,7 +65795,7 @@ loc_41c80: // 0160:41c80
+     edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4; 
+     ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();
+     esp = ebp; ebp = pop32();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     esp += 4;
+ }
+ void sub_41c83() // 0160:41c83 +long
+@@ -70743,7 +70754,7 @@ loc_44bc9: // 0160:44bc9
+     if (flags.zero)
+         goto loc_44c1e;
+     ecx++;
+-    for (; ecx != 0; --ecx) movsb<ES_EDI_PSP, DS_ESI>();
++    for (; ecx != 0; --ecx) movsb<ES_EDI, DS_ESI>();
+ loc_44c1e: // 0160:44c1e
+     al = 0;
+     stosb<ES_EDI>(al);
+@@ -76176,7 +76187,14 @@ void sub_47e02() // 0160:47e02 +long +returnCarry
+     esi = memoryGet32(ds, edi + 16);
+     edi = memoryGet32(ds, edi + 20);
+     ds = ebp;
+-    stop("stack_unbalanced");
++    switch (memoryGet16(cs, pop32()))
++    {
++        case 0x31cd: interrupt(0x31); break;
++        case 0x33cd: interrupt(0x33); break;
++        case 0x10cd: interrupt(0x10); break;
++        default:
++            assert(0);
++    }
+     esp += 4;
+ }
+ void sub_481cd() // 0160:481cd +long

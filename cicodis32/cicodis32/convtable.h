@@ -83,7 +83,7 @@ convert_t convert[X86_INS_ENDING] = {
         if (func.callConv == callConv_t::callConvShiftStackLong)
             aux.push_back("esp += 4;");
         if (func.callConv == callConv_t::callConvShiftStackNear)
-            aux.push_back("sp += 2a;"); // TODO: on all exit paths!!!
+            aux.push_back("sp += 2;"); // TODO: on all exit paths!!!
         if (instr->Imm() != 0)
         {
             if (func.arch == arch_t::arch16)

@@ -1,0 +1,2 @@
+{"id": "config", "loader": "LoaderMz", "executable": "goose.zip/GOOSE.EXE", "architecture": "arch16"}
+{"id": "jumpTable", "addr": "1000:104e", "table": "1000:105a", "entries": 35, "type": "callwords", "selector": "bx"}

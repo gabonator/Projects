@@ -23,20 +23,9 @@
 #include "analyserInstruction.h"
 #include "formatter.h"
 #include "converter.h"
-//#include "profiles.h"
 #include "json.h"
 
 int main(int argc, char **argv) {
-//    Options options = Profiles::optionsGoose;
-//    Options options = Profiles::optionsRick2;
-//    Options options = Profiles::optionsFox;
-//    Options options = Profiles::optionsRick1;
-//    Options options = Profiles::optionsBumpy;
-//    Options options = Profiles::optionsAv;
-//    Options options = Profiles::optionsCC1;
-//    Options options = Profiles::optionsCK1;
-//    Options options = Profiles::optionsCK4a;
-//    options.verbose = true;
     Options options;
     options.printProcAddress = true;
     options.printLabelAddress = true;
@@ -67,7 +56,10 @@ int main(int argc, char **argv) {
                 else if (k == "architecture" && v == "arch16")
                     options.arch = arch_t::arch16;
                 else if (k == "architecture" && v == "arch32")
+                {
+                    address_t::mode32 = true;
                     options.arch = arch_t::arch32;
+                }
                 else if (k == "loadAddressShift")
                     options.loadAddressShift = CConversion(v).ToInt();
                 else if (k == "loadAddress")
@@ -80,6 +72,11 @@ int main(int argc, char **argv) {
                     options.verboseAsm = true;
                 else if (k == "verboseAsm" && v == "false")
                     options.verboseAsm = false;
+                else if (k == "verboseAddr" && v == "false")
+                {
+                    options.printProcAddress = false;
+                    options.printLabelAddress = false;
+                }
                 else if (k == "recursive" && v == "false")
                     options.recursive = false;
                 else if (k == "relocations" && v == "false")

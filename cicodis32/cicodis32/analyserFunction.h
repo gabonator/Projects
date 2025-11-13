@@ -297,9 +297,22 @@ public:
             }
         }
 
+        static const uint64_t readFlagDirectMask[128] =
+        {
+            ['c'] = X86_EFLAGS_TEST_CF,
+            ['z'] = X86_EFLAGS_TEST_ZF,
+            ['o'] = X86_EFLAGS_TEST_OF,
+            ['s'] = X86_EFLAGS_TEST_SF,
+        };
+
         // save single flag
         for (const auto& [a, p] : info->code)
         {
+            if (a.offset == 0x426)
+            {
+                int f=9;
+            }
+
             for (instrInfo_t::instrInfoFlag_t* flag : p->Flags())
             {
                 if (p->readPrecondition.size())
@@ -311,15 +324,39 @@ public:
                 if (flag->depends.empty())
                     continue;
                 
-                if (flag->dirty || flag->depends.size() > 1 /*|| p->instr->mTemplate.ret*/)
+                // CC1 - loc_1f4d1: TEST should set carry for RCR
+                // TODO: inconsistent!
+                if (!p->instr->mTemplate.simpleJump &&
+                    !p->instr->mTemplate.simpleCond &&
+                    (p->instr->mDetail.eflags & readFlagDirectMask[flag->type]))
+                {
+                    for (address_t depAddr : flag->depends)
+                    {
+                        shared<instrInfo_t> dep = info->code.find(depAddr)->second;
+                        switch (flag->type)
+                        {
+                            case 'c':
+                                if (!dep->instr->mTemplate.savedVisiblyCarry)
+                                    dep->GetFlag(flag->type).save = true;
+                                break;
+                            case 'z':
+                                if (!dep->instr->mTemplate.savedVisiblyZero)
+                                    dep->GetFlag(flag->type).save = true;
+                                break;
+                            default:
+                                assert(0);
+                        }
+                    }
+                }
+                
+                if (flag->dirty || flag->depends.size() > 1)
                 {
                     // cannot calculate this flag value from input operands of lastSet
                     for (address_t depAddr : flag->depends)
                     {
                         shared<instrInfo_t> dep = info->code.find(depAddr)->second;
                         if (dep->savePrecondition.size())
-                            continue; // TODO!!
-
+                            continue;
 
                         if (dep->instr->mId == X86_INS_CALL)
                             continue;

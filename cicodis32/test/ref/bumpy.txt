@@ -1,0 +1,59 @@
+{"id": "config", "loader": "LoaderMz", "executable": "bumpy.zip/BUMPY.EXE", "architecture": "arch16", "loadAddress": 0x01ed0}
+{"id": "jumpTable", "addr": "01ed:01da", "table": "1227:0000", "entries": [1, 4], "type": "callwords", "selector": "memoryAGet16(es, bx + 2)", "useCaseOffset": true}
+//{"id": "jumpTable", "addr": "01ed:01da", "calls": ["01ed:9c62", "01ed:aa4e"]}
+{"id": "jumpTable", "addr": "01ed:46dc", "table": "01ed:4725", "entries": 4, "type": "jumpwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:37db", "table": "01ed:384a", "entries": 4, "type": "jumpwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:6e7e", "table": "01ed:70e7", "entries": 20, "type": "jumpwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:0264", "table": "1228:5469", "entries": 6, "type": "jumpwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:020a", "table": "1228:545d", "entries": 6, "type": "jumpwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:0374", "table": "1228:5475", "entries": 3, "type": "jumpwords", "selector": "bp"}
+{"id": "jumpTable", "addr": "0ca6:1321", "table": "1228:6946", "entries": 6, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ed9:2dbe", "table": "0ed9:2dc6", "entries": 6, "type": "callwords", "selector": "di"}
+//{"id": "jumpTable", "addr": "01ed:7284", "entries": 1, "type": "callwords", "selector": "memoryAGet16(ss, bp + 4)", "baseptr": "aea3", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "01ed:7284", callsNear:["01ed:a3ae"]}
+{"id": "jumpTable", "addr": "0ed9:2d01", "table": "0ed9:2d09", "entries": 6, "type": "callwords", "selector": "ax", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0e15:005e", "table": "1228:4e37", "entries": 12, "type": "callwords", "selector": "bp", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "01ed:23b0", "table": "1228:43c0", "entries": 1085, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:1e32", "table": "1228:07ca", "entries": 64, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:01a4", "table": "1228:4dda", "entries": 7, "type": "callwords", "selector": "bx"}
+//{"id": "jumpTable", "addr": "0ca6:0028", "entries": 1, "type": "callwords", "selector": "ax", "baseptr": "2b00", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0ca6:0028", callsNear:["0ca6:002b"]}
+{"id": "jumpTable", "addr": "1223:000b", "table": "1228:6976", "entries": 6, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:01f3", "table": "1228:5435", "entries": 14, "type": "callwords", "selector": "bp"}
+{"id": "jumpTable", "addr": "0ca6:02c3", "table": "1228:5441", "entries": 6, "type": "callwords", "selector": "bp"}
+{"id": "jumpTable", "addr": "0ca6:0d9e", "table": "1228:555e", "entries": 6, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:0acd", "table": "1228:5550", "entries": 8, "type": "callwords", "selector": "ax", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0ca6:0a92", "table": "1228:5544", "entries": 19, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:4db9", "table": "1228:0870", "entries": 12, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:501f", "table": "1228:085c", "entries": 21, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:129d", "table": "1228:56c2", "entries": 6, "type": "callwords", "selector": "si"}
+{"id": "jumpTable", "addr": "0ca6:0820", "table": "1228:5536", "entries": 26, "type": "callwords", "selector": "ax", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0ca6:1084", "table": "1228:56b4", "entries": 8, "type": "callwords", "selector": "ax", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0ed9:2d94", "table": "0ed9:2d9c", "entries": 6, "type": "callwords", "selector": "di"}
+{"id": "jumpTable", "addr": "0ca6:13e2", "table": "1228:6952", "entries": 6, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ed9:2d2f", "table": "0ed9:2d37", "entries": 6, "type": "callwords", "selector": "di"}
+{"id": "jumpTable", "addr": "0ed9:11d3", "table": "0ed9:210b", "entries": 1, "type": "jumpfix", "selector": "ax"}
+//{"id": "jumpTable", "addr": "0ed9:25e4", "entries": 4, "type": "jumpwords", "selector": "ax", "baseptr": "04206320461ffa20", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "0ed9:25e4", jumps:["0ed9:2004", "0ed9:2063", "0ed9:1f46", "0ed9:20fa"]}
+{"id": "jumpTable", "addr": "0ca6:104e", "table": "1228:5698", "entries": 6, "type": "callwords", "selector": "bx"}
+{"id": "jumpTable", "addr": "0ca6:0ddd", "table": "1228:568a", "entries": 1, "type": "callwords", "selector": "bx"}
+
+
+//{"id": "config", "verboseAsm": true }
+
+//{"id": "config", "recursive": false, "start": false, "procList": ["01ed:aadd+returnCarry+returnZero"], "verboseAsm": true, "relocations": false}
+
+
+{"id": "inject", "addr": "0ca6:0316", "text": "sync();"}
+{"id": "inject", "addr": "1219:0048", "text": "sync();"}
+{"id": "inject", "addr": "01ed:31c4", "text": "sync();"}
+{"id": "inject", "addr": "01ed:37fd", "text": "sync();"}
+{"id": "inject", "addr": "01ed:3a5b", "text": "sync();"}
+{"id": "inject", "addr": "01ed:32a2", "text": "sync();"}
+
+
+//{"id": "inject", "addr": "0ed9:25e1", "text": "//comment"}
+{"id": "inject", "addr": "0ed9:25e1", "text": "ax = memoryAGet16(cs, 0x25e2); stop();"}
+
+{"id": "marks", "marks": ["0ed9:25e2", "0ed9:25e3"]}
+{"id": "marks", "marks": ["0ca6:0b81", "0ca6:0b82"]} // TODO: check these!

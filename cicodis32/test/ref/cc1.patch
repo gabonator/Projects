@@ -1,0 +1,134 @@
+diff --git a/cc1.clean b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/cc1.cpp
+index b81f437..f4a7de4 100644
+--- a/cc1.clean
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/cicorun/cc1.cpp
+@@ -3,6 +3,9 @@
+ void fixReloc(uint16_t seg);
+ void sub_10e6b();
+ 
++void indirectCall(int s, int o) { stop(); }
++void indirectJump(int s, int o) { stop(); }
++
+ void init()
+ {
+     headerSize = 0x1d50;
+@@ -40241,7 +40244,12 @@ loc_20351:
+     memoryASet16(ss, bp - 2, 0xfff9);
+     goto loc_2037a;
+ loc_20376:
+-    cs = memoryAGet16(es, di + 36 + 2); indirectJump(cs, memoryAGet16(es, di + 36)); stop();;
++//    cs = memoryAGet16(es, di + 36 + 2); indirectJump(cs, memoryAGet16(es, di + 36)); stop();;
++    assert(memoryAGet16(es, di + 0x24) == 0x10d7);
++    assert(memoryAGet16(es, di + 0x24) == 0x10d7);
++    cs = 0x1f5c;
++    sub_20697(); // TODO jump stack fix?
++    return;
+ loc_2037a:
+     ax = memoryAGet16(ss, bp - 2);
+     di = pop();
+@@ -40617,13 +40625,13 @@ loc_2085a:
+ loc_20869:
+     ax = memoryAGet16(ss, bp - 2);
+     di = pop();
+-    stop("stack_below", "1f5c:12ac");
++//    stop("stack_below", "1f5c:12ac");
+     si = pop();
+     es = pop();
+     ds = pop();
+     sp = bp;
+     bp = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+     sp += 12;
+@@ -40631,7 +40639,7 @@ loc_20869:
+ void sub_20ed5() // +far +stackDrop12
+ {
+     sp -= 2;
+-    stop("breakpoint");
++//    stop("breakpoint");
+     push(bp);
+     bp = sp;
+     sp -= 0x0084;
+@@ -56645,6 +56653,7 @@ loc_2ae06:
+     out8(dx, al);
+     cx = 0x0010;
+ loc_2ae0f:
++    ds = ds ? ds : loadAddress;
+     dx = 0x03ce;
+     al = lodsb<DS_SI>();
+     ah = 0x08;
+@@ -57067,6 +57076,7 @@ void sub_2c34f() // +far +stackDrop10
+     al = 0x02;
+     out8(dx, al);
+     cx = 0x0010;
++    ds = ds ? ds : loadAddress;
+ loc_2c39d:
+     memoryASet(cs, 0x17e8, 0x02);
+ loc_2c3a3:
+@@ -57182,6 +57192,7 @@ void sub_2c47d() // +far +stackDrop10
+     push(di);
+     push(si);
+     si = memoryAGet16(ss, bp + 10); ds = memoryAGet16(ss, bp + 10 + 2);
++    ds = ds > 0x100 ? ds : loadAddress;
+     dx = 0xa000;
+     es = dx;
+     bx = memoryAGet16(ss, bp + 6);
+@@ -57552,10 +57563,12 @@ loc_2d42b:
+     if (--cx)
+         goto loc_2d42b;
+ loc_2d431:
++    ds = ds > 0x100 ? ds : loadAddress;
+     dx = 0x03c4;
+     al = 0x02;
+     out8(dx, al);
+     cx = 0x0010;
++    ds = ds ? ds : loadAddress;
+ loc_2d43a:
+     al = lodsb<DS_SI>();
+     dx = 0x03c5;
+@@ -57873,13 +57886,18 @@ void sub_2d99b() // +far +stackDrop2
+     si = pop();
+     ax = pop();
+     flags.interrupts = 0;
+-    stop("stack_unbalanced");
+-    sp += 2;
+-    cs = pop();
++    //    stop("stack_unbalanced");
++    //    sp += 2;
++    //    cs = pop();
++    int newOfs = pop(); // reads 0000:0040 - video int https://www.fysnet.net/rombios.htm
++    int newSeg = pop(); // ds:bx = f000:1320
++    interrupt(0x10);
++    sp += 6;
++    sub_2d9d5();
+ }
+ void sub_2d9d5()
+ {
+-    sp -= 2;
++//    sp -= 2;
+     push(flagAsReg());
+     push(es);
+     push(di);
+@@ -57907,9 +57925,9 @@ void sub_2d9d5()
+     ax = pop();
+     stosw<ES_DI>(ax);
+     ds = pop();
+-    stop("stack_below", "2d99:0067");
++//    stop("stack_below", "2d99:0067");
+     bp = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     sp += 2;
+     cs = pop();
+     sp += 6;
+@@ -59927,7 +59945,7 @@ void sub_2e6d6() // +returnZero
+ loc_2e6e4:
+     di = pop();
+     es = pop();
+-    stop("stack_unbalanced");
++//    stop("stack_unbalanced");
+     flags.zero = !ax;
+     sp += 2;
+ }

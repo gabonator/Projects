@@ -581,6 +581,9 @@ public:
                 } else if (cond == "edx" || cond == "eax" || strstr(condstr, " & 0x"))
                 {
                     snprintf(replace, sizeof(replace), "!!(%s)", cond.c_str());
+                } else if (cond == "flags.zero")
+                {
+                    strcpy(replace, condstr);
                 } else
                     assert(0);
             }

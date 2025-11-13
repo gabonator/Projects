@@ -101,7 +101,12 @@ public:
             
             if (verbose)
                 printf("/*%x %s %s*/\n", p.second->instr->mAddress.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
-            
+
+            if (p.first.offset == 0x422)
+            {
+                int f = 9;
+            }
+
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
             {
                 std::string label = format("loc_%x", pinstr->mAddress.linearOffset());

@@ -150,6 +150,7 @@ class LoaderMz : public Loader {
     MZHeader* header = nullptr;
     std::string strExecutable;
     std::streamsize size;
+    size_t realSize;
 
 public:
     virtual bool LoadFile(const char* executable, int loadAddress) override
@@ -182,6 +183,7 @@ public:
         }
         
         // append extra 16 dummy bytes, match with GetBufferAt
+        realSize = buffer.size();
         buffer.resize(buffer.size()+16);
         
         size = buffer.size();
@@ -246,7 +248,7 @@ void start()
                 header->cs+_loadBase/16 - 0x10,
                 header->ss+_loadBase/16,
                 header->sp,
-                execPath.c_str(), execName.c_str(), size,
+                execPath.c_str(), execName.c_str(), realSize,
                 _dumpReloc ? "\n    fixReloc(loadAddress);" : "",
                 (_loadBase/16+header->cs)*16+header->ip);
                 

@@ -1,0 +1,58 @@
+{"id": "config", "loader": "LoaderMz", "executable": "av.zip/av.exe", "architecture": "arch16", "loadAddress": 0x01ed0}
+{"id": "jumpTable", "addr": "01ed:007e", "table": "0a57:0958", "entries": 1, "type": "callwords", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "01ed:00fe", "table": "0a57:095c", "entries": 1, "type": "callwords", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "01ed:6710", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "08e6:0004", "table": "08e6:000f", "entries": 29, "type": "callwords", "selector": "si"}
+{"id": "jumpTable", "addr": "043e:0005", "table": "043e:0016", "entries": 29, "type": "callwords", "selector": "si"}
+{"id": "jumpTable", "addr": "08e6:01df", "callsFar": ["043e:0000"]}
+{"id": "jumpTable", "addr": "043e:047a", "callsNear": ["043e:0482"]}
+{"id": "jumpTable", "addr": "08e6:0259", "callsFar": ["043e:0000"]}
+{"id": "jumpTable", "addr": "01ed:695c", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "08e6:11f5", "callsFar": ["043e:0000"]}
+
+// TODO: do better!
+{"id": "jumpTable", "addr": "01ed:6744", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6796", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6821", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6833", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6850", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:687c", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6973", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6990", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:69d0", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6a33", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6a8f", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6aa2", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6b1c", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6b3b", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6bc4", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6c2a", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6c39", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6c56", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6c6f", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6cb5", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6cdb", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6d04", "callsFar": ["08e6:0000"]}
+{"id": "jumpTable", "addr": "01ed:6da7", "callsFar": ["08e6:0000"]}
+
+
+{"id": "jumpTable", "addr": "043e:08e4", "callsNear": ["043e:07f1"]}
+{"id": "jumpTable", "addr": "043e:0927", "callsNear": ["043e:07f1"]}
+{"id": "jumpTable", "addr": "043e:08ca", "callsNear": ["043e:0538", "043e:0548"]}
+{"id": "jumpTable", "addr": "043e:0726", "callsNear": ["043e:0538", "043e:0548"]}
+{"id": "jumpTable", "addr": "043e:0b18", "callsNear": ["043e:0538", "043e:0548"]}
+{"id": "jumpTable", "addr": "08e6:03dc", "callsFar": ["043e:0000"]}
+{"id": "jumpTable", "addr": "08e6:1267", "callsFar": ["043e:0000"]}
+{"id": "jumpTable", "addr": "08e6:1298", "callsFar": ["043e:0000"]}
+
+{"id": "config", "isolate": ["08e6:0075"]}
+{"id": "inject", "addr": "01ed:0641", "text": "sync();"}
+
+{"id": "marks", "marks": ["01ed:01a3", "01ed:01a4"]} // sub_1ed0() prev=0000 new=0a57
+{"id": "marks", "marks": ["043e:0010"]} // sub_43f0() prev c3, new 9a
+
+{"id": "config", "procList": ["043e:0072"]}
+{"id": "config", "stackShiftAlways": true}
+
+
+{"id": "jumpTable", "addr": "01ed:568b", "jumps": ["01ed:56a4"]}

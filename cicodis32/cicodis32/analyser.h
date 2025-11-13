@@ -110,22 +110,9 @@ struct instrInfo_t {
         // this instruction modifies flag for following set of instructions
         std::set<address_t> provides;
                 
-//        // private:
-//        // flag value cannnot be recovered from input operand after instruction evaluation
-//        // e.g. `cmp ax, bx` - flags can be fully recovered
-//        // e.g. `shl ax, 1` - carry flag is lost
-//        bool isDestructive{false};
-//        // instruction implementation internally saves default flag (e.g. flags.zero, flags.carry)
-//        bool savedVisibly{false};
-//        bool visible{false};
-//        // instruction requires the flag value to be set through default flag (e.g. flags.zero, flags.carry)
-//        bool usesInternal{false};
-//        bool saved{false};
-
         std::set<address_t> willSet;
         bool willSetDirty{false};
 
-        
         // second phase processing
         // should update the flag visibly?
         bool save{false};

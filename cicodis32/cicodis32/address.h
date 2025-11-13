@@ -6,6 +6,8 @@
 //
 
 struct address_t {
+    static bool mode32;
+
     int segment{-1};
     int offset{-1};
     operator bool()
@@ -27,8 +29,10 @@ struct address_t {
     }
     int linearOffset() const
     {
-        return offset; // only for 32bit!!!
-        return segment*0x10+offset;
+        if (mode32)
+            return offset;
+        else
+            return segment*0x10+offset;
     }
     bool operator == (const address_t& b) const
     {
@@ -76,3 +80,5 @@ struct address_t {
 //    }
 //};
 //
+
+bool address_t::mode32{false};

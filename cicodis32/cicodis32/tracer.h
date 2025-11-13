@@ -10,6 +10,7 @@ struct instruction_t
 {
     bool continuous{true};
     bool simpleJump{false};
+    bool simpleCond{false};
 //    bool calls{false};
     int stack{0};
     bool conditional{false};
@@ -102,7 +103,12 @@ instruction_t Instructions[X86_INS_ENDING] = {
     //            case X86_INS_CLC:
     //            case X86_INS_CMC:
     //                info->GetFlag('c').savedVisibly |= true;
-
+    [X86_INS_SETNE] = {.simpleCond = true},
+    [X86_INS_SETE] = {.simpleCond = true},
+    [X86_INS_SETL] = {.simpleCond = true},
+    [X86_INS_SETLE] = {.simpleCond = true},
+    [X86_INS_SETG] = {.simpleCond = true},
+    [X86_INS_SETGE] = {.simpleCond = true},
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

@@ -1,7 +1,0 @@
-https://www.youtube.com/watch?v=JF3FwOr4C90
-dosbox:
-wpp386 mandel.c
-wcl386 mandel.obj
-debug mandel
-bp 160:15e010
-memdumpbin 16:15e000 40000

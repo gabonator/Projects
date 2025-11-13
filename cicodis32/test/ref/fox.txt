@@ -1,0 +1,16 @@
+{"id": "config", "loader": "LoaderMz", "executable": "fox.zip/FOX.EXE", "architecture": "arch16"}
+{"id": "jumpTable", "addr": "1020:42e6", "table": "168f:6efb", "entries": 30, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:45a0", "table": "168f:727d", "entries": 19, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:45cf", "table": "168f:7299", "entries": 59, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:4629", "table": "168f:726f", "entries": 14, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:5961", "table": "168f:8eb5", "entries": 38, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:464b", "table": "168f:726f", "entries": 26, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "jumpTable", "addr": "1020:57e4", "table": "168f:8edb", "entries": 19, "type": "callwords", "selector": "bx", "filterMin": 1}
+{"id": "inject", "addr": "1020:03f7", "text": "sync();"}
+{"id": "inject", "addr": "1020:0403", "text": "sync();"}
+{"id": "inject", "addr": "1020:10dd", "text": "/*"}
+{"id": "inject", "addr": "1020:10f3", "text": "*/"}
+{"id": "inject", "addr": "1020:17eb", "text": "sync(); return;"}
+{"id": "inject", "addr": "1020:3243", "text": "static int counter=0; if (counter++%4==0) sync(); return;"}
+{"id": "inject", "addr": "1020:51f1", "text": "sync();"}
+{"id": "inject", "addr": "1020:5244", "text": "sync();"}
