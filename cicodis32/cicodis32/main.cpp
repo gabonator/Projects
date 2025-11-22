@@ -26,10 +26,10 @@
 #include "json.h"
 
 int main(int argc, char **argv) {
-    Options options;
-    options.printProcAddress = true;
-    options.printLabelAddress = true;
-//    options.verboseAsm = true;
+    std::shared_ptr<Options> options = std::make_shared<Options>();
+    options->printProcAddress = true;
+    options->printLabelAddress = true;
+//    options->verboseAsm = true;
 
     assert(argc==2);
     std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
@@ -50,41 +50,41 @@ int main(int argc, char **argv) {
                 if (k == "id")
                     return;
                 if (k == "loader")
-                    v.ToString(options.loader, sizeof(options.loader));
+                    v.ToString(options->loader, sizeof(options->loader));
                 else if (k == "executable")
-                    v.ToString(options.exec, sizeof(options.exec));
+                    v.ToString(options->exec, sizeof(options->exec));
                 else if (k == "architecture" && v == "arch16")
-                    options.arch = arch_t::arch16;
+                    options->arch = arch_t::arch16;
                 else if (k == "architecture" && v == "arch32")
                 {
                     address_t::mode32 = true;
-                    options.arch = arch_t::arch32;
+                    options->arch = arch_t::arch32;
                 }
                 else if (k == "loadAddressShift")
-                    options.loadAddressShift = CConversion(v).ToInt();
+                    options->loadAddressShift = CConversion(v).ToInt();
                 else if (k == "loadAddress")
-                    options.loadAddress = CConversion(v).ToInt();
+                    options->loadAddress = CConversion(v).ToInt();
                 else if (k == "start" && v == "false")
-                    options.start = false;
+                    options->start = false;
                 else if (k == "verbose" && v == "true")
-                    options.verbose = true;
+                    options->verbose = true;
                 else if (k == "verboseAsm" && v == "true")
-                    options.verboseAsm = true;
+                    options->verboseAsm = true;
                 else if (k == "verboseAsm" && v == "false")
-                    options.verboseAsm = false;
+                    options->verboseAsm = false;
                 else if (k == "verboseAddr" && v == "false")
                 {
-                    options.printProcAddress = false;
-                    options.printLabelAddress = false;
+                    options->printProcAddress = false;
+                    options->printLabelAddress = false;
                 }
                 else if (k == "recursive" && v == "false")
-                    options.recursive = false;
+                    options->recursive = false;
                 else if (k == "relocations" && v == "false")
-                    options.relocations = false;
+                    options->relocations = false;
                 else if (k == "declarations" && v == "false")
-                    options.declarations = false;
+                    options->declarations = false;
                 else if (k == "stackShiftAlways" && v == "true")
-                    options.stackShiftAlways = true;
+                    options->stackShiftAlways = true;
                 else if (k == "procList")
                 {
                     CJson(v).ForEach([&](const CSubstring& v)
@@ -102,23 +102,23 @@ int main(int argc, char **argv) {
                                 req = procRequest_t((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear);
                             else
                                 assert(0);
-                            options.procModifiers.insert({address_t::fromString(strAddr), req});
+                            options->procModifiers.insert({address_t::fromString(strAddr), req});
                         }
-                        options.procList.push_back(address_t::fromString(strAddr));
+                        options->procList.push_back(address_t::fromString(strAddr));
                     });
                 }
                 else if (k == "isolate")
                 {
                     CJson(v).ForEach([&](const CSubstring& v)
                     {
-                        options.isolateLabels.insert(address_t::fromString(CJson(v).GetString()));
+                        options->isolateLabels.insert(address_t::fromString(CJson(v).GetString()));
                     });
                 }
                 else if (k == "terminator")
                 {
                     CJson(v).ForEach([&](const CSubstring& v)
                     {
-                        options.terminators.insert(address_t::fromString(CJson(v).GetString()));
+                        options->terminators.insert(address_t::fromString(CJson(v).GetString()));
                     });
                 }
                 else
@@ -137,14 +137,14 @@ int main(int argc, char **argv) {
             address_t target = address_t::fromString(json["target"].GetString());
             //address_t parent = address_t::fromString(json["parent"].GetString());
             address_t origin = address_t::fromString(json["origin"].GetString());
-            options.indirectCalls.push_back({.target = target, /*.parent = parent,*/ .origin = origin});
+            options->indirectCalls.push_back({.target = target, /*.parent = parent,*/ .origin = origin});
         } else
         if (json["id"] == "indirectJump")
         {
             address_t target = address_t::fromString(json["target"].GetString());
             address_t parent = address_t::fromString(json["parent"].GetString());
             address_t origin = address_t::fromString(json["origin"].GetString());
-            options.indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
+            options->indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
         } else
         if (json["id"] == "jumpTable" && json["callsFar"])
         {
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::CallDwords, .useCaseOffset = true, .elements = elements});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "jumpTable" && json["callsNear"])
         {
@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::CallWords, .useCaseOffset = true, .elements = elements});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "jumpTable" && json["calls32"])
         {
@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::Call32, .useCaseOffset = true, .elements = elements});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "jumpTable" && json["jumps"])
         {
@@ -232,7 +232,7 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::JumpWords, .useCaseOffset = true, .elements = elements});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "jumpTable" && json["jumps32"])
         {
@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
                 .type = jumpTable_t::switch_e::Jump32, .useCaseOffset = true, .elements = elements});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "jumpTable")
         {
@@ -305,26 +305,26 @@ int main(int argc, char **argv) {
                 .instruction = instruction, .table = table, .type = type, .elements = elements, .selector = selector,
                 .minaddr = minaddr, .useCaseOffset = useCaseOffset});
             
-            options.jumpTables.push_back(jt);
+            options->jumpTables.push_back(jt);
         } else
         if (json["id"] == "inject")
         {
-            options.inject.insert({address_t::fromString(json["addr"].GetString()), json["text"].GetString()});
+            options->inject.insert({address_t::fromString(json["addr"].GetString()), json["text"].GetString()});
         } else
         if (json["id"] == "marks")
         {
             CJson(json["marks"]).ForEach([&](const CSubstring& v)
             {
-                options.marks.insert(address_t::fromString(CJson(v).GetString()));
+                options->marks.insert(address_t::fromString(CJson(v).GetString()));
             });
         } else
         if (json["id"] == "overlay")
         {
-            options.overlayBase = address_t::fromString(json["addr"].GetString());
+            options->overlayBase = address_t::fromString(json["addr"].GetString());
             CJson(json["bytes"]).ForEach([&](const CSubstring& v)
             {
                 int b = CJson(v).GetNumber();
-                options.overlayBytes.push_back(b);
+                options->overlayBytes.push_back(b);
             });
         }
         else if (json["id"] == "hint" && json["label"])
@@ -338,10 +338,10 @@ int main(int argc, char **argv) {
 
             if (hint.label == "*")
             {
-                options.memHintDefault = hint;
+                options->memHintDefault = hint;
             } else
             {
-                auto& vect = options.memHints[hint.label];
+                auto& vect = options->memHints[hint.label];
                 vect.push_back(hint);
                 
                 hint.string = true;
@@ -366,63 +366,67 @@ int main(int argc, char **argv) {
     //sub_3c4b
 
     shared<Loader> loader;
-    if (strcmp(options.loader, "LoaderMz") == 0)
+    if (strcmp(options->loader, "LoaderMz") == 0)
         loader.reset(new LoaderMz);
-    else if (strcmp(options.loader, "LoaderSnapshot") == 0)
+    else if (strcmp(options->loader, "LoaderSnapshot") == 0)
         loader.reset(new LoaderSnapshot);
-    else if (strcmp(options.loader, "LoaderLe") == 0)
+    else if (strcmp(options->loader, "LoaderLe") == 0)
         loader.reset(new LoaderLe);
+    else if (strcmp(options->loader, "LoaderPe") == 0)
+        loader.reset(new LoaderPe);
     else
         assert(0);
         
-    if (options.loadAddressShift != 0)
+    if (options->loadAddressShift != 0)
     {
-        options.loadAddress += options.loadAddressShift;
+        options->loadAddress += options->loadAddressShift;
         
         std::map<address_t, std::string> injectShift;
-        for (auto [addr, inject] : options.inject)
-            injectShift.insert({address_t{addr.segment, addr.offset + options.loadAddressShift}, inject});
-        options.inject = injectShift;
+        for (auto [addr, inject] : options->inject)
+            injectShift.insert({address_t{addr.segment, addr.offset + options->loadAddressShift}, inject});
+        options->inject = injectShift;
         
         std::set<address_t> marksShift;
-        for (auto addr : options.marks)
-            marksShift.insert({addr.segment, addr.offset + options.loadAddressShift});
-        options.marks = marksShift;
+        for (auto addr : options->marks)
+            marksShift.insert({addr.segment, addr.offset + options->loadAddressShift});
+        options->marks = marksShift;
 
-        assert(options.procList.size() == 0);
-        assert(options.isolateLabels.size() == 0);
-        assert(options.terminators.size() == 0);
-        assert(options.procModifiers.size() == 0);
-        assert(options.procModifiersStack.size() == 0);
-        for (auto jt : options.jumpTables)
+        assert(options->procList.size() == 0);
+        assert(options->isolateLabels.size() == 0);
+        assert(options->terminators.size() == 0);
+        assert(options->procModifiers.size() == 0);
+        assert(options->procModifiersStack.size() == 0);
+        for (auto jt : options->jumpTables)
         {
             if (jt->table.isValid())
-                jt->table.offset += options.loadAddressShift;
+                jt->table.offset += options->loadAddressShift;
             if (jt->instruction.isValid())
-                jt->instruction.offset += options.loadAddressShift;
+                jt->instruction.offset += options->loadAddressShift;
             if (jt->baseptr)
             {
                 assert(jt->type == jumpTable_t::switch_e::Call32 || jt->type == jumpTable_t::switch_e::Jump32);
                 uint32_t* ptr = (uint32_t*)jt->baseptr;
                 for (int e : jt->elements)
-                    ptr[e] += options.loadAddressShift;
+                    ptr[e] += options->loadAddressShift;
             }
         }
-        assert(options.indirectCalls.size() == 0);
-        assert(options.indirectJumps.size() == 0);
+        assert(options->indirectCalls.size() == 0);
+        assert(options->indirectJumps.size() == 0);
     }
 
-    if (!loader->LoadFile(options.exec, options.loadAddress))
+    if (!loader->LoadFile(options->exec, options->loadAddress))
     {
-        printf("Cannot open file %s\n", options.exec);
+        printf("Cannot open file %s\n", options->exec);
         return 1;
     }
-    if (options.overlayBase)
-        loader->Overlay(options.overlayBase, options.overlayBytes);
-    Capstone->Set(loader, options);
+    if (options->overlayBase)
+        loader->Overlay(options->overlayBase, options->overlayBytes);
+    
+    options->imports = loader->GetImports();
+    Capstone->Set(loader, *options);
     
     bool anyIndirectTable = false;
-    for (auto t : options.jumpTables)
+    for (auto t : options->jumpTables)
     {
         if (t->fileoffset)
             t->baseptr = loader->GetBufferAt(t->fileoffset);
@@ -440,56 +444,56 @@ int main(int argc, char **argv) {
 
     std::vector<address_t> startEntries;
     
-    if (options.start)
+    if (options->start)
     {
-        options.procModifiers.insert({loader->GetEntry(), procRequest_t{(int)procRequest_t::entry | (int) procRequest_t::callNear}});
+        options->procModifiers.insert({loader->GetEntry(), procRequest_t{(int)procRequest_t::entry | (int) procRequest_t::callNear}});
         startEntries.push_back(loader->GetEntry());
     }
-    for (address_t p : options.procList)
+    for (address_t p : options->procList)
         startEntries.push_back(p);
-    for (address_t p : options.isolateLabels)
+    for (address_t p : options->isolateLabels)
     {
-        options.procModifiers.insert({p, procRequest_t::callIsolated});
+        options->procModifiers.insert({p, procRequest_t::callIsolated});
         startEntries.push_back(p);
     }
-    for (shared<jumpTable_t> j : options.jumpTables)
+    for (shared<jumpTable_t> j : options->jumpTables)
         if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords || j->type == jumpTable_t::CallDwords)
         for (int i=0; i<j->GetSize(); i++)
             if (j->IsValid(i))
                 startEntries.push_back(j->GetTarget(i));
 
-    for (indirectJump_t j : options.indirectCalls)
+    for (indirectJump_t j : options->indirectCalls)
     {
         startEntries.push_back(j.target);
     }
 
-    for (indirectJump_t j : options.indirectJumps)
+    for (indirectJump_t j : options->indirectJumps)
     {
-        options.procModifiers.insert({j.target, procRequest_t::callIsolated});
+        options->procModifiers.insert({j.target, procRequest_t::callIsolated});
         startEntries.push_back(j.target);
     }
 
     for (address_t p : startEntries)
     {
-        if (options.procModifiers.find(p) == options.procModifiers.end())
-            options.procModifiers.insert({p, options.arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
+        if (options->procModifiers.find(p) == options->procModifiers.end())
+            options->procModifiers.insert({p, options->arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
     }
     
-    printf("#include \"cico%s.h\"\n\n", options.arch == arch_t::arch16 ? "16" : "32");
+    printf("#include \"cico%s.h\"\n\n", options->arch == arch_t::arch16 ? "16" : "32");
     
-    if (options.relocations)
+    if (options->relocations)
         printf("%s\n", loader->GetMain().c_str());
 
     Analyser analyser(options);
-    if (options.recursive)
+    if (options->recursive)
     {
         analyser.RecursiveScan(startEntries);
     } else {
-        for (address_t p : options.procList)
+        for (address_t p : options->procList)
             analyser.Scan(p);
     }
 
-    if (options.declarations)
+    if (options->declarations)
     {
         for (address_t proc : analyser.AllMethods())
             printf("void sub_%x();\n", proc.linearOffset());
@@ -504,7 +508,7 @@ int main(int argc, char **argv) {
         return org;
     };
     
-    if (options.jit)
+    if (options->jit)
     {
         printf(R"(#include <stdio.h>
 
@@ -513,14 +517,14 @@ void indirectCall(int s, int o, int orgs, int orgo)
     switch (orgs*0x10000+orgo)
     {
 )");
-        for (address_t org : IndirectOrigins(options.indirectCalls))
+        for (address_t org : IndirectOrigins(options->indirectCalls))
         {
             printf(R"(        case 0x%x: 
             switch (s*0x10000+o)
             {
 )", org.segment*0x10000 + org.offset);
             
-            for (const indirectJump_t& j : options.indirectCalls)
+            for (const indirectJump_t& j : options->indirectCalls)
             {
                 if (j.origin == org)
                     printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
@@ -539,14 +543,14 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
     switch (orgs*0x10000+orgo)
     {
 )");
-        for (address_t org : IndirectOrigins(options.indirectJumps))
+        for (address_t org : IndirectOrigins(options->indirectJumps))
         {
             printf(R"(        case 0x%x: 
             switch (s*0x10000+o)
             {
 )", org.segment*0x10000 + org.offset);
             
-            for (const indirectJump_t& j : options.indirectJumps)
+            for (const indirectJump_t& j : options->indirectJumps)
             {
                 if (j.origin == org)
                     printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
@@ -566,7 +570,7 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
     if (anyIndirectTable)
     {
         printf("void indirectCall(int seg, int ofs)\n{\n");
-        for (auto table : options.jumpTables)
+        for (auto table : options->jumpTables)
             if (table->selector == "indirect")
             {
                 std::set<int> used;
@@ -592,7 +596,7 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
     }
     
     std::map<address_t, address_t> dependency;
-    for (const indirectJump_t& j : options.indirectJumps)
+    for (const indirectJump_t& j : options->indirectJumps)
         dependency.insert({j.target, j.parent});
 
     std::set<address_t> processNew;
@@ -626,22 +630,22 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
         for (address_t proc : process)
         {
             procRequest_t modifier = procRequest_t::none;
-            if (options.procModifiers.find(proc) != options.procModifiers.end())
-                modifier = options.procModifiers.find(proc)->second;
+            if (options->procModifiers.find(proc) != options->procModifiers.end())
+                modifier = options->procModifiers.find(proc)->second;
             int modifierStack = analyser.GuessStackBalanceForProcCached(proc);
 
             if (/*processFinal.empty() &&*/ (int)modifier & (int)procRequest_t::callIsolated)
             {
                 // find parent, reuse attributes
-                for (indirectJump_t j : options.indirectJumps)
+                for (indirectJump_t j : options->indirectJumps)
                     if (j.target == proc)
                     {
 //                        auto pParent = analyser.mIndirectToParent.find(j.origin);
 //                        assert(pParent != analyser.mIndirectToParent.end());
 //                        address_t parent = pParent->second;
                         address_t parent = j.parent;
-                        if (options.procModifiers.find(parent) != options.procModifiers.end())
-                            modifier = procRequest_t{(int)modifier | (int)options.procModifiers.find(parent)->second};
+                        if (options->procModifiers.find(parent) != options->procModifiers.end())
+                            modifier = procRequest_t{(int)modifier | (int)options->procModifiers.find(parent)->second};
                         modifierStack = analyser.GuessStackBalanceForProcCached(parent);
                         break;
                     }
@@ -650,21 +654,21 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
             analyser.AnalyseProc(proc, modifier, modifierStack);
             processed.insert(proc);
             
-            if (options.recursive)
+            if (options->recursive)
             {
                 for (std::pair<address_t, procRequest_t> req : analyser.GetRequests(proc))
                 {
                     procRequest_t oldModifier = procRequest_t::none;
-                    if (options.procModifiers.find(req.first) != options.procModifiers.end())
-                        oldModifier = options.procModifiers.find(req.first)->second;
+                    if (options->procModifiers.find(req.first) != options->procModifiers.end())
+                        oldModifier = options->procModifiers.find(req.first)->second;
                     
                     if (((int)oldModifier & (int)req.second) != (int)req.second) // should set new flag
                     {
                         req.second = (procRequest_t)((int)req.second | (int)oldModifier);
-                        if (options.procModifiers.find(req.first) != options.procModifiers.end())
-                            options.procModifiers.find(req.first)->second = req.second;
+                        if (options->procModifiers.find(req.first) != options->procModifiers.end())
+                            options->procModifiers.find(req.first)->second = req.second;
                         else
-                            options.procModifiers.insert(req);
+                            options->procModifiers.insert(req);
                         processNew.insert(req.first);
                         processed.erase(req.first);
                     }
@@ -689,13 +693,13 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
     for (address_t proc : analyser.AllMethods())
     {
-        Convert convert(analyser, options);
-        convert.SetOffsetMask(options.arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
+        Convert convert(analyser, *options);
+        convert.SetOffsetMask(options->arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
     }
     
-    if (options.relocations)
+    if (options->relocations)
         printf("%s\n", loader->GetFooter().c_str());
 
     std::vector<int> procMap;
@@ -713,10 +717,10 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
     printf("int GetProcAt(int seg, int ofs)\n");
     printf("{\n");
-    if (options.marks.size())
+    if (options->marks.size())
     {
         printf("    int marks[] = {\n");
-        for (address_t mark : options.marks)
+        for (address_t mark : options->marks)
             printf("0x%04x, 0x%04x, ", mark.segment, mark.offset);
         printf("    };\n");
         printf("    for (int i=0; i<sizeof(marks)/sizeof(marks[0]); i+=2)\n");

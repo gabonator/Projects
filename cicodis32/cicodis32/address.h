@@ -5,6 +5,14 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 
+#pragma once
+
+#include <string>
+#include <regex>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+
 struct address_t {
     static bool mode32;
 
@@ -81,4 +89,4 @@ struct address_t {
 //};
 //
 
-bool address_t::mode32{false};
+inline bool address_t::mode32{false};

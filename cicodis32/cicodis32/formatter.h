@@ -238,10 +238,10 @@ public:
             return BuildStringOp(instr, info, func);
         
         const cs_x86& x86 = instr->mDetail;
-        assert(fmt_.length() < 128);
+        assert(fmt_.length() < 256);
         
         const bool getset = true;
-        char fmt[256];
+        char fmt[512];
         char tok[32];
         
         strcpy(fmt, fmt_.c_str());

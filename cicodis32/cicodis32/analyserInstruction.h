@@ -8,7 +8,7 @@
 // InstructionAnalyser - fill in instrInfo based on x86 instruction
 class InstructionAnalyser : public FunctionAnalyser {
 public:
-    InstructionAnalyser(Options& options) : FunctionAnalyser(options)
+    InstructionAnalyser(shared<Options> options) : FunctionAnalyser(options)
     {
     }
 

@@ -26,6 +26,7 @@ struct funcInfo_t {
     arch_t arch;
     bool jit;
     bool simpleStack{false};
+    shared<Options> options;
     
     std::string makeProcIdentifier() const
     {
@@ -224,7 +225,7 @@ bool instrInfo_t::AdvanceAndMerge(shared<instrInfo_t> o)
 class ProgramAnalyser {
 public:
     typedef std::map<address_t, shared<instrInfo_t>> code_t;
-    Options& mOptions;
+    shared<Options> mOptions;
     struct info_t {
         //address_t proc;
         code_t code;
@@ -235,19 +236,21 @@ public:
 //    std::map<address_t, address_t> mIndirectToParent; // TODO
     
 public:
-    ProgramAnalyser(Options& options) : mOptions(options)
+    ProgramAnalyser(shared<Options> options) : mOptions(options)
     {
     }
     
     void Scan(address_t method)
     {
-        std::shared_ptr<CTracer> tracer(new CTracer(mOptions));
+        std::shared_ptr<CTracer> tracer(new CTracer(*mOptions));
         tracer->Trace(method);
         std::shared_ptr<info_t> newInfo = std::make_shared<info_t>();
         newInfo->func.proc = method;
-        newInfo->func.arch = mOptions.arch;
-        newInfo->func.simpleStack = mOptions.simpleStack;
-        newInfo->func.jit = mOptions.jit;
+        // TODO: remove
+        newInfo->func.arch = mOptions->arch;
+        newInfo->func.simpleStack = mOptions->simpleStack;
+        newInfo->func.jit = mOptions->jit;
+        newInfo->func.options = mOptions;
         
         for (const auto& [addr, instr] : tracer->GetCode())
         {
@@ -277,11 +280,11 @@ public:
                 
                 for (const auto& [newCallTarget, newCallConv] : GetCalls(methodToProcess))
                 {
-                    if (mOptions.procModifiers.find(newCallTarget) == mOptions.procModifiers.end())
+                    if (mOptions->procModifiers.find(newCallTarget) == mOptions->procModifiers.end())
                     {
-                        mOptions.procModifiers.insert(std::pair<address_t, procRequest_t>{newCallTarget, newCallConv});
+                        mOptions->procModifiers.insert(std::pair<address_t, procRequest_t>{newCallTarget, newCallConv});
                     } else {
-                        procRequest_t& req = mOptions.procModifiers.find(newCallTarget)->second;
+                        procRequest_t& req = mOptions->procModifiers.find(newCallTarget)->second;
                         req = (procRequest_t)((int)req | (int)newCallConv);
                     }
                     
@@ -314,7 +317,7 @@ public:
         int stackChange = instr->mTemplate.stack;
         
         // push/pop shifts esp by 32
-        if (mOptions.arch == arch_t::arch32 && abs(stackChange) == 2)
+        if (mOptions->arch == arch_t::arch32 && abs(stackChange) == 2)
             stackChange *= 2;
         
         if (instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF)
@@ -333,15 +336,19 @@ public:
         {
             switch (instr->mId)
             {
+                case X86_INS_LEAVE:
                 case X86_INS_MOV:
                     // TODO: not very smart
                     stackChange = 111;
-                    if (instr->mDetail.operands[1].type == X86_OP_REG && (instr->mDetail.operands[1].reg == X86_REG_BP || instr->mDetail.operands[1].reg == X86_REG_EBP) )
+                    if (instr->mId == X86_INS_LEAVE ||
+                        (instr->mDetail.operands[1].type == X86_OP_REG && (instr->mDetail.operands[1].reg == X86_REG_BP || instr->mDetail.operands[1].reg == X86_REG_EBP)) )
                     {
                         bool saved = false;
                         int sum = 0;
                         for (const auto& [addr, i] : code)
                         {
+                            if (i->instr->mId == X86_INS_LEAVE)
+                                break;
                             if (i->instr->mId == X86_INS_MOV && (strcmp(i->instr->mOperands, "sp, bp") == 0 || strcmp(i->instr->mOperands, "esp, ebp") == 0))
                             {
 //                                if (addr != instr->mAddress)
@@ -364,7 +371,22 @@ public:
                             }
                         }
                         if (saved)
-                            info->stackAbs = sum;
+                        {
+                            // For LEAVE: restore esp to ebp (where it was saved), then pop ebp
+                            // sum = stack position where ebp was saved
+                            // After LEAVE, stack should be at: sum + popSize
+                            if (instr->mId == X86_INS_LEAVE)
+                            {
+                                int popSize = (mOptions->arch == arch_t::arch32) ? 4 : 2;
+                                // Set absolute stack position after LEAVE completes
+                                info->stackAbs = sum + popSize;
+                            }
+                            else
+                            {
+                                // For mov esp, ebp (without the pop)
+                                info->stackAbs = sum;
+                            }
+                        }
                     }
                     break;
                 case X86_INS_INC:
@@ -395,6 +417,22 @@ public:
                     assert(0);
             }
         }
+        if (instr->mId == X86_INS_CALL && !instr->IsDirectCall())
+        {
+            if (instr->mDetail.operands[0].size == 4 && instr->mDetail.operands[0].type == X86_OP_MEM && instr->mDetail.operands[0].mem.index == X86_REG_INVALID && instr->mDetail.operands[0].mem.disp != 0)
+            {
+                assert(instr->mDetail.operands[0].type == X86_OP_MEM);
+                assert(instr->mDetail.operands[0].mem.segment == X86_REG_INVALID);
+                assert(instr->mDetail.operands[0].mem.index == X86_REG_INVALID);
+                assert(instr->mDetail.operands[0].mem.scale == 1);
+                assert(instr->mDetail.operands[0].mem.disp != 0);
+                auto it = mOptions->imports.find({0, (int)instr->mDetail.operands[0].mem.disp});
+                if (it != mOptions->imports.end())
+                {
+                    stackChange -= it->second->stackShift;
+                }
+            }
+        }
         if ((instr->mId == X86_INS_CALL || instr->mId == X86_INS_LCALL) && instr->IsDirectCall())
         {
             int change = GuessStackBalanceForProcCached(instr->CallTarget());
@@ -420,12 +458,12 @@ public:
     
     int GuessStackBalanceForProcCached(address_t proc)
     {
-        if (mOptions.procModifiersStack.find(proc) != mOptions.procModifiersStack.end())
+        if (mOptions->procModifiersStack.find(proc) != mOptions->procModifiersStack.end())
         {
-            return mOptions.procModifiersStack.find(proc)->second;
+            return mOptions->procModifiersStack.find(proc)->second;
         }
         int b = GuessStackBalanceForProc(proc);
-        mOptions.procModifiersStack.insert({proc, b});
+        mOptions->procModifiersStack.insert({proc, b});
         return b;
     }
     
@@ -523,7 +561,7 @@ public:
             // stub
             if (code.begin()->second->instr->mDetail.operands[0].type == X86_OP_IMM)
             {
-                if (mOptions.arch == arch_t::arch16)
+                if (mOptions->arch == arch_t::arch16)
                     calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callNear});
                 else
                     calls.push_back({code.begin()->second->instr->JumpTarget(), procRequest_t::callLong});
@@ -564,7 +602,7 @@ public:
             std::vector<shared<jumpTable_t>> jts;
             if (pinstr->IsIndirectCall())
             {
-                jts = mOptions.GetJumpTables(pinstr->mAddress);
+                jts = mOptions->GetJumpTables(pinstr->mAddress);
                 for (shared<jumpTable_t> jt : jts)
                 {
                     for (int i=0; i<jt->GetSize(); i++)

@@ -170,18 +170,34 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_PUSHFD] = {.convert = [](convert_args){ return "push32(flagAsReg32());"; } },
     [X86_INS_POPFD] = {.convert = [](convert_args){ return "flagsFromReg32(pop32());"; } },
-    [X86_INS_CALL] = {.convert = [](convert_args){
+    [X86_INS_CALL] = {.convert = [](convert_args) -> std::string {
         assert(instr->mDetail.op_count == 1);
         if (instr->mDetail.operands[0].type == X86_OP_IMM)
             return "$method();";
         else
         {
+            //virtual std::shared_ptr<import_t> CheckImported(address_t addr) override
             if (instr->mDetail.operands[0].size == 2)
 //                return "callIndirect(cs, $rd0);";
                 return func.jit ? "indirectCall(cs, $rd0, $seg, $ofs); // $addr;" : "indirectCall(cs, $rd0); // $addr;";
             if (instr->mDetail.operands[0].size == 4)
-//                return "callIndirect(cs, $rd0);";
+            {
+                if (instr->mDetail.operands[0].type == X86_OP_MEM && instr->mDetail.operands[0].mem.index == X86_REG_INVALID && instr->mDetail.operands[0].mem.disp != 0)
+                {
+                    assert(instr->mDetail.operands[0].type == X86_OP_MEM);
+                    assert(instr->mDetail.operands[0].mem.segment == X86_REG_INVALID);
+                    assert(instr->mDetail.operands[0].mem.index == X86_REG_INVALID);
+                    assert(instr->mDetail.operands[0].mem.scale == 1);
+                    assert(instr->mDetail.operands[0].mem.disp != 0);
+                    auto it = func.options->imports.find({0, (int)instr->mDetail.operands[0].mem.disp});
+                    if (it != func.options->imports.end())
+                    {
+                        return it->second->call; //it->second->library + "::" + it->second->symbol + "();";
+                    }
+                }
+                //                return "callIndirect(cs, $rd0);";
                 return func.jit ? "indirectCall(cs, $rd0, $seg, $ofs); // CALL DWORD $addr;" : "indirectCall(cs, $rd0); // $addr;";
+            }
             assert(0);
             return "stop();";
         }
@@ -355,6 +371,8 @@ convert_t convert[X86_INS_ENDING] = {
             return "ax = ((char)$rd0 * (short)ax) & 0xffff;";
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 2)
             return "imul16($rd0);";
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 4)
+            return "imul32($rd0);";
         if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].size == 4 && instr->mDetail.operands[1].size == 4)
             return "$wr0 = (int32_t)$rd0 * (int32_t)$rd1;";
 

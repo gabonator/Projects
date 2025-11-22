@@ -5,10 +5,23 @@
 //  Created by Gabriel Valky on 01/07/2025.
 //
 
+#pragma once
+
+#include <memory>
+#include <string>
+#include <vector>
+#include <cstdarg>
+#include <cstdio>
+#include <cassert>
+#include <set>
+#include <map>
+#include <regex>
+#include "address.h"
+
 template<typename T> using shared = std::shared_ptr<T>;
 
 namespace utils {
-    std::string format(const char* fmt, ...)
+    inline std::string format(const char* fmt, ...)
     {
         char buf[4096];
         va_list args;
@@ -17,7 +30,7 @@ namespace utils {
         va_end(args);
         return std::string(buf);
     }
-    std::string join(std::vector<std::string> tokens, std::string spacer)
+    inline std::string join(std::vector<std::string> tokens, std::string spacer)
     {
         std::string aux;
         for (std::string t : tokens)
@@ -29,7 +42,7 @@ namespace utils {
         return aux;
     }
 
-    std::vector<std::string> split(const std::string& input, const std::string& delimiter) {
+    inline std::vector<std::string> split(const std::string& input, const std::string& delimiter) {
         std::vector<std::string> result;
         
         if (delimiter.empty()) {
@@ -48,7 +61,7 @@ namespace utils {
         result.push_back(input.substr(start)); // Add the last segment
         return result;
     }
-    std::string trim(const std::string& str) {
+    inline std::string trim(const std::string& str) {
         size_t first = str.find_first_not_of(' ');
         if (first == std::string::npos)
             return ""; // all spaces
@@ -57,7 +70,7 @@ namespace utils {
         return str.substr(first, last - first + 1);
     }
 
-    std::string replace(std::string str, const std::string& find, const std::string& replace) {
+    inline std::string replace(std::string str, const std::string& find, const std::string& replace) {
         if (find.empty()) return str; // avoid infinite loop
 
         size_t pos = 0;
@@ -67,11 +80,22 @@ namespace utils {
         }
         return str;
     }
-};
+}
 
 using namespace utils;
 
 class Loader {
+public:
+    struct import_t {
+        address_t addr;
+        std::string library;
+        std::string symbol;
+//        std::string protoRet;
+//        std::vector<std::string> protoArgs;
+        std::string call;
+        int stackShift;
+    };
+    
 public:
     static std::vector<uint8_t> GetFileContents(std::string fullPath);
     virtual bool LoadFile(const char* executable, int loadAddress) = 0;
@@ -82,6 +106,12 @@ public:
     virtual std::string GetMain() = 0;
     virtual std::string GetFooter() = 0;
     virtual void Overlay(address_t addr, const std::vector<uint8_t>& bytes) = 0;
+//    virtual std::vector<Loader::import_t> GetImports() { return {}; }
+//    virtual std::shared_ptr<import_t> CheckImported(address_t addr) { return {}; }
+    virtual const std::map<address_t, std::shared_ptr<import_t>>& GetImports() { 
+        static std::map<address_t, std::shared_ptr<import_t>> empty;
+        return empty; 
+    }
 };
 
 struct jumpTable_t {
@@ -354,6 +384,7 @@ public:
     std::vector<indirectJump_t> indirectCalls;
     std::vector<indirectJump_t> indirectJumps;
     std::map<std::string, std::vector<hint_t>> memHints;
+    std::map<address_t, std::shared_ptr<Loader::import_t>> imports;
     hint_t memHintDefault;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
     {
