@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raytracing Engine with WebGL</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        #canvas {
+            border: 2px solid #444;
+            display: block;
+            margin: 20px auto;
+            background: #000;
+        }
+        .controls {
+            max-width: 1000px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .info {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div class="info">
+            <h2>Raytracing Engine with WebGL Point Cloud Rendering</h2>
+            <p>Camera at (0,0,0) looking at (0,0,100) with 45° FOV</p>
+            <p style="font-size: 12px; color: #aaa;">
+                <strong>Mouse Controls:</strong> Left-drag to rotate • Right-drag or Shift+Drag to pan • Scroll to zoom
+            </p>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <label for="noiseLevel" style="margin-right: 10px;">Ray Noise (Jitter):</label>
+            <input type="range" id="noiseLevel" min="0" max="5" step="0.1" value="3" style="width: 200px; vertical-align: middle;">
+            <span id="noiseValue" style="margin-left: 10px; font-family: monospace;">3.0</span>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <label for="renderSpheres" style="margin-right: 10px;">
+                <input type="checkbox" id="renderSpheres" checked> Render Sphere Meshes
+            </label>
+        </div>
+        <div class="status" id="status">Ready. Click "Start Raytracing" to render.</div>
+    </div>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+
+    <script>
+        // ============= Math Utilities =============
+        class Vec3 {
+            constructor(x = 0, y = 0, z = 0) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+            add(v) {
+                return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z);
+            }
+
+            subtract(v) {
+                return new Vec3(this.x - v.x, this.y - v.y, this.z - v.z);
+            }
+
+            multiply(s) {
+                return new Vec3(this.x * s, this.y * s, this.z * s);
+            }
+
+            dot(v) {
+                return this.x * v.x + this.y * v.y + this.z * v.z;
+            }
+
+            cross(v) {
+                return new Vec3(
+                    this.y * v.z - this.z * v.y,
+                    this.z * v.x - this.x * v.z,
+                    this.x * v.y - this.y * v.x
+                );
+            }
+
+            length() {
+                return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+            }
+
+            normalize() {
+                const len = this.length();
+                return len > 0 ? this.multiply(1 / len) : new Vec3();
+            }
+
+            clone() {
+                return new Vec3(this.x, this.y, this.z);
+            }
+        }
+
+        class Ray {
+            constructor(origin, direction) {
+                this.origin = origin;
+                this.direction = direction.normalize();
+            }
+
+            pointAt(t) {
+                return this.origin.add(this.direction.multiply(t));
+            }
+        }
+
+        // ============= Base Geometry Class =============
+        class Geometry {
+            constructor() {
+                this.position = new Vec3();
+                this.rotation = new Vec3();
+                this.scale = new Vec3(1, 1, 1);
+            }
+
+            translate(x, y, z) {
+                this.position = this.position.add(new Vec3(x, y, z));
+                return this;
+            }
+
+            rotate(x, y, z) {
+                this.rotation.x += x;
+                this.rotation.y += y;
+                this.rotation.z += z;
+                return this;
+            }
+
+            scaleBy(x, y, z) {
+                this.scale.x *= x;
+                this.scale.y *= y;
+                this.scale.z *= z;
+                return this;
+            }
+
+            // Transform a point from world space to local space
+            worldToLocal(point) {
+                let p = point.subtract(this.position);
+                
+                // Apply inverse rotation
+                p = this.rotatePoint(p, -this.rotation.x, -this.rotation.y, -this.rotation.z);
+                
+                // Apply inverse scale
+                p = new Vec3(p.x / this.scale.x, p.y / this.scale.y, p.z / this.scale.z);
+                
+                return p;
+            }
+
+            // Transform a direction from world space to local space
+            directionToLocal(dir) {
+                return this.rotatePoint(dir, -this.rotation.x, -this.rotation.y, -this.rotation.z);
+            }
+
+            rotatePoint(p, rx, ry, rz) {
+                // Rotate around X axis
+                if (rx !== 0) {
+                    const cos = Math.cos(rx);
+                    const sin = Math.sin(rx);
+                    const y = p.y * cos - p.z * sin;
+                    const z = p.y * sin + p.z * cos;
+                    p = new Vec3(p.x, y, z);
+                }
+                
+                // Rotate around Y axis
+                if (ry !== 0) {
+                    const cos = Math.cos(ry);
+                    const sin = Math.sin(ry);
+                    const x = p.x * cos + p.z * sin;
+                    const z = -p.x * sin + p.z * cos;
+                    p = new Vec3(x, p.y, z);
+                }
+                
+                // Rotate around Z axis
+                if (rz !== 0) {
+                    const cos = Math.cos(rz);
+                    const sin = Math.sin(rz);
+                    const x = p.x * cos - p.y * sin;
+                    const y = p.x * sin + p.y * cos;
+                    p = new Vec3(x, y, p.z);
+                }
+                
+                return p;
+            }
+
+            intersect(ray) {
+                // To be implemented by subclasses
+                return null;
+            }
+        }
+
+        // ============= Sphere Class =============
+        class Sphere extends Geometry {
+            constructor(center, radius) {
+                super();
+                this.position = center;
+                this.radius = radius;
+            }
+
+            intersect(ray) {
+                // Transform ray to local space
+                const localOrigin = this.worldToLocal(ray.origin);
+                const localDir = this.directionToLocal(ray.direction).normalize();
+                const localRay = new Ray(localOrigin, localDir);
+
+                const oc = localRay.origin;
+                const a = localRay.direction.dot(localRay.direction);
+                const b = 2.0 * oc.dot(localRay.direction);
+                const c = oc.dot(oc) - this.radius * this.radius;
+                const discriminant = b * b - 4 * a * c;
+
+                if (discriminant < 0) return null;
+
+                const t = (-b - Math.sqrt(discriminant)) / (2.0 * a);
+                if (t < 0.001) return null;
+
+                // Transform back to world space
+                const localPoint = localRay.pointAt(t);
+                const worldPoint = this.localToWorld(localPoint);
+                
+                // Calculate normal (sphere normal is point - center, normalized)
+                const localNormal = localPoint.normalize();
+                const worldNormal = this.normalToWorld(localNormal);
+                
+                return { point: worldPoint, normal: worldNormal };
+            }
+
+            localToWorld(point) {
+                // Apply scale
+                let p = new Vec3(
+                    point.x * this.scale.x,
+                    point.y * this.scale.y,
+                    point.z * this.scale.z
+                );
+                
+                // Apply rotation
+                p = this.rotatePoint(p, this.rotation.x, this.rotation.y, this.rotation.z);
+                
+                // Apply translation
+                return p.add(this.position);
+            }
+
+            normalToWorld(normal) {
+                // Transform normal (no translation, inverse scale)
+                let n = new Vec3(
+                    normal.x / this.scale.x,
+                    normal.y / this.scale.y,
+                    normal.z / this.scale.z
+                );
+                
+                // Apply rotation
+                n = this.rotatePoint(n, this.rotation.x, this.rotation.y, this.rotation.z);
+                
+                return n.normalize();
+            }
+        }
+
+        // ============= Box Class =============
+        class Box extends Geometry {
+            constructor(center, width, height, depth) {
+                super();
+                this.position = center;
+                this.width = width;
+                this.height = height;
+                this.depth = depth;
+            }
+
+            intersect(ray) {
+                // Transform ray to local space
+                const localOrigin = this.worldToLocal(ray.origin);
+                const localDir = this.directionToLocal(ray.direction).normalize();
+
+                const halfW = this.width / 2;
+                const halfH = this.height / 2;
+                const halfD = this.depth / 2;
+
+                const tmin = new Vec3(
+                    (-halfW - localOrigin.x) / localDir.x,
+                    (-halfH - localOrigin.y) / localDir.y,
+                    (-halfD - localOrigin.z) / localDir.z
+                );
+
+                const tmax = new Vec3(
+                    (halfW - localOrigin.x) / localDir.x,
+                    (halfH - localOrigin.y) / localDir.y,
+                    (halfD - localOrigin.z) / localDir.z
+                );
+
+                const t1 = new Vec3(
+                    Math.min(tmin.x, tmax.x),
+                    Math.min(tmin.y, tmax.y),
+                    Math.min(tmin.z, tmax.z)
+                );
+
+                const t2 = new Vec3(
+                    Math.max(tmin.x, tmax.x),
+                    Math.max(tmin.y, tmax.y),
+                    Math.max(tmin.z, tmax.z)
+                );
+
+                const tNear = Math.max(t1.x, Math.max(t1.y, t1.z));
+                const tFar = Math.min(t2.x, Math.min(t2.y, t2.z));
+
+                if (tNear > tFar || tFar < 0.001) return null;
+
+                const t = tNear > 0.001 ? tNear : tFar;
+                const localPoint = new Ray(localOrigin, localDir).pointAt(t);
+                
+                // Determine which face was hit by checking which coordinate is closest to the box boundary
+                let localNormal = new Vec3(0, 0, 0);
+                const epsilon = 0.0001;
+                
+                if (Math.abs(localPoint.x - halfW) < epsilon) localNormal = new Vec3(1, 0, 0);
+                else if (Math.abs(localPoint.x + halfW) < epsilon) localNormal = new Vec3(-1, 0, 0);
+                else if (Math.abs(localPoint.y - halfH) < epsilon) localNormal = new Vec3(0, 1, 0);
+                else if (Math.abs(localPoint.y + halfH) < epsilon) localNormal = new Vec3(0, -1, 0);
+                else if (Math.abs(localPoint.z - halfD) < epsilon) localNormal = new Vec3(0, 0, 1);
+                else if (Math.abs(localPoint.z + halfD) < epsilon) localNormal = new Vec3(0, 0, -1);
+                
+                const worldPoint = this.localToWorld(localPoint);
+                const worldNormal = this.normalToWorld(localNormal);
+                
+                return { point: worldPoint, normal: worldNormal };
+            }
+
+            localToWorld(point) {
+                // Apply scale
+                let p = new Vec3(
+                    point.x * this.scale.x,
+                    point.y * this.scale.y,
+                    point.z * this.scale.z
+                );
+                
+                // Apply rotation
+                p = this.rotatePoint(p, this.rotation.x, this.rotation.y, this.rotation.z);
+                
+                // Apply translation
+                return p.add(this.position);
+            }
+
+            normalToWorld(normal) {
+                // Transform normal (no translation, inverse scale)
+                let n = new Vec3(
+                    normal.x / this.scale.x,
+                    normal.y / this.scale.y,
+                    normal.z / this.scale.z
+                );
+                
+                // Apply rotation
+                n = this.rotatePoint(n, this.rotation.x, this.rotation.y, this.rotation.z);
+                
+                return n.normalize();
+            }
+        }
+
+        // ============= Quad Class =============
+        class Quad extends Geometry {
+            constructor(p1, p2, p3, p4) {
+                super();
+                this.points = [p1, p2, p3, p4];
+                this.updateCenter();
+            }
+
+            updateCenter() {
+                const sum = this.points.reduce((acc, p) => acc.add(p), new Vec3());
+                this.position = sum.multiply(0.25);
+            }
+
+            intersect(ray) {
+                // Intersect with two triangles: (p1, p2, p3) and (p1, p3, p4)
+                let hit = this.intersectTriangle(ray, this.points[0], this.points[1], this.points[2]);
+                if (hit) return hit;
+                
+                return this.intersectTriangle(ray, this.points[0], this.points[2], this.points[3]);
+            }
+
+            intersectTriangle(ray, v0, v1, v2) {
+                const edge1 = v1.subtract(v0);
+                const edge2 = v2.subtract(v0);
+                const normal = edge1.cross(edge2).normalize();
+                const h = ray.direction.cross(edge2);
+                const a = edge1.dot(h);
+
+                if (a > -0.0001 && a < 0.0001) return null;
+
+                const f = 1.0 / a;
+                const s = ray.origin.subtract(v0);
+                const u = f * s.dot(h);
+
+                if (u < 0.0 || u > 1.0) return null;
+
+                const q = s.cross(edge1);
+                const v = f * ray.direction.dot(q);
+
+                if (v < 0.0 || u + v > 1.0) return null;
+
+                const t = f * edge2.dot(q);
+
+                if (t > 0.001) {
+                    return { point: ray.pointAt(t), normal: normal };
+                }
+
+                return null;
+            }
+        }
+
+        // ============= Scene and Camera =============
+        class Scene {
+            constructor() {
+                this.objects = [];
+            }
+
+            add(object) {
+                this.objects.push(object);
+            }
+
+            intersect(ray) {
+                let closest = null;
+                let minDist = Infinity;
+
+                for (const obj of this.objects) {
+                    const hit = obj.intersect(ray);
+                    if (hit) {
+                        const dist = hit.point.subtract(ray.origin).length();
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closest = hit;
+                        }
+                    }
+                }
+
+                return closest;
+            }
+        }
+
+        class Camera {
+            constructor(position, lookAt, fov) {
+                this.position = position;
+                this.lookAt = lookAt;
+                this.fov = fov * Math.PI / 180;
+                this.up = new Vec3(0, 1, 0);
+                this.updateVectors();
+            }
+
+            updateVectors() {
+                this.forward = this.lookAt.subtract(this.position).normalize();
+                this.right = this.forward.cross(this.up).normalize();
+                this.up = this.right.cross(this.forward).normalize();
+            }
+
+            getRay(u, v, width, height, noise = 0) {
+                const aspectRatio = width / height;
+                const viewportHeight = 2.0 * Math.tan(this.fov / 2);
+                const viewportWidth = viewportHeight * aspectRatio;
+
+                // Add random jitter for anti-aliasing / noise effect
+                const jitterX = noise > 0 ? (Math.random() - 0.5) * noise : 0;
+                const jitterY = noise > 0 ? (Math.random() - 0.5) * noise : 0;
+
+                const x = ((u + jitterX) / width - 0.5) * viewportWidth;
+                const y = (0.5 - (v + jitterY) / height) * viewportHeight;
+
+                const direction = this.forward
+                    .add(this.right.multiply(x))
+                    .add(this.up.multiply(y))
+                    .normalize();
+
+                return new Ray(this.position, direction);
+            }
+        }
+
+        // ============= WebGL Renderer =============
+        class WebGLRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl');
+                
+                if (!this.gl) {
+                    alert('WebGL not supported');
+                    return;
+                }
+
+                this.initShaders();
+                this.pointSize = 1.0;
+                
+                // Camera controls
+                this.cameraDistance = 200;
+                this.cameraRotationX = 0;
+                this.cameraRotationY = 0;
+                this.cameraTarget = new Vec3(0, 0, 100);
+                
+                // Mouse interaction
+                this.isDragging = false;
+                this.lastMouseX = 0;
+                this.lastMouseY = 0;
+                
+                this.setupMouseControls();
+            }
+            
+            setupMouseControls() {
+                const canvas = this.canvas;
+                
+                canvas.addEventListener('mousedown', (e) => {
+                    this.isDragging = true;
+                    this.lastMouseX = e.clientX;
+                    this.lastMouseY = e.clientY;
+                    this.isRightClick = (e.button === 2);
+                    canvas.style.cursor = 'grabbing';
+                    
+                    // Prevent context menu on right click
+                    if (e.button === 2) {
+                        e.preventDefault();
+                    }
+                });
+                
+                canvas.addEventListener('contextmenu', (e) => {
+                    e.preventDefault(); // Prevent context menu
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!this.isDragging) return;
+                    
+                    const deltaX = e.clientX - this.lastMouseX;
+                    const deltaY = e.clientY - this.lastMouseY;
+                    
+                    if (e.shiftKey || this.isRightClick) {
+                        // Translation mode (Shift+drag or right-click drag)
+                        const panSpeed = 0.2;
+                        
+                        // Calculate camera position
+                        const camX = this.cameraTarget.x + this.cameraDistance * Math.sin(this.cameraRotationY) * Math.cos(this.cameraRotationX);
+                        const camY = this.cameraTarget.y + this.cameraDistance * Math.sin(this.cameraRotationX);
+                        const camZ = this.cameraTarget.z - this.cameraDistance * Math.cos(this.cameraRotationY) * Math.cos(this.cameraRotationX);
+                        const cameraPos = new Vec3(camX, camY, camZ);
+                        
+                        // Calculate view direction and right/up vectors
+                        const forward = this.cameraTarget.subtract(cameraPos).normalize();
+                        const right = forward.cross(new Vec3(0, 1, 0)).normalize();
+                        const up = right.cross(forward).normalize();
+                        
+                        // Pan the target position based on camera orientation
+                        this.cameraTarget = this.cameraTarget
+                            .add(right.multiply(-deltaX * panSpeed))
+                            .add(up.multiply(deltaY * panSpeed));
+                    } else {
+                        // Rotation mode (left-click drag without Shift)
+                        this.cameraRotationY += deltaX * 0.005;
+                        this.cameraRotationX += deltaY * 0.005;
+                        
+                        // Clamp X rotation to prevent flipping
+                        this.cameraRotationX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.cameraRotationX));
+                    }
+                    
+                    this.lastMouseX = e.clientX;
+                    this.lastMouseY = e.clientY;
+                    
+                    this.render(this.currentPointCloud, this.currentSceneObjects);
+                });
+                
+                canvas.addEventListener('mouseup', () => {
+                    this.isDragging = false;
+                    this.isRightClick = false;
+                    canvas.style.cursor = 'grab';
+                });
+                
+                canvas.addEventListener('mouseleave', () => {
+                    this.isDragging = false;
+                    this.isRightClick = false;
+                    canvas.style.cursor = 'grab';
+                });
+                
+                canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    
+                    const zoomSpeed = 0.1;
+                    this.cameraDistance += e.deltaY * zoomSpeed;
+                    
+                    // Clamp distance
+                    this.cameraDistance = Math.max(50, Math.min(500, this.cameraDistance));
+                    
+                    this.render(this.currentPointCloud, this.currentSceneObjects);
+                });
+                
+                canvas.style.cursor = 'grab';
+            }
+
+            initShaders() {
+                const gl = this.gl;
+
+                const vertexShaderSource = `
+                    attribute vec3 position;
+                    attribute vec3 color;
+                    uniform mat4 projection;
+                    uniform mat4 view;
+                    uniform float pointSize;
+                    varying vec3 vColor;
+
+                    void main() {
+                        gl_Position = projection * view * vec4(position, 1.0);
+                        gl_PointSize = pointSize;
+                        vColor = color;
+                    }
+                `;
+
+                const fragmentShaderSource = `
+                    precision mediump float;
+                    varying vec3 vColor;
+
+                    void main() {
+                        gl_FragColor = vec4(vColor, 1.0);
+                    }
+                `;
+
+                const vertexShader = this.createShader(gl.VERTEX_SHADER, vertexShaderSource);
+                const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+                this.program = gl.createProgram();
+                gl.attachShader(this.program, vertexShader);
+                gl.attachShader(this.program, fragmentShader);
+                gl.linkProgram(this.program);
+
+                if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
+                    console.error('Shader program failed to link');
+                    return;
+                }
+
+                gl.useProgram(this.program);
+
+                this.positionLocation = gl.getAttribLocation(this.program, 'position');
+                this.colorLocation = gl.getAttribLocation(this.program, 'color');
+                this.projectionLocation = gl.getUniformLocation(this.program, 'projection');
+                this.viewLocation = gl.getUniformLocation(this.program, 'view');
+                this.pointSizeLocation = gl.getUniformLocation(this.program, 'pointSize');
+                
+                // Create sphere mesh shader program
+                this.initMeshShaders();
+            }
+            
+            initMeshShaders() {
+                const gl = this.gl;
+                
+                const meshVertexShaderSource = `
+                    attribute vec3 position;
+                    uniform mat4 projection;
+                    uniform mat4 view;
+                    uniform mat4 model;
+                    varying vec3 vNormal;
+
+                    void main() {
+                        gl_Position = projection * view * model * vec4(position, 1.0);
+                        vNormal = position; // For sphere, position is also the normal
+                    }
+                `;
+
+                const meshFragmentShaderSource = `
+                    precision mediump float;
+                    varying vec3 vNormal;
+
+                    void main() {
+                        vec3 normal = normalize(vNormal);
+                        vec3 lightDir = normalize(vec3(0.5, 1.0, -0.5));
+                        float diff = max(dot(normal, lightDir), 0.0);
+                        float ambient = 0.6;
+                        float lighting = ambient + diff * 0.4;
+                        vec3 color = vec3(1.0, 1.0, 1.0) * lighting;
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `;
+
+                const vertexShader = this.createShader(gl.VERTEX_SHADER, meshVertexShaderSource);
+                const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, meshFragmentShaderSource);
+
+                this.meshProgram = gl.createProgram();
+                gl.attachShader(this.meshProgram, vertexShader);
+                gl.attachShader(this.meshProgram, fragmentShader);
+                gl.linkProgram(this.meshProgram);
+
+                if (!gl.getProgramParameter(this.meshProgram, gl.LINK_STATUS)) {
+                    console.error('Mesh shader program failed to link');
+                    return;
+                }
+
+                this.meshPositionLocation = gl.getAttribLocation(this.meshProgram, 'position');
+                this.meshProjectionLocation = gl.getUniformLocation(this.meshProgram, 'projection');
+                this.meshViewLocation = gl.getUniformLocation(this.meshProgram, 'view');
+                this.meshModelLocation = gl.getUniformLocation(this.meshProgram, 'model');
+            }
+
+            createShader(type, source) {
+                const gl = this.gl;
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+
+                return shader;
+            }
+
+            createSphereGeometry(radius, segments = 32) {
+                const vertices = [];
+                const indices = [];
+                
+                for (let lat = 0; lat <= segments; lat++) {
+                    const theta = lat * Math.PI / segments;
+                    const sinTheta = Math.sin(theta);
+                    const cosTheta = Math.cos(theta);
+                    
+                    for (let lon = 0; lon <= segments; lon++) {
+                        const phi = lon * 2 * Math.PI / segments;
+                        const sinPhi = Math.sin(phi);
+                        const cosPhi = Math.cos(phi);
+                        
+                        const x = cosPhi * sinTheta;
+                        const y = cosTheta;
+                        const z = sinPhi * sinTheta;
+                        
+                        vertices.push(radius * x, radius * y, radius * z);
+                    }
+                }
+                
+                for (let lat = 0; lat < segments; lat++) {
+                    for (let lon = 0; lon < segments; lon++) {
+                        const first = (lat * (segments + 1)) + lon;
+                        const second = first + segments + 1;
+                        
+                        indices.push(first, second, first + 1);
+                        indices.push(second, second + 1, first + 1);
+                    }
+                }
+                
+                return { vertices: new Float32Array(vertices), indices: new Uint16Array(indices) };
+            }
+
+            createModelMatrix(position, rotation, scale) {
+                // Create transformation matrix
+                const mat = new Float32Array(16);
+                
+                // Start with identity
+                mat[0] = 1; mat[5] = 1; mat[10] = 1; mat[15] = 1;
+                
+                // Apply scale
+                mat[0] = scale.x;
+                mat[5] = scale.y;
+                mat[10] = scale.z;
+                
+                // Apply rotation (simplified - just Y rotation for now)
+                const c = Math.cos(rotation.y);
+                const s = Math.sin(rotation.y);
+                const temp = new Float32Array(mat);
+                
+                mat[0] = temp[0] * c + temp[8] * s;
+                mat[2] = temp[0] * -s + temp[8] * c;
+                mat[8] = temp[8] * c - temp[0] * s;
+                mat[10] = temp[8] * s + temp[10] * c;
+                
+                // Apply translation
+                mat[12] = position.x;
+                mat[13] = position.y;
+                mat[14] = position.z;
+                
+                return mat;
+            }
+
+            render(points, sceneObjects = []) {
+                const gl = this.gl;
+                
+                // Store current point cloud for re-rendering during interaction
+                this.currentPointCloud = points;
+                this.currentSceneObjects = sceneObjects;
+                
+                gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                gl.enable(gl.DEPTH_TEST);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+                // Set up projection and view matrices (used by both programs)
+                const projection = this.createPerspectiveMatrix(
+                    45 * Math.PI / 180,
+                    this.canvas.width / this.canvas.height,
+                    0.1,
+                    1000.0
+                );
+
+                const camX = this.cameraTarget.x + this.cameraDistance * Math.sin(this.cameraRotationY) * Math.cos(this.cameraRotationX);
+                const camY = this.cameraTarget.y + this.cameraDistance * Math.sin(this.cameraRotationX);
+                const camZ = this.cameraTarget.z - this.cameraDistance * Math.cos(this.cameraRotationY) * Math.cos(this.cameraRotationX);
+                const cameraPos = new Vec3(camX, camY, camZ);
+
+                const view = this.createViewMatrix(
+                    cameraPos,
+                    this.cameraTarget,
+                    new Vec3(0, 1, 0)
+                );
+
+                // Check if sphere rendering is enabled
+                const renderSpheresEnabled = document.getElementById('renderSpheres').checked;
+
+                // Render translucent spheres if enabled
+                if (renderSpheresEnabled && sceneObjects.length > 0 && this.meshProgram) {
+                    gl.useProgram(this.meshProgram);
+                    gl.uniformMatrix4fv(this.meshProjectionLocation, false, projection);
+                    gl.uniformMatrix4fv(this.meshViewLocation, false, view);
+                    
+                    // Render each sphere in the scene
+                    for (const obj of sceneObjects) {
+                        if (obj instanceof Sphere) {
+                            // Render sphere at 99% size to compare with raytraced points
+                            const sphereGeo = this.createSphereGeometry(obj.radius * 0.99, 32);
+                            
+                            const vertexBuffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+                            gl.bufferData(gl.ARRAY_BUFFER, sphereGeo.vertices, gl.STATIC_DRAW);
+                            
+                            const indexBuffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphereGeo.indices, gl.STATIC_DRAW);
+                            
+                            gl.enableVertexAttribArray(this.meshPositionLocation);
+                            gl.vertexAttribPointer(this.meshPositionLocation, 3, gl.FLOAT, false, 0, 0);
+                            
+                            // Create model matrix for this sphere
+                            const modelMatrix = this.createModelMatrix(obj.position, obj.rotation, obj.scale);
+                            gl.uniformMatrix4fv(this.meshModelLocation, false, modelMatrix);
+                            
+                            gl.drawElements(gl.TRIANGLES, sphereGeo.indices.length, gl.UNSIGNED_SHORT, 0);
+                        }
+                    }
+                }
+
+                // Then render point cloud on top
+                if (points.length > 0) {
+                    gl.useProgram(this.program);
+                    
+                    const stride = 6 * Float32Array.BYTES_PER_ELEMENT;
+                    const numVertices = points.length / 6;
+
+                    const buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+
+                    gl.enableVertexAttribArray(this.positionLocation);
+                    gl.vertexAttribPointer(this.positionLocation, 3, gl.FLOAT, false, stride, 0);
+
+                    gl.enableVertexAttribArray(this.colorLocation);
+                    gl.vertexAttribPointer(this.colorLocation, 3, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+                    gl.uniformMatrix4fv(this.projectionLocation, false, projection);
+                    gl.uniformMatrix4fv(this.viewLocation, false, view);
+                    gl.uniform1f(this.pointSizeLocation, this.pointSize);
+
+                    gl.drawArrays(gl.POINTS, 0, numVertices);
+                }
+            }
+
+            createPerspectiveMatrix(fov, aspect, near, far) {
+                const f = 1.0 / Math.tan(fov / 2);
+                const nf = 1 / (near - far);
+
+                return new Float32Array([
+                    f / aspect, 0, 0, 0,
+                    0, f, 0, 0,
+                    0, 0, (far + near) * nf, -1,
+                    0, 0, 2 * far * near * nf, 0
+                ]);
+            }
+
+            createViewMatrix(eye, center, up) {
+                const z = eye.subtract(center).normalize();
+                const x = up.cross(z).normalize();
+                const y = z.cross(x);
+
+                return new Float32Array([
+                    x.x, y.x, z.x, 0,
+                    x.y, y.y, z.y, 0,
+                    x.z, y.z, z.z, 0,
+                    -x.dot(eye), -y.dot(eye), -z.dot(eye), 1
+                ]);
+            }
+        }
+
+        // ============= Main Application =============
+        let scene, camera, renderer;
+        let pointCloud = [];
+
+        function initScene() {
+            scene = new Scene();
+
+            // Add spheres (50% smaller radius)
+            scene.add(new Sphere(new Vec3(30, 0, 120), 7.5));
+            scene.add(new Sphere(new Vec3(-30, 20, 100), 6));
+            scene.add(new Sphere(new Vec3(0, -25, 130), 5));
+            
+            // Add 3 more spheres
+            scene.add(new Sphere(new Vec3(-20, -15, 140), 6));
+            scene.add(new Sphere(new Vec3(40, -20, 110), 5.5));
+            scene.add(new Sphere(new Vec3(15, 30, 125), 7));
+
+            // Add boxes (with slight rotation on the previously unrotated box)
+            scene.add(new Box(new Vec3(0, 0, 150), 30, 30, 30).rotate(0.2, 0.15, 0.1));
+            scene.add(new Box(new Vec3(-40, -10, 110), 20, 40, 20).rotate(0, 0.5, 0));
+            scene.add(new Box(new Vec3(35, 25, 140), 15, 15, 15).rotate(0.3, 0.3, 0));
+
+            // Add a quad (floor)
+            scene.add(new Quad(
+                new Vec3(-100, -40, 50),
+                new Vec3(100, -40, 50),
+                new Vec3(100, -40, 200),
+                new Vec3(-100, -40, 200)
+            ));
+
+            // Add a quad (rear wall)
+            scene.add(new Quad(
+                new Vec3(-100, -80, 200),
+                new Vec3(100, -80, 200),
+                new Vec3(100, 80, 200),
+                new Vec3(-100, 80, 200)
+            ));
+
+            camera = new Camera(
+                new Vec3(0, 0, 0),
+                new Vec3(0, 0, 100),
+                45
+            );
+
+            const canvas = document.getElementById('canvas');
+            renderer = new WebGLRenderer(canvas);
+        }
+
+        function raytrace() {
+            const resolution = 1000;
+            pointCloud = [];
+            let hitCount = 0;
+
+            const startTime = performance.now();
+            const noiseLevel = parseFloat(document.getElementById('noiseLevel').value);
+
+            for (let y = 0; y < resolution; y++) {
+                for (let x = 0; x < resolution; x++) {
+                    const ray = camera.getRay(x, y, resolution, resolution, noiseLevel);
+                    const hit = scene.intersect(ray);
+
+                    if (hit) {
+                        // Position
+                        pointCloud.push(hit.point.x, hit.point.y, hit.point.z);
+                        
+                        // Color from normal (R=X, G=Y, B=0.5 as default)
+                        // Remap normal from [-1,1] to [0,1]
+                        const r = (hit.normal.x + 1.0) * 0.5;
+                        const g = (hit.normal.y + 1.0) * 0.5;
+                        const b = 0.5; // Keep blue constant
+                        
+                        pointCloud.push(r, g, b);
+                        hitCount++;
+                    }
+                }
+
+                // Update progress every 50 rows
+                if (y % 50 === 0) {
+                    const progress = ((y / resolution) * 100).toFixed(1);
+                    document.getElementById('status').textContent = 
+                        `Raytracing... ${progress}% complete (${hitCount} hits)`;
+                }
+            }
+
+            const endTime = performance.now();
+            const duration = ((endTime - startTime) / 1000).toFixed(2);
+
+            document.getElementById('status').textContent = 
+                `Raytracing complete! ${hitCount} intersections found in ${duration}s`;
+
+            renderer.render(pointCloud, scene.objects);
+        }
+
+        function startRaytracing() {
+            document.getElementById('status').textContent = 'Starting raytracing...';
+            
+            // Use setTimeout to allow UI to update
+            setTimeout(() => {
+                raytrace();
+            }, 100);
+        }
+
+        function rotateScene() {
+            scene.objects.forEach(obj => {
+                obj.rotate(0.1, 0.2, 0.05);
+            });
+            
+            document.getElementById('status').textContent = 'Scene rotated. Click "Start Raytracing" to re-render.';
+        }
+
+        function resetScene() {
+            initScene();
+            pointCloud = [];
+            renderer.render(pointCloud, []);
+            document.getElementById('status').textContent = 'Scene reset. Click "Start Raytracing" to render.';
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            initScene();
+            
+            // Setup noise slider
+            const noiseSlider = document.getElementById('noiseLevel');
+            const noiseValue = document.getElementById('noiseValue');
+            
+            noiseSlider.addEventListener('input', function() {
+                noiseValue.textContent = parseFloat(this.value).toFixed(1);
+            });
+            
+            // Setup sphere rendering toggle
+            const renderSpheresToggle = document.getElementById('renderSpheres');
+            renderSpheresToggle.addEventListener('change', function() {
+                if (renderer && renderer.currentPointCloud) {
+                    renderer.render(renderer.currentPointCloud, renderer.currentSceneObjects);
+                }
+            });
+            
+            // Auto-start raytracing
+            setTimeout(() => {
+                startRaytracing();
+            }, 100);
+        };
+    </script>
+</body>
+</html>
