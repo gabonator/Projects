@@ -61,7 +61,7 @@
         </div>
         <div style="text-align: center; margin-top: 15px;">
             <label for="noiseLevel" style="margin-right: 10px;">Ray Noise (Jitter):</label>
-            <input type="range" id="noiseLevel" min="0" max="5" step="0.1" value="3" style="width: 200px; vertical-align: middle;">
+            <input type="range" id="noiseLevel" min="0" max="5" step="0.1" value="2" style="width: 200px; vertical-align: middle;">
             <span id="noiseValue" style="margin-left: 10px; font-family: monospace;">3.0</span>
         </div>
         <div style="text-align: center; margin-top: 15px;">
@@ -578,7 +578,7 @@
                     this.lastMouseX = e.clientX;
                     this.lastMouseY = e.clientY;
                     
-                    this.render(this.currentPointCloud, this.currentSceneObjects);
+                    this.render(this.currentPointCloud, this.currentSceneObjects, this.analysed);
                 });
                 
                 canvas.addEventListener('mouseup', () => {
@@ -602,7 +602,7 @@
                     // Clamp distance
                     this.cameraDistance = Math.max(50, Math.min(500, this.cameraDistance));
                     
-                    this.render(this.currentPointCloud, this.currentSceneObjects);
+                    this.render(this.currentPointCloud, this.currentSceneObjects, this.analysed);
                 });
                 
                 canvas.style.cursor = 'grab';
@@ -790,7 +790,7 @@
                 return mat;
             }
 
-            render(points, sceneObjects = []) {
+            render(points, sceneObjects = [], extraSpheres) {
                 const gl = this.gl;
                 
                 // Store current point cloud for re-rendering during interaction
@@ -833,6 +833,7 @@
                     gl.uniformMatrix4fv(this.meshViewLocation, false, view);
                     
                     // Render each sphere in the scene
+/*
                     for (const obj of sceneObjects) {
                         if (obj instanceof Sphere) {
                             // Render sphere at 99% size to compare with raytraced points
@@ -856,18 +857,64 @@
                             gl.drawElements(gl.TRIANGLES, sphereGeo.indices.length, gl.UNSIGNED_SHORT, 0);
                         }
                     }
+*/
+                    for (const obj of extraSpheres) {
+                            // Render sphere at 99% size to compare with raytraced points
+                            const sphereGeo = this.createSphereGeometry(obj[3] * 0.99, 32);
+                            
+                            const vertexBuffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+                            gl.bufferData(gl.ARRAY_BUFFER, sphereGeo.vertices, gl.STATIC_DRAW);
+                            
+                            const indexBuffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphereGeo.indices, gl.STATIC_DRAW);
+                            
+                            gl.enableVertexAttribArray(this.meshPositionLocation);
+                            gl.vertexAttribPointer(this.meshPositionLocation, 3, gl.FLOAT, false, 0, 0);
+                            
+                            // Create model matrix for this sphere
+                            const modelMatrix = this.createModelMatrix(new Vec3(obj[0], obj[1], obj[2]), new Vec3(), new Vec3(1, 1, 1));
+                            gl.uniformMatrix4fv(this.meshModelLocation, false, modelMatrix);
+                            
+                            gl.drawElements(gl.TRIANGLES, sphereGeo.indices.length, gl.UNSIGNED_SHORT, 0);
+                    }
                 }
 
                 // Then render point cloud on top
                 if (points.length > 0) {
                     gl.useProgram(this.program);
                     
+                    // Convert 3D array [row][col] = [x,y,z,u,v,w] to flat array with colors
+                    const flatData = [];
+                    
+                    for (let row = 0; row < points.length; row++) {
+                        for (let col = 0; col < points[row].length; col++) {
+//if (row == 200 || col == 350) continue;
+//if (Math.abs(row- 210) < 50 && Math.abs(col-360)<50) continue;
+
+                            const point = points[row][col];
+                            
+                            // Skip null entries (non-colliding rays)
+                            if (point === null) continue;
+                            
+                            // Position: x, y, z
+                            flatData.push(point[0], point[1], point[2]);
+                            
+                            // Color from normal: u, v, w (remapped from [-1,1] to [0,1])
+                            const r = (point[3] + 1.0) * 0.5; // u (normal.x)
+                            const g = (point[4] + 1.0) * 0.5; // v (normal.y)
+                            const b = 0.5; // Keep blue constant
+                            flatData.push(r, g, b);
+                        }
+                    }
+                    
                     const stride = 6 * Float32Array.BYTES_PER_ELEMENT;
-                    const numVertices = points.length / 6;
+                    const numVertices = flatData.length / 6;
 
                     const buffer = gl.createBuffer();
                     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatData), gl.STATIC_DRAW);
 
                     gl.enableVertexAttribArray(this.positionLocation);
                     gl.vertexAttribPointer(this.positionLocation, 3, gl.FLOAT, false, stride, 0);
@@ -917,13 +964,13 @@
             scene = new Scene();
 
             // Add spheres (50% smaller radius)
-            scene.add(new Sphere(new Vec3(30, 0, 120), 7.5));
+            scene.add(new Sphere(new Vec3(30, 0, 120), 7));
             scene.add(new Sphere(new Vec3(-30, 20, 100), 6));
             scene.add(new Sphere(new Vec3(0, -25, 130), 5));
             
             // Add 3 more spheres
             scene.add(new Sphere(new Vec3(-20, -15, 140), 6));
-            scene.add(new Sphere(new Vec3(40, -20, 110), 5.5));
+            scene.add(new Sphere(new Vec3(40, -20, 110), 5));
             scene.add(new Sphere(new Vec3(15, 30, 125), 7));
 
             // Add boxes (with slight rotation on the previously unrotated box)
@@ -959,35 +1006,39 @@
 
         function raytrace() {
             const resolution = 1000;
-            pointCloud = [];
+            
+            // Pre-allocate 3D array: [row][column] = [x, y, z, u, v, w] or null
+            pointCloud = new Array(resolution);
+            for (let i = 0; i < resolution; i++) {
+                pointCloud[i] = new Array(resolution);
+            }
+            
             let hitCount = 0;
 
             const startTime = performance.now();
             const noiseLevel = parseFloat(document.getElementById('noiseLevel').value);
 
-            for (let y = 0; y < resolution; y++) {
-                for (let x = 0; x < resolution; x++) {
-                    const ray = camera.getRay(x, y, resolution, resolution, noiseLevel);
+            for (let row = 0; row < resolution; row++) {
+                for (let col = 0; col < resolution; col++) {
+                    const ray = camera.getRay(col, row, resolution, resolution, noiseLevel);
                     const hit = scene.intersect(ray);
 
                     if (hit) {
-                        // Position
-                        pointCloud.push(hit.point.x, hit.point.y, hit.point.z);
-                        
-                        // Color from normal (R=X, G=Y, B=0.5 as default)
-                        // Remap normal from [-1,1] to [0,1]
-                        const r = (hit.normal.x + 1.0) * 0.5;
-                        const g = (hit.normal.y + 1.0) * 0.5;
-                        const b = 0.5; // Keep blue constant
-                        
-                        pointCloud.push(r, g, b);
+                        // Store as [x, y, z, u, v, w] where uvw are normal components
+                        pointCloud[row][col] = [
+                            hit.point.x, hit.point.y, hit.point.z,
+                            hit.normal.x, hit.normal.y, hit.normal.z
+                        ];
                         hitCount++;
+                    } else {
+                        // Non-colliding rays store null
+                        pointCloud[row][col] = null;
                     }
                 }
 
                 // Update progress every 50 rows
-                if (y % 50 === 0) {
-                    const progress = ((y / resolution) * 100).toFixed(1);
+                if (row % 50 === 0) {
+                    const progress = ((row / resolution) * 100).toFixed(1);
                     document.getElementById('status').textContent = 
                         `Raytracing... ${progress}% complete (${hitCount} hits)`;
                 }
@@ -999,7 +1050,6 @@
             document.getElementById('status').textContent = 
                 `Raytracing complete! ${hitCount} intersections found in ${duration}s`;
 
-            renderer.render(pointCloud, scene.objects);
         }
 
         function startRaytracing() {
@@ -1008,6 +1058,8 @@
             // Use setTimeout to allow UI to update
             setTimeout(() => {
                 raytrace();
+                renderer.analysed = analyse();
+                renderer.render(pointCloud, scene.objects, renderer.analysed);
             }, 100);
         }
 
@@ -1052,5 +1104,91 @@
             }, 100);
         };
     </script>
+
+<script>
+function analyse()
+{
+  const w = pointCloud[0].length;
+  const h = pointCloud.length;
+  let spheres = []
+  for (let x=50; x<w-50; x+=20)
+    for (let y=50; y<w-50; y+=20)
+    {
+      var pts = [];
+      // moving window 3x3 points
+      for (let _x=-1; _x<=1; _x++)
+        for (let _y=-1; _y<=1; _y++)     
+        {
+          var found = 0;
+          var avg = [0, 0, 0, 0, 0, 0]
+          // filter out noise by averaging
+          for (let fx=-2; fx<=2; fx++)
+            for (let fy=-2; fy<=2; fy++)
+            {
+              let pt = pointCloud[y+_y*30+fy][x+_x*30+fx];
+              if (pt)
+              {
+                found++
+                for (let i=0; i<6; i++) 
+                  avg[i] += pt[i];
+              }
+            }
+          if (found)
+          {
+            for (let i=0; i<6; i++) 
+              avg[i] /= found;
+            for (let i=0; i<6; i++) 
+              avg[i] = Math.floor(avg[i]*1000)/1000;
+            pts.push(avg);
+          }
+
+          if (0)
+          {
+            var pt = pointCloud[y+_y*40][x+_x*40]
+            if (pt)
+              pts.push(pt);
+          }
+        }
+
+      if (pts.length != 9)
+        continue;
+
+      for (let r=5; r<=7; r+=1)
+      {
+        let sum = [0, 0, 0];
+        // sphere center = surface point - normalized normal * radius
+        for (let i=0; i<pts.length; i++)
+        {
+          sum[0] += pts[i][0] - pts[i][3]*r;
+          sum[1] += pts[i][1] - pts[i][4]*r;
+          sum[2] += pts[i][2] - pts[i][5]*r;
+        }
+        // center
+        sum = [sum[0]/pts.length, sum[1]/pts.length, sum[2]/pts.length]
+
+        // error
+        let err = [0, 0, 0]
+        for (let i=0; i<pts.length; i++)
+        {
+          err[0] += Math.abs(pts[i][0] - pts[i][3]*r - sum[0])
+          err[1] += Math.abs(pts[i][1] - pts[i][4]*r - sum[1])
+          err[2] += Math.abs(pts[i][2] - pts[i][5]*r - sum[2])
+        }
+        var e = Math.sqrt(err[0]**2+err[1]**2+err[2]**2)
+
+        // all projected centers close to each other?
+        if (e < 0.3)
+        {
+          console.log("Stred gule", sum[0].toFixed(1), sum[1].toFixed(1), sum[2].toFixed(1), "r="+r, "err="+Math.floor(e*100)/100);
+          if (!spheres.some(s=>(s[0]-sum[0])**2+(s[1]-sum[1])**2+(s[2]-sum[2])**2 < 5*5))
+            spheres.push([...sum, r]);
+        }
+      }
+    }
+  return spheres;
+}
+
+
+</script>
 </body>
 </html>
