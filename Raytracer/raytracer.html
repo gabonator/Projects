@@ -1094,7 +1094,7 @@
             const renderSpheresToggle = document.getElementById('renderSpheres');
             renderSpheresToggle.addEventListener('change', function() {
                 if (renderer && renderer.currentPointCloud) {
-                    renderer.render(renderer.currentPointCloud, renderer.currentSceneObjects);
+                    renderer.render(renderer.currentPointCloud, renderer.currentSceneObjects, renderer.analysed);
                 }
             });
             
