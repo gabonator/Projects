@@ -1,0 +1,43 @@
+{"id": "config", "loader": "LoaderMz", "executable": "keen1.zip/KEEN1.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "stackShiftAlways": true}
+{"id": "config", procList: ["01ed:015c", "01ed:bf97", "01ed:be1a", "01ed:d1bd"]}
+
+// with stride=3
+//{"id": "jumpTable", "addr": "01ed:0210", "table": "14f0:0002", "type": "callwords", "entries": [0, 3, 6], "useCaseOffset": true}
+{"id": "jumpTable", "addr": "01ed:0210", callsNear:["01ed:cbed", "01ed:d062", "01ed:e5a1"]}
+
+{"id": "jumpTable", "addr": "01ed:c19a", callsNear:["01ed:c1af"]} // selector ax?
+///{"id": "jumpTable", "addr": "01ed:162f", "table": "01ed:5897", "type": "callwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:5a60", "table": "01ed:5B35", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:5650", "table": "01ed:56C9", "type": "jumpwords", "entries": 9, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:b82d", callsNear:["01ed:a1d4", "01ed:a1eb", "01ed:a497", "01ed:95fd", "01ed:97ab", "01ed:97f0", "01ed:986c", "01ed:9e6d"]} // selector cx
+
+
+{"id": "jumpTable", "addr": "01ed:162f", "table": "01ed:1709", "type": "jumpwords", "entries": 5, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:4382", "table": "01ed:4590", "type": "jumpwords", "entries": 26, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:57a2", "table": "01ed:57ff", "type": "jumpwords", "entries": 9, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:597a", "table": "01ed:5a27", "type": "jumpwords", "entries": 9, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:9135", "table": "01ed:9287", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:956b", "table": "01ed:95ed", "type": "jumpwords", "entries": 8, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:9680", "table": "01ed:96a8", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:ab73", "table": "01ed:ae0c", "type": "jumpwords", "entries": 8, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:d871", "table": "01ed:dc3d", "type": "jumpwords", "entries": 11, "selector": "bx"}
+
+{"id": "jumpTable", "addr": "01ed:bba4", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:bbce", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:bbf8", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:bc22", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
+
+{"id": "jumpTable", "addr": "01ed:4d26", callsNear:["01ed:19d3", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:41f8", "01ed:194f", "01ed:1a2c", "01ed:40ef"]}
+{"id": "jumpTable", "addr": "01ed:4db7", callsNear:["01ed:19d3", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:41f8", "01ed:194f", "01ed:1a2c", "01ed:40ef"]}
+
+{"id": "jumpTable", "addr": "01ed:2525", "table": "01ed:26e2", "type": "jumpwords", "entries": 14, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:3926", "table": "01ed:3b7d", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:3bd9", "table": "01ed:3c8b", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:3ca9", "table": "01ed:3e04", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "01ed:3efa", "table": "01ed:4046", "type": "jumpwords", "entries": 7, "selector": "bx"}
+
+{"id": "jumpTable", "addr": "01ed:4e3c", callsNear:["01ed:1a68","01ed:1bce","01ed:1d6e","01ed:1e94","01ed:22bb","01ed:2927","01ed:4849","01ed:3360","01ed:45c4"]}
+{"id": "jumpTable", "addr": "01ed:4e44", callsNear:["01ed:1a68","01ed:1bce","01ed:1d6e","01ed:1e94","01ed:22bb","01ed:2927","01ed:4849","01ed:3360","01ed:45c4"]}
+
+{"id": "jumpTable", "addr": "01ed:45dd", "table": "01ed:469e", "type": "jumpwords", "entries": 14, "selector": "bx"}
+

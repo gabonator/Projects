@@ -1,7 +1,9 @@
 set -e
 mkdir -p temp
 #TODO: av, bumpy
-for fullpath in ./ref/av*.txt; do
+#TODO: fetch
+#for fullpath in ./ref/*.txt; do
+for fullpath in ./ref/keen1.txt ./ref/keen4.txt ./ref/rick1.txt ./ref/rick2.txt ./ref/wormsfull.txt ./ref/goose.txt ./ref/fox.txt ./ref/mm2.txt; do
   filename="$(basename $fullpath)"
   project="${filename%.txt}"
   echo "Processing $project"

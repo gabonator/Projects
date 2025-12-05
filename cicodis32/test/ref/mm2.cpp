@@ -41127,6 +41127,7 @@ void sub_1be39c() // 0160:1be39c +long
     ax = memoryAGet16(ds, esi);
     esi += 0x00000002;
     cx = ax;
+    flags.carry = 0;
     bx = 0;
     cx = rcl16(cx, 0x0001);
     bl = rcl8(bl, 0x01);
