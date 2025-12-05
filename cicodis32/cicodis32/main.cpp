@@ -72,6 +72,10 @@ int main(int argc, char **argv) {
                     options->verboseAsm = true;
                 else if (k == "verboseAsm" && v == "false")
                     options->verboseAsm = false;
+                else if (k == "printf" && v == "true")
+                    options->usePrintf = true;
+                else if (k == "jit" && v == "true")
+                    options->jit = true;
                 else if (k == "verboseAddr" && v == "false")
                 {
                     options->printProcAddress = false;
@@ -479,8 +483,12 @@ int main(int argc, char **argv) {
             options->procModifiers.insert({p, options->arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
     }
     
-    printf("#include \"cico%s.h\"\n\n", options->arch == arch_t::arch16 ? "16" : "32");
+    printf("#include \"cico%s.h\"\n", options->arch == arch_t::arch16 ? "16" : "32");
     
+    if (options->usePrintf)
+        printf("#include <stdio.h>");
+    printf("\n");
+
     if (options->relocations)
         printf("%s\n", loader->GetMain().c_str());
 
