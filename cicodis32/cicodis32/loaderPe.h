@@ -102,6 +102,9 @@ class LoaderPe : public Loader {
     std::vector<Section> mSections;
     uint32_t mImageBase{0};
     uint32_t mEntryPoint{0};
+    uint32_t mSizeOfImage{0};
+    uint32_t mSizeOfStackReserve{0};
+    uint32_t mSizeOfStackCommit{0};
     std::string mName;
 
 public:
@@ -129,6 +132,9 @@ public:
         const OptionalHeader* opt = (const OptionalHeader*)(&mBytes[pe_offset + sizeof(PEHeader) + sizeof(COFFHeader)]);
         mImageBase = opt->ImageBase;
         mEntryPoint = opt->AddressOfEntryPoint;
+        mSizeOfImage = opt->SizeOfImage;
+        mSizeOfStackReserve = opt->SizeOfStackReserve;
+        mSizeOfStackCommit = opt->SizeOfStackCommit;
         // Get section headers
         uint32_t secHdrOff = pe_offset + sizeof(PEHeader) + sizeof(COFFHeader) + coff->SizeOfOptionalHeader;
         for (int i = 0; i < coff->NumberOfSections; i++) {
@@ -146,8 +152,8 @@ public:
             }
             mSections.push_back(sec);
         }
-//        PrintSections();
         PrintImports();
+        PrintSections();
 //        exit(0);
         return true;
     }
@@ -165,6 +171,14 @@ public:
             uint32_t start = mImageBase + sec.vaddr;
             uint32_t end = start + sec.vsize;
             printf("  - %s: %x .. %x\n", sec.name.c_str(), start, end);
+            
+            for (const auto& [addr, imp] : GetImports())
+            {
+                if (addr.offset >= start && addr.offset < end)
+                {
+                    *((uint32_t*)&sec.data[addr.offset-start]) = imp->targetAddr;
+                }
+            }
             
             char outname[1024];
             snprintf(outname, sizeof(outname), "%s_%s.bin", key.c_str(), sec.name.substr(1).c_str());
@@ -247,6 +261,18 @@ public:
         size_t lastDot = filenameWithExt.find_last_of('.');
         std::string key = filenameWithExt.substr(0, lastDot);
 
+        uint32_t symAddr = 0x6ab00000;
+        std::string indirectImport = "switch ((ptrImportTable)o) {\n";
+        std::string indirectEnum = format("enum class ptrImportTable {\n    ptr_begin = 0x%x,\n", symAddr);
+        for (const auto& [addr, imp] : GetImports())
+        {
+//            *((uint32_t*)GetBufferAt(addr)) = ++symAddr;
+            indirectEnum += format("    ptr_%s_%s,\n", imp->namesp.c_str(), imp->symbol.c_str());
+            indirectImport += format("    case ptrImportTable::ptr_%s_%s:\n        %s\n        break;\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str());
+        }
+        indirectEnum += "};\n";
+        indirectImport += "}\n";
+
         for (const auto& sec : mSections) {
             uint32_t start = mImageBase + sec.vaddr;
             
@@ -255,9 +281,14 @@ public:
             overlays += format("    loadOverlay(\"%s_%s.bin\", 0x%x);\n", key.c_str(), sec.name.substr(1).c_str(), start);
         }
 
-        return includes + format("\nvoid sub_%x();\n\nvoid init()\n{\n%s}\n\nvoid start()\n{\n    sub_%x();\n}\n",
+        return includes + format("\nvoid sub_%x();\n\nvoid init()\n{\n%s    esp = 0x%x;\n    ebp = 0x%x;\n}\n\nvoid start()\n{\n    sub_%x();\n}\n",
                       mImageBase + mEntryPoint,
-                      overlays.c_str(), mImageBase + mEntryPoint);
+                      overlays.c_str(), 
+                      mImageBase + mSizeOfImage,
+                      mImageBase + mSizeOfImage,
+                      mImageBase + mEntryPoint) + indirectEnum + indirectImport;
+        
+        // TODO: addd indirect call table
     }
 
     virtual std::string GetFooter() override {
@@ -287,6 +318,11 @@ public:
         
         std::string getHeaderFile()
         {
+            return getNamespace() + ".h";
+        }
+        
+        std::string getNamespace()
+        {
             // Compose header name (strip .dll/.DLL/.Dll, add .h)
             std::string dllFile = dll;
             size_t dot = dllFile.find_last_of('.');
@@ -295,7 +331,7 @@ public:
             }
             std::transform(dllFile.begin(), dllFile.end(), dllFile.begin(),
                                [](unsigned char c){ return std::tolower(c); });
-            return dllFile + ".h";
+            return dllFile;
         }
 
     };
@@ -305,6 +341,7 @@ public:
         std::map<int, std::string> lastOrdinals;
         std::string lastDeclLib;
         std::map<std::string, std::string> lastDecls;
+        std::string namesp;
         
         for (auto& is : ListImports())
         {
@@ -321,6 +358,7 @@ public:
                     }                    
                 }
                 lastDecls = d.GetDeclarations();
+                namesp = is.getNamespace();
             }
             if (is.byOrdinal)
             {
@@ -347,7 +385,9 @@ public:
                     is.dll,
                     symbol,
                     makeDllCall(is.dll, it2->second),
-                    getStackShift(it2->second));
+                    namesp,
+                    getStackShift(it2->second),
+                    0);
                 mImports.insert({impSymbol->addr, impSymbol});
             }
             else
@@ -362,12 +402,275 @@ public:
                     is.dll,
                     symbol,
                     makeDllCall(is.dll, it2->second),
-                    getStackShift(it2->second));
+                    namesp,
+                    getStackShift(it2->second),
+                    0);
                 mImports.insert({impSymbol->addr, impSymbol});
             }
         }
+        
+        uint32_t targetAddr = 0x6ab00000;
+        for (const auto& [addr, imp] : GetImports())
+        {
+            imp->targetAddr = ++targetAddr;
+        }
+
     }
     
+private:
+    // Structure to represent a parsed function argument
+    struct ArgumentInfo {
+        std::string fullDeclaration;  // Full argument declaration (e.g., "int* ptr")
+        std::string type;              // Type without identifier (e.g., "int*")
+        std::string name;              // Argument name (e.g., "ptr")
+        bool isVariadic{false};        // True if this is "..."
+    };
+    
+    // Structure to represent a parsed function declaration
+    struct ParsedDeclaration {
+        std::string returnType;        // Return type (e.g., "int")
+        std::string callingConvention; // WINAPI, __stdcall, __cdecl, ALLEGRO_CC, etc.
+        std::string symbolName;        // Function name
+        std::vector<ArgumentInfo> arguments;
+        bool isValid{false};
+        
+        // Helper to determine calling convention type
+        bool isStdcall() const {
+            return (callingConvention == "WINAPI" ||
+                    callingConvention == "__stdcall" ||
+                    callingConvention == "CALLBACK" ||
+                    callingConvention == "PASCAL");
+        }
+        
+        bool isCdecl() const {
+            return (callingConvention == "__cdecl" ||
+                    callingConvention == "ALLEGRO_CC");
+        }
+        
+        bool isVariadic() const {
+            return !arguments.empty() && arguments.back().isVariadic;
+        }
+        
+        bool returnsVoid() const {
+            return returnType == "void" || returnType.empty();
+        }
+        
+        // Debug output
+        void Dump() const {
+            printf("ParsedDeclaration:\n");
+            printf("  Valid: %s\n", isValid ? "true" : "false");
+            if (!isValid) return;
+            
+            printf("  Return Type: '%s'\n", returnType.c_str());
+            printf("  Calling Convention: '%s'", callingConvention.c_str());
+            if (!callingConvention.empty()) {
+                if (isStdcall()) printf(" (stdcall)");
+                else if (isCdecl()) printf(" (cdecl)");
+            } else {
+                printf(" (default/stdcall)");
+            }
+            printf("\n");
+            printf("  Symbol Name: '%s'\n", symbolName.c_str());
+            printf("  Returns Void: %s\n", returnsVoid() ? "true" : "false");
+            printf("  Is Variadic: %s\n", isVariadic() ? "true" : "false");
+            printf("  Arguments (%zu):\n", arguments.size());
+            
+            for (size_t i = 0; i < arguments.size(); ++i) {
+                const auto& arg = arguments[i];
+                printf("    [%zu] ", i);
+                if (arg.isVariadic) {
+                    printf("... (variadic)\n");
+                } else {
+                    printf("'%s' - type: '%s', name: '%s'\n", 
+                           arg.fullDeclaration.c_str(),
+                           arg.type.c_str(),
+                           arg.name.c_str());
+                }
+            }
+        }
+    };
+    
+    // Helper function to trim whitespace
+    static void trim(std::string& s) {
+        s.erase(0, s.find_first_not_of(" \t"));
+        s.erase(s.find_last_not_of(" \t") + 1);
+    }
+    
+    // Parse a function declaration into structured components
+    ParsedDeclaration parseDeclaration(const std::string& decl) const {
+        ParsedDeclaration parsed;
+                
+        // Find the opening parenthesis for the parameter list
+        size_t parenPos = decl.find('(');
+        if (parenPos == std::string::npos) {
+            return parsed; // Invalid
+        }
+        
+        // Find the MATCHING closing parenthesis (not just the first one)
+        size_t parenEndPos = std::string::npos;
+        int depth = 1; // We're already at the opening '('
+        for (size_t i = parenPos + 1; i < decl.length(); ++i) {
+            if (decl[i] == '(') {
+                depth++;
+            } else if (decl[i] == ')') {
+                depth--;
+                if (depth == 0) {
+                    parenEndPos = i;
+                    break;
+                }
+            }
+        }
+        
+        if (parenEndPos == std::string::npos) {
+            return parsed; // Invalid - no matching closing paren
+        }
+        
+        // Extract the part before '(' - contains return type, calling convention, and function name
+        std::string beforeParen = decl.substr(0, parenPos);
+        trim(beforeParen);
+        
+        // Known calling conventions
+        const std::vector<std::string> callingConventions = {
+            "WINAPI", "__stdcall", "CALLBACK", "PASCAL", 
+            "__cdecl", "ALLEGRO_CC", "__fastcall"
+        };
+        
+        // Find calling convention in the declaration
+        for (const auto& conv : callingConventions) {
+            size_t pos = beforeParen.find(conv);
+            if (pos != std::string::npos) {
+                parsed.callingConvention = conv;
+                // Remove it from beforeParen
+                beforeParen.erase(pos, conv.length());
+                trim(beforeParen);
+                break;
+            }
+        }
+        
+        // Now beforeParen should be: "return_type function_name"
+        // Find the function name (last identifier after spaces and *)
+        size_t nameStart = beforeParen.find_last_of(" \t*");
+        if (nameStart == std::string::npos) {
+            return parsed; // Invalid
+        }
+        
+        parsed.symbolName = beforeParen.substr(nameStart + 1);
+        parsed.returnType = beforeParen.substr(0, nameStart + 1);
+        trim(parsed.returnType);
+        trim(parsed.symbolName);
+        
+        // Extract parameters
+        std::string paramStr = decl.substr(parenPos + 1, parenEndPos - parenPos - 1);
+        trim(paramStr);
+        
+        // Parse parameters
+        if (!paramStr.empty() && paramStr != "void") {
+            std::vector<std::string> params;
+            size_t start = 0;
+            int depth = 0; // Track parentheses depth for function pointer types
+            
+            // First pass: split by commas at depth 0
+            for (size_t i = 0; i <= paramStr.length(); ++i) {
+                if (i == paramStr.length() || (paramStr[i] == ',' && depth == 0)) {
+                    std::string param = paramStr.substr(start, i - start);
+                    trim(param);
+                    if (!param.empty()) {
+                        params.push_back(param);
+                    }
+                    start = i + 1;
+                } else if (paramStr[i] == '(') {
+                    depth++;
+                } else if (paramStr[i] == ')') {
+                    depth--;
+                }
+            }
+            
+            // Second pass: parse each parameter
+            for (const auto& param : params) {
+                ArgumentInfo argInfo;
+                argInfo.fullDeclaration = param;
+                
+                // Check for variadic
+                if (param == "...") {
+                    argInfo.isVariadic = true;
+                    argInfo.type = "...";
+                    argInfo.name = "";
+                } else {
+                    // Parse parameter to extract type and name
+                    // Handle function pointer types like: "void (*proc)(void)" or "int (*callback)(int, int)"
+                    size_t funcPtrPos = param.find("(*");
+                    if (funcPtrPos != std::string::npos) {
+                        // We have a function pointer
+                        // Find the matching closing paren for the pointer name (*name)
+                        size_t nameStart = funcPtrPos + 2; // after '(*'
+                        
+                        // Find the closing paren for (*name) - it's the first ')' after '(*'
+                        size_t nameEnd = std::string::npos;
+                        int parenDepth = 1; // We're already inside (*
+                        for (size_t i = nameStart; i < param.length(); ++i) {
+                            if (param[i] == '(') {
+                                parenDepth++;
+                            } else if (param[i] == ')') {
+                                parenDepth--;
+                                if (parenDepth == 0) {
+                                    nameEnd = i;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (nameEnd != std::string::npos) {
+                            argInfo.name = param.substr(nameStart, nameEnd - nameStart);
+                            trim(argInfo.name);
+                            // Type: "void (*)(void)" - replace the name with nothing
+                            argInfo.type = param.substr(0, nameStart) + ")" + param.substr(nameEnd + 1);
+                            trim(argInfo.type);
+                        } else {
+                            // Malformed function pointer, treat as type only
+                            argInfo.type = param;
+                            argInfo.name = "";
+                        }
+                    } else {
+                        // Regular parameter: "int count" or "char* str"
+                        // Find the last space or tab that's not inside parentheses
+                        size_t lastSpace = std::string::npos;
+                        int parenDepth = 0;
+                        for (size_t i = param.length(); i > 0; --i) {
+                            char c = param[i - 1];
+                            if (c == ')') parenDepth++;
+                            else if (c == '(') parenDepth--;
+                            else if ((c == ' ' || c == '\t') && parenDepth == 0) {
+                                lastSpace = i - 1;
+                                break;
+                            }
+                        }
+                        
+                        if (lastSpace != std::string::npos) {
+                            argInfo.name = param.substr(lastSpace + 1);
+                            argInfo.type = param.substr(0, lastSpace);
+                            trim(argInfo.type);
+                            trim(argInfo.name);
+                        } else {
+                            // No name, just type
+                            argInfo.type = param;
+                            argInfo.name = "";
+                        }
+                    }
+                }
+                
+                parsed.arguments.push_back(argInfo);
+            }
+        }
+        
+        parsed.isValid = true;
+        
+//        printf("---- decl=%s\n", decl.c_str());
+//        parsed.Dump();
+
+        return parsed;
+    }
+
+public:
     std::string makeDllCall(std::string dll, std::string decl)
     {
         // input:
@@ -375,18 +678,19 @@ public:
         // output:
         // eax = kernel32::set_gfx_mode(stack32(0), stack32(1), stack32(2), stack32(3), stack32(4)); esp += 20;
         
-        // Detect calling convention from declaration
-        bool isStdcall = (decl.find("WINAPI") != std::string::npos ||
-                          decl.find("__stdcall") != std::string::npos ||
-                          decl.find("CALLBACK") != std::string::npos ||
-                          decl.find("PASCAL") != std::string::npos);
+        // Parse the declaration into structured components
+        ParsedDeclaration parsed = parseDeclaration(decl);
         
-        bool isCdecl = (decl.find("__cdecl") != std::string::npos ||
-                        decl.find("ALLEGRO_CC") != std::string::npos);  // Add ALLEGRO_CC detection
+        if (!parsed.isValid) {
+            return "stop(\"invalid decl\");";
+        }
         
-        // Check for variadic functions (always __cdecl)
-        bool isVariadic = (decl.find("...") != std::string::npos);
+        // Determine calling convention
+        bool isStdcall = parsed.isStdcall();
+        bool isCdecl = parsed.isCdecl();
+        bool isVariadic = parsed.isVariadic();
         
+        // Variadic functions are always __cdecl
         if (isVariadic) {
             isCdecl = true;
             isStdcall = false;
@@ -405,98 +709,51 @@ public:
             dllNamespace = dllNamespace.substr(0, dotPos);
         }
         
-        // Parse the declaration to extract return type, function name, and parameters
-        // Format: "return_type function_name(param1, param2, ...)"
-        
-        // Find function name: it's between return type and '('
-        size_t parenPos = decl.find('(');
-        if (parenPos == std::string::npos) {
-            return "stop(\"invalid decl\");";
-        }
-        
-        size_t parenEndPos = decl.find(')', parenPos);
-        if (parenEndPos == std::string::npos) {
-            return "stop(\"invalid decl\");";
-        }
-        
-        // Extract the part before '(' and split to get return type and function name
-        std::string beforeParen = decl.substr(0, parenPos);
-        
-        // Trim whitespace
-        auto trim = [](std::string& s) {
-            s.erase(0, s.find_first_not_of(" \t"));
-            s.erase(s.find_last_not_of(" \t") + 1);
-        };
-        trim(beforeParen);
-        
-        // Find the function name by looking for the last identifier (after spaces and *)
-        // Handle cases like "int* func" or "void func" or "struct foo* func"
-        size_t nameStart = beforeParen.find_last_of(" \t*");
-        if (nameStart == std::string::npos) {
-            return "stop(\"invalid decl\");";
-        }
-        
-        std::string functionName = beforeParen.substr(nameStart + 1);
-        std::string returnType = beforeParen.substr(0, nameStart + 1);
-        
-        trim(returnType);
-        trim(functionName);
-        
-        // Extract parameters
-        std::string paramStr = decl.substr(parenPos + 1, parenEndPos - parenPos - 1);
-        trim(paramStr);
-        
-        // Count parameters by splitting on commas
-        std::vector<std::string> params;
-        if (!paramStr.empty() && paramStr != "void") {
-            size_t start = 0;
-            int depth = 0; // Track parentheses depth for complex types
-            
-            for (size_t i = 0; i <= paramStr.length(); ++i) {
-                if (i == paramStr.length() || (paramStr[i] == ',' && depth == 0)) {
-                    std::string param = paramStr.substr(start, i - start);
-                    trim(param);
-                    if (!param.empty()) {
-                        params.push_back(param);
-                    }
-                    start = i + 1;
-                } else if (paramStr[i] == '(') {
-                    depth++;
-                } else if (paramStr[i] == ')') {
-                    depth--;
-                }
-            }
-        }
-        
-        // Generate the call
+        // Generate the call syntax
         std::string result;
         
-        // Check if function returns void
-        bool returnsVoid = (returnType == "void" || returnType.empty());
-        
-        if (!returnsVoid) {
+        // Add return value assignment if not void
+        if (!parsed.returnsVoid()) {
             result += "eax = ";
         }
         
-        result += dllNamespace + "::" + functionName + "(";
+        // Add function call
+        result += dllNamespace + "::" + parsed.symbolName + "(";
         
-        // Add stack parameters in forward order
-        // stack32(0), stack32(1), ..., stack32(n-1)
-        for (size_t i = 0; i < params.size(); ++i) {
-            if (i > 0) {
+        // Add stack parameters with types
+        bool firstArgEmitted = false;
+        for (size_t i = 0; i < parsed.arguments.size(); ++i) {
+            const auto& arg = parsed.arguments[i];
+            
+            // Skip variadic marker
+            if (arg.isVariadic) {
+                continue;
+            }
+            
+            if (firstArgEmitted) {
                 result += ", ";
             }
-            result += "stack32(" + std::to_string(i) + ")";
+            firstArgEmitted = true;
+            
+            result += "stack32<" + arg.type + ">(" + std::to_string(i) + ")";
         }
         
         result += ");";
         
         // Add stack cleanup based on calling convention
-        if (params.size() > 0) {
+        // Count non-variadic arguments
+        size_t paramCount = 0;
+        for (const auto& arg : parsed.arguments) {
+            if (!arg.isVariadic) {
+                paramCount++;
+            }
+        }
+        
+        if (paramCount > 0) {
             if (isStdcall) {
                 // __stdcall: callee cleans up the stack (inside the DLL function)
                 // We embed the esp += here because the cleanup doesn't appear in the disassembled code
-                result += " esp += " + std::to_string(params.size() * 4) + ";";
+                result += " esp += " + std::to_string(paramCount * 4) + ";";
             } else if (isCdecl) {
                 // __cdecl: caller cleans up the stack
                 // The cleanup instruction (add esp, X) appears in the actual disassembled code
@@ -515,17 +772,19 @@ public:
         // For __stdcall: we embed esp += X in makeDllCall, so return X
         // For __cdecl: the actual add esp instruction is separate, so return 0
         
-        // Detect calling convention (same logic as makeDllCall)
-        bool isStdcall = (decl.find("WINAPI") != std::string::npos ||
-                          decl.find("__stdcall") != std::string::npos ||
-                          decl.find("CALLBACK") != std::string::npos ||
-                          decl.find("PASCAL") != std::string::npos);
+        // Parse the declaration using our helper function
+        ParsedDeclaration parsed = parseDeclaration(decl);
         
-        bool isCdecl = (decl.find("__cdecl") != std::string::npos ||
-                        decl.find("ALLEGRO_CC") != std::string::npos);
+        if (!parsed.isValid) {
+            return 0;
+        }
         
-        bool isVariadic = (decl.find("...") != std::string::npos);
+        // Determine calling convention
+        bool isStdcall = parsed.isStdcall();
+        bool isCdecl = parsed.isCdecl();
+        bool isVariadic = parsed.isVariadic();
         
+        // Variadic functions are always __cdecl
         if (isVariadic) {
             isCdecl = true;
             isStdcall = false;
@@ -542,49 +801,11 @@ public:
         }
         
         // For __stdcall, we embed the stack cleanup in the call string
-        // So return the amount that will be in the embedded "esp += X;"
-        
-        // Find the parameter list
-        size_t parenPos = decl.find('(');
-        if (parenPos == std::string::npos) {
-            return 0;
-        }
-        
-        size_t parenEndPos = decl.find(')', parenPos);
-        if (parenEndPos == std::string::npos) {
-            return 0;
-        }
-        
-        // Extract parameters
-        std::string paramStr = decl.substr(parenPos + 1, parenEndPos - parenPos - 1);
-        
-        // Trim whitespace
-        auto trim = [](std::string& s) {
-            s.erase(0, s.find_first_not_of(" \t"));
-            s.erase(s.find_last_not_of(" \t") + 1);
-        };
-        trim(paramStr);
-        
-        // Empty or void parameter list
-        if (paramStr.empty() || paramStr == "void") {
-            return 0;
-        }
-        
-        // Count parameters by splitting on commas
+        // Count non-variadic parameters
         int paramCount = 0;
-        int depth = 0; // Track parentheses depth for complex types
-        
-        for (size_t i = 0; i <= paramStr.length(); ++i) {
-            if (i == paramStr.length() && depth == 0) {
-                // End of string counts as one more parameter
+        for (const auto& arg : parsed.arguments) {
+            if (!arg.isVariadic) {
                 paramCount++;
-                break;
-            } else if (paramStr[i] == ',' && depth == 0) {
-                paramCount++;
-            } else if (paramStr[i] == '(') {
-                depth++;
-            } else if (paramStr[i] == ')') {
-                depth--;
             }
         }
         

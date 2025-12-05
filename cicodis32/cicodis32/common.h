@@ -93,7 +93,9 @@ public:
 //        std::string protoRet;
 //        std::vector<std::string> protoArgs;
         std::string call;
+        std::string namesp;
         int stackShift;
+        uint32_t targetAddr;
     };
     
 public:
