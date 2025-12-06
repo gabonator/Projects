@@ -10,6 +10,7 @@
 struct convert_t
 {
     std::function<std::string(convert_args)> convert;
+    std::function<StatementIr(convert_args)> convertir;
     std::function<std::string(convert_args)> zf;
     std::function<std::string(convert_args)> cf;
     std::function<std::string(convert_args)> sf;

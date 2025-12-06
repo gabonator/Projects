@@ -5,6 +5,9 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 
+#pragma once
+//#include "tracer.h"
+
 enum callConv_t {
     callConvUnknown = 0,
     callConvSimpleStackNear = 1,

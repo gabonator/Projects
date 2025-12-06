@@ -5,6 +5,10 @@
 //  Created by Gabriel Valky on 16/07/2025.
 //
 
+#pragma once
+//#include "tracer.h"
+//#include "analyser.h"
+
 // FunctionAnalyser - traversing single function code and filling in instrInfo structure
 class FunctionAnalyser : public ProgramAnalyser {
 public:

@@ -16,6 +16,109 @@
 
 #include "address.h"
 #include "common.h"
+
+class OperandIr {
+public:
+    enum class Type_t {
+        Const,
+        Register,
+        Memory,
+        Label,
+        String,
+        Operator,
+        Variable,
+        Capstone
+    } type;
+
+    // const
+    int constValue;
+    
+    // register
+    std::string regName;
+    
+    // memory
+    std::string memSegment;
+    std::string memOffset;
+    
+    // label
+    std::string label;
+    
+    // string
+    std::string string;
+    
+    // operator
+    std::string oper;
+    
+    // variable
+    std::string variable;
+    
+    // capstone
+    std::string capstone;
+    
+    explicit OperandIr(Type_t type, std::string s)
+    {
+        switch (type)
+        {
+            case Type_t::Register:
+                regName = s;
+                break;
+            case Type_t::Operator:
+                oper = s;
+                break;
+            case Type_t::Label:
+                label = s;
+                break;
+            case Type_t::Capstone:
+                capstone = s;
+                break;
+            default:
+                assert(0);
+        }
+    }
+    explicit OperandIr(Type_t type, int v)
+    {
+        switch (type)
+        {
+            case Type_t::Const:
+                constValue = v;
+                break;
+            default:
+                assert(0);
+        }
+
+    }
+};
+
+struct StatementIr {
+public:
+    enum class Type_t {
+        Assignment, // op1 = op2
+        Compare, // op1 > op2
+        Binary, // op1 = op2 +- op3
+        Function, // func(op1)?
+        Condition, // if (StatementIr) StatementIr
+        Stop, // stop(op1)
+        Goto, // jump(op1)
+        Call, // op1()
+        Label, // op1:
+        Switch, // switch(selector) { case const: long/far call/jump }
+        Comment, // // comment
+    } type;
+    shared<OperandIr> op1;
+    shared<OperandIr> op2;
+    shared<OperandIr> opOperator;
+    shared<OperandIr> op3;
+    shared<OperandIr> opFunc;
+    shared<StatementIr> stCondition;
+    shared<StatementIr> stStatement;
+    shared<OperandIr> opSwitchSelector;
+    std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
+    std::string label;
+    std::string comment;
+};
+
+
+
 #include "loader.h"
 #include "tracer.h"
 #include "analyser.h"
@@ -24,6 +127,341 @@
 #include "formatter.h"
 #include "converter.h"
 #include "json.h"
+#include "configParser.h"
+#include "exportcglue.h"
+
+
+class ProcIr {
+public:
+    std::string name;
+    std::string info;
+    std::vector<std::string> temps;
+    std::vector<StatementIr> lines;
+};
+
+class ConvertIr {
+    shared<Options> mOptions;
+    Analyser& mAnalyser;
+    
+public:
+    ConvertIr(Analyser& analyser, shared<Options> options) : mOptions(options), mAnalyser(analyser)
+    {
+    }
+    
+    shared<ProcIr> Convert(address_t proc)
+    {
+        shared<ProcIr> procir = std::make_shared<ProcIr>();
+        
+        assert(mAnalyser.mInfos.find(proc) != mAnalyser.mInfos.end());
+        shared<Analyser::info_t> info = mAnalyser.mInfos.find(proc)->second;
+        
+        std::string extraInfo = "";
+        if ((info->func.request != procRequest_t::none && info->func.request != procRequest_t::callNear) || mOptions->printLabelAddress)
+        {
+            if (mOptions->printLabelAddress)
+                extraInfo += utils::format("%04x:%04x", proc.segment, proc.offset);
+            
+            extraInfo += info->func.makeProcIdentifier();
+        }
+        procir->name = format("void sub_%x()", proc.linearOffset());
+        procir->info = extraInfo;
+
+        //
+        shared <Analyser::info_t> mInfo = mAnalyser.mInfos.find(proc)->second;
+        Analyser::code_t& code = mInfo->code;
+        assert(!code.empty());
+
+        for (std::string str : GetTempVariables(code, info))
+            if (!str.starts_with("flags."))
+                procir->temps.push_back(str);
+
+        //
+        if (!((int)info->func.request & (int)procRequest_t::callIsolated))
+        {
+            StatementIr shiftSp{.type = StatementIr::Type_t::Binary,
+                    .op1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "sp"),
+                    .op2 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "sp"),
+                    .opOperator = std::make_shared<OperandIr>(OperandIr::Type_t::Operator, "-"),
+                    .op3 = std::make_shared<OperandIr>(OperandIr::Type_t::Const, 2)
+            };
+            StatementIr shiftEsp{.type = StatementIr::Type_t::Binary,
+                    .op1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "esp"),
+                    .op2 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "esp"),
+                    .opOperator = std::make_shared<OperandIr>(OperandIr::Type_t::Operator, "-"),
+                    .op3 = std::make_shared<OperandIr>(OperandIr::Type_t::Const, 4)
+            };
+
+            if (info->func.callConv == callConv_t::callConvShiftStackNear)
+                procir->lines.push_back(shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackFar)
+                procir->lines.push_back(shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
+                procir->lines.push_back(shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackLong)
+                procir->lines.push_back(shiftEsp);
+        }
+        
+        if (code.begin()->first != proc)
+        {
+            procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Goto,
+                .op1 = std::make_shared<OperandIr>(OperandIr::Type_t::Label, format("loc_%x", proc.linearOffset()))});
+        }
+
+        //
+        address_t next;
+        for (const auto& p : code)
+        {
+            if (next && p.first != next)
+            {
+                procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Comment,
+                    .comment = format("gap %d bytes\n", p.first.offset - next.offset)});
+            }
+            
+            shared<CapInstr> pinstr = p.second->instr;
+            auto codeit = info->code.find(p.first);
+            assert(codeit != info->code.end());
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            if (pinstr->isLabel)
+            {
+                std::string label = format("loc_%x", pinstr->mAddress.linearOffset());
+
+                if (mOptions->printProcAddress)
+                    procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Label,
+                        .label = format("loc_%x", pinstr->mAddress.linearOffset()),
+                        .comment = pinstr->mAddress.toString()});
+                else
+                    procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Label,
+                        .label = format("loc_%x", pinstr->mAddress.linearOffset())});
+            }
+                        
+            /*
+            std::vector<std::string> post;
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+            {
+                static const char* flagName[128] = {['c'] = "flags.carry",
+                    ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow"};
+                
+                if (flag->save)
+                {
+                    std::function<std::string(convert_args)> save;
+                    switch (flag->type)
+                    {
+                        case 'c': save = convert[pinstr->mId].savecf; break;
+                        case 'z': save = convert[pinstr->mId].savezf; break;
+                        case 'o': save = convert[pinstr->mId].saveof; break;
+                        case 's': save = convert[pinstr->mId].savesf; break;
+                    }
+                    
+                    std::string fName(flagName[flag->type]);
+                    
+                    if (!flag->depends.empty())
+                    {
+                        std::string tempName = utils::format("temp_%cf", flag->type);
+                        
+                        procir->lines.push_back(StatementIr{
+                            .type = StatementIr::Type_t::Assignment,
+                            .op1 = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, fName),
+                            .op2 = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, tempName)
+                        });
+                        
+                        fName = tempName;
+                    }
+                    
+                    assert(save);
+                    std::string cmd = iformat(pinstr, pinfo, info->func, save(pinstr, pinfo, info->func));
+                    mCode.push_back(std::string("    ") + fName + " = " + cmd + ";\n");
+                    
+                }
+            }
+            */
+            
+            if (pinfo->savePrecondition.size())
+            {
+                assert(0);
+                /*
+                 for (const auto& prec : pinfo->savePrecondition)
+                 {
+                     std::string cmd = iformat(pinstr, pinfo, info->func, preCondition(pinstr, prec.readOp));
+                     PostProcessMemoryHint(pMemoryHints, cmd);
+                     mCode.push_back("    " + prec.variable + " = " + cmd + ";\n");
+                 }
+
+                 */
+            }
+            
+            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
+            {
+                assert(0);
+//                mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
+            }
+            
+            if (pinfo->instr->mTemplate.ret)
+            {
+                assert(0);
+                /*
+                 for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                 {
+                     if (flag->needed)
+                     {
+                         std::string flagvalue = BuildConditionFor(pinfo->instr, pinfo, info->func, flag);
+                         if (!flagvalue.empty())
+                             mCode.push_back("    " + flagvalue + ";\n");
+                     }
+                 }
+
+                 */
+            }
+            
+            if (mOptions->GetJumpTables(pinstr->mAddress).size())
+            {
+                assert(0);
+//                assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
+//                DumpIndirectTables(pMemoryHints, pinfo, info->func);
+
+            } else
+            if (convert[pinstr->mId].convert)
+            {
+                auto stf = convert[pinstr->mId].convertir;
+                StatementIr st = stf(pinstr, pinfo, info->func);
+                procir->lines.push_back(st);
+                
+//                std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
+//                
+//                if (command.size())
+//                    mCode.push_back("    " + command + "\n");
+//
+            } else
+            {
+                assert(0);
+//                    mCode.push_back(utils::format("    stop(\"disassembly failed at %x:%x %s\");\n",
+//                                                  pinstr->mAddress.segment, pinstr->mAddress.offset, pinstr->AsString().c_str()));
+
+            }
+
+
+            if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret /*&& injectstr != "//quiet"*/)
+                assert(0);
+            if (pinstr->isTerminating)
+                assert(0);
+            if (pinstr->isReturning)
+                assert(0);
+            
+            next = {p.first.segment, p.first.offset + p.second->instr->mSize};
+        }
+
+        /*
+
+
+             
+             if (mOptions.GetJumpTables(pinstr->mAddress).size())
+             {
+                 assert(pinstr->IsIndirectCall() || pinstr->IsIndirectJump());
+                 DumpIndirectTables(pMemoryHints, pinfo, info->func);
+             } else
+             if (convert[pinstr->mId].convert)
+             {
+                 std::string command = iformat(pinstr, pinfo, info->func, convert[pinstr->mId].convert(pinstr, pinfo, info->func));
+                 if (injectstr == "//comment")
+                     command = "// " + utils::replace(command, "\n", "");
+                 PostProcessMemoryHint(pMemoryHints, command);
+                 
+                 if (command.size())
+                     mCode.push_back("    " + command + "\n");
+             }
+             else
+             {
+                 mCode.push_back(utils::format("    stop(\"disassembly failed at %x:%x %s\");\n",
+                                               pinstr->mAddress.segment, pinstr->mAddress.offset, pinstr->AsString().c_str()));
+ //                break;
+ //                printf("Conversion for '%s'@ %x:%x not implemented!\n", pinstr->AsString().c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset);
+ //                assert(0);
+             }
+             
+             mCode.insert(mCode.end(), post.begin(), post.end());
+
+             if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret && injectstr != "//quiet")
+                 mCode.push_back("    stop(\""  + pinfo->stop + "\", \"" + pinfo->instr->mAddress.toString() + "\");\n");
+             if (pinstr->isTerminating)
+                 mCode.push_back("    stop(\"terminating\");\n");
+             if (pinstr->isReturning)
+             {
+                 mCode.push_back("    return;\n");
+             }
+
+             next = {p.first.segment, p.first.offset + p.second->instr->mSize};
+         }
+
+         */
+        return procir;
+    }
+    
+private:
+    std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
+    {
+        std::set<std::string> tempNames;
+        for (const auto& p : code)
+        {
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                if (flag->save && !flag->depends.empty())
+                    tempNames.insert(utils::format("temp_%cf", flag->type));
+
+            for (const auto& p : pinfo->savePrecondition)
+                tempNames.insert(p.variable);
+        }
+        return tempNames;
+    }
+
+};
+
+class PrintIr {
+public:
+    std::string ToString(shared<OperandIr> op)
+    {
+        switch (op->type)
+        {
+            case OperandIr::Type_t::Const:
+                assert(0);
+                break;
+            case OperandIr::Type_t::Register:
+                assert(0);
+                break;
+            case OperandIr::Type_t::Memory:
+                assert(0);
+                break;
+            case OperandIr::Type_t::String:
+                assert(0);
+                break;
+            case OperandIr::Type_t::Operator:
+                assert(0);
+                break;
+            default:
+                assert(0);
+        }
+        return "";
+    }
+    void Print(shared<ProcIr> prog)
+    {
+        if (prog->info.empty())
+            printf("void %s()\n", prog->name.c_str());
+        else
+            printf("void %s() // %s\n", prog->name.c_str(), prog->info.c_str());
+        printf("{\n");
+        for (auto st : prog->lines)
+        {
+            switch (st.type)
+            {
+                case StatementIr::Type_t::Assignment:
+                    printf("    %s = %s\n", ToString(st.op1).c_str(), ToString(st.op2).c_str());
+                    break;
+                default:
+                    assert(0);
+            }
+        }
+        printf("}\n");
+    }
+};
 
 int main(int argc, char **argv) {
     std::shared_ptr<Options> options = std::make_shared<Options>();
@@ -35,336 +473,11 @@ int main(int argc, char **argv) {
     std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
     assert(!optFile.empty());
     
-    const char* strJson = (const char*)&optFile[0];
-
-    for (std::string line : utils::split(strJson, "\n"))
+    // Parse configuration from JSON file
+    if (!ConfigParser::ParseConfiguration(optFile, options))
     {
-        if (line.empty() || line.starts_with("//"))
-            continue;
-        CJson json(line.c_str());
-        if (json["id"] == "config")
-        {
-            json.ForEach([&](const CSubstring& k, const CSubstring& v){
-                char temp[1024];
-                k.ToString(temp, 1024);
-                if (k == "id")
-                    return;
-                if (k == "loader")
-                    v.ToString(options->loader, sizeof(options->loader));
-                else if (k == "executable")
-                    v.ToString(options->exec, sizeof(options->exec));
-                else if (k == "architecture" && v == "arch16")
-                    options->arch = arch_t::arch16;
-                else if (k == "architecture" && v == "arch32")
-                {
-                    address_t::mode32 = true;
-                    options->arch = arch_t::arch32;
-                }
-                else if (k == "loadAddressShift")
-                    options->loadAddressShift = CConversion(v).ToInt();
-                else if (k == "loadAddress")
-                    options->loadAddress = CConversion(v).ToInt();
-                else if (k == "start" && v == "false")
-                    options->start = false;
-                else if (k == "verbose" && v == "true")
-                    options->verbose = true;
-                else if (k == "verboseAsm" && v == "true")
-                    options->verboseAsm = true;
-                else if (k == "verboseAsm" && v == "false")
-                    options->verboseAsm = false;
-                else if (k == "printf" && v == "true")
-                    options->usePrintf = true;
-                else if (k == "jit" && v == "true")
-                    options->jit = true;
-                else if (k == "verboseAddr" && v == "false")
-                {
-                    options->printProcAddress = false;
-                    options->printLabelAddress = false;
-                }
-                else if (k == "recursive" && v == "false")
-                    options->recursive = false;
-                else if (k == "relocations" && v == "false")
-                    options->relocations = false;
-                else if (k == "declarations" && v == "false")
-                    options->declarations = false;
-                else if (k == "stackShiftAlways" && v == "true")
-                    options->stackShiftAlways = true;
-                else if (k == "procList")
-                {
-                    CJson(v).ForEach([&](const CSubstring& v)
-                    {
-                        std::string strAddr = CJson(v).GetString();
-                        if (strAddr.find("+") != std::string::npos)
-                        {
-                            int plus = (int)strAddr.find("+");
-                            std::string modifier = strAddr.substr(plus);
-                            strAddr = strAddr.substr(0, plus);
-                            procRequest_t req = procRequest_t::none;
-                            if (modifier == "+returnZero")
-                                req = procRequest_t((int)procRequest_t::returnZero | (int)procRequest_t::callNear);
-                            else if (modifier == "+returnCarry+returnZero")
-                                req = procRequest_t((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry | (int)procRequest_t::callNear);
-                            else
-                                assert(0);
-                            options->procModifiers.insert({address_t::fromString(strAddr), req});
-                        }
-                        options->procList.push_back(address_t::fromString(strAddr));
-                    });
-                }
-                else if (k == "isolate")
-                {
-                    CJson(v).ForEach([&](const CSubstring& v)
-                    {
-                        options->isolateLabels.insert(address_t::fromString(CJson(v).GetString()));
-                    });
-                }
-                else if (k == "terminator")
-                {
-                    CJson(v).ForEach([&](const CSubstring& v)
-                    {
-                        options->terminators.insert(address_t::fromString(CJson(v).GetString()));
-                    });
-                }
-                else
-                {
-                    char temp1[128];
-                    char temp2[128];
-                    printf("Wrong attribute: %s=%s\n", k.ToString(temp1, 128), v.ToString(temp2, 128));
-                    //                printf("Wrong attribute: k=%s\n", k.GetString());
-                    //                printf("Wrong attribute: v=%s\n", v.GetString());
-                    assert(0);
-                }
-            });
-        } else
-        if (json["id"] == "indirectCall")
-        {
-            address_t target = address_t::fromString(json["target"].GetString());
-            //address_t parent = address_t::fromString(json["parent"].GetString());
-            address_t origin = address_t::fromString(json["origin"].GetString());
-            options->indirectCalls.push_back({.target = target, /*.parent = parent,*/ .origin = origin});
-        } else
-        if (json["id"] == "indirectJump")
-        {
-            address_t target = address_t::fromString(json["target"].GetString());
-            address_t parent = address_t::fromString(json["parent"].GetString());
-            address_t origin = address_t::fromString(json["origin"].GetString());
-            options->indirectJumps.push_back({.target = target, .parent = parent, .origin = origin});
-        } else
-        if (json["id"] == "jumpTable" && json["callsFar"])
-        {
-            std::vector<uint16_t> targets;
-            std::vector<int> elements;
-
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["callsFar"]).ForEach([&](const CSubstring& v)
-            {
-                address_t target = address_t::fromString(CJson(v).GetString());
-                targets.push_back(target.offset);
-                targets.push_back(target.segment);
-                elements.push_back((int)elements.size());
-            });
-            uint16_t* ptargets = new uint16_t[targets.size()];
-            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
-            
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
-                .type = jumpTable_t::switch_e::CallDwords, .useCaseOffset = true, .elements = elements});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "jumpTable" && json["callsNear"])
-        {
-            std::vector<uint16_t> targets;
-            std::vector<int> elements;
-
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["callsNear"]).ForEach([&](const CSubstring& v)
-            {
-                address_t target = address_t::fromString(CJson(v).GetString());
-                assert(target.segment == instruction.segment);
-                targets.push_back(target.offset);
-                elements.push_back((int)elements.size());
-            });
-            uint16_t* ptargets = new uint16_t[targets.size()];
-            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
-            
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
-                .type = jumpTable_t::switch_e::CallWords, .useCaseOffset = true, .elements = elements});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "jumpTable" && json["calls32"])
-        {
-            std::vector<uint32_t> targets;
-            std::vector<int> elements;
-
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["calls32"]).ForEach([&](const CSubstring& v)
-            {
-                address_t target = address_t::fromString(CJson(v).GetString());
-                assert(target.segment == instruction.segment);
-                targets.push_back(target.offset);
-                elements.push_back((int)elements.size());
-            });
-            uint32_t* ptargets = new uint32_t[targets.size()];
-            memcpy(ptargets, &targets[0], sizeof(uint32_t) * targets.size());
-            
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
-                .type = jumpTable_t::switch_e::Call32, .useCaseOffset = true, .elements = elements});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "jumpTable" && json["jumps"])
-        {
-            std::vector<uint16_t> targets;
-            std::vector<int> elements;
-
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["jumps"]).ForEach([&](const CSubstring& v)
-            {
-                address_t target = address_t::fromString(CJson(v).GetString());
-                assert(target.segment == instruction.segment);
-                targets.push_back(target.offset);
-                elements.push_back((int)elements.size());
-            });
-            uint16_t* ptargets = new uint16_t[targets.size()];
-            memcpy(ptargets, &targets[0], sizeof(uint16_t) * targets.size());
-            
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
-                .type = jumpTable_t::switch_e::JumpWords, .useCaseOffset = true, .elements = elements});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "jumpTable" && json["jumps32"])
-        {
-            std::vector<uint32_t> targets;
-            std::vector<int> elements;
-
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-            CJson(json["jumps32"]).ForEach([&](const CSubstring& v)
-            {
-                address_t target = address_t::fromString(CJson(v).GetString());
-                assert(target.segment == instruction.segment);
-                targets.push_back(target.offset);
-                elements.push_back((int)elements.size());
-            });
-            uint32_t* ptargets = new uint32_t[targets.size()];
-            memcpy(ptargets, &targets[0], sizeof(uint32_t) * targets.size());
-            
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .baseptr = (uint8_t*)ptargets, .release = true,
-                .type = jumpTable_t::switch_e::Jump32, .useCaseOffset = true, .elements = elements});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "jumpTable")
-        {
-            address_t instruction = address_t::fromString(json["addr"].GetString());
-//            if (json["addr"])
-//                instruction = address_t::fromString(json["addr"].GetString());
-            address_t table = address_t::fromString(json["table"].GetString());
-            
-            //int entries = json["entries"].GetNumber();
-            std::string strType = json["type"].GetString();
-            std::string selector = json["selector"].GetString();
-            int minaddr = json["filterMin"] ? json["filterMin"].GetNumber() : 0;
-            
-            bool useCaseOffset = json["useCaseOffset"] ? json["useCaseOffset"].GetBoolean() : false;
-
-            std::vector<int> elements;
-
-            if (json["entries"].IsArray())
-            {
-                CJson(json["entries"]).ForEach([&](const CSubstring& v)
-                {
-                    elements.push_back(CJson(v).GetNumber());
-                });
-            } else {
-                int entries = json["entries"].GetNumber();
-                for (int i=0; i<entries; i++)
-                    elements.push_back(i);
-            }
-            
-            jumpTable_t::switch_e type = jumpTable_t::switch_e::None;
-            if (strType == "jumpwords")
-                type = jumpTable_t::switch_e::JumpWords;
-            else if (strType == "callwords")
-                type = jumpTable_t::switch_e::CallWords;
-            else if (strType == "calldwords")
-                type = jumpTable_t::switch_e::CallDwords;
-            else if (strType == "jumpfix")
-                type = jumpTable_t::switch_e::JumpFix;
-            else if (strType == "jump32")
-                type = jumpTable_t::switch_e::Jump32;
-            else if (strType == "call32")
-                type = jumpTable_t::switch_e::Call32;
-            else
-                assert(0);
-            
-
-            std::shared_ptr<jumpTable_t> jt = std::shared_ptr<jumpTable_t>(new jumpTable_t{
-                .instruction = instruction, .table = table, .type = type, .elements = elements, .selector = selector,
-                .minaddr = minaddr, .useCaseOffset = useCaseOffset});
-            
-            options->jumpTables.push_back(jt);
-        } else
-        if (json["id"] == "inject")
-        {
-            options->inject.insert({address_t::fromString(json["addr"].GetString()), json["text"].GetString()});
-        } else
-        if (json["id"] == "marks")
-        {
-            CJson(json["marks"]).ForEach([&](const CSubstring& v)
-            {
-                options->marks.insert(address_t::fromString(CJson(v).GetString()));
-            });
-        } else
-        if (json["id"] == "overlay")
-        {
-            options->overlayBase = address_t::fromString(json["addr"].GetString());
-            CJson(json["bytes"]).ForEach([&](const CSubstring& v)
-            {
-                int b = CJson(v).GetNumber();
-                options->overlayBytes.push_back(b);
-            });
-        }
-        else if (json["id"] == "hint" && json["label"])
-        {
-            hint_t hint{
-                .string = false,
-                .label = json["label"].GetString(),
-                .pattern = json["pattern"].GetString(),
-                .type = hint_t::typeFromString(json["type"].GetString())
-            };
-
-            if (hint.label == "*")
-            {
-                options->memHintDefault = hint;
-            } else
-            {
-                auto& vect = options->memHints[hint.label];
-                vect.push_back(hint);
-                
-                hint.string = true;
-                if (hint.pattern == "ds, esi")
-                {
-                    hint.pattern = "DS_ESI";
-                    vect.push_back(hint);
-                }
-                if (hint.pattern == "es, edi")
-                {
-                    hint.pattern = "ES_EDI";
-                    vect.push_back(hint);
-                }
-            }
-        }
-        else {
-            printf("Wrong json: '%s'\n", line.c_str());
-            assert(0);
-        }
+        printf("Failed to parse configuration file\n");
+        return 1;
     }
     
     //sub_3c4b
@@ -429,7 +542,6 @@ int main(int argc, char **argv) {
     options->imports = loader->GetImports();
     Capstone->Set(loader, *options);
     
-    bool anyIndirectTable = false;
     for (auto t : options->jumpTables)
     {
         if (t->fileoffset)
@@ -442,8 +554,6 @@ int main(int argc, char **argv) {
 
         if (!t->baseptr)
             t->baseptr = loader->GetBufferAt(t->table);
-        if (t->selector == "indirect")
-            anyIndirectTable = true;
     }
 
     std::vector<address_t> startEntries;
@@ -483,15 +593,6 @@ int main(int argc, char **argv) {
             options->procModifiers.insert({p, options->arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
     }
     
-    printf("#include \"cico%s.h\"\n", options->arch == arch_t::arch16 ? "16" : "32");
-    
-    if (options->usePrintf)
-        printf("#include <stdio.h>");
-    printf("\n");
-
-    if (options->relocations)
-        printf("%s\n", loader->GetMain().c_str());
-
     Analyser analyser(options);
     if (options->recursive)
     {
@@ -500,108 +601,8 @@ int main(int argc, char **argv) {
         for (address_t p : options->procList)
             analyser.Scan(p);
     }
-
-    if (options->declarations)
-    {
-        for (address_t proc : analyser.AllMethods())
-            printf("void sub_%x();\n", proc.linearOffset());
-        printf("\n");
-    }
-
-    auto IndirectOrigins = [](std::vector<indirectJump_t> tab)
-    {
-        std::set<address_t> org;
-        for (const indirectJump_t& j : tab)
-            org.insert(j.origin);
-        return org;
-    };
     
-    if (options->jit)
-    {
-        printf(R"(#include <stdio.h>
-
-void indirectCall(int s, int o, int orgs, int orgo)
-{
-    switch (orgs*0x10000+orgo)
-    {
-)");
-        for (address_t org : IndirectOrigins(options->indirectCalls))
-        {
-            printf(R"(        case 0x%x: 
-            switch (s*0x10000+o)
-            {
-)", org.segment*0x10000 + org.offset);
-            
-            for (const indirectJump_t& j : options->indirectCalls)
-            {
-                if (j.origin == org)
-                    printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
-            }
-            printf(R"(            }
-            break;
-)");
-        }
-        printf(R"(    }
-    printf("\nMISSING INDIRECT CALL %%04x:%%04x @ %%04x:%%04x\n", s, o, orgs, orgo);
-    exit(3);
-}
-
-void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
-{
-    switch (orgs*0x10000+orgo)
-    {
-)");
-        for (address_t org : IndirectOrigins(options->indirectJumps))
-        {
-            printf(R"(        case 0x%x: 
-            switch (s*0x10000+o)
-            {
-)", org.segment*0x10000 + org.offset);
-            
-            for (const indirectJump_t& j : options->indirectJumps)
-            {
-                if (j.origin == org)
-                    printf("                case 0x%x: sub_%x(); return;\n", j.target.segment*0x10000 + j.target.offset, j.target.linearOffset());
-            }
-            printf(R"(            }
-            break;
-)");
-        }
-        printf(R"(    }
-    printf("\nMISSING INDIRECT JUMP %%04x:%%04x @ %%04x:%%04x/%%04x:%%04x\n", s, o, orgs, orgo, pars, paro);
-    exit(3);
-}
-
-)");
-    }
-    
-    if (anyIndirectTable)
-    {
-        printf("void indirectCall(int seg, int ofs)\n{\n");
-        for (auto table : options->jumpTables)
-            if (table->selector == "indirect")
-            {
-                std::set<int> used;
-                printf("    if (seg == 0x%04x)\n    {\n", table->instruction.segment);
-                printf("        switch (ofs)\n");
-                printf("        {\n");
-                for (int i : table->elements)
-                {
-                    if (!table->IsValid(i))
-                        continue;
-                    int v = table->GetTarget(i).offset;
-                    if (used.find(v) != used.end())
-                        continue;
-                    used.insert(v);
-                    printf("            case 0x%x: sub_%x(); return;\n", table->GetTarget(i).offset, table->GetTarget(i).linearOffset());
-                }
-                
-                printf("        }\n");
-                printf("    }\n");
-            }
-        printf("    stop(\"ind\");\n");
-        printf("}\n\n");
-    }
+    printHeading(options, loader, analyser);
     
     std::map<address_t, address_t> dependency;
     for (const indirectJump_t& j : options->indirectJumps)
@@ -609,7 +610,6 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
     std::set<address_t> processNew;
     processNew = analyser.AllMethods();
-    // TODO: call conv!
     std::set<address_t> processed;
     
     while (!processNew.empty())
@@ -631,8 +631,6 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
                 process.insert(p);
         }
         
-        //std::set<address_t> process = processNew;
-        //processNew.clear();
         processNew = keep;
         
         for (address_t proc : process)
@@ -642,15 +640,12 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
                 modifier = options->procModifiers.find(proc)->second;
             int modifierStack = analyser.GuessStackBalanceForProcCached(proc);
 
-            if (/*processFinal.empty() &&*/ (int)modifier & (int)procRequest_t::callIsolated)
+            if ((int)modifier & (int)procRequest_t::callIsolated)
             {
                 // find parent, reuse attributes
                 for (indirectJump_t j : options->indirectJumps)
                     if (j.target == proc)
                     {
-//                        auto pParent = analyser.mIndirectToParent.find(j.origin);
-//                        assert(pParent != analyser.mIndirectToParent.end());
-//                        address_t parent = pParent->second;
                         address_t parent = j.parent;
                         if (options->procModifiers.find(parent) != options->procModifiers.end())
                             modifier = procRequest_t{(int)modifier | (int)options->procModifiers.find(parent)->second};
@@ -683,94 +678,24 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
                 }
             }
         }
-        
-//        // TODO: dependency tree!!!
-//        if (processFinal5.empty())
-//            processFinal5 = std::move(processFinal6);
-//        if (processFinal4.empty())
-//            processFinal4 = std::move(processFinal5);
-//        if (processFinal3.empty())
-//            processFinal3 = std::move(processFinal4);
-//        if (processFinal2.empty())
-//            processFinal2 = std::move(processFinal3);
-//        if (processFinal.empty())
-//            processFinal = std::move(processFinal2);
-//        if (processNew.empty())
-//            processNew = std::move(processFinal);
     }
 
+//    ConvertIr conv(analyser, options);
+//    PrintIr print;
     for (address_t proc : analyser.AllMethods())
     {
+        
         Convert convert(analyser, *options);
         convert.SetOffsetMask(options->arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
         convert.ConvertProc(proc);
         convert.Dump();
+         
+        
+//        auto ir = conv.Convert(proc);
+//        print.Print(ir);
     }
     
-    if (options->relocations)
-        printf("%s\n", loader->GetFooter().c_str());
-
-    std::vector<int> procMap;
-    for (address_t proc : analyser.AllMethods())
-    {
-        for (const auto& [begin, end] : analyser.GetProcRanges(proc))
-        {
-            procMap.push_back(proc.linearOffset());
-            procMap.push_back(begin.segment);
-            procMap.push_back(begin.offset);
-            procMap.push_back(end.segment);
-            procMap.push_back(end.offset);
-        }
-    }
-
-    printf("int GetProcAt(int seg, int ofs)\n");
-    printf("{\n");
-    if (options->marks.size())
-    {
-        printf("    int marks[] = {\n");
-        for (address_t mark : options->marks)
-            printf("0x%04x, 0x%04x, ", mark.segment, mark.offset);
-        printf("    };\n");
-        printf("    for (int i=0; i<sizeof(marks)/sizeof(marks[0]); i+=2)\n");
-        printf("        if (seg == marks[i] && ofs == marks[i+1])\n");
-        printf("            return 0;\n");
-        printf("\n");
-    }
-    printf("    int map[] = {\n");
-    for (int i=0; i<procMap.size(); i++)
-    {
-        if (i%10 == 0)
-            printf("        ");
-        printf("0x%x, ", procMap[i]);
-        if (i%10 == 9)
-            printf("\n");
-    }
-    printf("    };\n");
-    printf("\n");
-    printf("    for (int i=0; i<sizeof(map)/sizeof(map[0]); i+=5)\n");
-    printf("        if (seg * 16 + ofs >= map[i+1]*16 + map[i+2] && seg * 16 + ofs < map[i+3]*16 + map[i+4])\n");
-    printf("            return map[i];\n");
-    printf("    return 0;\n");
-    printf("}\n");
-
-//    std::map<address_t, int> hits;
-//    for (address_t proc : analyser.AllMethods())
-//    {
-//        for (address_t label : analyser.GetGapLabels(proc))
-//        {
-//            if (hits.find(label) != hits.end())
-//                hits.find(label)->second++;
-//            else
-//                hits.insert(std::pair<address_t, int>(label, 1));
-//        }
-//    }
-
-//    for (std::pair<address_t, int> p : hits)
-//    {
-//        if (p.second > 1)
-//            printf("// %d refs to loc_%x\n", p.second, p.first.linearOffset());
-//    }
-    
+    printFooter(options, loader, analyser);
 
     return 0;
 }

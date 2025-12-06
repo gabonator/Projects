@@ -13,7 +13,6 @@ class Convert : public Formatter
     const Analyser& mAnal;
     const Options& mOptions;
     shared <Analyser::info_t> mInfo;
-//    shared<CTracer> mTracer;
     std::vector<std::string> mCode;
     
 public:

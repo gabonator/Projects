@@ -5,6 +5,11 @@
 //  Created by Gabriel Valky on 16/07/2025.
 //
 
+#pragma once
+//#include "tracer.h"
+//#include "analyser.h"
+//#include "analyserFunction.h"
+
 // InstructionAnalyser - fill in instrInfo based on x86 instruction
 class InstructionAnalyser : public FunctionAnalyser {
 public:
