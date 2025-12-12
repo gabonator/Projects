@@ -66,12 +66,20 @@ struct address_t {
         return {0, 0};
     }
     
-    std::string toString()
+    std::string toString() const
     {
         char temp[128];
         snprintf(temp, sizeof(temp), "%04x:%04x", segment, offset);
         return temp;
     }
+
+//    std::string toLinearString() const
+//    {
+//        char temp[128];
+//        snprintf(temp, sizeof(temp), "%x", linearOffset());
+//        return temp;
+//    }
+
     bool operator<(const address_t& other) const {
         if (segment != other.segment)
             return segment < other.segment;

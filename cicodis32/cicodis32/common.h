@@ -246,6 +246,47 @@ struct jumpTable_t {
                 return "stop(/*3*/);";
         }
     }
+    uint32_t GetCaseKey(int i) const
+    {
+        assert(IsValid(i));
+        switch (type)
+        {
+            case CallWords:
+                if (useCaseOffset)
+                    return GetTarget(i).offset;
+                else
+                    return i*2;
+            case CallDwords:
+                if (useCaseOffset)
+                    return (GetTarget(i).segment<<16) | GetTarget(i).offset;
+                else
+                    return i*4;
+            case JumpWords:
+            {
+                if (useCaseOffset)
+                    return GetTarget(i).offset;
+                else
+                    return i*2;
+            }
+            case JumpFix:
+            case Call:
+                return GetTarget(i).offset;
+            case Call32:
+                if (useCaseOffset)
+                    return GetTarget(i).offset;
+                else
+                    return i;
+            case Jump32:
+                if (useCaseOffset)
+                    return GetTarget(i).offset;
+                else
+                    return i;
+            default:
+                assert(0);
+                return 0;
+        }
+
+    }
     std::string GetSelector() const
     {
         return selector;

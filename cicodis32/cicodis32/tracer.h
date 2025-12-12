@@ -19,6 +19,7 @@ struct instruction_t
     bool destructiveCarry{false};
     bool savedVisiblyCarry{false};
     bool savedVisiblyZero{false};
+    bool string{false};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
@@ -109,6 +110,13 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_SETLE] = {.simpleCond = true},
     [X86_INS_SETG] = {.simpleCond = true},
     [X86_INS_SETGE] = {.simpleCond = true},
+    
+    [X86_INS_STOSB] = { .string = true },
+    [X86_INS_STOSW] = { .string = true },
+    [X86_INS_LODSB] = { .string = true },
+    [X86_INS_LODSW] = { .string = true },
+    [X86_INS_MOVSB] = { .string = true },
+    [X86_INS_MOVSW] = { .string = true },
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

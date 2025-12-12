@@ -5,10 +5,8 @@
 //  Created by Gabriel Valky on 26/06/2025.
 //
 #include <fstream>
-//#include <bit>
 #include <algorithm>
-#include "lib/miniz.h"
-
+#include "../lib/miniz.h"
 
 std::vector<uint8_t> Loader::GetFileContents(std::string fullPath)
 {

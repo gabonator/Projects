@@ -10,7 +10,6 @@
 struct convert_t
 {
     std::function<std::string(convert_args)> convert;
-    std::function<StatementIr(convert_args)> convertir;
     std::function<std::string(convert_args)> zf;
     std::function<std::string(convert_args)> cf;
     std::function<std::string(convert_args)> sf;
@@ -22,12 +21,28 @@ struct convert_t
     std::function<std::string(convert_args)> savesf;
     std::string flagCondition;
     x86_insn conditionAs{X86_INS_INVALID};
+    //
+    std::function<StatementIr(convert_args)> convertir;
+    std::function<StatementIr(convert_args)> zfir;
+    std::function<StatementIr(convert_args)> cfir;
+    std::function<StatementIr(convert_args)> sfir;
+
     
 };
 
 convert_t convert[X86_INS_ENDING] = {
-    [X86_INS_PUSH] = {.convert = [](convert_args){ return instr->mDetail.operands[0].size == 4 ? "push32($rd0);" : "push($rd0);";} },
-    [X86_INS_POP] = {.convert = [](convert_args){ return instr->mDetail.operands[0].size == 4 ? "$wr0 = pop32();" : "$wr0 = pop();";} },
+    [X86_INS_PUSH] = {.convert = [](convert_args){ return instr->mDetail.operands[0].size == 4 ? "push32($rd0);" : "push($rd0);";},
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "push",
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])}; },
+    },
+    [X86_INS_POP] = {.convert = [](convert_args){ return instr->mDetail.operands[0].size == 4 ? "$wr0 = pop32();" : "$wr0 = pop();";},
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .func = "pop"}; },
+},
     [X86_INS_XOR] = {.convert = [](convert_args){
         if (instr->ArgsEqual())
             return "$wr0 = 0;";
@@ -39,34 +54,74 @@ convert_t convert[X86_INS_ENDING] = {
         .savezf = [](convert_args){ assert(instr->ArgsEqual()); return "0"; },
         .savecf = [](convert_args){ return "0"; },
     },
-    [X86_INS_MOV] = {.convert = [](convert_args){ return "$wr0 = $rd1;"; } },
+    [X86_INS_MOV] = {
+        .convert = [](convert_args){ return "$wr0 = $rd1;"; },
+        .convertir = [](convert_args){ return StatementIr{
+            .type = StatementIr::Type_t::Assignment,
+            .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+            .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1])}; }
+    },
     [X86_INS_MOVZX] = {.convert = [](convert_args){
         return "$wr0 = $rd1;"; } },
     [X86_INS_MOVSX] = {.convert = [](convert_args){
         return "$wr0 = ($sig1)$rd1;"; } },
     [X86_INS_JE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+            //.convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
         .flagCondition = "$zero"},
     [X86_INS_JNE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        //.convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
         .flagCondition = "!$zero"},
-    [X86_INS_JLE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JL] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JLE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        //        .convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
+    },
+    [X86_INS_JL] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        //        .convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
+    },
     [X86_INS_JAE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+            //.convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
         .flagCondition = "!$carry"},
     [X86_INS_JA] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JB] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
         .flagCondition = "$carry"},
     [X86_INS_JBE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JG] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
-    [X86_INS_JGE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
+    [X86_INS_JGE] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
+        //.convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Condition}; },
+    },
     [X86_INS_JP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JNP] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; } },
     [X86_INS_JNS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
         .flagCondition = "!$sign"},
     [X86_INS_JS] = {.convert = [](convert_args){ return "if ($cond)\n        $goto_target;"; },
         .flagCondition = "$sign"},
-    [X86_INS_JMP] = {.convert = [](convert_args){ return "$goto_target;"; } },
+    [X86_INS_JMP] = {.convert = [](convert_args){ return "$goto_target;"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = instr->mDetail.operands[0].type == X86_OP_IMM ? StatementIr::Type_t::DirectJump : StatementIr::Type_t::IndirectJump,
+                .addr = instr->JumpTarget(), // TODO: indirect
+                //.opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])};
+            };
+        },
+    },
     [X86_INS_LJMP] = {.convert = [](convert_args){ return "$goto_ltarget;"; } },
-    [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--$cx)\n        $goto_target;"; } },
+    [X86_INS_LOOP] = {.convert = [](convert_args){ return "if (--$cx)\n        $goto_target;"; },
+            .convertir = [](convert_args){
+                auto loopTarget = std::make_shared<StatementIr>(StatementIr{
+                    .type = StatementIr::Type_t::DirectJump,
+                    .addr = instr->JumpTarget()});
+                auto loopCounter = std::make_shared<StatementIr>(StatementIr{
+                    .type = StatementIr::Type_t::Unary,
+                    .oper = "--", // prefix
+                    .opin1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "cx")});
+                auto loopCond = std::make_shared<StatementIr>(StatementIr{
+                    .type = StatementIr::Type_t::Compare,
+                    .stmt1 = loopCounter});
+                
+                return StatementIr{
+                    .type = StatementIr::Type_t::Condition,
+                    .stConditionExpr = loopCond,
+                    .stConditionTrue = loopTarget};
+            }
+    },
     [X86_INS_LOOPNE] = {.convert = [](convert_args){ return "if (--$cx && $cond)\n        $goto_target;"; },
         .flagCondition = "!$zero"},
     [X86_INS_LOOPE] = {.convert = [](convert_args){ return "if (--$cx && !$cond)\n        $goto_target;"; },
@@ -99,6 +154,34 @@ convert_t convert[X86_INS_ENDING] = {
         return utils::join(aux, "\n    ");
     },
         .flagCondition = "$ret",
+        .convertir = [](convert_args){
+            int shift = 0;
+            assert(((int)func.request & (int)procRequest_t::callNear) ||
+                   ((int)func.request & (int)procRequest_t::callLong));
+            assert(func.callConv == callConv_t::callConvNear ||
+                   func.callConv == callConv_t::callConvShiftStackNear ||
+                   func.callConv == callConv_t::callConvSimpleStackNear ||
+                   func.callConv == callConv_t::callConvShiftStackLong);
+            if (func.callConv == callConv_t::callConvShiftStackLong)
+                shift += 4;
+            if (func.callConv == callConv_t::callConvShiftStackNear)
+                shift += 2;
+            shift += instr->Imm();
+            
+            if (shift == 0)
+            {
+                if (!(instr->isLast && !instr->isLabel))
+                    return StatementIr{.type = StatementIr::Type_t::Return};
+                else
+                    return StatementIr{};
+            } else {
+                StatementIr st = OP_MOD("assign") << OP_REG("sp") + OP_CONST(shift); //{.type = StatementIr::Type_t::Binary, .shiftStack = shift};
+                //                StatementIr st{.type = StatementIr::Type_t::Return, .shiftStack = shift};
+                if (!(instr->isLast && !instr->isLabel))
+                    st.next = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::Return});
+                return st;
+            }
+        },
     },
     [X86_INS_RETF] = {.convert = [](convert_args){
         std::vector<std::string> aux;
@@ -135,11 +218,28 @@ convert_t convert[X86_INS_ENDING] = {
         return "stop(\"iretd\");";
     }},
     [X86_INS_INT] = {.convert = [](convert_args){ return "interrupt($rd0);"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "interrupt",
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])}; },
+
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
     },
     [X86_INS_AND] = {.convert = [](convert_args){
         return instr->ArgsEqual() ? "" : "$rw0 &= $rd1;"; },
+        .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) & OP_X86(instr, 1)); },
+            
+            .zfir = [](convert_args){
+                auto outer = std::make_shared<StatementIr>(StatementIr{
+                    .type = StatementIr::Type_t::Unary,
+                    .oper = "!",
+                    .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                });
+
+                return StatementIr{.type = StatementIr::Type_t::Compare, .stmt1 = outer};
+            },
+
         .cf = [](convert_args){ return "0"; },
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
@@ -150,14 +250,17 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_OR] = {.convert = [](convert_args){
         return instr->ArgsEqual() ? "" : "$rw0 |= $rd1;";
     },
+            .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) | OP_X86(instr, 1)); },
+
         .zf = [](convert_args){ return "!$rd0"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
-        .cf = [](convert_args){ return "stop() /*ggg9*/"; },
+        .cf = [](convert_args){ return "stop() /*ggg9"; },
         .savecf = [](convert_args){ return "0 /*ggg1*/"; },
         .savezf = [](convert_args){ return instr->ArgsEqual() ? "!$rd0" : "!($rd0 | $rd1)"; },
         .savesf = [](convert_args){ return instr->ArgsEqual() ? "($sig0)$rd0 < 0" : "($sig0)($rd0 | $rd1) < 0"; },
     },
     [X86_INS_ADD] = {.convert = [](convert_args){ return "$rw0 += $rd1;"; },
+            .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) + OP_X86(instr, 1)); },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return "!$rd0"; },
             .savecf = [](convert_args){ return "($large0$rd0 + $rd1) >= $overflow0"; },
@@ -205,6 +308,9 @@ convert_t convert[X86_INS_ENDING] = {
     },
             .cf = [](convert_args){ return "flags.carry"; },
             .zf = [](convert_args){ return "flags.zero"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = instr->mDetail.operands[0].type == X86_OP_IMM ? StatementIr::Type_t::DirectCall : StatementIr::Type_t::IndirectCall,
+                .addr = instr->CallTarget()}; }, // TODO: indirect
     },
     [X86_INS_LCALL] = {.convert = [](convert_args){
         if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_IMM && instr->mDetail.operands[1].type == X86_OP_IMM)
@@ -248,6 +354,7 @@ convert_t convert[X86_INS_ENDING] = {
 
     }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
+        .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) - OP_X86(instr, 1)); },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .zf = [](convert_args){ return instr->ArgsEqual() ? "1" : "!$rd0"; },
             .savezf = [](convert_args){ return instr->ArgsEqual() ? "1" : "$rd0 == $rd1"; },
@@ -257,6 +364,20 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_CMP] = {
         .convert = [](convert_args){ return ""; },
+        .convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
+        .zfir = [](convert_args){ return StatementIr{
+            .type = StatementIr::Type_t::Compare,
+            .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+            .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+            .oper = "=="
+        }; },
+        .cfir = [](convert_args){ return StatementIr{
+            .type = StatementIr::Type_t::Compare,
+            .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+            .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+            .oper = "<"
+        }; },
+
         .zf = [](convert_args){ return "$rd0 == $rd1"; },
         .cf = [](convert_args){ return "$rd0 < $rd1"; },
         .sf = [](convert_args){ return "($sig0)$rd0 < ($sig1)$rd1"; }, // TODO: ugly, imm
@@ -268,7 +389,31 @@ convert_t convert[X86_INS_ENDING] = {
     },
     [X86_INS_TEST] = {
         .convert = [](convert_args){ return ""; },
+        .convertir = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
         .zf = [](convert_args){ return instr->ArgsEqual() ? "!$rd0" : "!($rd0 & $rd1)"; },
+        .zfir = [](convert_args){
+            auto inner = std::make_shared<StatementIr>(StatementIr{
+                .type = StatementIr::Type_t::Binary,
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .oper = "&",
+                .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+            });
+                
+            auto outer = std::make_shared<StatementIr>(StatementIr{
+                .type = StatementIr::Type_t::Unary,
+                .oper = "!",
+                .stmt1 = inner,
+            });
+
+            StatementIr nonzero{
+                .type = StatementIr::Type_t::Compare,
+                .stmt1 = outer //std::make_shared<StatementIr>(outer),
+                //                .op2 = std::make_shared<OperandIr>(OperandIr::Type_t::Const, 0),
+                //                .opOperator = std::make_shared<OperandIr>(OperandIr::Type_t::Operator, "!=")
+            };
+            return nonzero;
+        },
+
         .numeric = [](convert_args){ return "$rd0"; },
         .signedNumeric = [](convert_args){ return "$rd0"; }, //[](convert_args){ return "(sig0)$rd0"; },
         .savezf = [](convert_args){
@@ -278,11 +423,15 @@ convert_t convert[X86_INS_ENDING] = {
 
     },
     [X86_INS_NEG] = {.convert = [](convert_args){ return "$wr0 = -$rd0;"; },
+            .convertir = [](convert_args){
+                return OP_MOD("assign") << -OP_X86(instr, 0); },
+
             .zf = [](convert_args){ return "!$rd0"; },
             .savecf = [](convert_args){ return "!$rd0 && stop(\"neg post\")"; }, // should be post
             .savesf = [](convert_args){ return "($sig0)$rd0 > 0"; },
     },
-    [X86_INS_CLD] = {.convert = [](convert_args){ return "flags.direction = 0;"; } },
+    [X86_INS_CLD] = {.convert = [](convert_args){ return "flags.direction = 0;"; },
+            .convertir = [](convert_args){ return ASSIGN(OP_VAR("flags.direction"), OP_CONST(0)); }},
     [X86_INS_STD] = {.convert = [](convert_args){ return "flags.direction = 1;"; } },
     [X86_INS_CLC] = {.convert = [](convert_args){
 //        return "flags.carry = 0;";
@@ -291,8 +440,10 @@ convert_t convert[X86_INS_ENDING] = {
 //            .savecf = [](convert_args){ return "0"; },
     },
     [X86_INS_STC] = {.convert = [](convert_args){ return "flags.carry = 1;"; } },
-    [X86_INS_CLI] = {.convert = [](convert_args){ return "flags.interrupts = 0;"; } },
-    [X86_INS_STI] = {.convert = [](convert_args){ return "flags.interrupts = 1;"; } },
+    [X86_INS_CLI] = {.convert = [](convert_args){ return "flags.interrupts = 0;"; },
+        .convertir = [](convert_args){ return ASSIGN(OP_VAR("flags.interrupts"), OP_CONST(0)); }},
+    [X86_INS_STI] = {.convert = [](convert_args){ return "flags.interrupts = 1;"; },
+        .convertir = [](convert_args){ return ASSIGN(OP_VAR("flags.interrupts"), OP_CONST(1)); }},
     [X86_INS_LODSB] = {.convert = [](convert_args){
         if (strcmp(instr->mOperands, "al, byte ptr [si]") == 0)
             return "al = lodsb<DS_SI>();";
@@ -318,12 +469,15 @@ convert_t convert[X86_INS_ENDING] = {
         return "";
     } },
     [X86_INS_DEC] = {.convert = [](convert_args){ return "$rw0--;"; },
+            .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) - OP_CONST(1)); },
             .zf = [](convert_args){ return "!$rd0"; },
             .sf = [](convert_args){ return "($sig0)$rd0 < 0"; },
             .savezf = [](convert_args){ return "stop(\"post\") && !$rd0"; }, // TODO: must be POST!!!!!!
     },
     [X86_INS_INC] = {
         .convert = [](convert_args){ return "$rw0++;"; },
+        .convertir = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) + OP_CONST(1)); },
+
         .sf = [](convert_args){ return "($sig0)$rd0 < 0";},
         .zf = [](convert_args){ return "!$rd0";},
         .savezf = [](convert_args){ return "!$rd0"; }, // TODO:
@@ -331,6 +485,8 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHR] = {.convert = [](convert_args) {
             return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 >>= $immd1;" : "$rw0 >>= $rd1;";
         },
+        .convertir = [](convert_args){ return OP_MOD("assign", "decimm") << SHR(OP_X86(instr, 0), OP_X86(instr, 1)); },
+
         .zf = [](convert_args){ return "!$rd0"; },
         .cf = [](convert_args){ return "$carry"; }, // TODO: saved index
         //.cf = [](convert_args){ return "temp_cf"; }, // TODO: saved index
@@ -339,6 +495,7 @@ convert_t convert[X86_INS_ENDING] = {
     [X86_INS_SHL] = {.convert = [](convert_args){
         return instr->mDetail.operands[1].type == X86_OP_IMM ? "$rw0 <<= $immd1;" : "$rw0 <<= $rd1;";
     },
+            .convertir = [](convert_args){ return OP_MOD("assign", "decimm") << SHL(OP_X86(instr, 0), OP_X86(instr, 1)); },
             .zf = [](convert_args){ return "!$rd0"; },
             .savecf = [](convert_args){
                 if (instr->Imm() == 1)
@@ -380,17 +537,47 @@ convert_t convert[X86_INS_ENDING] = {
         assert(0);
         return "";
     } },
-    [X86_INS_OUT] = {.convert = [](convert_args){ return "out$width1($rd0, $rd1);"; } },
+    [X86_INS_OUT] = {.convert = [](convert_args){ return "out$width1($rd0, $rd1);"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "out",
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+                .suffix = instr->mDetail.operands[1].size*8}; },
+    },
     [X86_INS_INT3] = {.convert = [](convert_args){ return "stop(\"breakpoint\");"; } },
-    [X86_INS_NOT] = {.convert = [](convert_args){ return "$wr0 = ~$rd0;"; } },
-    [X86_INS_DIV] = {.convert = [](convert_args){ return "div$width0($rd0);"; } },
+    [X86_INS_NOT] = {.convert = [](convert_args){ return "$wr0 = ~$rd0;"; },
+            .convertir = [](convert_args){
+                return OP_MOD("assign") << ~OP_X86(instr, 0); },
+},
+    [X86_INS_DIV] = {.convert = [](convert_args){ return "div$width0($rd0);"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "div",
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .suffix = instr->mDetail.operands[0].size*8 }; }
+    },
     [X86_INS_IDIV] = {.convert = [](convert_args){ return "idiv$width0($rd0);"; } },
     [X86_INS_MUL] = {.convert = [](convert_args){
         return "mul$width0($rd0);";
     } },
     [X86_INS_SAR] = {.convert = [](convert_args){ return "$wr0 = sar$width0($rd0, $rd1);"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "sar",
+                .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+                .suffix = instr->mDetail.operands[0].size*8 }; },
         .zf = [](convert_args){ return "!$rd0";},},
-    [X86_INS_IN] = {.convert = [](convert_args){ return "$wr0 = in$width0($rd1);"; } },
+    [X86_INS_IN] = {.convert = [](convert_args){ return "$wr0 = in$width0($rd1);"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = "in",
+                .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+                .suffix = instr->mDetail.operands[0].size*8}; },
+    },
     // float
     [X86_INS_FLD] = {.convert = [](convert_args){ return "fld$width0($rd0);"; } },
     [X86_INS_FILD] = {.convert = [](convert_args){ return "fild$width0($rd0);"; } },
@@ -455,7 +642,12 @@ convert_t convert[X86_INS_ENDING] = {
         .zf = [](convert_args){ return "flags.zero"; }},
     [X86_INS_CMPSD] = {.convert = [](convert_args){ return "$string"; },
         .zf = [](convert_args){ return "flags.zero"; }},
-    [X86_INS_CWDE] = {.convert = [](convert_args){ return func.arch == arch_t::arch16 ? "cbw();" : "cwde();"; } }, // CBW/CWDE
+    [X86_INS_CWDE] = {.convert = [](convert_args){ return func.arch == arch_t::arch16 ? "cbw();" : "cwde();"; },
+            .convertir = [](convert_args){ return StatementIr{
+                .type = StatementIr::Type_t::Function,
+                .func = func.arch == arch_t::arch16 ? "cbw" : "cwde"}; },
+
+    }, // CBW/CWDE
     [X86_INS_CDQ] = {.convert = [](convert_args){
         return func.arch == arch_t::arch16 ? "dx = ax & 0x8000 ? 0xffff : 0x0000;" : "edx = (int32_t)eax < 0 ? -1 : 0;"; } }, // CWD/CWDE
     [X86_INS_NOP] = {.convert = [](convert_args){ return ""; } },

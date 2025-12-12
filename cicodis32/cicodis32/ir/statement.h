@@ -1,0 +1,55 @@
+//
+//  statement.h
+//  cicodis-clean
+//
+//  Created by Gabriel Valky on 09/12/2025.
+//
+
+class StatementIr {
+public:
+    enum class Type_t {
+        None,
+        Assignment, // op1 = op2
+        Compare, // op1 > op2
+        Unary, // op1 = !op2
+        Binary, // op1 = op2 +- op3
+        Function, // func(op1)?
+        Condition, // if (StatementIr) StatementIr
+        Stop, // stop(stop)
+        DirectCall, // op1()
+        IndirectCall,
+        DirectJump, // op1()
+        IndirectJump,
+        Label, // op1:
+        Switch, // switch(selector) { case const: long/far call/jump }
+        Comment, // // comment
+        Return
+    } type{Type_t::None};
+
+    shared<OperandIr> opd;
+    shared<OperandIr> opin1;
+    shared<OperandIr> opin2;
+    shared<StatementIr> stmt1;
+    shared<StatementIr> stmt2;
+        shared<StatementIr> stConditionExpr;
+    shared<StatementIr> stConditionTrue;
+    std::string opSwitchSelector;
+    std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
+
+    std::string comment;
+    std::string stop;
+    std::string repeat;
+    std::string func;
+    std::string oper;
+    address_t addr;
+    
+    int suffix{0};
+    bool isSigned{false}; // For Compare type: true = signed comparison, false = unsigned
+    
+    shared<StatementIr> next;
+    
+    operator bool()
+    {
+        return type != Type_t::None;
+    }
+};
