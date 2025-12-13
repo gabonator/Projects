@@ -39,8 +39,8 @@ inline OperandBuilder OP_OP(const std::string& op) {
     return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Operator, op));
 }
 
-inline OperandBuilder OP_CONST(int value) {
-    return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Const, value));
+inline OperandBuilder OP_CONST(int value, int size = 0) {
+    return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Const, value, size));
 }
 
 inline OperandBuilder OP_REG(const std::string& reg) {
@@ -55,6 +55,10 @@ inline OperandBuilder OP_STR(const std::string& str) {
 inline OperandBuilder OP_X86(shared<CapInstr> instr, int index) {
     assert(index >= 0 && index < instr->mDetail.op_count);
     return OperandBuilder(std::make_shared<OperandIr>(instr->mDetail.operands[index]));
+}
+
+inline OperandBuilder OP_X86(cs_x86_op op) {
+    return OperandBuilder(std::make_shared<OperandIr>(op));
 }
 
 // Unary operator: ! prefix for OperandBuilder
@@ -179,6 +183,16 @@ inline StatementBuilder ASSIGN(const OperandBuilder& dest, const OperandBuilder&
     return StatementBuilder(stmt);
 }
 
+// Assignment operator overload for StatementBuilder as source
+// Usage: ASSIGN(OP_VAR("x"), some_statement)
+inline StatementBuilder ASSIGN(const OperandBuilder& dest, const StatementBuilder& src) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Assignment;
+    stmt->opd = dest.get();
+    stmt->stmt1 = src.get();
+    return StatementBuilder(stmt);
+}
+
 // Comparison operators (unsigned by default)
 inline StatementBuilder operator==(const OperandBuilder& left, const OperandBuilder& right) {
     auto stmt = std::make_shared<StatementIr>();
@@ -244,14 +258,21 @@ inline StatementBuilder operator<=(const OperandBuilder& left, const OperandBuil
 class StatementModifier {
 private:
     std::vector<std::string> modTypes;
+    std::function<int()> suffixComputer; // Lambda to compute suffix dynamically
     
 public:
-    explicit StatementModifier(const std::string& type) : modTypes({type}) {}
-    explicit StatementModifier(const std::string& type1, const std::string& type2) : modTypes({type1, type2}) {}
+    explicit StatementModifier(const std::string& type) : modTypes({type}), suffixComputer(nullptr) {}
+    explicit StatementModifier(const std::string& type1, const std::string& type2) : modTypes({type1, type2}), suffixComputer(nullptr) {}
+    explicit StatementModifier(const std::string& type, std::function<int()> suffixFunc) : modTypes({type}), suffixComputer(suffixFunc) {}
     
     // Apply modifier to a StatementBuilder
     StatementBuilder apply(const StatementBuilder& builder) const {
         auto stmt = builder.get();
+        
+        // Apply suffix if provided
+        if (suffixComputer) {
+            stmt->suffix = suffixComputer();
+        }
         
         // Apply each modifier in sequence
         for (const auto& modType : modTypes) {
@@ -284,6 +305,12 @@ public:
                         stmt->oper.clear(); // clear the operator from the assignment level
                     }
                 }
+                // For Function type with "assign", set opd to opin1
+                else if (stmt->type == StatementIr::Type_t::Function && !stmt->opd) {
+                    if (stmt->opin1) {
+                        stmt->opd = stmt->opin1; // destination is the first operand
+                    }
+                }
             } else if (modType == "decimm") {
                 // Mark immediate operands to be printed as decimal instead of hexadecimal
                 assert(stmt->opin2);
@@ -305,6 +332,11 @@ inline StatementModifier OP_MOD(const std::string& modifierType) {
 
 inline StatementModifier OP_MOD(const std::string& modifierType1, const std::string& modifierType2) {
     return StatementModifier(modifierType1, modifierType2);
+}
+
+// Helper function to create modifier with suffix computer
+inline StatementModifier OP_MOD(const std::string& modifierType, std::function<int()> suffixFunc) {
+    return StatementModifier(modifierType, suffixFunc);
 }
 
 // Operator << to apply modifier to statement
@@ -331,12 +363,41 @@ inline StatementBuilder operator-(const OperandBuilder& left, const OperandBuild
     return StatementBuilder(stmt);
 }
 
+// Arithmetic operators between StatementBuilder and OperandBuilder (for chaining)
+inline StatementBuilder operator+(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Binary;
+    stmt->stmt1 = left.get();
+    stmt->oper = "+";
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator-(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Binary;
+    stmt->stmt1 = left.get();
+    stmt->oper = "-";
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+
 // Comparison operators for StatementBuilder (left side)
 inline StatementBuilder operator>=(const StatementBuilder& left, const OperandBuilder& right) {
     auto stmt = std::make_shared<StatementIr>();
     stmt->type = StatementIr::Type_t::Compare;
     stmt->stmt1 = left.get();
     stmt->oper = ">=";
+    stmt->opin2 = right.get();
+    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator<=(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = "<=";
     stmt->opin2 = right.get();
     stmt->isSigned = false;
     return StatementBuilder(stmt);
@@ -349,6 +410,74 @@ inline StatementBuilder operator<(const StatementBuilder& left, const OperandBui
     stmt->oper = "<";
     stmt->opin2 = right.get();
     stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator>(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = ">";
+    stmt->opin2 = right.get();
+    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator==(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = "==";
+    stmt->opin2 = right.get();
+    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator!=(const StatementBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = "!=";
+    stmt->opin2 = right.get();
+    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+// Helper function to create binary operations with custom operators
+inline StatementBuilder OP_BINARY(const OperandBuilder& left, const std::string& op, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Binary;
+    stmt->opin1 = left.get();
+    stmt->oper = op;
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+// Helper function to create function call statements
+inline StatementBuilder OP_FUNCTION(const std::string& funcName, const OperandBuilder& arg1, const OperandBuilder& arg2) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Function;
+    if (!funcName.ends_with("#"))
+        stmt->func = funcName;
+    else {
+        stmt->func = funcName.substr(0, funcName.size()-1);
+        stmt->suffix = (arg1.get()->regSize + arg1.get()->memSize)*8;
+    }
+    stmt->opin1 = arg1.get();
+    stmt->opin2 = arg2.get();
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder OP_FUNCTION(const std::string& funcName, const OperandBuilder& arg1) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Function;
+    if (!funcName.ends_with("#"))
+        stmt->func = funcName;
+    else {
+        stmt->func = funcName.substr(0, funcName.size()-1);
+        stmt->suffix = (arg1.get()->regSize + arg1.get()->memSize)*8;
+    }
+    stmt->opin1 = arg1.get();
     return StatementBuilder(stmt);
 }
 
@@ -415,6 +544,25 @@ inline StatementBuilder operator|(const OperandBuilder& left, const StatementBui
     stmt->type = StatementIr::Type_t::Binary;
     stmt->opin1 = left.get();
     stmt->oper = "|";
+    stmt->stmt2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+// Bitwise XOR operator between operands
+inline StatementBuilder operator^(const OperandBuilder& left, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Binary;
+    stmt->opin1 = left.get();
+    stmt->oper = "^";
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator^(const OperandBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Binary;
+    stmt->opin1 = left.get();
+    stmt->oper = "^";
     stmt->stmt2 = right.get();
     return StatementBuilder(stmt);
 }

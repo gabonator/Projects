@@ -117,6 +117,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_LODSW] = { .string = true },
     [X86_INS_MOVSB] = { .string = true },
     [X86_INS_MOVSW] = { .string = true },
+    [X86_INS_SCASB] = { .string = true },
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

@@ -32,7 +32,9 @@
 #include "configParser.h"
 #include "exportcglue.h"
 
+#include "ir/convtable.h"
 #include "ir/convert.h"
+
 
 
 int main(int argc, char **argv) {

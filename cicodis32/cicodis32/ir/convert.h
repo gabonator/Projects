@@ -111,9 +111,17 @@ public:
                 };
                 if (flag->save)
                 {
-                    assert(flag->depends.empty());
+                    std::string useFlagName(flagName[flag->type]);
+                    if (!flag->depends.empty())
+                    {
+                        std::string tempName = utils::format("temp_%cf", flag->type);
+                        procir->lines.push_back(ASSIGN(OP_VAR(tempName), OP_VAR(useFlagName)));
+                        useFlagName = tempName;
+                    }
+
+                    //assert(flag->depends.empty());
                     StatementIr st{.type = StatementIr::Type_t::Assignment,
-                            .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, flagName[flag->type]),
+                            .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
                             .stmt1 = std::make_shared<StatementIr>(PreCondition(pinfo->instr, flagCond[flag->type]))
                     };
                     
@@ -168,21 +176,18 @@ public:
             
             if (pinfo->savePrecondition.size())
             {
-                assert(0);
-                /*
-                 for (const auto& prec : pinfo->savePrecondition)
-                 {
-                     std::string cmd = iformat(pinstr, pinfo, info->func, preCondition(pinstr, prec.readOp));
-                     PostProcessMemoryHint(pMemoryHints, cmd);
-                     mCode.push_back("    " + prec.variable + " = " + cmd + ";\n");
-                 }
-
-                 */
+                for (const auto& prec : pinfo->savePrecondition)
+                {
+                    StatementIr st = ASSIGN(OP_VAR(prec.variable), StatementBuilder(std::make_shared<StatementIr>(PreCondition(pinfo->instr, prec.readOp))));
+//                    PrintIr::Print(st);
+                    procir->lines.push_back(st);
+                }
             }
             
             if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
             {
-                assert(0);
+                procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop});
+//                assert(0);
 //                mCode.push_back("    stop(\""  + pinfo->stop + "\");\n");
             }
             
@@ -192,28 +197,34 @@ public:
                  {
                      if (flag->needed)
                      {
-                         assert(0);
-//                         std::string flagvalue = BuildConditionFor(pinfo->instr, pinfo, info->func, flag);
-//                         if (!flagvalue.empty())
-//                             mCode.push_back("    " + flagvalue + ";\n");
+                         bool allVisible = true;
+                         for (address_t a : flag->lastSet)
+                         {
+                             shared<instrInfo_t> lastSetInstr = mInfo->code.find(a)->second;
+                             allVisible &= lastSetInstr->GetFlag(flag->type).save || lastSetInstr->GetFlag(flag->type).visible;
+                         }
+                         if (!allVisible)
+                         {
+                             StatementIr st = BuildConditionFor(pinfo, info->func, flag);
+                             procir->lines.push_back(st);
+                         }
                      }
                  }
                 
-                auto stf = convert[pinstr->mId].convertir;
+                auto stf = convertir[pinstr->mId];
                 assert(stf);
                 StatementIr st = stf(pinstr, pinfo, info->func);
                 if (st)
                     procir->lines.push_back(st);
-                //procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Return});
             }
             else if ((pinstr->IsIndirectCall() || pinstr->IsIndirectJump()) && mOptions->GetJumpTables(pinstr->mAddress).size())
             {
                 StatementIr st = DumpIndirectTables(pinstr, info->func);
                 procir->lines.push_back(st);
             }
-            else if (convert[pinstr->mId].convertir)
+            else if (convertir[pinstr->mId])
             {
-                auto stf = convert[pinstr->mId].convertir;
+                auto stf = convertir[pinstr->mId];
                 assert(stf);
                 StatementIr st = stf(pinstr, pinfo, info->func);
                 if(st.type == StatementIr::Type_t::Condition)
@@ -242,26 +253,11 @@ public:
             }
             else if (pinstr->mTemplate.conditional)
             {
-                StatementIr st;
-//                if (pinstr->mId == X86_INS_LOOP)
-//                {
-//                    // Create: if (--cx) goto target
-//                    auto cx = OP_REG("cx");
-//                    st = StatementIr{
-//                        .type = StatementIr::Type_t::Condition,
-//                        .stConditionExpr = COMPARE(--cx).get(),
-//                        .stConditionTrue = std::make_shared<StatementIr>(StatementIr{
-//                            .type = StatementIr::Type_t::DirectJump,
-//                            .opin1 = std::make_shared<OperandIr>(pinstr->mDetail.operands[0])
-//                        })
-//                    };
-//                } else {
-                st = StatementIr{
+                StatementIr st = StatementIr{
                     .type = StatementIr::Type_t::Condition,
                     .stConditionTrue = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectJump, .addr = pinstr->JumpTarget()}),
                     .stConditionExpr = std::make_shared<StatementIr>(MakeCondition(pinfo, info))
                 };
-//                }
                 assert(st.stConditionExpr->type != StatementIr::Type_t::None);
                 if (st)
                 {
@@ -280,7 +276,8 @@ public:
 
 
             if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret /*&& injectstr != "//quiet"*/)
-                assert(0);
+                procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop});
+
             if (pinstr->isTerminating)
                 procir->lines.push_back(StatementIr{.type = StatementIr::Type_t::Stop, .stop = "terminating"});
 
@@ -356,8 +353,13 @@ private:
     
     StatementIr MakeCondition(shared<instrInfo_t> pinfo, shared<Analyser::info_t> proc)
     {
-        assert(pinfo->readPrecondition.empty());
-
+        if (!pinfo->readPrecondition.empty())
+        {
+            assert(pinfo->readPrecondition.size() == 1);
+            return StatementIr{.type = StatementIr::Type_t::Compare,
+                .opin1 = OP_VAR(pinfo->readPrecondition[0]).get()};
+        }
+        
         bool dirty = false;
         std::set<address_t> lastSet;
         int needFlags = 0;
@@ -404,10 +406,10 @@ private:
 // cmp si, wordptr [123]
             // jne
             //
-            convert_t cond = convert[pinfo->instr->mId];
-            std::string flagCondition = cond.flagCondition;
-            if (flagCondition.empty() && cond.conditionAs != X86_INS_INVALID)
-                flagCondition = convert[cond.conditionAs].flagCondition;
+//            convert_t cond = convertir[pinfo->instr->mId];
+//            std::string flagCondition = cond.flagCondition;
+//            if (flagCondition.empty() && cond.conditionAs != X86_INS_INVALID)
+//                flagCondition = convertir[cond.conditionAs].flagCondition;
 
 //            char needFlag = *needType.begin();
 //
@@ -462,8 +464,8 @@ private:
             lastSetInfo = proc->code.find(*lastSet.begin())->second;
             x86_insn condInsn = pinfo->instr->mId;
             
-            convert_t cond = convert[condInsn];
-            assert(cond.conditionAs == X86_INS_INVALID);
+//            convertir_t cond = convertir[condInsn];
+//            assert(cond.conditionAs == X86_INS_INVALID);
 //            if (cond.conditionAs != X86_INS_INVALID)
 //                condInsn = cond.conditionAs;
             return Condition(lastSetInfo ? lastSetInfo->instr : nullptr, pinfo->instr);
@@ -504,13 +506,58 @@ private:
     }
     StatementIr PreCondition(shared<CapInstr> set, x86_insn getter)
     {
+        auto maxValue = [](shared<CapInstr> set, int op) {
+            int w = set->mDetail.operands[op].size;
+            switch (w)
+            {
+                case 1:
+                    return 0x100;
+                case 2:
+                    return 0x10000;
+                default:
+                    assert(0);
+                    return 0;
+            }
+        };
         x86_insn setter = set->mId;
         // shr, jb
-        if (setter == X86_INS_SHR && getter == X86_INS_JB)
+        if ((setter == X86_INS_SHR || setter == X86_INS_ROR) && getter == X86_INS_JB)
         {
+            if (set->mDetail.operands[1].type != X86_OP_IMM)
+                return COMPARE(OP_VAR("JB_SHR/ROR/CNT???"));
             assert(set->Imm() == 1);
             return OP_X86(set, 0) & OP_CONST(1);
         }
+        if ((setter == X86_INS_SHL || setter == X86_INS_ROL) && getter == X86_INS_JB)
+        {
+            assert(set->Imm() == 1);
+            switch (set->mDetail.operands[0].size)
+            {
+                case 1:
+                    return !!COMPARE(OP_X86(set, 0) & OP_CONST(0x80, 1));
+                case 2:
+                    return !!COMPARE(OP_X86(set, 0) & OP_CONST(0x8000, 2));
+                default:
+                    assert(0);
+            }
+        }
+        if (setter == X86_INS_SUB && getter == X86_INS_JB)
+            return OP_X86(set, 0) < OP_X86(set, 1);
+        if (setter == X86_INS_SUB && getter == X86_INS_JG)
+            return OP_MOD("signed") << (OP_X86(set, 0) > OP_X86(set, 1));
+        if (setter == X86_INS_SUB && getter == X86_INS_JLE)
+            return OP_MOD("signed") << (OP_X86(set, 0) <= OP_X86(set, 1));
+        if (setter == X86_INS_ADD && getter == X86_INS_JB)
+            return (OP_X86(set, 0) + OP_X86(set, 1)) >= OP_CONST(maxValue(set, 0));
+        if (setter == X86_INS_ADD && getter == X86_INS_JL)
+            return OP_MOD("signed") << ((OP_X86(set, 0) + OP_X86(set, 1)) < OP_CONST(0));
+        if (setter == X86_INS_ADD && getter == X86_INS_JLE)
+            return OP_MOD("signed") << ((OP_X86(set, 0) + OP_X86(set, 1)) <= OP_CONST(0));
+        if (setter == X86_INS_SUB && getter == X86_INS_JA)
+            return (OP_X86(set, 0) > OP_X86(set, 1));
+        if (setter == X86_INS_ADC && getter == X86_INS_JB)
+            return (OP_X86(set, 0) + OP_X86(set, 1) + OP_VAR("flags.carry")) >= OP_CONST(maxValue(set, 0));
+
         return Condition(set, getter);
     }
     StatementIr Condition(shared<CapInstr> set, x86_insn getter)
@@ -602,13 +649,17 @@ private:
                     return OP_X86(set, 0) == OP_CONST(0);
                 case X86_INS_JNE:
                     return OP_X86(set, 0) != OP_CONST(0);
+                case X86_INS_JS:
+                    return OP_MOD("signed") << (OP_X86(set, 0) < OP_CONST(0));
+                case X86_INS_JNS:
+                    return OP_MOD("signed") << (OP_X86(set, 0) >= OP_CONST(0));
                 default:
                     assert(0);
             }
         }
         
         // destructive
-        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB  || setter == X86_INS_SHR)
+        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR)
         {
             switch (getter)
             {
@@ -632,6 +683,8 @@ private:
                     return OP_X86(set, 0) & OP_X86(set, 1);
                 case X86_INS_JE:
                     return !(OP_X86(set, 0) & OP_X86(set, 1));
+                case X86_INS_JB:
+                    return COMPARE(OP_VAR("JB_TEST_???"));
                 default:
                     assert(0);
             }
@@ -729,6 +782,21 @@ private:
                     .func = templ + "<" + argToTemplate(args[0]) + ", " + argToTemplate(args[1]) + ">"};
 
         }
+        if (templ.starts_with("sca"))
+        {
+            if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
+                return {.type = StatementIr::Type_t::Function,
+                        .repeat = repeat,
+                        .func = templ + "<" + argToTemplate(args[0]) + ">",
+                        .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[1])};
+            else if (args[0] == "al" || args[0] == "ax" || args[0] == "eax")
+                return {.type = StatementIr::Type_t::Function,
+                        .repeat = repeat,
+                        .func = templ + "<" + argToTemplate(args[1]) + ">",
+                        .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
+            else
+                assert(0);
+        }
         assert(args[1] == "al" || args[1] == "ax" || args[1] == "eax");
         
 //        if (args[0] == "al" || args[0] == "ax")
@@ -802,6 +870,11 @@ private:
             .opSwitchCases = opSwitchCases
         };
         
+    }
+    StatementIr BuildConditionFor(shared<instrInfo_t> info, const funcInfo_t& func, const instrInfo_t::instrInfoFlag_t* flag)
+    {
+        assert(0);
+        return {};
     }
 
 };

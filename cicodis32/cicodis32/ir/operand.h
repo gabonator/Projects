@@ -14,7 +14,7 @@ public:
         String,
         Operator,
         Variable,
-        Capstone,
+//        Capstone,
     } type;
     
     // const
@@ -43,7 +43,7 @@ public:
     std::string variable;
     
     // capstone
-    std::string capstone;
+//    std::string capstone;
     
     explicit OperandIr(cs_x86_op op)
     {
@@ -108,9 +108,9 @@ public:
             case Type_t::Operator:
                 oper = s;
                 break;
-            case Type_t::Capstone:
-                capstone = s;
-                break;
+//            case Type_t::Capstone:
+//                capstone = s;
+//                break;
             case Type_t::String:
                 string = s;
                 break;

@@ -196,7 +196,7 @@ public:
             case StatementIr::Type_t::Unary:
                 if (st.stmt1)
                 {
-                    if (ToString(*st.stmt1).starts_with("flags.")) // TODO: ugly
+                    if (ToString(*st.stmt1).starts_with("flags.") || ToString(*st.stmt1).starts_with("!")) // TODO: ugly
                         return format("%s%s", st.oper.c_str(), ToString(*st.stmt1).c_str());
                     else
                         return format("%s(%s)", st.oper.c_str(), ToString(*st.stmt1).c_str());
@@ -319,6 +319,11 @@ public:
                                           leftSigned.c_str(), leftStr.c_str(),
                                           st.oper.c_str(),
                                           rightSigned.c_str(), rightStr.c_str());
+                        } else {
+                            return format("(?)%s %s (?)%s",
+                                          leftStr.c_str(),
+                                          st.oper.c_str(),
+                                          rightStr.c_str());
                         }
                         assert(0);
                     }
@@ -366,7 +371,11 @@ public:
         if (st.next)
         {
             printf("%s\n", ToString(*st.next).c_str());
-            assert(!st.next->next);
+            if (st.next->next)
+            {
+                printf("%s\n", ToString(*st.next->next).c_str());
+                assert(!st.next->next->next);
+            }
         }
     }
 };
