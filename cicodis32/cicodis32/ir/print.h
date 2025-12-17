@@ -15,8 +15,13 @@ public:
 
 class PrintIr {
     const static bool mode16{true};
+    shared<Options> mOptions;
     
 public:
+    PrintIr(shared<Options> options) : mOptions(options)
+    {
+    }
+    
     static std::string OffsetAsString(shared<OperandIr> op)
     {
         std::string memOffset = "";
@@ -35,7 +40,7 @@ public:
                 memOffset += " * ";
             memOffset += format("%d", op->memOfsScale);
         }
-        if (op->memOfsDisp != 0)
+        if (op->memOfsDisp != 0 || memOffset.empty())
         {
             if (memOffset.empty())
             {
@@ -102,6 +107,8 @@ public:
             case OperandIr::Type_t::Const:
                 switch (op->constSize)
                 {
+                    case -1:
+                        return format("0x%x", op->constValue);
                     case 0:
                         return format("%d", op->constValue);
                     case 1:
@@ -136,6 +143,7 @@ public:
         switch (op->type)
         {
             case OperandIr::Type_t::Memory:
+                    
                 if (op->memSize == 1)
                     return format("    memoryASet(%s, %s, %%s);", op->memSegment.c_str(), OffsetAsString(op).c_str());
                 else
@@ -153,17 +161,20 @@ public:
         else
             printf("%s // %s\n", prog->name.c_str(), prog->info.c_str());
         printf("{\n");
-        
-        size_t lines = prog->lines.size();
-//        if (lines >= 2 &&
-//            prog->lines[lines-1].type == StatementIr::Type_t::Return &&
-//            prog->lines[lines-2].type != StatementIr::Type_t::Label)
-//        {
-//            lines--;
-//        }
-        
-        for (size_t i=0; i<lines; i++)
-            Print(prog->lines[i]);
+        for (auto t : prog->temps)
+            printf("    bool %s;\n", t.c_str());
+        for (auto l : prog->lines)
+        {
+            if (l.type != StatementIr::Type_t::Label && l.type != StatementIr::Type_t::Comment)
+            {
+                auto it = mOptions->inject.find(l.address);
+                if (it != mOptions->inject.end())
+                {
+                    printf("    %s\n", it->second.c_str());
+                }
+            }
+            Print(l);
+        }
         printf("}\n");
     }
     
@@ -226,6 +237,12 @@ public:
                     else
                         assert(0);
                     
+                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory"))
+                        leftStr = std::string("(") + leftStr + ")";
+                    if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
+                        rightStr = std::string("(") + rightStr + ")";
+                    assert(!st.isSigned);
+
                     if (!st.opd)
                         return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                     else if (st.opd->type == OperandIr::Type_t::Memory) // use memory getter/setter
@@ -254,22 +271,30 @@ public:
                         return format("    %s = %s %s %s;", ToString(st.opd).c_str(), leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
                 break;
+            case StatementIr::Type_t::Copy:
+                assert(st.isSigned && st.opin1);
+                return SignedType(st.opin1) + ToString(st.opin1);
+
             case StatementIr::Type_t::Function:
             {
                 std::string repeat = st.repeat.empty() ? "" : st.repeat + " ";
-                if (st.opd && st.opin1 && st.opin2)
-                    return format("    %s%s = %s%s(%s, %s);", repeat.c_str(), ToString(st.opd).c_str(), st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
-                else if (st.opd && st.opin1)
-                    return format("    %s%s = %s%s(%s);", repeat.c_str(), ToString(st.opd).c_str(), st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str());
-                else if (st.opd && !st.opin1)
-                    return format("    %s%s = %s%s();", repeat.c_str(), ToString(st.opd).c_str(), st.func.c_str(), suffix.c_str());
-                else if (st.opin1 && st.opin2)
-                    return format("    %s%s%s(%s, %s);", repeat.c_str(), st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
+                std::string rhs;
+                
+                if (st.opin1 && st.opin2)
+                    rhs = format("%s%s(%s, %s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
                 else if (st.opin1)
-                    return format("    %s%s%s(%s);", repeat.c_str(), st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str());
+                    rhs = format("%s%s(%s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str());
                 else
-                    return format("    %s%s%s();", repeat.c_str(), st.func.c_str(), suffix.c_str());
-                //assert(0);
+                    rhs = format("%s%s()", st.func.c_str(), suffix.c_str());
+                
+                if (st.opd)
+                {
+                    if (st.opd->type == OperandIr::Type_t::Memory)
+                        return repeat + format(ToStringSetter(st.opd).c_str(), rhs.c_str());
+                    else
+                        return format("    %s%s = %s;", repeat.c_str(), ToString(st.opd).c_str(), rhs.c_str());
+                } else
+                    return format("    %s%s;", repeat.c_str(), rhs.c_str());
                 break;
             }
             case StatementIr::Type_t::Condition:
@@ -331,15 +356,18 @@ public:
                     return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
             case StatementIr::Type_t::DirectJump:
-                return format("    goto loc_%x;", st.addr.linearOffset());
+                return format("    goto loc_%x;", st.target.linearOffset());
             case StatementIr::Type_t::DirectCall:
-                return format("    sub_%x();", st.addr.linearOffset());
+                return format("    sub_%x();", st.target.linearOffset());
+            case StatementIr::Type_t::IndirectCall:
+                assert(st.opin1);
+                return format("    indirectCall(cs, %s); // %s", ToString(st.opin1).c_str(), st.address.toString().c_str());
             case StatementIr::Type_t::Stop:
                 return format("    stop(\"%s\");", st.stop.c_str());
             case StatementIr::Type_t::Comment:
                 return format("    // %s", st.comment.c_str());
             case StatementIr::Type_t::Label:
-                return format("loc_%x: // %s", st.addr.linearOffset(), st.addr.toString().c_str());
+                return format("loc_%x: // %s", st.address.linearOffset(), st.address.toString().c_str());
             case StatementIr::Type_t::Return:
                 return "    return;";
                 //return format(st.shiftStack ? "    sp += %d;\n    return;" : "    return;", st.shiftStack);
@@ -349,7 +377,7 @@ public:
                 for (auto p : st.opSwitchCases)
                     aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                 aux += "        default:\n";
-                aux += format("            stop(\"ind %s\")\n", address_t(0, 0).toString().c_str()); // TODO
+                aux += format("            stop(\"ind %s\")\n", st.address.toString().c_str()); // TODO
                 aux += "    }";
                 return aux;
             }
@@ -361,12 +389,6 @@ public:
     }
     static void Print(const StatementIr& st)
     {
-        if (ToString(st).find("(ax - 0x0000 >=") != std::string::npos)
-        {
-            printf("%s\n", ToString(st).c_str());
-            int f = 9; // TODO: ugly
-            ToString(st);
-        }
         printf("%s\n", ToString(st).c_str());
         if (st.next)
         {

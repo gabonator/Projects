@@ -14,7 +14,6 @@ public:
         String,
         Operator,
         Variable,
-//        Capstone,
     } type;
     
     // const
@@ -41,9 +40,6 @@ public:
     
     // variable
     std::string variable;
-    
-    // capstone
-//    std::string capstone;
     
     explicit OperandIr(cs_x86_op op)
     {
@@ -80,23 +76,7 @@ public:
             default:
                 assert(0);
         }
-        
     }
-    
-    //    static OperandIr MakeAddress(shared<CapInstr> instr)
-    //    {
-    //        assert(instr->mDetail.op_count == 1);
-    //        assert(instr->mDetail.operands[0].type == X86_OP_IMM);
-    //
-    //        return OperandIr(Type_t::Address, address_t(instr->mAddress.segment, instr->mDetail.operands[0].imm));
-    //    }
-    
-    //    explicit OperandIr(Type_t type, cs_x86_op op)
-    //    {
-    //        //assert(x86.op_count == 1);
-    //        assert(op.type == X86_OP_IMM);
-    //        label = format("loc_%x", (int)address_t(instr->mAddress.segment, x86.operands[0].imm).linearOffset());
-    //    }
     
     explicit OperandIr(Type_t type, std::string s) : type(type)
     {
@@ -104,13 +84,20 @@ public:
         {
             case Type_t::Register:
                 regName = s;
+                switch (regName[1])
+                {
+                    case 'x':
+                        regSize = 2;
+                        break;
+                    case 'h':
+                    case 'l':
+                        regSize = 1;
+                        break;
+                }
                 break;
             case Type_t::Operator:
                 oper = s;
                 break;
-//            case Type_t::Capstone:
-//                capstone = s;
-//                break;
             case Type_t::String:
                 string = s;
                 break;
@@ -121,9 +108,6 @@ public:
                 assert(0);
         }
     }
-    //    explicit OperandIr(Type_t type, address_t addr) : type(type), addr(addr)
-    //    {
-    //    }
     
     explicit OperandIr(Type_t type, int v, int size = 0) : type(type)
     {

@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
     }
 
     ConvertIr conv(analyser, options);
-    PrintIr print;
+    PrintIr print(options);
     for (address_t proc : analyser.AllMethods())
     {
 #ifdef OLDCONVERTER

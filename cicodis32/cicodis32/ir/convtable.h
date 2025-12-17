@@ -12,7 +12,8 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         .type = StatementIr::Type_t::Function,
         .func = "push",
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])}; },
-    [X86_INS_POP] = [](convert_args){ return StatementIr{
+    [X86_INS_POP] = [](convert_args){ //return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("pop")); },
+        return StatementIr{
         .type = StatementIr::Type_t::Function,
         .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
         .func = "pop"}; },
@@ -22,11 +23,11 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1])}; },
     [X86_INS_JMP] = [](convert_args){ return StatementIr{
         .type = instr->mDetail.operands[0].type == X86_OP_IMM ? StatementIr::Type_t::DirectJump : StatementIr::Type_t::IndirectJump,
-        .addr = instr->JumpTarget()}; },
+        .target = instr->JumpTarget()}; },
     [X86_INS_LOOP] = [](convert_args){
         auto loopTarget = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::DirectJump,
-            .addr = instr->JumpTarget()});
+            .target = instr->JumpTarget()});
         auto loopCounter = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::Unary,
             .oper = "--",
@@ -76,7 +77,10 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return StatementIr(OP_MOD("assign") << (OP_X86(instr, 0) | OP_X86(instr, 1)));
     },
     [X86_INS_ADD] = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) + OP_X86(instr, 1)); },
-    [X86_INS_ADC] = [](convert_args){ return OP_MOD("assign") << ((OP_X86(instr, 0) + OP_X86(instr, 1)) + OP_VAR("flags.carry")); },
+    [X86_INS_ADC] = [](convert_args){
+        auto sum = OP_BINARY(OP_X86(instr, 1), "+", OP_VAR("flags.carry"));
+        return OP_MOD("assign") << OP_BINARY(OP_X86(instr, 0), "+", sum);
+    },
     [X86_INS_SBB] = [](convert_args){ return instr->ArgsEqual() ?
         OP_MOD("assign") << - OP_VAR("flags.carry") :
         OP_MOD("assign") << ((OP_X86(instr, 0) - OP_X86(instr, 1)) - OP_VAR("flags.carry")); },
@@ -86,9 +90,12 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         if (instr->ArgsEqual())
             return ASSIGN(OP_X86(instr, 0), OP_CONST(0));
         return OP_MOD("assign") << (OP_X86(instr, 0) ^ OP_X86(instr, 1)); },
-    [X86_INS_CALL] = [](convert_args){ return StatementIr{
-        .type = instr->mDetail.operands[0].type == X86_OP_IMM ? StatementIr::Type_t::DirectCall : StatementIr::Type_t::IndirectCall,
-        .addr = instr->CallTarget()}; },
+    [X86_INS_CALL] = [](convert_args){
+        if (instr->mDetail.operands[0].type == X86_OP_IMM)
+            return StatementIr{.type = StatementIr::Type_t::DirectCall, .target = instr->CallTarget()};
+        else
+            return StatementIr{.type = StatementIr::Type_t::IndirectCall, .opin1 = OP_X86(instr, 0).get()};
+    },
     [X86_INS_SUB] = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) - OP_X86(instr, 1)); },
     [X86_INS_CMP] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
     [X86_INS_TEST] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
@@ -109,6 +116,17 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_ROL] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("rol#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_ROR] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("ror#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_MUL] = [](convert_args){ return OP_FUNCTION("mul#", OP_X86(instr, 0)); },
+    [X86_INS_IMUL] = [](convert_args){
+        assert(instr->mDetail.op_count < 3);
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 1)
+        {
+            auto multiplication = OP_BINARY(OP_SIGNED(OP_X86(instr, 0)), "*", OP_SIGNED(OP_REG("ax")));
+            return StatementIr(ASSIGN(OP_REG("ax"), OP_BINARY(multiplication, "&", OP_CONST(0xffff, 2))));
+        }
+        assert(0);
+        return StatementIr{};
+    },
+    [X86_INS_IDIV] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("idiv#", OP_X86(instr, 0)); },
     [X86_INS_OUT] = [](convert_args){ return StatementIr{
                 .type = StatementIr::Type_t::Function,
                 .func = "out",
@@ -195,5 +213,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return ASSIGN(OP_VAR("dx"), OP_VAR("ax & 0x8000 ? 0xffff : 0x0000"));
     },
     [X86_INS_CMC] = [](convert_args){ return ASSIGN(OP_VAR("flags.carry"), !OP_VAR("flags.carry")); },
+    [X86_INS_PUSHF] = [](convert_args){ return OP_FUNCTION("push", OP_VAR("flagAsReg()")); },
+    [X86_INS_POPF] = [](convert_args){ return OP_FUNCTION("flagsFromReg", OP_VAR("pop()")); },
 
 };

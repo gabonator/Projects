@@ -11,6 +11,7 @@ public:
         None,
         Assignment, // op1 = op2
         Compare, // op1 > op2
+        Copy, // op1
         Unary, // op1 = !op2
         Binary, // op1 = op2 +- op3
         Function, // func(op1)?
@@ -41,10 +42,11 @@ public:
     std::string repeat;
     std::string func;
     std::string oper;
-    address_t addr;
+    address_t address;
+    address_t target;
     
     int suffix{0};
-    bool isSigned{false}; // For Compare type: true = signed comparison, false = unsigned
+    bool isSigned{false};
     
     shared<StatementIr> next;
     
