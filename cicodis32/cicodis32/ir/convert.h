@@ -37,8 +37,9 @@ public:
             
             extraInfo += info->func.makeProcIdentifier();
         }
-        xprocir->name = format("void sub_%x()", proc.linearOffset());
+        xprocir->name = format("sub_%x()", proc.linearOffset());
         xprocir->info = extraInfo;
+        xprocir->addr = proc;
 
         //
         shared <Analyser::info_t> mInfo = mAnalyser.mInfos.find(proc)->second;
@@ -98,6 +99,7 @@ public:
                 else
                     append(p.first, StatementIr{.type = StatementIr::Type_t::Label,
                         .address = pinstr->mAddress});
+                xprocir->labels = true;
             }
 
             for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())

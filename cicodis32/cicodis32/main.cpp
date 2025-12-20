@@ -21,7 +21,9 @@
 #include "ir/operand.h"
 #include "ir/statement.h"
 #include "ir/builder.h"
-#include "ir/print.h"
+#include "ir/printBase.h"
+#include "ir/printCpp.h"
+#include "ir/printJs.h"
 
 #include "analyser/analyser.h"
 #include "analyser/analyserFunction.h"
@@ -175,9 +177,7 @@ int main(int argc, char **argv) {
         for (address_t p : options->procList)
             analyser.Scan(p);
     }
-    
-    printHeading(options, loader, analyser);
-    
+        
     std::map<address_t, address_t> dependency;
     for (const indirectJump_t& j : options->indirectJumps)
         dependency.insert({j.target, j.parent});
@@ -255,7 +255,13 @@ int main(int argc, char **argv) {
     }
 
     ConvertIr conv(analyser, options);
-    PrintIr print(options);
+    //PrintIrCpp print(options);
+    PrintIrJs print(options);
+    
+    print.PrintHeading(loader);
+    print.PrintDeclarations(analyser.AllMethods());
+    print.PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
+
     for (address_t proc : analyser.AllMethods())
     {
 #ifdef OLDCONVERTER
@@ -265,11 +271,11 @@ int main(int argc, char **argv) {
         convert.Dump();
 #else
         auto ir = conv.Convert(proc);
-        print.Print(ir);
+        print.PrintProgram(ir);
 #endif
     }
     
-    printFooter(options, loader, analyser);
+    print.PrintRelocations(loader->GetRelocations());
 
     return 0;
 }

@@ -4,7 +4,7 @@
 //
 //  Created by Gabriel Valky on 05/12/2025.
 //
-
+// TODO: remove
 void printHeading(std::shared_ptr<Options> options, shared<Loader> loader, Analyser& analyser)
 {
     printf("#include \"cico%s.h\"\n", options->arch == arch_t::arch16 ? "16" : "32");
@@ -89,7 +89,7 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
 
 )");
     }
-    
+/*
     bool anyIndirectTable = false;
     for (auto t : options->jumpTables)
         if (t->selector == "indirect")
@@ -122,6 +122,7 @@ void indirectJump(int s, int o, int orgs, int orgo, int pars, int paro)
         printf("    stop(\"ind\");\n");
         printf("}\n\n");
     }
+ */
 }
 
 void printFooter(std::shared_ptr<Options> options, shared<Loader> loader, Analyser& analyser)
@@ -141,7 +142,7 @@ void printFooter(std::shared_ptr<Options> options, shared<Loader> loader, Analys
             procMap.push_back(end.offset);
         }
     }
-
+/*
     printf("int GetProcAt(int seg, int ofs)\n");
     printf("{\n");
     if (options->marks.size())
@@ -171,5 +172,36 @@ void printFooter(std::shared_ptr<Options> options, shared<Loader> loader, Analys
     printf("            return map[i];\n");
     printf("    return 0;\n");
     printf("}\n");
+*/
+}
 
+StatementIr BuildGlobalIndirectTable(std::shared_ptr<Options> options)
+{
+    std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
+    std::set<uint32_t> used;
+    
+    for (auto table : options->jumpTables)
+        if (table->selector == "indirect")
+        {
+            for (int i : table->elements)
+            {
+                if (!table->IsValid(i))
+                    continue;
+                int v = table->GetTarget(i).segment*0x10000 + table->GetTarget(i).offset;
+                if (used.find(v) != used.end())
+                    continue;
+                used.insert(v);
+                opSwitchCases.push_back({
+                    std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)v, 4}),
+                    std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectCall, .target = table->GetTarget(i)})
+                });
+            }
+        }
+    
+    return StatementIr{
+        .type = StatementIr::Type_t::Switch,
+        .address = {0, 0},
+        .opSwitchSelector = "seg*0x10000 + ofs",
+        .opSwitchCases = opSwitchCases
+    };
 }

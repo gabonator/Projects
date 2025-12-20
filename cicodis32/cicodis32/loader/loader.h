@@ -213,6 +213,36 @@ public:
         return address_t(header->cs + (_loadBase >> 4), header->ip + (_loadBase % 16));
     }
     
+    virtual std::string GetInit() override
+    {
+        bool _dumpReloc{true};
+
+        const size_t lastSlash = strExecutable.find_last_of("\\/");
+        std::string execName = std::string::npos != lastSlash ? strExecutable.substr(lastSlash+1) : strExecutable;
+        std::string execPath = std::string::npos != lastSlash ? strExecutable.substr(0, lastSlash) : "";
+
+        return format(R"(    headerSize = 0x%04x;
+    loadAddress = 0x%04x;
+    endAddress = 0x%04x;
+    cs = 0x%04x;
+    ds = 0x%04x;
+    es = 0x%04x;
+    ss = 0x%04x;
+    sp = 0x%04x;
+    load("%s", "%s", %d);%s)",
+                header->headerSize16*16,
+                _loadBase/16,
+                _loadBase/16+header->full512Pages*512/16,
+                header->cs+_loadBase/16,
+                header->cs+_loadBase/16 - 0x10,
+                header->cs+_loadBase/16 - 0x10,
+                header->ss+_loadBase/16,
+                header->sp,
+                execPath.c_str(), execName.c_str(), realSize,
+                _dumpReloc ? "\n    fixReloc(loadAddress);" : "",
+                (_loadBase/16+header->cs)*16+header->ip);
+    }
+    
     virtual std::string GetMain() override
     {
         bool _dumpReloc{true};
@@ -255,6 +285,24 @@ void start()
         return strForward + strMain + "\n"; //+ strReloc + "\n";
     }
     
+    virtual std::vector<std::string> GetRelocations() override
+    {
+        std::vector<std::string> aux;
+        for (int i=0; i<header->relocations; i++)
+        {
+            MZRelocation* reloc = (MZRelocation*)&buffer[header->relocationOffset+i*4];
+            int linearOffset = reloc->segment*16 + reloc->offset + header->headerSize16*16;
+            uint16_t* addr = (uint16_t*)&buffer[linearOffset];
+            if (reloc->segment == 0)
+                aux.push_back(format("    memoryASet16(seg, 0x%04x, memoryAGet16(seg, 0x%04x) + seg); // %04x -> %04x; lin=%x",
+                       reloc->offset, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset));
+            else
+                aux.push_back(format("    memoryASet16(0x%04x + seg, 0x%04x, memoryAGet16(0x%04x + seg, 0x%04x) + seg); // %04x -> %04x; lin=%x",
+                   reloc->segment, reloc->offset, reloc->segment, reloc->offset, *addr - _loadBase/16, *addr, reloc->segment*16+reloc->offset));
+        }
+        return aux;
+    }
+    
     virtual std::string GetFooter() override
     {
         std::string strReloc = "void fixReloc(uint16_t seg)\n{\n";
@@ -277,7 +325,6 @@ void start()
         return strReloc;
     }
 
-    
     void Relocate()
     {
         for (int i=0; i<header->relocations; i++)

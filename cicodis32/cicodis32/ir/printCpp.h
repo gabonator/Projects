@@ -1,0 +1,205 @@
+//
+//  printNice.h
+//  cicodis-clean
+//
+//  Created by Gabriel Valky on 19/12/2025.
+//
+
+class PrintIrCpp : public PrintIrBase {
+protected:
+    const static bool mode16{true};
+    
+public:
+    PrintIrCpp(shared<Options> options) : PrintIrBase(options)
+    {
+    }
+    
+    virtual std::string OffsetRegister(std::string reg)
+    {
+        return reg;
+    }
+    
+    virtual std::string OffsetAsString(shared<OperandIr> op) override
+    {
+        std::string memOffset = "";
+        if (!op->memOfsBase.empty())
+            memOffset += OffsetRegister(op->memOfsBase);
+        
+        if (!op->memOfsIndex.empty())
+        {
+            if (!memOffset.empty())
+                memOffset += " + ";
+            memOffset += OffsetRegister(op->memOfsIndex);
+        }
+        if (op->memOfsScale != 1)
+        {
+            if (!memOffset.empty())
+                memOffset += " * ";
+            memOffset += format("%d", op->memOfsScale);
+        }
+        if (op->memOfsDisp != 0 || memOffset.empty())
+        {
+            if (memOffset.empty())
+            {
+                if (mode16)
+                    memOffset += format("0x%04x", op->memOfsDisp & 0xffff);
+                else
+                    memOffset += format("0x%04x", op->memOfsDisp);
+            } else {
+                if (mode16)
+                {
+                    if ((uint16_t)op->memOfsDisp > (uint16_t)-100)
+                        memOffset += format(" - %d", -op->memOfsDisp);
+                    else
+                        memOffset += format(" + %d", op->memOfsDisp & 0xffff);
+                }
+                else
+                    memOffset += format(" + %d", op->memOfsDisp);
+            }
+        }
+        return memOffset;
+    }
+
+    virtual std::string ToStringSetter(shared<OperandIr> op)
+    {
+        assert(op);
+        switch (op->type)
+        {
+            case OperandIr::Type_t::Memory:
+                    
+                if (op->memSize == 1)
+                    return format("    memoryASet(%s, %s, %%s);", op->memSegment.c_str(), OffsetAsString(op).c_str());
+                else
+                    return format("    memoryASet%d(%s, %s, %%s);", op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+            default:
+                assert(0);
+        }
+        return "";
+    }
+    
+    virtual std::string ToString(shared<OperandIr> op) override
+    {
+        assert(op);
+        switch (op->type)
+        {
+            case OperandIr::Type_t::Memory:
+                if (op->memSize == 1)
+                    return format("memoryAGet(%s, %s)", op->memSegment.c_str(), OffsetAsString(op).c_str());
+                else
+                    return format("memoryAGet%d(%s, %s)", op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+            default:
+                return PrintIrBase::ToString(op);
+        }
+    }
+
+    virtual std::string ToString(const StatementIr& st) override
+    {
+        std::string suffix = "";
+        if (st.suffix != 0)
+            suffix = format("%d", st.suffix);
+        
+        switch (st.type)
+        {
+            case StatementIr::Type_t::Assignment:
+                if (st.opd->type == OperandIr::Type_t::Memory)
+                {
+                    if (st.opin1)
+                        return format(ToStringSetter(st.opd).c_str(), ToString(st.opin1).c_str());
+                    else if (st.stmt1)
+                        return format(ToStringSetter(st.opd).c_str(), ToString(*st.stmt1).c_str());
+                    else
+                        assert(0);
+                }
+                return PrintIrBase::ToString(st);
+
+            case StatementIr::Type_t::Binary:
+                {
+                    std::string leftStr, rightStr;
+                    
+                    // Handle left side
+                    if (st.stmt1)
+                        leftStr = ToString(*st.stmt1);
+                    else if (st.opin1)
+                        leftStr = ToString(st.opin1);
+                    else
+                        assert(0);
+                    
+                    // Handle right side
+                    if (st.stmt2)
+                        rightStr = ToString(*st.stmt2);
+                    else if (st.opin2)
+                        rightStr = ToString(st.opin2);
+                    else
+                        assert(0);
+                    
+                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory"))
+                        leftStr = std::string("(") + leftStr + ")";
+                    if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
+                        rightStr = std::string("(") + rightStr + ")";
+                    assert(!st.isSigned);
+
+                    if (!st.opd)
+                        return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
+                    else if (st.opd->type == OperandIr::Type_t::Memory) // use memory getter/setter
+                        return ToString(StatementIr{
+                            .type = StatementIr::Type_t::Assignment,
+                            .opd = st.opd,
+                            .stmt1 = std::make_shared<StatementIr>(StatementIr{
+                                .type = StatementIr::Type_t::Binary,
+                                .opin1 = st.opin1,
+                                .opin2 = st.opin2,
+                                .stmt1 = st.stmt1,
+                                .stmt2 = st.stmt2,
+                                .oper = st.oper
+                            })});
+                    else if (ToString(st.opd) == leftStr)
+                    {
+                        // Assignment shortcuts (+=, ++, etc.)
+                        if (st.opin2 && st.opin2->type == OperandIr::Type_t::Const && st.opin2->constValue == 1 && st.oper == "+")
+                            return format("    %s++;", ToString(st.opd).c_str());
+                        else if (st.opin2 && st.opin2->type == OperandIr::Type_t::Const && st.opin2->constValue == 1 && st.oper == "-")
+                            return format("    %s--;", ToString(st.opd).c_str());
+                        else
+                            return format("    %s %s= %s;", ToString(st.opd).c_str(), st.oper.c_str(), rightStr.c_str());
+                    }
+                    else
+                        return format("    %s = %s %s %s;", ToString(st.opd).c_str(), leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
+                }
+                break;
+
+            case StatementIr::Type_t::Function:
+            {
+                std::string repeat = st.repeat.empty() ? "" : st.repeat + " ";
+                std::string rhs;
+                
+                if (st.opin1 && st.opin2)
+                    rhs = format("%s%s(%s, %s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
+                else if (st.opin1)
+                    rhs = format("%s%s(%s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str());
+                else
+                    rhs = format("%s%s()", st.func.c_str(), suffix.c_str());
+                
+                if (st.opd && st.opd->type == OperandIr::Type_t::Memory)
+                    return repeat + format(ToStringSetter(st.opd).c_str(), rhs.c_str());
+                
+                return PrintIrBase::ToString(st);
+            }
+            case StatementIr::Type_t::Condition:
+                assert(st.stConditionExpr && st.stConditionTrue);
+                if (st.stConditionExpr->type == StatementIr::Type_t::Compare &&
+                    st.stConditionExpr->opin1 &&
+                    st.stConditionExpr->opin2 &&
+                    st.stConditionExpr->opin2->type == OperandIr::Type_t::Const &&
+                    st.stConditionExpr->opin2->constValue == 0)
+                {
+                    if (st.stConditionExpr->oper == "==")
+                        return format("    if (!%s)\n    %s", ToString(st.stConditionExpr->opin1).c_str(), ToString(*st.stConditionTrue).c_str());
+                    if (st.stConditionExpr->oper == "!=")
+                        return format("    if (%s)\n    %s", ToString(st.stConditionExpr->opin1).c_str(), ToString(*st.stConditionTrue).c_str());
+                }
+                return PrintIrBase::ToString(st);
+            default:
+                return PrintIrBase::ToString(st);
+        }
+    }
+};

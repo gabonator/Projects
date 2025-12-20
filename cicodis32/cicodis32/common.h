@@ -105,7 +105,9 @@ public:
     virtual const uint8_t* GetBufferAt(int offset) = 0;
     virtual bool InRange(address_t addr, int size = 0) = 0;
     virtual address_t GetEntry() = 0;
+    virtual std::string GetInit() { assert(0); return "";}
     virtual std::string GetMain() = 0;
+    virtual std::vector<std::string> GetRelocations() { assert(0); return {};}
     virtual std::string GetFooter() = 0;
     virtual void Overlay(address_t addr, const std::vector<uint8_t>& bytes) = 0;
 //    virtual std::vector<Loader::import_t> GetImports() { return {}; }
