@@ -411,7 +411,7 @@ private:
             switch (getter)
             {
                 case X86_INS_JCXZ:
-                    return OP_REG("cx") == OP_CONST(0);
+                    return OP_REG("cx", 2) == OP_CONST(0);
                 default:
                     assert(0);
             }
@@ -530,7 +530,7 @@ private:
                 case X86_INS_JB:
                     return COMPARE(OP_VAR("JB_TEST_???"));
                 case X86_INS_LOOPNE:
-                    return OP_BINARY(OP_UNARY("--", OP_VAR("cx")), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
                 default:
                     assert(0);
             }

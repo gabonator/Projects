@@ -82,19 +82,20 @@ public:
     {
         switch (type)
         {
-            case Type_t::Register:
-                regName = s;
-                switch (regName[1])
-                {
-                    case 'x':
-                        regSize = 2;
-                        break;
-                    case 'h':
-                    case 'l':
-                        regSize = 1;
-                        break;
-                }
-                break;
+//            case Type_t::Register:
+//                assert(0);
+//                regName = s;
+//                switch (regName[1])
+//                {
+//                    case 'x':
+//                        regSize = 2;
+//                        break;
+//                    case 'h':
+//                    case 'l':
+//                        regSize = 1;
+//                        break;
+//                }
+//                break;
             case Type_t::Operator:
                 oper = s;
                 break;
@@ -108,7 +109,20 @@ public:
                 assert(0);
         }
     }
-    
+    explicit OperandIr(Type_t type, std::string s, int size) : type(type)
+    {
+        switch (type)
+        {
+            case Type_t::Register:
+                assert(size);
+                regName = s;
+                regSize = size;
+                break;
+            default:
+                assert(0);
+        }
+    }
+
     explicit OperandIr(Type_t type, int v, int size = 0) : type(type)
     {
         switch (type)

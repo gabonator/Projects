@@ -31,7 +31,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         auto loopCounter = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::Unary,
             .oper = "--",
-            .opin1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "cx")});
+            .opin1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "cx", 2)});
         auto loopCond = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::Compare,
             .stmt1 = loopCounter});
@@ -61,7 +61,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             else
                 return StatementIr{};
         } else {
-            StatementIr st = OP_MOD("assign") << OP_REG("sp") + OP_CONST(shift);
+            StatementIr st = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift);
             if (!(instr->isLast && !instr->isLabel))
                 st.next = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::Return});
             return st;
@@ -120,8 +120,8 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         assert(instr->mDetail.op_count < 3);
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 1)
         {
-            auto multiplication = OP_BINARY(OP_SIGNED(OP_X86(instr, 0)), "*", OP_SIGNED(OP_REG("ax")));
-            return StatementIr(ASSIGN(OP_REG("ax"), OP_BINARY(multiplication, "&", OP_CONST(0xffff, 2))));
+            auto multiplication = OP_BINARY(OP_SIGNED(OP_X86(instr, 0)), "*", OP_SIGNED(OP_REG("ax", 2)));
+            return StatementIr(ASSIGN(OP_REG("ax", 2), OP_BINARY(multiplication, "&", OP_CONST(0xffff, 2))));
         }
         assert(0);
         return StatementIr{};
@@ -158,17 +158,17 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_NOP] = [](convert_args){ return StatementIr{}; },
     
     [X86_INS_XCHG] = [](convert_args){
-        std::string temp = "";
-        switch (instr->mDetail.operands[0].size)
+        int tempSize = instr->mDetail.operands[0].size;
+        std::string tempReg = "";
+        switch (tempSize)
         {
-            case 1: temp = "tl"; break;
-            case 2: temp = "tx"; break;
-            default:
-                assert(0);
+            case 1: tempReg = "tl"; break;
+            case 2: tempReg = "tx"; break;
+            default: assert(0);
         }
-        StatementIr a = ASSIGN(OP_VAR(temp), OP_X86(instr, 0));
+        StatementIr a = ASSIGN(OP_REG(tempReg, tempSize), OP_X86(instr, 0));
         StatementIr b = ASSIGN(OP_X86(instr, 0), OP_X86(instr, 1));
-        StatementIr c = ASSIGN(OP_X86(instr, 1), OP_VAR(temp));
+        StatementIr c = ASSIGN(OP_X86(instr, 1), OP_REG(tempReg, tempSize));
         b.next = std::make_shared<StatementIr>(c);
         a.next = std::make_shared<StatementIr>(b);
         return a;

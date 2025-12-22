@@ -303,7 +303,7 @@ public:
                 for (auto p : st.opSwitchCases)
                     aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                 aux += "        default:\n";
-                aux += format("            stop(\"ind %s\")\n", st.address.toString().c_str()); // TODO
+                aux += format("            stop(\"ind %s\");\n", st.address.toString().c_str()); // TODO
                 aux += "    }";
                 return aux;
             }

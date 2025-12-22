@@ -85,12 +85,12 @@ public:
         {
             case OperandIr::Type_t::Register:
                 return RegisterName(op->regName, op->regSize, false);
-//                if (op->regName == "ax" || op->regName == "bx" || op->regName == "cx" || op->regName == "dx" || op->regName == "ah" || op->regName == "al" || op->regName == "bh" || op->regName == "bl" || op->regName == "ch" || op->regName == "cl" || op->regName == "dh" || op->regName == "dl" || op->regName == "si" || op->regName == "di")
-//                {
-//                    return format("r%d[%s]", op->regSize*8, op->regName.c_str());
-//                } else {
-//                    return op->regName;
-//                }
+            case OperandIr::Type_t::Variable:
+                if (op->variable == "th" || op->variable == "tl")
+                    return RegisterName(op->variable, 1, false);
+                if (op->variable == "tx")
+                    return RegisterName(op->variable, 2, false);
+                return PrintIrCpp::ToString(op);
             default:
                 return PrintIrCpp::ToString(op);
         }
@@ -123,6 +123,8 @@ public:
         func = replace(func, "<", "_");
         func = replace(func, ">", "");
         func = replace(func, ", ", "_");
+        func = replace(func, "DS_SI", "DSSI");
+        func = replace(func, "ES_DI", "ESDI");
         repeat = replace(repeat, "cx", "r16[cx]");
         
         if (st.func.starts_with("sub_") || st.func == "sync")
@@ -161,6 +163,11 @@ public:
         {
             case OperandIr::Type_t::Register:
                 return RegisterName(op->regName, op->regSize, true);
+//            case OperandIr::Type_t::Variable:
+//                if (op->variable == "th" || op->variable == "tl" || op->variable == "tx")
+//                    assert(0);
+//                    return RegisterName(op->regName, 1, false);
+                
             case OperandIr::Type_t::Const:
                 if (op->constSize == 0 && op->constValue == 0)
                     return "0";

@@ -43,8 +43,8 @@ inline OperandBuilder OP_CONST(int value, int size = 0) {
     return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Const, value, size));
 }
 
-inline OperandBuilder OP_REG(const std::string& reg) {
-    return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Register, reg));
+inline OperandBuilder OP_REG(const std::string& reg, int size) {
+    return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Register, reg, size));
 }
 
 inline OperandBuilder OP_STR(const std::string& str) {

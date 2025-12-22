@@ -255,8 +255,8 @@ int main(int argc, char **argv) {
     }
 
     ConvertIr conv(analyser, options);
-    //PrintIrCpp print(options);
-    PrintIrJs print(options);
+    PrintIrCpp print(options);
+//    PrintIrJs print(options);
     
     print.PrintHeading(loader);
     print.PrintDeclarations(analyser.AllMethods());
