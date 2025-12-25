@@ -241,6 +241,7 @@ public:
         return address_t(0, mImageBase + mEntryPoint);
     }
 
+    virtual std::string GetInit() override { return "-- todo --\n";}
     virtual std::string GetMain() override {
         std::string overlays = "";
         std::string includes = "";

@@ -37,7 +37,69 @@
 #include "ir/convtable.h"
 #include "ir/convert.h"
 
+//#define OLDCONVERTER
 
+void MapHints(std::shared_ptr<Options> options, Analyser& analyser)
+{
+    for (hint_t& hint : options->memHints)
+    {
+        if (hint.label.find("-") != std::string::npos)
+        {
+            std::vector<std::string> parts = split(hint.label, "-");
+            assert(parts.size() == 2);
+            hint.begin = address_t::fromString(parts[0]);
+            hint.end = address_t::fromString(parts[1]);
+        } else if (hint.label.starts_with("sub_"))
+        {
+            int addrPart = std::stoi(hint.label.substr(4).c_str(), nullptr, 16);
+            bool done = false;
+            for (const auto& [addr, info] : analyser.mInfos)
+            {
+                if (addr.linearOffset() == addrPart)
+                {
+                    assert(info->code.size());
+                    hint.begin = info->code.begin()->first;
+                    hint.end = info->code.rbegin()->first;
+                    done = true;
+                    break;
+                }
+            }
+            assert(done);
+        } else if (hint.label.starts_with("loc_"))
+        {
+            int addrPart = std::stoi(hint.label.substr(4).c_str(), nullptr, 16);
+            bool done = false;
+
+            for (const auto& [addr, info] : analyser.mInfos)
+            {
+                if (addr.linearOffset() == addrPart)
+                {
+                    hint.begin = info->code.begin()->first;
+                }
+
+                for (const auto& [caddr, instr] : info->code)
+                {
+                    if (!hint.begin)
+                    {
+                        if (instr->instr->isLabel && caddr.linearOffset() == addrPart)
+                        {
+                            hint.begin = caddr;
+                        }
+                    } else {
+                        hint.end = caddr;
+                        done = true;
+                        if (instr->instr->isLabel)
+                            break;
+                    }
+                }
+                if (done)
+                    break;
+            }
+            assert(done);
+        } else
+            assert(0);
+    }
+}
 
 int main(int argc, char **argv) {
     std::shared_ptr<Options> options = std::make_shared<Options>();
@@ -116,7 +178,7 @@ int main(int argc, char **argv) {
         loader->Overlay(options->overlayBase, options->overlayBytes);
     
     options->imports = loader->GetImports();
-    Capstone->Set(loader, *options);
+    Capstone->Set(loader, options);
     
     for (auto t : options->jumpTables)
     {
@@ -253,15 +315,21 @@ int main(int argc, char **argv) {
             }
         }
     }
+    
+    // map hints
+    MapHints(options, analyser);
 
+#ifndef OLDCONVERTER
     ConvertIr conv(analyser, options);
-    PrintIrCpp print(options);
-//    PrintIrJs print(options);
+//    PrintIrCpp print(options);
+//    PrintIrCppHints print(options);
+    PrintIrJs print(options);
     
     print.PrintHeading(loader);
     print.PrintDeclarations(analyser.AllMethods());
     print.PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
-
+#endif
+    
     for (address_t proc : analyser.AllMethods())
     {
 #ifdef OLDCONVERTER
@@ -275,8 +343,9 @@ int main(int argc, char **argv) {
 #endif
     }
     
+#ifndef OLDCONVERTER
     print.PrintRelocations(loader->GetRelocations());
-
+#endif
     return 0;
 }
 

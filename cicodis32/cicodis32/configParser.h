@@ -382,9 +382,10 @@ void ConfigParser::ParseOverlay(CJson& json, std::shared_ptr<Options> options)
 void ConfigParser::ParseHint(CJson& json, std::shared_ptr<Options> options)
 {
     hint_t hint{
-        .string = false,
+        .string = false, // movsb/movsw/lodsb/lodsw/...
         .label = json["label"].GetString(),
         .pattern = json["pattern"].GetString(),
+        .direction = json["direction"] ? json["direction"].GetString() : "",
         .type = hint_t::typeFromString(json["type"].GetString())
     };
 
@@ -394,19 +395,31 @@ void ConfigParser::ParseHint(CJson& json, std::shared_ptr<Options> options)
     }
     else
     {
-        auto& vect = options->memHints[hint.label];
-        vect.push_back(hint);
+        options->memHints.push_back(hint);
+        //auto& vect = options->memHints[hint.label];
+        //vect.push_back(hint);
         
         hint.string = true;
         if (hint.pattern == "ds, esi")
         {
             hint.pattern = "DS_ESI";
-            vect.push_back(hint);
+            options->memHints.push_back(hint);
         }
         if (hint.pattern == "es, edi")
         {
             hint.pattern = "ES_EDI";
-            vect.push_back(hint);
+            options->memHints.push_back(hint);
         }
+        if (hint.pattern == "ds")
+        {
+            hint.pattern = "DS_SI";
+            options->memHints.push_back(hint);
+        }
+        if (hint.pattern == "es")
+        {
+            hint.pattern = "ES_DI";
+            options->memHints.push_back(hint);
+        }
+
     }
 }

@@ -5,9 +5,9 @@
 //  Created by Gabriel Valky on 19/12/2025.
 //
 
-class PrintIrJs : public PrintIrCpp {
+class PrintIrJs : public PrintIrCppHints {
 public:
-    PrintIrJs(shared<Options> options) : PrintIrCpp(options)
+    PrintIrJs(shared<Options> options) : PrintIrCppHints(options)
     {
     }
     
@@ -26,6 +26,8 @@ public:
 
     virtual void PrintProgram(shared<ProcIr> prog) override
     {
+        PrintIrCppHints::PrepareProgram(prog);
+        
         if (prog->info.empty())
             printf("function* %s\n", prog->name.c_str());
         else
@@ -67,7 +69,7 @@ public:
                 }
             }
             lastRet = l.type == StatementIr::Type_t::Return;
-            PrintIrCpp::PrintStatement(l);
+            PrintIrCppHints::PrintStatement(l);
         }
         if (prog->labels)
         {
@@ -90,15 +92,16 @@ public:
                     return RegisterName(op->variable, 1, false);
                 if (op->variable == "tx")
                     return RegisterName(op->variable, 2, false);
-                return PrintIrCpp::ToString(op);
+                return PrintIrCppHints::ToString(op);
             default:
-                return PrintIrCpp::ToString(op);
+                return PrintIrCppHints::ToString(op);
         }
         return "";
     }
     
     virtual std::string ToString(const StatementIr& st) override
     {
+        PrepareStatement(st);
         switch (st.type)
         {
             case StatementIr::Type_t::Label:
@@ -110,9 +113,8 @@ public:
             case StatementIr::Type_t::IndirectCall:
                 assert(st.opin1);
                 return format("    yield* indirectCall(cs, %s);", ToString(st.opin1).c_str());
-                
             default:
-                return PrintIrCpp::ToString(st);
+                return PrintIrCppHints::ToString(st);
         }
     }
     
@@ -120,11 +122,11 @@ public:
     {
         std::string repeat = st.repeat.empty() ? "" : st.repeat + " ";
         std::string func = st.func;
-        func = replace(func, "<", "_");
-        func = replace(func, ">", "");
-        func = replace(func, ", ", "_");
-        func = replace(func, "DS_SI", "DSSI");
-        func = replace(func, "ES_DI", "ESDI");
+//        func = replace(func, "<", "_");
+//        func = replace(func, ">", "");
+//        func = replace(func, ", ", "_");
+//        func = replace(func, "DS_SI", "DSSI");
+//        func = replace(func, "ES_DI", "ESDI");
         repeat = replace(repeat, "cx", "r16[cx]");
         
         if (st.func.starts_with("sub_") || st.func == "sync")
@@ -141,6 +143,16 @@ public:
         }
     }
     
+    virtual std::string ProcessFuncTemplate(const StatementIr& st) override
+    {
+        if (st.templ1.empty())
+            return "";
+        if (st.templ2.empty())
+            return format("_%s", replace(GetHintForTemplate(st.templ1), "_", "").c_str());
+        return format("_%s_%s", replace(GetHintForTemplate(st.templ1), "_", "").c_str(),
+                      replace(GetHintForTemplate(st.templ2), "_", "").c_str());
+    }
+
     std::string RegisterName(const std::string& regName, int regSize, bool sign)
     {
         if (regName == "ax" || regName == "bx" || regName == "cx" || regName == "dx" || regName == "ah" || regName == "al" || regName == "bh" || regName == "bl" || regName == "ch" || regName == "cl" || regName == "dh" || regName == "dl" || regName == "si" || regName == "di" || regName == "bp" || regName == "th" || regName == "tl" || regName == "tx")
@@ -199,6 +211,9 @@ function* start()
 
     virtual void PrintGlobalIndirectTable(const StatementIr& stmt) override
     {
+        if (stmt.opSwitchCases.empty())
+            return;
+
         printf("function* indirectCall(seg, ofs)\n{\n");
         PrintStatement(stmt);
         printf("}\n");
@@ -208,11 +223,15 @@ function* start()
     {
     }
     
-    virtual void PrintRelocations(const std::vector<std::string>& allRelocs)
+    virtual void PrintRelocations(const std::vector<std::string>& allRelocs) override
     {
         printf("function fixReloc(seg)\n{\n");
-        for (auto l : allRelocs)
+        for (std::string l : allRelocs)
+        {
+            if (mOptions->memHintDefault.isValid())
+                l = replace(l, "memoryA", "memory");
             printf("    %s\n", l.c_str());
+        }
         printf("}\n");
     }
 

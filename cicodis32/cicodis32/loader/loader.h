@@ -287,6 +287,7 @@ void start()
     
     virtual std::vector<std::string> GetRelocations() override
     {
+        // TODO: turn to IR?
         std::vector<std::string> aux;
         for (int i=0; i<header->relocations; i++)
         {

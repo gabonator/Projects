@@ -255,6 +255,8 @@ convert_t convert[X86_INS_ENDING] = {
 
     }, // TODO: flags carry?
     [X86_INS_SUB] = {.convert = [](convert_args){  return instr->ArgsEqual() ? "$wr0 = 0;" : "$rw0 -= $rd1;"; },
+            .sf = [](convert_args){ return "($sig0)$rd0 < 0"; }, // TODO: check
+            .zf = [](convert_args){ return "$rd0 == 0"; },
     },
     [X86_INS_CMP] = {
         .convert = [](convert_args){ return ""; },

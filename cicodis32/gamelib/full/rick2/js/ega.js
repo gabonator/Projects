@@ -73,9 +73,9 @@ class Ega
        case 0x1012:
             for (let i=0; i<r16[cx]; i++)
             {
-                let r = memoryAGet(es, r16[dx]+i*3)*4;
-                let g = memoryAGet(es, r16[dx]+i*3+1)*4;
-                let b = memoryAGet(es, r16[dx]+i*3+2)*4;
+                let r = memoryGet(es, r16[dx]+i*3)*4;
+                let g = memoryGet(es, r16[dx]+i*3+1)*4;
+                let b = memoryGet(es, r16[dx]+i*3+2)*4;
                 let palIndex = r16[bx] + i;
                 EGA.palette[palIndex] = b | (g << 8) | (r << 16);
             }
@@ -88,12 +88,16 @@ class Ega
   {
     if (this.videoMode != 13)
       return;
+    if (addr < 0xa0000 || addr > 0xc0000)
+      throw "bad range"
     EGA.write(addr, value);
   }
   read(addr)
   {
     if (this.videoMode != 13)
       return;
+    if (addr < 0xa0000 || addr > 0xc0000)
+      throw "bad range"
     return EGA.read(addr);
   }
   getPixel(x, y)

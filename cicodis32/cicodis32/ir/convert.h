@@ -618,14 +618,17 @@ private:
             assert(args[0] == "al" || args[0] == "ax" || args[0] == "eax");
             return {.type = StatementIr::Type_t::Function,
                     .repeat = repeat,
-                    .func = templ + "<" + argToTemplate(args[1]) + ">",
+                    .func = templ,
+                    .templ1 = argToTemplate(args[1]),
                     .opd = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
         }
         if (templ.starts_with("mov"))
         {
             return {.type = StatementIr::Type_t::Function,
                     .repeat = repeat,
-                    .func = templ + "<" + argToTemplate(args[0]) + ", " + argToTemplate(args[1]) + ">"};
+                    .func = templ,
+                    .templ1 = argToTemplate(args[0]),
+                    .templ2 = argToTemplate(args[1])};
 
         }
         if (templ.starts_with("sca"))
@@ -633,12 +636,14 @@ private:
             if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
                 return {.type = StatementIr::Type_t::Function,
                         .repeat = repeat,
-                        .func = templ + "<" + argToTemplate(args[0]) + ">",
+                        .func = templ,
+                        .templ1 = argToTemplate(args[0]),
                         .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[1])};
             else if (args[0] == "al" || args[0] == "ax" || args[0] == "eax")
                 return {.type = StatementIr::Type_t::Function,
                         .repeat = repeat,
-                        .func = templ + "<" + argToTemplate(args[1]) + ">",
+                        .func = templ,
+                        .templ1 = argToTemplate(args[1]),
                         .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
             else
                 assert(0);
@@ -653,7 +658,8 @@ private:
 //            return repeat + templ + "<" + argToTemplate(args[0]) + ", " + argToTemplate(args[1]) + ">();";
         return {.type = StatementIr::Type_t::Function,
                 .repeat = repeat,
-                .func = templ + "<" + argToTemplate(args[0]) + ">",
+                .func = templ,
+                .templ1 = argToTemplate(args[0]),
                 .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[1])};
     }
 
@@ -704,8 +710,8 @@ private:
                     }
                     
                     opSwitchCases.push_back({
-                        std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)jt->GetCaseKey(i), 0}),
-                        std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectCall, .address = jt->GetTarget(i)})
+                        std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)jt->GetCaseKey(i), jt->useCaseOffset ? 2 : 0}),
+                        std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectCall, .target = jt->GetTarget(i)})
                     });
                 }
         }

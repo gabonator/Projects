@@ -41,6 +41,8 @@ public:
     std::string stop;
     std::string repeat;
     std::string func;
+    std::string templ1;
+    std::string templ2;
     std::string oper;
     address_t address;
     address_t target;

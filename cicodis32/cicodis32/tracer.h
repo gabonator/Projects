@@ -452,6 +452,7 @@ class CCapstone
 {
     csh mHandle;
     cs_insn* mInsn;
+    shared<Options> mOptions;
     shared<Loader> mLoader;
     uint8_t mRegMap[X86_REG_ENDING][X86_REG_ENDING] = {};
 
@@ -492,11 +493,12 @@ public:
         }
     }
     
-    void Set(shared<Loader> loader, Options& options)
+    void Set(shared<Loader> loader, shared<Options> options)
     {
         mLoader = loader;
+        mOptions = options;
         
-        cs_mode mode = options.arch == arch_t::arch16 ? CS_MODE_16 : cs_mode(/*CS_MODE_16 |*/ CS_MODE_32);
+        cs_mode mode = mOptions->arch == arch_t::arch16 ? CS_MODE_16 : cs_mode(/*CS_MODE_16 |*/ CS_MODE_32);
         cs_err err = cs_open(CS_ARCH_X86, mode, &mHandle);
         if (err) {
             printf("Failed on cs_open() with error returned: %u\n", err);
@@ -518,6 +520,7 @@ public:
         }
             
         cs_disasm_iter(mHandle, &buf, &codeSize, &address, mInsn);
+        Preprocess(mInsn);
         std::shared_ptr<CapInstr> instr(new CapInstr(addr, mInsn));
         instr->Populate();
         return instr;
@@ -608,6 +611,28 @@ public:
     virtual const uint8_t* GetBufferAt(address_t addr) // TODO: remove?
     {
         return mLoader->GetBufferAt(addr);
+    }
+    
+    //
+    void Preprocess(cs_insn* insn)
+    {
+        if (mOptions->optStaticIndirectCall)
+        {
+            cs_x86* detail = &insn->detail->x86;
+            if (insn->id == X86_INS_CALL &&
+                detail->op_count == 1 &&
+                detail->operands[0].type == X86_OP_MEM &&
+                detail->operands[0].mem.segment == X86_REG_INVALID &&
+                detail->operands[0].mem.index == X86_REG_INVALID &&
+                detail->operands[0].mem.scale == 1 &&
+                detail->operands[0].mem.base == X86_REG_INVALID)
+            {
+                detail->operands[0].type = X86_OP_IMM;
+                uint16_t* p = (uint16_t*)GetBufferAt({mOptions->optStaticIndirectCallDs, (int)detail->operands[0].mem.disp});
+                detail->operands[0].imm = *p;
+            }
+        }
+        
     }
 };
 

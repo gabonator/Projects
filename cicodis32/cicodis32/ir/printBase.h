@@ -24,17 +24,22 @@ public:
     {
     }
     
+    virtual std::string OffsetRegister(std::string reg)
+    {
+        return reg;
+    }
+
     virtual std::string OffsetAsString(shared<OperandIr> op)
     {
         std::string memOffset = "";
         if (!op->memOfsBase.empty())
-            memOffset += op->memOfsBase;
+            memOffset += OffsetRegister(op->memOfsBase);
         
         if (!op->memOfsIndex.empty())
         {
             if (!memOffset.empty())
                 memOffset += " + ";
-            memOffset += op->memOfsIndex;
+            memOffset += OffsetRegister(op->memOfsIndex);
         }
         if (op->memOfsScale != 1)
         {
@@ -223,11 +228,11 @@ public:
                 std::string rhs;
                 
                 if (st.opin1 && st.opin2)
-                    rhs = format("%s(%s, %s)", ProcessFuncName(st).c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
+                    rhs = format("%s%s(%s, %s)", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
                 else if (st.opin1)
-                    rhs = format("%s(%s)", ProcessFuncName(st).c_str(), ToString(st.opin1).c_str());
+                    rhs = format("%s%s(%s)", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str(), ToString(st.opin1).c_str());
                 else
-                    rhs = format("%s()", ProcessFuncName(st).c_str());
+                    rhs = format("%s%s()", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str());
                 
                 if (st.opd)
                     return format("    %s = %s;", ToString(st.opd).c_str(), rhs.c_str());
@@ -299,7 +304,10 @@ public:
                 //return format(st.shiftStack ? "    sp += %d;\n    return;" : "    return;", st.shiftStack);
             case StatementIr::Type_t::Switch:
             {
-                std::string aux = format("    switch (%s)\n    {\n", st.opSwitchSelector.c_str());
+                std::string sel = st.opSwitchSelector;
+                if (sel.size() == 2)
+                    sel = OffsetRegister(sel); // js reg transform
+                std::string aux = format("    switch (%s)\n    {\n", sel.c_str());
                 for (auto p : st.opSwitchCases)
                     aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                 aux += "        default:\n";
@@ -316,6 +324,7 @@ public:
     virtual void PrintStatement(const StatementIr& st)
     {
         printf("%s\n", ToString(st).c_str());
+//        printf("%-40s //%s\n", ToString(st).c_str(), st.address.toString().c_str());
         if (st.next)
         {
             printf("%s\n", ToString(*st.next).c_str());
@@ -336,8 +345,20 @@ public:
             return format("%s%s", repeat.c_str(), st.func.c_str());
     }
 
+    virtual std::string ProcessFuncTemplate(const StatementIr& st)
+    {
+        if (st.templ1.empty())
+            return "";
+        if (st.templ2.empty())
+            return format("<%s>", st.templ1.c_str());
+        return format("<%s, %s>", st.templ1.c_str(), st.templ2.c_str());
+    }
+
     virtual void PrintGlobalIndirectTable(const StatementIr& stmt)
     {
+        if (stmt.opSwitchCases.empty())
+            return;
+        
         printf("void indirectCall(int seg, int ofs)\n{\n");
         PrintStatement(stmt);
         printf("}\n");
@@ -383,8 +404,13 @@ void start()
     virtual void PrintRelocations(const std::vector<std::string>& allRelocs)
     {
         printf("void fixReloc(uint16_t seg)\n{\n");
-        for (auto l : allRelocs)
+        for (std::string l : allRelocs)
+        {
+            if (mOptions->memHintDefault.isValid())
+                l = replace(l, "memoryA", "memory");
+
             printf("    %s\n", l.c_str());
+        }
         printf("}\n");
     }
 

@@ -80,11 +80,23 @@ struct address_t {
 //        return temp;
 //    }
 
-    bool operator<(const address_t& other) const {
-        if (segment != other.segment)
-            return segment < other.segment;
-        return offset < other.offset;
-    }
+//    bool operator<(const address_t& other) const {
+//        if (segment != other.segment)
+//            return segment < other.segment;
+//        return offset < other.offset;
+//    }
+//    bool operator>(const address_t& other) const {
+//        if (segment != other.segment)
+//            return segment > other.segment;
+//        return offset > other.offset;
+//    }
+//    bool operator<=(const address_t& other) const {
+//        return !(*this > other);
+//    }
+//    bool operator>=(const address_t& other) const {
+//        return !(*this < other);
+//    }
+    auto operator<=>(const address_t& other) const = default;
 };
 
 //struct cmp_adress_t { // TODO: remove!

@@ -328,6 +328,9 @@ struct hint_t
     bool string;
     std::string label;
     std::string pattern;
+    std::string direction;
+    address_t begin;
+    address_t end;
     enum class hintType_t {
         invalid,
         video,
@@ -341,22 +344,32 @@ struct hint_t
         return !label.empty();
     }
     
-    std::string getTypeAsString() const
+    std::string getTypeAsString(bool string) const
     {
         switch (type)
         {
             case hintType_t::video:
-                return string ? "VIDEO": "Video";
+                return /*string ? "VIDEO":*/ "Video";
             case hintType_t::psp:
-                return string ? "PSP" : "Psp";
+                return /*string ? "PSP" :*/ "Psp";
             case hintType_t::memory:
-                return "";
+                return string ? "Mem" : "";
             case hintType_t::bios:
-                return string ? "BIOS" : "Bios";
+                return /*string ? "BIOS" :*/ "Bios";
             default:
                 assert(0);
                 return "";
         }
+    }
+    std::string getDirectionAsString() const
+    {
+//        assert(string);
+        if (direction == "forward")
+            return "Fwd";
+        if (direction == "backward")
+            return "Bwd";
+        assert(0);
+        return "";
     }
     static hintType_t typeFromString(const std::string& s)
     {
@@ -386,9 +399,9 @@ struct hint_t
     std::string replaceTo() const
     {
         if (string)
-            return pattern + "_" + getTypeAsString();
+            return pattern + "_" + getTypeAsString(string);
         else
-            return std::string("memory") + getTypeAsString();
+            return std::string("memory") + getTypeAsString(string);
     }
 
 };
@@ -428,7 +441,7 @@ public:
     std::set<address_t> marks;
     std::vector<indirectJump_t> indirectCalls;
     std::vector<indirectJump_t> indirectJumps;
-    std::map<std::string, std::vector<hint_t>> memHints;
+    std::vector<hint_t> memHints;
     std::map<address_t, std::shared_ptr<Loader::import_t>> imports;
     hint_t memHintDefault;
     std::vector<shared<jumpTable_t>> GetJumpTables(address_t addr) const
@@ -449,6 +462,8 @@ public:
     
     address_t overlayBase;
     std::vector<uint8_t> overlayBytes;
+    bool optStaticIndirectCall{true};
+    int optStaticIndirectCallDs{0x1040};
 };
 
 template<typename T, typename U> T check(T o, U end)

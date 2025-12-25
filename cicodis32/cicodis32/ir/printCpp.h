@@ -14,7 +14,7 @@ public:
     {
     }
     
-    virtual std::string OffsetRegister(std::string reg)
+    virtual std::string OffsetRegister(std::string reg) override
     {
         return reg;
     }
@@ -173,11 +173,11 @@ public:
                 std::string rhs;
                 
                 if (st.opin1 && st.opin2)
-                    rhs = format("%s%s(%s, %s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
+                    rhs = format("%s%s(%s, %s)", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str(), ToString(st.opin1).c_str(), ToString(st.opin2).c_str());
                 else if (st.opin1)
-                    rhs = format("%s%s(%s)", st.func.c_str(), suffix.c_str(), ToString(st.opin1).c_str());
+                    rhs = format("%s%s(%s)", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str(), ToString(st.opin1).c_str());
                 else
-                    rhs = format("%s%s()", st.func.c_str(), suffix.c_str());
+                    rhs = format("%s%s()", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str());
                 
                 if (st.opd && st.opd->type == OperandIr::Type_t::Memory)
                     return repeat + format(ToStringSetter(st.opd).c_str(), rhs.c_str());
@@ -203,3 +203,110 @@ public:
         }
     }
 };
+
+class PrintIrCppHints : public PrintIrCpp {
+    std::vector<hint_t> activeProgHints; // TODO: ptr
+    std::vector<hint_t> activeStatementHints; // TODO: ptr
+
+public:
+    PrintIrCppHints(shared<Options> options) : PrintIrCpp(options)
+    {
+    }
+
+    virtual void PrepareProgram(shared<ProcIr> prog)
+    {
+        activeProgHints.clear();
+        if (prog->lines.size())
+        {
+            address_t begin = prog->lines.begin()->address;
+            address_t end = prog->lines.rbegin()->address;
+            for (const hint_t& h : mOptions->memHints)
+            {
+                if (h.end < begin || h.begin > end)
+                    continue;
+                activeProgHints.push_back(h);
+            }
+        }
+    }
+    
+    virtual void PrintProgram(shared<ProcIr> prog) override
+    {
+        PrepareProgram(prog);
+        PrintIrCpp::PrintProgram(prog);
+    }
+    
+    virtual void PrepareStatement(const StatementIr& st)
+    {
+        activeStatementHints.clear();
+        for (const hint_t& h : activeProgHints)
+            if (h.begin <= st.address && st.address <= h.end)
+                activeStatementHints.push_back(h);
+    }
+    
+    virtual std::string ToString(const StatementIr& st) override
+    {
+        PrepareStatement(st);
+        return PrintIrCpp::ToString(st);
+    }
+    
+    std::string GetHintForSegment(std::string seg)
+    {
+        for (const hint_t& h : activeStatementHints)
+            if (h.pattern == seg)
+                return h.getTypeAsString(false);
+        if (mOptions->memHintDefault.isValid())
+            return mOptions->memHintDefault.getTypeAsString(false);
+        return "A";
+    }
+    
+    std::string GetHintForTemplate(std::string templ)
+    {
+        for (const hint_t& h : activeStatementHints)
+            if (h.pattern == templ)
+                return h.getTypeAsString(true) + h.getDirectionAsString() + "_" + templ;
+        if (mOptions->memHintDefault.isValid())
+            return mOptions->memHintDefault.getTypeAsString(true) + mOptions->memHintDefault.getDirectionAsString() + "_" + templ;
+        return templ;
+    }
+    
+    virtual std::string ToStringSetter(shared<OperandIr> op) override
+    {
+        assert(op);
+        switch (op->type)
+        {
+            case OperandIr::Type_t::Memory:
+                if (op->memSize == 1)
+                    return format("    memory%sSet(%s, %s, %%s);", GetHintForSegment(op->memSegment).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
+                else
+                    return format("    memory%sSet%d(%s, %s, %%s);", GetHintForSegment(op->memSegment).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+            default:
+                assert(0);
+        }
+        return "";
+    }
+    
+    virtual std::string ToString(shared<OperandIr> op) override
+    {
+        assert(op);
+        switch (op->type)
+        {
+            case OperandIr::Type_t::Memory:
+                if (op->memSize == 1)
+                    return format("memory%sGet(%s, %s)", GetHintForSegment(op->memSegment).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
+                else
+                    return format("memory%sGet%d(%s, %s)", GetHintForSegment(op->memSegment).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+            default:
+                return PrintIrBase::ToString(op);
+        }
+    }
+
+    virtual std::string ProcessFuncTemplate(const StatementIr& st) override
+    {
+        if (st.templ1.empty())
+            return "";
+        if (st.templ2.empty())
+            return format("<%s>", GetHintForTemplate(st.templ1).c_str());
+        return format("<%s, %s>", GetHintForTemplate(st.templ1).c_str(), GetHintForTemplate(st.templ2).c_str());
+    }
+};
+

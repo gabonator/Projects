@@ -109,12 +109,15 @@ public:
             if (pinstr->isLabel) // && !pinfo->isLast) // TODO: goto ret
             {
                 std::string label = format("loc_%x", pinstr->mAddress.linearOffset());
-                auto hintIt = mOptions.memHints.find(label);
-                if (hintIt != mOptions.memHints.end())
-                    pMemoryHints = &hintIt->second;
-                else
-                    pMemoryHints = nullptr;
-                
+                pMemoryHints = nullptr;
+
+                // TODO: removed!!
+//                auto hintIt = mOptions.memHints.find(label);
+//                if (hintIt != mOptions.memHints.end())
+//                    pMemoryHints = &hintIt->second;
+//                else
+//                    pMemoryHints = nullptr;
+//                
                 if (mOptions.printProcAddress)
                     mCode.push_back(format("%s: // %04x:%04x\n", label.c_str(), pinstr->mAddress.segment, pinstr->mAddress.offset));
                 else
