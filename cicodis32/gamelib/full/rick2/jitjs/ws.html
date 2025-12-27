@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<canvas id="canvas" style="position:relative; left:120px; width:80%; max-width:100vw; aspect-ratio: 640/400;"></canvas><br>
+<script src="resources.js"></script>
+<script src="ega.js"></script>
+<script src="cpu.js"></script>
+<script src="controls.js"></script>
+
+<script>
+const socket = new WebSocket("ws://localhost:9000");
+let seq;
+let longmsg = ""
+let first = true;
+
+const config = [
+  {"id": "inject", "addr": "1040:6957", "text": "sync();"},
+  {"id": "inject", "addr": "1040:964B", "text": "sync();"},
+  {"id": "inject", "addr": "1040:0664", "text": "sync();"},
+  {"id": "inject", "addr": "1040:9A18", "text": "memorySet(cs, 0xbda2, 0xc3); flags.carry = false; return;"},
+  {"id": "inject", "addr": "1040:BBA0", "text": "return;"},
+  {"id": "inject", "addr": "1040:BDA2", "text": "return;"},
+  {"id": "inject", "addr": "1040:BEE2", "text": "if (0)"},
+  {"id": "inject", "addr": "1040:BF22", "text": "if (0)"},
+  {"id": "config", "loader": "LoaderMz", "executable": "res/rick2.zip/RICK2.EXE", "architecture": "arch16", "frontend": "javascript"},
+]
+
+socket.onmessage = event => {
+  event.data.text().then(text => {
+    longmsg += text;
+    if (longmsg.substr(-3) == "\n\n\n") {
+      log("rx", longmsg);
+      globalThis.eval(longmsg);
+      longmsg = "";
+      if (first)
+      {
+        first = false;
+        main();
+      }
+    }
+  })
+}
+
+socket.onopen = () => {
+  console.log('Connected to cicodis32');
+  let msg = config.map(x=>JSON.stringify(x)).join("\n") + "\n";
+  log("tx", msg);
+  socket.send(msg);
+}
+socket.onclose = () => console.log("Disconnect");
+
+function main()
+{
+  init();
+  seq = start();
+  setInterval(()=>
+  {
+    seq.next();
+    display();
+  }, 30);
+}
+
+function* indirectCall(seg, ofs)
+{
+  let name = `sub_${(seg*16+ofs).toString(16)}`;
+  if (name in globalThis)
+    return yield* globalThis[name]();
+
+  let wsreq = `{"id": "config", "procList": ["${seg.toString(16)}:${ofs.toString(16)}"]}` + "\n";
+  log("tx", wsreq);
+  socket.send(wsreq);
+  while (1)
+  {
+    yield 0;
+    if (name in globalThis)
+      return yield* globalThis[name]();
+  }
+}
+
+function log(dir, msg)
+{
+  msg = msg.split("\n").join("")
+  let fmt = {"rx": {clr:"color:blue", text:"\u2192"}, "tx": {clr:"color:green", text:"\u2190"}}
+  if (msg.length > 80)
+    console.log("%c" + fmt[dir].text + " " + msg.substr(0, 80) + "...", fmt[dir].clr)
+  else
+    console.log("%c" + fmt[dir].text  + " " + msg, fmt[dir].clr)
+}
+
+</script>
+</body>
+</html>

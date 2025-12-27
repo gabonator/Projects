@@ -293,7 +293,7 @@ public:
                     
                     if (methodsProcessed.find(newCallTarget) == methodsProcessed.end() &&
                         std::find(methodsToProcess.begin(), methodsToProcess.end(), newCallTarget) == methodsToProcess.end() &&
-                        std::find(newMethodsToProcess.begin(), newMethodsToProcess.end(), newCallTarget) ==  newMethodsToProcess.end())
+                        std::find(newMethodsToProcess.begin(), newMethodsToProcess.end(), newCallTarget) == newMethodsToProcess.end())
                     {
                         newMethodsToProcess.push_back(newCallTarget);
                     }
@@ -302,6 +302,7 @@ public:
             methodsToProcess = newMethodsToProcess;
         }
     }
+    
     std::set<address_t> AllMethods()
     {
         std::set<address_t> methods;

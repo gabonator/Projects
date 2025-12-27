@@ -13,6 +13,10 @@
 #include <list>
 #include <map>
 #include <set>
+#include <iostream>
+#include <string>
+#include <ranges>
+#include <string_view>
 
 #include "address.h"
 #include "common.h"
@@ -101,37 +105,8 @@ void MapHints(std::shared_ptr<Options> options, Analyser& analyser)
     }
 }
 
-int main(int argc, char **argv) {
-    std::shared_ptr<Options> options = std::make_shared<Options>();
-    options->printProcAddress = true;
-    options->printLabelAddress = true;
-//    options->verboseAsm = true;
-
-    assert(argc==2);
-    std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
-    assert(!optFile.empty());
-    
-    // Parse configuration from JSON file
-    if (!ConfigParser::ParseConfiguration(optFile, options))
-    {
-        printf("Failed to parse configuration file\n");
-        return 1;
-    }
-    
-    //sub_3c4b
-
-    shared<Loader> loader;
-    if (strcmp(options->loader, "LoaderMz") == 0)
-        loader.reset(new LoaderMz);
-    else if (strcmp(options->loader, "LoaderSnapshot") == 0)
-        loader.reset(new LoaderSnapshot);
-    else if (strcmp(options->loader, "LoaderLe") == 0)
-        loader.reset(new LoaderLe);
-    else if (strcmp(options->loader, "LoaderPe") == 0)
-        loader.reset(new LoaderPe);
-    else
-        assert(0);
-        
+void ApplyLoaderShift(const std::shared_ptr<Options> &options)
+{
     if (options->loadAddressShift != 0)
     {
         options->loadAddress += options->loadAddressShift;
@@ -145,7 +120,7 @@ int main(int argc, char **argv) {
         for (auto addr : options->marks)
             marksShift.insert({addr.segment, addr.offset + options->loadAddressShift});
         options->marks = marksShift;
-
+        
         assert(options->procList.size() == 0);
         assert(options->isolateLabels.size() == 0);
         assert(options->terminators.size() == 0);
@@ -168,20 +143,14 @@ int main(int argc, char **argv) {
         assert(options->indirectCalls.size() == 0);
         assert(options->indirectJumps.size() == 0);
     }
+}
 
-    if (!loader->LoadFile(options->exec, options->loadAddress))
-    {
-        printf("Cannot open file %s\n", options->exec);
-        return 1;
-    }
-    if (options->overlayBase)
-        loader->Overlay(options->overlayBase, options->overlayBytes);
-    
-    options->imports = loader->GetImports();
-    Capstone->Set(loader, options);
-    
+void PrepareJumpTables(const shared<Loader> &loader, const std::shared_ptr<Options> &options)
+{
     for (auto t : options->jumpTables)
     {
+        if (t->baseptr)
+            continue;
         if (t->fileoffset)
             t->baseptr = loader->GetBufferAt(t->fileoffset);
         if (t->filecount)
@@ -189,49 +158,118 @@ int main(int argc, char **argv) {
             for (int i=0; i<t->filecount; i++)
                 t->elements.push_back(i);
         }
-
+        
         if (!t->baseptr)
             t->baseptr = loader->GetBufferAt(t->table);
     }
+}
 
+std::vector<address_t> BuildEntriesList(const shared<Loader> &loader, const std::shared_ptr<Options> &options) {
     std::vector<address_t> startEntries;
     
     if (options->start)
     {
-        options->procModifiers.insert({loader->GetEntry(), procRequest_t{(int)procRequest_t::entry | (int) procRequest_t::callNear}});
+        if (options->procModifiers.find(loader->GetEntry()) == options->procModifiers.end())
+            options->procModifiers.insert({loader->GetEntry(), procRequest_t{(int)procRequest_t::entry | (int) procRequest_t::callNear}});
         startEntries.push_back(loader->GetEntry());
     }
     for (address_t p : options->procList)
         startEntries.push_back(p);
     for (address_t p : options->isolateLabels)
     {
-        options->procModifiers.insert({p, procRequest_t::callIsolated});
+        if (options->procModifiers.find(p) == options->procModifiers.end())
+            options->procModifiers.insert({p, procRequest_t::callIsolated});
         startEntries.push_back(p);
     }
     for (shared<jumpTable_t> j : options->jumpTables)
         if (j->type == jumpTable_t::Call || j->type == jumpTable_t::CallWords || j->type == jumpTable_t::CallDwords)
-        for (int i=0; i<j->GetSize(); i++)
-            if (j->IsValid(i))
-                startEntries.push_back(j->GetTarget(i));
-
+            for (int i=0; i<j->GetSize(); i++)
+                if (j->IsValid(i))
+                    startEntries.push_back(j->GetTarget(i));
+    
     for (indirectJump_t j : options->indirectCalls)
-    {
         startEntries.push_back(j.target);
-    }
-
+    
     for (indirectJump_t j : options->indirectJumps)
     {
-        options->procModifiers.insert({j.target, procRequest_t::callIsolated});
+        if (options->procModifiers.find(j.target) == options->procModifiers.end())
+            options->procModifiers.insert({j.target, procRequest_t::callIsolated});
         startEntries.push_back(j.target);
     }
-
+    
     for (address_t p : startEntries)
     {
         if (options->procModifiers.find(p) == options->procModifiers.end())
             options->procModifiers.insert({p, options->arch == arch_t::arch16 ? procRequest_t::callNear : procRequest_t::callLong});
     }
+    return startEntries;
+}
+
+void FilterIncrementalEntries(std::set<address_t>& newSet, std::set<address_t>& oldSet)
+{
+    std::set<address_t> aux;
+    for (const address_t& addr : newSet)
+    {
+        if (oldSet.find(addr) == oldSet.end())
+        {
+            oldSet.insert(addr);
+            aux.insert(addr);
+        }
+    }
+    newSet = aux;
+}
+
+void FilterIncrementalEntries(std::vector<address_t>& newSet, std::set<address_t>& oldSet)
+{
+    std::vector<address_t> aux;
+    for (const address_t& addr : newSet)
+    {
+        if (oldSet.find(addr) == oldSet.end())
+        {
+            oldSet.insert(addr);
+            aux.push_back(addr);
+        }
+    }
+    newSet = aux;
+}
+
+bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options, Analyser& analyser) {
+    if (!loader)
+    {
+        if (!options->loader[0] || !options->exec[0])
+            return true;
+        
+        // Only once
+        if (strcmp(options->loader, "LoaderMz") == 0)
+            loader.reset(new LoaderMz);
+        else if (strcmp(options->loader, "LoaderSnapshot") == 0)
+            loader.reset(new LoaderSnapshot);
+        else if (strcmp(options->loader, "LoaderLe") == 0)
+            loader.reset(new LoaderLe);
+        else if (strcmp(options->loader, "LoaderPe") == 0)
+            loader.reset(new LoaderPe);
+        else
+            assert(0);
+        
+        ApplyLoaderShift(options);
+        
+        if (!loader->LoadFile(options->exec, options->loadAddress))
+        {
+            printf("Cannot open file %s\n", options->exec);
+            return false;
+        }
+        if (options->overlayBase)
+            loader->Overlay(options->overlayBase, options->overlayBytes);
+        
+        options->imports = loader->GetImports();
+        Capstone->Set(loader, options);
+    }
     
-    Analyser analyser(options);
+    PrepareJumpTables(loader, options);
+    
+    std::vector<address_t> startEntries = BuildEntriesList(loader, options);
+    FilterIncrementalEntries(startEntries, options->incrementalAnalyse);
+    
     if (options->recursive)
     {
         analyser.RecursiveScan(startEntries);
@@ -239,14 +277,19 @@ int main(int argc, char **argv) {
         for (address_t p : options->procList)
             analyser.Scan(p);
     }
-        
+
     std::map<address_t, address_t> dependency;
     for (const indirectJump_t& j : options->indirectJumps)
         dependency.insert({j.target, j.parent});
-
+    
     std::set<address_t> processNew;
     processNew = analyser.AllMethods();
+    FilterIncrementalEntries(processNew, options->incrementalProcess);
     std::set<address_t> processed;
+
+    std::string all = "";
+    for (address_t adr : processNew)
+        all += format(" sub_%x", adr.linearOffset());
     
     while (!processNew.empty())
     {
@@ -256,11 +299,11 @@ int main(int argc, char **argv) {
         for (address_t p : processNew)
         {
             bool depends = false;
-
+            
             auto pDeps = dependency.find(p);
             if (pDeps != dependency.end())
                 depends = processed.find(pDeps->second) == processed.end();
-                
+            
             if (depends)
                 keep.insert(p);
             else
@@ -275,7 +318,7 @@ int main(int argc, char **argv) {
             if (options->procModifiers.find(proc) != options->procModifiers.end())
                 modifier = options->procModifiers.find(proc)->second;
             int modifierStack = analyser.GuessStackBalanceForProcCached(proc);
-
+            
             if ((int)modifier & (int)procRequest_t::callIsolated)
             {
                 // find parent, reuse attributes
@@ -289,7 +332,7 @@ int main(int argc, char **argv) {
                         break;
                     }
             }
-
+            
             analyser.AnalyseProc(proc, modifier, modifierStack);
             processed.insert(proc);
             
@@ -318,19 +361,32 @@ int main(int argc, char **argv) {
     
     // map hints
     MapHints(options, analyser);
-
+    
 #ifndef OLDCONVERTER
     ConvertIr conv(analyser, options);
-//    PrintIrCpp print(options);
-//    PrintIrCppHints print(options);
-    PrintIrJs print(options);
+    PrintIrBase* print = nullptr;
+    if (options->frontend == "base")
+        print = new PrintIrBase(options);
+    else if (options->frontend == "c++")
+        print = new PrintIrCppHints(options);
+    else if (options->frontend == "javascript")
+        print = new PrintIrJs(options);
+    else
+        assert(0);
     
-    print.PrintHeading(loader);
-    print.PrintDeclarations(analyser.AllMethods());
-    print.PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
+    bool firstRun = options->incrementalPrint.empty();
+    if (firstRun)
+    {
+        print->PrintHeading(loader);
+        print->PrintDeclarations(analyser.AllMethods());
+        print->PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
+    }
 #endif
     
-    for (address_t proc : analyser.AllMethods())
+    std::set<address_t> allMethods = analyser.AllMethods();
+    FilterIncrementalEntries(allMethods, options->incrementalPrint);
+
+    for (address_t proc : allMethods)
     {
 #ifdef OLDCONVERTER
         Convert convert(analyser, *options);
@@ -339,13 +395,67 @@ int main(int argc, char **argv) {
         convert.Dump();
 #else
         auto ir = conv.Convert(proc);
-        print.PrintProgram(ir);
+        print->PrintProgram(ir);
 #endif
     }
     
 #ifndef OLDCONVERTER
-    print.PrintRelocations(loader->GetRelocations());
+    if (firstRun)
+        print->PrintRelocations(loader->GetRelocations());
 #endif
-    return 0;
+    if (allMethods.size())
+        printf("\n\n");
+    return true;
 }
 
+int main(int argc, char **argv) {
+    shared<Options> options = std::make_shared<Options>();
+    shared<Loader> loader;
+    Analyser analyser(options);
+
+    if (argc == 2)
+    {
+        // non-interactive mode
+        std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
+        assert(!optFile.empty());
+        // Parse configuration from JSON file
+        if (1)
+        {
+            if (!ConfigParser::ParseConfiguration(optFile, options))
+            {
+                printf("Failed to parse configuration file\n");
+                return 1;
+            }
+            if (!DoIteration(loader, options, analyser))
+                return 1;
+            return 0;
+        } else {
+            std::string text(reinterpret_cast<const char*>(optFile.data()),
+                             optFile.size());
+            
+            for (auto line : text | std::views::split('\n')) {
+                std::string_view sv(line.begin(), line.end());
+                
+                if (!sv.empty() && sv.back() == '\r')
+                    sv.remove_suffix(1);
+                
+                if (sv.empty() || sv.starts_with("//"))
+                    continue;
+                
+                ConfigParser::ParseConfigLine(std::string(sv), options);
+                assert(DoIteration(loader, options, analyser));
+            }
+        }
+        return 0;
+    }
+
+    std::string line;
+    while (std::getline(std::cin, line))
+    {
+        ConfigParser::ParseConfigLine(line, options);
+        if (!DoIteration(loader, options, analyser))
+            return 1;
+    }
+
+    return 0;
+}

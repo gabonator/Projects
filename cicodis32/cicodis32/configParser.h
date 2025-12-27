@@ -11,8 +11,9 @@ class ConfigParser {
 public:
     static bool ParseConfiguration(const std::vector<uint8_t>& fileContents, std::shared_ptr<Options> options);
     
-private:
     static void ParseConfigLine(const std::string& line, std::shared_ptr<Options> options);
+
+private:
     static void ParseConfigObject(CJson& json, std::shared_ptr<Options> options);
     static void ParseIndirectCall(CJson& json, std::shared_ptr<Options> options);
     static void ParseIndirectJump(CJson& json, std::shared_ptr<Options> options);
@@ -132,6 +133,14 @@ void ConfigParser::ParseConfigObject(CJson& json, std::shared_ptr<Options> optio
             options->declarations = false;
         else if (k == "stackShiftAlways" && v == "true")
             options->stackShiftAlways = true;
+        else if (k == "optStaticIndirectCall" && v == "false")
+            options->optStaticIndirectCall = false;
+        else if (k == "optStaticIndirectCall" && v == "true")
+            options->optStaticIndirectCall = true;
+        else if (k == "optStaticIndirectCallDs")
+            options->optStaticIndirectCallDs = CConversion(v).ToInt();
+        else if (k == "frontend")
+            options->frontend = CJson(v).GetString();
         else if (k == "procList")
         {
             CJson(v).ForEach([&](const CSubstring& v)

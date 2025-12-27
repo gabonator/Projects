@@ -456,14 +456,20 @@ public:
     }
     bool verbose{false};
     bool verboseAsm{false};
-    bool printProcAddress{false};
-    bool printLabelAddress{false};
+    bool printProcAddress{true};
+    bool printLabelAddress{true};
     bool printOpcodes{false};
     
     address_t overlayBase;
     std::vector<uint8_t> overlayBytes;
-    bool optStaticIndirectCall{true};
+    bool optStaticIndirectCall{false};
     int optStaticIndirectCallDs{0x1040};
+    
+    bool run{false};
+    std::string frontend{"c++"};
+    std::set<address_t> incrementalAnalyse;
+    std::set<address_t> incrementalProcess;
+    std::set<address_t> incrementalPrint;
 };
 
 template<typename T, typename U> T check(T o, U end)
