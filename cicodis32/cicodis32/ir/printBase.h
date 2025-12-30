@@ -93,7 +93,7 @@ public:
             default:
                 assert(0);
         }
-        return prefix + ToString(op);
+        return prefix;
     }
 
     virtual std::string ToString(shared<OperandIr> op)
@@ -150,6 +150,8 @@ public:
                 auto it = mOptions->inject.find(l.address);
                 if (it != mOptions->inject.end())
                 {
+                    if (it->second == "//comment")
+                        continue;
                     printf("    %s\n", it->second.c_str());
                 }
             }
@@ -175,6 +177,37 @@ public:
                     assert(0);
                 break;
             case StatementIr::Type_t::Unary:
+                if (st.oper == "signed")
+                {
+                    std::string type, expr;
+                    bool compound = false;
+                    if (st.opin1)
+                    {
+                        type = SignedType(st.opin1);
+                        expr = ToString(st.opin1);
+                    }
+                    if (st.stmt1)
+                    {
+                        compound = st.stmt1->type == StatementIr::Type_t::Binary; // TODO:
+                        if (st.stmt1->opin1)
+                        {
+                            type = SignedType(st.stmt1->opin1);
+                            expr = ToString(*st.stmt1);
+                        } else {
+                            assert(st.stmt1->stmt1 && st.stmt1->stmt1->opin1);
+                            type = SignedType(st.stmt1->stmt1->opin1);
+                            expr = ToString(*st.stmt1);
+                        }
+                    }
+                    assert(expr.size());
+                    if (type.empty())
+                        return expr;
+                    // TODO: cond!
+                    if (type.starts_with("(") && !compound)
+                        return type + expr;
+                    else
+                        return type + "(" + expr + ")";
+                }
                 if (st.stmt1)
                 {
                     if (ToString(*st.stmt1).starts_with("flags.") || ToString(*st.stmt1).starts_with("!")) // TODO: ugly
@@ -211,7 +244,6 @@ public:
                         leftStr = std::string("(") + leftStr + ")";
                     if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
                         rightStr = std::string("(") + rightStr + ")";
-                    assert(!st.isSigned);
 
                     if (!st.opd)
                         return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
@@ -219,9 +251,9 @@ public:
                         return format("    %s = %s %s %s;", ToString(st.opd).c_str(), leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
                 break;
-            case StatementIr::Type_t::Copy:
-                assert(st.isSigned && st.opin1);
-                return SignedType(st.opin1);
+//            case StatementIr::Type_t::Copy:
+//                assert(st.isSigned && st.opin1);
+//                return SignedType(st.opin1);
 
             case StatementIr::Type_t::Function:
             {
@@ -264,25 +296,25 @@ public:
                         assert(0);
                     
                     // Add cast prefix for signed comparisons
-                    if (st.isSigned)
-                    {
-                        if (st.opin1 && st.opin2)
-                        {
-                            std::string leftSigned = SignedType(st.opin1);
-                            std::string rightSigned = SignedType(st.opin2);
-                            
-                            return format("%s %s %s",
-                                          leftSigned.c_str(),
-                                          st.oper.c_str(),
-                                          rightSigned.c_str());
-                        } else {
-                            return format("(?)%s %s (?)%s",
-                                          leftStr.c_str(),
-                                          st.oper.c_str(),
-                                          rightStr.c_str());
-                        }
-                        assert(0);
-                    }
+//                    if (st.isSigned)
+//                    {
+//                        if (st.opin1 && st.opin2)
+//                        {
+//                            std::string leftSigned = SignedType(st.opin1) + ToString(st.opin1);
+//                            std::string rightSigned = SignedType(st.opin2) + ToString(st.opin1);
+//                            
+//                            return format("%s %s %s",
+//                                          leftSigned.c_str(),
+//                                          st.oper.c_str(),
+//                                          rightSigned.c_str());
+//                        } else {
+//                            return format("(?)%s %s (?)%s",
+//                                          leftStr.c_str(),
+//                                          st.oper.c_str(),
+//                                          rightStr.c_str());
+//                        }
+//                        assert(0);
+//                    }
                     
                     return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
@@ -290,9 +322,18 @@ public:
                 return format("    goto loc_%x;", st.target.linearOffset());
             case StatementIr::Type_t::DirectCall:
                 return format("    sub_%x();", st.target.linearOffset());
+            case StatementIr::Type_t::DirectCallLong:
+                return format("    push(cs); cs = 0x%04x; sub_%x(); assert(cs == 0x%04x);",
+                    st.target.segment, st.target.linearOffset(), st.address.segment);
             case StatementIr::Type_t::IndirectCall:
                 assert(st.opin1);
                 return format("    indirectCall(cs, %s); // %s", ToString(st.opin1).c_str(), st.address.toString().c_str());
+            case StatementIr::Type_t::IndirectCallLong:
+                assert(st.opin1 && st.opin2);
+                return format("    push(cs); cs = %s; indirectCall(cs, %s); assert(cs == 0x%04x); // %s", ToString(st.opin1).c_str(), ToString(st.opin2).c_str(), st.address.segment, st.address.toString().c_str());
+            case StatementIr::Type_t::IndirectJump:
+                assert(st.opin1 && st.opin2);
+                return format("    indirectJump(%s, %s); return; // %s", ToString(st.opin1).c_str(), ToString(st.opin2).c_str(), st.address.toString().c_str());
             case StatementIr::Type_t::Stop:
                 return format("    stop(\"%s\");", st.stop.c_str());
             case StatementIr::Type_t::Comment:
@@ -304,12 +345,20 @@ public:
                 //return format(st.shiftStack ? "    sp += %d;\n    return;" : "    return;", st.shiftStack);
             case StatementIr::Type_t::Switch:
             {
-                std::string sel = st.opSwitchSelector;
+                std::string sel;
+                if (st.opSwitchSelectorIr)
+                    sel = ToString(st.opSwitchSelectorIr);
+                else
+                    sel = st.opSwitchSelector;
+                
                 if (sel.size() == 2)
                     sel = OffsetRegister(sel); // js reg transform
                 std::string aux = format("    switch (%s)\n    {\n", sel.c_str());
                 for (auto p : st.opSwitchCases)
-                    aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
+                    if (p.second->type == StatementIr::Type_t::DirectJump)
+                        aux += format("        case %s: %s\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
+                    else
+                        aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                 aux += "        default:\n";
                 aux += format("            stop(\"ind %s\");\n", st.address.toString().c_str()); // TODO
                 aux += "    }";
@@ -323,17 +372,22 @@ public:
     
     virtual void PrintStatement(const StatementIr& st)
     {
-        printf("%s\n", ToString(st).c_str());
+        printf("%s", ToString(st).c_str());
 //        printf("%-40s //%s\n", ToString(st).c_str(), st.address.toString().c_str());
         if (st.next)
         {
-            printf("%s\n", ToString(*st.next).c_str());
+            printf(" %s", trim(ToString(*st.next)).c_str());
             if (st.next->next)
             {
-                printf("%s\n", ToString(*st.next->next).c_str());
-                assert(!st.next->next->next);
+                printf(" %s", trim(ToString(*st.next->next)).c_str());
+                if (st.next->next->next)
+                {
+                    printf(" %s", trim(ToString(*st.next->next->next)).c_str());
+                    assert(!st.next->next->next->next);
+                }
             }
         }
+        printf("\n");
     }
     
     virtual std::string ProcessFuncName(const StatementIr& st)

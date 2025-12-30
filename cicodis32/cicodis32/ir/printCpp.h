@@ -136,7 +136,6 @@ public:
                         leftStr = std::string("(") + leftStr + ")";
                     if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
                         rightStr = std::string("(") + rightStr + ")";
-                    assert(!st.isSigned);
 
                     if (!st.opd)
                         return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());

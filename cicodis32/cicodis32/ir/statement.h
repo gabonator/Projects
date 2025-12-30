@@ -18,7 +18,9 @@ public:
         Condition, // if (StatementIr) StatementIr
         Stop, // stop(stop)
         DirectCall, // op1()
+        DirectCallLong, // TODO: remove
         IndirectCall,
+        IndirectCallLong,
         DirectJump, // op1()
         IndirectJump,
         Label, // op1:
@@ -32,9 +34,11 @@ public:
     shared<OperandIr> opin2;
     shared<StatementIr> stmt1;
     shared<StatementIr> stmt2;
-        shared<StatementIr> stConditionExpr;
+    shared<StatementIr> stConditionExpr;
     shared<StatementIr> stConditionTrue;
+    
     std::string opSwitchSelector;
+    shared<OperandIr> opSwitchSelectorIr;
     std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
 
     std::string comment;
@@ -48,7 +52,6 @@ public:
     address_t target;
     
     int suffix{0};
-    bool isSigned{false};
     
     shared<StatementIr> next;
     

@@ -200,7 +200,6 @@ inline StatementBuilder operator==(const OperandBuilder& left, const OperandBuil
     stmt->opin1 = left.get();
     stmt->oper = "==";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -210,7 +209,6 @@ inline StatementBuilder operator!=(const OperandBuilder& left, const OperandBuil
     stmt->opin1 = left.get();
     stmt->oper = "!=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -220,7 +218,6 @@ inline StatementBuilder operator>(const OperandBuilder& left, const OperandBuild
     stmt->opin1 = left.get();
     stmt->oper = ">";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -230,7 +227,24 @@ inline StatementBuilder operator<(const OperandBuilder& left, const OperandBuild
     stmt->opin1 = left.get();
     stmt->oper = "<";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator>=(const StatementBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = ">=";
+    stmt->stmt2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator>(const StatementBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = ">";
+    stmt->stmt2 = right.get();
     return StatementBuilder(stmt);
 }
 
@@ -240,7 +254,6 @@ inline StatementBuilder operator>=(const OperandBuilder& left, const OperandBuil
     stmt->opin1 = left.get();
     stmt->oper = ">=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -250,7 +263,6 @@ inline StatementBuilder operator<=(const OperandBuilder& left, const OperandBuil
     stmt->opin1 = left.get();
     stmt->oper = "<=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -276,14 +288,7 @@ public:
         
         // Apply each modifier in sequence
         for (const auto& modType : modTypes) {
-            if (modType == "signed") {
-                // Set signed flag for comparisons and binary operations
-                if (stmt->type == StatementIr::Type_t::Compare) {
-                    stmt->isSigned = true;
-                } else if (stmt->type == StatementIr::Type_t::Binary) {
-                    stmt->isSigned = true;
-                }
-            } else if (modType == "assign") {
+            if (modType == "assign") {
                 // Convert Binary expression to Assignment with compound operation
                 // e.g., (a + b) with "assign" becomes a = a + b (stored as Binary type with opd)
                 if (stmt->type == StatementIr::Type_t::Binary && !stmt->opd) {
@@ -410,7 +415,6 @@ inline StatementBuilder operator>=(const StatementBuilder& left, const OperandBu
     stmt->stmt1 = left.get();
     stmt->oper = ">=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -420,9 +424,18 @@ inline StatementBuilder operator<=(const StatementBuilder& left, const OperandBu
     stmt->stmt1 = left.get();
     stmt->oper = "<=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
+
+inline StatementBuilder operator<=(const StatementBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = "<=";
+    stmt->stmt2 = right.get();
+    return StatementBuilder(stmt);
+}
+
 
 inline StatementBuilder operator<(const StatementBuilder& left, const OperandBuilder& right) {
     auto stmt = std::make_shared<StatementIr>();
@@ -430,7 +443,15 @@ inline StatementBuilder operator<(const StatementBuilder& left, const OperandBui
     stmt->stmt1 = left.get();
     stmt->oper = "<";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder operator<(const StatementBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = "<";
+    stmt->stmt2 = right.get();
     return StatementBuilder(stmt);
 }
 
@@ -440,9 +461,9 @@ inline StatementBuilder operator>(const StatementBuilder& left, const OperandBui
     stmt->stmt1 = left.get();
     stmt->oper = ">";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
+
 
 inline StatementBuilder operator==(const StatementBuilder& left, const OperandBuilder& right) {
     auto stmt = std::make_shared<StatementIr>();
@@ -450,7 +471,6 @@ inline StatementBuilder operator==(const StatementBuilder& left, const OperandBu
     stmt->stmt1 = left.get();
     stmt->oper = "==";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -460,7 +480,6 @@ inline StatementBuilder operator!=(const StatementBuilder& left, const OperandBu
     stmt->stmt1 = left.get();
     stmt->oper = "!=";
     stmt->opin2 = right.get();
-    stmt->isSigned = false;
     return StatementBuilder(stmt);
 }
 
@@ -526,18 +545,18 @@ inline StatementBuilder OP_UNARY(const std::string& op, const StatementBuilder& 
 // Usage: OP_SIGNED(OP_X86(instr, 0)) creates a unary cast to signed type
 inline StatementBuilder OP_SIGNED(const OperandBuilder& operand) {
     auto stmt = std::make_shared<StatementIr>();
-    stmt->type = StatementIr::Type_t::Copy;
+    stmt->type = StatementIr::Type_t::Unary;
     stmt->opin1 = operand.get();
-    stmt->isSigned = true;
+    stmt->oper = "signed";
     return StatementBuilder(stmt);
 }
 
 // Overload for OP_SIGNED with StatementBuilder
 inline StatementBuilder OP_SIGNED(const StatementBuilder& statement) {
     auto stmt = std::make_shared<StatementIr>();
-    stmt->type = StatementIr::Type_t::Copy;
+    stmt->type = StatementIr::Type_t::Unary;
     stmt->stmt1 = statement.get();
-    stmt->isSigned = true;
+    stmt->oper = "signed";
     return StatementBuilder(stmt);
 }
 

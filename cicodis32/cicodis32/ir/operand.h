@@ -68,7 +68,7 @@ public:
                 memOfsBase = op.mem.base != X86_REG_INVALID ? Capstone->ToString(op.mem.base) : "";
                 memOfsIndex = op.mem.index != X86_REG_INVALID ? Capstone->ToString(op.mem.index) : "";
                 memOfsScale = op.mem.scale;
-                memOfsDisp = op.mem.disp;
+                memOfsDisp = (int)op.mem.disp;
                 break;
             case X86_OP_INVALID:
                 assert(0);

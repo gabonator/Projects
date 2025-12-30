@@ -382,17 +382,19 @@ private:
         if (setter == X86_INS_SUB && getter == X86_INS_JB)
             return OP_X86(set, 0) < OP_X86(set, 1);
         if (setter == X86_INS_SUB && getter == X86_INS_JG)
-            return OP_MOD("signed") << (OP_X86(set, 0) > OP_X86(set, 1));
+            return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_DEC && getter == X86_INS_JGE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
         if (setter == X86_INS_ADD && getter == X86_INS_JG)
             return (OP_SIGNED(OP_X86(set, 0)) + OP_SIGNED(OP_X86(set, 1))) > OP_CONST(0);
         if (setter == X86_INS_SUB && getter == X86_INS_JLE)
-            return OP_MOD("signed") << (OP_X86(set, 0) <= OP_X86(set, 1));
+            return OP_SIGNED(OP_X86(set, 0)) <= OP_SIGNED(OP_X86(set, 1));
         if (setter == X86_INS_ADD && getter == X86_INS_JB)
             return (OP_X86(set, 0) + OP_X86(set, 1)) >= OP_CONST(maxValue(set, 0), -1);
         if (setter == X86_INS_ADD && getter == X86_INS_JL)
-            return OP_MOD("signed") << ((OP_X86(set, 0) + OP_X86(set, 1)) < OP_CONST(0));
+            return OP_SIGNED(OP_X86(set, 0) + OP_X86(set, 1)) < OP_CONST(0);
         if (setter == X86_INS_ADD && getter == X86_INS_JLE)
-            return OP_MOD("signed") << ((OP_X86(set, 0) + OP_X86(set, 1)) <= OP_CONST(0));
+            return OP_SIGNED(OP_X86(set, 0) + OP_X86(set, 1)) <= OP_CONST(0);
         if (setter == X86_INS_SUB && getter == X86_INS_JA)
             return (OP_X86(set, 0) > OP_X86(set, 1));
         if (setter == X86_INS_ADC && getter == X86_INS_JB)
@@ -401,6 +403,16 @@ private:
             return COMPARE(OP_VAR("false"));
         if (setter == X86_INS_AND && getter == X86_INS_JB)
             return COMPARE(OP_VAR("false"));
+        if (setter == X86_INS_XOR && getter == X86_INS_JB)
+            return COMPARE(OP_VAR("false"));
+
+        // stupid, force post condition
+        if (setter == X86_INS_INC && getter == X86_INS_JGE)
+            return (OP_SIGNED(OP_X86(set, 0)) + OP_CONST(1)) >= OP_CONST(0);
+        if (setter == X86_INS_DEC && getter == X86_INS_JL)
+            return OP_SIGNED((OP_X86(set, 0) - OP_CONST(1))) < OP_CONST(0);
+        if (setter == X86_INS_NEG && getter == X86_INS_JB)
+            return OP_X86(set, 0) != OP_CONST(0);
 
         return Condition(set, getter);
     }
@@ -419,14 +431,16 @@ private:
         }
         x86_insn setter = set->mId;
         
-        if (setter == X86_INS_CALL)
+        if (setter == X86_INS_CALL || setter == X86_INS_INT)
         {
             // Flag-based conditions
             if (getter == X86_INS_JA)
                 return !OP_VAR("flags.carry") && !OP_VAR("flags.zero");
             if (getter == X86_INS_JBE)
                 return OP_VAR("flags.carry") || OP_VAR("flags.zero");
-            
+            if (getter == X86_INS_JE)
+                return COMPARE(OP_VAR("flags.zero"));
+
             assert(0);
         }
         
@@ -438,13 +452,13 @@ private:
             switch (getter)
             {
                 case X86_INS_JGE:
-                    return OP_MOD("signed") << (OP_X86(set, 0) >= OP_X86(set, 1));
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
                 case X86_INS_JLE:
-                    return OP_MOD("signed") << (OP_X86(set, 0) <= OP_X86(set, 1));
+                    return OP_SIGNED(OP_X86(set, 0)) <= OP_SIGNED(OP_X86(set, 1));
                 case X86_INS_JG:
-                    return OP_MOD("signed") << (OP_X86(set, 0) > OP_X86(set, 1));
+                    return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
                 case X86_INS_JL:
-                    return OP_MOD("signed") << (OP_X86(set, 0) < OP_X86(set, 1));
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_SIGNED(OP_X86(set, 1));
                 case X86_INS_JA:
                     return OP_X86(set, 0) > OP_X86(set, 1);
                 case X86_INS_JB:
@@ -458,13 +472,13 @@ private:
                 case X86_INS_JE:
                     return OP_X86(set, 0) == OP_X86(set, 1);
                 case X86_INS_JNS:
-                    return OP_MOD("signed") << ((OP_X86(set, 0) >= OP_X86(set, 1)));
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
 //                    if (set->Imm() == 0)
 //                        return OP_MOD("signed") << ((OP_X86(set, 0) >= OP_CONST(0)));
 //                    else
 //                        return OP_MOD("signed") << ((OP_X86(set, 0) - OP_X86(set, 1)) >= OP_CONST(0));
                 case X86_INS_JS:
-                    return OP_MOD("signed") << ((OP_X86(set, 0) < OP_X86(set, 1)));
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_SIGNED(OP_X86(set, 1));
 //                    if (set->Imm() == 0)
 //                        return OP_MOD("signed") << ((OP_X86(set, 0) < OP_CONST(0)));
 //                    else
@@ -482,21 +496,31 @@ private:
             switch (getter)
             {
                 case X86_INS_JGE:
-                    return OP_MOD("signed") << (OP_X86(set, 0) >= OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
                 case X86_INS_JG:
-                    return OP_MOD("signed") << (OP_X86(set, 0) > OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(0);
                 case X86_INS_JLE:
-                    return OP_MOD("signed") << (OP_X86(set, 0) <= OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) <= OP_CONST(0);
                 case X86_INS_JL:
-                    return OP_MOD("signed") << (OP_X86(set, 0) < OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
                 case X86_INS_JE:
                     return OP_X86(set, 0) == OP_CONST(0);
                 case X86_INS_JNE:
                     return OP_X86(set, 0) != OP_CONST(0);
                 case X86_INS_JS:
-                    return OP_MOD("signed") << (OP_X86(set, 0) < OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
                 case X86_INS_JNS:
-                    return OP_MOD("signed") << (OP_X86(set, 0) >= OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
+                case X86_INS_JA:
+                    return OP_X86(set, 0) == OP_CONST(0); // check?
+                case X86_INS_JB:
+                    return COMPARE(OP_VAR("false")); // check?
+                case X86_INS_JBE:
+                    return OP_X86(set, 0) <= OP_CONST(0); // == 0
+                case X86_INS_LOOPNE:
+                    assert(set->ArgsEqual());
+                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", !OP_X86(set, 0));
+
                 default:
                     assert(0);
             }
@@ -508,9 +532,9 @@ private:
             switch (getter)
             {
                 case X86_INS_JS:
-                    return OP_MOD("signed") << (OP_X86(set, 0) < OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
                 case X86_INS_JNS:
-                    return OP_MOD("signed") << (OP_X86(set, 0) >= OP_CONST(0));
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
                 case X86_INS_JE:
                     return OP_X86(set, 0) == OP_CONST(0);
                 case X86_INS_JNE:
@@ -581,6 +605,8 @@ private:
                 return "CS_SI";
             if (in == "dword ptr [esi]")
                 return "DS_ESI";
+            if (in == "byte ptr ss:[si]" || in == "word ptr ss:[si]")
+                return "SS_SI";
             assert(0);
             return "?";
         };
@@ -629,7 +655,6 @@ private:
                     .func = templ,
                     .templ1 = argToTemplate(args[0]),
                     .templ2 = argToTemplate(args[1])};
-
         }
         if (templ.starts_with("sca"))
         {
@@ -642,11 +667,19 @@ private:
             else if (args[0] == "al" || args[0] == "ax" || args[0] == "eax")
                 return {.type = StatementIr::Type_t::Function,
                         .repeat = repeat,
-                        .func = templ,
+                        .func = templ + "_inv",
                         .templ1 = argToTemplate(args[1]),
                         .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
             else
                 assert(0);
+        }
+        if (templ.starts_with("cmp"))
+        {
+            return {.type = StatementIr::Type_t::Function,
+                    .repeat = repeat,
+                    .func = templ,
+                    .templ1 = argToTemplate(args[0]),
+                    .templ2 = argToTemplate(args[1])};
         }
         assert(args[1] == "al" || args[1] == "ax" || args[1] == "eax");
         
@@ -667,6 +700,7 @@ private:
     {
         std::set<int> dupl;
         std::string selector;
+        shared<OperandIr> selectorIr;
         bool first = true;
 
         std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
@@ -678,8 +712,24 @@ private:
             
             if (selector.empty())
             {
-//                if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
-//                    selector = iformat(instr, info, func, "$rd0");
+                if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                    {
+                        selectorIr = OP_X86(instr, 0).get();
+                    } else
+                        assert(0);
+                    //selector = iformat(instr, shared<instrInfo_t>(), func, "$rd0");
+                }
+                else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
+                {
+                    selectorIr = OP_X86(instr, 0).get();
+                    selectorIr->memSize = 8;
+//                    selectorIr = std::make_shared<StatementIr>(StatementIr{
+//                        .type = StatementIr::Type_t::Copy,
+//                        .opin1 = OP_X86(instr, 0).get()});
+//                    selectorIr->opin1->size = 8;
+                }
 //                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
 //                    selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
 //                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
@@ -690,14 +740,33 @@ private:
 //                    selector = iformat(instr, info, func, "$rd0");
 //                else if (instr->mId == X86_INS_LJMP && instr->mDetail.op_count == 1)
 //                    selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
-//                else
+                else
                     assert(0);
             }
             
             // multiple tables must use the same selector
             assert(jt->selector.empty() || selector == jt->selector);
                                 
-            
+            StatementIr::Type_t type = StatementIr::Type_t::None;
+            int width = 0;
+            switch (jt->type)
+            {
+                case jumpTable_t::CallWords:
+                    type = StatementIr::Type_t::DirectCall;
+                    width = 2;
+                    break;
+                case jumpTable_t::CallDwords:
+                    type = StatementIr::Type_t::DirectCallLong;
+                    width = 4;
+                    break;
+                case jumpTable_t::JumpWords:
+                    type = StatementIr::Type_t::DirectJump;
+                    width = 2;
+                    break;
+                default:
+                    assert(0);
+            }
+
             for (int i=0; i<jt->GetSize(); i++)
                 if (jt->IsValid(i))
                 {
@@ -710,8 +779,8 @@ private:
                     }
                     
                     opSwitchCases.push_back({
-                        std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)jt->GetCaseKey(i), jt->useCaseOffset ? 2 : 0}),
-                        std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectCall, .target = jt->GetTarget(i)})
+                        std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)jt->GetCaseKey(i), jt->useCaseOffset ? width : 0}),
+                        std::make_shared<StatementIr>(StatementIr{.type = type, .target = jt->GetTarget(i), .address = instr->mAddress})
                     });
                 }
         }
@@ -719,6 +788,7 @@ private:
         return StatementIr{
             .type = StatementIr::Type_t::Switch,
             .opSwitchSelector = selector,
+            .opSwitchSelectorIr = selectorIr,
             .opSwitchCases = opSwitchCases
         };
         

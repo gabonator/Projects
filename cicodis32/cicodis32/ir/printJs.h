@@ -62,6 +62,8 @@ public:
                 auto it = mOptions->inject.find(l.address);
                 if (it != mOptions->inject.end())
                 {
+                    if (it->second == "//comment")
+                        continue;
                     if (it->second.find("sync()") == std::string::npos)
                         printf("    %s\n", it->second.c_str());
                     else
