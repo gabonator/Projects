@@ -230,6 +230,15 @@ inline StatementBuilder operator<(const OperandBuilder& left, const OperandBuild
     return StatementBuilder(stmt);
 }
 
+inline StatementBuilder operator<(const OperandBuilder& left, const StatementBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->opin1 = left.get();
+    stmt->oper = "<";
+    stmt->stmt2 = right.get();
+    return StatementBuilder(stmt);
+}
+
 inline StatementBuilder operator>=(const StatementBuilder& left, const StatementBuilder& right) {
     auto stmt = std::make_shared<StatementIr>();
     stmt->type = StatementIr::Type_t::Compare;

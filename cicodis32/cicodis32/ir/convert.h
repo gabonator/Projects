@@ -170,14 +170,25 @@ public:
                          }
                          if (!allVisible)
                          {
+                             // TODO: duplicity!
                              assert(flag->lastSet.size() == 1);
                              StatementIr st;
                              shared<instrInfo_t> lastSetInstr = mInfo->code.find(*flag->lastSet.begin())->second;
-                             if (lastSetInstr->instr->mId == X86_INS_AND && flag->type == 'c')
-                             {
-                                 st = ASSIGN(OP_VAR("flags.carry"), OP_CONST(0));
-                             } else
-                                 assert(0);
+
+                             static const char* flagName[128] = {['c'] = "flags.carry",
+                                 ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow"};
+                             static const x86_insn flagCond[128] = {
+                                 ['c'] = X86_INS_JB,
+                                 ['z'] = X86_INS_JE,
+                                 ['s'] = X86_INS_JS,
+                             };
+                             std::string useFlagName(flagName[flag->type]);
+
+                             st = StatementIr{.type = StatementIr::Type_t::Assignment,
+                                     .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
+                                     .stmt1 = std::make_shared<StatementIr>(PreCondition(lastSetInstr->instr, flagCond[flag->type]))
+                             };
+
                              append(p.first, st);
                          }
                      }
@@ -304,7 +315,6 @@ private:
             assert(lastSet.size() <= 1);
             if (lastSet.size() == 1)
             lastSetInfo = proc->code.find(*lastSet.begin())->second;
-            x86_insn condInsn = pinfo->instr->mId;
             
             return Condition(lastSetInfo ? lastSetInfo->instr : nullptr, pinfo->instr);
         }
@@ -336,6 +346,8 @@ private:
                 return COMPARE(OP_VAR("flags.carry"));
             if (getter == X86_INS_JAE)
                 return !COMPARE(OP_VAR("flags.carry"));
+            if (getter == X86_INS_JNS)
+                return !OP_VAR("flags.sign");
 
             assert(0);
         }
@@ -383,12 +395,18 @@ private:
             return OP_X86(set, 0) < OP_X86(set, 1);
         if (setter == X86_INS_SUB && getter == X86_INS_JG)
             return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_SUB && getter == X86_INS_JGE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
         if (setter == X86_INS_DEC && getter == X86_INS_JGE)
             return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
+        if (setter == X86_INS_DEC && getter == X86_INS_JG)
+            return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(1);
         if (setter == X86_INS_ADD && getter == X86_INS_JG)
             return (OP_SIGNED(OP_X86(set, 0)) + OP_SIGNED(OP_X86(set, 1))) > OP_CONST(0);
         if (setter == X86_INS_SUB && getter == X86_INS_JLE)
             return OP_SIGNED(OP_X86(set, 0)) <= OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_DEC && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0)) <= OP_CONST(1);
         if (setter == X86_INS_ADD && getter == X86_INS_JB)
             return (OP_X86(set, 0) + OP_X86(set, 1)) >= OP_CONST(maxValue(set, 0), -1);
         if (setter == X86_INS_ADD && getter == X86_INS_JL)
@@ -405,6 +423,8 @@ private:
             return COMPARE(OP_VAR("false"));
         if (setter == X86_INS_XOR && getter == X86_INS_JB)
             return COMPARE(OP_VAR("false"));
+        if (setter == X86_INS_INC && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0) + OP_CONST(1)) <= OP_CONST(0);
 
         // stupid, force post condition
         if (setter == X86_INS_INC && getter == X86_INS_JGE)
@@ -413,6 +433,10 @@ private:
             return OP_SIGNED((OP_X86(set, 0) - OP_CONST(1))) < OP_CONST(0);
         if (setter == X86_INS_NEG && getter == X86_INS_JB)
             return OP_X86(set, 0) != OP_CONST(0);
+        
+        // op0 - op1 - carry < 0
+        if (setter == X86_INS_SBB && getter == X86_INS_JB)
+            return OP_X86(set, 0) < OP_BINARY(OP_X86(set, 1), "+", OP_VAR("flags.carry"));
 
         return Condition(set, getter);
     }
@@ -513,6 +537,8 @@ private:
                     return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
                 case X86_INS_JA:
                     return OP_X86(set, 0) == OP_CONST(0); // check?
+                case X86_INS_JAE:
+                    return COMPARE(OP_VAR("true")); // check?
                 case X86_INS_JB:
                     return COMPARE(OP_VAR("false")); // check?
                 case X86_INS_JBE:
@@ -552,7 +578,7 @@ private:
                 case X86_INS_JE:
                     return !(OP_X86(set, 0) & OP_X86(set, 1));
                 case X86_INS_JB:
-                    return COMPARE(OP_VAR("JB_TEST_???"));
+                    return COMPARE(OP_VAR("false"));
                 case X86_INS_LOOPNE:
                     return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
                 default:

@@ -28,6 +28,18 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         else
             return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_REG("cs", 2).get(), .opin2 = OP_X86(instr, 0).get()};
     },
+    [X86_INS_LJMP] = [](convert_args){
+        assert(instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM);
+        
+        cs_x86_op lowWord = instr->mDetail.operands[0];
+        cs_x86_op highWord = instr->mDetail.operands[0];
+        assert(highWord.type == X86_OP_MEM);
+        highWord.mem.disp += 2;
+        highWord.size = 2;
+        lowWord.size = 2;
+
+        return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_X86(highWord).get(), .opin2 = OP_X86(lowWord).get()};
+    },
     [X86_INS_LOOP] = [](convert_args){
         auto loopTarget = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::DirectJump,
@@ -71,33 +83,6 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             return st;
         } },
     [X86_INS_RETF] = [](convert_args){
-        /*
-        int shift = 0;
-        assert(((int)func.request & (int)procRequest_t::callNear) ||
-               ((int)func.request & (int)procRequest_t::callLong));
-        assert(func.callConv == callConv_t::callConvNear ||
-               func.callConv == callConv_t::callConvShiftStackNear ||
-               func.callConv == callConv_t::callConvSimpleStackNear ||
-               func.callConv == callConv_t::callConvShiftStackLong);
-        if (func.callConv == callConv_t::callConvShiftStackLong)
-            shift += 4;
-        if (func.callConv == callConv_t::callConvShiftStackNear)
-            shift += 2;
-        shift += instr->Imm();
-        
-        if (shift == 0)
-        {
-            if (!(instr->isLast && !instr->isLabel))
-                return StatementIr{.type = StatementIr::Type_t::Return};
-            else
-                return StatementIr{};
-        } else {
-            StatementIr st = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift);
-            if (!(instr->isLast && !instr->isLabel))
-                st.next = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::Return});
-            return st;
-        }
-         */
         int shift = 0;
         if (!((int)func.request & (int)procRequest_t::callFar))
         {
@@ -141,6 +126,12 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             return spshift;
         }
          },
+    [X86_INS_IRET] = [](convert_args){
+        StatementIr stop = {.type = StatementIr::Type_t::Stop, .stop = "iret"};
+        StatementIr ret = {.type = StatementIr::Type_t::Return};
+        stop.next = std::make_shared<StatementIr>(ret);
+        return stop;
+    },
     [X86_INS_INT] = [](convert_args){ return StatementIr{
         .type = StatementIr::Type_t::Function,
         .func = "interrupt",
@@ -337,16 +328,22 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     },
     [X86_INS_LDS] = [](convert_args){
         cs_x86_op ds{.type = X86_OP_REG, .reg = X86_REG_DS, .size = 2};
-        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) /*|| Capstone->Intersects(instr->mDetail.operands[1], ds)*/)
-        {
-            assert(0);
-        }
-        
         cs_x86_op lowWord = instr->mDetail.operands[1];
         cs_x86_op highWord = instr->mDetail.operands[1];
         assert(highWord.type == X86_OP_MEM);
         highWord.mem.disp += 2;
-        
+
+        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) /*|| Capstone->Intersects(instr->mDetail.operands[1], ds)*/)
+        {
+            // lds bx, ds:[bx]
+            StatementIr a = ASSIGN(OP_REG("tx", 2), OP_X86(lowWord));
+            StatementIr b = ASSIGN(OP_X86(ds), OP_X86(highWord));
+            StatementIr c = ASSIGN(OP_X86(instr, 0), OP_REG("tx", 2));
+            b.next = std::make_shared<StatementIr>(c);
+            a.next = std::make_shared<StatementIr>(b);
+            return a;
+        }
+                
         StatementIr a = ASSIGN(OP_X86(instr, 0), OP_X86(lowWord));
         StatementIr b = ASSIGN(OP_X86(ds), OP_X86(highWord));
         a.next = std::make_shared<StatementIr>(b);
@@ -380,6 +377,8 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         a.next = std::make_shared<StatementIr>(b);
         return a;
     },
+    [X86_INS_AAD] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "iret"}; },
+    [X86_INS_INT3] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "breakpoint"}; },
     /*
     {.convert = [](convert_args){
         cs_x86_op es{.type = X86_OP_REG, .reg = X86_REG_ES};

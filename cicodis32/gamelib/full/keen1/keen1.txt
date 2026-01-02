@@ -41,3 +41,13 @@
 
 {"id": "jumpTable", "addr": "01ed:45dd", "table": "01ed:469e", "type": "jumpwords", "entries": 14, "selector": "bx"}
 
+{"id": "inject", "addr": "01ed:025f", "text": "memoryASet16(ds, 0x5135, memoryAGet16(ds, 0x5135)+1);"}
+//{"id": "inject", "addr": "01ed:92c4", "text": "sync();"}
+//{"id": "inject", "addr": "01ed:bdda", "text": "sync();"}
+{"id": "inject", "addr": "01ed:e6ae", "text": "//comment"}
+{"id": "inject", "addr": "01ed:bf8e", "text": "sync();"}
+{"id": "inject", "addr": "01ed:b87b", "text": "sync();"}
+{"id": "inject", "addr": "01ed:bf97", "text": "sp += 2;"}
+{"id": "inject", "addr": "01ed:c012", "text": "//comment"}
+{"id": "inject", "addr": "01ed:c103", "text": "sync();"}
+
