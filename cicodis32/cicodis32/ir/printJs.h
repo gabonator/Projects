@@ -109,12 +109,21 @@ public:
             case StatementIr::Type_t::Label:
                 return format("  case 0x%x:", st.address.linearOffset());
             case StatementIr::Type_t::DirectJump:
-                return format("    { pc = 0x%x; break; }", st.target.linearOffset());
+                return format("    { pc = 0x%x; break; }", st.target.linearOffset()); // TODO: extra break at end
             case StatementIr::Type_t::DirectCall:
                 return format("    yield* sub_%x();", st.target.linearOffset());
+            case StatementIr::Type_t::DirectCallLong:
+                return format("    push(cs); cs = 0x%04x; yield* sub_%x(); assert(cs == 0x%04x);",
+                              st.target.segment, st.target.linearOffset(), st.address.segment);
             case StatementIr::Type_t::IndirectCall:
                 assert(st.opin1);
                 return format("    yield* indirectCall(cs, %s);", ToString(st.opin1).c_str());
+            case StatementIr::Type_t::Switch:
+                assert(st.opSwitchCases.size());
+                if (st.opSwitchCases.begin()->second->type == StatementIr::Type_t::DirectJump)
+                    return PrintIrCppHints::ToString(st) + "\n    break;";
+                else
+                    return PrintIrCppHints::ToString(st);
             default:
                 return PrintIrCppHints::ToString(st);
         }
@@ -185,9 +194,9 @@ public:
             case OperandIr::Type_t::Const:
                 if (op->constSize == 0 && op->constValue == 0)
                     return "0";
-                return utils::format("signed%d(%s)", op->constSize*8, ToString(op).c_str());
+                return utils::format("signed%d", op->constSize*8);
             case OperandIr::Type_t::Memory:
-                return utils::format("signed%d(%s)", op->memSize*8, ToString(op).c_str());
+                return utils::format("signed%d", op->memSize*8);
             default:
                 assert(0);
         }

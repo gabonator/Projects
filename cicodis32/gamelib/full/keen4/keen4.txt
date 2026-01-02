@@ -1,0 +1,109 @@
+{"id": "config", "loader": "LoaderMz", "executable": "keen4.zip/KEEN4.EXE", "architecture": "arch16", "loadAddress": 0x01ed0, "stackShiftAlways": true}
+{"id": "config", "frontend": "javascript"}
+
+{"id": "jumpTable", "addr": "01ed:0216", callsNear:["01ed:12a3", "01ed:36f4", "01ed:35e1", "01ed:181e"]}
+{"id": "inject", "addr": "01ed:36f0", "text": "//comment"}
+{"id": "jumpTable", "addr": "1ff7:0b4b", callsNear:["1ff7:0b60"]}
+{"id": "inject", "addr": "164d:0fa9", "text": "sync();"}
+{"id": "inject", "addr": "164d:04a0", "text": "sync(); /*"}
+{"id": "inject", "addr": "164d:04b3", "text": "*/"}
+
+{"id": "inject", "addr": "164d:0ea6", "text": "//comment"}
+
+
+// keen4.py
+{"id": "jumpTable", "addr": "01ed:02d9", "table": "01ed:03bf", "type": "jumpwords", "entries": 7, "selector": "bx"}
+//{"id": "jumpTable", "addr": "01ed:0943", "table": "01ed:000e", "type": "jumpwords", "entries": ?, "selector": "bx"}
+{"id": "jumpTable", "addr": "056a:0443", "table": "056a:04e9", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "07b1:0e67", "table": "07b1:0f81", "type": "jumpwords", "entries": 13, "selector": "bx"}
+{"id": "jumpTable", "addr": "0b02:0154", "table": "0b02:0331", "type": "jumpwords", "entries": 19, "selector": "bx"}
+{"id": "jumpTable", "addr": "0b02:0ac8", "table": "0b02:0b19", "type": "jumpwords", "entries": 10, "selector": "bx"}
+{"id": "jumpTable", "addr": "0d6d:196c", "table": "0d6d:1a47", "type": "jumpwords", "entries": 26, "selector": "bx"}
+{"id": "jumpTable", "addr": "0f7c:0985", "table": "0f7c:09ef", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "107c:005f", "table": "107c:0595", "type": "jumpwords", "entries": 88, "selector": "bx"}
+{"id": "jumpTable", "addr": "164d:0a71", "table": "164d:0d1e", "type": "jumpwords", "entries": 5, "selector": "bx"}
+{"id": "jumpTable", "addr": "1841:0c77", "table": "1841:0d51", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "1b1e:12f6", "table": "1b1e:1577", "type": "jumpwords", "entries": 7, "selector": "bx"}
+{"id": "jumpTable", "addr": "1c76:071b", "table": "1c76:07b8", "type": "jumpwords", "entries": 6, "selector": "bx"}
+{"id": "jumpTable", "addr": "1c76:2434", "table": "1c76:2472", "type": "jumpwords", "entries": 7, "selector": "bx"}
+
+
+{"id": "inject", "addr": "1ff7:0759", "text": "sync(); cs = pop(); return;"}
+
+{"id": "inject", "addr": "05da:0455", "text": "sync(); /*"}
+{"id": "inject", "addr": "05da:0468", "text": "*/"}
+
+// keen4.py
+{"id": "jumpTable", "addr": "05da:02ed", "table": "05da:03e4", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "126d:0ce7", "table": "126d:0d3c", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "138f:0d28", "table": "138f:0d7e", "type": "jumpwords", "entries": 4, "selector": "bx"}
+{"id": "jumpTable", "addr": "138f:0e7d", "table": "138f:0ede", "type": "jumpwords", "entries": 4, "selector": "bx"}
+
+{"id": "jumpTable", "addr": "1ff7:0507", "table": "30d4:6018", "type": "jumpwords", "entries": 4, "selector": "di"}
+{"id": "inject", "addr": "164d:0e7e", "text": "sync();"}
+
+{"id": "jumpTable", "addr": "1493:18e7", callsFar:["07b1:066d"]}
+
+{"id": "jumpTable", "addr": "1ff7:017e", "table": "30d4:5FEA", "type": "jumpwords", "entries": 22, "selector": "memoryAGet16(ss, 0x6016)", "useCaseOffset": true}
+{"id": "jumpTable", "addr": "1ff7:017e", jumps:["1ff7:01a0"]}
+
+{"id": "jumpTable", "addr": "056a:004a", callsFar:["1ef3:078d"]}
+{"id": "jumpTable", "addr": "1b1e:0e74", callsFar:["1ef3:078d"]}
+
+{"id": "jumpTable", "addr": "1ff7:08a0", "table": "30d4:667a", "type": "jumpwords", "entries": 3, "selector": "si"}
+
+{"id": "jumpTable", "addr": "1493:1933", callsFar:["07b1:07ea"]}
+{"id": "jumpTable", "addr": "1493:1ba1", callsFar:["07b1:085b"]}
+
+{"id": "jumpTable", "addr": "1b1e:0eaa", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:0d3c", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:0e13", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:11f9", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:147d", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:14a8", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1b1e:1558", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:0198", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:01c2", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:01eb", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:0224", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:05fb", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:064d", callsFar:["1ef3:0e2c"]}
+{"id": "jumpTable", "addr": "1c76:0673", callsFar:["1ef3:0e2c"]}
+
+{"id": "jumpTable", "addr": "05da:1bc2", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1b1e:0d27", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1b1e:0dd6", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1b1e:11dd", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1b1e:1407", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1c76:01d6", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1c76:01ff", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1c76:054d", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1c76:0560", callsFar:["01ef3:078d"]}
+{"id": "jumpTable", "addr": "1c76:0575", callsFar:["01ef3:078d"]}
+
+{"id": "jumpTable", "addr": "1c76:250f", callsFar:["07b1:0466"]}
+
+{"id": "inject", "addr": "1c76:2632", "text": "sync();"}
+
+{"id": "jumpTable", "addr": "0bc9:0fb0", callsFar:["1195:002e", "1195:008b", "1195:00b3", "1195:00db", "1195:0103", "1195:012b", "1195:0153", "1195:017b", "1195:024e", "0f7c:07ab", "0f7c:0826", "0f7c:06af", "0f7c:06f0", "0d6d:0395", "0bc9:16c9", "0d6d:062c", "0d6d:0b5b", "0d6d:049a", "0d6d:04e2", "0d6d:024c", "d6d:0842", "1195:024e", "1195:0369", "1195:03a6", "d6d:04e2", "d6d:049a"]}
+{"id": "jumpTable", "addr": "08aa:2468", callsFar:["0bc9:176e", "0d6d:1aa2", "126d:097e", "0d6d:1b5f", "0d6d:1c48", "bc9:1847"]}
+
+{"id": "jumpTable", "addr": "1841:1cb7", callsFar:["07b1:0561"]}
+
+{"id": "jumpTable", "addr": "0bc9:106d", callsFar:["0f7c:06f0", "1195:002e", "1195:008b", "1195:00b3", "1195:00db", "0f7c:06af", "1195:0103", "1195:012b", "1195:0153", "1195:017b", "0d6d:0395", "0bc9:16c9", "0d6d:062c", "0d6d:0b5b", "0d6d:0234", "0d6d:024c", "d6d:0842", "1195:024e", "1195:0369", "1195:03a6", "d6d:04e2", "d6d:049a"]}
+
+{"id": "inject", "addr": "1841:12a4", "text": "sync();"}
+
+{"id": "jumpTable", "addr": "0bc9:0f16", callsFar:["0bc9:0f16", "0d6d:0b5b", "126d:114f", "0d6d:07d8", "d6d:04e2", "f7c:0bc4"]}
+
+{"id": "inject", "addr": "1a61:0b00", "text": "sync();"}
+{"id": "inject", "addr": "1a61:0b06", "text": "//comment"}
+
+{"id": "jumpTable", "addr": "08aa:23aa", callsFar:["0d6d:14a9", "1195:03ea"]}
+{"id": "jumpTable", "addr": "08aa:23c0", callsFar:["126d:0938", "bc9:1752"]}
+
+{"id": "jumpTable", "addr": "0d6d:1502", "table": "0d6d:161a", "type": "jumpwords", "entries": 11, "selector": "bx"}
+
+
+//{id:"config", procList: ["164d:0488"], recursive:false, verboseAsm:true}
+{id:"config", printf:true}

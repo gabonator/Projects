@@ -724,7 +724,7 @@ private:
                 else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
                 {
                     selectorIr = OP_X86(instr, 0).get();
-                    selectorIr->memSize = 8;
+                    selectorIr->memSize = 4;
 //                    selectorIr = std::make_shared<StatementIr>(StatementIr{
 //                        .type = StatementIr::Type_t::Copy,
 //                        .opin1 = OP_X86(instr, 0).get()});

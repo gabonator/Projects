@@ -121,12 +121,19 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             if (!(instr->isLast && !instr->isLabel))
                 popcs.next = std::make_shared<StatementIr>(StatementIr{ret});
             return popcs;
+        } else if (shift == 2) {
+            StatementIr spshift = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift);
+            StatementIr popcs{.type = StatementIr::Type_t::Function, .opd = OP_REG("cs", 2).get(), .func = "pop"};
+            StatementIr ret = {.type = StatementIr::Type_t::Return};
+            if (!(instr->isLast && !instr->isLabel))
+                popcs.next = std::make_shared<StatementIr>(ret);
+            spshift.next = std::make_shared<StatementIr>(popcs);
+            return spshift;
         } else {
             StatementIr spshift = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(2);
             StatementIr popcs{.type = StatementIr::Type_t::Function, .opd = OP_REG("cs", 2).get(), .func = "pop"};
             StatementIr spargs = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift-2);
             StatementIr ret = {.type = StatementIr::Type_t::Return};
-            //st.next = std::make_shared<StatementIr>(StatementIr{ret});
             if (!(instr->isLast && !instr->isLabel))
                 spargs.next = std::make_shared<StatementIr>(ret);
             popcs.next = std::make_shared<StatementIr>(spargs);
@@ -294,7 +301,13 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_SAR] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("sar#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_CDQ] = [](convert_args){
         assert(func.arch == arch_t::arch16);
-        return ASSIGN(OP_VAR("dx"), OP_VAR("ax & 0x8000 ? 0xffff : 0x0000"));
+        return ASSIGN(OP_REG("dx", 2),
+                      OP_BINARY(
+                        OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000")),
+                        "?",
+                        OP_VAR("0xffff : 0x0000")
+            ));
+        //return ASSIGN(OP_REG("dx", 2), OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000 ? 0xffff : 0x0000"));
     },
     [X86_INS_CMC] = [](convert_args){ return ASSIGN(OP_VAR("flags.carry"), !OP_VAR("flags.carry")); },
     [X86_INS_PUSHF] = [](convert_args){ return OP_FUNCTION("push", OP_VAR("flagAsReg()")); },

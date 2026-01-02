@@ -203,7 +203,9 @@ public:
                     if (type.empty())
                         return expr;
                     // TODO: cond!
-                    if (type.starts_with("(") && !compound)
+                    if (type.starts_with("r")) // TODO: javascript r16s[ax]
+                        return type;
+                    else if (type.starts_with("(") && !compound)
                         return type + expr;
                     else
                         return type + "(" + expr + ")";
@@ -240,9 +242,9 @@ public:
                     else
                         assert(0);
                     
-                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory"))
+                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory") && st.oper != "?")
                         leftStr = std::string("(") + leftStr + ")";
-                    if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
+                    if (rightStr.find(" ") != std::string::npos && rightStr.find(":") == std::string::npos && !rightStr.starts_with("memory"))
                         rightStr = std::string("(") + rightStr + ")";
 
                     if (!st.opd)

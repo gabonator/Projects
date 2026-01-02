@@ -132,9 +132,9 @@ public:
                     else
                         assert(0);
                     
-                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory"))
+                    if (leftStr.find(" ") != std::string::npos && !leftStr.starts_with("memory") && st.oper != "?")
                         leftStr = std::string("(") + leftStr + ")";
-                    if (rightStr.find(" ") != std::string::npos && !rightStr.starts_with("memory"))
+                    if (rightStr.find(" ") != std::string::npos && rightStr.find(":") == std::string::npos && !rightStr.starts_with("memory"))
                         rightStr = std::string("(") + rightStr + ")";
 
                     if (!st.opd)
