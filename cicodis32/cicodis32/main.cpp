@@ -25,13 +25,16 @@
 #include "ir/operand.h"
 #include "ir/statement.h"
 #include "ir/builder.h"
-#include "ir/printBase.h"
-#include "ir/printCpp.h"
-#include "ir/printJs.h"
 
 #include "analyser/analyser.h"
 #include "analyser/analyserFunction.h"
 #include "analyser/analyserInstruction.h"
+
+#include "ir/printBase.h"
+#include "ir/printCpp.h"
+#include "ir/printJs.h"
+
+
 #include "old/formatter.h"
 #include "old/converter.h"
 #include "json.h"
@@ -232,7 +235,49 @@ void FilterIncrementalEntries(std::vector<address_t>& newSet, std::set<address_t
     }
     newSet = aux;
 }
+/*
+void PostProcess(shared<ProcIr> prog, Analyser& analyser)
+{
+    shared<Analyser::info_t> info = analyser.mInfos.find(prog->addr)->second;
+    
+    auto ProcessOp = [&](address_t addr, shared<OperandIr> op) {
+        if (!op)
+            return;
+        if (op->type != OperandIr::Type_t::Memory)
+            return;
+        if (op->memOfsDisp == 0x7fffffff)
+        {
+            //                    if (op->memOfsDisp == 0x7fffffff  && info->instr->mSize == 6)
+            //                        memOffset += format("memoryGet32(cs, 0x%x)", active.linearOffset()+2);
+            //                    else
 
+            shared<instrInfo_t> inst = info->code.find(addr)->second;
+            if (inst->instr->mSize == 6 && inst->instr->mBytes[5] == 0x7f && inst->instr->mBytes[4] == 0xff && inst->instr->mBytes[3] == 0xff && inst->instr->mBytes[2] == 0xff)
+            {
+                op->memOfsDisp = 0;
+                op->memDynamicSize = 4;
+                op->memDynamicSegment = "cs";
+                op->memDynamicOffset = 0xabababab;
+            }
+            //info->code
+            
+        }
+    };
+    
+    std::function<void (address_t, StatementIr&)> ProcessStmt = [&](address_t addr, StatementIr& stmt) -> void {
+        ProcessOp(addr, stmt.opd);
+        ProcessOp(addr, stmt.opin1);
+        ProcessOp(addr, stmt.opin2);
+        if (stmt.stmt1)
+            ProcessStmt(addr, *stmt.stmt1);
+        if (stmt.stmt2)
+            ProcessStmt(addr, *stmt.stmt2);
+    };
+    
+    for (StatementIr& stmt : prog->lines)
+        ProcessStmt(stmt.address, stmt);
+}
+*/
 bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options, Analyser& analyser) {
     if (!loader)
     {
@@ -395,7 +440,10 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
         convert.Dump();
 #else
         auto ir = conv.Convert(proc);
-        print->PrintProgram(ir);
+//        PostProcess(ir, analyser);
+        shared<Analyser::info_t> info = analyser.mInfos.find(proc)->second;
+
+        print->PrintProgram(ir, info);
 #endif
     }
     
@@ -459,3 +507,32 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
+
+/*
+ flags.carry = !!(edx & 0x0000);
+ flags.carry = !!((edx<<8) & 0x80000000);
+ video
+ 
+ edx = edx + edx*4;
+ edx = edx + edx;
+ 
+ eax = memoryGet32(ss, ebp + 16);
+ eax = memoryGet32(ds, ebp + 16);
+ memorySet32(ds, 0x5d22e, eax);
+ eax -= eax;
+ 
+ 
+ sub_47e02 switch
+ 
+ 
+ loc_3a9fc: // 0160:3a9fc
+     eax = memoryGet32(ds, ecx + memoryGet32(cs, 0x3a9fe));
+ loc_3a9fc: // 0160:3a9fc
+     eax = memoryGet32(ds, ecx + 2147483647);
+ 
+ 
+ BAAD:
+ memorySet32(ds, 0x398b2, memoryGet32(ds, 0x398b2) + (0x7fffffff + flags.carry));
+> 1000000ull
+ */

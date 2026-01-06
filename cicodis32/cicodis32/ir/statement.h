@@ -26,7 +26,8 @@ public:
         Label, // op1:
         Switch, // switch(selector) { case const: long/far call/jump }
         Comment, // // comment
-        Return
+        Return,
+        Dereference // op1:op2
     } type{Type_t::None};
 
     shared<OperandIr> opd;

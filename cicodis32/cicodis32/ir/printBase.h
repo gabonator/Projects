@@ -47,6 +47,12 @@ public:
                 memOffset += " * ";
             memOffset += format("%d", op->memOfsScale);
         }
+//        if (op->memDynamicSize != 0) // TODO!
+//        {
+//            if (memOffset.empty())
+//                memOffset += " + ";
+//            memOffset += format("memory%d(%s, 0x%x)", op->memDynamicSize*8, op->memDynamicSegment.c_str(), op->memDynamicOffset);
+//        }
         if (op->memOfsDisp != 0 || memOffset.empty())
         {
             if (memOffset.empty())
@@ -85,10 +91,13 @@ public:
                 prefix = "";
                 break;
             case 1:
-                prefix = "(char)";
+                prefix = mOptions->arch == arch_t::arch16 ? "(char)" : "(int8_t)";
                 break;
             case 2:
-                prefix = "(short)";
+                prefix = mOptions->arch == arch_t::arch16 ? "(short)" : "(int16_t)";
+                break;
+            case 4:
+                prefix = "(int32_t)";
                 break;
             default:
                 assert(0);
@@ -105,15 +114,15 @@ public:
                 switch (op->constSize)
                 {
                     case -1:
-                        return format("0x%x", op->constValue);
+                        return format("0x%lx", op->constValue);
                     case 0:
-                        return format("%d", op->constValue);
+                        return format("%ld", op->constValue);
                     case 1:
                         return format("0x%02x", op->constValue & 0xff);
                     case 2:
                         return format("0x%04x", op->constValue & 0xffff);
                     case 4:
-                        return format("0x%08x", op->constValue);
+                        return format("0x%08lx", op->constValue & 0xffffffff);
                     default:
                         assert(0);
                         return "";
@@ -134,7 +143,7 @@ public:
         return "";
     }
 
-    virtual void PrintProgram(shared<ProcIr> prog)
+    virtual void PrintProgram(shared<ProcIr> prog, shared<Analyser::info_t> info)
     {
         if (prog->info.empty())
             printf("void %s\n", prog->name.c_str());
@@ -143,9 +152,12 @@ public:
         printf("{\n");
         for (auto t : prog->temps)
             printf("    bool %s;\n", t.c_str());
+        address_t last; // TODO:
         for (auto l : prog->lines)
         {
-            if (l.type != StatementIr::Type_t::Label && l.type != StatementIr::Type_t::Comment)
+            if (0)
+                printf("/*%s*/ ", l.address.toString().c_str());
+            if (l.type != StatementIr::Type_t::Label && l.type != StatementIr::Type_t::Comment && last != l.address)
             {
                 auto it = mOptions->inject.find(l.address);
                 if (it != mOptions->inject.end())
@@ -153,6 +165,7 @@ public:
                     if (it->second == "//comment")
                         continue;
                     printf("    %s\n", it->second.c_str());
+                    last = l.address;
                 }
             }
             PrintStatement(l);
@@ -275,10 +288,19 @@ public:
                 break;
             }
             case StatementIr::Type_t::Condition:
-                return format("    if (%s)\n    %s", ToString(*st.stConditionExpr).c_str(), ToString(*st.stConditionTrue).c_str());
+            {
+                if (st.stConditionExpr->type == StatementIr::Type_t::Stop || st.stConditionExpr->type == StatementIr::Type_t::Function)
+                { // TODO: cleanup
+                    std::string cond = ToString(*st.stConditionExpr);
+                    cond = trim(replace(cond, ");", ")"));
+                    return format("    if (%s)\n    %s", cond.c_str(), ToString(*st.stConditionTrue).c_str());
+                } else
+                    return format("    if (%s)\n    %s", ToString(*st.stConditionExpr).c_str(), ToString(*st.stConditionTrue).c_str());
+            }
             case StatementIr::Type_t::Compare:
                 {
                     std::string leftStr, rightStr;
+                    bool largeNum = false;
                     
                     if (st.stmt1)
                         leftStr = ToString(*st.stmt1);
@@ -293,32 +315,26 @@ public:
                     if (st.stmt2)
                         rightStr = ToString(*st.stmt2);
                     else if (st.opin2)
+                    {
                         rightStr = ToString(st.opin2);
+                        if (st.opin2->type == OperandIr::Type_t::Const)
+                        {
+                            // TODO: negative!?
+                            largeNum = (int64_t)st.opin2->constValue >= 0x100000000;
+                            if (largeNum)
+                            {
+                                int f = 9;
+                            }
+                        }
+                    }
                     else
                         assert(0);
                     
-                    // Add cast prefix for signed comparisons
-//                    if (st.isSigned)
-//                    {
-//                        if (st.opin1 && st.opin2)
-//                        {
-//                            std::string leftSigned = SignedType(st.opin1) + ToString(st.opin1);
-//                            std::string rightSigned = SignedType(st.opin2) + ToString(st.opin1);
-//                            
-//                            return format("%s %s %s",
-//                                          leftSigned.c_str(),
-//                                          st.oper.c_str(),
-//                                          rightSigned.c_str());
-//                        } else {
-//                            return format("(?)%s %s (?)%s",
-//                                          leftStr.c_str(),
-//                                          st.oper.c_str(),
-//                                          rightStr.c_str());
-//                        }
-//                        assert(0);
-//                    }
-                    
-                    return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
+                    // TODO: 10000000ull
+                    if (!largeNum)
+                        return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
+                    else
+                        return format("(uint64_t)(%s) %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
             case StatementIr::Type_t::DirectJump:
                 return format("    goto loc_%x;", st.target.linearOffset());
@@ -375,19 +391,11 @@ public:
     virtual void PrintStatement(const StatementIr& st)
     {
         printf("%s", ToString(st).c_str());
-//        printf("%-40s //%s\n", ToString(st).c_str(), st.address.toString().c_str());
-        if (st.next)
+        shared<StatementIr> iter = st.next;
+        while (iter)
         {
-            printf(" %s", trim(ToString(*st.next)).c_str());
-            if (st.next->next)
-            {
-                printf(" %s", trim(ToString(*st.next->next)).c_str());
-                if (st.next->next->next)
-                {
-                    printf(" %s", trim(ToString(*st.next->next->next)).c_str());
-                    assert(!st.next->next->next->next);
-                }
-            }
+            printf(" %s", trim(ToString(*iter)).c_str());
+            iter = iter->next;
         }
         printf("\n");
     }

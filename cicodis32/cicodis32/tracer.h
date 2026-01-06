@@ -20,6 +20,7 @@ struct instruction_t
     bool savedVisiblyCarry{false};
     bool savedVisiblyZero{false};
     bool string{false};
+    x86_insn conditionAs{X86_INS_INVALID};
 };
 
 instruction_t Instructions[X86_INS_ENDING] = {
@@ -104,20 +105,23 @@ instruction_t Instructions[X86_INS_ENDING] = {
     //            case X86_INS_CLC:
     //            case X86_INS_CMC:
     //                info->GetFlag('c').savedVisibly |= true;
-    [X86_INS_SETNE] = {.simpleCond = true},
-    [X86_INS_SETE] = {.simpleCond = true},
-    [X86_INS_SETL] = {.simpleCond = true},
-    [X86_INS_SETLE] = {.simpleCond = true},
-    [X86_INS_SETG] = {.simpleCond = true},
-    [X86_INS_SETGE] = {.simpleCond = true},
+    [X86_INS_SETNE] = {.simpleCond = true, .conditionAs = X86_INS_JNE},
+    [X86_INS_SETE] = {.simpleCond = true, .conditionAs = X86_INS_JE},
+    [X86_INS_SETL] = {.simpleCond = true, .conditionAs = X86_INS_JL},
+    [X86_INS_SETLE] = {.simpleCond = true, .conditionAs = X86_INS_JLE},
+    [X86_INS_SETG] = {.simpleCond = true, .conditionAs = X86_INS_JG},
+    [X86_INS_SETGE] = {.simpleCond = true, .conditionAs = X86_INS_JGE},
     
     [X86_INS_STOSB] = { .string = true },
     [X86_INS_STOSW] = { .string = true },
+    [X86_INS_STOSD] = { .string = true },
     [X86_INS_LODSB] = { .string = true },
     [X86_INS_LODSW] = { .string = true },
     [X86_INS_MOVSB] = { .string = true },
     [X86_INS_MOVSW] = { .string = true },
-    [X86_INS_SCASB] = { .string = true },
+    [X86_INS_MOVSD] = { .string = true },
+    [X86_INS_SCASB] = { .string = true, .savedVisiblyZero = true },
+    [X86_INS_SCASW] = { .string = true, .savedVisiblyZero = true },
 };
 
 class CapInstr : public std::enable_shared_from_this<CapInstr>

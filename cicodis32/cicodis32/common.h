@@ -456,9 +456,9 @@ public:
     }
     bool verbose{false};
     bool verboseAsm{false};
+    bool printOpcodes{false};
     bool printProcAddress{true};
     bool printLabelAddress{true};
-    bool printOpcodes{false};
     
     address_t overlayBase;
     std::vector<uint8_t> overlayBytes;

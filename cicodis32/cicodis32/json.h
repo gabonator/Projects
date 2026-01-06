@@ -61,8 +61,8 @@ public:
     
     bool operator ==(const char* str) const
     {
-        char temp[128];
-        ToString(temp, 128);
+        char temp[512];
+        ToString(temp, 512);
 
         return strcmp(temp, str) == 0;
 //        if ((int)strlen(str) != strl)
@@ -227,6 +227,22 @@ public:
     {
     }
     
+    void Unescape(char *s)
+    {
+        char *src = s;
+        char *dst = s;
+
+        while (*src) {
+            if (src[0] == '\\' && src[1] == '"') {
+                *dst++ = '"';
+                src += 2;
+            } else {
+                *dst++ = *src++;
+            }
+        }
+        *dst = '\0';
+    }
+    
     char* GetString()
     {
         static char strValue[MaxStringLength];
@@ -242,6 +258,7 @@ public:
             }
         });
         
+        Unescape(strValue);
         return strValue;
     }
     

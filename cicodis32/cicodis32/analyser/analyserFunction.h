@@ -45,8 +45,10 @@ public:
         info->func.callConv = GetCallConvention(info);
         info->func.stackDrop = stackDrop;
 
-        if (verbose)
+        if (mOptions->verbose)
             DumpCode(proc, code, req, stackDrop);
+        if (mOptions->verboseAsm)
+            DumpCode2(proc, code);
 
         while (!head.empty())
         {
@@ -130,6 +132,45 @@ public:
                 printf("    ");
             printf("%x %x:%x %s %s\n", p.first.linearOffset(), p.first.segment, p.first.offset, p.second->instr->mMnemonic, p.second->instr->mOperands);
         }
+    }
+
+    void DumpCode2(address_t proc, code_t& code)
+    {
+        printf("--- void sub_%x() // %x:%x", proc.linearOffset(), proc.segment, proc.offset);
+
+//        printf("/*\n");
+        for (const auto& [addr, pi] : code)
+        {
+            shared<CapInstr> p = pi->instr;
+            char disasm[40];
+            char depends[1024] = {0};
+            char provides[1024] = {0};
+            for (instrInfo_t::instrInfoFlag_t* f : pi->Flags())
+            {
+                for (const auto addr : f->depends)
+                {
+                    char temp[1024];
+                    snprintf(temp, sizeof(temp), "r%cf: %x ", f->type, addr.offset);
+                    strncat(depends, temp, sizeof(depends)-1);
+                    if (f->dirty)
+                        strncat(depends, "(dirty) ", sizeof(depends)-1);
+                }
+                for (const auto addr : f->provides)
+                {
+                    char temp[1024];
+                    snprintf(temp, sizeof(temp), "w%cf: %x ", f->type, addr.offset);
+                    strncat(provides, temp, sizeof(provides)-1);
+                    if (f->save)
+                        strncat(provides, "(save) ", sizeof(depends)-1);
+                }
+            }
+            snprintf(disasm, sizeof(disasm), "%s %s", p->mMnemonic, p->mOperands);
+            if (mOptions->printOpcodes)
+                printf("%-20s ", p->GetBytes().c_str());
+            printf("// %3d ", pi->stack);
+            printf("%s%x %x:%x %-30s %s%s\n", p->isLabel ? "loc_" : "    ", p->mAddress.linearOffset(), p->mAddress.segment, p->mAddress.offset, disasm, depends, provides);
+        }
+//        printf("*/\n");
     }
 
     // Post-process analyzed info, checking stack, flags, and adding annotations

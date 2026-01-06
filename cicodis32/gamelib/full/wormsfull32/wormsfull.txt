@@ -9,7 +9,7 @@
 {"id": "jumpTable", "addr": "160:1cd7a7", "calls32": ["160:1cbd14", "160:1cdabf", "160:1d3380", "160:1d33c8", "160:1d31b8", "160:1ce597", "160:1cd805"]}
 
 {"id": "inject", "addr": "0160:1cd820", "text": "return;"}
-{"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
+//{"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
 
 {"id": "jumpTable", "addr": "160:1ccb9a", "calls32":["160:1cdaff", "160:1cb8ee"]}
 {"id": "jumpTable", "addr": "160:1ccd12", "calls32":["160:1cdaff", "160:1cb8ee"]}
@@ -41,31 +41,31 @@
 {"id": "jumpTable", "addr": "0160:1a74fa", "table": "160:1A74CD", "entries": 7, "type": "jump32", "selector": "esi/4"}
 {"id": "jumpTable", "addr": "0160:1a7722", "table": "160:1A7685", "entries": 7, "type": "jump32", "selector": "edi/4"}
 
-{"id": "inject", "addr": "0160:1BFDBF", "text": "return;"}
+{"id": "inject", "addr": "0160:1BFDBF", "text": "if (memoryGet32(ss, esp+8) > memoryGet32(ss, esp+4)) playSound(ds, memoryGet32(ss, esp+4), memoryGet32(ss, esp+8)-memoryGet32(ss, esp+4), 16000, \"s8\"); return;"}
 {"id": "inject", "addr": "0160:1BF310", "text": "return;"}
 {"id": "inject", "addr": "0160:1CF2DB", "text": "return;"}
 
 // memory hints, TODO: compares strings, should be address to take loadAddressShift into account
-{id:"hint", label:"loc_11c66", pattern: "ds, eax", type:"video"}
-{id:"hint", label:"loc_11c7f", pattern: "ds, eax", type:"video"}
-{id:"hint", label:"loc_122a6", pattern: "ds, edx", type:"video"}
-{id:"hint", label:"loc_122be", pattern: "ds, eax", type:"video"}
-{id:"hint", label:"loc_1251e", pattern: "ds, edx", type:"video"}
-{id:"hint", label:"loc_12569", pattern: "ds, edx", type:"video"}
-//{id:"hint", label:"loc_18d41", pattern: "ds, ebx", type:"video"}
-{id:"hint", label:"loc_17018", pattern: "ds, edx", type:"video"}
-{id:"hint", label:"loc_414f8", pattern: "ds, edi", type:"video"}
-{id:"hint", label:"loc_44ba1", pattern: "es", type:"psp"}
-{id:"hint", label:"loc_44bc9", pattern: "es, edi", type:"psp"}
-{id:"hint", label:"loc_44c30", pattern: "ds, esi", type:"psp"}
-{id:"hint", label:"loc_44c45", pattern: "ds, esi", type:"psp"}
-{id:"hint", label:"loc_44c53", pattern: "ds, esi", type:"psp"}
-{id:"hint", label:"loc_4c3f3", pattern: "es", type:"psp"}
-{id:"hint", label:"loc_4c3f8", pattern: "es", type:"psp"}
-{id:"hint", label:"loc_4c447", pattern: "es", type:"psp"}
-{id:"hint", label:"loc_4c456", pattern: "es", type:"psp"}
-{id:"hint", label:"loc_4d973", pattern: "ds, eax", type:"video"}
-{id:"hint", label:"*", pattern: "*", type:"memory"}
+{id:"hint", label:"loc_11c66", pattern: "ds, eax", type:"video", direction:"forward"}
+{id:"hint", label:"loc_11c7f", pattern: "ds, eax", type:"video", direction:"forward"}
+{id:"hint", label:"loc_122a6", pattern: "ds, edx", type:"video", direction:"forward"}
+{id:"hint", label:"loc_122be", pattern: "ds, eax", type:"video", direction:"forward"}
+{id:"hint", label:"loc_1251e", pattern: "ds, edx", type:"video", direction:"forward"}
+{id:"hint", label:"loc_12569", pattern: "ds, edx", type:"video", direction:"forward"}
+//{id:"hint", label:"loc_18d41", pattern: "ds, ebx", type:"video", direction:"forward"}
+{id:"hint", label:"loc_17018", pattern: "ds, edx", type:"video", direction:"forward"}
+{id:"hint", label:"loc_414f8", pattern: "ds, edi", type:"video", direction:"forward"}
+{id:"hint", label:"loc_44ba1", pattern: "es", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_44bc9", pattern: "es, edi", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_44c30", pattern: "ds, esi", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_44c45", pattern: "ds, esi", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_44c53", pattern: "ds, esi", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_4c3f3", pattern: "es", type:"psp", direction:"forward"} // missing!!
+{id:"hint", label:"loc_4c3f8", pattern: "es", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_4c447", pattern: "es", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_4c456", pattern: "es", type:"psp", direction:"forward"}
+{id:"hint", label:"loc_4d973", pattern: "ds, eax", type:"video", direction:"forward"}
+{id:"hint", label:"*", pattern: "*", direction: "forward", type:"memory"}
 
 // wasm local variables workaround
 {"id": "inject", "addr": "0160:1C4354", "text": "void (*inner)();"}
@@ -73,9 +73,18 @@
 {"id": "inject", "addr": "0160:1C845B", "text": "}; inner();"}
 
 // sync
-//{"id": "inject", "addr": "0160:19C19C", "text": "memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+2);"}
-
+{"id": "inject", "addr": "0160:19C19C", "text": "memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+2);"} // todo check!
 {"id": "inject", "addr": "0160:19714B", "text": "return;"}
 
 {"id": "inject", "addr": "0160:1cdabf", "text": "return;"}
 {"id": "inject", "addr": "0160:1970F2", "text": "return;"}
+
+{"id": "inject", "addr": "0160:19FD6E", "text": "memorySet32(ds, ebx + 2205190, 3);"}
+{"id": "inject", "addr": "0160:19C16A", "text": "//comment"}
+
+{"id": "inject", "addr": "0160:1A594C", "text": "{ static int c=0; if (++c%10 == 0){ memorySet32(ds, 0x5c6fc, (memoryGet32(ds, 0x5c6fc)+5)&255); memorySet32(ds, 0x22313c, memoryGet32(ds, 0x22313c)+1); } }"}
+{"id": "inject", "addr": "0160:1BC4F4", "text": "eax = 0; return;"}
+
+{"id": "inject", "addr": "0160:1CEE26", "text":"interrupt(memoryGet16(cs, pop32())>>8);"}
+
+

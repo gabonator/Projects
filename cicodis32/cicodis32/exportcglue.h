@@ -187,12 +187,12 @@ StatementIr BuildGlobalIndirectTable(std::shared_ptr<Options> options)
             {
                 if (!table->IsValid(i))
                     continue;
-                int v = table->GetTarget(i).segment*0x10000 + table->GetTarget(i).offset;
+                uint32_t v = table->GetTarget(i).segment*0x10000 + table->GetTarget(i).offset;
                 if (used.find(v) != used.end())
                     continue;
                 used.insert(v);
                 opSwitchCases.push_back({
-                    std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, (int)v, 4}),
+                    std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, v, 4}),
                     std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectCall, .target = table->GetTarget(i)})
                 });
             }

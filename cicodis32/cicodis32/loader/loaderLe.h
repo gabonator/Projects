@@ -428,9 +428,36 @@ void start()
     GetEntry().linearOffset());
 }
 
+    virtual std::string GetInit() override
+    {
+        // export relocated overlays
+        size_t lastSlash = mName.find_last_of("/\\");
+        std::string filenameWithExt = mName.substr(lastSlash + 1);
+        size_t lastDot = filenameWithExt.find_last_of('.');
+        std::string key = filenameWithExt.substr(0, lastDot);
+        // TODO: fix 160/168 addresses
+        return format(R"(ds = 0x0168;
+    cs = 0x%04x;
+    es = 0x0028;
+    ss = 0x0168;
+    esp = 0x%x;
+    loadOverlay("%s_1.bin", 0x%x);
+    loadOverlay("%s_2.bin", 0x%x);
+)",
+    GetEntry().segment,
+    mMemoryObjects[mHeader.stackobj-1].base + mHeader.esp,
+    key.c_str(), mMemoryObjects[0].base,
+    key.c_str(), mMemoryObjects[1].base);
+}
+
     void Overlay(address_t addr, const std::vector<uint8_t>& bytes) override
     {
         assert(0);
+    }
+    virtual std::vector<std::string> GetRelocations() override
+    {
+        // loads relocated image, no runtime fixup correction
+        return {};
     }
 };
 

@@ -26,7 +26,7 @@ struct funcInfo_t {
     int stackDrop{0};
     int stackEntry{0};
     callConv_t callConv{callConvUnknown};
-    arch_t arch;
+    arch_t arch; // TODO: remove all
     bool jit;
     bool simpleStack{false};
     shared<Options> options;

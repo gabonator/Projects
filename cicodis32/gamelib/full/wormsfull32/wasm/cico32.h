@@ -193,6 +193,10 @@ using ES_EDI = Mem_ES_EDI<MemMemory>;
 using ES_EDI_PSP = Mem_ES_EDI<MemPsp>;
 using DS_ESI = Mem_DS_ESI<MemMemory>;
 using DS_ESI_PSP = Mem_DS_ESI<MemPsp>;
+using MemFwd_ES_EDI = Mem_ES_EDI<MemMemory>;
+using MemFwd_DS_ESI = Mem_DS_ESI<MemMemory>;
+using PspFwd_ES_EDI = ES_EDI_PSP;
+using PspFwd_DS_ESI = DS_ESI_PSP;
 
 template <typename dst, typename src> void movsw()
 {
@@ -455,7 +459,9 @@ uint64_t& st(int n) {static uint64_t x; stop(); return x;}
 uint64_t fstp80() {stop(); return 0;}
 void fmul80(uint64_t v) {stop();}
 void fdiv64(uint64_t v) {stop();}
+void fdivr32(uint32_t v) {stop();}
 void fdiv80(uint64_t v) {stop();}
+void fsqrt() {stop();}
 void fsubp80() {stop();}
 void fadd64(uint64_t v) {stop();}
 void fadd80(uint64_t v) {stop();}
@@ -475,6 +481,7 @@ void fild16(uint16_t v) {stop();}
 uint16_t fnstsw() {stop(); return 0;}
 void fldcw(uint16_t) {stop();}
 void frndtint() {stop();}
+void frndint() {stop();}
 uint16_t fnstcw() {stop(); return 0;}
 void fld80(uint64_t) {stop();}
 void fprem() {stop();}

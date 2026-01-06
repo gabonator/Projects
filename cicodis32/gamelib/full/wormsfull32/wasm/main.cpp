@@ -123,7 +123,9 @@ void out8(int p, int v) {
 
 bool stop(const char* msg = nullptr, const char* info = nullptr)
 {
-    printf("stop called\n");
+if (strcmp(msg, "stack_unbalanced") == 0)
+ return 0;
+    printf("stop called %s\n", msg);
     return 0;
 }
 

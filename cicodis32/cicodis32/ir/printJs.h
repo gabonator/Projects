@@ -24,7 +24,7 @@ public:
         return "";
     }
 
-    virtual void PrintProgram(shared<ProcIr> prog) override
+    virtual void PrintProgram(shared<ProcIr> prog, shared<Analyser::info_t>) override
     {
         PrintIrCppHints::PrepareProgram(prog);
         

@@ -10,17 +10,20 @@
 std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_PUSH] = [](convert_args){ return StatementIr{
         .type = StatementIr::Type_t::Function,
-        .func = "push",
+        .func = instr->mDetail.operands[0].size == 4 ? "push32" : "push",
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])}; },
     [X86_INS_POP] = [](convert_args){ //return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("pop")); },
         return StatementIr{
         .type = StatementIr::Type_t::Function,
+            
         .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-        .func = "pop"}; },
+        .func = instr->mDetail.operands[0].size == 4 ? "pop32" : "pop"}; },
     [X86_INS_MOV] = [](convert_args){ return StatementIr{
         .type = StatementIr::Type_t::Assignment,
         .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1])}; },
+    [X86_INS_MOVZX] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_X86(instr, 1)); },
+    [X86_INS_MOVSX] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_SIGNED(OP_X86(instr, 1))); },
     [X86_INS_JMP] = [](convert_args){
         assert(instr->mDetail.op_count == 1);
         if (instr->mDetail.operands[0].type == X86_OP_IMM)
@@ -77,7 +80,14 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             else
                 return StatementIr{};
         } else {
-            StatementIr st = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift);
+            StatementIr st;
+            if (func.arch == arch_t::arch16)
+                st = OP_MOD("assign") << OP_REG("sp", 2) + OP_CONST(shift);
+            else if (func.arch == arch_t::arch32)
+                st = OP_MOD("assign") << OP_REG("esp", 4) + OP_CONST(shift);
+            else
+                assert(0);
+                
             if (!(instr->isLast && !instr->isLabel))
                 st.next = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::Return});
             return st;
@@ -188,7 +198,6 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_ROR] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("ror#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_MUL] = [](convert_args){ return OP_FUNCTION("mul#", OP_X86(instr, 0)); },
     [X86_INS_IMUL] = [](convert_args){
-        assert(instr->mDetail.op_count < 3);
         if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].size == 1)
         {
             auto multiplication = OP_BINARY(OP_SIGNED(OP_X86(instr, 0)), "*", OP_SIGNED(OP_REG("ax", 2)));
@@ -196,6 +205,19 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         }
         if (instr->mDetail.op_count == 1)
             return StatementIr(OP_FUNCTION("imul#", OP_X86(instr, 0)));
+        if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].size == 4)
+        {
+            StatementIr st = OP_BINARY(OP_SIGNED(OP_X86(instr, 0)), "*", OP_SIGNED(OP_X86(instr, 1)));
+            st.opd = OP_X86(instr, 0).get();
+            return st;
+        }
+        if (instr->mDetail.op_count == 3)
+        {
+            StatementIr st = OP_BINARY(OP_SIGNED(OP_X86(instr, 1)), "*", OP_SIGNED(OP_X86(instr, 2)));
+            st.opd = OP_X86(instr, 0).get();
+            return st;
+        }
+
         assert(0);
         return StatementIr{};
     },
@@ -237,6 +259,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         {
             case 1: tempReg = "tl"; break;
             case 2: tempReg = "tx"; break;
+            case 4: tempReg = "etx"; break;
             default: assert(0);
         }
         StatementIr a = ASSIGN(OP_REG(tempReg, tempSize), OP_X86(instr, 0));
@@ -270,39 +293,81 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return ASSIGN(OP_VAR("al"), OP_X86(op));
     },
     [X86_INS_LEA] = [](convert_args){
-        //OperandIr op(instr->mDetail.operands[1]);
-        //assert()
         assert(instr->mDetail.operands[1].type == X86_OP_MEM);
-        assert(instr->mDetail.operands[1].mem.segment == X86_REG_INVALID);
-        assert(instr->mDetail.operands[1].mem.index == X86_REG_INVALID);
+        //assert(instr->mDetail.operands[1].mem.segment == X86_REG_INVALID);
+        if (instr->mDetail.operands[1].mem.base == X86_REG_INVALID)
+        {
+            assert(instr->mDetail.operands[1].mem.index == X86_REG_INVALID);
+            assert(instr->mDetail.operands[1].mem.disp != 0);
+            assert(instr->mDetail.operands[1].mem.scale == 1);
+            return ASSIGN(OP_X86(instr, 0), OP_CONST(instr->mDetail.operands[1].mem.disp));
+        }
         assert(instr->mDetail.operands[1].mem.base != X86_REG_INVALID);
-        // TODO: bad! ax = bp - 8; loc_21d5
-        // TODO: sbc? loc_261a
-        // loc_2da4 (?)ax
-        std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
-        assert(regBase == "bp" || regBase == "di");
-        if (instr->mDetail.operands[1].mem.disp == 0)
-            return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 2));
-        else if (instr->mDetail.operands[1].mem.disp >= 0)
-            return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 2) + OP_CONST(instr->mDetail.operands[1].mem.disp));
-        else
-            return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 2) - OP_CONST(-instr->mDetail.operands[1].mem.disp));
+
+        if (instr->mDetail.operands[1].mem.index == X86_REG_INVALID)
+        {
+            std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
+            int regSize = 0;
+            if (regBase == "bp" || regBase == "di")
+                regSize = 2;
+            else if (regBase.size() == 3 && regBase[0] == 'e')
+                regSize = 4;
+            else
+                assert(0);
+            
+            assert(instr->mDetail.operands[1].mem.scale == 1);
+            
+            if (instr->mDetail.operands[1].mem.disp == 0)
+                return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, regSize));
+            else if (instr->mDetail.operands[1].mem.disp >= 0)
+                return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, regSize) + OP_CONST(instr->mDetail.operands[1].mem.disp));
+            else
+                return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, regSize) - OP_CONST(-instr->mDetail.operands[1].mem.disp));
+        } else {
+            assert (instr->mDetail.operands[1].mem.disp == 0);
+            std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
+            assert (regBase.size() == 3 && regBase[0] == 'e');
+            std::string regIndex = Capstone->ToString(instr->mDetail.operands[1].mem.index);
+            assert (regIndex.size() == 3 && regIndex[0] == 'e');
+
+            if (instr->mDetail.operands[1].mem.scale == 1)
+                return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 4) + OP_REG(regIndex, 4));
+            else
+                return ASSIGN(OP_X86(instr, 0),
+                              OP_BINARY(OP_REG(regBase, 4), "+", OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) )));
+        }
     },
 
     [X86_INS_SAR] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("sar#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_CDQ] = [](convert_args){
-        assert(func.arch == arch_t::arch16);
-        return ASSIGN(OP_REG("dx", 2),
+        if (func.arch == arch_t::arch16)
+            return (StatementIr)ASSIGN(OP_REG("dx", 2),
                       OP_BINARY(
                         OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000")),
                         "?",
                         OP_VAR("0xffff : 0x0000")
             ));
+        else if (func.arch == arch_t::arch32)
+            return (StatementIr)ASSIGN(OP_REG("edx", 4),
+                      OP_BINARY(
+                        OP_COMPARE(OP_SIGNED(OP_REG("eax", 4)), "<", OP_CONST(0)),
+                        "?",
+                        OP_VAR("-1 : 0")
+            ));
+        else
+        {
+            assert(0);
+            return StatementIr{};
+        }
+
+
         //return ASSIGN(OP_REG("dx", 2), OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000 ? 0xffff : 0x0000"));
     },
     [X86_INS_CMC] = [](convert_args){ return ASSIGN(OP_VAR("flags.carry"), !OP_VAR("flags.carry")); },
     [X86_INS_PUSHF] = [](convert_args){ return OP_FUNCTION("push", OP_VAR("flagAsReg()")); },
+    [X86_INS_PUSHFD] = [](convert_args){ return OP_FUNCTION("push32", OP_VAR("flagAsReg32()")); },
     [X86_INS_POPF] = [](convert_args){ return OP_FUNCTION("flagsFromReg", OP_VAR("pop()")); },
+    [X86_INS_POPFD] = [](convert_args){ return OP_FUNCTION("flagsFromReg32", OP_VAR("pop32()")); },
 //
     [X86_INS_LCALL] = [](convert_args){
         if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_IMM && instr->mDetail.operands[1].type == X86_OP_IMM)
@@ -379,6 +444,87 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     },
     [X86_INS_AAD] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "iret"}; },
     [X86_INS_INT3] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "breakpoint"}; },
+    [X86_INS_POPAL] = [](convert_args){
+        StatementIr stmts[] = {
+            ASSIGN(OP_REG("edi", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("esi", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("ebp", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("esp", 4), OP_REG("esp", 4) + OP_CONST(4)),
+            ASSIGN(OP_REG("ebx", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("edx", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("ecx", 4), OP_FUNCTION("pop32")),
+            ASSIGN(OP_REG("eax", 4), OP_FUNCTION("pop32"))
+        };
+        for (int i=sizeof(stmts)/sizeof(stmts[0])-2; i>=0; i--)
+            stmts[i].next = std::make_shared<StatementIr>(stmts[i+1]);
+        return stmts[0];
+    },
+    [X86_INS_PUSHAL] = [](convert_args){
+        StatementIr stmts[] = {
+            ASSIGN(OP_REG("etx", 4), OP_REG("esp", 4)),
+            OP_FUNCTION("push32", OP_REG("eax", 4)),
+            OP_FUNCTION("push32", OP_REG("ecx", 4)),
+            OP_FUNCTION("push32", OP_REG("edx", 4)),
+            OP_FUNCTION("push32", OP_REG("ebx", 4)),
+            OP_FUNCTION("push32", OP_REG("etx", 4)),
+            OP_FUNCTION("push32", OP_REG("ebp", 4)),
+            OP_FUNCTION("push32", OP_REG("esi", 4)),
+            OP_FUNCTION("push32", OP_REG("edi", 4)),
+        };
+        for (int i=sizeof(stmts)/sizeof(stmts[0])-2; i>=0; i--)
+            stmts[i].next = std::make_shared<StatementIr>(stmts[i+1]);
+        return stmts[0];
+    },
+    [X86_INS_LEAVE] = [](convert_args){
+        StatementIr stmts[] = {
+            ASSIGN(OP_REG("esp", 4), OP_REG("ebp", 4)),
+            ASSIGN(OP_REG("ebp", 4), OP_FUNCTION("pop32")),
+        };
+        for (int i=sizeof(stmts)/sizeof(stmts[0])-2; i>=0; i--)
+            stmts[i].next = std::make_shared<StatementIr>(stmts[i+1]);
+        return stmts[0];
+    },
+
+//    [X86_INS_POPAL] = {.convert = [](convert_args){ return "edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4;\n    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();"; } },
+//    [X86_INS_PUSHAL] = {.convert = [](convert_args){ return "etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx);\n    push32(etx); push32(ebp); push32(esi); push32(edi);"; } },
+//    [X86_INS_LEAVE] = {.convert = [](convert_args){ return "esp = ebp; ebp = pop32();"; } },
+
+    // fpu
+    [X86_INS_FNINIT] = [](convert_args){ return OP_FUNCTION("fninit"); },
+    [X86_INS_FLD] = [](convert_args){ return OP_FUNCTION("fld#", OP_X86(instr, 0)); },
+    [X86_INS_FLDCW] = [](convert_args){ return OP_FUNCTION("fldcw", OP_X86(instr, 0)); },
+    [X86_INS_FLDZ] = [](convert_args){ return OP_FUNCTION("fldz"); },
+    [X86_INS_FLD1] = [](convert_args){ return OP_FUNCTION("fld1"); },
+    [X86_INS_FILD] = [](convert_args){ return OP_FUNCTION("fild#", OP_X86(instr, 0)); },
+    [X86_INS_FMUL] = [](convert_args){ return OP_FUNCTION("fmul#", OP_X86(instr, 0)); },
+    [X86_INS_FDIV] = [](convert_args){ return OP_FUNCTION("fdiv#", OP_X86(instr, 0)); },
+    [X86_INS_FDIVR] = [](convert_args){ return OP_FUNCTION("fdivr#", OP_X86(instr, 0)); },
+    [X86_INS_FDIVP] = [](convert_args){ return OP_FUNCTION("fdivp#", OP_X86(instr, 0)); },
+    [X86_INS_FST] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fst#")); },
+    [X86_INS_FSTP] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#")); },
+    [X86_INS_FISTP] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fistp#")); },
+    [X86_INS_FADD] = [](convert_args){
+        if (strcmp(instr->mMnemonic, "fadd") == 0)
+            return OP_FUNCTION("fadd#", OP_X86(instr, 0));
+        else if (strcmp(instr->mMnemonic, "faddp") == 0)
+            return OP_FUNCTION("faddp#", OP_X86(instr, 0));
+        else
+            assert(0);
+    },
+    [X86_INS_FSUB] = [](convert_args){ return OP_FUNCTION("fsub#", OP_X86(instr, 0)); },
+    [X86_INS_FSUBP] = [](convert_args){ return OP_FUNCTION("fsubp#", OP_X86(instr, 0)); },
+    [X86_INS_FSUBR] = [](convert_args){ return OP_FUNCTION("fsubr#", OP_X86(instr, 0)); },
+    [X86_INS_FCOM] = [](convert_args){ return OP_FUNCTION("fcom#", OP_X86(instr, 0)); },
+    [X86_INS_FCOMP] = [](convert_args){ return OP_FUNCTION("fcomp#", OP_X86(instr, 0)); },
+    [X86_INS_FCOMPP] = [](convert_args){ return OP_FUNCTION("fcompp"); },
+    [X86_INS_FNSTSW] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstsw")); },
+    [X86_INS_FNSTCW] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstcw")); },
+    [X86_INS_WAIT] = [](convert_args){ return StatementIr{}; },
+    [X86_INS_SAHF] = [](convert_args){ return OP_FUNCTION("sahf"); },
+    [X86_INS_FSQRT] = [](convert_args){ return OP_FUNCTION("fsqrt"); },
+    [X86_INS_FRNDINT] = [](convert_args){ return OP_FUNCTION("frndint"); },
+    [X86_INS_FCHS] = [](convert_args){ return OP_FUNCTION("fchs"); },
+
     /*
     {.convert = [](convert_args){
         cs_x86_op es{.type = X86_OP_REG, .reg = X86_REG_ES};

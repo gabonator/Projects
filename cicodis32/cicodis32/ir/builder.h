@@ -39,7 +39,13 @@ inline OperandBuilder OP_OP(const std::string& op) {
     return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Operator, op));
 }
 
-inline OperandBuilder OP_CONST(int value, int size = 0) {
+//inline OperandBuilder OP_CONST(int value, int size = 0) {
+//    return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Const, value, size));
+//}
+
+inline OperandBuilder OP_CONST(int64_t value, int size = 0) {
+//    int32_t reduced = (int32_t)value;
+//    assert(reduced == value);
     return OperandBuilder(std::make_shared<OperandIr>(OperandIr::Type_t::Const, value, size));
 }
 
@@ -187,6 +193,24 @@ inline StatementBuilder ASSIGN(const OperandBuilder& dest, const OperandBuilder&
 // Usage: ASSIGN(OP_VAR("x"), some_statement)
 inline StatementBuilder ASSIGN(const OperandBuilder& dest, const StatementBuilder& src) {
     auto stmt = std::make_shared<StatementIr>();
+    if (src.get()->type == StatementIr::Type_t::Function)
+    {
+        stmt->type = StatementIr::Type_t::Function;
+        stmt->opd = dest.get();
+        stmt->func = src.get()->func;
+        stmt->opin1 = src.get()->opin1;
+        stmt->opin2 = src.get()->opin2;
+        stmt->stmt1 = src.get()->stmt1;
+        stmt->stmt2 = src.get()->stmt2;
+        
+        if (stmt->func.ends_with("#"))
+        {
+            stmt->func = stmt->func.substr(0, stmt->func.size()-1);
+            stmt->suffix = (stmt->opd.get()->regSize + stmt->opd.get()->memSize)*8;
+        }
+
+        return StatementBuilder(stmt);
+    }
     stmt->type = StatementIr::Type_t::Assignment;
     stmt->opd = dest.get();
     stmt->stmt1 = src.get();
@@ -725,3 +749,22 @@ inline StatementBuilder COMPARE(const OperandBuilder& operand) {
     compare->opin1 = operand.get();
     return StatementBuilder(compare);
 }
+
+inline StatementBuilder OP_COMPARE(const OperandBuilder& left, const std::string& op, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->opin1 = left.get();
+    stmt->oper = op;
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+
+inline StatementBuilder OP_COMPARE(const StatementBuilder& left, const std::string& op, const OperandBuilder& right) {
+    auto stmt = std::make_shared<StatementIr>();
+    stmt->type = StatementIr::Type_t::Compare;
+    stmt->stmt1 = left.get();
+    stmt->oper = op;
+    stmt->opin2 = right.get();
+    return StatementBuilder(stmt);
+}
+

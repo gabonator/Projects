@@ -17,7 +17,7 @@ public:
     } type;
     
     // const
-    int constValue{0};
+    uint64_t constValue{0};
     int constSize{0};
     
     // register
@@ -29,9 +29,9 @@ public:
     std::string memOfsBase;
     std::string memOfsIndex;
     int memOfsScale{0};
-    int memOfsDisp{0};
+    int64_t memOfsDisp{0};
     int memSize{0};
-    
+        
     // string
     std::string string;
     
@@ -60,7 +60,7 @@ public:
                 memSize = op.size;
                 if (op.mem.segment != X86_REG_INVALID)
                     memSegment = Capstone->ToString(op.mem.segment);
-                else if (op.mem.base == X86_REG_BP)
+                else if (op.mem.base == X86_REG_BP || op.mem.base == X86_REG_EBP)
                     memSegment = Capstone->ToString(X86_REG_SS);
                 else
                     memSegment = Capstone->ToString(X86_REG_DS);
@@ -123,7 +123,7 @@ public:
         }
     }
 
-    explicit OperandIr(Type_t type, int v, int size = 0) : type(type)
+    explicit OperandIr(Type_t type, uint64_t v, int size = 0) : type(type)
     {
         switch (type)
         {

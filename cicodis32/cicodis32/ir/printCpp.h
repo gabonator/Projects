@@ -6,12 +6,10 @@
 //
 
 class PrintIrCpp : public PrintIrBase {
-protected:
-    const static bool mode16{true};
-    
 public:
     PrintIrCpp(shared<Options> options) : PrintIrBase(options)
     {
+        
     }
     
     virtual std::string OffsetRegister(std::string reg) override
@@ -21,6 +19,8 @@ public:
     
     virtual std::string OffsetAsString(shared<OperandIr> op) override
     {
+        bool mode16 = mOptions->arch == arch_t::arch16;
+        
         std::string memOffset = "";
         if (!op->memOfsBase.empty())
             memOffset += OffsetRegister(op->memOfsBase);
@@ -53,8 +53,16 @@ public:
                     else
                         memOffset += format(" + %d", op->memOfsDisp & 0xffff);
                 }
-                else
-                    memOffset += format(" + %d", op->memOfsDisp);
+                else {
+//                    if (op->memOfsDisp == 0x7fffffff /* && info->instr->mSize == 6*/)
+//                    {
+//                        memOffset += format("memoryGet32(cs, 0x%x)", active.linearOffset()+2);
+//                    } else
+                    if (op->memOfsDisp >= 0)
+                        memOffset += format(" + %d", op->memOfsDisp);
+                    else
+                        memOffset += format(" - %d", -op->memOfsDisp);
+                }
             }
         }
         return memOffset;
@@ -206,6 +214,8 @@ public:
 class PrintIrCppHints : public PrintIrCpp {
     std::vector<hint_t> activeProgHints; // TODO: ptr
     std::vector<hint_t> activeStatementHints; // TODO: ptr
+    shared<Analyser::info_t> instructions;
+    shared<instrInfo_t> instruction;
 
 public:
     PrintIrCppHints(shared<Options> options) : PrintIrCpp(options)
@@ -228,14 +238,16 @@ public:
         }
     }
     
-    virtual void PrintProgram(shared<ProcIr> prog) override
+    virtual void PrintProgram(shared<ProcIr> prog, shared<Analyser::info_t> info) override
     {
+        instructions = info;
         PrepareProgram(prog);
-        PrintIrCpp::PrintProgram(prog);
+        PrintIrCpp::PrintProgram(prog, info);
     }
     
     virtual void PrepareStatement(const StatementIr& st)
     {
+        instruction = instructions->code.find(st.address)->second;
         activeStatementHints.clear();
         for (const hint_t& h : activeProgHints)
             if (h.begin <= st.address && st.address <= h.end)
@@ -244,15 +256,25 @@ public:
     
     virtual std::string ToString(const StatementIr& st) override
     {
-        PrepareStatement(st);
+        // internal operands do not have address set
+        if (st.address.isValid())
+            PrepareStatement(st);
         return PrintIrCpp::ToString(st);
     }
     
-    std::string GetHintForSegment(std::string seg)
+    std::string GetHintForSegment(std::string seg, std::string base)
     {
         for (const hint_t& h : activeStatementHints)
-            if (h.pattern == seg)
-                return h.getTypeAsString(false);
+        {
+            if (h.pattern.find(",") == std::string::npos)
+            {
+                if (h.pattern == seg)
+                    return h.getTypeAsString(false);
+            } else {
+                if (h.pattern == seg + ", " + base)
+                    return h.getTypeAsString(false);
+            }
+        }
         if (mOptions->memHintDefault.isValid())
             return mOptions->memHintDefault.getTypeAsString(false);
         return "A";
@@ -275,9 +297,9 @@ public:
         {
             case OperandIr::Type_t::Memory:
                 if (op->memSize == 1)
-                    return format("    memory%sSet(%s, %s, %%s);", GetHintForSegment(op->memSegment).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
+                    return format("    memory%sSet(%s, %s, %%s);", GetHintForSegment(op->memSegment, op->memOfsBase).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
                 else
-                    return format("    memory%sSet%d(%s, %s, %%s);", GetHintForSegment(op->memSegment).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+                    return format("    memory%sSet%d(%s, %s, %%s);", GetHintForSegment(op->memSegment, op->memOfsBase).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
             default:
                 assert(0);
         }
@@ -291,9 +313,9 @@ public:
         {
             case OperandIr::Type_t::Memory:
                 if (op->memSize == 1)
-                    return format("memory%sGet(%s, %s)", GetHintForSegment(op->memSegment).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
+                    return format("memory%sGet(%s, %s)", GetHintForSegment(op->memSegment, op->memOfsBase).c_str(), op->memSegment.c_str(), OffsetAsString(op).c_str());
                 else
-                    return format("memory%sGet%d(%s, %s)", GetHintForSegment(op->memSegment).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
+                    return format("memory%sGet%d(%s, %s)", GetHintForSegment(op->memSegment, op->memOfsBase).c_str(), op->memSize*8, op->memSegment.c_str(), OffsetAsString(op).c_str());
             default:
                 return PrintIrBase::ToString(op);
         }
@@ -307,5 +329,48 @@ public:
             return format("<%s>", GetHintForTemplate(st.templ1).c_str());
         return format("<%s, %s>", GetHintForTemplate(st.templ1).c_str(), GetHintForTemplate(st.templ2).c_str());
     }
+    
+    virtual std::string OffsetAsString(shared<OperandIr> op) override
+    {
+        if (mOptions->arch == arch_t::arch16)
+            return PrintIrCpp::OffsetAsString(op);
+        
+        std::string memOffset = "";
+        if (!op->memOfsBase.empty())
+            memOffset += OffsetRegister(op->memOfsBase);
+        
+        if (!op->memOfsIndex.empty())
+        {
+            if (!memOffset.empty())
+                memOffset += " + ";
+            memOffset += OffsetRegister(op->memOfsIndex);
+        }
+        if (op->memOfsScale != 1)
+        {
+            if (!memOffset.empty())
+                memOffset += " * ";
+            memOffset += format("%d", op->memOfsScale);
+        }
+        if (op->memOfsDisp != 0 || memOffset.empty())
+        {
+            // worms2 trick
+            // TODO: only when 6 byte long instr
+            assert(instruction);
+            if (op->memOfsDisp == 0x7fffffff)
+            {
+                // size=8, ofs=4
+                // size=6, ofs=2
+                int immOfs = instruction->instr->mSize-4;
+                assert(instruction->instr->mBytes[immOfs+3] == 0x7f && instruction->instr->mBytes[immOfs+2] == 0xff && instruction->instr->mBytes[immOfs+1] == 0xff && instruction->instr->mBytes[immOfs] == 0xff);
+                memOffset += format("%smemoryGet32(cs, 0x%x)", memOffset.empty() ? "" : " + ", instruction->instr->mAddress.linearOffset()+2);
+            }
+            else if (op->memOfsDisp >= 0)
+                memOffset += format("%s%d", memOffset.empty() ? "" : " + ", op->memOfsDisp);
+            else
+                memOffset += format("%s%d", memOffset.empty() ? "-" : " - ", -op->memOfsDisp);
+        }
+        return memOffset;
+    }
+
 };
 
