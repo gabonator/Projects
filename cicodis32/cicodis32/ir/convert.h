@@ -85,10 +85,6 @@ public:
         address_t next;
         for (const auto& p : code)
         {
-            if (p.first.offset == 0x1cd62f)
-            {
-                int f = 9;
-            }
             if (next && p.first != next)
             {
                 append(p.first, StatementIr{.type = StatementIr::Type_t::Comment,
@@ -186,10 +182,6 @@ public:
 
             if (pinfo->instr->mTemplate.ret)
             {
-                if (pinfo->instr->mAddress.offset == 289050)
-                {
-                    int f = 9;
-                }
                  for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
                  {
                      if (flag->needed)
@@ -316,10 +308,6 @@ private:
     
     StatementIr MakeCondition(shared<instrInfo_t> pinfo, shared<Analyser::info_t> proc)
     {
-        if (pinfo->instr->mAddress.offset == 0x44c19)
-        {
-            int f = 9;
-        }
         if (!pinfo->readPrecondition.empty())
         {
             assert(pinfo->readPrecondition.size() == 1);
@@ -652,7 +640,7 @@ private:
                 case X86_INS_JNS:
                     return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
                 case X86_INS_JA:
-                    return OP_X86(set, 0) == OP_CONST(0); // check?
+                    return OP_X86(set, 0) > OP_CONST(0);
                 case X86_INS_JAE:
                     return COMPARE(OP_VAR("true")); // check?
                 case X86_INS_JB:
