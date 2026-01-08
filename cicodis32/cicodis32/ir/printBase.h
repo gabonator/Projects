@@ -47,12 +47,6 @@ public:
                 memOffset += " * ";
             memOffset += format("%d", op->memOfsScale);
         }
-//        if (op->memDynamicSize != 0) // TODO!
-//        {
-//            if (memOffset.empty())
-//                memOffset += " + ";
-//            memOffset += format("memory%d(%s, 0x%x)", op->memDynamicSize*8, op->memDynamicSegment.c_str(), op->memDynamicOffset);
-//        }
         if (op->memOfsDisp != 0 || memOffset.empty())
         {
             if (memOffset.empty())
@@ -302,10 +296,31 @@ public:
                     std::string leftStr, rightStr;
                     bool largeNum = false;
                     
+                    if (st.opin2 && st.opin2->type == OperandIr::Type_t::Const && (int64_t)st.opin2->constValue >= 0x100000000)
+                    {
+                        largeNum = true;
+                    }
+
                     if (st.stmt1)
+                    {
                         leftStr = ToString(*st.stmt1);
+                        if (largeNum)
+                        {
+                            assert(leftStr.size());
+                            if (leftStr[0] == '(')
+                            {
+                                // we need to expand the first argument in the calculation, not the result
+                                assert(leftStr[1] != '(');
+                                leftStr = leftStr.substr(0, 1) + "(uint64_t)" + leftStr.substr(1);
+                            } else
+                                leftStr = "(uint64_t)" + leftStr;
+                        }
+                    }
                     else if (st.opin1)
+                    {
+                        assert(!largeNum);
                         leftStr = ToString(st.opin1);
+                    }
                     else
                         return "true"; // Handle empty compare
                     
@@ -315,26 +330,12 @@ public:
                     if (st.stmt2)
                         rightStr = ToString(*st.stmt2);
                     else if (st.opin2)
-                    {
                         rightStr = ToString(st.opin2);
-                        if (st.opin2->type == OperandIr::Type_t::Const)
-                        {
-                            // TODO: negative!?
-                            largeNum = (int64_t)st.opin2->constValue >= 0x100000000;
-                            if (largeNum)
-                            {
-                                int f = 9;
-                            }
-                        }
-                    }
                     else
                         assert(0);
                     
                     // TODO: 10000000ull
-                    if (!largeNum)
-                        return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
-                    else
-                        return format("(uint64_t)(%s) %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
+                    return format("%s %s %s", leftStr.c_str(), st.oper.c_str(), rightStr.c_str());
                 }
             case StatementIr::Type_t::DirectJump:
                 return format("    goto loc_%x;", st.target.linearOffset());
@@ -357,7 +358,8 @@ public:
             case StatementIr::Type_t::Comment:
                 return format("    // %s", st.comment.c_str());
             case StatementIr::Type_t::Label:
-                return format("loc_%x: // %s", st.address.linearOffset(), st.address.toString().c_str());
+                return format("loc_%x:", st.address.linearOffset());
+                //return format("loc_%x: // %s", st.address.linearOffset(), st.address.toString().c_str());
             case StatementIr::Type_t::Return:
                 return "    return;";
                 //return format(st.shiftStack ? "    sp += %d;\n    return;" : "    return;", st.shiftStack);
@@ -390,13 +392,18 @@ public:
     
     virtual void PrintStatement(const StatementIr& st)
     {
+        std::string comments;
         printf("%s", ToString(st).c_str());
+        comments += st.comment;
         shared<StatementIr> iter = st.next;
         while (iter)
         {
+            comments += iter->comment;
             printf(" %s", trim(ToString(*iter)).c_str());
             iter = iter->next;
         }
+        if (!comments.empty())
+            printf(" // %s", comments.c_str());
         printf("\n");
     }
     

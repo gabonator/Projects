@@ -47,8 +47,6 @@ public:
 
         if (mOptions->verbose)
             DumpCode(proc, code, req, stackDrop);
-        if (mOptions->verboseAsm)
-            DumpCode2(proc, code);
 
         while (!head.empty())
         {
@@ -56,6 +54,10 @@ public:
 
             for (auto link : head)
             {
+                if (link.second.offset == 0x1e3b16)
+                {
+                    int f = 9;
+                }
                 if (verbose)
                     printf("%x->%x: ", link.first.offset, link.second.offset);
                 
@@ -106,6 +108,9 @@ public:
         // Post processing after analysis
         PostProcess(info, req);
         mInfos.insert(std::pair<address_t, shared<info_t>>(proc, info));
+        
+        if (mOptions->verboseAsm)
+            DumpCode2(proc, code);
     }
 
     // Pure virtual: Analyze a single instruction and return addresses for further analysis
@@ -136,7 +141,7 @@ public:
 
     void DumpCode2(address_t proc, code_t& code)
     {
-        printf("--- void sub_%x() // %x:%x", proc.linearOffset(), proc.segment, proc.offset);
+        printf("--- void sub_%x() // %x:%x\n", proc.linearOffset(), proc.segment, proc.offset);
 
 //        printf("/*\n");
         for (const auto& [addr, pi] : code)
@@ -340,13 +345,9 @@ public:
         // Save single flags where possible
         for (auto& [a, p] : info->code)
         {
-            if (a.offset == 0x426)
-            {
-                int f=9;
-            }
-
             for (auto flag : p->Flags())
             {
+                // TODO: mm2 160:1e3b0d, needs precond & saving
                 if (!p->readPrecondition.empty())
                     continue;
                 
@@ -383,12 +384,23 @@ public:
                     for (auto depAddr : flag->depends)
                     {
                         auto dep = info->code.find(depAddr)->second;
+                        // TODO: mm2 160:1e3b0d, needs precond & saving
                         if (!dep->savePrecondition.empty())
+                        {
                             continue;
+//                            assert(dep->savePrecondition.size() == 1);
+//                            if (dep->savePrecondition[0].readOp == p->instr->mId)
+//                                continue;
+                        }
 
+                        // TODO: cleanup
                         if (dep->instr->mId == X86_INS_CALL)
                             continue;
                         if (flag->type == 'c' && dep->instr->mTemplate.savedVisiblyCarry)
+                            continue;
+                        if (flag->type == 'z' && dep->instr->mTemplate.savedVisiblyZero)
+                            continue;
+                        if (flag->type == 's' && dep->instr->mTemplate.savedVisiblySign)
                             continue;
                         if (flag->type == 'z' && (dep->instr->mId == X86_INS_SCASB || dep->instr->mId == X86_INS_SCASW ||
                                                   dep->instr->mId == X86_INS_CMPSB || dep->instr->mId == X86_INS_CMPSW || dep->instr->mId == X86_INS_CMPSD))

@@ -19,6 +19,7 @@ struct instruction_t
     bool destructiveCarry{false};
     bool savedVisiblyCarry{false};
     bool savedVisiblyZero{false};
+    bool savedVisiblySign{false};
     bool string{false};
     x86_insn conditionAs{X86_INS_INVALID};
 };
@@ -98,8 +99,9 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_INC] = { .destructiveCarry = true },
     [X86_INS_DEC] = { .destructiveCarry = true },
 
-    [X86_INS_SAHF] = { .savedVisiblyCarry = true, .savedVisiblyZero = true },
+    [X86_INS_SAHF] = { .savedVisiblyCarry = true, .savedVisiblyZero = true, .savedVisiblySign = true },
     [X86_INS_CMPSB] = { .savedVisiblyZero = true, .string = true }, 
+    [X86_INS_CMPSD] = { .savedVisiblyZero = true, .string = true },
 
     //            case X86_INS_STC:
     //            case X86_INS_CLC:
@@ -387,7 +389,17 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
     {
         mDetail.operands[1].size = 1;
     }
-        
+     
+    bool is_fpu = false;
+    for (int i = 0; i < p->detail->groups_count; i++) {
+        if (p->detail->groups[i] == X86_GRP_FPU) {
+            is_fpu = true;
+            break;
+        }
+    }
+
+    if (is_fpu)
+        mDetail.eflags = 0;
 
     mAddress = addr;
     mSize = p->size;
@@ -659,7 +671,7 @@ public:
     
     void Trace(address_t a)
     {
-        const bool verbose = mOptions.verbose;
+        const bool verbose = mOptions.verboseTracer;
         address_t stub;
         address = a;
         assert(code.empty());

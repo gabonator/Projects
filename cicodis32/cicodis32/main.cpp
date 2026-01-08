@@ -535,4 +535,6 @@ int main(int argc, char **argv) {
  BAAD:
  memorySet32(ds, 0x398b2, memoryGet32(ds, 0x398b2) + (0x7fffffff + flags.carry));
 > 1000000ull
+
+ flags.zero = ((uint64_t)ebp + ebp) % 0x100000000ull == 0;
  */

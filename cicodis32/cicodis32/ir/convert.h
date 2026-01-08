@@ -85,6 +85,10 @@ public:
         address_t next;
         for (const auto& p : code)
         {
+            if (p.first.offset == 0x1cd62f)
+            {
+                int f = 9;
+            }
             if (next && p.first != next)
             {
                 append(p.first, StatementIr{.type = StatementIr::Type_t::Comment,
@@ -136,7 +140,21 @@ public:
                             .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
                             .stmt1 = std::make_shared<StatementIr>(PreCondition(pinfo->instr, flagCond[flag->type]))
                     };
-                    append(p.first, st);
+                    st.comment = std::move(st.stmt1->comment);
+                    st.postpone = st.stmt1->postpone; // TODO:
+                    if (st.postpone)
+                    {
+                        if (post)
+                        {
+                            assert(!post.next);
+                            post.next = std::make_shared<StatementIr>(st);
+                        } else {
+                            assert(!post);
+                            post = st;
+                        }
+                    } else {
+                        append(p.first, st);
+                    }
                 }
             }
             
@@ -145,6 +163,7 @@ public:
                 for (const auto& prec : pinfo->savePrecondition)
                 {
                     StatementIr st = ASSIGN(OP_VAR(prec.variable), StatementBuilder(std::make_shared<StatementIr>(PreCondition(pinfo->instr, prec.readOp))));
+                    assert(!st.postpone);
                     append(p.first, st);
                 }
             }
@@ -205,7 +224,6 @@ public:
                                          .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
                                          .stmt1 = std::make_shared<StatementIr>(PreCondition(lastSetInstr->instr, flagCond[flag->type]))
                                  };
-                                 
                                  append(p.first, st);
                              }
                          }
@@ -346,12 +364,39 @@ private:
         if (!dirty)
         {
             shared<instrInfo_t> lastSetInfo;
-            assert(lastSet.size() <= 1);
-            if (lastSet.size() == 1)
-            lastSetInfo = proc->code.find(*lastSet.begin())->second;
+            for (int i=0; i<lastSet.size(); i++)
+            {
+                shared<instrInfo_t> curSetInfo = proc->code.find(*lastSet.begin())->second;
+                if (!lastSetInfo)
+                    lastSetInfo = curSetInfo;
+                else if (lastSetInfo->instr->mId != curSetInfo->instr->mId)
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: cant narrow down " + pinfo->instr->mAddress.toString()};
+            }
             
             return Condition(lastSetInfo ? lastSetInfo->instr : nullptr, pinfo->instr);
         }
+        /*
+         mm2
+         --- void sub_1e3b0d() // 160:1e3b0d
+         //   0 loc_1e3b0d 160:1e3b0d shr ax, 1                      wcf: 1e3b10 wcf: 1e3b16 wzf: 1e3b10 wzf: 1e3b1a
+         //   0     1e3b10 160:1e3b10 jbe 0x1e3b16                   rcf: 1e3b0d (dirty) rzf: 1e3b0d
+         //   0     1e3b12 160:1e3b12 fmul st(0)
+         //   0     1e3b14 160:1e3b14 jmp 0x1e3b0d
+         //   0 loc_1e3b16 160:1e3b16 jae 0x1e3b2b                   rcf: 1e3b0d (dirty)
+         //   0     1e3b18 160:1e3b18 fld st(0)
+         //   0 loc_1e3b1a 160:1e3b1a je 0x1e3b27                    rzf: 1e3b0d rzf: 1e3b1e
+         //   0     1e3b1c 160:1e3b1c fmul st(0)
+         //   0     1e3b1e 160:1e3b1e shr ax, 1                      wcf: 1e3b21 (save) wzf: 1e3b1a (save)
+         //   0     1e3b21 160:1e3b21 jae 0x1e3b25                   rcf: 1e3b1e (dirty)
+         //   0     1e3b23 160:1e3b23 fmul st(1), st(0)
+         //   0 loc_1e3b25 160:1e3b25 jmp 0x1e3b1a
+         //   0 loc_1e3b27 160:1e3b27 fstp st(0)
+         //   0     1e3b29 160:1e3b29 jmp 0x1e3b2f
+         //   0 loc_1e3b2b 160:1e3b2b fstp st(0)
+         //   0     1e3b2d 160:1e3b2d fld1
+         //   0 loc_1e3b2f 160:1e3b2f ret
+         */
+        return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: dirty " + pinfo->instr->mAddress.toString()};
         assert(0);
         return StatementIr{};
     }
@@ -384,6 +429,8 @@ private:
                 return !COMPARE(OP_VAR("flags.carry"));
             if (getter == X86_INS_JNS)
                 return !OP_VAR("flags.sign");
+            if (getter == X86_INS_JS)
+                return COMPARE(OP_VAR("flags.sign"));
 
             assert(0);
         }
@@ -413,9 +460,12 @@ private:
         {
             if (set->mDetail.operands[1].type != X86_OP_IMM)
                 return COMPARE(OP_VAR("JB_SHR/ROR/CNT???"));
-            assert(set->Imm() == 1);
-            return OP_X86(set, 0) & OP_CONST(1);
+//            assert(set->Imm() == 1);
+            return OP_X86(set, 0) & OP_CONST(1<<(set->Imm()-1));
         }
+        if (setter == X86_INS_SHR && getter == X86_INS_JBE)
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: shr - jbe"};
+        
         if ((setter == X86_INS_SHL || setter == X86_INS_ROL) && getter == X86_INS_JB)
         {
             assert(set->Imm() >= 1);
@@ -433,6 +483,8 @@ private:
         }
         if (setter == X86_INS_SUB && getter == X86_INS_JB)
             return OP_X86(set, 0) < OP_X86(set, 1);
+        if (setter == X86_INS_SUB && getter == X86_INS_JBE)
+            return OP_X86(set, 0) <= OP_X86(set, 1);
         if (setter == X86_INS_SUB && getter == X86_INS_JG)
             return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
         if (setter == X86_INS_SUB && getter == X86_INS_JGE)
@@ -473,12 +525,30 @@ private:
             return OP_SIGNED((OP_X86(set, 0) - OP_CONST(1))) < OP_CONST(0);
         if (setter == X86_INS_NEG && getter == X86_INS_JB)
             return OP_X86(set, 0) != OP_CONST(0);
-        
+        if (setter == X86_INS_NEG && getter == X86_INS_JS)
+            return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(0);
+
         // op0 - op1 - carry < 0
         if (setter == X86_INS_SBB && getter == X86_INS_JB)
             return OP_X86(set, 0) < OP_BINARY(OP_X86(set, 1), "+", OP_VAR("flags.carry"));
+        if (setter == X86_INS_OR && getter == X86_INS_JE)
+            return !COMPARE(OP_X86(set, 0) | OP_X86(set, 1));
 
-        return Condition(set, getter);
+        /*
+         loc_1cd62f: // 0160:1cd62f mm2
+             flags.sign = (char)(memoryAGet(ds, 0x20c848) | 0x04) < 0;
+
+         */
+        // only instructions which do modify registers
+        if (setter == X86_INS_CMP || setter == X86_INS_TEST)
+            return Condition(set, getter);
+        
+        assert(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_SHR);
+        
+        // Note: apply the basic condition after the instruction was evaluated, not before!
+        StatementIr stat = Condition(set, getter);
+        stat.postpone = true;
+        return stat;
     }
     StatementIr Condition(shared<CapInstr> set, x86_insn getter)
     {
@@ -487,7 +557,13 @@ private:
             switch (getter)
             {
                 case X86_INS_JCXZ:
+                    assert(mOptions->arch == arch_t::arch16);
                     return OP_REG("cx", 2) == OP_CONST(0);
+                case X86_INS_JECXZ:
+                    assert(mOptions->arch == arch_t::arch32);
+                    return OP_REG("ecx", 4) == OP_CONST(0);
+                case X86_INS_JP:
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "bad condition - jp"};
                 default:
                     assert(0);
             }
@@ -585,7 +661,12 @@ private:
                     return OP_X86(set, 0) <= OP_CONST(0); // == 0
                 case X86_INS_LOOPNE:
                     assert(set->ArgsEqual());
-                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", !OP_X86(set, 0));
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", !OP_X86(set, 0));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", !OP_X86(set, 0));
+                    else
+                        assert(0);
 
                 default:
                     assert(0);
@@ -593,7 +674,7 @@ private:
         }
         
         // destructive
-        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR)
+        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR  || setter == X86_INS_SHL)
         {
             switch (getter)
             {
@@ -619,16 +700,42 @@ private:
                     return !(OP_X86(set, 0) & OP_X86(set, 1));
                 case X86_INS_JB:
                     return COMPARE(OP_VAR("false"));
+                case X86_INS_JNS:
+                    if (set->mDetail.operands[0].size == 1)
+                        return !(OP_X86(set, 0) & OP_CONST(0x80));
+                    else if (set->mDetail.operands[0].size == 2)
+                        return !(OP_X86(set, 0) & OP_CONST(0x8000));
+                    else
+                        assert(0);
+                case X86_INS_JS:
+                    if (set->mDetail.operands[0].size == 1)
+                        return OP_X86(set, 0) & OP_CONST(0x80);
+                    else if (set->mDetail.operands[0].size == 2)
+                        return OP_X86(set, 0) & OP_CONST(0x8000);
+                    else
+                        assert(0);
                 case X86_INS_LOOPNE:
-                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    else
+                        assert(0);
                 case X86_INS_LOOPE:
-                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_UNARY("!", OP_X86(set, 0) & OP_X86(set, 1)));
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_UNARY("!", OP_X86(set, 0) & OP_X86(set, 1)));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", OP_UNARY("!", OP_X86(set, 0) & OP_X86(set, 1)));
+                    else
+                        assert(0);
+
                 default:
                     assert(0);
             }
         }
+        // TODO: try using flags
         if (setter == X86_INS_SAHF)
-            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "reads sahf"};
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: reads sahf"};
 
         assert(0);
         return StatementIr{}; // Return empty statement on error
@@ -800,6 +907,13 @@ private:
                 {
                     selectorIr = OP_X86(instr, 0).get();
                     selectorIr->memSize = 4;
+                }
+                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Jump32)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                        selectorIr = OP_X86(instr, 0).get();
+                    else
+                        assert(0);
                 }
 //                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
 //                    selector = iformat(instr, info, func, "cs*0x10000 + $rd0");

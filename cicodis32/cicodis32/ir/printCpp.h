@@ -54,12 +54,8 @@ public:
                         memOffset += format(" + %d", op->memOfsDisp & 0xffff);
                 }
                 else {
-//                    if (op->memOfsDisp == 0x7fffffff /* && info->instr->mSize == 6*/)
-//                    {
-//                        memOffset += format("memoryGet32(cs, 0x%x)", active.linearOffset()+2);
-//                    } else
                     if (op->memOfsDisp >= 0)
-                        memOffset += format(" + %d", op->memOfsDisp);
+                        memOffset += format(" + 0x%x", op->memOfsDisp);
                     else
                         memOffset += format(" - %d", -op->memOfsDisp);
                 }
@@ -365,7 +361,7 @@ public:
                 memOffset += format("%smemoryGet32(cs, 0x%x)", memOffset.empty() ? "" : " + ", instruction->instr->mAddress.linearOffset()+2);
             }
             else if (op->memOfsDisp >= 0)
-                memOffset += format("%s%d", memOffset.empty() ? "" : " + ", op->memOfsDisp);
+                memOffset += format("%s0x%x", memOffset.empty() ? "" : " + ", op->memOfsDisp);
             else
                 memOffset += format("%s%d", memOffset.empty() ? "-" : " - ", -op->memOfsDisp);
         }

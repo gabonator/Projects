@@ -53,6 +53,7 @@ public:
     address_t target;
     
     int suffix{0};
+    bool postpone{false};
     
     shared<StatementIr> next;
     

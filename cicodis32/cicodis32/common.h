@@ -455,6 +455,7 @@ public:
         return aux;
     }
     bool verbose{false};
+    bool verboseTracer{false};
     bool verboseAsm{false};
     bool printOpcodes{false};
     bool printProcAddress{true};

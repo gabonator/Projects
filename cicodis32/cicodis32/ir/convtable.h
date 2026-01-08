@@ -44,13 +44,21 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_X86(highWord).get(), .opin2 = OP_X86(lowWord).get()};
     },
     [X86_INS_LOOP] = [](convert_args){
+        shared<OperandIr> counter;
+        if(func.arch == arch_t::arch16)
+            counter = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "cx", 2);
+        else if(func.arch == arch_t::arch32)
+            counter = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "ecx", 4);
+        else
+            assert(0);
+        
         auto loopTarget = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::DirectJump,
             .target = instr->JumpTarget()});
         auto loopCounter = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::Unary,
             .oper = "--",
-            .opin1 = std::make_shared<OperandIr>(OperandIr::Type_t::Register, "cx", 2)});
+            .opin1 = counter});
         auto loopCond = std::make_shared<StatementIr>(StatementIr{
             .type = StatementIr::Type_t::Compare,
             .stmt1 = loopCounter});
@@ -293,10 +301,25 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return ASSIGN(OP_VAR("al"), OP_X86(op));
     },
     [X86_INS_LEA] = [](convert_args){
+        // TODO: rework
         assert(instr->mDetail.operands[1].type == X86_OP_MEM);
         //assert(instr->mDetail.operands[1].mem.segment == X86_REG_INVALID);
         if (instr->mDetail.operands[1].mem.base == X86_REG_INVALID)
         {
+            if (instr->mDetail.operands[1].mem.index != X86_REG_INVALID)
+            {
+                std::string regIndex = Capstone->ToString(instr->mDetail.operands[1].mem.index);
+                assert (regIndex.size() == 3 && regIndex[0] == 'e');
+
+                return ASSIGN(OP_X86(instr, 0),
+                        OP_BINARY(
+                                OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) ),
+                                  "+",
+                                  OP_CONST(instr->mDetail.operands[1].mem.disp)
+                              ));
+
+                //return ASSIGN(OP_X86(instr, 0), OP_CONST(instr->mDetail.operands[1].mem.disp));
+            }
             assert(instr->mDetail.operands[1].mem.index == X86_REG_INVALID);
             assert(instr->mDetail.operands[1].mem.disp != 0);
             assert(instr->mDetail.operands[1].mem.scale == 1);
@@ -324,17 +347,25 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             else
                 return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, regSize) - OP_CONST(-instr->mDetail.operands[1].mem.disp));
         } else {
-            assert (instr->mDetail.operands[1].mem.disp == 0);
             std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
             assert (regBase.size() == 3 && regBase[0] == 'e');
             std::string regIndex = Capstone->ToString(instr->mDetail.operands[1].mem.index);
             assert (regIndex.size() == 3 && regIndex[0] == 'e');
-
-            if (instr->mDetail.operands[1].mem.scale == 1)
-                return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 4) + OP_REG(regIndex, 4));
-            else
-                return ASSIGN(OP_X86(instr, 0),
-                              OP_BINARY(OP_REG(regBase, 4), "+", OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) )));
+            
+            if(instr->mDetail.operands[1].mem.disp == 0)
+            {
+                if (instr->mDetail.operands[1].mem.scale == 1)
+                    return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 4) + OP_REG(regIndex, 4));
+                else
+                    return ASSIGN(OP_X86(instr, 0),
+                                  OP_BINARY(OP_REG(regBase, 4), "+", OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) )));
+            } else {
+                if (instr->mDetail.operands[1].mem.scale == 1)
+                    return ASSIGN(OP_X86(instr, 0), OP_REG(regBase, 4) + OP_REG(regIndex, 4) + OP_CONST(instr->mDetail.operands[1].mem.disp));
+                else
+                    return ASSIGN(OP_X86(instr, 0),
+                                  OP_BINARY(OP_REG(regBase, 4), "+", OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) ))+ OP_CONST(instr->mDetail.operands[1].mem.disp));
+            }
         }
     },
 
@@ -442,8 +473,9 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         a.next = std::make_shared<StatementIr>(b);
         return a;
     },
-    [X86_INS_AAD] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "iret"}; },
+    [X86_INS_AAD] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "aad"}; },
     [X86_INS_INT3] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "breakpoint"}; },
+    [X86_INS_IRETD] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "iretd"}; },
     [X86_INS_POPAL] = [](convert_args){
         StatementIr stmts[] = {
             ASSIGN(OP_REG("edi", 4), OP_FUNCTION("pop32")),

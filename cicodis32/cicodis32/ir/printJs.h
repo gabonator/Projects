@@ -139,7 +139,8 @@ public:
 //        func = replace(func, "DS_SI", "DSSI");
 //        func = replace(func, "ES_DI", "ESDI");
         repeat = replace(repeat, "cx", "r16[cx]");
-        
+        repeat = replace(repeat, "ecx", "r16[ecx]");
+
         if (st.func.starts_with("sub_") || st.func == "sync")
         {
             if (st.suffix)
