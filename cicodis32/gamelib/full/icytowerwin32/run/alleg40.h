@@ -517,9 +517,9 @@ void ALLEGRO_CC get_palette_range(CicoPtr<PALETTE> p, int from, int to) {
     
     for (int i=from; i<to; i++)
     {
-        memoryASet(ss, p.ptr+i*4, currentPalette[i].r/4);
-        memoryASet(ss, p.ptr+i*4+1, currentPalette[i].g/4);
-        memoryASet(ss, p.ptr+i*4+2, currentPalette[i].b/4);
+        memoryASet(0, p.ptr+i*4, currentPalette[i].r/4);
+        memoryASet(0, p.ptr+i*4+1, currentPalette[i].g/4);
+        memoryASet(0, p.ptr+i*4+2, currentPalette[i].b/4);
     }
 }
 int ALLEGRO_CC play_sample(CicoPtr<const SAMPLE*> spl, int vol, int pan, int freq, int loop) {
@@ -557,12 +557,12 @@ void ALLEGRO_CC set_palette(CicoPtr<const PALETTE> pal) {
 //    memcpy(currentPalette, _cicoptr<PALETTE>(p), sizeof(currentPalette));
 }
 void ALLEGRO_CC set_palette_range(CicoPtr<const PALETTE> pal, int from, int to, int vsync) {
-    RGB* p = _cicoptr<RGB>(pal);
+//    RGB* p = _cicoptr<RGB>(pal);
     for (int i=from; i<to; i++)
     {
-        currentPalette[i].r = p[i].r*4;
-        currentPalette[i].g = p[i].g*4;
-        currentPalette[i].b = p[i].b*4;
+        currentPalette[i].r = memoryAGet(0, pal.ptr+i*4)*4;
+        currentPalette[i].g = memoryAGet(0, pal.ptr+i*4+1)*4;
+        currentPalette[i].b = memoryAGet(0, pal.ptr+i*4+2)*4;
     }
 }
 void ALLEGRO_CC solid_mode(void) {

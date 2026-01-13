@@ -389,6 +389,12 @@ CapInstr::CapInstr(address_t addr, cs_insn* p)
     {
         mDetail.operands[1].size = 1;
     }
+    
+    if (mId == X86_INS_FNSTSW)
+    {
+        mDetail.eflags = 0; // only fpu flags
+    }
+
      
     bool is_fpu = false;
     for (int i = 0; i < p->detail->groups_count; i++) {

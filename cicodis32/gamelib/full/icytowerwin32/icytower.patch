@@ -1,5 +1,5 @@
 diff --git a/./icytower.clean3 b/./icytower.cpp
-index a082c8d..727a54e 100644
+index a082c8d..31cc2ea 100644
 --- a/./icytower.clean3
 +++ b/./icytower.cpp
 @@ -3,7 +3,7 @@
@@ -170,16 +170,12 @@ index a082c8d..727a54e 100644
  }
  void sub_4022b0() // 0000:4022b0 +long
  {
-+    return;
++//    return;
      esp -= 4;
      eax = memoryAGet32(ds, 0x40e054);
      esp -= 0x00000400;
-@@ -2270,10 +2330,10 @@ void sub_4022b0() // 0000:4022b0 +long
-     push32(edi);
-     edi = memoryAGet32(ds, esp + 0x40c);
-     push32(esi);
--    eax = esp + 12;
-+    eax = esp + esi*4 + 12; // TODO: CICO!!!!!!!!
+@@ -2273,7 +2333,7 @@ void sub_4022b0() // 0000:4022b0 +long
+     eax = esp + 12;
      push32(edi);
      push32(eax);
 -    alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<PALETTE>(3));
@@ -245,17 +241,18 @@ index a082c8d..727a54e 100644
      push32(0x0042bde0);
      sub_401060();
      push32(0x0042bde0);
-@@ -5524,7 +5587,8 @@ loc_404895: // 0000:404895
+@@ -5524,7 +5587,9 @@ loc_404895: // 0000:404895
      edi = memoryAGet32(ds, 0x40d0b8);
      esp += 0x00000008;
  loc_4048af: // 0000:4048af
 -    memoryASet32(ds, 0x42bbc0, 0x00000000);
++    alleg40::renderScreen();
 +    sync();
 +//    memoryASet32(ds, 0x42bbc0, 0x00000000);
      push32(0x000000ef);
      push32(0x000000e0);
      sub_4022b0();
-@@ -6763,11 +6827,12 @@ void sub_405680() // 0000:405680 +long
+@@ -6763,11 +6828,12 @@ void sub_405680() // 0000:405680 +long
      ebp = memoryAGet32(ds, esp + 0xac);
      esp += 0x0000000c;
  loc_4056b3: // 0000:4056b3
@@ -270,7 +267,7 @@ index a082c8d..727a54e 100644
      goto loc_4056dd;
  loc_4056cc: // 0000:4056cc
      edx = memoryAGet32(ds, esp + 0xa4);
-@@ -8939,16 +9004,16 @@ loc_406ee9: // 0000:406ee9
+@@ -8939,16 +9005,16 @@ loc_406ee9: // 0000:406ee9
      sub_409082();
      eax = kernel32::GetCommandLineA();
      memoryASet32(ds, 0x42d180, eax);
@@ -292,7 +289,7 @@ index a082c8d..727a54e 100644
      memoryASet32(ss, ebp - 100, eax);
      if (!(memoryAGet(ss, ebp - 48) & 0x01))
          goto loc_406f36;
-@@ -9930,7 +9995,7 @@ loc_407ceb: // 0000:407ceb
+@@ -9930,7 +9996,7 @@ loc_407ceb: // 0000:407ceb
          goto loc_407d0f;
      push32(0x0040d348);
      push32(eax);

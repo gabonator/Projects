@@ -180,7 +180,12 @@ public:
                 else if (st.opin1)
                     rhs = format("%s%s(%s)", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str(), ToString(st.opin1).c_str());
                 else
-                    rhs = format("%s%s()", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str());
+                {
+                    if (st.func.ends_with(";")) // todo: imports
+                        return std::string("    ") + st.func;
+                    else
+                        rhs = format("%s%s()", ProcessFuncName(st).c_str(), ProcessFuncTemplate(st).c_str());
+                }
                 
                 if (st.opd && st.opd->type == OperandIr::Type_t::Memory)
                     return repeat + format(ToStringSetter(st.opd).c_str(), rhs.c_str());

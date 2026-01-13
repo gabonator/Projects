@@ -2319,7 +2319,7 @@ loc_4022a3: // 0000:4022a3
 }
 void sub_4022b0() // 0000:4022b0 +long
 {
-    return;
+//    return;
     esp -= 4;
     eax = memoryAGet32(ds, 0x40e054);
     esp -= 0x00000400;
@@ -2330,7 +2330,7 @@ void sub_4022b0() // 0000:4022b0 +long
     push32(edi);
     edi = memoryAGet32(ds, esp + 0x40c);
     push32(esi);
-    eax = esp + esi*4 + 12; // TODO: CICO!!!!!!!!
+    eax = esp + 12;
     push32(edi);
     push32(eax);
     alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2));
@@ -5587,6 +5587,7 @@ loc_404895: // 0000:404895
     edi = memoryAGet32(ds, 0x40d0b8);
     esp += 0x00000008;
 loc_4048af: // 0000:4048af
+    alleg40::renderScreen();
     sync();
 //    memoryASet32(ds, 0x42bbc0, 0x00000000);
     push32(0x000000ef);
