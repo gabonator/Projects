@@ -422,7 +422,12 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
     bool firstRun = options->incrementalPrint.empty();
     if (firstRun)
     {
-        print->PrintHeading(loader);
+        std::string initCode = loader->GetInit();
+        if (!initCode.empty())
+            printf("%s", initCode.c_str());
+        else
+            print->PrintHeading(loader);
+        
         print->PrintDeclarations(analyser.AllMethods());
         print->PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
     }
@@ -507,34 +512,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-
-/*
- flags.carry = !!(edx & 0x0000);
- flags.carry = !!((edx<<8) & 0x80000000);
- video
- 
- edx = edx + edx*4;
- edx = edx + edx;
- 
- eax = memoryGet32(ss, ebp + 16);
- eax = memoryGet32(ds, ebp + 16);
- memorySet32(ds, 0x5d22e, eax);
- eax -= eax;
- 
- 
- sub_47e02 switch
- 
- 
- loc_3a9fc: // 0160:3a9fc
-     eax = memoryGet32(ds, ecx + memoryGet32(cs, 0x3a9fe));
- loc_3a9fc: // 0160:3a9fc
-     eax = memoryGet32(ds, ecx + 2147483647);
- 
- 
- BAAD:
- memorySet32(ds, 0x398b2, memoryGet32(ds, 0x398b2) + (0x7fffffff + flags.carry));
-> 1000000ull
-
- flags.zero = ((uint64_t)ebp + ebp) % 0x100000000ull == 0;
- */

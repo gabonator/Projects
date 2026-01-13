@@ -182,14 +182,33 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_CALL] = [](convert_args){
         if (instr->mDetail.operands[0].type == X86_OP_IMM)
             return StatementIr{.type = StatementIr::Type_t::DirectCall, .target = instr->CallTarget()};
-        else
-            return StatementIr{.type = StatementIr::Type_t::IndirectCall, .opin1 = OP_X86(instr, 0).get()};
+        
+        if (instr->mDetail.operands[0].size == 4)
+        {
+            if (instr->mDetail.operands[0].type == X86_OP_MEM && instr->mDetail.operands[0].mem.index == X86_REG_INVALID && instr->mDetail.operands[0].mem.disp != 0)
+            {
+                assert(instr->mDetail.operands[0].type == X86_OP_MEM);
+                assert(instr->mDetail.operands[0].mem.segment == X86_REG_INVALID);
+                assert(instr->mDetail.operands[0].mem.index == X86_REG_INVALID);
+                assert(instr->mDetail.operands[0].mem.scale == 1);
+                assert(instr->mDetail.operands[0].mem.disp != 0);
+                auto it = func.options->imports.find({0, (int)instr->mDetail.operands[0].mem.disp});
+                if (it != func.options->imports.end())
+                {
+                    return StatementIr{.type = StatementIr::Type_t::Function, .func = it->second->call};
+                }
+            }
+        }
+        return StatementIr{.type = StatementIr::Type_t::IndirectCall, .opin1 = OP_X86(instr, 0).get()};
     },
-    [X86_INS_SUB] = [](convert_args){ return OP_MOD("assign") << (OP_X86(instr, 0) - OP_X86(instr, 1)); },
+    [X86_INS_SUB] = [](convert_args){
+        if (instr->ArgsEqual())
+            return ASSIGN(OP_X86(instr, 0), OP_CONST(0));
+        return OP_MOD("assign") << (OP_X86(instr, 0) - OP_X86(instr, 1));
+    },
     [X86_INS_CMP] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
     [X86_INS_TEST] = [](convert_args){ return StatementIr{.type = StatementIr::Type_t::None}; },
     [X86_INS_NEG] = [](convert_args){ return OP_MOD("assign") << -OP_X86(instr, 0); },
-    [X86_INS_CLD] = [](convert_args){ return ASSIGN(OP_VAR("flags.direction"), OP_CONST(0)); },
     [X86_INS_CLI] = [](convert_args){ return ASSIGN(OP_VAR("flags.interrupts"), OP_CONST(0)); },
     [X86_INS_STI] = [](convert_args){ return ASSIGN(OP_VAR("flags.interrupts"), OP_CONST(1)); },
     [X86_INS_CLC] = [](convert_args){ return ASSIGN(OP_VAR("flags.carry"), OP_CONST(0)); },
@@ -331,7 +350,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         {
             std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
             int regSize = 0;
-            if (regBase == "bp" || regBase == "di")
+            if (regBase == "bp" || regBase == "di" || regBase == "si" || regBase == "bx")
                 regSize = 2;
             else if (regBase.size() == 3 && regBase[0] == 'e')
                 regSize = 4;
@@ -556,23 +575,5 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_FSQRT] = [](convert_args){ return OP_FUNCTION("fsqrt"); },
     [X86_INS_FRNDINT] = [](convert_args){ return OP_FUNCTION("frndint"); },
     [X86_INS_FCHS] = [](convert_args){ return OP_FUNCTION("fchs"); },
-
-    /*
-    {.convert = [](convert_args){
-        cs_x86_op es{.type = X86_OP_REG, .reg = X86_REG_ES};
-        // les bx, es:[bx]
-        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) || Capstone->Intersects(instr->mDetail.operands[1], es))
-            return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; es = tmp2;};";
-        assert(!Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]));
-        return "$wr0 = $rd1; es = $rn1;";
-    } },
-    [X86_INS_LDS] = {.convert = [](convert_args){
-        cs_x86_op ds{.type = X86_OP_REG, .reg = X86_REG_DS};
-//        assert(!Capstone->Intersects(instr->mDetail.operands[1], ds));
-        if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]))
-            return "{int tmp1 = $rd1; int tmp2 = $rn1; $wr0 = tmp1; ds = tmp2; };";
-        return "$wr0 = $rd1; ds = $rn1;";
-    } },
-*/
 
 };

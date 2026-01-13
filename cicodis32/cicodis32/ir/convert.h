@@ -522,6 +522,8 @@ private:
         if (setter == X86_INS_OR && getter == X86_INS_JE)
             return !COMPARE(OP_X86(set, 0) | OP_X86(set, 1));
 
+        if (getter == X86_INS_FNSTSW)
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "FNSTSW reads flags"};
         /*
          loc_1cd62f: // 0160:1cd62f mm2
              flags.sign = (char)(memoryAGet(ds, 0x20c848) | 0x04) < 0;
@@ -531,7 +533,7 @@ private:
         if (setter == X86_INS_CMP || setter == X86_INS_TEST)
             return Condition(set, getter);
         
-        assert(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_SHR);
+        assert(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_SHR || setter == X86_INS_XOR);
         
         // Note: apply the basic condition after the instruction was evaluated, not before!
         StatementIr stat = Condition(set, getter);

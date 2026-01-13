@@ -243,7 +243,7 @@ public:
     
     virtual void PrepareStatement(const StatementIr& st)
     {
-        instruction = instructions->code.find(st.address)->second;
+        instruction = instruction ? instructions->code.find(st.address)->second : nullptr;
         activeStatementHints.clear();
         for (const hint_t& h : activeProgHints)
             if (h.begin <= st.address && st.address <= h.end)
@@ -349,11 +349,10 @@ public:
         }
         if (op->memOfsDisp != 0 || memOffset.empty())
         {
-            // worms2 trick
-            // TODO: only when 6 byte long instr
-            assert(instruction);
-            if (op->memOfsDisp == 0x7fffffff)
+            if (instruction && op->memOfsDisp == 0x7fffffff)
             {
+                // worms2 trick
+                // TODO: only when 6 byte long instr
                 // size=8, ofs=4
                 // size=6, ofs=2
                 int immOfs = instruction->instr->mSize-4;

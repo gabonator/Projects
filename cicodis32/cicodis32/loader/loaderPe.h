@@ -160,17 +160,17 @@ public:
     
     void PrintSections()
     {
-        printf("Sections:\n");
-        
         size_t lastSlash = mName.find_last_of("/\\");
         std::string filenameWithExt = mName.substr(lastSlash + 1);
         size_t lastDot = filenameWithExt.find_last_of('.');
         std::string key = filenameWithExt.substr(0, lastDot);
 
+        printf("// Sections of %s:\n", filenameWithExt.c_str());
+
         for (const auto& sec : mSections) {
             uint32_t start = mImageBase + sec.vaddr;
             uint32_t end = start + sec.vsize;
-            printf("  - %s: %x .. %x\n", sec.name.c_str(), start, end);
+            printf("//  - %s: %x .. %x\n", sec.name.c_str(), start, end);
             
             for (const auto& [addr, imp] : GetImports())
             {
@@ -187,6 +187,7 @@ public:
             fclose(f);
 
         }
+        printf("\n");
 /*
  for (int i=0; i<mMemoryObjects.size(); i++)
  {
@@ -241,8 +242,8 @@ public:
         return address_t(0, mImageBase + mEntryPoint);
     }
 
-    virtual std::string GetInit() override { return "-- todo --\n";}
-    virtual std::string GetMain() override {
+    virtual std::string GetMain() override { assert(0); return "-- todo --\n";}
+    virtual std::string GetInit() override {
         std::string overlays = "";
         std::string includes = "";
 
@@ -263,13 +264,15 @@ public:
         std::string key = filenameWithExt.substr(0, lastDot);
 
         uint32_t symAddr = 0x6ab00000;
+        int counter = 0;
         std::string indirectImport = "switch ((ptrImportTable)o) {\n";
         std::string indirectEnum = format("enum class ptrImportTable {\n    ptr_begin = 0x%x,\n", symAddr);
         for (const auto& [addr, imp] : GetImports())
         {
+            counter ++;
 //            *((uint32_t*)GetBufferAt(addr)) = ++symAddr;
             indirectEnum += format("    ptr_%s_%s,\n", imp->namesp.c_str(), imp->symbol.c_str());
-            indirectImport += format("    case ptrImportTable::ptr_%s_%s:\n        %s\n        break;\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str());
+            indirectImport += format("    case ptrImportTable::ptr_%s_%s:\n        %s\n        break; // %x\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str(), symAddr+counter);
         }
         indirectEnum += "};\n";
         indirectImport += "}\n";
@@ -887,6 +890,11 @@ public:
             }
         }
         return imports;
+    }
+    virtual std::vector<std::string> GetRelocations() override
+    {
+        // postprocessed image is already relocated
+        return {};
     }
 };
 
