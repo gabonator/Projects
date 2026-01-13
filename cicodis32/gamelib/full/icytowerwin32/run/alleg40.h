@@ -7,7 +7,9 @@
 
 #include "alleg40tools.h"
 
+uint8_t* screenPixels = nullptr;
 void renderPixels(uint8_t*, uint32_t*);
+void renderScreen();
 uint8_t* MemoryGetPtr(int s, int o);
 extern int allocatorLast;
 extern std::vector<uint8_t> allocator;
@@ -286,7 +288,6 @@ void ALLEGRO_CC clear_bitmap(CicoPtr<BITMAP*> bitmap) {
     BITMAP* bmp = _cicoptr<BITMAP>(bitmap);
 
     vtable_rectfill(bitmap, 0, 0, bmp->w, bmp->h, 0);
-    assert(0);
 }
 void ALLEGRO_CC clear_keybuf(void) {assert(0);}
 CicoPtr<BITMAP*> ALLEGRO_CC create_bitmap(int width, int height) {
@@ -316,8 +317,8 @@ CicoPtr<BITMAP*> ALLEGRO_CC create_bitmap(int width, int height) {
     return ptrBitmap;
     //assert(0);
 }
-void ALLEGRO_CC destroy_bitmap(CicoPtr<BITMAP*> bitmap) {assert(0);}
-void ALLEGRO_CC destroy_sample(CicoPtr<SAMPLE*> spl) {assert(0);}
+void ALLEGRO_CC destroy_bitmap(CicoPtr<BITMAP*> bitmap) {}
+void ALLEGRO_CC destroy_sample(CicoPtr<SAMPLE*> spl) {}
 void ALLEGRO_CC drawing_mode(int mode, CicoPtr<BITMAP*> pattern, int x_anchor, int y_anchor) {
     printf("SKIP ----- %s\n", __FUNCTION__);
 }
@@ -326,8 +327,14 @@ int ALLEGRO_CC exists(CicoPtr<const char*> filename) {
     printf("SKIP ----- %s(%s)\n", __FUNCTION__, str);
     return 0;
 }
-void ALLEGRO_CC fade_in(CicoPtr<const PALETTE> p, int speed) {
-    printf("SKIP ----- %s\n", __FUNCTION__);
+void ALLEGRO_CC fade_in(CicoPtr<const PALETTE> pal, int speed) {
+    RGB* p = _cicoptr<RGB>(pal);
+    for (int i=0; i<256; i++)
+    {
+        currentPalette[i].r = p[i].r*4;
+        currentPalette[i].g = p[i].g*4;
+        currentPalette[i].b = p[i].b*4;
+    }
 }
 void ALLEGRO_CC fade_out(int speed) {
     printf("SKIP ----- %s\n", __FUNCTION__);
@@ -505,8 +512,15 @@ CicoPtr<PACKFILE*> ALLEGRO_CC pack_fopen(CicoPtr<const char*> filename, CicoPtr<
 int ALLEGRO_CC pack_fread(CicoPtr<void*> p, long n, CicoPtr<PACKFILE*> f) {assert(0);}
 int ALLEGRO_CC pack_fwrite(CicoPtr<const void*> p, long n, CicoPtr<PACKFILE*> f) {assert(0);}
 void ALLEGRO_CC get_palette(PALETTE p) {assert(0);}
-void ALLEGRO_CC get_palette_range(CicoPtr<PALETTE> p, int from, int to, CicoPtr<PALETTE> p2) {
-    printf("SKIP ----- %s\n", __FUNCTION__);
+void ALLEGRO_CC get_palette_range(CicoPtr<PALETTE> p, int from, int to) {
+//    RGB* pal = _cicoptr<RGB>(p);
+    
+    for (int i=from; i<to; i++)
+    {
+        memoryASet(ss, p.ptr+i*4, currentPalette[i].r/4);
+        memoryASet(ss, p.ptr+i*4+1, currentPalette[i].g/4);
+        memoryASet(ss, p.ptr+i*4+2, currentPalette[i].b/4);
+    }
 }
 int ALLEGRO_CC play_sample(CicoPtr<const SAMPLE*> spl, int vol, int pan, int freq, int loop) {
     SAMPLE* smp = _cicoptr<SAMPLE>(spl);
@@ -530,12 +544,26 @@ int ALLEGRO_CC set_display_switch_mode(int mode) {
     printf("SKIP ----- %s(%d)\n", __FUNCTION__, mode);
     return 0;
 }
-void ALLEGRO_CC set_palette(CicoPtr<const PALETTE> p) {
-    printf("SKIP ----- %s(%d)\n", __FUNCTION__, p);
+void ALLEGRO_CC set_palette(CicoPtr<const PALETTE> pal) {
+    RGB* p = _cicoptr<RGB>(pal);
+    for (int i=0; i<256; i++)
+    {
+        currentPalette[i].r = p[i].r*4;
+        currentPalette[i].g = p[i].g*4;
+        currentPalette[i].b = p[i].b*4;
+    }
+
+//    printf("SKIP ----- %s(%d)\n", __FUNCTION__, p);
 //    memcpy(currentPalette, _cicoptr<PALETTE>(p), sizeof(currentPalette));
 }
-void ALLEGRO_CC set_palette_range(CicoPtr<const PALETTE> p, int from, int to, int vsync) {
-    printf("SKIP ----- %s\n", __FUNCTION__);
+void ALLEGRO_CC set_palette_range(CicoPtr<const PALETTE> pal, int from, int to, int vsync) {
+    RGB* p = _cicoptr<RGB>(pal);
+    for (int i=from; i<to; i++)
+    {
+        currentPalette[i].r = p[i].r*4;
+        currentPalette[i].g = p[i].g*4;
+        currentPalette[i].b = p[i].b*4;
+    }
 }
 void ALLEGRO_CC solid_mode(void) {
     printf("SKIP ----- %s\n", __FUNCTION__);
@@ -639,7 +667,7 @@ void ALLEGRO_CC textprintf_right(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, i
     char* _str = (char*)MemoryGetPtr(0, fmt);
     printf("SKIP ----- %s('%s' x=%d y=%d c=0x%x)\n", __FUNCTION__, strFmt, x, y, color);
 }
-void ALLEGRO_CC unload_datafile(CicoPtr<DATAFILE*> dat) {assert(0);}
+void ALLEGRO_CC unload_datafile(CicoPtr<DATAFILE*> dat) {}
 void ALLEGRO_CC create_rgb_table(CicoPtr<RGB_MAP*> table, CicoPtr<const PALETTE> pal, CicoPtr<void (*)(int pos)> callback) {
     RGB* p = _cicoptr<RGB>(pal);
     for (int i=0; i<256; i++)
@@ -794,6 +822,7 @@ void initTables()
     memoryASet32(ds, 0x40d0dc, ptrLightMap);
     
     CicoPtr<BITMAP*> ptrScreen = create_bitmap(640, 480);
+    screenPixels = _cicoptr<uint8_t>(_cicoptr<BITMAP>(ptrScreen)->ptr_dat);
     uint32_t ptrptrScreen = _alloc(4);
     memoryASet32(ds, ptrptrScreen, ptrScreen.ptr);
     memoryASet32(ds, 0x40d108, ptrptrScreen);
@@ -814,6 +843,10 @@ void initTables()
     memoryASet32(ds, ptrptrFont, ptrFont);
     
     ptrShared = _alloc(1024);
+    
+    // ptr_alleg40_black_palette
+    uint32_t ptrBlackPalette = _alloc(1024);
+    memoryASet32(ds, 0x40d0e8, ptrBlackPalette);
 }
 
 void vtable_line(CicoPtr<BITMAP*> bmp, int x1, int y1, int x2, int y2, int c)
@@ -863,6 +896,20 @@ void vtable_release(CicoPtr<BITMAP*> bmp)
     assert(pBitmap->w == 640 && pBitmap->h == 480);
     renderPixels(pPixels, (uint32_t*)currentPalette);
 }
+
+void renderScreen()
+{
+    renderPixels(screenPixels, (uint32_t*)currentPalette);
+}
+uint32_t vtable_read_bank(CicoPtr<BITMAP*> bmp, int row)
+{
+    BITMAP* bitmap = _cicoptr<BITMAP>(bmp);
+    assert(row >= 0 && row < bitmap->h);
+    if (row&1)
+        return  bitmap->ptr_dat;
+    return bitmap->ptr_dat + row * bitmap->w;
+}
+
 
 #ifdef __cplusplus
 }

@@ -1,8 +1,32 @@
+// Sections of icytower.exe:
+//  - .text: 401000 .. 40d000
+//  - .rdata: 40d000 .. 40e000
+//  - .data: 40e000 .. 42d194
+//  - .rsrc: 42e000 .. 4333b6
 #include "cico32.h"
-
 #include "alleg40.h"
 #include "kernel32.h"
 
+void sub_406e7d();
+
+void init()
+{
+    loadOverlay("icytower_text.bin", 0x401000);
+    loadOverlay("icytower_rdata.bin", 0x40d000);
+    loadOverlay("icytower_data.bin", 0x40e000);
+    loadOverlay("icytower_rsrc.bin", 0x42e000);
+    esp = 0x434000;
+    ebp = 0x434000;
+    fs = 9999;
+    ds = cs = es = 0;
+    alleg40::initTables();
+    memoryASet32(0, 0x42bbc0, 1);
+}
+
+void start()
+{
+    sub_406e7d();
+}
 enum class ptrImportTable {
     ptr_begin = 0x6ab00000,
     ptr_kernel32_CloseHandle,
@@ -144,10 +168,12 @@ void indirectCall(int s, int o)
             alleg40::vtable_release(stack32<BITMAP>(0));
             return;
         case 0x6ab10009: // read bank
+            eax = alleg40::vtable_read_bank(edx, eax); //stack32<BITMAP>(0), stack32<int>(1));
             return;
         case 0x6ab1000a: // unwrite bank
             return;
         case 0x6ab1000b:
+            eax = alleg40::vtable_read_bank(edx, eax); //stack32<BITMAP>(0), stack32<int>(1));
             return; // write _bank
         case 0x6ab1000c:
             alleg40::vtable_draw_256_sprite_hflip(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2),
@@ -155,364 +181,342 @@ void indirectCall(int s, int o)
             return;
 
     }
+
     switch ((ptrImportTable)o) {
-        case ptrImportTable::ptr_begin:
-            stop();
-            break;
         case ptrImportTable::ptr_kernel32_CloseHandle:
             eax = kernel32::CloseHandle(stack32<HANDLE>(0)); esp += 4;
-            break;
+            break; // 6ab00001
         case ptrImportTable::ptr_kernel32_FlushFileBuffers:
             eax = kernel32::FlushFileBuffers(stack32<HANDLE>(0)); esp += 4;
-            break;
+            break; // 6ab00002
         case ptrImportTable::ptr_kernel32_SetStdHandle:
             eax = kernel32::SetStdHandle(stack32<DWORD>(0), stack32<HANDLE>(1)); esp += 8;
-            break;
+            break; // 6ab00003
         case ptrImportTable::ptr_kernel32_LCMapStringW:
             eax = kernel32::LCMapStringW(stack32<LCID>(0), stack32<DWORD>(1), stack32<LPCWSTR>(2), stack32<int>(3), stack32<LPWSTR>(4), stack32<int>(5)); esp += 24;
-            break;
+            break; // 6ab00004
         case ptrImportTable::ptr_kernel32_LCMapStringA:
             eax = kernel32::LCMapStringA(stack32<LCID>(0), stack32<DWORD>(1), stack32<LPCSTR>(2), stack32<int>(3), stack32<LPSTR>(4), stack32<int>(5)); esp += 24;
-            break;
+            break; // 6ab00005
         case ptrImportTable::ptr_kernel32_GetStringTypeW:
             eax = kernel32::GetStringTypeW(stack32<DWORD>(0), stack32<LPCWSTR>(1), stack32<int>(2), stack32<LPWORD>(3)); esp += 16;
-            break;
+            break; // 6ab00006
         case ptrImportTable::ptr_kernel32_GetStringTypeA:
             eax = kernel32::GetStringTypeA(stack32<LCID>(0), stack32<DWORD>(1), stack32<LPCSTR>(2), stack32<int>(3), stack32<LPWORD>(4)); esp += 20;
-            break;
+            break; // 6ab00007
         case ptrImportTable::ptr_kernel32_MultiByteToWideChar:
             eax = kernel32::MultiByteToWideChar(stack32<UINT>(0), stack32<DWORD>(1), stack32<LPCSTR>(2), stack32<int>(3), stack32<LPWSTR>(4), stack32<int>(5)); esp += 24;
-            break;
+            break; // 6ab00008
         case ptrImportTable::ptr_kernel32_LoadLibraryA:
             eax = kernel32::LoadLibraryA(stack32<LPCSTR>(0)); esp += 4;
-            break;
+            break; // 6ab00009
         case ptrImportTable::ptr_kernel32_GetOEMCP:
             eax = kernel32::GetOEMCP();
-            break;
+            break; // 6ab0000a
         case ptrImportTable::ptr_kernel32_GetACP:
             eax = kernel32::GetACP();
-            break;
+            break; // 6ab0000b
         case ptrImportTable::ptr_kernel32_GetCPInfo:
             eax = kernel32::GetCPInfo(stack32<UINT>(0), stack32<LPCPINFO>(1)); esp += 8;
-            break;
+            break; // 6ab0000c
         case ptrImportTable::ptr_kernel32_SetFilePointer:
             eax = kernel32::SetFilePointer(stack32<HANDLE>(0), stack32<LONG>(1), stack32<PLONG>(2), stack32<DWORD>(3)); esp += 16;
-            break;
+            break; // 6ab0000d
         case ptrImportTable::ptr_kernel32_GetLastError:
             eax = kernel32::GetLastError();
-            break;
+            break; // 6ab0000e
         case ptrImportTable::ptr_kernel32_WriteFile:
             eax = kernel32::WriteFile(stack32<HANDLE>(0), stack32<LPCVOID>(1), stack32<DWORD>(2), stack32<LPDWORD>(3), stack32<LPOVERLAPPED>(4)); esp += 20;
-            break;
+            break; // 6ab0000f
         case ptrImportTable::ptr_kernel32_RtlUnwind:
             kernel32::RtlUnwind(stack32<PVOID>(0), stack32<PVOID>(1), stack32<PEXCEPTION_RECORD>(2), stack32<PVOID>(3)); esp += 16;
-            break;
+            break; // 6ab00010
         case ptrImportTable::ptr_kernel32_GetFileType:
             eax = kernel32::GetFileType(stack32<HANDLE>(0)); esp += 4;
-            break;
+            break; // 6ab00011
         case ptrImportTable::ptr_kernel32_GetStdHandle:
             eax = kernel32::GetStdHandle(stack32<DWORD>(0)); esp += 4;
-            break;
+            break; // 6ab00012
         case ptrImportTable::ptr_kernel32_SetHandleCount:
             eax = kernel32::SetHandleCount(stack32<UINT>(0)); esp += 4;
-            break;
+            break; // 6ab00013
         case ptrImportTable::ptr_kernel32_GetEnvironmentStringsW:
             eax = kernel32::GetEnvironmentStringsW();
-            break;
+            break; // 6ab00014
         case ptrImportTable::ptr_kernel32_GetEnvironmentStrings:
             eax = kernel32::GetEnvironmentStrings();
-            break;
+            break; // 6ab00015
         case ptrImportTable::ptr_kernel32_WideCharToMultiByte:
             eax = kernel32::WideCharToMultiByte(stack32<UINT>(0), stack32<DWORD>(1), stack32<LPCWSTR>(2), stack32<int>(3), stack32<LPSTR>(4), stack32<int>(5), stack32<LPCSTR>(6), stack32<LPBOOL>(7)); esp += 32;
-            break;
+            break; // 6ab00016
         case ptrImportTable::ptr_kernel32_FreeEnvironmentStringsW:
             eax = kernel32::FreeEnvironmentStringsW(stack32<LPWCH>(0)); esp += 4;
-            break;
+            break; // 6ab00017
         case ptrImportTable::ptr_kernel32_FreeEnvironmentStringsA:
             eax = kernel32::FreeEnvironmentStringsA(stack32<LPCH>(0)); esp += 4;
-            break;
+            break; // 6ab00018
         case ptrImportTable::ptr_kernel32_GetModuleFileNameA:
+//            stop();
             eax = kernel32::GetModuleFileNameA(stack32<HMODULE>(0), stack32<LPSTR>(1), stack32<DWORD>(2)); esp += 12;
-            break;
+            break; // 6ab00019
         case ptrImportTable::ptr_kernel32_UnhandledExceptionFilter:
             eax = kernel32::UnhandledExceptionFilter(stack32<struct _EXCEPTION_POINTERS>(0)); esp += 4;
-            break;
+            break; // 6ab0001a
         case ptrImportTable::ptr_kernel32_GetProcAddress:
             stop();
-            //eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
-            break;
+//            eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
+            break; // 6ab0001b
         case ptrImportTable::ptr_kernel32_HeapSize:
             eax = kernel32::HeapSize(stack32<HANDLE>(0), stack32<DWORD>(1), stack32<LPCVOID>(2)); esp += 12;
-            break;
+            break; // 6ab0001c
         case ptrImportTable::ptr_kernel32_HeapReAlloc:
             eax = kernel32::HeapReAlloc(stack32<HANDLE>(0), stack32<DWORD>(1), stack32<LPVOID>(2), stack32<SIZE_T>(3)); esp += 16;
-            break;
+            break; // 6ab0001d
         case ptrImportTable::ptr_kernel32_VirtualAlloc:
             eax = kernel32::VirtualAlloc(stack32<LPVOID>(0), stack32<SIZE_T>(1), stack32<DWORD>(2), stack32<DWORD>(3)); esp += 16;
-            break;
+            break; // 6ab0001e
         case ptrImportTable::ptr_kernel32_VirtualFree:
             eax = kernel32::VirtualFree(stack32<LPVOID>(0), stack32<SIZE_T>(1), stack32<DWORD>(2)); esp += 12;
-            break;
+            break; // 6ab0001f
         case ptrImportTable::ptr_kernel32_HeapCreate:
             eax = kernel32::HeapCreate(stack32<DWORD>(0), stack32<SIZE_T>(1), stack32<SIZE_T>(2)); esp += 12;
-            break;
+            break; // 6ab00020
         case ptrImportTable::ptr_kernel32_HeapDestroy:
             eax = kernel32::HeapDestroy(stack32<HANDLE>(0)); esp += 4;
-            break;
+            break; // 6ab00021
         case ptrImportTable::ptr_kernel32_GetVersion:
             eax = kernel32::GetVersion();
-            break;
+            break; // 6ab00022
         case ptrImportTable::ptr_kernel32_GetCommandLineA:
             eax = kernel32::GetCommandLineA();
-            break;
+            break; // 6ab00023
         case ptrImportTable::ptr_kernel32_GetStartupInfoA:
             kernel32::GetStartupInfoA(stack32<LPSTARTUPINFOA>(0)); esp += 4;
-            break;
+            break; // 6ab00024
         case ptrImportTable::ptr_kernel32_GetModuleHandleA:
             eax = kernel32::GetModuleHandleA(stack32<LPCSTR>(0)); esp += 4;
-            break;
+            break; // 6ab00025
         case ptrImportTable::ptr_kernel32_GetCurrentProcess:
             eax = kernel32::GetCurrentProcess();
-            break;
+            break; // 6ab00026
         case ptrImportTable::ptr_kernel32_TerminateProcess:
             eax = kernel32::TerminateProcess(stack32<HANDLE>(0), stack32<UINT>(1)); esp += 8;
-            break;
+            break; // 6ab00027
         case ptrImportTable::ptr_kernel32_ExitProcess:
             kernel32::ExitProcess(stack32<UINT>(0)); esp += 4;
-            break;
+            break; // 6ab00028
         case ptrImportTable::ptr_kernel32_HeapFree:
             eax = kernel32::HeapFree(stack32<HANDLE>(0), stack32<DWORD>(1), stack32<LPVOID>(2)); esp += 12;
-            break;
+            break; // 6ab00029
         case ptrImportTable::ptr_kernel32_HeapAlloc:
             eax = kernel32::HeapAlloc(stack32<HANDLE>(0), stack32<DWORD>(1), stack32<SIZE_T>(2)); esp += 12;
-            break;
+            break; // 6ab0002a
         case ptrImportTable::ptr_alleg40_textprintf_centre:
             alleg40::textprintf_centre(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<const char>(5));
-            break;
+            break; // 6ab0002b
         case ptrImportTable::ptr_alleg40_fade_out:
             alleg40::fade_out(stack32<int>(0));
-            break;
+            break; // 6ab0002c
         case ptrImportTable::ptr_alleg40_readkey:
             eax = alleg40::readkey();
-            break;
+            break; // 6ab0002d
         case ptrImportTable::ptr_alleg40_save_pcx:
             alleg40::save_pcx(stack32<const char>(0), stack32<BITMAP>(1), stack32<const PALETTE>(2));
-            break;
+            break; // 6ab0002e
         case ptrImportTable::ptr_alleg40_keypressed:
             eax = alleg40::keypressed();
-            break;
+            break; // 6ab0002f
         case ptrImportTable::ptr_alleg40_clear_keybuf:
             alleg40::clear_keybuf();
-            break;
+            break; // 6ab00030
         case ptrImportTable::ptr_alleg40_textout_centre:
             alleg40::textout_centre(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<const char>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
-            break;
+            break; // 6ab00031
         case ptrImportTable::ptr_alleg40_stop_sample:
             alleg40::stop_sample(stack32<const SAMPLE>(0));
-            break;
+            break; // 6ab00032
         case ptrImportTable::ptr_alleg40_adjust_sample:
             alleg40::adjust_sample(stack32<SAMPLE>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
-            break;
+            break; // 6ab00033
         case ptrImportTable::ptr_alleg40_fade_in:
             alleg40::fade_in(stack32<const PALETTE>(0), stack32<int>(1));
-            break;
+            break; // 6ab00034
         case ptrImportTable::ptr_alleg40_font:
             stop("invalid decl");
-            break;
+            break; // 6ab00035
         case ptrImportTable::ptr_alleg40_clear_bitmap:
             alleg40::clear_bitmap(stack32<BITMAP>(0));
-            break;
+            break; // 6ab00036
         case ptrImportTable::ptr_alleg40_color_map:
             stop("invalid decl");
-            break;
+            break; // 6ab00037
         case ptrImportTable::ptr_alleg40_drawing_mode:
             alleg40::drawing_mode(stack32<int>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3));
-            break;
+            break; // 6ab00038
         case ptrImportTable::ptr_alleg40_textout:
             alleg40::textout(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<const char>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
-            break;
+            break; // 6ab00039
         case ptrImportTable::ptr_alleg40_black_palette:
             stop("invalid decl");
-            break;
+            break; // 6ab0003a
         case ptrImportTable::ptr_alleg40__WinMain:
             eax = alleg40::_WinMain(stack32<void>(0), stack32<void>(1), stack32<char>(2), stack32<int>(3));
-            break;
+            break; // 6ab0003b
         case ptrImportTable::ptr_alleg40_text_length:
             eax = alleg40::text_length(stack32<const FONT>(0), stack32<const char>(1));
-            break;
+            break; // 6ab0003c
         case ptrImportTable::ptr_alleg40_set_clip:
             alleg40::set_clip(stack32<BITMAP>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
-            break;
+            break; // 6ab0003d
         case ptrImportTable::ptr_alleg40_install_int:
             stop();
-            //alleg40::install_int(stack32<void (*)(void)>(0), stack32<long>(1));
-            break;
+//            alleg40::install_int(stack32<void (*)(void)>(0), stack32<long>(1));
+            break; // 6ab0003e
         case ptrImportTable::ptr_alleg40_install_timer:
             alleg40::install_timer();
-            break;
+            break; // 6ab0003f
         case ptrImportTable::ptr_alleg40_get_palette_range:
-            alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<PALETTE>(3));
-            break;
+            alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2));
+            break; // 6ab00040
         case ptrImportTable::ptr_alleg40_set_palette_range:
             alleg40::set_palette_range(stack32<const PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3));
-            break;
+            break; // 6ab00041
         case ptrImportTable::ptr_alleg40_screen:
             stop("invalid decl");
-            break;
+            break; // 6ab00042
         case ptrImportTable::ptr_alleg40_stretch_sprite:
             alleg40::stretch_sprite(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
-            break;
+            break; // 6ab00043
         case ptrImportTable::ptr_alleg40_allegro_errno:
             stop("invalid decl");
-            break;
+            break; // 6ab00044
         case ptrImportTable::ptr_alleg40__cos_tbl:
             stop("invalid decl");
-            break;
+            break; // 6ab00045
         case ptrImportTable::ptr_alleg40_blit:
             alleg40::blit(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5), stack32<int>(6), stack32<int>(7));
-            break;
+            break; // 6ab00046
         case ptrImportTable::ptr_alleg40_destroy_sample:
             alleg40::destroy_sample(stack32<SAMPLE>(0));
-            break;
+            break; // 6ab00047
         case ptrImportTable::ptr_alleg40_unload_datafile:
             alleg40::unload_datafile(stack32<DATAFILE>(0));
-            break;
+            break; // 6ab00048
         case ptrImportTable::ptr_alleg40_destroy_bitmap:
             alleg40::destroy_bitmap(stack32<BITMAP>(0));
-            break;
+            break; // 6ab00049
         case ptrImportTable::ptr_alleg40_allegro_exit:
             alleg40::allegro_exit();
-            break;
+            break; // 6ab0004a
         case ptrImportTable::ptr_alleg40_install_allegro:
             eax = alleg40::install_allegro(stack32<int>(0), stack32<int>(1), stack32<int (*)(void (*func)(void))>(2));
-            break;
+            break; // 6ab0004b
         case ptrImportTable::ptr_alleg40_install_keyboard:
             alleg40::install_keyboard();
-            break;
+            break; // 6ab0004c
         case ptrImportTable::ptr_alleg40_install_sound:
             eax = alleg40::install_sound(stack32<int>(0), stack32<int>(1), stack32<const char>(2));
-            break;
+            break; // 6ab0004d
         case ptrImportTable::ptr_alleg40_install_joystick:
             alleg40::install_joystick(stack32<int>(0));
-            break;
+            break; // 6ab0004e
         case ptrImportTable::ptr_alleg40_create_bitmap:
             eax = alleg40::create_bitmap(stack32<int>(0), stack32<int>(1));
-            break;
+            break; // 6ab0004f
         case ptrImportTable::ptr_alleg40_allegro_message:
             alleg40::allegro_message(stack32<const char>(0));
-            break;
+            break; // 6ab00050
         case ptrImportTable::ptr_alleg40_load_datafile:
             eax = alleg40::load_datafile(stack32<const char>(0));
-            break;
+            break; // 6ab00051
         case ptrImportTable::ptr_alleg40_pack_fopen:
             eax = alleg40::pack_fopen(stack32<const char>(0), stack32<const char>(1));
-            break;
+            break; // 6ab00052
         case ptrImportTable::ptr_alleg40_pack_fclose:
             eax = alleg40::pack_fclose(stack32<PACKFILE>(0));
-            break;
+            break; // 6ab00053
         case ptrImportTable::ptr_alleg40_create_rgb_table:
             alleg40::create_rgb_table(stack32<RGB_MAP>(0), stack32<const PALETTE>(1), stack32<void (*)(int pos)>(2));
-            break;
+            break; // 6ab00054
         case ptrImportTable::ptr_alleg40_rgb_map:
             stop("invalid decl");
-            break;
+            break; // 6ab00055
         case ptrImportTable::ptr_alleg40_create_light_table:
             alleg40::create_light_table(stack32<COLOR_MAP>(0), stack32<const PALETTE>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<void (*)(int pos)>(5));
-            break;
+            break; // 6ab00056
         case ptrImportTable::ptr_alleg40_set_color_depth:
             alleg40::set_color_depth(stack32<int>(0));
-            break;
+            break; // 6ab00057
         case ptrImportTable::ptr_alleg40_set_gfx_mode:
             eax = alleg40::set_gfx_mode(stack32<int>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
-            break;
+            break; // 6ab00058
         case ptrImportTable::ptr_alleg40_exists:
             eax = alleg40::exists(stack32<const char>(0));
-            break;
+            break; // 6ab00059
         case ptrImportTable::ptr_alleg40_set_display_switch_mode:
             eax = alleg40::set_display_switch_mode(stack32<int>(0));
-            break;
+            break; // 6ab0005a
         case ptrImportTable::ptr_alleg40_text_mode:
             alleg40::text_mode(stack32<int>(0));
-            break;
+            break; // 6ab0005b
         case ptrImportTable::ptr_alleg40_load_wav:
             eax = alleg40::load_wav(stack32<const char>(0));
-            break;
+            break; // 6ab0005c
         case ptrImportTable::ptr_alleg40_play_sample:
             eax = alleg40::play_sample(stack32<const SAMPLE>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
-            break;
+            break; // 6ab0005d
         case ptrImportTable::ptr_alleg40_get_palette:
             stop();
             //alleg40::get_palette(stack32<PALETTE>(0));
-            break;
+            break; // 6ab0005e
         case ptrImportTable::ptr_alleg40_desktop_palette:
             stop("invalid decl");
-            break;
+            break; // 6ab0005f
         case ptrImportTable::ptr_alleg40_set_palette:
             alleg40::set_palette(stack32<const PALETTE>(0));
-            break;
+            break; // 6ab00060
         case ptrImportTable::ptr_alleg40_alert:
             alleg40::alert(stack32<const char>(0), stack32<const char>(1), stack32<const char>(2), stack32<const char>(3), stack32<const char>(4), stack32<int>(5), stack32<int>(6));
-            break;
+            break; // 6ab00061
         case ptrImportTable::ptr_alleg40_text_height:
             eax = alleg40::text_height(stack32<const FONT>(0));
-            break;
+            break; // 6ab00062
         case ptrImportTable::ptr_alleg40_textprintf:
             alleg40::textprintf(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<const char>(5));
-            break;
+            break; // 6ab00063
         case ptrImportTable::ptr_alleg40_textprintf_right:
             alleg40::textprintf_right(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<const char>(5));
-            break;
+            break; // 6ab00064
         case ptrImportTable::ptr_alleg40_pack_fread:
             eax = alleg40::pack_fread(stack32<void>(0), stack32<long>(1), stack32<PACKFILE>(2));
-            break;
+            break; // 6ab00065
         case ptrImportTable::ptr_alleg40_pack_fwrite:
             eax = alleg40::pack_fwrite(stack32<const void>(0), stack32<long>(1), stack32<PACKFILE>(2));
-            break;
+            break; // 6ab00066
         case ptrImportTable::ptr_alleg40_poll_joystick:
             eax = alleg40::poll_joystick();
-            break;
+            break; // 6ab00067
         case ptrImportTable::ptr_alleg40_joy:
             stop("invalid decl");
-            break;
+            break; // 6ab00068
         case ptrImportTable::ptr_alleg40_key:
             stop("invalid decl");
-            break;
+            break; // 6ab00069
         case ptrImportTable::ptr_alleg40_masked_blit:
             alleg40::masked_blit(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5), stack32<int>(6), stack32<int>(7));
-            break;
+            break; // 6ab0006a
         case ptrImportTable::ptr_alleg40_solid_mode:
             alleg40::solid_mode();
-            break;
+            break; // 6ab0006b
         default:
-            stop();
+            assert(0);
     }
-}
-
-using namespace kernel32;
-
-void sub_406e7d();
-
-void init()
-{
-    loadOverlay("icytower_text.bin", 0x401000);
-    loadOverlay("icytower_rdata.bin", 0x40d000);
-    loadOverlay("icytower_data.bin", 0x40e000);
-    loadOverlay("icytower_rsrc.bin", 0x42e000);
-    esp = 0x434000;
-    ebp = 0x434000;
-    fs = 9999;
-    ds = cs = es = 0;
-    alleg40::initTables();
-}
-
-void start()
-{
-    sub_406e7d();
 }
 
 void sub_401000();
 void sub_401030();
 void sub_401060();
+void sub_401170();
 void sub_4011c0();
 void sub_4011d0();
 void sub_4011e0();
@@ -692,7 +696,7 @@ void sub_401030() // 0000:401030 +long
     memoryASet32(ds, eax + 0x14, ecx);
     esp += 4;
 }
-void sub_401060() // 0000:401060 +long keyboard
+void sub_401060() // 0000:401060 +long
 {
     esp -= 4;
     push32(esi);
@@ -743,7 +747,7 @@ loc_4010ca: // 0000:4010ca
     memoryASet32(ds, esi + 0x1c, eax);
 loc_4010e2: // 0000:4010e2
     edx = memoryAGet32(ds, esi + 0xc);
-    eax = memoryAGet32(ds, 0x40d1a4); // alleg keys
+    eax = memoryAGet32(ds, 0x40d1a4);
     if (!memoryAGet(ds, edx + eax))
         goto loc_4010f8;
     eax = memoryAGet32(ds, esi + 0x1c);
@@ -791,6 +795,45 @@ loc_401153: // 0000:401153
     memoryASet32(ds, esi + 0x1c, eax);
 loc_40116a: // 0000:40116a
     esi = pop32();
+    esp += 4;
+}
+void sub_401170() // 0000:401170 +long
+{
+    esp -= 4;
+    ecx = memoryAGet32(ds, esp + 0x4);
+    eax = memoryAGet32(ds, esp + 0x8);
+    if (eax != memoryAGet32(ds, ecx + 0x4))
+        goto loc_401181;
+    eax |= 0xffffffff;
+    esp += 4; return;
+loc_401181: // 0000:401181
+    if (eax != memoryAGet32(ds, ecx + 0x8))
+        goto loc_40118a;
+    eax |= 0xffffffff;
+    esp += 4; return;
+loc_40118a: // 0000:40118a
+    if (eax != memoryAGet32(ds, ecx + 0xc))
+        goto loc_401193;
+    eax |= 0xffffffff;
+    esp += 4; return;
+loc_401193: // 0000:401193
+    if (eax != memoryAGet32(ds, ecx + 0x10))
+        goto loc_40119c;
+    eax |= 0xffffffff;
+    esp += 4; return;
+loc_40119c: // 0000:40119c
+    if (eax != memoryAGet32(ds, ecx + 0x14))
+        goto loc_4011a5;
+    eax |= 0xffffffff;
+    esp += 4; return;
+loc_4011a5: // 0000:4011a5
+    push32(esi);
+    esi = memoryAGet32(ds, ecx + 0x18);
+    edx = 0;
+    dl = eax != esi;
+    edx--;
+    esi = pop32();
+    eax = edx;
     esp += 4;
 }
 void sub_4011c0() // 0000:4011c0 +long
@@ -1197,7 +1240,7 @@ void sub_401510() // 0000:401510 +long
     eax = esp;
     push32(esi);
     push32(eax);
-    assert(0); //alleg40::get_palette(stack32<PALETTE>(0)); // gabo
+    stop(); //alleg40::get_palette(stack32<PALETTE>(0));
     ecx = memoryAGet32(ds, 0x40d17c);
     esi = memoryAGet32(ds, 0x40d180);
     push32(ecx);
@@ -1289,7 +1332,7 @@ void sub_401600() // 0000:401600 +long
     push32(0x00000000);
     eax = alleg40::install_allegro(stack32<int>(0), stack32<int>(1), stack32<int (*)(void (*func)(void))>(2));
     alleg40::install_keyboard();
-//    sub_406b00(); // gabo
+//    sub_406b00();
     push32(0x00000000);
     push32(0xffffffff);
     push32(0x44584120);
@@ -1304,7 +1347,7 @@ void sub_401600() // 0000:401600 +long
     push32(0x00000280);
     eax++;
     memoryASet32(ds, 0x42bbc4, eax);
-    indirectCall(cs, esi); // 0000:401650 create bitmap
+    indirectCall(cs, esi); // 0000:401650
     push32(0x00000040);
     push32(0x00000280);
     memoryASet32(ds, 0x40fa34, eax);
@@ -1312,7 +1355,6 @@ void sub_401600() // 0000:401600 +long
     ecx = memoryAGet32(ds, 0x40fa34);
     esp += 0x0000002c;
     memoryASet32(ds, 0x40fa38, eax);
-    assert(ecx && eax);
     if (!ecx)
         goto loc_401c4b;
     if (!eax)
@@ -1351,7 +1393,7 @@ loc_4016ca: // 0000:4016ca
     sub_401370();
     esi = memoryAGet32(ds, 0x40d144);
     push32(0x0040e9f0);
-    indirectCall(cs, esi); // 0000:4016e7 - load_datafile
+    indirectCall(cs, esi); // 0000:4016e7
     esp += 0x00000014;
     memoryASet32(ds, 0x40fa40, eax);
     if (eax)
@@ -1463,7 +1505,7 @@ loc_40186c: // 0000:40186c
     push32(0x00000000);
     push32(0x00000000);
     push32(0x00000000);
-//    memoryASet32(ds, ecx, 0x00423bc0); //gabo???
+//    memoryASet32(ds, ecx, 0x00423bc0);
     edx = memoryAGet32(ds, 0x40fa40);
     push32(0x00000000);
     eax = memoryAGet32(ds, edx);
@@ -1817,6 +1859,8 @@ loc_401d92: // 0000:401d92
     sub_401240();
     esp += 0x00000004;
 loc_401da4: // 0000:401da4
+    if (memoryAGet32(ds, 0x40d128) == (uint32_t)ptrImportTable::ptr_alleg40_allegro_exit)
+        exit(0);
     indirectJump(cs, memoryAGet32(ds, 0x40d128)); return; // 0000:401da4
 }
 void sub_401db0() // 0000:401db0 +long
@@ -1900,9 +1944,9 @@ loc_401e6a: // 0000:401e6a
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x24);
     eax = memoryAGet32(ss, ebp - 4);
-    indirectCall(cs, ecx); // 0000:401e7c gabo read_bank
+    indirectCall(cs, ecx); // 0000:401e7c
     ecx = 0;
-//    cl = memoryAGet(ds, eax + edi); //gabo
+    cl = memoryAGet(ds, eax + edi);
     esi = ecx;
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -1935,7 +1979,7 @@ loc_401eb3: // 0000:401eb3
         goto loc_401eeb;
     ecx = memoryAGet32(ds, 0x40d110);
     eax = 0x7fffffff;
-    /*st(0) =*/ fstp80();
+    st(0) = fstp80();
     edx = memoryAGet32(ds, ecx);
     memoryASet32(ds, edx, 0x00000022);
     goto loc_401f3a;
@@ -1944,8 +1988,8 @@ loc_401eeb: // 0000:401eeb
     ax = fnstsw();
     if (!(ah & 0x01))
         goto loc_401f0e;
-    eax = memoryAGet32(ds, 0x40d110); //errno
-    /*st(0) =*/ fstp80();
+    eax = memoryAGet32(ds, 0x40d110);
+    st(0) = fstp80();
     ecx = memoryAGet32(ds, eax);
     eax = 0x80000001;
     memoryASet32(ds, ecx, 0x00000022);
@@ -2001,7 +2045,7 @@ loc_401f99: // 0000:401f99
     ecx = memoryAGet32(ds, edx + 0x20);
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:401fab
-    //memoryASet(ds, eax + edi, bl); //gabo
+    memoryASet(ds, eax + edi, bl);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
     ecx = memoryAGet32(ds, ecx + 0x8);
@@ -2037,7 +2081,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:402010
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi); gabo
+    cl = memoryAGet(ds, eax + esi);
     memoryASet32(ss, ebp - 56, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2051,7 +2095,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 16);
     indirectCall(cs, ecx); // 0000:40203a
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi + 0x1); // gabo
+    cl = memoryAGet(ds, eax + esi + 0x1);
     memoryASet32(ss, ebp - 52, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2064,7 +2108,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:402062
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi + 0x1); // gabo
+    cl = memoryAGet(ds, eax + esi + 0x1);
     memoryASet32(ss, ebp - 48, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2078,7 +2122,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 16);
     indirectCall(cs, ecx); // 0000:40208d
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi + 0x1); // gabo
+    cl = memoryAGet(ds, eax + esi + 0x1);
     memoryASet32(ss, ebp - 44, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2092,7 +2136,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 16);
     indirectCall(cs, ecx); // 0000:4020b8
     ebx = 0;
-//    bl = memoryAGet(ds, eax + esi); // gabo
+    bl = memoryAGet(ds, eax + esi);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
     ecx = memoryAGet32(ds, ecx + 0x8);
@@ -2104,7 +2148,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:4020db
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi); // gabo
+    cl = memoryAGet(ds, eax + esi);
     memoryASet32(ss, ebp - 40, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2118,7 +2162,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 16);
     indirectCall(cs, ecx); // 0000:402105
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi); // gabo
+    cl = memoryAGet(ds, eax + esi);
     memoryASet32(ss, ebp - 36, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2131,7 +2175,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 8);
     indirectCall(cs, ecx); // 0000:40212c
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi - 1); // gabo
+    cl = memoryAGet(ds, eax + esi - 1);
     memoryASet32(ss, ebp - 32, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2144,7 +2188,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:402154
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi - 1); // gabo
+    cl = memoryAGet(ds, eax + esi - 1);
     memoryASet32(ss, ebp - 28, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2157,7 +2201,7 @@ loc_401fff: // 0000:401fff
     eax = memoryAGet32(ss, ebp - 24);
     indirectCall(cs, ecx); // 0000:40217c
     ecx = 0;
-//    cl = memoryAGet(ds, eax + esi - 1); // gabo
+    cl = memoryAGet(ds, eax + esi - 1);
     memoryASet32(ss, ebp - 16, ecx);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
@@ -2203,7 +2247,7 @@ loc_4021e9: // 0000:4021e9
     ecx = memoryAGet32(ds, edx + 0x20);
     eax = memoryAGet32(ss, ebp - 4);
     indirectCall(cs, ecx); // 0000:4021fb
-//    memoryASet(ds, eax + esi, bl); // gabo
+    memoryASet(ds, eax + esi, bl);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
     ecx = memoryAGet32(ds, ecx + 0x8);
@@ -2275,6 +2319,7 @@ loc_4022a3: // 0000:4022a3
 }
 void sub_4022b0() // 0000:4022b0 +long
 {
+    return;
     esp -= 4;
     eax = memoryAGet32(ds, 0x40e054);
     esp -= 0x00000400;
@@ -2285,10 +2330,10 @@ void sub_4022b0() // 0000:4022b0 +long
     push32(edi);
     edi = memoryAGet32(ds, esp + 0x40c);
     push32(esi);
-    eax = esp + 12;
+    eax = esp + esi*4 + 12; // TODO: CICO!!!!!!!!
     push32(edi);
     push32(eax);
-    alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<PALETTE>(3));
+    alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2));
     edx = memoryAGet32(ds, esp + esi * 4 + 0x14);
     eax = (esp + (esi * 4)) + 20;
     esp += 0x0000000c;
@@ -2613,7 +2658,7 @@ loc_402657: // 0000:402657
     esp += 0x00000008;
     esp += 4;
 }
-void sub_402670() // 0000:402670 +long keyb2
+void sub_402670() // 0000:402670 +long
 {
     esp -= 4;
     push32(esi);
@@ -2621,7 +2666,7 @@ void sub_402670() // 0000:402670 +long keyb2
     if (!esi)
         goto loc_40277d;
     push32(esi);
-    sub_401060(); // keyb
+    sub_401060();
     push32(esi);
     sub_4011e0();
     esp += 0x00000008;
@@ -2705,7 +2750,6 @@ loc_40277d: // 0000:40277d
 }
 void sub_402780() // 0000:402780 +long
 {
-    bool temp_cond0;
     esp -= 4;
     push32(ebp);
     ebp = esp;
@@ -3090,21 +3134,15 @@ loc_402b30: // 0000:402b30
 loc_402b4e: // 0000:402b4e
     ecx = memoryAGet32(ss, ebp - 4);
 loc_402b51: // 0000:402b51
-    flags.zero = eax == 0x00000003;
-    flags.sign = (int32_t)eax < (int32_t)0x00000003;
-    if (flags.zero)
+    if (eax == 0x00000003)
         goto loc_402b5b;
-    flags.zero = eax == 0x00000002;
-    flags.sign = (int32_t)eax < (int32_t)0x00000002;
-    if (!flags.zero)
+    if (eax != 0x00000002)
         goto loc_402b7f;
 loc_402b5b: // 0000:402b5b
     fld64(memoryAGet64(ds, 0x412ff8));
     fcomp64(memoryAGet64(ds, 0x40d270));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_402c6e;
     ecx = 0x00000007;
     memoryASet32(ss, ebp - 4, ecx);
@@ -3115,9 +3153,7 @@ loc_402b7f: // 0000:402b7f
     fld64(memoryAGet64(ds, 0x412ff8));
     fcomp64(memoryAGet64(ds, 0x40d268));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_402c6e;
     ecx = 0x00000005;
     memoryASet32(ss, ebp - 4, ecx);
@@ -3136,9 +3172,7 @@ loc_402ba8: // 0000:402ba8
 loc_402bd2: // 0000:402bd2
     fcomp64(memoryAGet64(ds, 0x40d260));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_402cb5;
     memoryASet32(ss, ebp - 4, 0x00000000);
 loc_402bea: // 0000:402bea
@@ -3181,8 +3215,6 @@ loc_402bea: // 0000:402bea
 loc_402c6e: // 0000:402c6e
     if ((int32_t)ecx < (int32_t)0x00000005)
         goto loc_402cac;
-    flags.zero = ecx == 0x00000007;
-    flags.sign = (int32_t)ecx < (int32_t)0x00000007;
     if ((int32_t)ecx > (int32_t)0x00000007)
         goto loc_402cac;
 loc_402c78: // 0000:402c78
@@ -3201,9 +3233,7 @@ loc_402c93: // 0000:402c93
     memoryASet32(ss, ebp - 4, 0x00000008);
     goto loc_402bea;
 loc_402cac: // 0000:402cac
-    flags.zero = ecx == 0x00000001;
-    flags.sign = (int32_t)ecx < (int32_t)0x00000001;
-    if (!flags.zero)
+    if (ecx != 0x00000001)
         goto loc_402bea;
 loc_402cb5: // 0000:402cb5
     fld64(memoryAGet64(ds, 0x412ff0));
@@ -3619,7 +3649,6 @@ loc_403139: // 0000:403139
     memoryASet32(ss, ebp - 12, edx);
 loc_403171: // 0000:403171
     eax = memoryAGet32(ds, 0x413328);
-    temp_cond0 = fnstsw();
     if (!eax)
         goto loc_40320d;
     eax = memoryAGet32(ds, 0x413328);
@@ -3889,8 +3918,6 @@ loc_403433: // 0000:403433
 }
 void sub_4034a0() // 0000:4034a0 +long
 {
-    bool temp_cond0;
-    bool temp_cond1;
     esp -= 4;
     push32(ebp);
     ebp = esp;
@@ -4098,13 +4125,11 @@ loc_403733: // 0000:403733
     edx = memoryAGet32(ds, 0x40ffc0);
     esi = edx;
     esi &= 0x8000000f;
-    flags.zero = esi == 0; flags.sign = (int32_t)esi < 0;
-    if (!flags.sign)
+    if ((int32_t)esi >= 0)
         goto loc_403753;
     esi--;
     esi |= 0xfffffff0;
     esi++;
-    flags.zero = esi == 0; flags.sign = (int32_t)esi < 0;
 loc_403753: // 0000:403753
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d2c0));
@@ -4116,7 +4141,6 @@ loc_403753: // 0000:403753
     ecx = 0x00000001;
     memoryASet32(ds, esp + 0x14, ecx);
     ax = fnstsw();
-    temp_cond0 = fnstsw();
     if (!(cl & ah))
         goto loc_40378e;
     ecx = 0x00000002;
@@ -4125,67 +4149,49 @@ loc_40378e: // 0000:40378e
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d2b0));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4037a6;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_4037a6: // 0000:4037a6
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d2a8));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4037be;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_4037be: // 0000:4037be
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d2a0));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4037d6;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_4037d6: // 0000:4037d6
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d298));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4037ee;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_4037ee: // 0000:4037ee
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d290));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_403806;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_403806: // 0000:403806
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d288));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_40381e;
     ecx++;
-    flags.zero = ecx == 0; flags.sign = (int32_t)ecx < 0;
     memoryASet32(ds, esp + 0x14, ecx);
 loc_40381e: // 0000:40381e
     fld64(memoryAGet64(ds, 0x412fe8));
@@ -4401,7 +4407,6 @@ loc_403a79: // 0000:403a79
     ecx = memoryAGet32(ds, 0x413010);
     esp += 0x00000004;
 loc_403aba: // 0000:403aba
-    temp_cond1 = fnstsw();
     if (ecx != ebp)
         goto loc_403b6b;
     fld64(memoryAGet64(ds, 0x412fe8));
@@ -4424,7 +4429,7 @@ loc_403aba: // 0000:403aba
     eax = edx;
     eax -= ecx;
     ecx = 0x00000001;
-    temp_cond1 = fnstsw(); // GABO TODO! temp cond, eax check next line!? TODO: check cicodis
+    flags.zero = eax == ecx;
     if ((int32_t)eax <= (int32_t)ecx)
         goto loc_403b41;
     if (memoryAGet32(ds, 0x41301c) == ebp)
@@ -4441,17 +4446,15 @@ loc_403b2a: // 0000:403b2a
     memoryASet32(ds, 0x413024, ecx);
 loc_403b35: // 0000:403b35
     memoryASet32(ds, 0x41301c, 0x00000064);
-    temp_cond1 =     stop("FNSTSW reads flags");;
+    flags.zero = eax == ecx;
 loc_403b41: // 0000:403b41
-    if (eax != ecx)
+    if (!flags.zero)
         goto loc_403b65;
-    temp_cond1 =     stop("FNSTSW reads flags");;
     if (memoryAGet32(ds, 0x41301c) == ebp)
         goto loc_403b65;
     memoryASet32(ds, 0x41301c, ecx);
     goto loc_403b65;
 loc_403b53: // 0000:403b53
-    temp_cond1 =     stop("FNSTSW reads flags");;
     if (memoryAGet32(ds, 0x41301c) == ebp)
         goto loc_403b65;
     memoryASet32(ds, 0x41301c, 0x00000001);
@@ -4461,13 +4464,9 @@ loc_403b6b: // 0000:403b6b
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d280));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_403ba7;
-    flags.zero = memoryAGet32(ds, 0x413028) == ebp;
-    flags.sign = (int32_t)memoryAGet32(ds, 0x413028) < (int32_t)ebp;
-    if (!flags.zero)
+    if (memoryAGet32(ds, 0x413028) != ebp)
         goto loc_403ba7;
     ecx = memoryAGet32(ds, 0x40fa9c);
     ebx = 0x00000001;
@@ -4477,7 +4476,6 @@ loc_403b6b: // 0000:403b6b
     memoryASet32(ds, 0x413028, ebx);
     sub_401570();
     esp += 0x00000008;
-    flags.zero = esp == 0; flags.sign = (int32_t)esp < 0;
 loc_403ba7: // 0000:403ba7
     fld64(memoryAGet64(ds, 0x412fe8));
     fcomp64(memoryAGet64(ds, 0x40d278));
@@ -4775,10 +4773,9 @@ loc_403f09: // 0000:403f09
     if (ecx != ebp)
         goto loc_403f24;
 loc_403f1a: // 0000:403f1a
-    sync();
     ecx = memoryAGet32(ds, 0x42bbc0);
-    if (ecx == ebp)
-        goto loc_403f1a;
+//    if (ecx == ebp)
+//        goto loc_403f1a;
 loc_403f24: // 0000:403f24
     if (memoryAGet32(ds, esp + 0x28) != ebp)
         goto loc_40359b;
@@ -4989,7 +4986,7 @@ loc_404198: // 0000:404198
     alleg40::clear_keybuf();
     edi = memoryAGet32(ds, esp + 0x38);
 loc_4041b8: // 0000:4041b8
-    memoryASet32(ds, 0x42bbc0, 0x00000000);
+//    memoryASet32(ds, 0x42bbc0, 0x00000000);
     edx = memoryAGet32(ds, 0x40ffc4);
     edx++;
     memoryASet32(ds, 0x40ffc4, edx);
@@ -5195,7 +5192,7 @@ loc_404413: // 0000:404413
     esp += 0x00000004;
 loc_404421: // 0000:404421
     push32(0x0042bde0);
-    sub_401060(); // keyb
+    sub_401060();
     esp += 0x00000004;
     eax = alleg40::keypressed();
     if (!eax)
@@ -5481,7 +5478,7 @@ loc_4046e0: // 0000:4046e0
     push32(ecx);
     alleg40::fade_in(stack32<const PALETTE>(0), stack32<int>(1));
     esp += 0x00000008;
-    memoryASet32(ds, 0x42bbc0, 0x00000000);
+//    memoryASet32(ds, 0x42bbc0, 0x00000000);
     edx = memoryAGet32(ds, 0x40d1a4);
     al = memoryAGet(ds, edx + 0x3b);
     if (al)
@@ -5513,14 +5510,15 @@ loc_4047d3: // 0000:4047d3
     if (edi != eax)
         goto loc_4047f1;
 loc_4047e8: // 0000:4047e8
+    sync();
     eax = memoryAGet32(ds, 0x42bbc0);
-    if (edi == eax)
-        goto loc_4047e8;
+//    if (edi == eax)
+//        goto loc_4047e8;
 loc_4047f1: // 0000:4047f1
     eax = memoryAGet32(ds, 0x40d1a4);
     cl = memoryAGet(ds, eax + 0x3b);
-    if (!cl)
-        goto loc_40479b;
+//    if (!cl)
+//        goto loc_40479b;
 loc_4047fd: // 0000:4047fd
     push32(0x00000010);
     alleg40::fade_out(stack32<int>(0));
@@ -5571,9 +5569,10 @@ void sub_404810() // 0000:404810 +long
     if (!eax)
         goto loc_404895;
 loc_40487a: // 0000:40487a
+    alleg40::renderScreen();
     sync();
     push32(0x0042bde0);
-    sub_401060(); // keyb
+    sub_401060();
     push32(0x0042bde0);
     sub_401220();
     esp += 0x00000008;
@@ -5589,12 +5588,12 @@ loc_404895: // 0000:404895
     esp += 0x00000008;
 loc_4048af: // 0000:4048af
     sync();
-    memoryASet32(ds, 0x42bbc0, 0x00000000);
+//    memoryASet32(ds, 0x42bbc0, 0x00000000);
     push32(0x000000ef);
     push32(0x000000e0);
     sub_4022b0();
     push32(0x0042bde0);
-    sub_401060(); // keyb
+    sub_401060();
     push32(0x0042bde0);
     sub_401200();
     esp += 0x00000010;
@@ -5629,7 +5628,6 @@ loc_404922: // 0000:404922
     if (eax)
         goto loc_404934;
 loc_40492b: // 0000:40492b
-    memoryASet32(ds, 0x42bbc0, 1); /*gabosync*/
     eax = memoryAGet32(ds, 0x42bbc0);
     if (!eax)
         goto loc_40492b;
@@ -5669,7 +5667,7 @@ void sub_404990() // 0000:404990 +long
     push32(ebp);
     ebp = esp;
     push32(ecx);
-    memoryASet32(ds, 0x40fab0, memoryAGet32(ds, 0x40fab0) + 1); // increment tick
+    memoryASet32(ds, 0x40fab0, memoryAGet32(ds, 0x40fab0) + 1);
     sub_406be3();
     edx = (int32_t)eax < 0 ? -1 : 0;
     ecx = 0x000000c8;
@@ -5700,7 +5698,6 @@ loc_4049c5: // 0000:4049c5
     ecx = memoryAGet32(ds, 0x40fa34);
     esp += 0x00000020;
     eax = memoryAGet32(ds, edx + 0x410);
-    assert(eax);
     push32(0x00000014);
     push32(0x000000fa);
     edx = memoryAGet32(ds, eax + 0x1c);
@@ -5710,7 +5707,7 @@ loc_4049c5: // 0000:4049c5
     edx = memoryAGet32(ds, ecx + 0x1c);
     if (esi != 0x00000008)
         goto loc_404a22;
-    indirectCall(cs, memoryAGet32(ds, edx + 0x44)); // 0000:404a1d // draw_256_sprite
+    indirectCall(cs, memoryAGet32(ds, edx + 0x44)); // 0000:404a1d
     goto loc_404a25;
 loc_404a22: // 0000:404a22
     indirectCall(cs, memoryAGet32(ds, edx + 0x40)); // 0000:404a22
@@ -6047,7 +6044,7 @@ loc_404e75: // 0000:404e75
     edi = memoryAGet32(ds, 0x40d0b0);
     ebx = memoryAGet32(ds, 0x40d0c8);
 loc_404e87: // 0000:404e87
-    sub_404990();                           /// gabo1
+    sub_404990();
     edx = memoryAGet32(ds, 0x40fa34);
     push32(0x0000010e);
     push32(0x00000032);
@@ -6071,7 +6068,7 @@ loc_404e87: // 0000:404e87
     push32(0x0042bde0);
     push32(0x00423340);
     push32(0x0040e408);
-    sub_405680();                              /// gabo2
+    sub_405680();
     esp += 0x0000003c;
     if (eax != 0x00000065)
         goto loc_404f3a;
@@ -6234,7 +6231,7 @@ loc_40506e: // 0000:40506e
     ax = fnstsw();
     if (ah & 0x41)
         goto loc_4050db;
-    /*st(0) =*/ fstp80();
+    st(0) = fstp80();
     memoryASet32(ds, esp + 0xc, 0x00000000);
     memoryASet32(ds, esp + 0x10, 0x3ff00000);
     goto loc_4050df;
@@ -6810,7 +6807,6 @@ loc_405654: // 0000:405654
     ecx = pop32();
     esp += 4;
 }
-/*
 void sub_405680() // 0000:405680 +long
 {
     esp -= 4;
@@ -6831,12 +6827,12 @@ void sub_405680() // 0000:405680 +long
     ebp = memoryAGet32(ds, esp + 0xac);
     esp += 0x0000000c;
 loc_4056b3: // 0000:4056b3
-    memoryASet32(ds, 0x42bbc0, 0x00000000);
+//    memoryASet32(ds, 0x42bbc0, 0x00000000);
     eax = memoryAGet32(ds, esp + 0xa8);
-    printf("gabo - skip? broken stack?\n"); eax = 0;
     if (!eax)
         goto loc_4056cc;
-    indirectCall(cs, eax); // 0000:4056c8
+//    indirectCall(cs, eax); // 0000:4056c8
+    assert(eax == 0x404990); sub_404990(); 
     goto loc_4056dd;
 loc_4056cc: // 0000:4056cc
     edx = memoryAGet32(ds, esp + 0xa4);
@@ -6895,8 +6891,139 @@ loc_40575d: // 0000:40575d
         goto loc_40588a;
     edx = 0;
     dl = memoryAGet(ds, esi + 0x405960);
-    indirectJump(cs, memoryAGet32(ds, edx * 4 + 0x405928)); return; // 0000:40576e
-    // gap 277 bytes // gap 277 bytes
+    switch (edx)
+    {
+        case 0: goto loc_4058ac;
+        case 1: goto loc_4058d8;
+        case 2: goto loc_405775;
+        case 3: goto loc_4058e8;
+        case 4: goto loc_4058f8;
+        case 5: goto loc_405908;
+        case 6: goto loc_405918;
+        case 7: goto loc_4057b0;
+        case 8: goto loc_4057cb;
+        case 9: goto loc_4057fe;
+        case 10: goto loc_4057e6;
+        case 11: goto loc_405816;
+        case 12: goto loc_40582a;
+        case 13: goto loc_40588a;
+        default:
+            stop("ind 0000:40576e");
+    }
+loc_405775: // 0000:405775
+    eax = memoryAGet32(ds, esp + 0xb0);
+    ecx = memoryAGet32(ds, esp + 0xac);
+    edx = memoryAGet32(ds, esp + 0xa8);
+    push32(eax);
+    eax = memoryAGet32(ds, esp + 0xa8);
+    push32(ecx);
+    ecx = memoryAGet32(ds, esp + 0x18);
+    push32(edx);
+    push32(eax);
+    push32(ebp);
+    push32(ebx);
+    push32(ecx);
+    memoryASet32(ds, ebx + 0x2c, 0x00000000);
+    sub_405680();
+    esp += 0x0000001c;
+    goto loc_4058ac;
+loc_4057b0: // 0000:4057b0
+    eax = memoryAGet32(ds, esp + 0x10);
+    edx = memoryAGet32(ds, eax + 0xc);
+    ecx = memoryAGet32(ds, eax);
+    ecx += edx;
+    edx = memoryAGet32(ds, eax + 0x8);
+    if ((int32_t)ecx < (int32_t)edx)
+        goto loc_4057c4;
+    ecx = edx;
+loc_4057c4: // 0000:4057c4
+    memoryASet32(ds, eax, ecx);
+    goto loc_4058ac;
+loc_4057cb: // 0000:4057cb
+    ecx = memoryAGet32(ds, esp + 0x10);
+    eax = memoryAGet32(ds, ecx);
+    edx = memoryAGet32(ds, ecx + 0xc);
+    eax -= edx;
+    edx = memoryAGet32(ds, ecx + 0x4);
+    if ((int32_t)eax > (int32_t)edx)
+        goto loc_4057df;
+    eax = edx;
+loc_4057df: // 0000:4057df
+    memoryASet32(ds, ecx, eax);
+    goto loc_4058ac;
+loc_4057e6: // 0000:4057e6
+    edx = memoryAGet32(ds, esp + 0x10);
+    eax = memoryAGet32(ds, edx + 0x4);
+    ecx = memoryAGet32(ds, edx);
+    eax--;
+    ecx++;
+    if ((int32_t)ecx >= (int32_t)eax)
+        goto loc_4057f7;
+    eax = ecx;
+loc_4057f7: // 0000:4057f7
+    memoryASet32(ds, edx, eax);
+    goto loc_4058ac;
+loc_4057fe: // 0000:4057fe
+    ecx = memoryAGet32(ds, esp + 0x10);
+    edx = 0;
+    eax = memoryAGet32(ds, ecx);
+    eax--;
+    dl = (int32_t)eax <= 0;
+    edx--;
+    eax &= edx;
+    memoryASet32(ds, ecx, eax);
+    goto loc_4058ac;
+loc_405816: // 0000:405816
+    eax = memoryAGet32(ds, esp + 0x10);
+    ecx = memoryAGet32(ds, eax);
+    flags.carry = ecx != 0;
+    ecx = -ecx;
+    ecx = -flags.carry;
+    ecx = -ecx;
+    ecx--;
+    memoryASet32(ds, eax, ecx);
+    goto loc_4058ac;
+loc_40582a: // 0000:40582a
+    esi = 0;
+    eax = 0;
+loc_40582e: // 0000:40582e
+    edx = memoryAGet32(ds, 0x40d1a4);
+    memoryASet(ds, edx + eax, 0x00);
+    eax++;
+    if ((int32_t)eax < (int32_t)0x00000080)
+        goto loc_40582e;
+loc_405840: // 0000:405840
+    ecx = memoryAGet32(ds, 0x40d1a4);
+    eax = 0;
+loc_405848: // 0000:405848
+    if (!memoryAGet(ds, ecx + eax))
+        goto loc_405850;
+    esi = eax;
+loc_405850: // 0000:405850
+    eax++;
+    if ((int32_t)eax < (int32_t)0x00000080)
+        goto loc_405848;
+    push32(esi);
+    push32(ebp);
+    sub_401170();
+    esp += 0x00000008;
+    if (!eax)
+        goto loc_40586a;
+    esi = 0;
+    goto loc_405840;
+loc_40586a: // 0000:40586a
+    if (!esi)
+        goto loc_405840;
+    eax = 0;
+loc_405870: // 0000:405870
+    ecx = memoryAGet32(ds, 0x40d1a4);
+    memoryASet(ds, ecx + eax, 0x00);
+    eax++;
+    if ((int32_t)eax < (int32_t)0x00000080)
+        goto loc_405870;
+    edx = memoryAGet32(ds, esp + 0x10);
+    memoryASet32(ds, edx, esi);
+    goto loc_4058ac;
 loc_40588a: // 0000:40588a
     push32(esi);
     eax = esp + 24;
@@ -6908,6 +7035,7 @@ loc_40588a: // 0000:40588a
     push32(0x0040ebe0);
     sub_401510();
     esp += 0x00000014;
+loc_4058ac: // 0000:4058ac
     edx = memoryAGet32(ds, 0x40d1a4);
     al = memoryAGet(ds, edx + 0x40);
     if (al)
@@ -6920,8 +7048,47 @@ loc_4058ca: // 0000:4058ca
     if (!eax)
         goto loc_4058ca;
     goto loc_4056b3;
+loc_4058d8: // 0000:4058d8
+    edi = pop32();
+    esi = pop32();
+    ebp = pop32();
+    eax = 0x00000065;
+    ebx = pop32();
+    esp += 0x00000084;
+    esp += 4; return;
+loc_4058e8: // 0000:4058e8
+    edi = pop32();
+    esi = pop32();
+    ebp = pop32();
+    eax = 0x00000068;
+    ebx = pop32();
+    esp += 0x00000084;
+    esp += 4; return;
+loc_4058f8: // 0000:4058f8
+    edi = pop32();
+    esi = pop32();
+    ebp = pop32();
+    eax = 0x00000069;
+    ebx = pop32();
+    esp += 0x00000084;
+    esp += 4; return;
+loc_405908: // 0000:405908
+    edi = pop32();
+    esi = pop32();
+    ebp = pop32();
+    eax = 0x0000006b;
+    ebx = pop32();
+    esp += 0x00000084;
+    esp += 4; return;
+loc_405918: // 0000:405918
+    edi = pop32();
+    esi = pop32();
+    ebp = pop32();
+    eax = 0x0000006c;
+    ebx = pop32();
+    esp += 0x00000084;
+    esp += 4;
 }
- */
 void sub_4059e0() // 0000:4059e0 +long
 {
     esp -= 4;
@@ -7840,292 +8007,6 @@ loc_406489: // 0000:406489
     memoryASet16(ds, ecx + 0x8, dx);
     esp += 4;
 }
-void sub_405680() // 0000:405680 +long keyb2
-{
-    esp -= 4;
-    esp -= 0x00000084;
-    ecx = memoryAGet32(ds, esp + 0x88);
-    push32(ebx);
-    ebx = memoryAGet32(ds, esp + 0x90);
-    push32(ebp);
-    push32(esi);
-    push32(edi);
-    eax = memoryAGet32(ds, ebx + 0x2c);
-    edi = 0;
-    push32(eax);
-    push32(ebx);
-    push32(ecx);
-    memoryASet32(ds, esp + 0x1c, edi);
-    sub_405480();
-    ebp = memoryAGet32(ds, esp + 0xac);
-    esp += 0x0000000c;
-loc_4056b3: // 0000:4056b3
-//    sync();
-    memoryASet32(ds, 0x42bbc0, 0x00000000);
-    eax = memoryAGet32(ds, esp + 0xa8);
-//    printf("gabo - skip? broken stack?\n"); eax = 0;
-    if (!eax)
-        goto loc_4056cc;
-    assert(eax == 0x404990); sub_404990(); 
-    //indirectCall(cs, eax); // 0000:4056c8
-    goto loc_4056dd;
-loc_4056cc: // 0000:4056cc
-    edx = memoryAGet32(ds, esp + 0xa4);
-    push32(edx);
-    alleg40::clear_bitmap(stack32<BITMAP>(0));
-    esp += 0x00000004;
-loc_4056dd: // 0000:4056dd
-    ecx = memoryAGet32(ds, esp + 0xb0);
-    edx = memoryAGet32(ds, esp + 0xac);
-    flags.carry = edi != 0;
-    edi = -edi;
-    eax = esp + 16;
-    edi = -flags.carry;
-    push32(eax);
-    eax = memoryAGet32(ds, esp + 0x9c);
-    push32(ecx);
-    ecx = memoryAGet32(ds, esp + 0xac);
-    edi &= ebp;
-    push32(edx);
-    push32(edi);
-    push32(ebx);
-    push32(eax);
-    push32(ecx);
-    sub_4054e0();
-    edx = memoryAGet32(ds, esp + 0xc0);
-    esi = eax;
-    push32(edx);
-    sub_402250();
-    push32(ebp);
-    sub_401220();
-    esp += 0x00000024;
-    if (eax)
-        goto loc_405740;
-    eax = ebx + 8;
-    push32(eax);
-    sub_401220();
-    esp += 0x00000004;
-    if (eax)
-        goto loc_405740;
-    edi |= 0xffffffff;
-    goto loc_405742;
-loc_405740: // 0000:405740
-    edi = 0;
-loc_405742: // 0000:405742
-    push32(ebp);
-    sub_401060(); // keyb
-    ecx = ebx + 8;
-    push32(ecx);
-    sub_401060(); // keyb
-    esp += 0x00000008;
-    if (!esi)
-        goto loc_40575d;
-    sub_404970();
-loc_40575d: // 0000:40575d
-    if (esi > 0x00000072)
-        goto loc_40588a;
-    edx = 0;
-    dl = memoryAGet(ds, esi + 0x405960);
-    switch (edx)
-    {
-        case 0: goto loc_4058ac;
-        case 1: goto loc_4058d8;
-        case 2: goto loc_405775;
-        case 3: goto loc_4058e8;
-        case 4: goto loc_4058f8;
-        case 5: goto loc_405908;
-        case 6: goto loc_405918;
-        case 7: goto loc_4057b0;
-        case 8: goto loc_4057cb;
-        case 9: goto loc_4057fe;
-        case 10: goto loc_4057e6;
-        case 11: goto loc_405816;
-        case 12: goto loc_40582a;
-        case 13: goto loc_40588a;
-        default:
-            stop("ind 0000:40576e");
-    }
-loc_405775: // 0000:405775
-    eax = memoryAGet32(ds, esp + 0xb0);
-    ecx = memoryAGet32(ds, esp + 0xac);
-    edx = memoryAGet32(ds, esp + 0xa8);
-    push32(eax);
-    eax = memoryAGet32(ds, esp + 0xa8);
-    push32(ecx);
-    ecx = memoryAGet32(ds, esp + 0x18);
-    push32(edx);
-    push32(eax);
-    push32(ebp);
-    push32(ebx);
-    push32(ecx);
-    memoryASet32(ds, ebx + 0x2c, 0x00000000);
-    sub_405680();
-    esp += 0x0000001c;
-    goto loc_4058ac;
-loc_4057b0: // 0000:4057b0
-    eax = memoryAGet32(ds, esp + 0x10);
-    edx = memoryAGet32(ds, eax + 0xc);
-    ecx = memoryAGet32(ds, eax);
-    ecx += edx;
-    edx = memoryAGet32(ds, eax + 0x8);
-    if ((int32_t)ecx < (int32_t)edx)
-        goto loc_4057c4;
-    ecx = edx;
-loc_4057c4: // 0000:4057c4
-    memoryASet32(ds, eax, ecx);
-    goto loc_4058ac;
-loc_4057cb: // 0000:4057cb
-    ecx = memoryAGet32(ds, esp + 0x10);
-    eax = memoryAGet32(ds, ecx);
-    edx = memoryAGet32(ds, ecx + 0xc);
-    eax -= edx;
-    edx = memoryAGet32(ds, ecx + 0x4);
-    if ((int32_t)eax > (int32_t)edx)
-        goto loc_4057df;
-    eax = edx;
-loc_4057df: // 0000:4057df
-    memoryASet32(ds, ecx, eax);
-    goto loc_4058ac;
-loc_4057e6: // 0000:4057e6
-    edx = memoryAGet32(ds, esp + 0x10);
-    eax = memoryAGet32(ds, edx + 0x4);
-    ecx = memoryAGet32(ds, edx);
-    eax--;
-    ecx++;
-    if ((int32_t)ecx >= (int32_t)eax)
-        goto loc_4057f7;
-    eax = ecx;
-loc_4057f7: // 0000:4057f7
-    memoryASet32(ds, edx, eax);
-    goto loc_4058ac;
-loc_4057fe: // 0000:4057fe
-    ecx = memoryAGet32(ds, esp + 0x10);
-    edx = 0;
-    eax = memoryAGet32(ds, ecx);
-    eax--;
-    dl = (int32_t)eax <= 0;
-    edx--;
-    eax &= edx;
-    memoryASet32(ds, ecx, eax);
-    goto loc_4058ac;
-loc_405816: // 0000:405816
-    eax = memoryAGet32(ds, esp + 0x10);
-    ecx = memoryAGet32(ds, eax);
-    flags.carry = ecx != 0;
-    ecx = -ecx;
-    ecx = -flags.carry;
-    ecx = -ecx;
-    ecx--;
-    memoryASet32(ds, eax, ecx);
-    goto loc_4058ac;
-loc_40582a: // 0000:40582a
-    esi = 0;
-    eax = 0;
-loc_40582e: // 0000:40582e
-    edx = memoryAGet32(ds, 0x40d1a4);
-    memoryASet(ds, edx + eax, 0x00);
-    eax++;
-    if ((int32_t)eax < (int32_t)0x00000080)
-        goto loc_40582e;
-loc_405840: // 0000:405840
-    ecx = memoryAGet32(ds, 0x40d1a4);
-    eax = 0;
-loc_405848: // 0000:405848
-    if (!memoryAGet(ds, ecx + eax))
-        goto loc_405850;
-    esi = eax;
-loc_405850: // 0000:405850
-    eax++;
-    if ((int32_t)eax < (int32_t)0x00000080)
-        goto loc_405848;
-    push32(esi);
-    push32(ebp);
-    stop("sub_401170();");
-    esp += 0x00000008;
-    if (!eax)
-        goto loc_40586a;
-    esi = 0;
-    goto loc_405840;
-loc_40586a: // 0000:40586a
-    if (!esi)
-        goto loc_405840;
-    eax = 0;
-loc_405870: // 0000:405870
-    ecx = memoryAGet32(ds, 0x40d1a4);
-    memoryASet(ds, ecx + eax, 0x00);
-    eax++;
-    if ((int32_t)eax < (int32_t)0x00000080)
-        goto loc_405870;
-    edx = memoryAGet32(ds, esp + 0x10);
-    memoryASet32(ds, edx, esi);
-    goto loc_4058ac;
-loc_40588a: // 0000:40588a
-    push32(esi);
-    eax = esp + 24;
-    push32(0x0040ebec);
-    push32(eax);
-    sub_406e2b();
-    ecx = esp + 32;
-    push32(ecx);
-    push32(0x0040ebe0);
-    sub_401510();
-    esp += 0x00000014;
-loc_4058ac: // 0000:4058ac
-    edx = memoryAGet32(ds, 0x40d1a4);
-    al = memoryAGet(ds, edx + 0x40);
-    if (al)
-        goto loc_4056b3;
-    eax = memoryAGet32(ds, 0x42bbc0);
-    if (eax)
-        goto loc_4056b3;
-loc_4058ca: // 0000:4058ca
-//    sync(); // gabo.sync1
-    /*gabo*/ memoryASet32(ds, 0x42bbc0, 1);
-    eax = memoryAGet32(ds, 0x42bbc0);
-    if (!eax)
-        goto loc_4058ca;
-    goto loc_4056b3;
-loc_4058d8: // 0000:4058d8
-    edi = pop32();
-    esi = pop32();
-    ebp = pop32();
-    eax = 0x00000065;
-    ebx = pop32();
-    esp += 0x00000084;
-    esp += 4; return;
-loc_4058e8: // 0000:4058e8
-    edi = pop32();
-    esi = pop32();
-    ebp = pop32();
-    eax = 0x00000068;
-    ebx = pop32();
-    esp += 0x00000084;
-    esp += 4; return;
-loc_4058f8: // 0000:4058f8
-    edi = pop32();
-    esi = pop32();
-    ebp = pop32();
-    eax = 0x00000069;
-    ebx = pop32();
-    esp += 0x00000084;
-    esp += 4; return;
-loc_405908: // 0000:405908
-    edi = pop32();
-    esi = pop32();
-    ebp = pop32();
-    eax = 0x0000006b;
-    ebx = pop32();
-    esp += 0x00000084;
-    esp += 4; return;
-loc_405918: // 0000:405918
-    edi = pop32();
-    esi = pop32();
-    ebp = pop32();
-    eax = 0x0000006c;
-    ebx = pop32();
-    esp += 0x00000084;
-    esp += 4;
-}
 void sub_4064b0() // 0000:4064b0 +long
 {
     esp -= 4;
@@ -8312,18 +8193,14 @@ void sub_406670() // 0000:406670 +long
     fld64(memoryAGet64(ds, ecx + 0x18));
     fcomp64(memoryAGet64(ds, 0x40d320));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4066a0;
     fld64(memoryAGet64(ds, ecx + 0x18));
     fld64(memoryAGet64(ds, 0x40d318));
     fcomp80(st(1));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
     st(0) = fstp80();
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_4066a0;
     fld64(memoryAGet64(ds, 0x40d318));
     goto loc_4066bb;
@@ -8331,9 +8208,7 @@ loc_4066a0: // 0000:4066a0
     fld64(memoryAGet64(ds, ecx + 0x18));
     fcomp64(memoryAGet64(ds, 0x40d320));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4066b5;
     fld64(memoryAGet64(ds, ecx + 0x18));
     goto loc_4066bb;
@@ -8344,18 +8219,14 @@ loc_4066bb: // 0000:4066bb
     fld64(memoryAGet64(ds, ecx + 0x10));
     fcomp64(memoryAGet64(ds, 0x40d320));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4066ea;
     fld64(memoryAGet64(ds, ecx + 0x10));
     fld64(memoryAGet64(ds, 0x40d310));
     fcomp80(st(1));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
     st(0) = fstp80();
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_4066ea;
     fld64(memoryAGet64(ds, 0x40d310));
     goto loc_406705;
@@ -8363,9 +8234,7 @@ loc_4066ea: // 0000:4066ea
     fld64(memoryAGet64(ds, ecx + 0x10));
     fcomp64(memoryAGet64(ds, 0x40d320));
     ax = fnstsw();
-    flags.zero = !(ah & 0x01);
-    flags.sign = ah & 128;
-    if (flags.zero)
+    if (!(ah & 0x01))
         goto loc_4066ff;
     fld64(memoryAGet64(ds, ecx + 0x10));
     goto loc_406705;
@@ -8388,9 +8257,7 @@ loc_406705: // 0000:406705
 loc_406731: // 0000:406731
     fcomp64(memoryAGet64(ds, 0x40d300));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_406779;
     fmul64(memoryAGet64(ds, 0x40d2f8));
     memoryASet32(ds, ecx, 0x00000000);
@@ -8404,9 +8271,7 @@ loc_406731: // 0000:406731
 loc_406763: // 0000:406763
     fcomp64(memoryAGet64(ds, 0x40d2f0));
     ax = fnstsw();
-    flags.zero = !(ah & 0x41);
-    flags.sign = ah & 128;
-    if (!flags.zero)
+    if (ah & 0x41)
         goto loc_40677b;
     memoryASet32(ds, ecx + 0x5c, 0xffffffec);
     goto loc_40677b;
@@ -8457,7 +8322,6 @@ loc_4067f6: // 0000:4067f6
 }
 void sub_406800() // 0000:406800 +long
 {
-    bool temp_cond0;
     esp -= 4;
     ecx = memoryAGet32(ds, esp + 0x4);
     eax = memoryAGet32(ds, ecx + 0x30);
@@ -8480,12 +8344,10 @@ loc_40682b: // 0000:40682b
     fchs();
     fcomp64(memoryAGet64(ds, 0x40d310));
     ax = fnstsw();
-    temp_cond0 =     stop("FNSTSW reads flags");;
     if (!(ah & 0x01))
         goto loc_40684d;
     fcom64(memoryAGet64(ds, 0x40d1e0));
     ax = fnstsw();
-    temp_cond0 =     stop("FNSTSW reads flags");;
     if (!(ah & 0x01))
         goto loc_406849;
     fchs();
@@ -9058,7 +8920,7 @@ void sub_406e04() // 0000:406e04 +long
     eax = memoryAGet32(ss, ebp - 12);
     edx = memoryAGet32(ss, ebp - 8);
     esp = ebp; ebp = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_406e2b() // 0000:406e2b +long
@@ -9098,7 +8960,7 @@ loc_406e78: // 0000:406e78
     eax = esi;
     esi = pop32();
     esp = ebp; ebp = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_406e7d() // 0000:406e7d +entry
@@ -9142,11 +9004,11 @@ loc_406ee9: // 0000:406ee9
     sub_409082();
     eax = kernel32::GetCommandLineA();
     memoryASet32(ds, 0x42d180, eax);
-//    sub_408f50(); // gabo
+//    sub_408f50();
     memoryASet32(ds, 0x40fb0c, eax);
 //    sub_408d03();
 //    sub_408c4a();
-//    sub_406c01(); // gabo
+//    sub_406c01();
     memoryASet32(ss, ebp - 48, esi);
     eax = ebp - 92;
     push32(eax);
@@ -9919,7 +9781,7 @@ loc_4076ab: // 0000:4076ab
     esi = pop32();
     ebx = pop32();
     esp = ebp; ebp = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_4076b0() // 0000:4076b0 +long
@@ -10080,7 +9942,7 @@ loc_407857: // 0000:407857
     esi = pop32();
     ebx = pop32();
     esp = ebp; ebp = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_407c9b() // 0000:407c9b +long
@@ -10133,7 +9995,7 @@ loc_407ceb: // 0000:407ceb
         goto loc_407d0f;
     push32(0x0040d348);
     push32(eax);
-    assert(0); //eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8; // gbao
+    stop(); //eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
     if (!eax)
         goto loc_407d0f;
     push32(0x00000000);
@@ -10993,7 +10855,7 @@ loc_40897d: // 0000:40897d
     esi = pop32();
     ebx = pop32();
     esp = ebp; ebp = pop32();
-//    stop("stack_unbalanced");
+    stop("stack_unbalanced");
     esp += 4;
 }
 void sub_4089a5() // 0000:4089a5 +long
@@ -13457,12 +13319,12 @@ void sub_40acb0() // 0000:40acb0 +long
     if (eax != 0xfffffffe)
         goto loc_40acd0;
     memoryASet32(ds, 0x40fc74, 0x00000001);
-//    indirectJump(cs, memoryAGet32(ds, 0x40d024)); return; // 0000:40acca // gabo
+    indirectJump(cs, memoryAGet32(ds, 0x40d024)); return; // 0000:40acca
 loc_40acd0: // 0000:40acd0
     if (eax != 0xfffffffd)
         goto loc_40ace5;
     memoryASet32(ds, 0x40fc74, 0x00000001);
-//    indirectJump(cs, memoryAGet32(ds, 0x40d028)); return; // 0000:40acdf // gabo
+    indirectJump(cs, memoryAGet32(ds, 0x40d028)); return; // 0000:40acdf
 loc_40ace5: // 0000:40ace5
     if (eax != 0xfffffffc)
         goto loc_40acf9;

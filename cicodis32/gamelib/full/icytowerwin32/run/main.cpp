@@ -178,12 +178,13 @@ void onKey(int k, int p)
     switch (k)
     {
         case SDL_SCANCODE_ESCAPE:exit(0); break;
-    case SDL_SCANCODE_1: memoryASet(0, memoryAGet32(0, 0x40d1a4)+82, p); break;
-    case SDL_SCANCODE_2: memoryASet(0, memoryAGet32(0, 0x40d1a4)+84, p); break;
-    case SDL_SCANCODE_3: memoryASet(0, memoryAGet32(0, 0x40d1a4)+85, p); break;
+    case SDL_SCANCODE_LEFT: memoryASet(0, memoryAGet32(0, 0x40d1a4)+82, p); break;
+        case SDL_SCANCODE_RIGHT: memoryASet(0, memoryAGet32(0, 0x40d1a4)+83, p); break;
+    case SDL_SCANCODE_UP: memoryASet(0, memoryAGet32(0, 0x40d1a4)+84, p); break;
+    case SDL_SCANCODE_DOWN: memoryASet(0, memoryAGet32(0, 0x40d1a4)+85, p); break;
         case SDL_SCANCODE_4: memoryASet(0, memoryAGet32(0, 0x40d1a4)+0x28, p); break;
-        case SDL_SCANCODE_5: memoryASet(0, memoryAGet32(0, 0x40d1a4)+0x1c, p); break;
-        case SDL_SCANCODE_6: memoryASet(0, memoryAGet32(0, 0x40d1a4)+67, p); break;
+        case SDL_SCANCODE_1: memoryASet(0, memoryAGet32(0, 0x40d1a4)+0x1c, p); break;
+        case SDL_SCANCODE_SPACE: memoryASet(0, memoryAGet32(0, 0x40d1a4)+67, p); break;
     }
 }
 

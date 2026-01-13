@@ -103,7 +103,10 @@ CicoPtr<HANDLE> WINAPI GetStdHandle(DWORD nStdHandle) {
 //    return 0;
 }
 UINT WINAPI SetHandleCount(UINT uNumber) { return uNumber; }
-CicoPtr<LPWCH> WINAPI GetEnvironmentStringsW(void) {assert(0);}
+CicoPtr<LPWCH> WINAPI GetEnvironmentStringsW(void) {
+    uint32_t envString = _alloc(32);
+    return envString;
+}
 CicoPtr<LPCH> WINAPI GetEnvironmentStrings(void) {assert(0);}
 int WINAPI WideCharToMultiByte(UINT CodePage, DWORD dwFlags, CicoPtr<LPCWSTR> lpWideCharStr, int cchWideChar, CicoPtr<LPSTR> lpMultiByteStr, int cbMultiByte, CicoPtr<LPCSTR> lpDefaultChar, CicoPtr<LPBOOL> lpUsedDefaultChar) {assert(0);}
 BOOL WINAPI FreeEnvironmentStringsW(CicoPtr<LPWCH> penv) {assert(0);}

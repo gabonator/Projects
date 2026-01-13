@@ -1,0 +1,303 @@
+diff --git a/./icytower.clean3 b/./icytower.cpp
+index a082c8d..727a54e 100644
+--- a/./icytower.clean3
++++ b/./icytower.cpp
+@@ -3,7 +3,7 @@
+ //  - .rdata: 40d000 .. 40e000
+ //  - .data: 40e000 .. 42d194
+ //  - .rsrc: 42e000 .. 4333b6
+-
++#include "cico32.h"
+ #include "alleg40.h"
+ #include "kernel32.h"
+ 
+@@ -17,6 +17,10 @@ void init()
+     loadOverlay("icytower_rsrc.bin", 0x42e000);
+     esp = 0x434000;
+     ebp = 0x434000;
++    fs = 9999;
++    ds = cs = es = 0;
++    alleg40::initTables();
++    memoryASet32(0, 0x42bbc0, 1);
+ }
+ 
+ void start()
+@@ -133,6 +137,51 @@ enum class ptrImportTable {
+     ptr_alleg40_masked_blit,
+     ptr_alleg40_solid_mode,
+ };
++
++using namespace kernel32;
++
++void indirectCall(int s, int o)
++{
++    switch (o)
++    {
++        case 0x6ab10003:
++            alleg40::vtable_draw_256_sprite(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3));
++//            esp += 4*4;
++            return;
++        case 0x6ab10004:
++            alleg40::pivot_scaled_sprite_flip(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3),
++                stack32<int>(4), stack32<int>(5), stack32<int>(6), stack32<int>(7), stack32<int>(8));
++//            esp += 9*4;
++            return;
++        case 0x6ab10005:
++            alleg40::vtable_line(stack32<BITMAP>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
++//            esp += 6*4;
++            return;
++        case 0x6ab10006:
++            alleg40::vtable_rectfill(stack32<BITMAP>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
++//            esp += 6*4;
++            return;
++        case 0x6ab10007:
++            alleg40::vtable_acquire(stack32<BITMAP>(0));
++            return;
++        case 0x6ab10008:
++            alleg40::vtable_release(stack32<BITMAP>(0));
++            return;
++        case 0x6ab10009: // read bank
++            eax = alleg40::vtable_read_bank(edx, eax); //stack32<BITMAP>(0), stack32<int>(1));
++            return;
++        case 0x6ab1000a: // unwrite bank
++            return;
++        case 0x6ab1000b:
++            eax = alleg40::vtable_read_bank(edx, eax); //stack32<BITMAP>(0), stack32<int>(1));
++            return; // write _bank
++        case 0x6ab1000c:
++            alleg40::vtable_draw_256_sprite_hflip(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2),
++                                                  stack32<int>(3));
++            return;
++
++    }
++
+     switch ((ptrImportTable)o) {
+         case ptrImportTable::ptr_kernel32_CloseHandle:
+             eax = kernel32::CloseHandle(stack32<HANDLE>(0)); esp += 4;
+@@ -207,13 +256,15 @@ switch ((ptrImportTable)o) {
+             eax = kernel32::FreeEnvironmentStringsA(stack32<LPCH>(0)); esp += 4;
+             break; // 6ab00018
+         case ptrImportTable::ptr_kernel32_GetModuleFileNameA:
++//            stop();
+             eax = kernel32::GetModuleFileNameA(stack32<HMODULE>(0), stack32<LPSTR>(1), stack32<DWORD>(2)); esp += 12;
+             break; // 6ab00019
+         case ptrImportTable::ptr_kernel32_UnhandledExceptionFilter:
+             eax = kernel32::UnhandledExceptionFilter(stack32<struct _EXCEPTION_POINTERS>(0)); esp += 4;
+             break; // 6ab0001a
+         case ptrImportTable::ptr_kernel32_GetProcAddress:
+-        eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
++            stop();
++//            eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
+             break; // 6ab0001b
+         case ptrImportTable::ptr_kernel32_HeapSize:
+             eax = kernel32::HeapSize(stack32<HANDLE>(0), stack32<DWORD>(1), stack32<LPCVOID>(2)); esp += 12;
+@@ -318,13 +369,14 @@ switch ((ptrImportTable)o) {
+             alleg40::set_clip(stack32<BITMAP>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
+             break; // 6ab0003d
+         case ptrImportTable::ptr_alleg40_install_int:
+-        alleg40::install_int(stack32<void (*)(void)>(0), stack32<long>(1));
++            stop();
++//            alleg40::install_int(stack32<void (*)(void)>(0), stack32<long>(1));
+             break; // 6ab0003e
+         case ptrImportTable::ptr_alleg40_install_timer:
+             alleg40::install_timer();
+             break; // 6ab0003f
+         case ptrImportTable::ptr_alleg40_get_palette_range:
+-        alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<PALETTE>(3));
++            alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2));
+             break; // 6ab00040
+         case ptrImportTable::ptr_alleg40_set_palette_range:
+             alleg40::set_palette_range(stack32<const PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3));
+@@ -414,7 +466,8 @@ switch ((ptrImportTable)o) {
+             eax = alleg40::play_sample(stack32<const SAMPLE>(0), stack32<int>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4));
+             break; // 6ab0005d
+         case ptrImportTable::ptr_alleg40_get_palette:
+-        alleg40::get_palette(stack32<PALETTE>(0));
++            stop();
++            //alleg40::get_palette(stack32<PALETTE>(0));
+             break; // 6ab0005e
+         case ptrImportTable::ptr_alleg40_desktop_palette:
+             stop("invalid decl");
+@@ -455,7 +508,11 @@ switch ((ptrImportTable)o) {
+         case ptrImportTable::ptr_alleg40_solid_mode:
+             alleg40::solid_mode();
+             break; // 6ab0006b
++        default:
++            assert(0);
++    }
+ }
++
+ void sub_401000();
+ void sub_401030();
+ void sub_401060();
+@@ -1183,7 +1240,7 @@ void sub_401510() // 0000:401510 +long
+     eax = esp;
+     push32(esi);
+     push32(eax);
+-    alleg40::get_palette(stack32<PALETTE>(0));
++    stop(); //alleg40::get_palette(stack32<PALETTE>(0));
+     ecx = memoryAGet32(ds, 0x40d17c);
+     esi = memoryAGet32(ds, 0x40d180);
+     push32(ecx);
+@@ -1275,7 +1332,7 @@ void sub_401600() // 0000:401600 +long
+     push32(0x00000000);
+     eax = alleg40::install_allegro(stack32<int>(0), stack32<int>(1), stack32<int (*)(void (*func)(void))>(2));
+     alleg40::install_keyboard();
+-    sub_406b00();
++//    sub_406b00();
+     push32(0x00000000);
+     push32(0xffffffff);
+     push32(0x44584120);
+@@ -1448,7 +1505,7 @@ loc_40186c: // 0000:40186c
+     push32(0x00000000);
+     push32(0x00000000);
+     push32(0x00000000);
+-    memoryASet32(ds, ecx, 0x00423bc0);
++//    memoryASet32(ds, ecx, 0x00423bc0);
+     edx = memoryAGet32(ds, 0x40fa40);
+     push32(0x00000000);
+     eax = memoryAGet32(ds, edx);
+@@ -1802,6 +1859,8 @@ loc_401d92: // 0000:401d92
+     sub_401240();
+     esp += 0x00000004;
+ loc_401da4: // 0000:401da4
++    if (memoryAGet32(ds, 0x40d128) == (uint32_t)ptrImportTable::ptr_alleg40_allegro_exit)
++        exit(0);
+     indirectJump(cs, memoryAGet32(ds, 0x40d128)); return; // 0000:401da4
+ }
+ void sub_401db0() // 0000:401db0 +long
+@@ -2260,6 +2319,7 @@ loc_4022a3: // 0000:4022a3
+ }
+ void sub_4022b0() // 0000:4022b0 +long
+ {
++    return;
+     esp -= 4;
+     eax = memoryAGet32(ds, 0x40e054);
+     esp -= 0x00000400;
+@@ -2270,10 +2330,10 @@ void sub_4022b0() // 0000:4022b0 +long
+     push32(edi);
+     edi = memoryAGet32(ds, esp + 0x40c);
+     push32(esi);
+-    eax = esp + 12;
++    eax = esp + esi*4 + 12; // TODO: CICO!!!!!!!!
+     push32(edi);
+     push32(eax);
+-    alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2), stack32<PALETTE>(3));
++    alleg40::get_palette_range(stack32<PALETTE>(0), stack32<int>(1), stack32<int>(2));
+     edx = memoryAGet32(ds, esp + esi * 4 + 0x14);
+     eax = (esp + (esi * 4)) + 20;
+     esp += 0x0000000c;
+@@ -4714,8 +4774,8 @@ loc_403f09: // 0000:403f09
+         goto loc_403f24;
+ loc_403f1a: // 0000:403f1a
+     ecx = memoryAGet32(ds, 0x42bbc0);
+-    if (ecx == ebp)
+-        goto loc_403f1a;
++//    if (ecx == ebp)
++//        goto loc_403f1a;
+ loc_403f24: // 0000:403f24
+     if (memoryAGet32(ds, esp + 0x28) != ebp)
+         goto loc_40359b;
+@@ -4926,7 +4986,7 @@ loc_404198: // 0000:404198
+     alleg40::clear_keybuf();
+     edi = memoryAGet32(ds, esp + 0x38);
+ loc_4041b8: // 0000:4041b8
+-    memoryASet32(ds, 0x42bbc0, 0x00000000);
++//    memoryASet32(ds, 0x42bbc0, 0x00000000);
+     edx = memoryAGet32(ds, 0x40ffc4);
+     edx++;
+     memoryASet32(ds, 0x40ffc4, edx);
+@@ -5418,7 +5478,7 @@ loc_4046e0: // 0000:4046e0
+     push32(ecx);
+     alleg40::fade_in(stack32<const PALETTE>(0), stack32<int>(1));
+     esp += 0x00000008;
+-    memoryASet32(ds, 0x42bbc0, 0x00000000);
++//    memoryASet32(ds, 0x42bbc0, 0x00000000);
+     edx = memoryAGet32(ds, 0x40d1a4);
+     al = memoryAGet(ds, edx + 0x3b);
+     if (al)
+@@ -5450,14 +5510,15 @@ loc_4047d3: // 0000:4047d3
+     if (edi != eax)
+         goto loc_4047f1;
+ loc_4047e8: // 0000:4047e8
++    sync();
+     eax = memoryAGet32(ds, 0x42bbc0);
+-    if (edi == eax)
+-        goto loc_4047e8;
++//    if (edi == eax)
++//        goto loc_4047e8;
+ loc_4047f1: // 0000:4047f1
+     eax = memoryAGet32(ds, 0x40d1a4);
+     cl = memoryAGet(ds, eax + 0x3b);
+-    if (!cl)
+-        goto loc_40479b;
++//    if (!cl)
++//        goto loc_40479b;
+ loc_4047fd: // 0000:4047fd
+     push32(0x00000010);
+     alleg40::fade_out(stack32<int>(0));
+@@ -5508,6 +5569,8 @@ void sub_404810() // 0000:404810 +long
+     if (!eax)
+         goto loc_404895;
+ loc_40487a: // 0000:40487a
++    alleg40::renderScreen();
++    sync();
+     push32(0x0042bde0);
+     sub_401060();
+     push32(0x0042bde0);
+@@ -5524,7 +5587,8 @@ loc_404895: // 0000:404895
+     edi = memoryAGet32(ds, 0x40d0b8);
+     esp += 0x00000008;
+ loc_4048af: // 0000:4048af
+-    memoryASet32(ds, 0x42bbc0, 0x00000000);
++    sync();
++//    memoryASet32(ds, 0x42bbc0, 0x00000000);
+     push32(0x000000ef);
+     push32(0x000000e0);
+     sub_4022b0();
+@@ -6763,11 +6827,12 @@ void sub_405680() // 0000:405680 +long
+     ebp = memoryAGet32(ds, esp + 0xac);
+     esp += 0x0000000c;
+ loc_4056b3: // 0000:4056b3
+-    memoryASet32(ds, 0x42bbc0, 0x00000000);
++//    memoryASet32(ds, 0x42bbc0, 0x00000000);
+     eax = memoryAGet32(ds, esp + 0xa8);
+     if (!eax)
+         goto loc_4056cc;
+-    indirectCall(cs, eax); // 0000:4056c8
++//    indirectCall(cs, eax); // 0000:4056c8
++    assert(eax == 0x404990); sub_404990(); 
+     goto loc_4056dd;
+ loc_4056cc: // 0000:4056cc
+     edx = memoryAGet32(ds, esp + 0xa4);
+@@ -8939,16 +9004,16 @@ loc_406ee9: // 0000:406ee9
+     sub_409082();
+     eax = kernel32::GetCommandLineA();
+     memoryASet32(ds, 0x42d180, eax);
+-    sub_408f50();
++//    sub_408f50();
+     memoryASet32(ds, 0x40fb0c, eax);
+-    sub_408d03();
+-    sub_408c4a();
+-    sub_406c01();
++//    sub_408d03();
++//    sub_408c4a();
++//    sub_406c01();
+     memoryASet32(ss, ebp - 48, esi);
+     eax = ebp - 92;
+     push32(eax);
+     kernel32::GetStartupInfoA(stack32<LPSTARTUPINFOA>(0)); esp += 4;
+-    sub_408bf2();
++//    sub_408bf2();
+     memoryASet32(ss, ebp - 100, eax);
+     if (!(memoryAGet(ss, ebp - 48) & 0x01))
+         goto loc_406f36;
+@@ -9930,7 +9995,7 @@ loc_407ceb: // 0000:407ceb
+         goto loc_407d0f;
+     push32(0x0040d348);
+     push32(eax);
+-    eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
++    stop(); //eax = kernel32::GetProcAddress(stack32<HMODULE>(0), stack32<LPCSTR>(1)); esp += 8;
+     if (!eax)
+         goto loc_407d0f;
+     push32(0x00000000);

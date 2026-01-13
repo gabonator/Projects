@@ -194,8 +194,8 @@ uint32_t sar32(uint32_t a, uint32_t b)
 
 bool stop(const char* msg = nullptr, const char* info = nullptr)
 {
-//    if (msg && strstr(msg, "stack_unbalanced"))
-//        return false;
+    if (msg && strstr(msg, "stack_unbalanced"))
+        return false;
 //    if (msg && strstr(msg, "stack_below"))
 //        return false;
     assert(0);
@@ -1028,7 +1028,7 @@ void fcos() {stop();}
 void fabs() {stop();}
 void fyl2x() {stop();}
 void f2xm1() {stop();}
-void fchs() {stop();}
+void fchs() {fpstack[0] = -fpstack[0];}
 void fscale() {stop();}
 void fninit() {stop();}
 void fld64(uint64_t v) {
@@ -1052,7 +1052,7 @@ void fsub64(uint64_t v) {
 }
 uint64_t fstp64() {
     double d = fppop();
-    return toFp64(d); ////*((uint64_t*)&d);
+    return toFp64(d);
 }
 uint64_t fistp64() {
     double d = fppop();
@@ -1117,11 +1117,11 @@ uint16_t emulate_fnstsw_compare(double a, double b)
     return ax;
 }
 void fcom64(uint64_t v) {
-    double d = *((uint64_t*)&v);
+    double d = toFp64(v);
     compareResult = emulate_fnstsw_compare(fpstack[0], d);
 }
 void fcomp64(uint64_t v) {
-    double d = *((uint64_t*)&v);
+    double d = toFp64(v);
     compareResult = emulate_fnstsw_compare(fpstack[0], d);
     fppop();
 }
