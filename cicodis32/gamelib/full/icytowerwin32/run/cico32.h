@@ -232,7 +232,7 @@ void idiv32(int32_t r)
 void imul32(int32_t r)
 {
     // edx:eax / r
-    int64_t num = ((int32_t)eax)*r;
+    int64_t num = ((int64_t)eax)*r;
     eax = num;
     edx = num >> 32;
 }
@@ -312,7 +312,7 @@ uint16_t sar16(uint16_t r, int n)
 }
 
 
-void playSound(int seg, uint32_t ofs, int len, int samplerate, const char* fmt);
+void playSound(int seg, uint32_t ofs, int len, int samplerate, const char* fmt, bool loop);
 
 void sync();
 //{
@@ -1092,7 +1092,7 @@ double fstp80() {
     return fppop();
 }
 uint64_t fst64() { return toFp64(st(0));}
-void fmul80(uint64_t v) {stop();}
+void fmul80(double d) {st(0) *= d;}
 void fmulp80(uint64_t v) {stop();}
 void fdiv64(uint64_t v) {stop();}
 void fdiv80(uint64_t v) {stop();}

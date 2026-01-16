@@ -51,6 +51,8 @@ CicoAlloc_t _cicoalloc(int size)
 }
 */
 
+void playSound(uint8_t* ptr, int len, int samplerate, const char* fmt, bool loop);
+
 void sub_404d90();
 #ifdef __cplusplus
 // RGB structure - represents a single palette entry
@@ -526,10 +528,15 @@ void ALLEGRO_CC get_palette_range(CicoPtr<PALETTE> p, int from, int to) {
         memoryASet(0, p.ptr+i*4+2, currentPalette[i].b/4);
     }
 }
+
 int ALLEGRO_CC play_sample(CicoPtr<const SAMPLE*> spl, int vol, int pan, int freq, int loop) {
     SAMPLE* smp = _cicoptr<SAMPLE>(spl);
-    printf("SKIP ----- play_sample: %x\n", spl.ptr);
-    return 1;
+    uint8_t* data = _cicoptr<uint8_t>(smp->ptrdata);
+    assert(smp->bits == 16 && smp->freq == 11025);
+    playSound(data, smp->len, smp->freq, "u16", loop);
+    return 0;
+    //printf("SKIP ----- play_sample: %x\n", spl.ptr);
+    //return 1;
 }
 int ALLEGRO_CC poll_joystick(void) {assert(0);}
 int ALLEGRO_CC readkey(void) {assert(0);}
@@ -578,10 +585,14 @@ void ALLEGRO_CC stop_sample(CicoPtr<const SAMPLE*> spl) {
 void ALLEGRO_CC stretch_blit(CicoPtr<BITMAP*> s, CicoPtr<BITMAP*> d, int s_x, int s_y, int s_w, int s_h, int d_x, int d_y, int d_w, int d_h) {assert(0);}
 int ALLEGRO_CC text_height(CicoPtr<const FONT*> f) {
     FONT* font = _cicoptr<FONT>(f);
+    if (!font->ptrBitmaps[0])
+        font = _cicoptr<FONT>(ptrDefaultFont);
     return font->height;
 }
 int  text_length(CicoPtr<const FONT*> f, const char* _str) {
     FONT* font = _cicoptr<FONT>(f);
+    if (!font->ptrBitmaps[0])
+        font = _cicoptr<FONT>(ptrDefaultFont);
     int w = 0;
     while (*_str)
     {
@@ -603,19 +614,23 @@ void ALLEGRO_CC text_mode(int mode) {
 void vtable_draw_256_sprite(CicoPtr<BITMAP*> bmp, CicoPtr<BITMAP*> sprite, int x, int y);
 
 void textout(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, char* _str, int x, int y, int color, char align) {
+    if (strstr(_str, "%"))
+    {
+        int f = 9;
+    }
     if (align=='c')
         x -= text_length(f, _str)/2;
     else if (align=='r')
         x -= text_length(f, _str);
     
     FONT* font = _cicoptr<FONT>(f);
-    if (!font->ptrBitmaps)
+    if (!font->ptrBitmaps[0])
         font = _cicoptr<FONT>(ptrDefaultFont);
     while (*_str)
     {
         char c = *_str++;
         assert(c >= 0x20 && c <= 0x7f);
-        if (!font->ptrBitmaps || !font->ptrBitmaps[c-0x20])
+        if (!font->ptrBitmaps[c-0x20])
             continue;
         vtable_draw_256_sprite(bmp, font->ptrBitmaps[c-0x20], x, y);
         x += _cicoptr<BITMAP>(font->ptrBitmaps[c-0x20])->w;
@@ -649,7 +664,6 @@ void ALLEGRO_CC textprintf(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, 
     if (strcmp(strFmt, "score: %d") == 0)
     {
         char* temp = _cicoptr<char>(ptrShared);
-//        char temp[1024];
         sprintf(temp, "score: %d", stack32<const char *>(6));
         textout(bmp, f, ptrShared, x, y, color);
         return;
@@ -661,6 +675,13 @@ void ALLEGRO_CC textprintf(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, 
 }
 void ALLEGRO_CC textprintf_centre(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, int y, int color, CicoPtr<const char*> fmt, ...) {
     char* strFmt = (char*)MemoryGetPtr(0, fmt);
+    if (strcmp(strFmt, "%d") == 0 || strcmp(strFmt, "You reached Level %d.") == 0)
+    {
+        char temp[128];
+        sprintf(temp, strFmt, stack32<const char *>(6));
+        textout(bmp, f, temp, x, y, color, 'c');
+        return;
+    }
     textout(bmp, f, strFmt, x, y, color, 'c');
     //printf("SKIP ----- %s('%s' x=%d y=%d c=0x%x)\n", __FUNCTION__, strFmt, x, y, color);
 //    assert(0);
@@ -966,16 +987,10 @@ void vtable_release(CicoPtr<BITMAP*> bmp)
     renderPixels(pPixels, (uint32_t*)currentPalette);
 }
 
-void renderScreen()
-{
-    renderPixels(screenPixels, (uint32_t*)currentPalette);
-}
 uint32_t vtable_read_bank(CicoPtr<BITMAP*> bmp, int row)
 {
     BITMAP* bitmap = _cicoptr<BITMAP>(bmp);
     assert(row >= 0 && row < bitmap->h);
-    if (row&1)
-        return  bitmap->ptr_dat;
     return bitmap->ptr_dat + row * bitmap->w;
 }
 
@@ -983,5 +998,10 @@ uint32_t vtable_read_bank(CicoPtr<BITMAP*> bmp, int row)
 #ifdef __cplusplus
 }
 #endif
+
+void renderScreen()
+{
+    renderPixels(screenPixels, (uint32_t*)currentPalette);
+}
 
 #endif // ALLEG40_H

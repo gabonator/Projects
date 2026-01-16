@@ -181,6 +181,7 @@ void renderPixels(uint8_t*pixels, uint32_t*pal)
 }
 void sync()
 {
+    memoryASet32(0, 0x413028, memoryAGet32(0, 0x413028)+300); //0x413028
     memoryASet32(0, 0x42bbc0, 1);
     sdl.Loop();
 }
@@ -190,12 +191,17 @@ void onMouseMove(int x, int y)
 void onMouseButton(int b)
 {
 }
+int playSound(uint8_t* ptr, int len, int samplerate, const char* fmt, bool);
+
 void onKey(int k, int p)
 {
     // 85, 82, 84
     switch (k)
     {
-        case SDL_SCANCODE_ESCAPE:exit(0); break;
+        case SDL_SCANCODE_ESCAPE:
+            playSound(nullptr, 0, 0, "", false);
+            exit(0);
+            break;
     case SDL_SCANCODE_LEFT: memoryASet(0, memoryAGet32(0, 0x40d1a4)+82, p); break;
         case SDL_SCANCODE_RIGHT: memoryASet(0, memoryAGet32(0, 0x40d1a4)+83, p); break;
     case SDL_SCANCODE_UP: memoryASet(0, memoryAGet32(0, 0x40d1a4)+84, p); break;
@@ -205,6 +211,48 @@ void onKey(int k, int p)
         case SDL_SCANCODE_RETURN: memoryASet(0, memoryAGet32(0, 0x40d1a4)+67, p); break;
         case SDL_SCANCODE_SPACE: memoryASet(0, memoryAGet32(0, 0x40d1a4)+75, p); break;
     }
+}
+
+int playSound(uint8_t* ptr, int len, int samplerate, const char* fmt, bool loop)
+{
+    static bool init = false;
+    static SDL_AudioDeviceID devices[16];
+    if (!init)
+    {
+        SDL_AudioSpec want{};
+        want.freq = samplerate;
+        want.format = AUDIO_U16;  // signed 8-bit
+        want.channels = 1;       // mono
+        want.samples = 512;     // internal buffer size
+        want.callback = nullptr; // we’ll use SDL_QueueAudio()
+
+        for (int i=0; i<sizeof(devices)/sizeof(devices[0]); i++)
+            devices[i] = SDL_OpenAudioDevice(nullptr, 0, &want, nullptr, 0);
+//        assert(dev);
+        init = true;
+    }
+
+    if (ptr == nullptr)
+    {
+        for (int i=0; i<sizeof(devices)/sizeof(devices[0]); i++)
+        {
+            SDL_CloseAudioDevice(devices[i]);
+            devices[i] = 0;
+        }
+        SDL_CloseAudio();
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+        return 0;
+        // stop all
+    }
+//    static SDL_AudioDeviceID dev = 0;
+
+    static int counter = 0;
+//    printf("PLAY: %x\n", ofs);
+    int handle = counter;
+    SDL_QueueAudio(devices[counter], ptr, len);
+    SDL_PauseAudioDevice(devices[counter++], 0);
+    counter %= sizeof(devices)/sizeof(devices[0]);
+    return 0x6ab60000 + handle;
 }
 
 void init();

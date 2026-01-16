@@ -6,7 +6,6 @@
 #include "cico32.h"
 #include "alleg40.h"
 #include "kernel32.h"
-
 void sub_406e7d();
 
 void init()
@@ -1859,8 +1858,6 @@ loc_401d92: // 0000:401d92
     sub_401240();
     esp += 0x00000004;
 loc_401da4: // 0000:401da4
-    if (memoryAGet32(ds, 0x40d128) == (uint32_t)ptrImportTable::ptr_alleg40_allegro_exit)
-        exit(0);
     indirectJump(cs, memoryAGet32(ds, 0x40d128)); return; // 0000:401da4
 }
 void sub_401db0() // 0000:401db0 +long
@@ -1979,7 +1976,7 @@ loc_401eb3: // 0000:401eb3
         goto loc_401eeb;
     ecx = memoryAGet32(ds, 0x40d110);
     eax = 0x7fffffff;
-    st(0) = fstp80();
+    fstp80();
     edx = memoryAGet32(ds, ecx);
     memoryASet32(ds, edx, 0x00000022);
     goto loc_401f3a;
@@ -1989,7 +1986,7 @@ loc_401eeb: // 0000:401eeb
     if (!(ah & 0x01))
         goto loc_401f0e;
     eax = memoryAGet32(ds, 0x40d110);
-    st(0) = fstp80();
+    fstp80();
     ecx = memoryAGet32(ds, eax);
     eax = 0x80000001;
     memoryASet32(ds, ecx, 0x00000022);
@@ -2004,11 +2001,11 @@ loc_401f0e: // 0000:401f0e
 loc_401f23: // 0000:401f23
     fld64(memoryAGet64(ds, 0x40d1d0));
 loc_401f29: // 0000:401f29
-    stop("disassembly failed at 0000:401f29 (fxch st(1))");
+    fxch80(st(0));
     fmul64(memoryAGet64(ds, 0x40d1c8));
     fadd80(st(1));
     sub_406e04();
-    st(0) = fstp80();
+    fstp80();
 loc_401f3a: // 0000:401f3a
     edx = memoryAGet32(ds, 0x40d114);
     eax += 0x00004000;
@@ -2137,6 +2134,7 @@ loc_401fff: // 0000:401fff
     indirectCall(cs, ecx); // 0000:4020b8
     ebx = 0;
     bl = memoryAGet(ds, eax + esi);
+    //bl +=35; /*gabo */memoryASet(ds, eax + esi, bl);
     edx = memoryAGet32(ss, ebp - 12);
     ecx = memoryAGet32(ds, edx + 0x1c);
     ecx = memoryAGet32(ds, ecx + 0x8);
@@ -2319,7 +2317,6 @@ loc_4022a3: // 0000:4022a3
 }
 void sub_4022b0() // 0000:4022b0 +long
 {
-//    return;
     esp -= 4;
     eax = memoryAGet32(ds, 0x40e054);
     esp -= 0x00000400;
@@ -2424,7 +2421,7 @@ void sub_402320() // 0000:402320 +long
     ecx -= eax;
     eax = memoryAGet32(ds, edi);
     eax = (int32_t)eax * (int32_t)esi;
-    st(0) = fstp80();
+    fstp80();
     edx = (int32_t)eax < 0 ? -1 : 0;
     eax -= edx;
     edx = memoryAGet32(ss, ebp + 0x8);
@@ -2502,7 +2499,7 @@ loc_4023e2: // 0000:4023e2
     push32(edx);
     push32(esi);
     push32(eax);
-    st(0) = fstp80();
+    fstp80();
     alleg40::stretch_sprite(stack32<BITMAP>(0), stack32<BITMAP>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<int>(5));
     esp += 0x00000018;
 loc_4024b1: // 0000:4024b1
@@ -3648,7 +3645,7 @@ loc_403139: // 0000:403139
     edx--;
     memoryASet32(ss, ebp - 12, edx);
 loc_403171: // 0000:403171
-    eax = memoryAGet32(ds, 0x413328);
+    eax = memoryAGet32(ds, 0x413328); // check timer
     if (!eax)
         goto loc_40320d;
     eax = memoryAGet32(ds, 0x413328);
@@ -3663,7 +3660,7 @@ loc_403171: // 0000:403171
     if (ah & 0x41)
         goto loc_4031bb;
     edx = memoryAGet32(ds, 0x40d110);
-    st(0) = fstp80();
+    fstp80();
     eax = memoryAGet32(ds, edx);
     memoryASet32(ds, eax, 0x00000022);
     eax = 0x7fffffff;
@@ -3675,7 +3672,7 @@ loc_4031bb: // 0000:4031bb
         goto loc_4031df;
     ecx = memoryAGet32(ds, 0x40d110);
     eax = 0x80000001;
-    st(0) = fstp80();
+    fstp80();
     edx = memoryAGet32(ds, ecx);
     memoryASet32(ds, edx, 0x00000022);
     goto loc_40320f;
@@ -3689,11 +3686,11 @@ loc_4031df: // 0000:4031df
 loc_4031f4: // 0000:4031f4
     fld64(memoryAGet64(ds, 0x40d1d0));
 loc_4031fa: // 0000:4031fa
-    stop("disassembly failed at 0000:4031fa (fxch st(1))");
+    fxch80(st(0));
     fmul64(memoryAGet64(ds, 0x40d1c8));
     fadd80(st(1));
     sub_406e04();
-    st(0) = fstp80();
+    fstp80();
     goto loc_40320f;
 loc_40320d: // 0000:40320d
     eax = 0;
@@ -3701,7 +3698,7 @@ loc_40320f: // 0000:40320f
     ecx = memoryAGet32(ds, 0x40fa40);
     push32(0x00000000);
     push32(0x00010000);
-    push32(eax);
+    push32(eax); // angle
     ecx = memoryAGet32(ds, ecx + 0x30);
     ebx = memoryAGet32(ds, esi + 0x1c);
     edx = memoryAGet32(ds, ecx + 0x4);
@@ -3731,7 +3728,7 @@ loc_40320f: // 0000:40320f
     eax = sar32(eax, 0x00000001);
     edx <<= 16;
     eax += edx;
-    push32(eax);
+    push32(eax); // xpos
     push32(ecx);
     push32(esi);
     indirectCall(cs, memoryAGet32(ds, ebx + 0xa0)); // 0000:403262
@@ -3797,7 +3794,7 @@ loc_4032e6: // 0000:4032e6
     push32(0x00000140);
     push32(eax);
     push32(esi);
-    alleg40::textprintf_centre(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<const char>(5));
+    alleg40::textprintf_centre(stack32<BITMAP>(0), stack32<const FONT>(1), stack32<int>(2), stack32<int>(3), stack32<int>(4), stack32<const char>(5)); // death
     eax = memoryAGet32(ds, 0x413028);
     esp += 0x0000001c;
     if ((int32_t)eax >= (int32_t)0x0000012c)
@@ -4976,8 +4973,8 @@ loc_404179: // 0000:404179
         goto loc_404198;
 loc_40418f: // 0000:40418f
     eax = memoryAGet32(ds, 0x42bbc0);
-    if (eax == ebx)
-        goto loc_40418f;
+//    if (eax == ebx)
+//        goto loc_40418f;
 loc_404198: // 0000:404198
     if ((int32_t)esi > (int32_t)0x00000104)
         goto loc_404014;
@@ -5510,15 +5507,14 @@ loc_4047d3: // 0000:4047d3
     if (edi != eax)
         goto loc_4047f1;
 loc_4047e8: // 0000:4047e8
-    sync();
     eax = memoryAGet32(ds, 0x42bbc0);
-//    if (edi == eax)
-//        goto loc_4047e8;
+    if (edi == eax)
+        goto loc_4047e8;
 loc_4047f1: // 0000:4047f1
     eax = memoryAGet32(ds, 0x40d1a4);
     cl = memoryAGet(ds, eax + 0x3b);
-//    if (!cl)
-//        goto loc_40479b;
+    if (!cl)
+        goto loc_40479b;
 loc_4047fd: // 0000:4047fd
     push32(0x00000010);
     alleg40::fade_out(stack32<int>(0));
@@ -5569,8 +5565,7 @@ void sub_404810() // 0000:404810 +long
     if (!eax)
         goto loc_404895;
 loc_40487a: // 0000:40487a
-    alleg40::renderScreen();
-    sync();
+    renderScreen();
     push32(0x0042bde0);
     sub_401060();
     push32(0x0042bde0);
@@ -5587,8 +5582,7 @@ loc_404895: // 0000:404895
     edi = memoryAGet32(ds, 0x40d0b8);
     esp += 0x00000008;
 loc_4048af: // 0000:4048af
-    alleg40::renderScreen();
-    sync();
+    renderScreen();
 //    memoryASet32(ds, 0x42bbc0, 0x00000000);
     push32(0x000000ef);
     push32(0x000000e0);
@@ -6232,7 +6226,7 @@ loc_40506e: // 0000:40506e
     ax = fnstsw();
     if (ah & 0x41)
         goto loc_4050db;
-    st(0) = fstp80();
+    fstp80();
     memoryASet32(ds, esp + 0xc, 0x00000000);
     memoryASet32(ds, esp + 0x10, 0x3ff00000);
     goto loc_4050df;
@@ -7046,8 +7040,8 @@ loc_4058ac: // 0000:4058ac
         goto loc_4056b3;
 loc_4058ca: // 0000:4058ca
     eax = memoryAGet32(ds, 0x42bbc0);
-    if (!eax)
-        goto loc_4058ca;
+//    if (!eax)
+//        goto loc_4058ca;
     goto loc_4056b3;
 loc_4058d8: // 0000:4058d8
     edi = pop32();
@@ -8200,7 +8194,7 @@ void sub_406670() // 0000:406670 +long
     fld64(memoryAGet64(ds, 0x40d318));
     fcomp80(st(1));
     ax = fnstsw();
-    st(0) = fstp80();
+    fstp80();
     if (ah & 0x41)
         goto loc_4066a0;
     fld64(memoryAGet64(ds, 0x40d318));
@@ -8226,7 +8220,7 @@ loc_4066bb: // 0000:4066bb
     fld64(memoryAGet64(ds, 0x40d310));
     fcomp80(st(1));
     ax = fnstsw();
-    st(0) = fstp80();
+    fstp80();
     if (ah & 0x41)
         goto loc_4066ea;
     fld64(memoryAGet64(ds, 0x40d310));
@@ -8277,7 +8271,7 @@ loc_406763: // 0000:406763
     memoryASet32(ds, ecx + 0x5c, 0xffffffec);
     goto loc_40677b;
 loc_406779: // 0000:406779
-    st(0) = fstp80();
+    fstp80();
 loc_40677b: // 0000:40677b
     fld64(memoryAGet64(ds, ecx));
     fcomp64(memoryAGet64(ds, 0x40d2e8));
@@ -8308,7 +8302,7 @@ loc_4067c6: // 0000:4067c6
     memoryASet64(ds, ecx + 0x18, fstp64());
     goto loc_4067da;
 loc_4067d8: // 0000:4067d8
-    st(0) = fstp80();
+    fstp80();
 loc_4067da: // 0000:4067da
     if (eax != 0x00000001)
         goto loc_4067f6;
@@ -8356,7 +8350,7 @@ loc_406849: // 0000:406849
     fchs();
     goto loc_406855;
 loc_40684d: // 0000:40684d
-    st(0) = fstp80();
+    fstp80();
     fld64(memoryAGet64(ds, 0x40d310));
 loc_406855: // 0000:406855
     memoryASet64(ds, ecx + 0x18, fst64());
