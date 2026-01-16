@@ -44,7 +44,7 @@ public:
         
         window = SDL_CreateWindow
         (
-         "Cicoparser32 simulator",
+         "Cicoparser win32 host",
          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
          Width*pixelSize, Height*pixelSize,
          SDL_WINDOW_SHOWN

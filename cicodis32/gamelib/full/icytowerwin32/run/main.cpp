@@ -41,10 +41,11 @@ void memoryASet(int s, int o, int v)
 {
 //    int check = allocator[0x75a8e8+0x44+1-allocatorBase];
 //    assert(check == 0xb0 || check == 0);
-//    if (o== 0x75a8e8+0x44+2)
-//    {
-//        int f = 9;
-//    }
+//    if (o== 0x412ff8 && v != 0) // yvect
+//    if (o==0x412fe8) // ypos
+    {
+        int f = 9;
+    }
     assert(o != 0x40d04c);
     if (s == 9999)
         return;
@@ -55,9 +56,13 @@ void memoryASet(int s, int o, int v)
     else
         assert(0);
 }
-
+extern uint32_t ptrAllegKeys;
 uint8_t memoryAGet(int s, int o)
 {
+    if (o == 0x42bde0+0x1c)
+    {
+        int f = 9;
+    }
 //    assert(o != 0x40d04c);
     if (s == 9999)
         return 0;
@@ -140,6 +145,19 @@ uint32_t memoryAGet32(int s, int o)
 }
 uint64_t memoryAGet64(int s, int o)
 {
+//    if (o==0x412ff8)
+//        return 0;
+//fpuinsns::FromFp64(memoryAGet64(ds, 0x412fe8))
+//    if (o==0x412fe8) // ypos
+//    {
+//        if (random()% 100 == 0)
+//        {
+//            double d = 400;
+//            int64_t t;
+//            memcpy(&t, &d, 8);
+//            return t; //fpuinsns::toFp64(400);
+//        }
+//    }
     return
     ((uint64_t)memoryAGet(s, o+0) << 0)+
     ((uint64_t)memoryAGet(s, o+1) << 8)+
@@ -184,7 +202,8 @@ void onKey(int k, int p)
     case SDL_SCANCODE_DOWN: memoryASet(0, memoryAGet32(0, 0x40d1a4)+85, p); break;
         case SDL_SCANCODE_4: memoryASet(0, memoryAGet32(0, 0x40d1a4)+0x28, p); break;
         case SDL_SCANCODE_1: memoryASet(0, memoryAGet32(0, 0x40d1a4)+0x1c, p); break;
-        case SDL_SCANCODE_SPACE: memoryASet(0, memoryAGet32(0, 0x40d1a4)+67, p); break;
+        case SDL_SCANCODE_RETURN: memoryASet(0, memoryAGet32(0, 0x40d1a4)+67, p); break;
+        case SDL_SCANCODE_SPACE: memoryASet(0, memoryAGet32(0, 0x40d1a4)+75, p); break;
     }
 }
 

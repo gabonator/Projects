@@ -6,7 +6,8 @@
 #define ALLEG40_H
 
 #include "alleg40tools.h"
-
+uint32_t ptrDefaultFont = 0;
+uint32_t ptrAllegKeys = 0;
 uint8_t* screenPixels = nullptr;
 void renderPixels(uint8_t*, uint32_t*);
 void renderScreen();
@@ -213,7 +214,7 @@ extern volatile char *key;
 
 // Function declarations (ordinal_7) _cos_tbl
 void ALLEGRO_CC adjust_sample(CicoPtr<SAMPLE*> spl, int vol, int pan, int freq, int loop) {
-    printf("SKIP ----- %s\n", __FUNCTION__);
+//    printf("SKIP ----- %s\n", __FUNCTION__);
 }
 void ALLEGRO_CC alert(CicoPtr<const char*> s1, CicoPtr<const char*> s2, CicoPtr<const char*> s3, CicoPtr<const char*> b1, CicoPtr<const char*> b2, int c1, int c2) {assert(0);}
 void ALLEGRO_CC allegro_exit(void) { exit(1); }
@@ -394,6 +395,9 @@ CicoPtr<DATAFILE*> ALLEGRO_CC load_datafile(CicoPtr<const char*> filename) {
             {
                 ptrPayload = _alloc(sizeof(FONT));
                 FONT* font = _cicoptr<FONT>(ptrPayload);
+                
+                if (ptrDefaultFont == 0)
+                    ptrDefaultFont = ptrPayload;
 
                 font->height = 0;
                 int type = res.payload[0]*256 + res.payload[1];
@@ -605,6 +609,8 @@ void textout(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, char* _str, int x, in
         x -= text_length(f, _str);
     
     FONT* font = _cicoptr<FONT>(f);
+    if (!font->ptrBitmaps)
+        font = _cicoptr<FONT>(ptrDefaultFont);
     while (*_str)
     {
         char c = *_str++;
@@ -653,7 +659,12 @@ void ALLEGRO_CC textprintf(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, 
     //char* arg0 = (char*)MemoryGetPtr(0, stack32<const char *>(6));
     printf("SKIP ----- %s('%s' x=%d y=%d c=0x%x)\n", __FUNCTION__, _str, x, y, color);
 }
-void ALLEGRO_CC textprintf_centre(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, int y, int color, CicoPtr<const char*> fmt, ...) {assert(0);}
+void ALLEGRO_CC textprintf_centre(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, int y, int color, CicoPtr<const char*> fmt, ...) {
+    char* strFmt = (char*)MemoryGetPtr(0, fmt);
+    textout(bmp, f, strFmt, x, y, color, 'c');
+    //printf("SKIP ----- %s('%s' x=%d y=%d c=0x%x)\n", __FUNCTION__, strFmt, x, y, color);
+//    assert(0);
+}
 void ALLEGRO_CC textprintf_right(CicoPtr<BITMAP*> bmp, CicoPtr<const FONT*> f, int x, int y, int color, CicoPtr<const char*> fmt, ...) {
     char* strFmt = (char*)MemoryGetPtr(0, fmt);
     //char* arg0 = (char*)MemoryGetPtr(0, stack32<const char *>(6));
@@ -787,7 +798,7 @@ void vtable_draw_256_sprite_vflip(CicoPtr<BITMAP*> bmp, CicoPtr<BITMAP*> sprite,
 {
     vtable_draw_256_sprite_all(bmp, sprite, x, y, false, true);
 }
-
+/*
 void pivot_scaled_sprite_flip(CicoPtr<BITMAP*> bmp, CicoPtr<BITMAP*> sprite, uint32_t fixedX, uint32_t fixedY,
                               uint32_t fixedCX, uint32_t fixedCY, uint32_t fixedAngle, uint32_t fixedScale, int v_flip)
 {
@@ -801,6 +812,64 @@ void pivot_scaled_sprite_flip(CicoPtr<BITMAP*> bmp, CicoPtr<BITMAP*> sprite, uin
     uint8_t* pPixelsBitmap = _cicoptr<uint8_t>(pBitmap->ptr_dat);
 
 //    renderPixels(pPixelsBitmap, (uint8_t*)currentPalette);
+}
+*/
+void pivot_scaled_sprite_flip(CicoPtr<BITMAP*> bmp, CicoPtr<BITMAP*> sprite,
+                              int32_t fixedX, int32_t fixedY,
+                              int32_t fixedCX, int32_t fixedCY,
+                              int32_t fixedAngle, int32_t fixedScale,
+                              int v_flip)
+{
+    BITMAP* pBitmap = _cicoptr<BITMAP>(bmp);
+    BITMAP* pSprite = _cicoptr<BITMAP>(sprite);
+
+    uint8_t* dst = _cicoptr<uint8_t>(pBitmap->ptr_dat);
+    uint8_t* src = _cicoptr<uint8_t>(pSprite->ptr_dat);
+
+    // Convert from 16.16 fixed
+    int dstX = fixedX >> 16;
+    int dstY = fixedY >> 16;
+    int cx   = fixedCX >> 16;
+    int cy   = fixedCY >> 16;
+
+    float scale = fixedScale / 65536.0f;
+    float angle = (fixedAngle / 65536.0f) * (M_PI / 180.0f); //(fixedAngle / 65536.0f) * 2.0f * 3.14159265358979323846f;
+
+    float cos_a = cosf(angle) * scale;
+    float sin_a = sinf(angle) * scale;
+
+    // Compute bounding box (conservative)
+    int maxDim = int((pSprite->w + pSprite->h) * scale) + 2;
+
+    for (int y = -maxDim; y <= maxDim; y++)
+    {
+        for (int x = -maxDim; x <= maxDim; x++)
+        {
+            int dx = dstX + x;
+            int dy = dstY + y;
+
+            if (dx < 0 || dx >= pBitmap->w || dy < 0 || dy >= pBitmap->h)
+                continue;
+
+            // Inverse transform (screen → sprite space)
+            float sx =  ( x * cos_a + y * sin_a );
+            float sy =  (-x * sin_a + y * cos_a );
+
+            int srcX = int(sx + cx);
+            int srcY = int(sy + cy);
+
+            if (v_flip)
+                srcY = pSprite->h - 1 - srcY;
+
+            if (srcX < 0 || srcX >= pSprite->w ||
+                srcY < 0 || srcY >= pSprite->h)
+                continue;
+
+            uint8_t p = src[srcY * pSprite->w + srcX];
+            if (p)
+                dst[dy * pBitmap->w + dx] = p;
+        }
+    }
 }
 
 void initTables()
@@ -827,7 +896,7 @@ void initTables()
     memoryASet32(ds, ptrptrScreen, ptrScreen.ptr);
     memoryASet32(ds, 0x40d108, ptrptrScreen);
     
-    uint32_t ptrAllegKeys = _alloc(256);
+    ptrAllegKeys = _alloc(256);
     int t = memoryAGet32(ds, 0x40d1a4);
     memoryASet32(ds, 0x40d1a4, ptrAllegKeys);
     

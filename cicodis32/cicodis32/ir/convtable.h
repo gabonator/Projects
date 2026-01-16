@@ -552,7 +552,14 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_FDIVR] = [](convert_args){ return OP_FUNCTION("fdivr#", OP_X86(instr, 0)); },
     [X86_INS_FDIVP] = [](convert_args){ return OP_FUNCTION("fdivp#", OP_X86(instr, 0)); },
     [X86_INS_FST] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fst#")); },
-    [X86_INS_FSTP] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#")); },
+    [X86_INS_FSTP] = [](convert_args){
+        if(instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg == X86_REG_ST0);
+            return OP_FUNCTION("fstp80");
+        }
+        return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#"));
+    },
     [X86_INS_FISTP] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fistp#")); },
     [X86_INS_FADD] = [](convert_args){
         if (strcmp(instr->mMnemonic, "fadd") == 0)
@@ -564,7 +571,13 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     },
     [X86_INS_FSUB] = [](convert_args){ return OP_FUNCTION("fsub#", OP_X86(instr, 0)); },
     [X86_INS_FSUBP] = [](convert_args){ return OP_FUNCTION("fsubp#", OP_X86(instr, 0)); },
-    [X86_INS_FSUBR] = [](convert_args){ return OP_FUNCTION("fsubr#", OP_X86(instr, 0)); },
+    [X86_INS_FSUBR] = [](convert_args){
+        assert(instr->mDetail.op_count == 1);
+        StatementIr st = OP_FUNCTION("fsubr#", OP_X86(instr, 0));
+        st.comment = instr->GetBytes() + " : " + instr->mMnemonic + " " + instr->mOperands;
+        return st;
+        //return OP_FUNCTION("fsubr#", OP_X86(instr, 0));
+    },
     [X86_INS_FCOM] = [](convert_args){ return OP_FUNCTION("fcom#", OP_X86(instr, 0)); },
     [X86_INS_FCOMP] = [](convert_args){ return OP_FUNCTION("fcomp#", OP_X86(instr, 0)); },
     [X86_INS_FCOMPP] = [](convert_args){ return OP_FUNCTION("fcompp"); },
@@ -575,5 +588,6 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_FSQRT] = [](convert_args){ return OP_FUNCTION("fsqrt"); },
     [X86_INS_FRNDINT] = [](convert_args){ return OP_FUNCTION("frndint"); },
     [X86_INS_FCHS] = [](convert_args){ return OP_FUNCTION("fchs"); },
+    [X86_INS_FXCH] = [](convert_args){ return OP_FUNCTION("fxch#", OP_X86(instr, 0)); },
 
 };

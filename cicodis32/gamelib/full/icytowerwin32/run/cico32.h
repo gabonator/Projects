@@ -977,29 +977,66 @@ uint16_t rcr16(uint8_t r, int i)
 
 
 namespace fpuinsns {
-double fpstack[4];
+double fpstack[8];
+int top{0};
 int fppos{0};
+/*
 void fppush(double d)
 {
+    fpstack[5] = fpstack[4];
+    fpstack[4] = fpstack[3];
     fpstack[3] = fpstack[2];
     fpstack[2] = fpstack[1];
     fpstack[1] = fpstack[0];
     fpstack[0] = d;
     fppos++;
+    assert(fppos < 5);
 }
 double fppop()
 {
     assert(fppos > 0);
     fppos--;
-    float aux = fpstack[0];
+    double aux = fpstack[0];
     fpstack[0] = fpstack[1];
     fpstack[1] = fpstack[2];
     fpstack[2] = fpstack[3];
+    fpstack[3] = fpstack[4];
+    fpstack[4] = fpstack[5];
     return aux;
 }
+ double& st(int n) {
+     return fpstack[n];
+ }
+ */
+
+void fppush(double value)
+{
+    assert(fppos < 8);           // stack overflow check
+
+    top = (top - 1) & 7;         // rotate TOP downward
+    assert(top != 0);
+    fpstack[top] = value;        // write new ST(0)
+
+    fppos++;
+}
+double fppop()
+{
+    assert(fppos > 0);           // stack underflow check
+
+    double value = fpstack[top]; // read ST(0)
+    fpstack[top] = 0;
+    top = (top + 1) & 7;         // rotate TOP upward
+    fppos--;
+
+    return value;
+}
+double& st(int i) {
+    assert(((top+i)&7) != 0);
+    return fpstack[(top+i)&7];
+}
+
 void fild32(uint32_t v) {
-    fppush(v);
-    //assert(fppos < 4); fpstack[fppos++] = v;
+    fppush((int32_t)v);
 }
 double FromFp64(uint64_t v)
 {
@@ -1017,8 +1054,8 @@ uint64_t toFp64(double d)
 void fadd32(uint32_t v) {stop();}
 void fdiv32(uint32_t v) {stop();}
 void fmul64(uint64_t v) {
-    float d = FromFp64(v);
-    fpstack[0] *= d;
+    double d = FromFp64(v);
+    st(0) *= d;
 }
 void fld1() {stop();}
 void fldz() {stop();}
@@ -1028,27 +1065,18 @@ void fcos() {stop();}
 void fabs() {stop();}
 void fyl2x() {stop();}
 void f2xm1() {stop();}
-void fchs() {fpstack[0] = -fpstack[0];}
+void fchs() {st(0) = -st(0);}
 void fscale() {stop();}
 void fninit() {stop();}
 void fld64(uint64_t v) {
     fppush(FromFp64(v));
-    //assert(fppos < 4); fpstack[fppos++] = *(double*)&v;
-}
-double& st(int n) {
-//    assert(n < fppos);
-    return fpstack[n];
-    //return fpstack[n];
-//    printf("fp:st(%d) - not implemented\n", n);
-//    static uint64_t x; stop(); return x;
 }
 
 void fsubr64(uint64_t v) {
     st(0) = FromFp64(v) - st(0);
 }
 void fsub64(uint64_t v) {
-    assert(fppos > 0);
-    fpstack[0] -= FromFp64(v);
+    st(0) -= FromFp64(v);
 }
 uint64_t fstp64() {
     double d = fppop();
@@ -1056,11 +1084,11 @@ uint64_t fstp64() {
 }
 uint64_t fistp64() {
     double d = fppop();
-    return (int)d;
+    return (int64_t)d;
     
 }
 uint32_t fistp32() {stop(); return 0;}
-uint64_t fstp80() {
+double fstp80() {
     return fppop();
 }
 uint64_t fst64() { return toFp64(st(0));}
@@ -1074,16 +1102,17 @@ void fsub80() {stop();}
 void fsub80(uint64_t v) {stop();}
 void fsub32(uint64_t v) {stop();}
 void fadd64(uint64_t v) {
-    fpstack[0] += FromFp64(v);    
+    double d = FromFp64(v);
+    st(0) += d;
 }
-void fadd80(uint64_t v) {stop();}
+void fadd80(double d) {st(0) += d;}
 void faddp64(uint64_t v) {stop();}
 void faddp80(double& v) {
-    v += fpstack[0];
+    v += st(0);
     fppop();
 }
 void fsubp80(double& v) {
-    v -= fpstack[0];
+    v -= st(0);
     fppop();
 }
 //void fdiv64(uint64_t v) {stop();}
@@ -1117,18 +1146,18 @@ uint16_t emulate_fnstsw_compare(double a, double b)
     return ax;
 }
 void fcom64(uint64_t v) {
-    double d = toFp64(v);
-    compareResult = emulate_fnstsw_compare(fpstack[0], d);
+    double d = FromFp64(v);
+    compareResult = emulate_fnstsw_compare(st(0), d);
 }
 void fcomp64(uint64_t v) {
-    double d = toFp64(v);
-    compareResult = emulate_fnstsw_compare(fpstack[0], d);
+    double d = FromFp64(v);
+    compareResult = emulate_fnstsw_compare(st(0), d);
     fppop();
 }
 void fcomp32(uint32_t v) {stop();}
 void fcomp80(double v) {
     assert(fppos >= 2);
-    compareResult = emulate_fnstsw_compare(fpstack[0], v);
+    compareResult = emulate_fnstsw_compare(st(0), v);
     fppop();
 }
 void fcompp() {stop();}
@@ -1148,7 +1177,11 @@ void fld80(double d) {
     fppush(d);
 }
 void fprem() {stop();}
-void fxch(uint64_t) {stop();}
+void fxch80(double& d) {
+    double temp = d;
+    d=st(0);
+    st(0)=temp;
+}
 void ftst() {stop();}
 }
 using namespace fpuinsns;
