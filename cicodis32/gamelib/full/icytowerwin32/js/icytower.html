@@ -1,0 +1,52 @@
+<canvas id="canvas" width=640 height=480></canvas>
+<script src="cpu.js"></script>
+<script src="fpu.js"></script>
+<script src="icytower.js"></script>
+<script src="fflate.js"></script>
+<script src="kernel32.js"></script>
+<script src="alleg40.js"></script>
+<script src="allegro_datafile.js"></script>
+<script src="controls.js"></script>
+<script>
+let archive = {};
+
+const mainScreenCanvas = document.getElementById("canvas");
+mainScreenCanvas.width = 640;
+mainScreenCanvas.height = 480;
+const mainScreenCtx = canvas.getContext("2d");
+
+
+const cico = {
+  alloc: (size) => {
+    let ptr = allocatorPtr;
+    console.log("Alloc 0x" + size.toString(16) + " @ 0x" + ptr.toString(16))
+    allocatorPtr += size;
+    return ptr;
+  }, 
+  writeString: (ptr, str) => {
+    for (let i=0; i<str.length; i++)
+      memoryASet(0, ptr+i, str.charCodeAt(i));
+  },
+  readString: (ptr) => {
+    let str = "";
+    for (let i=0; i<200; i++)
+    {
+      const c = memoryAGet(0, ptr+i);
+      if (c == 0)
+        break;
+      str += String.fromCharCode(c);
+    }
+    return str;
+  }
+}
+
+Promise.resolve()
+  .then(() => fetch("icytower.zip"))
+  .then(x => x.arrayBuffer())
+  .then(x => archive = fflate.unzipSync(new Uint8Array(x)))
+  .then(() => {
+    init();
+    let seq = start();
+    setInterval(() => seq.next(), 30);
+  });
+</script>
