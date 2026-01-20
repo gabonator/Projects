@@ -120,13 +120,57 @@ const alleg40helper = {
     for (let i=0; i<text.length; i++)
     {
       const canvas = font.chars[text.charCodeAt(i)];
-      bitmap.canvas.getContext("2d").drawImage(canvas, x, y);
+      if (color == -1)
+        bitmap.canvas.getContext("2d").drawImage(canvas, x, y);
+      else {
+        const off = document.createElement("canvas");
+        off.width = canvas.width;
+        off.height = canvas.height;
+
+        const octx = off.getContext("2d");
+
+        octx.drawImage(canvas, 0, 0);
+        octx.globalCompositeOperation = "source-in";
+        octx.fillStyle = alleg40helper.htmlColor(color);
+        octx.fillRect(0, 0, off.width, off.height);
+        bitmap.canvas.getContext("2d").drawImage(off, x, y);
+      }
       x += canvas.width;
     }
   },
   htmlColor: (index) => {
     let pal = alleg40helper.palette;
     return `rgb(${pal[index*4]}, ${pal[index*4+1]}, ${pal[index*4+2]})`;
+  },
+  sampleUid: 0x65000000,
+  samples: {},
+  buildSampleUid: () =>
+  {
+    alleg40helper.samples[alleg40helper.sampleUid] = {}
+    return alleg40helper.sampleUid++;
+  },
+  setSample: (uid, f, data) => {
+    alleg40helper.samples[uid] = {freq:f, data:data};
+  },
+  audioCtx: new window.AudioContext(),
+  playSample: (uid, loop) => {
+    let sample = alleg40helper.samples[uid];
+    const audioBuffer = alleg40helper.audioCtx.createBuffer(1, sample.data.length/2, sample.freq);
+    const floatData = audioBuffer.getChannelData(0);
+
+    for (let i = 0; i < sample.data.length/2; i++)
+      floatData[i] = (sample.data[i*2]+sample.data[i*2+1]*256)/32768-1;
+
+    const source = alleg40helper.audioCtx.createBufferSource();
+    source.loop = loop;
+    source.buffer = audioBuffer;
+    source.connect(alleg40helper.audioCtx.destination);
+    source.start();
+    sample.source = source;
+  },
+  stopSample: (uid) => {
+    let sample = alleg40helper.samples[uid];
+    sample.source.stop();
   },
   palette: (() => { var code="AAAAABAQEAAgICAAMDAwAERERABUVFQAZGRkAHR0dACIiIgAmJiYAKioqAC4uLgAzMzMANzc3ADs7OwA/Pz8AAAAAAAMDBQAGBgsACQkQAA0NFQARERkAFRUdABkZIQAdHSYAISEqACYmLgAqKjIALi43ADIyOwA2Nj8AOjo/AAkRGwAPGioAMR8WAD8pHQAlIAAAMS4cABERBgAbGgkAACcGAAA1CQAlFg8AFw0JAAA/PwAAPz8AAD8/AAA/PwALAAAAFQ0IACEWCgAlHA8AIQAAADAAAAA/AAAAPxsXAD82LgAYCQAAKxkAAD8pAAA/NAAAPz8AAD8/KwA/Pz8AAAAAAAMDBQAGBgsACQkQAA0NFQARERkAFRUdABkZIQAdHSYAISEqACYmLgAqKjIALi43ADIyOwA2Nj8APz8/ABIGEQAbCRkAKg8nAAAAGQAKCiIAFRUsACAfNgArKj8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAYGBgAHBwcACAgIAAkJCQAIR8fAB4ZGgAbFBUAGQ8QABYKCwAZCQsAHQkLACAJCwAkCAsAAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AD8AAAA/FQAAPyoAAD8/AAAqPwAAFT8AAAA/AAAAMwwAACYZAAAZJgAADDMAAAA/AA8APwAfAD8ALwA/AD8APwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAA/PwAAPz8AAD8/AAAUPwAAKgcAA=="; return Uint8Array.from(atob(code), c => c.charCodeAt(0));})()
 }
@@ -200,6 +244,7 @@ const alleg40 = {
       return null;
     data = decompressLZSS(data)
     let datafile = loadAllegroDatafile(data);
+    console.log("load datafile OK", datafile.length)
     let ptrResult = cico.alloc(4*4*datafile.length);
     for (let i=0; i<datafile.length; i++)
     {
@@ -220,8 +265,6 @@ const alleg40 = {
           break;
         case "FONT":
           ptrPayload = cico.alloc(4);
-//          if (!memoryAGet32(0, alleg40.ptrDefaultFont))
-//            memoryASet32(0, alleg40.ptrDefaultFont, ptrPayload);
           const uid = alleg40helper.buildFontUid();
           memoryASet32(0, ptrPayload, uid);
           const mono = res.payload[4];
@@ -241,7 +284,7 @@ const alleg40 = {
                 for (var y=0; y<h; y++)
                 {
                   for (var x=0; x<w; x++)
-                    pixels.push(res.payload[pos+x/8] & (128>>(x&7)) ? 15 : 0);
+                    pixels.push(res.payload[pos+(x>>3)] & (128>>(x&7)) ? 15 : 0);
                   pos += (w + 7) >> 3;
                 }
               } else {
@@ -252,6 +295,17 @@ const alleg40 = {
               alleg40helper.setFontCharacter(uid, c, w, h, pixels);
           }
           break;
+        case "SAMP":
+          const len = res.payload[4]*256*256*256 + res.payload[5]*256*256 + res.payload[6]*256 + res.payload[7];
+          const freq = res.payload[2]*256 + res.payload[3];
+          const uids = alleg40helper.buildSampleUid();
+          ptrPayload = cico.alloc(4);
+          memoryASet32(0, ptrPayload, uids);
+          alleg40helper.setSample(uids, freq, res.payload.subarray(8));
+          break;
+
+        default:
+          throw "unsupported type"
       }
       memoryASet32(0, ptrResult+i*4*4, ptrPayload);
       memoryASet32(0, ptrResult+i*4*4+4, 0x6ab07777);
@@ -263,15 +317,6 @@ const alleg40 = {
   pack_fopen: (ptrFilename) => 0,
   currentPalette: [],
   create_rgb_table(ptrTable, ptrPal, callback) {
-/*
-if (0){
-var x = [];
-    for (let i=0; i<1024; i++)
-x.push(memoryAGet(0, ptrPal+i)*4)
-console.log(btoa(String.fromCharCode(...x)))
-}
-
-*/
     for (let i=0; i<256; i++)
         alleg40.currentPalette[i] = {
           r: memoryAGet(0, ptrPal+i*3)*4,
@@ -289,7 +334,10 @@ console.log(btoa(String.fromCharCode(...x)))
           g: memoryAGet(0, ptrPal+i*3+1)*4,
           b: memoryAGet(0, ptrPal+i*3+2)*4};
   },
-  exists: () => 0,
+  exists: (name) => {
+    console.log("exists?", cico.readString(name))
+    return 0;
+  },
   set_display_switch_mode: () => 0,
   text_mode: () => 0,
   text_height: (ptrFont) => alleg40helper.getFontHeight(memoryAGet32(0, ptrFont)),
@@ -397,4 +445,16 @@ console.log(btoa(String.fromCharCode(...x)))
     const text = alleg40.sprintf(cico.readString(ptrFmt), 6);
     alleg40helper.textout(memoryAGet32(0, ptrBmp+8), memoryAGet32(0, ptrFont), text, x, y, color, "c");
   },
+  textout_centre: (ptrBmp, ptrFont, ptrText, x, y, color) => {
+    const text = cico.readString(ptrText);
+    alleg40helper.textout(memoryAGet32(0, ptrBmp+8), memoryAGet32(0, ptrFont), text, x, y, color, "c");
+  },
+  play_sample: (ptrSample, vol, pan, freq, loop) => {
+    //console.log("samplePlay", memoryAGet32(0, ptrSample) & 0xff, vol, pan, freq, loop);
+    alleg40helper.playSample(memoryAGet32(0, ptrSample), 0);
+  },
+  adjust_sample: (ptrSample, vol, pan, freq, loop) => {
+//    console.log("sampleAdjust", memoryAGet32(0, ptrSample) & 0xff, vol, pan, freq, loop);
+//    alleg40helper.stopSample(memoryAGet32(0, ptrSample))
+  }
 }

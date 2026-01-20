@@ -199,6 +199,12 @@ function movsb_ESDI_DSSI()
   assert(flags.direction == 0);
   memoryASet(es, r16[di]++, memoryAGet(ds, r16[si]++));
 }
+function movsb_ESEDI_DSESI() 
+{
+  assert(flags.direction == 0);
+  memoryASet(es, r32[edi]++, memoryAGet(ds, r32[esi]++));
+}
+
 function movsw_ESDI_DSSI() 
 {
   if(flags.direction == 0)

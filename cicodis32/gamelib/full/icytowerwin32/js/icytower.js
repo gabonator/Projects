@@ -4939,8 +4939,8 @@ function* sub_4034a0() // 0000:4034a0 +long
         { pc = 0x404198; break; }
   case 0x40418f: // 0000:40418f
     r32[eax] = memoryAGet32(ds, 0x42bbc0);
-    if (r32[eax] == r32[ebx])
-        { pc = 0x40418f; break; }
+//    if (r32[eax] == r32[ebx])
+//        { pc = 0x40418f; break; }
   case 0x404198: // 0000:404198
     if (r32s[esi] > signed32(0x00000104))
         { pc = 0x404014; break; }
