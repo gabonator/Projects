@@ -27,8 +27,8 @@
 {"id": "jumpTable", "addr": "01ed:bbf8", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
 {"id": "jumpTable", "addr": "01ed:bc22", "table": "14f2:5004", "type": "callwords", "entries": 5, "selector": "bx"}
 
-{"id": "jumpTable", "addr": "01ed:4d26", callsNear:["01ed:19d3", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:41f8", "01ed:194f", "01ed:1a2c", "01ed:40ef"]}
-{"id": "jumpTable", "addr": "01ed:4db7", callsNear:["01ed:19d3", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:41f8", "01ed:194f", "01ed:1a2c", "01ed:40ef"]}
+{"id": "jumpTable", "addr": "01ed:4d26", callsNear:["01ed:194f", "01ed:19d3", "01ed:1a2c", "01ed:1aa8", "01ed:1b51", "01ed:1c0e", "01ed:1cc8", "01ed:1d15", "01ed:1dc7", "01ed:1e5e", "01ed:1ea9", "01ed:1f75", "01ed:1f8f", "01ed:1fc1", "01ed:2151", "01ed:2192", "01ed:26fe", "01ed:2919", "01ed:3360", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:40ef", "01ed:41f8", "01ed:47e8", "01ed:4808", "01ed:488e", "01ed:489d"]}
+{"id": "jumpTable", "addr": "01ed:4db7", callsNear:["01ed:194f", "01ed:19d3", "01ed:1a2c", "01ed:1aa8", "01ed:1b51", "01ed:1c0e", "01ed:1cc8", "01ed:1d15", "01ed:1dc7", "01ed:1e5e", "01ed:1ea9", "01ed:1f75", "01ed:1f8f", "01ed:1fc1", "01ed:2151", "01ed:2192", "01ed:26fe", "01ed:2919", "01ed:3360", "01ed:3867", "01ed:3b8b", "01ed:3c99", "01ed:3e12", "01ed:3ec8", "01ed:4054", "01ed:40ef", "01ed:41f8", "01ed:47e8", "01ed:4808", "01ed:488e", "01ed:489d"]}
 
 {"id": "jumpTable", "addr": "01ed:2525", "table": "01ed:26e2", "type": "jumpwords", "entries": 14, "selector": "bx"}
 {"id": "jumpTable", "addr": "01ed:3926", "table": "01ed:3b7d", "type": "jumpwords", "entries": 7, "selector": "bx"}
@@ -50,4 +50,9 @@
 {"id": "inject", "addr": "01ed:bf97", "text": "sp += 2;"}
 {"id": "inject", "addr": "01ed:c012", "text": "//comment"}
 {"id": "inject", "addr": "01ed:c103", "text": "sync();"}
+{"id": "inject", "addr": "01ed:bdda", "text": "sync();"}
+
+{"id": "jumpTable", "addr": "01ed:4ee1", callsNear:["01ed:204a", "01ed:273d", "01ed:2919"]}
+
+{"id": "inject", "addr": "01ed:7f02", "text": "sync();"}
 

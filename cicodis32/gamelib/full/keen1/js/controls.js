@@ -18,6 +18,9 @@ function onKey(code, p)
     const SDL_SCANCODE_LCTRL = 17;
     const SDL_SCANCODE_LALT = 18;
     const SDL_SCANCODE_ESC = 27;
+    const SDL_SCANCODE_G = 34;  // SDL scancode for 'G'
+    const SDL_SCANCODE_O = 24;  // SDL scancode for 'O'
+    const SDL_SCANCODE_D = 32;  // SDL scancode for 'D'
 
     let scancode = 0;
     switch (code)
@@ -30,6 +33,12 @@ function onKey(code, p)
         case SDL_SCANCODE_LCTRL: scancode = 0x1d; break;
         case SDL_SCANCODE_ESC: scancode = 0x1c; break;
         case SDL_SCANCODE_LALT: scancode = 0x38; break;
+        case SDL_SCANCODE_RETURN: scancode = 0x1c; break;
+
+        // Added letters
+        case SDL_SCANCODE_G: scancode = 0x22; break; // example scancode for 'G'
+        case SDL_SCANCODE_O: scancode = 0x18; break; // example scancode for 'O'
+        case SDL_SCANCODE_D: scancode = 0x20; break; // example scancode for 'D'
     }
 
     if (scancode)
@@ -43,5 +52,5 @@ function onKey(code, p)
         return true;
     }
 
-  return false;   
+    return false;   
 }
