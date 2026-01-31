@@ -244,7 +244,6 @@ const alleg40 = {
       return null;
     data = decompressLZSS(data)
     let datafile = loadAllegroDatafile(data);
-    console.log("load datafile OK", datafile.length)
     let ptrResult = cico.alloc(4*4*datafile.length);
     for (let i=0; i<datafile.length; i++)
     {

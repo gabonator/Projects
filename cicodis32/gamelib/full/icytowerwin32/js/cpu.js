@@ -56,9 +56,6 @@ function stack32(n)
 
 const pop = pop32, push = push32;
 
-//4333b6
-//440000...1240000
-
 function memoryASet32(seg, ofs, v)
 {
   assert(ofs >= 0x401000 && ofs < 0x1240000);
@@ -252,11 +249,6 @@ function cmpsb_DSSI_ESDI()
   flags.zero = memoryAGet(ds, r16[si]++) == memoryAGet(es, r16[di]++);
 }
 
-
-
-function out8(port, val) {
- console.log("out8", port.toString(16), val.toString(16))
-}
 let flags = {carry:0, zero:0, direction:0}
 
 function cbw()
@@ -368,30 +360,6 @@ function in8(port)
         return video.PortRead8(port);
   return 0;
 }
-/*
-var can = document.getElementById("canvas");
-var ctx = can.getContext('2d');
-can.width = 320;
-can.height = 200;
-var data = ctx.createImageData(can.width, can.height);
-
-function display()
-{
-  var p = 0;
-  var pixels = data.data;
-    for (var x=0; x<200; x++)
-  for (var y=0; y<320; y++)
-    {
-      var c = video.getPixel(y, x);
-      pixels[p++] = c>>16;
-      pixels[p++] = (c>>8)&0xff;
-      pixels[p++] = c & 0xff;
-      pixels[p++] = 255;
-    }
-  ctx.putImageData(data, 0, 0);
-}
-*/
-
 
 function imul32(r) {
     // signed 32-bit operands
@@ -433,7 +401,6 @@ function movsd_ESEDI_DSESI()
   r32[esi] += 4;
   r32[edi] += 4;
 }
-
 
 function memoryAGet64(seg, ofs)
 {
