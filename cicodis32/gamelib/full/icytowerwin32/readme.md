@@ -4,7 +4,7 @@ This is the first Windows game I tried to reverse engineer with cico parser. I w
 
 Actually, expectation was not far from reality. It wasn't that difficult, but I had to learn how to read Allegro's datafiles. AI helped a lot with this. How to emulate all sprite operations, making sure that the allocated structures in my emulator match what the game was expecting to see in memory. After I had a decent port as native OSX application with SDL2, I tried to port it to javascript. I could throw away all the C++ methods for rendering rotated and scaled sprites and replaced them with Canvas methods. It made everything much easier. I could even heavily simplify the memory representation of all resource objects since the game didn't require 100% compatibility with Allegro.
 
-Play the HTML/JS port here (needs keyboard) 
+Play the [HTML/JS port here]((https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/cicodis32/gamelib/full/icytowerwin32/js/icytower.html) (needs keyboard) 
 
 [![preview](preview.jpg)](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/cicodis32/gamelib/full/icytowerwin32/js/icytower.html)
 
@@ -22,5 +22,7 @@ If you want to see the guts of this port:
 ## Why?
 
 Cicoparser started as a fun project to learn better x86 assembly and to make better lightweight ports of old MSDOS games compared to dosbox emulation. Extreme execution speed (30000 fps) makes it a perfect environment for training AI agents on temporally coherent video inputs or for finetuning video encoders. It also allows you to inject your own code and freely modify the game, improve rendering, game mechanics or add new way how to control the game. 
+
 Bringing it to the world of Windows applications makes it a serious reverse engineering tool - it produces a C++ code which you can easily debug, examine, disable or isolate interesting pieces of the program. In comparison with IDA/Ghidra pseudocode tools, cicoparser generates truly working code which you can rely on.
+
 By porting a Win32 application to the web as a lightweight JavaScript app, it can run efficiently on any mobile phone - bringing it to the masses.
