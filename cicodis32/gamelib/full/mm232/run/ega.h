@@ -332,7 +332,7 @@ public:
             {
             
             }
-            printf("Skip video write out %x, %x\n", port, data);
+            //printf("Skip video write out %x, %x\n", port, data);
             return true;
         }
         if ( port == 0x3d4 )
@@ -354,7 +354,7 @@ public:
                 rowOffset = data >> 8;
             }
 
-            printf("Skip video write out %x, %x\n", port, data);
+            //printf("Skip video write out %x, %x\n", port, data);
             return true;
         }
         if ( port == 0x3ce )
@@ -382,7 +382,7 @@ public:
                 return true;
             }
 
-            printf("EGA skip write16 port %x=%x\n", port, data);
+            //printf("EGA skip write16 port %x=%x\n", port, data);
             return true;
         }
         assert(0);
@@ -840,6 +840,7 @@ public:
     int pitch = 320;
     int mPanning{0};
     int planarWriteMode{0};
+    int mPageStart{0};
     
     CVga()
     {
@@ -882,11 +883,15 @@ public:
                 case 0x06:
                 case 0x07:
                 case 0x16:
+                    printf("Write16: crtc %02x <- %02x\n", data & 0xff, data >> 8);
+                    break;
                 case 0x0c:
-                    //printf("Write16: crtc %02x <- %02x\n", data & 0xff, data >> 8);
+                    // high word
+                    mPageStart = (mPageStart & 0xff) | ((data >> 8) << 8);
                     break;
                 case 0x0d:
-                    mPanning = (mPanning & 3) | (data>>8)*4;
+                    mPageStart = (mPageStart & 0xff00) | (data >> 8);
+                    //mPanning = (mPanning & 3) | (data>>8)*4;
                     break;
                     
 
@@ -1088,7 +1093,7 @@ public:
 //        }
         if (1) // worms
         {
-            uint8_t c = buffer[y*pitch+x];
+            uint8_t c = buffer[y*pitch+x + mPageStart*4];
             return (palette[3*c]*4) | ((palette[3*c+1]*4)<<8) | ((palette[3*c+2]*4)<<16);
         }
 

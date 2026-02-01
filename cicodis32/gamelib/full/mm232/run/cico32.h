@@ -193,6 +193,7 @@ bool stop(const char* msg = nullptr, const char* info = nullptr)
 //        return false;
 //    if (msg && strstr(msg, "stack_below"))
 //        return false;
+  fprintf(stderr, "err: %s\n", msg); fflush(stderr);
     assert(0);
     return false;
 }
@@ -1000,6 +1001,7 @@ void fcomp64(uint64_t v) {stop();}
 void fcomp32(uint32_t v) {stop();}
 void fcomp80(uint64_t v) {stop();}
 void fcompp() {stop();}
+void fcom64(uint64_t) {stop();}
 void fmul32(uint32_t v) {stop();}
 uint32_t fst32() {stop(); return 0;}
 uint32_t fstp32() {stop(); return 0;}
@@ -1009,6 +1011,7 @@ void fild16(uint16_t v) {stop();}
 uint16_t fnstsw() {stop(); return 0;}
 void fldcw(uint16_t) {stop();}
 void frndtint() {stop();}
+void frndint() {stop();}
 uint16_t fnstcw() {stop(); return 0;}
 void fld80(uint64_t) {stop();}
 void fprem() {stop();}
