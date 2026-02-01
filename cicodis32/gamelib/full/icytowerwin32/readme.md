@@ -4,7 +4,7 @@ This is the first Windows game I tried to reverse engineer with cico parser. I w
 
 Actually, expectation was not far from reality. It wasn't that difficult, but I had to learn how to read Allegro's datafiles. AI helped a lot with this. How to emulate all sprite operations, making sure that the allocated structures in my emulator match what the game was expecting to see in memory. After I had a decent port as native OSX application with SDL2, I tried to port it to javascript. I could throw away all the C++ methods for rendering rotated and scaled sprites and replaced them with Canvas methods. It made everything much easier. I could even heavily simplify the memory representation of all resource objects since the game didn't require 100% compatibility with Allegro.
 
-Play the [HTML/JS port here]((https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/cicodis32/gamelib/full/icytowerwin32/js/icytower.html) (needs keyboard) 
+Play the [HTML/JS port here](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/cicodis32/gamelib/full/icytowerwin32/js/icytower.html) (needs keyboard) 
 
 [![preview](preview.jpg)](https://rawgit.valky.eu/gabonator/Projects/refs/heads/master/cicodis32/gamelib/full/icytowerwin32/js/icytower.html)
 
