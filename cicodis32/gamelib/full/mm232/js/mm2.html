@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<canvas id="canvas" style="position:relative; left:120px; width:80%; max-width:100vw; aspect-ratio: 640/480;"></canvas><br>
+<script src="cpu.js"></script>
+<script src="controls.js"></script>
+<script src="mm2.js"></script>
+<script src="fflate.js"></script>
+<script src="dos.js"></script>
+<script src="vga.js"></script>
+
+<script>
+let loadAddress;
+let archive = {};
+
+Promise.resolve()
+  .then(() => fetch("mm2js.zip"))
+  .then(x => x.arrayBuffer())
+  .then(x => archive = fflate.unzipSync(new Uint8Array(x)))
+  .then(() => {
+    init();
+    fillPsp();
+    let seq = start();
+    let timer = setInterval(()=>
+    {
+      tick();
+      try {
+        seq.next();
+      } catch (e)
+      {
+        console.error("crash", e);
+        clearInterval(timer);
+      }
+      display();
+    }, 30);
+  })
+
+function fillPsp()
+{
+/*
+  memory[(loadAddress-0x10)*16 + 0x80] = 0x00;
+  memory[(loadAddress-0x10)*16 + 0x81] = 0x0d;
+  let env = "PATH=Z:\\"+"\x00"+"COMSPEC=Z:\\COMMAND.COM"+"\x00"+
+        "BLASTER=A220 I7 D1 H5 T6" + "\x00\x00\x01\x00" + "C:\\BUM\\B.EXE" +
+        "\x00\x00\x00\x00\x00\x00\x00";
+  for (let i=0; i<env.length; i++)
+    memory[(loadAddress-0x1a)*16 + i] = env.charCodeAt(i);
+  memory[(loadAddress-0x10)*16 + 2] = 0x9fff & 255;
+  memory[(loadAddress-0x10)*16 + 2+1] = 0x9fff >> 8;
+  memory[(loadAddress-0x10)*16 + 0x2c] = (loadAddress - 0x1a) & 255;
+  memory[(loadAddress-0x10)*16 + 0x2c+1] = (loadAddress - 0x1a) >> 8;
+*/
+}
+
+function tick()
+{
+  memoryASet32(ds, 0x2eebd0, memoryAGet32(ds, 0x2eebd0)+4);
+    
+  for (let i=0; i<10; i++)
+    sub_1a88e4();
+}
+
+</script>
+</body>
+</html>
