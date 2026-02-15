@@ -1,12 +1,12 @@
-const mm2_skipIntro1 = true;
-const mm2_skipIntro2 = true;
-const mm2_skipMenuItem = 0;
-const mm2_skipMenuChangeControls = true;
-const mm2_skipMenuGameMode = true;
-const mm2_skipMenuChangePlayer = true;
-const mm2_skipLevelBanner = false;
-const mm2_skipLevelGetReady = false;
-const mm2_jumpToLevel = -1;
+var mm2_skipIntro1 = true;
+var mm2_skipIntro2 = true;
+var mm2_skipMenuItem = 0;
+var mm2_skipMenuChangeControls = true;
+var mm2_skipMenuGameMode = true;
+var mm2_skipMenuChangePlayer = true;
+var mm2_skipLevelBanner = false;
+var mm2_skipLevelGetReady = false;
+var mm2_jumpToLevel = -1;
 
 function init()
 {
