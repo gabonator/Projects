@@ -422,10 +422,10 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
     bool firstRun = options->incrementalPrint.empty();
     if (firstRun)
     {
-        std::string initCode = loader->GetInit();
-        if (!initCode.empty())
-            printf("%s", initCode.c_str());
-        else
+//        std::string initCode = loader->GetInit();
+//        if (!initCode.empty())
+//            printf("%s", initCode.c_str());
+//        else
             print->PrintHeading(loader);
         
         print->PrintDeclarations(analyser.AllMethods());

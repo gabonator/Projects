@@ -212,7 +212,6 @@ public:
     {
         return address_t(header->cs + (_loadBase >> 4), header->ip + (_loadBase % 16));
     }
-    
     virtual std::string GetInit() override
     {
         bool _dumpReloc{true};
@@ -242,7 +241,6 @@ public:
                 _dumpReloc ? "\n    fixReloc(loadAddress);" : "",
                 (_loadBase/16+header->cs)*16+header->ip);
     }
-    
     virtual std::string GetMain() override
     {
         bool _dumpReloc{true};

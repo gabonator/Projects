@@ -170,7 +170,7 @@ public:
         for (const auto& sec : mSections) {
             uint32_t start = mImageBase + sec.vaddr;
             uint32_t end = start + sec.vsize;
-            printf("//  - %s: %x .. %x\n", sec.name.c_str(), start, end);
+            printf("//  - %s: %x .. %x (%d bytes)\n", sec.name.c_str(), start, end, end-start);
             
             for (const auto& [addr, imp] : GetImports())
             {
@@ -248,6 +248,7 @@ public:
         std::string includes = "";
 
         std::string lastDeclLib;
+        std::vector<ExportSymbol> exp = ListExports();
         
         for (auto& is : ListImports())
         {
@@ -265,17 +266,17 @@ public:
 
         uint32_t symAddr = 0x6ab00000;
         int counter = 0;
-        std::string indirectImport = "switch ((ptrImportTable)o) {\n";
-        std::string indirectEnum = format("enum class ptrImportTable {\n    ptr_begin = 0x%x,\n", symAddr);
+        std::string indirectImport = "    switch ((ptrImportTable)o) {\n";
+        std::string indirectEnum = format("\nenum class ptrImportTable {\n    ptr_begin = 0x%x,\n", symAddr);
         for (const auto& [addr, imp] : GetImports())
         {
             counter ++;
 //            *((uint32_t*)GetBufferAt(addr)) = ++symAddr;
             indirectEnum += format("    ptr_%s_%s,\n", imp->namesp.c_str(), imp->symbol.c_str());
-            indirectImport += format("    case ptrImportTable::ptr_%s_%s:\n        %s\n        break; // %x\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str(), symAddr+counter);
+            indirectImport += format("        case ptrImportTable::ptr_%s_%s:\n            %s\n            break; // %x\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str(), symAddr+counter);
         }
-        indirectEnum += "};\n";
-        indirectImport += "}\n";
+        indirectEnum += "};\n\n";
+        indirectImport += "    }\n";
 
         for (const auto& sec : mSections) {
             uint32_t start = mImageBase + sec.vaddr;
@@ -284,13 +285,16 @@ public:
             snprintf(outname, sizeof(outname), "%s_%s.bin", key.c_str(), sec.name.substr(1).c_str());
             overlays += format("    loadOverlay(\"%s_%s.bin\", 0x%x);\n", key.c_str(), sec.name.substr(1).c_str(), start);
         }
-
+        std::string indirectImportHeader = "void indirectCall(int s, int o) {\n";
+        std::string indirectImportFooter = "}\n";
+        
         return includes + format("\nvoid sub_%x();\n\nvoid init()\n{\n%s    esp = 0x%x;\n    ebp = 0x%x;\n}\n\nvoid start()\n{\n    sub_%x();\n}\n",
                       mImageBase + mEntryPoint,
                       overlays.c_str(), 
                       mImageBase + mSizeOfImage,
                       mImageBase + mSizeOfImage,
-                      mImageBase + mEntryPoint) + indirectEnum + indirectImport;
+                      mImageBase + mEntryPoint) + indirectEnum +
+                    indirectImportHeader + indirectImport + indirectImportFooter;
         
         // TODO: addd indirect call table
     }
@@ -339,6 +343,74 @@ public:
         }
 
     };
+
+    struct ExportSymbol {
+        std::string name;      // empty if export-by-ordinal only
+        uint32_t    ordinal;
+        uint32_t    rva;
+        bool        isForwarded = false;
+        std::string forwarder; // "DLL.Func"
+    };
+    
+    std::string demangle_msvc(const std::string &mangled) {
+        // Check if it starts with '?' (MSVC mangled)
+        if (mangled.empty() || mangled[0] != '?') return mangled;
+
+        size_t pos = 1;
+
+        // 1. Extract function name (up to first '@')
+        size_t func_end = mangled.find('@', pos);
+        if (func_end == std::string::npos) return mangled;
+        std::string func = mangled.substr(pos, func_end - pos);
+        pos = func_end + 1;
+
+        // 2. Extract class name (up to next '@')
+        size_t cls_end = mangled.find('@', pos);
+        std::string cls;
+        if (cls_end != std::string::npos) {
+            cls = mangled.substr(pos, cls_end - pos);
+            pos = cls_end + 2; // skip the @@
+        }
+
+        // 3. Extract simple parameters
+        // For simplicity, we only handle pointers and basic types (P=pointer, V=void, etc.)
+        std::string params;
+        if (pos < mangled.size()) {
+            std::vector<std::string> param_list;
+            while (pos < mangled.size()) {
+                char c = mangled[pos++];
+                switch (c) {
+                    case 'X': param_list.push_back("void"); break;
+                    case 'H': param_list.push_back("int"); break;
+                    case 'I': param_list.push_back("unsigned int"); break;
+                    case 'P': // pointer
+                        if (pos < mangled.size()) {
+                            char next = mangled[pos++];
+                            if (next == 'A') param_list.push_back("DXCtl*"); // custom type example
+                        }
+                        break;
+                    case '@':
+                        // end of parameter list
+                        pos = mangled.size();
+                        break;
+                    default:
+                        param_list.push_back("?");
+                }
+            }
+            for (size_t i = 0; i < param_list.size(); ++i) {
+                if (i > 0) params += ", ";
+                params += param_list[i];
+            }
+        }
+
+        // 4. Combine into declaration
+        std::string decl;
+        if (!cls.empty()) decl = cls + "::";
+        decl += func + "(" + params + ")";
+
+        return decl;
+    }
+
     void PrintImports()
     {
         std::string lastOrdinal;
@@ -358,7 +430,8 @@ public:
                 {
                     if (!d.LoadFile("decl/"+hdrFile))
                     {
-                        assert(0);
+                        printf("Missing imports for %s!\n", hdrFile.c_str());
+//                        assert(0);
                     }                    
                 }
                 lastDecls = d.GetDeclarations();
@@ -371,7 +444,9 @@ public:
                     lastOrdinal = is.dll;
                     
                     DllImport d;
-                    d.LoadFile(is.dll);
+                    if (!d.LoadFile(is.dll))
+                        printf("Missing dll for %s!\n", is.dll.c_str());
+                        
 //                    d.Dump();
                     lastOrdinals = d.GetOrdinals();
                 }
@@ -382,34 +457,58 @@ public:
                 std::string symbol = it->second;
                 
                 auto it2 = lastDecls.find(symbol);
-                assert(it2 != lastDecls.end());
-                
-                std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
-                    address_t(0, is.addr+mImageBase),
-                    is.dll,
-                    symbol,
-                    makeDllCall(is.dll, it2->second),
-                    namesp,
-                    getStackShift(it2->second),
-                    0);
-                mImports.insert({impSymbol->addr, impSymbol});
+                if(it2 != lastDecls.end())
+                {
+                    std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
+                     address_t(0, is.addr+mImageBase),
+                     is.dll,
+                     symbol,
+                     makeDllCall(is.dll, it2->second),
+                     namesp,
+                     getStackShift(it2->second),
+                     0);
+                    mImports.insert({impSymbol->addr, impSymbol});
+                } else {
+                    std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
+                     address_t(0, is.addr+mImageBase),
+                     is.dll,
+                     symbol,
+                     format("ordinal_%d", is.ordinal),
+                     namesp,
+                     0,
+                     0);
+                    mImports.insert({impSymbol->addr, impSymbol});
+
+                }
             }
             else
             {
                 std::string symbol = is.name;
 
                 auto it2 = lastDecls.find(symbol);
-                assert(it2 != lastDecls.end());
-//                printf("app imports from %s symbol %s 0x%x, %s\n", is.dll.c_str(), symbol.c_str(), is.addr+mImageBase, it2->second.c_str());
-                std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
-                    address_t(0, is.addr+mImageBase),
-                    is.dll,
-                    symbol,
-                    makeDllCall(is.dll, it2->second),
-                    namesp,
-                    getStackShift(it2->second),
-                    0);
-                mImports.insert({impSymbol->addr, impSymbol});
+                if(it2 != lastDecls.end())
+                {
+                    //                printf("app imports from %s symbol %s 0x%x, %s\n", is.dll.c_str(), symbol.c_str(), is.addr+mImageBase, it2->second.c_str());
+                    std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
+                     address_t(0, is.addr+mImageBase),
+                     is.dll,
+                     symbol,
+                     makeDllCall(is.dll, it2->second),
+                     namesp,
+                     getStackShift(it2->second),
+                     0);
+                    mImports.insert({impSymbol->addr, impSymbol});
+                } else {
+                    std::shared_ptr<import_t> impSymbol = std::make_shared<import_t>(
+                     address_t(0, is.addr+mImageBase),
+                     is.dll,
+                     symbol,
+                     "eax = " + namesp + "::" + demangle_msvc(symbol) + "();",
+                     namesp,
+                     0,
+                     0);
+                    mImports.insert({impSymbol->addr, impSymbol});
+                }
             }
         }
         
@@ -891,6 +990,110 @@ public:
         }
         return imports;
     }
+    std::vector<ExportSymbol> ListExports() const
+    {
+        std::vector<ExportSymbol> exports;
+        if (mBytes.empty()) return exports;
+
+        // --- DOS + PE headers ---
+        if (mBytes.size() < sizeof(DOSHeader)) return exports;
+        const DOSHeader* dos = (const DOSHeader*)&mBytes[0];
+        if (dos->e_magic[0] != 'M' || dos->e_magic[1] != 'Z') return exports;
+
+        uint32_t pe_offset = dos->e_lfanew;
+        if (pe_offset + sizeof(PEHeader) + sizeof(COFFHeader) > mBytes.size())
+            return exports;
+
+        const PEHeader* pe = (const PEHeader*)(&mBytes[pe_offset]);
+        if (pe->Signature[0] != 'P' || pe->Signature[1] != 'E')
+            return exports;
+
+        // Optional header start
+        const uint8_t* opt_bytes =
+            &mBytes[pe_offset + sizeof(PEHeader) + sizeof(COFFHeader)];
+
+        // Export directory = DataDirectory[0]
+        uint32_t exportDirRVA  = *(uint32_t*)(opt_bytes + 96); // 0x60
+        uint32_t exportDirSize = *(uint32_t*)(opt_bytes + 100);
+        if (!exportDirRVA || !exportDirSize) return exports;
+
+        // RVA → file pointer helper
+        auto rvaToFile = [&](uint32_t rva) -> const uint8_t* {
+            for (const auto& sec : mSections) {
+                uint32_t start = sec.vaddr;
+                uint32_t end   = start + sec.vsize;
+                if (rva >= start && rva < end) {
+                    return sec.data.data() + (rva - start);
+                }
+            }
+            return nullptr;
+        };
+
+        const uint8_t* dirPtr = rvaToFile(exportDirRVA);
+        if (!dirPtr) return exports;
+
+        struct ExportDir {
+            uint32_t Characteristics;
+            uint32_t TimeDateStamp;
+            uint16_t MajorVersion;
+            uint16_t MinorVersion;
+            uint32_t NameRVA;
+            uint32_t Base;
+            uint32_t NumberOfFunctions;
+            uint32_t NumberOfNames;
+            uint32_t AddressOfFunctions;
+            uint32_t AddressOfNames;
+            uint32_t AddressOfNameOrdinals;
+        };
+
+        const ExportDir* dir = (const ExportDir*)dirPtr;
+
+        const uint32_t* funcRVAs =
+            (const uint32_t*)rvaToFile(dir->AddressOfFunctions);
+        const uint32_t* nameRVAs =
+            (const uint32_t*)rvaToFile(dir->AddressOfNames);
+        const uint16_t* ordinals =
+            (const uint16_t*)rvaToFile(dir->AddressOfNameOrdinals);
+
+        if (!funcRVAs) return exports;
+
+        // --- Build name map (ordinal -> name) ---
+        std::vector<std::string> names(dir->NumberOfFunctions);
+        if (nameRVAs && ordinals) {
+            for (uint32_t i = 0; i < dir->NumberOfNames; ++i) {
+                uint16_t ord = ordinals[i];
+                const char* nm = (const char*)rvaToFile(nameRVAs[i]);
+                if (nm && ord < names.size())
+                    names[ord] = nm;
+            }
+        }
+
+        // --- Enumerate exports ---
+        for (uint32_t i = 0; i < dir->NumberOfFunctions; ++i) {
+            uint32_t rva = funcRVAs[i];
+            if (!rva) continue;
+
+            ExportSymbol sym;
+            sym.ordinal = dir->Base + i;
+            sym.rva     = rva;
+            sym.name    = names[i];
+
+            // Forwarded export?
+            if (rva >= exportDirRVA &&
+                rva < exportDirRVA + exportDirSize) {
+                const char* fwd = (const char*)rvaToFile(rva);
+                if (fwd) {
+                    sym.isForwarded = true;
+                    sym.forwarder = fwd;
+                }
+            }
+
+            exports.push_back(std::move(sym));
+        }
+
+        return exports;
+    }
+
     virtual std::vector<std::string> GetRelocations() override
     {
         // postprocessed image is already relocated

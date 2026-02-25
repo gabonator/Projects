@@ -13,6 +13,8 @@ public:
     
     virtual std::string OffsetRegister(std::string reg) override
     {
+        if (reg.size() == 3)
+            return RegisterName(reg, 3, false);
         assert(reg.size() == 2);
         if (reg == "si" || reg == "di" || reg == "bp" || reg[1] == 'x')
             return RegisterName(reg, 2, false);
@@ -167,7 +169,8 @@ public:
 
     std::string RegisterName(const std::string& regName, int regSize, bool sign)
     {
-        if (regName == "ax" || regName == "bx" || regName == "cx" || regName == "dx" || regName == "ah" || regName == "al" || regName == "bh" || regName == "bl" || regName == "ch" || regName == "cl" || regName == "dh" || regName == "dl" || regName == "si" || regName == "di" || regName == "bp" || regName == "th" || regName == "tl" || regName == "tx")
+        if (regName.size() == 3 ||
+            regName == "ax" || regName == "bx" || regName == "cx" || regName == "dx" || regName == "ah" || regName == "al" || regName == "bh" || regName == "bl" || regName == "ch" || regName == "cl" || regName == "dh" || regName == "dl" || regName == "si" || regName == "di" || regName == "bp" || regName == "th" || regName == "tl" || regName == "tx")
         {
             if (sign)
                 return format("r%ds[%s]", regSize*8, regName.c_str());
