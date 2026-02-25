@@ -1,0 +1,12 @@
+{"id": "config", "loader": "LoaderPe", "executable": "ddx10.dll", "architecture": "arch32", "loadAddress": 0x10000000, "stackShiftAlways": true, "procList":["0:10012170", "0:10008ac0", "0:10008b40", "0:1000bd60", "0:10010790", "0:100105f0", "0:1000c040"], "recursive": false}
+
+{"id": "config", procList:["0:10008810", "0:1000aee0", "0:10011e80"]}
+{"id": "config", procList:["0:10010750", "0:10010680", "0:100110b0", "0:10010870", "0:1000b180", "0:1000b7a0", "0:100087e0", "0:1000bc70", "0:1000ba30", "0:10008910", "0:10008920", "0:1000bcf0", "0:10010750", "0:1000a160", "0:10008800", "0:100087f0"]} // process replacing
+
+{"id": "config", procList:["0:1000ba30"]} // note on
+{"id": "config", "frontend": "javascriptSync"}
+
+
+{"id": "jumpTable", "addr": "0:100110c6", "table": "0:10011648", "type": "jump32", "entries": 34, "selector": "edx", "useCaseOffset": false}
+{"id": "jumpTable", "addr": "0:10010880", "table": "0:10010a30", "type": "jump32", "entries": 24, "selector": "eax", "useCaseOffset": false}
+{"id": "jumpTable", "addr": "0:1000b7fa", "table": "0:1000b9b4", "type": "jump32", "entries": 6, "selector": "ecx", "useCaseOffset": false}
