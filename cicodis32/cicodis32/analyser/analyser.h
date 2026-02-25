@@ -417,6 +417,10 @@ public:
                 case X86_INS_LEA:
                     stackChange = 333;
                     break;
+                case X86_INS_CMP:
+                    break;
+                case X86_INS_XCHG:
+                    break;
                 default:
                     assert(0);
             }

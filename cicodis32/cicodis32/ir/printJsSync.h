@@ -1,13 +1,6 @@
-//
-//  printNice.h
-//  cicodis-clean
-//
-//  Created by Gabriel Valky on 19/12/2025.
-//
-
-class PrintIrJs : public PrintIrCppHints {
+class PrintIrJsSync : public PrintIrCppHints {
 public:
-    PrintIrJs(shared<Options> options) : PrintIrCppHints(options)
+    PrintIrJsSync(shared<Options> options) : PrintIrCppHints(options)
     {
     }
     
@@ -23,18 +16,16 @@ public:
         assert(0);
         return "";
     }
-    
+
     virtual void PrintProgram(shared<ProcIr> prog, shared<Analyser::info_t>) override
     {
         PrintIrCppHints::PrepareProgram(prog);
         
         if (prog->info.empty())
-            printf("function* %s\n", prog->name.c_str());
+            printf("function %s\n", prog->name.c_str());
         else
-            printf("function* %s // %s\n", prog->name.c_str(), prog->info.c_str());
+            printf("function %s // %s\n", prog->name.c_str(), prog->info.c_str());
         printf("{\n");
-        //        if (prog->labels)
-        //            printf("  var pc = 0x%x;\n", prog->addr.linearOffset());
         
         if (prog->labels)
         {
@@ -54,7 +45,7 @@ public:
         {
             if (first && l.type != StatementIr::Type_t::Label)
                 printf("  case 0:\n");
-            //                printf("  case 0x%x:\n", prog->addr.linearOffset()); //l.address.linearOffset()); TODO
+//                printf("  case 0x%x:\n", prog->addr.linearOffset()); //l.address.linearOffset()); TODO
             
             first = false;
             if (l.type != StatementIr::Type_t::Label && l.type != StatementIr::Type_t::Comment)
@@ -64,10 +55,7 @@ public:
                 {
                     if (it->second == "//comment")
                         continue;
-                    if (it->second.find("sync()") == std::string::npos)
-                        printf("    %s\n", ToStringExpression(it->second).c_str());
-                    else
-                        printf("    yield* %s\n", it->second.c_str());
+                    printf("    %s\n", it->second.c_str());
                 }
             }
             lastRet = l.type == StatementIr::Type_t::Return;
@@ -81,7 +69,7 @@ public:
         }
         printf("}\n");
     }
-    
+
     virtual std::string ToString(shared<OperandIr> op) override
     {
         assert(op);
@@ -111,13 +99,13 @@ public:
             case StatementIr::Type_t::DirectJump:
                 return format("    { pc = 0x%x; break; }", st.target.linearOffset()); // TODO: extra break at end
             case StatementIr::Type_t::DirectCall:
-                return format("    yield* sub_%x();", st.target.linearOffset());
+                return format("    sub_%x();", st.target.linearOffset());
             case StatementIr::Type_t::DirectCallLong:
-                return format("    push(cs); cs = 0x%04x; yield* sub_%x(); assert(cs == 0x%04x);",
+                return format("    push(cs); cs = 0x%04x; sub_%x(); assert(cs == 0x%04x);",
                               st.target.segment, st.target.linearOffset(), st.address.segment);
             case StatementIr::Type_t::IndirectCall:
                 assert(st.opin1);
-                return format("    yield* indirectCall(cs, %s);", ToString(st.opin1).c_str());
+                return format("    indirectCall(cs, %s);", ToString(st.opin1).c_str());
             case StatementIr::Type_t::Switch:
                 assert(st.opSwitchCases.size());
                 if (st.opSwitchCases.begin()->second->type == StatementIr::Type_t::DirectJump)
@@ -141,28 +129,13 @@ public:
     {
         std::string repeat = st.repeat.empty() ? "" : st.repeat + " ";
         std::string func = st.func;
-        //        func = replace(func, "<", "_");
-        //        func = replace(func, ">", "");
-        //        func = replace(func, ", ", "_");
-        //        func = replace(func, "DS_SI", "DSSI");
-        //        func = replace(func, "ES_DI", "ESDI");
-        if (repeat.find("ecx") != std::string::npos)
-            repeat = replace(repeat, "ecx", "r16[cx]");
-        else if (repeat.find("cx") != std::string::npos)
-            repeat = replace(repeat, "cx", "r16[cx]");
-        
-        if (st.func.starts_with("sub_") || st.func == "sync")
-        {
-            if (st.suffix)
-                return format("yield* %s%s%d", repeat.c_str(), func.c_str(), st.suffix);
-            else
-                return format("yield* %s%s", repeat.c_str(), func.c_str());
-        } else {
-            if (st.suffix)
-                return format("%s%s%d", repeat.c_str(), func.c_str(), st.suffix);
-            else
-                return format("%s%s", repeat.c_str(), func.c_str());
-        }
+        repeat = replace(repeat, "ecx", "r16[ecx]");
+        repeat = replace(repeat, "cx", "r16[cx]");
+
+        if (st.suffix)
+            return format("%s%s%d", repeat.c_str(), func.c_str(), st.suffix);
+        else
+            return format("%s%s", repeat.c_str(), func.c_str());
     }
     
     virtual std::string ProcessFuncTemplate(const StatementIr& st) override
@@ -174,7 +147,7 @@ public:
         return format("_%s_%s", replace(GetHintForTemplate(st.templ1), "_", "").c_str(),
                       replace(GetHintForTemplate(st.templ2), "_", "").c_str());
     }
-    
+
     std::string RegisterName(const std::string& regName, int regSize, bool sign)
     {
         assert(regSize != 3);
@@ -199,11 +172,6 @@ public:
         {
             case OperandIr::Type_t::Register:
                 return RegisterName(op->regName, op->regSize, true);
-                //            case OperandIr::Type_t::Variable:
-                //                if (op->variable == "th" || op->variable == "tl" || op->variable == "tx")
-                //                    assert(0);
-                //                    return RegisterName(op->regName, 1, false);
-                
             case OperandIr::Type_t::Const:
                 if (op->constSize == 0 && op->constValue == 0)
                     return "0";
@@ -214,7 +182,7 @@ public:
                 assert(0);
         }
     }
-    
+
     virtual void PrintHeading(shared<Loader> loader) override
     {
         if (mOptions->relocations)
@@ -224,25 +192,25 @@ public:
 %s
 }
 
-function* start()
+function start()
 {
-    yield* sub_%x();
+    sub_%x();
 }
 
 )", loader->GetInit().c_str(), loader->GetEntry().linearOffset());
         }
     }
-    
+
     virtual void PrintGlobalIndirectTable(const StatementIr& stmt) override
     {
         if (stmt.opSwitchCases.empty())
             return;
-        
+
         printf("function* indirectCall(seg, ofs)\n{\n");
         PrintStatement(stmt);
         printf("}\n");
     }
-    
+
     virtual void PrintDeclarations(std::set<address_t> allMethods) override
     {
     }
@@ -261,7 +229,7 @@ function* start()
     virtual std::string ToStringExpression(std::string str) override
     {
         // TODO: ugly
-        if (str == "edx" || str == "eax")
+        if (str == "edx" || str == "eax" || str == "ecx")
             return format("r32[%s]", str.c_str());
         if (str == "ax = 0x0168;")
             return "r16[ax] = 0x0168;";
@@ -274,3 +242,4 @@ function* start()
     }
 
 };
+

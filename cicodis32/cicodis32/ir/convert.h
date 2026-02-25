@@ -346,7 +346,10 @@ private:
         
         if (allVisible)
         {
-            return Condition(X86_INS_CALL, pinfo->instr->mId);
+            if (pinfo->instr->mTemplate.conditionAs == X86_INS_INVALID)
+                return Condition(X86_INS_CALL, pinfo->instr->mId);
+            else
+                return Condition(X86_INS_CALL, pinfo->instr->mTemplate.conditionAs);
         }
 
         if (!dirty)
@@ -481,6 +484,8 @@ private:
             return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
         if (setter == X86_INS_DEC && getter == X86_INS_JG)
             return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(1);
+        if (setter == X86_INS_DEC && getter == X86_INS_JE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
         if (setter == X86_INS_ADD && getter == X86_INS_JG)
             return (OP_SIGNED(OP_X86(set, 0)) + OP_SIGNED(OP_X86(set, 1))) > OP_CONST(0);
         if (setter == X86_INS_SUB && getter == X86_INS_JLE)
@@ -554,6 +559,8 @@ private:
                     return OP_REG("ecx", 4) == OP_CONST(0);
                 case X86_INS_JP:
                     return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "bad condition - jp"};
+                case X86_INS_JNP:
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "bad condition - jnp"};
                 default:
                     assert(0);
             }
@@ -598,8 +605,10 @@ private:
                 case X86_INS_JAE:
                     return OP_X86(set, 0) >= OP_X86(set, 1);
                 case X86_INS_JNE:
+                case X86_INS_LOOPNE: //check
                     return OP_X86(set, 0) != OP_X86(set, 1);
                 case X86_INS_JE:
+                case X86_INS_LOOPE: //check
                     return OP_X86(set, 0) == OP_X86(set, 1);
                 case X86_INS_JNS:
                     return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
@@ -673,6 +682,7 @@ private:
                 case X86_INS_JNS:
                     return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
                 case X86_INS_JE:
+                case X86_INS_LOOPE:
                     return OP_X86(set, 0) == OP_CONST(0);
                 case X86_INS_JNE:
                     return OP_X86(set, 0) != OP_CONST(0);

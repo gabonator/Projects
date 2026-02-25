@@ -158,7 +158,7 @@ public:
                 {
                     if (it->second == "//comment")
                         continue;
-                    printf("    %s\n", it->second.c_str());
+                    printf("    %s\n", ToStringExpression(it->second).c_str());
                     last = l.address;
                 }
             }
@@ -299,6 +299,20 @@ public:
                     if (st.opin2 && st.opin2->type == OperandIr::Type_t::Const && (int64_t)st.opin2->constValue >= 0x100000000)
                     {
                         largeNum = true;
+                        if (st.opin2->constValue == 0x100000000 &&
+                            st.stmt1->type == StatementIr::Type_t::Binary &&
+                            st.stmt1->oper == "+")
+                        {
+                            // checks for carry
+                            if (st.stmt1->opin1 && st.stmt1->opin2)
+                                return format("overflow32(%s, %s)", ToString(st.stmt1->opin1).c_str(), ToString(st.stmt1->opin2).c_str());
+                            else if (st.stmt1->stmt1 && st.stmt1->stmt1->opin1 && st.stmt1->stmt1->opin2  && st.stmt1->opin2)
+                                return format("overflow32(%s, %s, %s)", ToString(st.stmt1->stmt1->opin1).c_str(),
+                                    ToString(st.stmt1->stmt1->opin2).c_str(),
+                                    ToString(st.stmt1->opin2).c_str());
+                            else
+                                assert(0);
+                        }
                     }
 
                     if (st.stmt1)
@@ -369,7 +383,7 @@ public:
                 if (st.opSwitchSelectorIr)
                     sel = ToString(st.opSwitchSelectorIr);
                 else
-                    sel = st.opSwitchSelector;
+                    sel = ToStringExpression(st.opSwitchSelector);
                 
                 if (sel.size() == 2)
                     sel = OffsetRegister(sel); // js reg transform
@@ -388,6 +402,11 @@ public:
                 assert(0);
                 return "";
         }
+    }
+    
+    virtual std::string ToStringExpression(std::string str)
+    {
+        return str;
     }
     
     virtual void PrintStatement(const StatementIr& st)

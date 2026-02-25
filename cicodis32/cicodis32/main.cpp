@@ -33,7 +33,7 @@
 #include "ir/printBase.h"
 #include "ir/printCpp.h"
 #include "ir/printJs.h"
-
+#include "ir/printJsSync.h"
 
 #include "old/formatter.h"
 #include "old/converter.h"
@@ -416,6 +416,8 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
         print = new PrintIrCppHints(options);
     else if (options->frontend == "javascript")
         print = new PrintIrJs(options);
+    else if (options->frontend == "javascriptSync")
+        print = new PrintIrJsSync(options);
     else
         assert(0);
     

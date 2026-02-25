@@ -14,10 +14,10 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0])}; },
     [X86_INS_POP] = [](convert_args){ //return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("pop")); },
         return StatementIr{
-        .type = StatementIr::Type_t::Function,
+            .type = StatementIr::Type_t::Function,
             
-        .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-        .func = instr->mDetail.operands[0].size == 4 ? "pop32" : "pop"}; },
+            .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+            .func = instr->mDetail.operands[0].size == 4 ? "pop32" : "pop"}; },
     [X86_INS_MOV] = [](convert_args){ return StatementIr{
         .type = StatementIr::Type_t::Assignment,
         .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
@@ -40,7 +40,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         highWord.mem.disp += 2;
         highWord.size = 2;
         lowWord.size = 2;
-
+        
         return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_X86(highWord).get(), .opin2 = OP_X86(lowWord).get()};
     },
     [X86_INS_LOOP] = [](convert_args){
@@ -95,7 +95,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
                 st = OP_MOD("assign") << OP_REG("esp", 4) + OP_CONST(shift);
             else
                 assert(0);
-                
+            
             if (!(instr->isLast && !instr->isLabel))
                 st.next = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::Return});
             return st;
@@ -106,7 +106,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         {
             if (func.callConv == callConv_t::callConvShiftStackNear)
                 shift += 2;
-                //aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
+            //aux.push_back("sp += 2;"); // we expect pop,push,push at start  --- TODO
         }
         if (func.callConv == callConv_t::callConvShiftStackFar)
             shift += 2; //assert(0); //aux.push_back("sp += 2;");  // -- TODO POP CS????
@@ -120,7 +120,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         {
             StatementIr popcs{.type = StatementIr::Type_t::Function, .opd = OP_REG("cs", 2).get(), .func = "pop"};
             StatementIr ret = {.type = StatementIr::Type_t::Return};
-                    
+            
             if (!(instr->isLast && !instr->isLabel))
                 popcs.next = std::make_shared<StatementIr>(StatementIr{ret});
             return popcs;
@@ -143,7 +143,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             spshift.next = std::make_shared<StatementIr>(popcs);
             return spshift;
         }
-         },
+    },
     [X86_INS_IRET] = [](convert_args){
         StatementIr stop = {.type = StatementIr::Type_t::Stop, .stop = "iret"};
         StatementIr ret = {.type = StatementIr::Type_t::Return};
@@ -172,9 +172,9 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         //OP_MOD("assign") << - OP_VAR("flags.carry") :
         return OP_MOD("assign") << OP_BINARY(OP_X86(instr, 0), "-", OP_BINARY(OP_X86(instr, 1), "+", OP_VAR("flags.carry")));
     },
-        //(OP_X86(instr, 1) + OP_VAR("flags.carry"))); },
-//    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; },
-
+    //(OP_X86(instr, 1) + OP_VAR("flags.carry"))); },
+    //    [X86_INS_SBB] = {.convert = [](convert_args){ return instr->ArgsEqual() ? "$wr0 = -$carry;" : "$wr0 = $rd0 - $rd1 - $carry;"; },
+    
     [X86_INS_XOR] = [](convert_args){
         if (instr->ArgsEqual())
             return ASSIGN(OP_X86(instr, 0), OP_CONST(0));
@@ -244,39 +244,39 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             st.opd = OP_X86(instr, 0).get();
             return st;
         }
-
+        
         assert(0);
         return StatementIr{};
     },
     [X86_INS_IDIV] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("idiv#", OP_X86(instr, 0)); },
     [X86_INS_OUT] = [](convert_args){ return StatementIr{
-                .type = StatementIr::Type_t::Function,
-                .func = "out",
-                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-                .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
-                .suffix = instr->mDetail.operands[1].size*8}; },
+        .type = StatementIr::Type_t::Function,
+        .func = "out",
+        .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+        .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+        .suffix = instr->mDetail.operands[1].size*8}; },
     [X86_INS_NOT] = [](convert_args){ return OP_MOD("assign") << ~OP_X86(instr, 0); },
     [X86_INS_DIV] = [](convert_args){ return StatementIr{
-                .type = StatementIr::Type_t::Function,
-                .func = "div",
-                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-                .suffix = instr->mDetail.operands[0].size*8 }; },
+        .type = StatementIr::Type_t::Function,
+        .func = "div",
+        .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+        .suffix = instr->mDetail.operands[0].size*8 }; },
     [X86_INS_SAR] = [](convert_args){ return StatementIr{
-                .type = StatementIr::Type_t::Function,
-                .func = "sar",
-                .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-                .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
-                .suffix = instr->mDetail.operands[0].size*8 }; },
+        .type = StatementIr::Type_t::Function,
+        .func = "sar",
+        .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+        .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+        .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+        .suffix = instr->mDetail.operands[0].size*8 }; },
     [X86_INS_IN] = [](convert_args){ return StatementIr{
-                .type = StatementIr::Type_t::Function,
-                .func = "in",
-                .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-                .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
-                .suffix = instr->mDetail.operands[0].size*8}; },
+        .type = StatementIr::Type_t::Function,
+        .func = "in",
+        .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
+        .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
+        .suffix = instr->mDetail.operands[0].size*8}; },
     [X86_INS_CWDE] = [](convert_args){ return StatementIr{
-                .type = StatementIr::Type_t::Function,
-                .func = func.arch == arch_t::arch16 ? "cbw" : "cwde"}; },
+        .type = StatementIr::Type_t::Function,
+        .func = func.arch == arch_t::arch16 ? "cbw" : "cwde"}; },
     [X86_INS_NOP] = [](convert_args){ return StatementIr{}; },
     
     [X86_INS_XCHG] = [](convert_args){
@@ -329,14 +329,14 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             {
                 std::string regIndex = Capstone->ToString(instr->mDetail.operands[1].mem.index);
                 assert (regIndex.size() == 3 && regIndex[0] == 'e');
-
+                
                 return ASSIGN(OP_X86(instr, 0),
-                        OP_BINARY(
-                                OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) ),
-                                  "+",
-                                  OP_CONST(instr->mDetail.operands[1].mem.disp)
-                              ));
-
+                              OP_BINARY(
+                                        OP_BINARY(OP_REG(regIndex, 4), "*", OP_CONST(instr->mDetail.operands[1].mem.scale) ),
+                                        "+",
+                                        OP_CONST(instr->mDetail.operands[1].mem.disp)
+                                        ));
+                
                 //return ASSIGN(OP_X86(instr, 0), OP_CONST(instr->mDetail.operands[1].mem.disp));
             }
             assert(instr->mDetail.operands[1].mem.index == X86_REG_INVALID);
@@ -345,7 +345,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             return ASSIGN(OP_X86(instr, 0), OP_CONST(instr->mDetail.operands[1].mem.disp));
         }
         assert(instr->mDetail.operands[1].mem.base != X86_REG_INVALID);
-
+        
         if (instr->mDetail.operands[1].mem.index == X86_REG_INVALID)
         {
             std::string regBase = Capstone->ToString(instr->mDetail.operands[1].mem.base);
@@ -387,30 +387,30 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             }
         }
     },
-
+    
     [X86_INS_SAR] = [](convert_args){ return OP_MOD("assign") << OP_FUNCTION("sar#", OP_X86(instr, 0), OP_X86(instr, 1)); },
     [X86_INS_CDQ] = [](convert_args){
         if (func.arch == arch_t::arch16)
             return (StatementIr)ASSIGN(OP_REG("dx", 2),
-                      OP_BINARY(
-                        OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000")),
-                        "?",
-                        OP_VAR("0xffff : 0x0000")
-            ));
+                                       OP_BINARY(
+                                                 OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000")),
+                                                 "?",
+                                                 OP_VAR("0xffff : 0x0000")
+                                                 ));
         else if (func.arch == arch_t::arch32)
             return (StatementIr)ASSIGN(OP_REG("edx", 4),
-                      OP_BINARY(
-                        OP_COMPARE(OP_SIGNED(OP_REG("eax", 4)), "<", OP_CONST(0)),
-                        "?",
-                        OP_VAR("-1 : 0")
-            ));
+                                       OP_BINARY(
+                                                 OP_COMPARE(OP_SIGNED(OP_REG("eax", 4)), "<", OP_CONST(0)),
+                                                 "?",
+                                                 OP_VAR("-1 : 0")
+                                                 ));
         else
         {
             assert(0);
             return StatementIr{};
         }
-
-
+        
+        
         //return ASSIGN(OP_REG("dx", 2), OP_BINARY(OP_REG("ax", 2), "&", OP_VAR("0x8000 ? 0xffff : 0x0000"));
     },
     [X86_INS_CMC] = [](convert_args){ return ASSIGN(OP_VAR("flags.carry"), !OP_VAR("flags.carry")); },
@@ -418,7 +418,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_PUSHFD] = [](convert_args){ return OP_FUNCTION("push32", OP_VAR("flagAsReg32()")); },
     [X86_INS_POPF] = [](convert_args){ return OP_FUNCTION("flagsFromReg", OP_VAR("pop()")); },
     [X86_INS_POPFD] = [](convert_args){ return OP_FUNCTION("flagsFromReg32", OP_VAR("pop32()")); },
-//
+    //
     [X86_INS_LCALL] = [](convert_args){
         if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_IMM && instr->mDetail.operands[1].type == X86_OP_IMM)
         {
@@ -432,12 +432,12 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             highWord.mem.disp += 2;
             highWord.size = 2;
             lowWord.size = 2;
-
+            
             return StatementIr{.type = StatementIr::Type_t::IndirectCallLong,
                 .opin1 = OP_X86(highWord).get(), .opin2 = OP_X86(lowWord).get()};
             //return StatementIr(OP_FUNCTION("indirectCall", OP_X86(highWord), OP_X86(lowWord)));
         }
-
+        
         assert(0);
         return StatementIr{};
     },
@@ -447,7 +447,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         cs_x86_op highWord = instr->mDetail.operands[1];
         assert(highWord.type == X86_OP_MEM);
         highWord.mem.disp += 2;
-
+        
         if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) /*|| Capstone->Intersects(instr->mDetail.operands[1], ds)*/)
         {
             // lds bx, ds:[bx]
@@ -458,7 +458,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             a.next = std::make_shared<StatementIr>(b);
             return a;
         }
-                
+        
         StatementIr a = ASSIGN(OP_X86(instr, 0), OP_X86(lowWord));
         StatementIr b = ASSIGN(OP_X86(ds), OP_X86(highWord));
         a.next = std::make_shared<StatementIr>(b);
@@ -470,14 +470,14 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         cs_x86_op highWord = instr->mDetail.operands[1];
         assert(highWord.type == X86_OP_MEM);
         highWord.mem.disp += 2;
-
+        
         if(Capstone->Intersects(instr->mDetail.operands[1], instr->mDetail.operands[0]) /*|| Capstone->Intersects(instr->mDetail.operands[1], es)*/)
         {
             /*
              les bx, es:[bx+8]
-                temp = es:[bx+8]
-                es = es:[bx+8+2]
-                bx = temp
+             temp = es:[bx+8]
+             es = es:[bx+8+2]
+             bx = temp
              */
             StatementIr a = ASSIGN(OP_REG("tx", 2), OP_X86(lowWord));
             StatementIr b = ASSIGN(OP_X86(es), OP_X86(highWord));
@@ -486,7 +486,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             a.next = std::make_shared<StatementIr>(b);
             return a;
         }
-                
+        
         StatementIr a = ASSIGN(OP_X86(instr, 0), OP_X86(lowWord));
         StatementIr b = ASSIGN(OP_X86(es), OP_X86(highWord));
         a.next = std::make_shared<StatementIr>(b);
@@ -535,42 +535,149 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             stmts[i].next = std::make_shared<StatementIr>(stmts[i+1]);
         return stmts[0];
     },
-
-//    [X86_INS_POPAL] = {.convert = [](convert_args){ return "edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4;\n    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();"; } },
-//    [X86_INS_PUSHAL] = {.convert = [](convert_args){ return "etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx);\n    push32(etx); push32(ebp); push32(esi); push32(edi);"; } },
-//    [X86_INS_LEAVE] = {.convert = [](convert_args){ return "esp = ebp; ebp = pop32();"; } },
-
+    
+    //    [X86_INS_POPAL] = {.convert = [](convert_args){ return "edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4;\n    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();"; } },
+    //    [X86_INS_PUSHAL] = {.convert = [](convert_args){ return "etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx);\n    push32(etx); push32(ebp); push32(esi); push32(edi);"; } },
+    //    [X86_INS_LEAVE] = {.convert = [](convert_args){ return "esp = ebp; ebp = pop32();"; } },
+    
     // fpu
     [X86_INS_FNINIT] = [](convert_args){ return OP_FUNCTION("fninit"); },
-    [X86_INS_FLD] = [](convert_args){ return OP_FUNCTION("fld#", OP_X86(instr, 0)); },
-    [X86_INS_FLDCW] = [](convert_args){ return OP_FUNCTION("fldcw", OP_X86(instr, 0)); },
-    [X86_INS_FLDZ] = [](convert_args){ return OP_FUNCTION("fldz"); },
-    [X86_INS_FLD1] = [](convert_args){ return OP_FUNCTION("fld1"); },
-    [X86_INS_FILD] = [](convert_args){ return OP_FUNCTION("fild#", OP_X86(instr, 0)); },
-    [X86_INS_FMUL] = [](convert_args){ return OP_FUNCTION("fmul#", OP_X86(instr, 0)); },
-    [X86_INS_FDIV] = [](convert_args){ return OP_FUNCTION("fdiv#", OP_X86(instr, 0)); },
-    [X86_INS_FDIVR] = [](convert_args){ return OP_FUNCTION("fdivr#", OP_X86(instr, 0)); },
-    [X86_INS_FDIVP] = [](convert_args){ return OP_FUNCTION("fdivp#", OP_X86(instr, 0)); },
-    [X86_INS_FST] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fst#")); },
-    [X86_INS_FSTP] = [](convert_args){
-        if(instr->mDetail.operands[0].type == X86_OP_REG)
+    [X86_INS_FLD] = [](convert_args){
+        assert(instr->mDetail.op_count == 1);
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
         {
-            assert(instr->mDetail.operands[0].reg == X86_REG_ST0);
-            return OP_FUNCTION("fstp80");
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fldst", OP_CONST(index0));
         }
-        return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#"));
+
+        return OP_FUNCTION("fld#", OP_X86(instr, 0));
     },
-    [X86_INS_FISTP] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fistp#")); },
+    [X86_INS_FLDCW] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fldcw", OP_X86(instr, 0)); },
+    [X86_INS_FLDZ] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldz"); },
+    [X86_INS_FLD1] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fld1"); },
+    [X86_INS_FILD] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fild#", OP_X86(instr, 0)); },
+    [X86_INS_FMUL] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fmulst", OP_CONST(index0));
+        }
+        if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_REG && instr->mDetail.operands[1].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            assert(instr->mDetail.operands[1].reg >= X86_REG_ST0 && instr->mDetail.operands[1].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            int index1 = instr->mDetail.operands[1].reg - X86_REG_ST0;
+            return OP_FUNCTION("fmulst2", OP_CONST(index0), OP_CONST(index1));
+        }
+
+        assert(instr->mDetail.op_count == 1);
+        return OP_FUNCTION("fmul#", OP_X86(instr, 0));
+    },
+    [X86_INS_FDIV] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fdiv#", OP_X86(instr, 0)); },
+    [X86_INS_FDIVR] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fdivr#", OP_X86(instr, 0)); },
+    [X86_INS_FDIVP] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fdivp#", OP_X86(instr, 0)); },
+    [X86_INS_FDIVRP] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fdivrpst", OP_CONST(index0));
+        }
+
+        assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fdivrp#", OP_X86(instr, 0));
+    },
+    [X86_INS_FST] = [](convert_args){ assert(instr->mDetail.op_count == 1); return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fst#")); },
+    [X86_INS_FSTP] = [](convert_args){
+        /*
+         if(instr->mDetail.operands[0].type == X86_OP_REG)
+         {
+         if (instr->mDetail.operands[0].reg == X86_REG_ST0)
+         return OP_FUNCTION("fstp80");
+         else
+         return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp_check#"));
+         }
+         return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#"));
+         */
+        assert(instr->mDetail.op_count == 1);
+        if (instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].type == X86_OP_REG);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            assert(index0 >= 0 && index0 < 8);
+            StatementIr q = OP_FUNCTION("fstpst#", OP_CONST(index0));
+            //            q.comment = format("%s %s", instr->mMnemonic, instr->mOperands);
+            return q;
+        }
+        return (StatementIr)ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fstp#"));
+    },
+    [X86_INS_FISTP] = [](convert_args){ assert(instr->mDetail.op_count == 1); return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fistp#")); },
     [X86_INS_FADD] = [](convert_args){
         if (strcmp(instr->mMnemonic, "fadd") == 0)
-            return OP_FUNCTION("fadd#", OP_X86(instr, 0));
+        {
+            if (instr->mDetail.op_count == 1)
+            {
+                if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+                {
+                    assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+                    int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+                    return OP_FUNCTION("faddst", OP_CONST(index0));
+                }
+                return OP_FUNCTION("fadd#", OP_X86(instr, 0));
+            }
+            
+            assert(instr->mDetail.op_count == 2);
+            assert(instr->mDetail.operands[0].type == X86_OP_REG);
+            assert(instr->mDetail.operands[1].type == X86_OP_REG);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            int index1 = instr->mDetail.operands[1].reg - X86_REG_ST0;
+            return OP_FUNCTION("faddst2", OP_CONST(index0), OP_CONST(index1));
+        }
         else if (strcmp(instr->mMnemonic, "faddp") == 0)
+        {
+            if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+            {
+                assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+                int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+                return OP_FUNCTION("faddpst", OP_CONST(index0));
+            }
+
+            assert(instr->mDetail.op_count == 1);
             return OP_FUNCTION("faddp#", OP_X86(instr, 0));
+        }
         else
             assert(0);
     },
-    [X86_INS_FSUB] = [](convert_args){ return OP_FUNCTION("fsub#", OP_X86(instr, 0)); },
-    [X86_INS_FSUBP] = [](convert_args){ return OP_FUNCTION("fsubp#", OP_X86(instr, 0)); },
+    [X86_INS_FSUB] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fsubst", OP_CONST(index0));
+        }
+
+        if (instr->mDetail.op_count == 1)
+        {
+            return OP_FUNCTION("fsub#", OP_X86(instr, 0));
+        }
+        assert(instr->mDetail.op_count == 2);
+        assert(instr->mDetail.operands[0].type == X86_OP_REG);
+        assert(instr->mDetail.operands[1].type == X86_OP_REG);
+        int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+        int index1 = instr->mDetail.operands[1].reg - X86_REG_ST0;
+        return OP_FUNCTION("fsubst2", OP_CONST(index0), OP_CONST(index1));
+    },
+    [X86_INS_FSUBP] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fsubpst", OP_CONST(index0));
+        }
+        assert(instr->mDetail.op_count == 1);
+        return OP_FUNCTION("fsubp#", OP_X86(instr, 0)); },
     [X86_INS_FSUBR] = [](convert_args){
         assert(instr->mDetail.op_count == 1);
         StatementIr st = OP_FUNCTION("fsubr#", OP_X86(instr, 0));
@@ -578,16 +685,69 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         return st;
         //return OP_FUNCTION("fsubr#", OP_X86(instr, 0));
     },
-    [X86_INS_FCOM] = [](convert_args){ return OP_FUNCTION("fcom#", OP_X86(instr, 0)); },
-    [X86_INS_FCOMP] = [](convert_args){ return OP_FUNCTION("fcomp#", OP_X86(instr, 0)); },
-    [X86_INS_FCOMPP] = [](convert_args){ return OP_FUNCTION("fcompp"); },
-    [X86_INS_FNSTSW] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstsw")); },
-    [X86_INS_FNSTCW] = [](convert_args){ return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstcw")); },
-    [X86_INS_WAIT] = [](convert_args){ return StatementIr{}; },
-    [X86_INS_SAHF] = [](convert_args){ return OP_FUNCTION("sahf"); },
-    [X86_INS_FSQRT] = [](convert_args){ return OP_FUNCTION("fsqrt"); },
-    [X86_INS_FRNDINT] = [](convert_args){ return OP_FUNCTION("frndint"); },
-    [X86_INS_FCHS] = [](convert_args){ return OP_FUNCTION("fchs"); },
-    [X86_INS_FXCH] = [](convert_args){ return OP_FUNCTION("fxch#", OP_X86(instr, 0)); },
+    [X86_INS_FCOM] = [](convert_args){
+        assert(instr->mDetail.op_count == 1);
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fcomst", OP_CONST(index0));
+        }
+
+        return OP_FUNCTION("fcom#", OP_X86(instr, 0));
+    },
+    [X86_INS_FCOMP] = [](convert_args){
+        assert(instr->mDetail.op_count == 1);
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fcompst", OP_CONST(index0));
+        }
+
+        return OP_FUNCTION("fcomp#", OP_X86(instr, 0));
+    },
+    [X86_INS_FCOMPP] = [](convert_args){ assert(instr->mDetail.op_count == 0);  return OP_FUNCTION("fcompp"); },
+    [X86_INS_FNSTSW] = [](convert_args){ assert(instr->mDetail.op_count == 1);  return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstsw")); },
+    [X86_INS_FNSTCW] = [](convert_args){ assert(instr->mDetail.op_count == 1);  return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fnstcw")); },
+    [X86_INS_WAIT] = [](convert_args){ assert(instr->mDetail.op_count == 0);  return StatementIr{}; },
+    [X86_INS_SAHF] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("sahf"); },
+    [X86_INS_FSQRT] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fsqrt"); },
+    [X86_INS_FRNDINT] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("frndint"); },
+    [X86_INS_FCHS] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fchs"); },
+    [X86_INS_FXCH] = [](convert_args){
+        assert(instr->mDetail.op_count == 2);
+        assert(instr->mDetail.operands[0].type == X86_OP_REG);
+        assert(instr->mDetail.operands[1].type == X86_OP_REG);
+        int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+        int index1 = instr->mDetail.operands[1].reg - X86_REG_ST0;
+        assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+        assert(instr->mDetail.operands[1].reg >= X86_REG_ST0 && instr->mDetail.operands[1].reg <= X86_REG_ST7);
+
+        StatementIr q = OP_FUNCTION("fxchst2", OP_CONST(index0), OP_CONST(index1));
+//        q.comment = format("%s %s; %s %s", instr->mMnemonic, instr->mOperands,
+//                           Capstone->ToString(instr->mDetail.operands[0].reg),
+//                           Capstone->ToString(instr->mDetail.operands[1].reg));
+        return q;
+    },
+    [X86_INS_FIADD] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fiadd#", OP_X86(instr, 0)); },
+    [X86_INS_FSUBRP] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fsubrpst", OP_CONST(index0));
+        }
+
+        assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fsubrp#", OP_X86(instr, 0)); },
+    [X86_INS_FMULP] = [](convert_args){
+        if (instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_REG)
+        {
+            assert(instr->mDetail.operands[0].reg >= X86_REG_ST0 && instr->mDetail.operands[0].reg <= X86_REG_ST7);
+            int index0 = instr->mDetail.operands[0].reg - X86_REG_ST0;
+            return OP_FUNCTION("fmulpst", OP_CONST(index0));
+        }
+
+        assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fmulp#", OP_X86(instr, 0)); },
 
 };
