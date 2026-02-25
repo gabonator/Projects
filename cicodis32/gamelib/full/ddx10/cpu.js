@@ -13,11 +13,14 @@ const r32s = new Int32Array(r0, 0, 9);
 const memorybuf = new ArrayBuffer(1024*1024);
 const memory = new Uint8Array(memorybuf, 0, 1024*1024);
 const memorys = new Int8Array(memorybuf, 0, 1024*1024);
+const memoryView = new DataView(memorybuf);
 let allocatorPtr = 0x10080000;
+
+
 
 function stop(msg)
 {
-  if (msg == "stack_unbalanced") return;
+  if (msg.indexOf("stack") != -1) return;
   console.trace();
   throw "stop"
 }
@@ -25,7 +28,7 @@ function assert(cond)
 {
   if (!cond)
   {                
-    console.trace();
+//    console.trace();
     throw "assertion failed"
   }
 }
@@ -58,7 +61,15 @@ const pop = pop32, push = push32;
 
 function memoryASet32(seg, ofs, v)
 {
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+/*
+  if (ofs == 0x1008369c+100*4)
+     console.log("write sample ", v.toString(16))
+ if (ofs == 0x10081418 || ofs == 0x10080064)
+   console.log("Write32: ", ofs.toString(16), v.toString(16), FromFp32(v))
+//  if (ofs >= 0x100836c8 && ofs <= 0x10083ec8)
+//    dbg();
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+*/
   ofs -= 0x10000000;
   memory[ofs] = v;
   memory[ofs+1] = v >> 8;
@@ -67,34 +78,45 @@ function memoryASet32(seg, ofs, v)
 }
 function memoryAGet32(seg, ofs)
 {   
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+/*
+  const pb = 0x10081084+8*96;
+  if (ofs >= pb && ofs < pb + 96)
+  {
+    console.log("read patch ", (ofs-pb).toString(16));
+  }
+  if (!(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000))
+    dbg();
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+*/
   ofs -= 0x10000000;
   return memory[ofs] | (memory[ofs+1]<<8) | (memory[ofs+2]<<16) | (memory[ofs+3]<<24);
 }
 
 function memoryASet16(seg, ofs, v)
 {
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
   ofs -= 0x10000000;
   memory[ofs] = v & 0xff;
   memory[ofs+1] = v >> 8;
 }
 function memoryAGet16(seg, ofs)
 {   
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
   ofs -= 0x10000000;
   return memory[ofs] | (memory[ofs+1]<<8);
 }
 
 function memoryASet(seg, ofs, v)
 {
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
   ofs -= 0x10000000;
   memory[ofs] = v;
 }
 function memoryAGet(seg, ofs)
 {   
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+  if (!(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000))
+    dbg();
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
   ofs -= 0x10000000;
   return memory[ofs];
 }
@@ -249,7 +271,7 @@ function cmpsb_DSSI_ESDI()
   flags.zero = memoryAGet(ds, r16[si]++) == memoryAGet(es, r16[di]++);
 }
 
-let flags = {carry:0, zero:0, direction:0}
+let flags = {carry:0, zero:0, direction:0, parity:0}
 
 function cbw()
 {
@@ -390,10 +412,11 @@ function movsd_ESEDI_DSESI()
 
 function memoryAGet64(seg, ofs)
 {
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
-
+  //assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+ 
+  return memoryView.getBigUint64(ofs-0x10000000, true);
+/*  
   ofs -= 0x10000000;
-
   return (
     BigInt(memory[ofs]) |
     (BigInt(memory[ofs + 1]) << 8n) |
@@ -404,12 +427,33 @@ function memoryAGet64(seg, ofs)
     (BigInt(memory[ofs + 6]) << 48n) |
     (BigInt(memory[ofs + 7]) << 56n)
   );
+*/  
 }
 
+/*
+  if (ofs == 0x10081080|| ofs == 0x10041598 || ofs == 0x10041590)
+    console.log("write64: ", ofs.toString(16), FromFp64(v));
+  if (ofs == 0x10081080+8)
+  {
+    console.log("write64: ", ofs.toString(16), FromFp64(v));
+    if (FromFp64(v) > 10000)
+      throw "bad"
+  }
+*/
+/*
+  if (ofs == 0x100800f8)
+    console.log("write phase shift", v.toString(16), FromFp64(v))
+
+  if (ofs == 0x10069f78)
+  {
+    console.log("write64Z: ", ofs.toString(16), FromFp64(v));
+  }
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
+*/
+
+/*
 function memoryASet64(seg, ofs, v)
 {
-  console.assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
-
   ofs -= 0x10000000;
 
   v = BigInt(v);
@@ -422,4 +466,8 @@ function memoryASet64(seg, ofs, v)
   memory[ofs + 5] = Number((v >> 40n) & 0xFFn);
   memory[ofs + 6] = Number((v >> 48n) & 0xFFn);
   memory[ofs + 7] = Number((v >> 56n) & 0xFFn);
+}
+*/
+function memoryASet64(seg, ofs, v) {
+  memoryView.setBigUint64(ofs - 0x10000000, BigInt(v), true);
 }

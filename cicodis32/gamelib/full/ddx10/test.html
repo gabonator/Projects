@@ -2,23 +2,199 @@
 <script src="fpu.js"></script>
 <script src="crt.js"></script>
 <script src="ddx10.js"></script>
-<script src="fflate.js"></script>
+<script src="ddx10bin.js"></script>
 <script>
-Promise.resolve()
-  .then(() => fetch("ddx10.zip"))
-  .then(x => x.arrayBuffer())
-  .then(x => archive = fflate.unzipSync(new Uint8Array(x)))
-  .then(() => {
-    init();
-    let pluginPtr = allocate(0x1080);
-    let audioMasterPtr = 0x77778888;
+function base64ToUint8(base64) {
+  const binary = atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
 
-    push32(audioMasterPtr);
-    push32(pluginPtr);
-    sub_10008b40();
-//    let seq = start();
-//    seq.next();
-//    setInterval(() => seq.next(), 30);
+  for (let i = 0; i < len; i++)
+    bytes[i] = binary.charCodeAt(i);
+
+  return bytes;
+}
+function deserialize(json) {
+  const parsed = json;
+  const out = {};
+  for (const k in parsed) {
+    out[k] = base64ToUint8(parsed[k]);
+  }
+  return out;
+}
+archive = deserialize(archive)
+</script>
+
+<script>
+function audioMasterHandler() {
+  const opcode = stack32(2);
+  console.log("audio master ", opcode)
+  r32[eax] = 0;
+}
+
+const vstEventsPtr = allocate(8 + 32 * 4);
+const vstEventsDataPtr = allocate(32 * 32);
+
+function processEvents(pluginPtr, dispatcherPtr, events) {
+  if (!events || !events.length)
+    return;
+  //console.log(events);
+
+  const numEvents = events.length;
+
+  const ptrs = events.map((ev, i) => {
+    const p = vstEventsDataPtr + i *32; //allocate(32);
+    memoryASet32(ds, p + 0x00, 1);   // type = kVstMidiType
+    memoryASet32(ds, p + 0x04, 32);  // byteSize
+    memoryASet32(ds, p + 0x08, ev.deltaFrames || 0);
+    memoryASet32(ds, p + 0x0c, 0);   // flags
+    memoryASet32(ds, p + 0x10, 0);   // noteLength
+    memoryASet32(ds, p + 0x14, 0);   // noteOffset
+    // midiData[0..3] packed as little-endian uint32
+    memoryASet32(ds, p + 0x18,
+      (ev.status & 0xff) | ((ev.note & 0xff) << 8) | ((ev.velocity & 0xff) << 16));
+    memoryASet32(ds, p + 0x1c, 0);
+    return p;
   });
 
+  memoryASet32(ds, vstEventsPtr + 0, numEvents);
+  memoryASet32(ds, vstEventsPtr + 4, 0);
+  ptrs.forEach((p, i) => memoryASet32(ds, vstEventsPtr + 8 + i * 4, p));
+
+  // effProcessEvents = opcode 25
+  push32(0); push32(vstEventsPtr); push32(0); push32(0); push32(25); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr);
+  r32[esp] += 24;
+}
+
+  init();
+
+  const BLOCK_SIZE    = 1024*2;
+  const SAMPLE_RATE   = 44100;
+
+  const audioMasterPtr  = 0x77778888;
+  const pluginStructPtr = allocate(0x1080);
+
+  push32(audioMasterPtr);
+  push32(pluginStructPtr);
+  sub_10008b40();
+  r32[esp] += 8;
+
+  let pluginPtr = r32[eax] + 0x20;
+  console.log('AEffect @ 0x' + pluginPtr.toString(16));
+
+  const dispatcherPtr = memoryAGet32(ds, pluginPtr + 0x04);
+  const thisPtr       = memoryAGet32(ds, pluginPtr + 0x40);
+  console.log('C++ object @ 0x' + thisPtr.toString(16));
+
+
+  // effSetProgram (opcode 2) — select preset index (0–31, see CLAUDE.md for full list)
+  const PRESET_INDEX = 1; // 0 = Bright E.Piano
+ // patch 8, 16 - infinite loop
+  push32(0); push32(0); push32(PRESET_INDEX); push32(0); push32(2); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+  console.log('Program set to preset', PRESET_INDEX);
+
+  const outL       = allocate(BLOCK_SIZE * 4);
+  const outR       = allocate(BLOCK_SIZE * 4);
+  const inputPtrs  = allocate(4);
+  const outputPtrs = allocate(8);
+  memoryASet32(ds, outputPtrs + 0, outL);
+  memoryASet32(ds, outputPtrs + 4, outR);
+  let midiEvents = []
+
+  function loop()
+  {
+    processEvents(pluginPtr, dispatcherPtr, midiEvents);
+    midiEvents = [];
+
+    // processReplacing
+    push32(BLOCK_SIZE);
+    push32(outputPtrs);
+    push32(inputPtrs);
+    push32(pluginPtr);
+    sub_10010750();
+    r32[esp] += 16;
+
+    //
+    const buffer = audioContext.createBuffer(2, BLOCK_SIZE, SAMPLE_RATE);
+    const left = buffer.getChannelData(0);
+    const right = buffer.getChannelData(1);
+
+    for (let i = 0; i < BLOCK_SIZE; i++) {
+        left[i] = FromFp32(memoryAGet32(ds, outL + i * 4));
+        right[i] = FromFp32(memoryAGet32(ds, outR + i * 4));
+    }
+
+    return buffer;
+  }
+
+
+let audioContext;
+let nextTime = 0;
+
+function scheduleBuffer() {
+    const buffer = loop();
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start(nextTime);
+    nextTime += BLOCK_SIZE / SAMPLE_RATE;
+}
+
+async function playStart() {
+    audioContext = new AudioContext({ SAMPLE_RATE });
+    await audioContext.resume();
+
+    nextTime = audioContext.currentTime;
+    // schedule 3 buffers ahead to avoid gaps
+    schedulerInterval = setInterval(() => {
+      while (nextTime < audioContext.currentTime + 0.1) {
+        scheduleBuffer();
+      }
+    }, 10); // run every 10 ms
+}
+
+// Map QWERTY keys to MIDI notes (C4=60, D4=62, etc.)
+const keyMap = {
+  'A': 60, // C
+  'W': 61, // C#
+  'S': 62, // D
+  'E': 63, // D#
+  'D': 64, // E
+  'F': 65, // F
+  'T': 66, // F#
+  'G': 67, // G
+  'Y': 68, // G#
+  'H': 69, // A
+  'U': 70, // A#
+  'J': 71, // B
+  'K': 72  // C5
+};
+
+let activeKeys = {}; // Track which keys are currently down
+let first = true;
+
+document.onkeydown = evt => handleKey(evt.key.toUpperCase(), 1);
+document.onkeyup = evt => handleKey(evt.key.toUpperCase(), 0);
+
+async function handleKey(key, pressed) {
+  if (first) {
+    first = false;
+    playStart();
+  }
+
+  const midiNote = keyMap[key];
+  if (!midiNote) return; // Ignore keys not mapped
+
+  // Prevent repeat firing if key is already pressed
+  if (activeKeys[key] === pressed) return;
+  activeKeys[key] = pressed;
+
+  if (pressed) {
+    midiEvents.push({ status: 0x90, note: midiNote, velocity: 100 }); // Note on
+  } else {
+    midiEvents.push({ status: 0x80, note: midiNote, velocity: 0 });   // Note off
+  }
+}
 </script>
