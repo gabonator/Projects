@@ -1,0 +1,24 @@
+<script src="cpu.js"></script>
+<script src="fpu.js"></script>
+<script src="crt.js"></script>
+<script src="ddx10.js"></script>
+<script src="fflate.js"></script>
+<script>
+Promise.resolve()
+  .then(() => fetch("ddx10.zip"))
+  .then(x => x.arrayBuffer())
+  .then(x => archive = fflate.unzipSync(new Uint8Array(x)))
+  .then(() => {
+    init();
+    let pluginPtr = allocate(0x1080);
+    let audioMasterPtr = 0x77778888;
+
+    push32(audioMasterPtr);
+    push32(pluginPtr);
+    sub_10008b40();
+//    let seq = start();
+//    seq.next();
+//    setInterval(() => seq.next(), 30);
+  });
+
+</script>
