@@ -2,6 +2,7 @@ function allocate(size)
 {
     let ptr = allocatorPtr;
     console.log("Alloc 0x" + size.toString(16) + " @ 0x" + ptr.toString(16))
+    for (var i=0; i<size; i++) if (memoryAGet(0, ptr+i) != 0) throw "not clean"
     allocatorPtr += size;
     return ptr;
 }
@@ -12,6 +13,7 @@ function sub_1001ef91()
 
     let ptr = allocatorPtr;
     console.log("Alloc 0x" + size.toString(16) + " @ 0x" + ptr.toString(16))
+    for (var i=0; i<size; i++) if (memoryAGet(0, ptr+i) != 0) throw "not clean"
     allocatorPtr += size;
     r32[eax] = ptr;  
 }
@@ -93,11 +95,10 @@ function sub_10035bb0()
 
 function sub_10010470()
 {
-  // AEffGUIEditor / TooltipEditor constructor — skipped, GUI not needed
-  // eax = AEffect* (esi holds the editor this-ptr, already set by caller)
-  // Just return esi unchanged; the caller at 0x10009fa0 will set hasEditor flag.
+  // AEffGUIEditor constructor: this (esi) = editor object, edi = plugin thisPtr (effect*)
+  // Store effect* into editor+4 (the AEffGUIEditor::effect field)
+  memoryASet32(ds, r32[esi] + 0x4, r32[edi]);
   r32[eax] = r32[esi];
-  // OleInitialize - todo gui
 }
 
 function sub_10008980()
@@ -211,7 +212,7 @@ function indirectCall(s, o)
     case 0x77778888: audioMasterHandler(); break;
     case 0x10008800: break;
     case 0x1000b180: // Voice DSP processing
-      const voiceDspThis = stack32(0);
+      const voiceDspThis = r32[ecx]; // __thiscall: thisPtr is in ECX
       const voiceCount = memoryAGet32(ds, voiceDspThis + 0xfbc);
       if (voiceCount > 0) {
         console.log(">>> Voice DSP 0x1000b180 called with", voiceCount, "active voices");
@@ -249,9 +250,215 @@ function indirectCall(s, o)
     case 0x10010750: sub_10010750(); break;
     case 0x1000a160: sub_1000a160(); break;
     case 0x100087f0: sub_100087f0(); break;
+    // gui
+    case 0x100012c0: sub_100012c0(); break;
+    case 0xff6ab013: r32[esp] += 4; break; // setBackground — ignore
+    case 0xff6ab014: { // CFrame::addView(CView* child)
+      const cnt = memoryAGet32(ds, r32[ecx] + 0x100);
+      memoryASet32(ds, r32[ecx] + 0x104 + cnt * 4, memoryAGet32(ds, r32[esp]));
+      memoryASet32(ds, r32[ecx] + 0x100, cnt + 1);
+      r32[esp] += 4;
+      break; }
+    case 0x1000a820: sub_1000a820(); break; // getParameter(idx) — returns float via FPU
+    // knob widget float setter/getter pairs (field@ecx+0x54, +0x58, +0x5c)
+    case 0x10001240: sub_10001240(); return;
+    case 0x10001250: sub_10001250(); return;
+    case 0x10001260: sub_10001260(); return;
+    case 0x10001270: sub_10001270(); return;
+    case 0x10001280: sub_10001280(); return;
+    case 0x10001290: sub_10001290(); return;
+    case 0x1000ff90: sub_1000ff90(); return;
+    case 0x10010380: sub_10010380(); return;
+    case 0x10012a00: sub_10012a00(); return;
+    case 0x10001000: sub_10001000(); return;
+    case 0x10019820: sub_10019820(); return;
+    case 0x100143d0: sub_100143d0(); return;
+    case 0x10010170: sub_10010170(); return;
+    case 0x10001620: sub_10001620(); return;
+    case 0x1001d6c0: sub_1001d6c0(); return;
+    // ddx10handlers.js — GUI event handlers
+    case 0x10001990: sub_10001990(); break;
+    case 0x100043b0: sub_100043b0(); break;
+    case 0x10010510: sub_10010510(); break;
+    case 0x10017470: sub_10017470(); break;
+    case 0x100174b0: sub_100174b0(); break;
+    case 0x10017510: sub_10017510(); break;
+    case 0x10019d20: sub_10019d20(); break;
+/*
+    case 0x10001240: memoryASet32(ds, r32[ecx]+0x54, memoryAGet32(ds,r32[esp])); r32[esp]+=4; break;
+    case 0x10001250: fld32(memoryAGet32(ds, r32[ecx]+0x54)); break;
+    case 0x10001260: memoryASet32(ds, r32[ecx]+0x58, memoryAGet32(ds,r32[esp])); r32[esp]+=4; break;
+    case 0x10001270: fld32(memoryAGet32(ds, r32[ecx]+0x58)); break;
+    case 0x10001280: memoryASet32(ds, r32[ecx]+0x5c, memoryAGet32(ds,r32[esp])); r32[esp]+=4; break;
+    case 0x10001290: fld32(memoryAGet32(ds, r32[ecx]+0x5c)); break;
+    case 0x1000ff90: ? r32[esp]+=4; break;
+//         10010380
+*/
+    case 0x1000a200: sub_1000a200(); break; // setParameter(index, float) — indexed preset store
+    case 0x10010700: { // AEffect.setParameter(effect*, index, float) — cdecl 3 args
+      // Stack on entry (no ret addr in emulator): [esp+0]=AEffect*, [esp+4]=index, [esp+8]=float_bits
+      const effect  = memoryAGet32(ds, r32[esp]);
+      const idx     = memoryAGet32(ds, r32[esp] + 4);
+      const fval    = memoryAGet32(ds, r32[esp] + 8);
+      const tp      = memoryAGet32(ds, effect + 0x40);  // thisPtr from AEffect backptr
+      r32[ecx] = tp;
+      push32(fval); push32(idx);   // push (float, index) → [esp]=idx, [esp+4]=fval
+      sub_1000a200();
+      // cdecl: caller cleans r32[esp] += 12
+      break; }
+    case 0x100106e0: { // AEffect.getParameter(effect*, index) — cdecl 2 args, returns float in FPU
+      // Stack on entry: [esp+0]=AEffect*, [esp+4]=index
+      const effect  = memoryAGet32(ds, r32[esp]);
+      const idx     = memoryAGet32(ds, r32[esp] + 4);
+      const tp      = memoryAGet32(ds, effect + 0x40);  // thisPtr from AEffect backptr
+      r32[ecx] = tp;
+      push32(idx);   // push index → [esp]=idx
+      sub_1000a820();
+      // cdecl: caller cleans r32[esp] += 8
+      break; }
     default:
       console.log(o.toString(16))
       throw "unimplemented indirect";
   }
 }
 
+
+
+
+// ===== AEffect parameter functions =====
+
+// VST param index → preset struct byte offset mapping
+// Decoded from sub_1000a200 and sub_1000a820 binary jump tables.
+// Derived from confirmed slider VSTGUI tags 2–13 (widget+0x48) mapping to preset+0x00..+0x2c.
+// Knob params 0,1 and 14,15,16 fill the remaining slots.
+const paramIndexToPresetOffset = [
+  0x30, // param 0  → Knob 0 (Vibrato Rate)
+  0x34, // param 1  → Knob 1 (Vibrato Amount)
+  0x00, // param 2  → Slider 0 (Mod Coarse)
+  0x04, // param 3  → Slider 1 (Mod Fine)
+  0x08, // param 4  → Slider 2 (Env Initial)
+  0x0c, // param 5  → Slider 3 (Env Decay)
+  0x10, // param 6  → Slider 4 (Env Sustain)
+  0x14, // param 7  → Slider 5 (Env Release)
+  0x18, // param 8  → Slider 6 (Mod Velocity)
+  0x1c, // param 9  → Slider 7 (Mod Wave)
+  0x20, // param 10 → Slider 8 (Mod Thru)
+  0x24, // param 11 → Slider 9 (Amp Env Attack)
+  0x28, // param 12 → Slider 10 (Amp Env Decay)
+  0x2c, // param 13 → Slider 11 (Amp Env Release)
+  0x38, // param 14 → Knob 2 (Master Octave)
+  0x3c, // param 15 → Knob 3 (Master Tuning)
+  0x40, // param 16 → Knob 4 (Master Volume)
+];
+
+// sub_1000a200 — Plugin::setParameter(index, float) — vtable[10]
+// Called as: ecx=thisPtr, stack=[index, float_value, ...]
+// Stores float to presetBank[currentProgram * 0x60 + presetOffset].
+// Caller pushes (float, index) in that order so index is at top of stack.
+function sub_1000a200() {
+  const idx    = memoryAGet32(ds, r32[esp]);      // top of stack = index
+  const fval   = memoryAGet32(ds, r32[esp] + 4);  // next = float value (raw bits)
+  r32[esp] += 8;                                   // callee pops 2 args
+
+  const tptr = r32[ecx];                           // ecx = thisPtr (set by caller)
+  if (idx > 16) return;                            // only handle known params 0..16
+
+  const presetOffset = paramIndexToPresetOffset[idx];
+  const presetBank   = memoryAGet32(ds, tptr + 0xb0);
+  const curProg      = memoryAGet32(ds, tptr + 0x1c);
+  memoryASet32(ds, presetBank + curProg * 0x60 + presetOffset, fval);
+  sub_1000aee0(); // recompute derived DSP constants (vtable[155]: attack/release/freq factors)
+}
+
+// sub_1000a820 — Plugin::getParameter(index) — vtable[11]
+// Called as: ecx=thisPtr, stack=[index, ...]
+// Returns float value in FPU ST(0). Pops 1 arg (ret 4 = stdcall).
+function sub_1000a820() {
+  const idx    = memoryAGet32(ds, r32[esp]);   // top of stack = index
+  r32[esp] += 4;                               // pop 1 arg
+
+  const tptr = r32[ecx];                       // ecx = thisPtr (already set by caller)
+
+  if (idx > 16) { fldz(); return; }
+
+  const presetOffset = paramIndexToPresetOffset[idx];
+  const presetBank   = memoryAGet32(ds, tptr + 0xb0);
+  const curProg      = memoryAGet32(ds, tptr + 0x1c);
+  const srcAddr      = presetBank + curProg * 0x60 + presetOffset;
+  fld32(memoryAGet32(ds, srcAddr));            // push float onto FPU stack
+}
+
+// gui ========
+function sub_1001eab0()
+{
+  // gdi plus startup
+  memoryASet32(0, 0x100505bc, 0xff6ab070);  
+}
+
+const bitmapFiles = {};  // bitmapPtr → filename (for image rendering)
+function sub_1001d370()
+{
+  const name = readstring(memoryAGet32(0, r32[eax]+4));
+  console.log("LOAD IMAGE", name);
+  bitmapFiles[r32[eax]] = name;
+//  r32[esp] += 4;
+}
+
+function sub_1001a0b0()
+{
+  const vtable = allocate(0x100);            // 256 bytes for vtable entries
+  r32[eax] = allocate(0x200);               // 512 bytes for CFrame object
+  memoryASet32(0, r32[eax], vtable);
+  memoryASet32(0, vtable + 0xb0, 0xff6ab013); // vtable[44] = setBackground
+  memoryASet32(0, vtable + 0xdc, 0xff6ab014); // vtable[55] = addView
+  memoryASet32(0, r32[eax] + 0x100, 0);       // child count = 0
+  r32[esp] += 8;
+}
+
+function sub_100166c0()
+{
+  // esi = CAnimKnob object (pre-allocated this), ecx = CRect& (left+0, top+4, right+8, bottom+c)
+  memoryASet32(ds, r32[esi] + 0x04, 1);
+  memoryASet32(ds, r32[esi] + 0x08, memoryAGet32(ds, r32[ecx]));
+  memoryASet32(ds, r32[esi] + 0x0c, memoryAGet32(ds, r32[ecx] + 0x4));
+  memoryASet32(ds, r32[esi] + 0x10, memoryAGet32(ds, r32[ecx] + 0x8));
+  memoryASet32(ds, r32[esi] + 0x14, memoryAGet32(ds, r32[ecx] + 0xc));
+  r32[esp] += 8;
+}
+
+function sub_100177e0()
+{
+  // arg[0] = pre-allocated CSplashScreen ptr; ecx = CRect& (left, top, right, bottom)
+  const splash = memoryAGet32(ds, r32[esp]);
+  if (splash) {
+    memoryASet32(ds, splash, 0x10040c74);  // vtable = CSplashScreen
+    memoryASet32(ds, splash + 0x04, 1);
+    memoryASet32(ds, splash + 0x08, memoryAGet32(ds, r32[ecx]));
+    memoryASet32(ds, splash + 0x0c, memoryAGet32(ds, r32[ecx] + 0x4));
+    memoryASet32(ds, splash + 0x10, memoryAGet32(ds, r32[ecx] + 0x8));
+    memoryASet32(ds, splash + 0x14, memoryAGet32(ds, r32[ecx] + 0xc));
+  }
+  r32[eax] = splash;
+  r32[esp] += 0x14;
+}
+
+
+function user32__GetDoubleClickTime()
+{
+  return 0x6ab0100;
+}
+
+// Stubs for Windows API functions called directly from ddx10handlers.js
+// (destructor/heap-management paths — not needed in normal GUI operation)
+function ole32__OleUninitialize() { r32[eax] = 0; }
+function kernel32__EnterCriticalSection() { r32[eax] = 0; }
+function kernel32__HeapFree() { r32[eax] = 1; }
+function kernel32__GetLastError() { r32[eax] = 0; }
+// Missing sub-functions called within ddx10handlers.js heap management
+function sub_1001ff47() {}
+function sub_10024be4() {}
+function sub_10024c26() { r32[eax] = 0; }
+function sub_100267e0() {}
+function sub_10027015() {}
+function sub_10027381() {}
+function sub_1002a3b5() {}

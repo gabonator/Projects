@@ -321,6 +321,10 @@
     compareResult = emulate_fnstsw_compare(st(0), FromFp64(v));
   }
 
+  function fcom32(v) {
+    compareResult = emulate_fnstsw_compare(st(0), FromFp32(v));
+  }
+
   function fcomp64(v) {
     compareResult = emulate_fnstsw_compare(st(0), FromFp64(v));
     fppop();

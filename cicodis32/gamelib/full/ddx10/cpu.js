@@ -61,6 +61,10 @@ const pop = pop32, push = push32;
 
 function memoryASet32(seg, ofs, v)
 {
+  if (ofs == 0x10087c88)
+     console.log("write XXXX ", v.toString(16))
+
+  assert(ofs >= 0x1004d000 && ofs < 0x10000000 + 0xb0000)
 /*
   if (ofs == 0x1008369c+100*4)
      console.log("write sample ", v.toString(16))
@@ -78,6 +82,7 @@ function memoryASet32(seg, ofs, v)
 }
 function memoryAGet32(seg, ofs)
 {   
+  assert(ofs >= 0x1003c000 && ofs < 0x10000000 + 0xb0000)
 /*
   const pb = 0x10081084+8*96;
   if (ofs >= pb && ofs < pb + 96)
@@ -412,6 +417,7 @@ function movsd_ESEDI_DSESI()
 
 function memoryAGet64(seg, ofs)
 {
+  assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
   //assert(ofs >= 0x10000000 + 0x1000 && ofs < 0x10000000 + 0xb0000);
  
   return memoryView.getBigUint64(ofs-0x10000000, true);

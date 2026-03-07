@@ -1,7 +1,11 @@
+<body>
+</body>
 <script src="cpu.js"></script>
 <script src="fpu.js"></script>
 <script src="crt.js"></script>
 <script src="ddx10.js"></script>
+<script src="ddx10gui.js"></script>
+<script src="ddx10handlers.js"></script>
 <script src="ddx10bin.js"></script>
 <script>
 function base64ToUint8(base64) {
@@ -85,6 +89,7 @@ function processEvents(pluginPtr, dispatcherPtr, events) {
 
   const dispatcherPtr = memoryAGet32(ds, pluginPtr + 0x04);
   const thisPtr       = memoryAGet32(ds, pluginPtr + 0x40);
+  const setParamFnPtr = memoryAGet32(ds, pluginPtr + 0x0c); // AEffect.setParameter = 0x10010700
   console.log('C++ object @ 0x' + thisPtr.toString(16));
 
 
@@ -197,4 +202,191 @@ async function handleKey(key, pressed) {
     midiEvents.push({ status: 0x80, note: midiNote, velocity: 0 });   // Note off
   }
 }
+
+// gui
+
+//sub_10001b10();
+
+// gui: call editor->open(hwnd) via effEditOpen vtable[3] = sub_10001b10
+// ecx = editor object (at thisPtr+8), push hwnd=0 as the host window arg
+const editorPtr = memoryAGet32(ds, thisPtr + 8);
+r32[ecx] = editorPtr;
+push32(0); // hwnd (stub, no real window)
+sub_10001b10();
+// sub_10001b10 is __thiscall+1 arg, pops its own arg (stackDrop4)
+
+// ============ HTML GUI ============
+const guiContainer = document.createElement('div');
+guiContainer.style.cssText = 'position:relative;width:856px;height:392px;overflow:hidden;user-select:none';
+document.body.appendChild(guiContainer);
+
+const VTABLE_NAME = {
+  0x1003f864: 'TooltipKnob',
+  0x1003fb5c: 'TooltipDisplay',
+  0x10040c74: 'CSplashScreen',
+  0x1003e89c: 'TextLabel',
+  0x1003ea0c: 'TextEdit',
+  0x1003eb8c: 'OptionMenu',
+  0x1003f9f4: 'TooltipSlider',
+  0x10040084: 'CParamDisplay',
+  0x1003ff24: 'CControl',
+  0x10040b2c: 'CKickButton',
+};
+
+function getPresetBase() {
+  const pb = memoryAGet32(ds, thisPtr + 0xb0);
+  const cp = memoryAGet32(ds, thisPtr + 0x1c);
+  return pb + 0x60 * cp;
+}
+
+// VST param indices for the 5 knobs (left-to-right order)
+const KNOB_PARAMS = [0, 1, 14, 15, 16];
+
+// Call AEffect.setParameter(pluginPtr, paramIdx, float) via the plugin's own dispatch.
+// This writes to the preset and triggers sub_1000aee0 (DSP recompute).
+function callSetParam(paramIdx, newVal) {
+  push32(toFp32(newVal)); // [esp+8] = float bits
+  push32(paramIdx);       // [esp+4] = param index
+  push32(pluginPtr);      // [esp+0] = AEffect*
+  indirectCall(cs, setParamFnPtr);
+  r32[esp] += 12;         // cdecl caller cleanup
+}
+
+function doSetProgram(idx) {
+  idx = Math.max(0, Math.min(98, idx));
+  push32(0); push32(0); push32(idx); push32(0); push32(2); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+  buildGui();
+}
+
+function buildGui() {
+  guiContainer.innerHTML = '';
+
+  // Background
+  const bg = document.createElement('img');
+  bg.src = 'res/BACKGROUND.png';
+  bg.style.cssText = 'position:absolute;left:0;top:0;width:856px;height:392px;pointer-events:none';
+  guiContainer.appendChild(bg);
+
+  const framePtr = memoryAGet32(ds, editorPtr + 0x10);
+  const childCount = memoryAGet32(ds, framePtr + 0x100);
+  const presetBase = getPresetBase();
+  const presetName = readstring(presetBase + 0x44);
+
+  // Preset name display (centered above sliders area)
+  const nameDiv = document.createElement('div');
+  nameDiv.style.cssText = 'position:absolute;left:316px;top:90px;width:172px;height:16px;background:#fff;border:1px solid #888;font-family:monospace;font-size:9px;line-height:16px;text-align:center;overflow:hidden;pointer-events:none';
+  nameDiv.textContent = presetName;
+  guiContainer.appendChild(nameDiv);
+
+  let sliderIdx = 0, knobIdx = 0;
+
+  for (let i = 0; i < childCount; i++) {
+    const ptr  = memoryAGet32(ds, framePtr + 0x104 + i * 4);
+    const vtbl = memoryAGet32(ds, ptr);
+    const left = memoryAGet32(ds, ptr + 0x08);
+    const top  = memoryAGet32(ds, ptr + 0x0c);
+    const right  = memoryAGet32(ds, ptr + 0x10);
+    const bottom = memoryAGet32(ds, ptr + 0x14);
+    const tag  = memoryAGet32(ds, ptr + 0x48);
+    const ww = right - left, hh = bottom - top;
+    const type = VTABLE_NAME[vtbl];
+
+    if (type === 'TooltipSlider') {
+      const si = sliderIdx++;
+      const val = Math.max(0, Math.min(1, FromFp32(memoryAGet32(ds, presetBase + si * 4))));
+
+      const div = document.createElement('div');
+      div.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${ww}px;height:${hh}px;cursor:ns-resize`;
+
+      const back = document.createElement('img');
+      back.src = 'res/SLIDERBACK.png';
+      back.style.cssText = `position:absolute;left:0;top:0;width:${ww}px;height:${hh}px;pointer-events:none`;
+      div.appendChild(back);
+
+      const handleY = Math.round((1 - val) * 112);
+      const handle = document.createElement('img');
+      handle.src = 'res/SLIDERHANDLE.png';
+      handle.style.cssText = `position:absolute;left:0;top:${handleY}px;width:${ww}px;height:16px;pointer-events:none`;
+      div.appendChild(handle);
+
+      div.addEventListener('mousedown', e => {
+        const startY = e.clientY;
+        const startVal = Math.max(0, Math.min(1, FromFp32(memoryAGet32(ds, presetBase + si * 4))));
+        const onMove = me => {
+          const dy = me.clientY - startY;
+          const newVal = Math.max(0, Math.min(1, startVal - dy / 112));
+          callSetParam(si + 2, newVal); // slider si → VST param (si+2)
+          handle.style.top = Math.round((1 - newVal) * 112) + 'px';
+        };
+        const onUp = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        e.preventDefault();
+      });
+      guiContainer.appendChild(div);
+
+    } else if (type === 'TooltipKnob') {
+      const ki = knobIdx++;
+      const val = Math.max(0, Math.min(1, FromFp32(memoryAGet32(ds, presetBase + (12 + ki) * 4))));
+      const SPRITE_H = 64;
+      const frameIndex = Math.round(val * 100);
+
+      const div = document.createElement('div');
+      div.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${ww}px;height:${hh}px;overflow:hidden;cursor:ns-resize`;
+
+      const img = document.createElement('img');
+      img.src = 'res/KNOB.png';
+      img.style.cssText = `position:absolute;left:0;top:-${frameIndex * SPRITE_H}px;width:${ww}px;height:6464px;pointer-events:none`;
+      div.appendChild(img);
+
+      div.addEventListener('mousedown', e => {
+        const startY = e.clientY;
+        const startVal = Math.max(0, Math.min(1, FromFp32(memoryAGet32(ds, presetBase + (12 + ki) * 4))));
+        const onMove = me => {
+          const dy = me.clientY - startY;
+          const newVal = Math.max(0, Math.min(1, startVal - dy / 100));
+          callSetParam(KNOB_PARAMS[ki], newVal); // knob ki → VST param KNOB_PARAMS[ki]
+          img.style.top = `-${Math.round(newVal * 100) * SPRITE_H}px`;
+        };
+        const onUp = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        e.preventDefault();
+      });
+      guiContainer.appendChild(div);
+
+    } else if (type === 'CKickButton') {
+      const isPrev = (tag === 0x68);
+      const div = document.createElement('div');
+      div.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${ww}px;height:${hh}px;cursor:pointer`;
+
+      const img = document.createElement('img');
+      img.src = isPrev ? 'res/PREV.png' : 'res/NEXT.png';
+      img.style.cssText = `position:absolute;left:0;top:0;width:${ww}px;height:${hh}px;pointer-events:none`;
+      div.appendChild(img);
+
+      div.addEventListener('mousedown', e => {
+        const prog = memoryAGet32(ds, thisPtr + 0x1c);
+        doSetProgram(isPrev ? prog - 1 : prog + 1);
+        e.preventDefault();
+      });
+      guiContainer.appendChild(div);
+
+    } else if (type === 'CSplashScreen') {
+      const img = document.createElement('img');
+      img.src = 'res/SPLASHSCREEN.png';
+      img.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${ww}px;height:${hh}px;pointer-events:none`;
+      //guiContainer.appendChild(img);
+    }
+  }
+}
+
+buildGui();
 </script>

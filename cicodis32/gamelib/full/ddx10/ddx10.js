@@ -2168,7 +2168,7 @@ function sub_10008b40() // 0000:10008b40 +long +stackDrop8
         { pc = 0x10009f9e; break; }
     r32[eax] = r32[edi];
     sub_10010470();
-    memoryASet32(ds, r32[esi], 0x1003edd4);
+    memoryASet32(ds, r32[esi], 0x1003edd4); // editor vf table
     memoryASet32(ds, r32[esi] + 0xc, 0x1003ee14);
     memoryASet32(ds, r32[esi] + 0x24, 0x1003ee2c);
     memoryASet32(ds, 0x10050558, 0x00000002);
