@@ -430,6 +430,7 @@ public:
     bool stackShiftAlways{false};
     bool jit{false};
     bool usePrintf{false};
+    bool quiet{false};
     
     std::vector<address_t> procList;
     std::vector<shared<jumpTable_t>> jumpTables;

@@ -35,8 +35,6 @@
 #include "ir/printJs.h"
 #include "ir/printJsSync.h"
 
-#include "old/formatter.h"
-#include "old/converter.h"
 #include "json.h"
 #include "configParser.h"
 #include "exportcglue.h"
@@ -407,7 +405,6 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
     // map hints
     MapHints(options, analyser);
     
-#ifndef OLDCONVERTER
     ConvertIr conv(analyser, options);
     PrintIrBase* print = nullptr;
     if (options->frontend == "base")
@@ -422,7 +419,7 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
         assert(0);
     
     bool firstRun = options->incrementalPrint.empty();
-    if (firstRun)
+    if (firstRun && !options->quiet)
     {
 //        std::string initCode = loader->GetInit();
 //        if (!initCode.empty())
@@ -433,31 +430,21 @@ bool DoIteration(shared<Loader> &loader, const std::shared_ptr<Options> &options
         print->PrintDeclarations(analyser.AllMethods());
         print->PrintGlobalIndirectTable(BuildGlobalIndirectTable(options));
     }
-#endif
     
     std::set<address_t> allMethods = analyser.AllMethods();
     FilterIncrementalEntries(allMethods, options->incrementalPrint);
 
     for (address_t proc : allMethods)
     {
-#ifdef OLDCONVERTER
-        Convert convert(analyser, *options);
-        convert.SetOffsetMask(options->arch == arch_t::arch16 ? 0xffff : -1); // 16 bit
-        convert.ConvertProc(proc);
-        convert.Dump();
-#else
         auto ir = conv.Convert(proc);
-//        PostProcess(ir, analyser);
         shared<Analyser::info_t> info = analyser.mInfos.find(proc)->second;
 
         print->PrintProgram(ir, info);
-#endif
     }
     
-#ifndef OLDCONVERTER
-    if (firstRun)
+    if (firstRun && !options->quiet)
         print->PrintRelocations(loader->GetRelocations());
-#endif
+
     if (allMethods.size())
         printf("\n\n");
     return true;
@@ -468,7 +455,7 @@ int main(int argc, char **argv) {
     shared<Loader> loader;
     Analyser analyser(options);
 
-    if (argc == 2)
+    if (argc >= 2)
     {
         // non-interactive mode
         std::vector<uint8_t> optFile = Loader::GetFileContents(argv[1]);
@@ -483,6 +470,18 @@ int main(int argc, char **argv) {
             }
             if (!DoIteration(loader, options, analyser))
                 return 1;
+            
+            if (argc > 2)
+            {
+                for (int i=2; i<argc; i++)
+                {
+                    // for 32bit
+                    options->procList.push_back(address_t::fromString(format("0:%s", argv[i])));
+                }
+                if (!DoIteration(loader, options, analyser))
+                    return 1;
+            }
+
             return 0;
         } else {
             std::string text(reinterpret_cast<const char*>(optFile.data()),
@@ -503,7 +502,7 @@ int main(int argc, char **argv) {
         }
         return 0;
     }
-
+    
     std::string line;
     while (std::getline(std::cin, line))
     {

@@ -129,8 +129,10 @@ public:
     {
         std::string repeat = st.repeat.empty() ? "" : st.repeat + " ";
         std::string func = st.func;
-        repeat = replace(repeat, "ecx", "r16[ecx]");
-        repeat = replace(repeat, "cx", "r16[cx]");
+        if (repeat.find("ecx") != std::string::npos)
+            repeat = replace(repeat, "ecx", "r32[ecx]");
+        else
+            repeat = replace(repeat, "cx", "r16[cx]");
 
         if (st.suffix)
             return format("%s%s%d", repeat.c_str(), func.c_str(), st.suffix);

@@ -207,7 +207,7 @@ inline StatementBuilder ASSIGN(const OperandBuilder& dest, const StatementBuilde
         {
             stmt->func = stmt->func.substr(0, stmt->func.size()-1);
             stmt->suffix = (stmt->opd.get()->regSize + stmt->opd.get()->memSize)*8;
-            assert(stmt->suffix != 80);
+            // 80-bit (x87 extended precision) allowed — fpu.js has fstp80/fmul80 etc.
         }
 
         return StatementBuilder(stmt);
@@ -318,7 +318,7 @@ public:
         // Apply suffix if provided
         if (suffixComputer) {
             stmt->suffix = suffixComputer();
-            assert(stmt->suffix != 80);
+            // 80-bit (x87 extended precision) allowed — fpu.js has fstp80/fmul80 etc.
         }
         
         // Apply each modifier in sequence
@@ -604,7 +604,7 @@ inline StatementBuilder OP_FUNCTION(const std::string& funcName, const OperandBu
     else {
         stmt->func = funcName.substr(0, funcName.size()-1);
         stmt->suffix = (arg1.get()->regSize + arg1.get()->memSize)*8;
-        assert(stmt->suffix != 80);
+        // 80-bit (x87 extended precision) allowed
     }
     stmt->opin1 = arg1.get();
     stmt->opin2 = arg2.get();
@@ -619,7 +619,7 @@ inline StatementBuilder OP_FUNCTION(const std::string& funcName, const OperandBu
     else {
         stmt->func = funcName.substr(0, funcName.size()-1);
         stmt->suffix = (arg1.get()->regSize + arg1.get()->memSize)*8;
-        assert(stmt->suffix != 80);
+        // 80-bit (x87 extended precision) allowed
     }
     stmt->opin1 = arg1.get();
     return StatementBuilder(stmt);

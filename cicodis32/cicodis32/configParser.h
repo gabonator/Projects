@@ -129,6 +129,10 @@ void ConfigParser::ParseConfigObject(CJson& json, std::shared_ptr<Options> optio
             options->recursive = false;
         else if (k == "recursive" && v == "true")
             options->recursive = true;
+        else if (k == "quiet" && v == "true")
+            options->quiet = true;
+        else if (k == "quiet" && v == "false")
+            options->quiet = false;
         else if (k == "relocations" && v == "false")
             options->relocations = false;
         else if (k == "declarations" && v == "false")

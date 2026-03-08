@@ -624,7 +624,12 @@ private:
 //                        return OP_MOD("signed") << ((OP_X86(set, 0) - OP_X86(set, 1)) < OP_CONST(0));
 
                 default:
-                    assert(0);
+                {
+                    StatementIr stop = OP_FUNCTION("stop");
+                    stop.comment = format("bad condition, setter: %s, getter: %s, addr %s", Capstone->ToString(setter), Capstone->ToString(getter), set->mAddress.toString().c_str());
+                    return stop;
+                }
+                //assert(0);
             }
         }
         

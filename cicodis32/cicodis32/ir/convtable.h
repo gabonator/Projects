@@ -261,13 +261,6 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         .func = "div",
         .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
         .suffix = instr->mDetail.operands[0].size*8 }; },
-    [X86_INS_SAR] = [](convert_args){ return StatementIr{
-        .type = StatementIr::Type_t::Function,
-        .func = "sar",
-        .opd = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-        .opin1 = std::make_shared<OperandIr>(instr->mDetail.operands[0]),
-        .opin2 = std::make_shared<OperandIr>(instr->mDetail.operands[1]),
-        .suffix = instr->mDetail.operands[0].size*8 }; },
     [X86_INS_IN] = [](convert_args){ return StatementIr{
         .type = StatementIr::Type_t::Function,
         .func = "in",
@@ -749,5 +742,23 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         }
 
         assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fmulp#", OP_X86(instr, 0)); },
+    [X86_INS_FIDIV]  = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fidiv#",  OP_X86(instr, 0)); },
+    [X86_INS_FIDIVR] = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fidivr#", OP_X86(instr, 0)); },
+    [X86_INS_FSIN]   = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fsin"); },
+    [X86_INS_FCOS]   = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fcos"); },
+    [X86_INS_FPTAN]  = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fptan"); },
+    [X86_INS_FPATAN] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fpatan"); },
+    [X86_INS_FIST]   = [](convert_args){ assert(instr->mDetail.op_count == 1); return ASSIGN(OP_X86(instr, 0), OP_FUNCTION("fist#")); },
+    [X86_INS_FISUB]  = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fisub#",  OP_X86(instr, 0)); },
+    [X86_INS_FIMUL]  = [](convert_args){ assert(instr->mDetail.op_count == 1); return OP_FUNCTION("fimul#",  OP_X86(instr, 0)); },
+    [X86_INS_FABS]   = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fabs"); },
+    [X86_INS_F2XM1]  = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("f2xm1"); },
+    [X86_INS_FSCALE] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fscale"); },
+    [X86_INS_FYL2X]  = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fyl2x"); },
+    [X86_INS_FLDPI]  = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldpi"); },
+    [X86_INS_FLDLN2] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldln2"); },
+    [X86_INS_FLDL2T] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldl2t"); },
+    [X86_INS_FLDL2E] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldl2e"); },
+    [X86_INS_FLDLG2] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldlg2"); },
 
 };

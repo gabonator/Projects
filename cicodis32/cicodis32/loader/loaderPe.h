@@ -152,9 +152,7 @@ public:
             }
             mSections.push_back(sec);
         }
-        PrintImports();
-        PrintSections();
-//        exit(0);
+        
         return true;
     }
     
@@ -244,6 +242,12 @@ public:
 
     virtual std::string GetMain() override { assert(0); return "-- todo --\n";}
     virtual std::string GetInit() override {
+        // TODO: cleanup {
+        PrintImports();
+        PrintRTTI();
+        PrintSections();
+        // }
+
         std::string overlays = "";
         std::string includes = "";
 
@@ -272,7 +276,7 @@ public:
         {
             counter ++;
 //            *((uint32_t*)GetBufferAt(addr)) = ++symAddr;
-            indirectEnum += format("    ptr_%s_%s,\n", imp->namesp.c_str(), imp->symbol.c_str());
+            indirectEnum += format("    ptr_%s_%s, // 0x%x \n", imp->namesp.c_str(), imp->symbol.c_str(), imp->addr.offset);
             indirectImport += format("        case ptrImportTable::ptr_%s_%s:\n            %s\n            break; // %x\n", imp->namesp.c_str(), imp->symbol.c_str(), imp->call.c_str(), symAddr+counter);
         }
         indirectEnum += "};\n\n";
@@ -430,7 +434,7 @@ public:
                 {
                     if (!d.LoadFile("decl/"+hdrFile))
                     {
-                        printf("Missing imports for %s!\n", hdrFile.c_str());
+                        printf("// Missing imports for %s!\n", hdrFile.c_str());
 //                        assert(0);
                     }                    
                 }
@@ -1098,6 +1102,607 @@ public:
     {
         // postprocessed image is already relocated
         return {};
+    }
+
+    // RTTI structures for MSVC (32-bit PE)
+    struct RTTITypeDescriptor {
+        uint32_t pVFTable;     // Pointer to type_info vtable
+        uint32_t spare;        // Reserved
+        char name[1];          // Mangled name (variable length)
+    };
+
+    struct RTTIBaseClassDescriptor {
+        uint32_t pTypeDescriptor;       // Type descriptor of the base class
+        uint32_t numContainedBases;     // Number of nested classes in base class
+        int32_t  mdisp;                 // Member displacement
+        int32_t  pdisp;                 // Vbtable displacement
+        int32_t  vdisp;                 // Displacement inside vbtable
+        uint32_t attributes;            // Flags
+    };
+
+    struct RTTIClassHierarchyDescriptor {
+        uint32_t signature;             // Always 0
+        uint32_t attributes;            // Bit 0 set = multiple inheritance
+        uint32_t numBaseClasses;        // Number of base classes
+        uint32_t pBaseClassArray;       // Array of base class descriptors
+    };
+
+    struct RTTICompleteObjectLocator {
+        uint32_t signature;    // Always 0 for 32-bit
+        uint32_t offset;       // Offset of this vtable in the complete class
+        uint32_t cdOffset;     // Constructor displacement offset
+        uint32_t pTypeDescriptor;   // RVA to TypeDescriptor (in PE32+) or pointer (in PE32)
+        uint32_t pClassDescriptor;  // RVA to ClassHierarchyDescriptor
+    };
+
+    struct BaseClassInfo {
+        std::string name;
+        std::string demangledName;
+        int32_t offset;         // Offset of base class in derived class
+        int32_t vbtableOffset;  // Virtual base table offset
+        int32_t vbtableIndex;   // Index into virtual base table
+    };
+
+    struct RTTIInfo {
+        std::string mangledName;   // Mangled type name from TypeDescriptor
+        std::string demangledName; // Demangled class name
+        uint32_t vtableRVA;        // RVA of the vtable
+        uint32_t colRVA;           // RVA of CompleteObjectLocator
+        uint32_t offset;           // Offset in complete object
+        std::vector<BaseClassInfo> baseClasses;  // Base class information
+        std::vector<uint32_t> virtualFunctions;  // RVAs of virtual functions
+        bool hasMultipleInheritance{false};
+        bool hasVirtualInheritance{false};
+    };
+
+    std::vector<RTTIInfo> ListRTTI() const
+    {
+        std::vector<RTTIInfo> rttiList;
+        if (mBytes.empty() || mSections.empty()) return rttiList;
+
+        // Helper to map RVA to file pointer
+        auto rvaToFile = [&](uint32_t rva) -> const uint8_t* {
+            for (const auto& sec : mSections) {
+                uint32_t start = sec.vaddr;
+                uint32_t end = start + sec.vsize;
+                if (rva >= start && rva < end) {
+                    uint32_t offset = rva - start;
+                    if (offset < sec.data.size()) {
+                        return sec.data.data() + offset;
+                    }
+                }
+            }
+            return nullptr;
+        };
+
+        // Helper to check if RVA is valid
+        auto isValidRVA = [&](uint32_t rva) -> bool {
+            return rvaToFile(rva) != nullptr;
+        };
+
+        // Find .rdata section (where RTTI usually lives)
+        const Section* rdataSection = nullptr;
+        for (const auto& sec : mSections) {
+            if (sec.name == ".rdata" || sec.name == ".data") {
+                rdataSection = &sec;
+                break;
+            }
+        }
+
+        if (!rdataSection) return rttiList;
+
+        // Scan .rdata for potential vtables
+        // A vtable entry is a pointer, and the pointer at vtable[-1] points to CompleteObjectLocator
+        for (uint32_t i = 4; i < rdataSection->data.size() - 4; i += 4) {
+            uint32_t vtableRVA = rdataSection->vaddr + i;
+            
+            // Read the potential vtable pointer
+            const uint8_t* vtablePtr = rvaToFile(vtableRVA);
+            if (!vtablePtr) continue;
+
+            uint32_t firstEntry = *(uint32_t*)vtablePtr;
+            
+            // Check if this looks like a code pointer (points to executable section)
+            bool isCode = false;
+            for (const auto& sec : mSections) {
+                if (sec.name == ".text") {
+                    uint32_t start = mImageBase + sec.vaddr;
+                    uint32_t end = start + sec.vsize;
+                    if (firstEntry >= start && firstEntry < end) {
+                        isCode = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isCode) continue;
+
+            // Check vtable[-1] for CompleteObjectLocator pointer
+            if (i < 4) continue;
+            const uint8_t* colPtrData = rvaToFile(vtableRVA - 4);
+            if (!colPtrData) continue;
+
+            uint32_t colAddr = *(uint32_t*)colPtrData;
+            
+            // Convert to RVA (subtract image base if it's an absolute address)
+            uint32_t colRVA = colAddr;
+            if (colAddr >= mImageBase) {
+                colRVA = colAddr - mImageBase;
+            }
+
+            // Validate COL RVA
+            if (!isValidRVA(colRVA)) continue;
+
+            const RTTICompleteObjectLocator* col = 
+                (const RTTICompleteObjectLocator*)rvaToFile(colRVA);
+            if (!col) continue;
+
+            // Validate signature (should be 0 for 32-bit PE)
+            if (col->signature != 0 && col->signature != 1) continue;
+
+            // Get TypeDescriptor
+            uint32_t tdRVA = col->pTypeDescriptor;
+            if (tdRVA >= mImageBase) {
+                tdRVA -= mImageBase;
+            }
+
+            if (!isValidRVA(tdRVA)) continue;
+
+            const RTTITypeDescriptor* td = 
+                (const RTTITypeDescriptor*)rvaToFile(tdRVA);
+            if (!td) continue;
+
+            // Read the mangled name (it's null-terminated)
+            const char* namePtr = (const char*)&td->name[0];
+            std::string mangledName;
+            
+            // Read up to 256 chars or until null
+            for (int j = 0; j < 256; ++j) {
+                if (namePtr[j] == '\0') break;
+                // Basic validation - printable ASCII
+                if (namePtr[j] < 0x20 || namePtr[j] > 0x7E) {
+                    break;
+                }
+                mangledName += namePtr[j];
+            }
+
+            // Must start with . for MSVC RTTI
+            if (mangledName.empty() || mangledName[0] != '.') continue;
+
+            // Create RTTI info
+            RTTIInfo info;
+            info.mangledName = mangledName;
+            info.demangledName = DemangleMSVCType(mangledName);
+            info.vtableRVA = vtableRVA;
+            info.colRVA = colRVA;
+            info.offset = col->offset;
+
+            // Extract class hierarchy information
+            uint32_t classHierarchyRVA = col->pClassDescriptor;
+            if (classHierarchyRVA >= mImageBase) {
+                classHierarchyRVA -= mImageBase;
+            }
+
+            if (isValidRVA(classHierarchyRVA)) {
+                const RTTIClassHierarchyDescriptor* hierarchy = 
+                    (const RTTIClassHierarchyDescriptor*)rvaToFile(classHierarchyRVA);
+                
+                if (hierarchy && hierarchy->signature == 0) {
+                    info.hasMultipleInheritance = (hierarchy->attributes & 0x01) != 0;
+                    info.hasVirtualInheritance = (hierarchy->attributes & 0x02) != 0;
+
+                    // Get base class array
+                    uint32_t baseArrayRVA = hierarchy->pBaseClassArray;
+                    if (baseArrayRVA >= mImageBase) {
+                        baseArrayRVA -= mImageBase;
+                    }
+
+                    if (isValidRVA(baseArrayRVA)) {
+                        const uint32_t* baseClassPtrs = (const uint32_t*)rvaToFile(baseArrayRVA);
+                        
+                        // Iterate through base classes (skip first - it's the class itself)
+                        for (uint32_t i = 1; i < hierarchy->numBaseClasses && i < 16; ++i) {
+                            uint32_t baseDescRVA = baseClassPtrs[i];
+                            if (baseDescRVA >= mImageBase) {
+                                baseDescRVA -= mImageBase;
+                            }
+
+                            if (!isValidRVA(baseDescRVA)) continue;
+
+                            const RTTIBaseClassDescriptor* baseDesc = 
+                                (const RTTIBaseClassDescriptor*)rvaToFile(baseDescRVA);
+                            if (!baseDesc) continue;
+
+                            // Get base class type descriptor
+                            uint32_t baseTDRVA = baseDesc->pTypeDescriptor;
+                            if (baseTDRVA >= mImageBase) {
+                                baseTDRVA -= mImageBase;
+                            }
+
+                            if (!isValidRVA(baseTDRVA)) continue;
+
+                            const RTTITypeDescriptor* baseTD = 
+                                (const RTTITypeDescriptor*)rvaToFile(baseTDRVA);
+                            if (!baseTD) continue;
+
+                            // Read base class name
+                            const char* baseNamePtr = (const char*)&baseTD->name[0];
+                            std::string baseMangledName;
+                            for (int j = 0; j < 256; ++j) {
+                                if (baseNamePtr[j] == '\0') break;
+                                if (baseNamePtr[j] < 0x20 || baseNamePtr[j] > 0x7E) break;
+                                baseMangledName += baseNamePtr[j];
+                            }
+
+                            if (!baseMangledName.empty() && baseMangledName[0] == '.') {
+                                BaseClassInfo baseInfo;
+                                baseInfo.name = baseMangledName;
+                                baseInfo.demangledName = DemangleMSVCType(baseMangledName);
+                                baseInfo.offset = baseDesc->mdisp;
+                                baseInfo.vbtableOffset = baseDesc->pdisp;
+                                baseInfo.vbtableIndex = baseDesc->vdisp;
+                                info.baseClasses.push_back(baseInfo);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Extract virtual function pointers from vtable
+            const uint8_t* vtableData = rvaToFile(vtableRVA);
+            if (vtableData) {
+                // Read up to 64 virtual function pointers (or until we hit invalid data)
+                for (int vfIdx = 0; vfIdx < 64; ++vfIdx) {
+                    const uint8_t* vfPtrData = rvaToFile(vtableRVA + vfIdx * 4);
+                    if (!vfPtrData) break;
+
+                    uint32_t vfAddr = *(uint32_t*)vfPtrData;
+                    
+                    // Check if this looks like a code pointer
+                    bool validCodePtr = false;
+                    for (const auto& sec : mSections) {
+                        if (sec.name == ".text") {
+                            uint32_t start = mImageBase + sec.vaddr;
+                            uint32_t end = start + sec.vsize;
+                            if (vfAddr >= start && vfAddr < end) {
+                                validCodePtr = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!validCodePtr) break;
+
+                    info.virtualFunctions.push_back(vfAddr);
+                }
+            }
+
+            rttiList.push_back(info);
+        }
+
+        return rttiList;
+    }
+
+    // Enhanced MSVC type name demangler with template support
+    std::string DemangleMSVCType(const std::string& mangled) const
+    {
+        // MSVC RTTI type names have format: .?AV<name>@@ or .?AU<name>@@ or .?AW<name>@@
+        // .?AV = class
+        // .?AU = struct  
+        // .?AW = union
+        // Templates: ?$ introduces a template, @ separates template args
+        // Example: .?AV?$basic_ifstream@DU?$char_traits@D@std@@@std@@
+        //   = std::basic_ifstream<char, std::char_traits<char>>
+
+        if (mangled.size() < 4 || mangled[0] != '.') return mangled;
+
+        size_t pos = 1;
+
+        // Skip past .?A
+        if (mangled.substr(pos, 2) != "?A") return mangled;
+        pos += 2;
+
+        // Get type (V=class, U=struct, W=union)
+        char typeChar = (pos < mangled.size()) ? mangled[pos++] : '?';
+        std::string typePrefix;
+        switch (typeChar) {
+            case 'V': typePrefix = ""; break; // Don't show "class" prefix
+            case 'U': typePrefix = ""; break; // Don't show "struct" prefix
+            case 'W': typePrefix = "union "; break;
+            default: return mangled;
+        }
+
+        // Parse the rest recursively
+        std::string result = typePrefix + ParseMangledName(mangled, pos);
+        return result;
+    }
+
+private:
+    // Helper to parse a single mangled type/name component
+    std::string ParseMangledName(const std::string& mangled, size_t& pos) const
+    {
+        if (pos >= mangled.size()) return "";
+
+        // Check for template
+        if (pos < mangled.size() - 1 && mangled[pos] == '?' && mangled[pos + 1] == '$') {
+            pos += 2; // Skip ?$
+            return ParseTemplate(mangled, pos);
+        }
+
+        // Check for nested type (V=class, U=struct, etc.)
+        if (mangled[pos] == 'V' || mangled[pos] == 'U' || mangled[pos] == 'W') {
+            pos++; // Skip type indicator
+            return ParseMangledName(mangled, pos);
+        }
+
+        // Parse regular identifier and namespace
+        std::vector<std::string> components;
+        std::string current;
+        
+        while (pos < mangled.size()) {
+            char c = mangled[pos];
+            
+            if (c == '@') {
+                pos++;
+                if (!current.empty()) {
+                    components.push_back(current);
+                    current.clear();
+                }
+                // @@ terminates the name
+                if (pos < mangled.size() && mangled[pos] == '@') {
+                    pos++; // Consume second @
+                    break;
+                }
+            } else if (c == '?') {
+                // Start of nested template or type
+                if (!current.empty()) {
+                    components.push_back(current);
+                    current.clear();
+                }
+                std::string nested = ParseMangledName(mangled, pos);
+                if (!nested.empty()) {
+                    components.push_back(nested);
+                }
+            } else {
+                current += c;
+                pos++;
+            }
+        }
+
+        if (!current.empty()) {
+            components.push_back(current);
+        }
+
+        // Build result: namespace::namespace::class
+        if (components.empty()) return "";
+
+        // Reverse order (MSVC stores innermost first)
+        std::reverse(components.begin(), components.end());
+
+        std::string result;
+        for (size_t i = 0; i < components.size(); ++i) {
+            if (i > 0) result += "::";
+            result += components[i];
+        }
+
+        return result;
+    }
+
+    // Parse template: name<arg1, arg2, ...>
+    std::string ParseTemplate(const std::string& mangled, size_t& pos) const
+    {
+        // Read template name until @
+        std::string templateName;
+        while (pos < mangled.size() && mangled[pos] != '@') {
+            templateName += mangled[pos++];
+        }
+        
+        if (pos >= mangled.size()) return templateName;
+        pos++; // Skip @
+
+        // Parse template arguments
+        std::vector<std::string> args;
+        while (pos < mangled.size()) {
+            // Check for end of template args
+            if (mangled[pos] == '@') {
+                pos++; // Skip @
+                // Check for end of entire name (@@)
+                if (pos < mangled.size() && mangled[pos] == '@') {
+                    // Don't consume - let outer parser handle it
+                    break;
+                }
+                // Check for namespace separator
+                if (pos < mangled.size() && mangled[pos] != '@' && mangled[pos] != '?') {
+                    // This @ is part of namespace, continue parsing namespace
+                    break;
+                }
+                continue;
+            }
+
+            // Parse template argument
+            std::string arg = ParseTemplateArg(mangled, pos);
+            if (!arg.empty()) {
+                args.push_back(arg);
+            } else {
+                break;
+            }
+        }
+
+        // Parse namespace if present
+        std::vector<std::string> namespaces;
+        std::string current;
+        while (pos < mangled.size()) {
+            char c = mangled[pos];
+            if (c == '@') {
+                pos++;
+                if (!current.empty()) {
+                    namespaces.push_back(current);
+                    current.clear();
+                }
+                if (pos < mangled.size() && mangled[pos] == '@') {
+                    pos++; // Consume @@
+                    break;
+                }
+            } else {
+                current += c;
+                pos++;
+            }
+        }
+        if (!current.empty()) {
+            namespaces.push_back(current);
+        }
+
+        // Build result
+        std::string result;
+        
+        // Add namespace in reverse order
+        if (!namespaces.empty()) {
+            std::reverse(namespaces.begin(), namespaces.end());
+            for (const auto& ns : namespaces) {
+                result += ns + "::";
+            }
+        }
+        
+        result += templateName;
+        
+        // Add template arguments
+        if (!args.empty()) {
+            result += "<";
+            for (size_t i = 0; i < args.size(); ++i) {
+                if (i > 0) result += ", ";
+                result += args[i];
+            }
+            result += ">";
+        }
+
+        return result;
+    }
+
+    // Parse a single template argument
+    std::string ParseTemplateArg(const std::string& mangled, size_t& pos) const
+    {
+        if (pos >= mangled.size()) return "";
+
+        char c = mangled[pos];
+
+        // Basic types
+        switch (c) {
+            case 'D': pos++; return "char";
+            case 'E': pos++; return "unsigned char";
+            case 'F': pos++; return "short";
+            case 'G': pos++; return "unsigned short";
+            case 'H': pos++; return "int";
+            case 'I': pos++; return "unsigned int";
+            case 'J': pos++; return "long";
+            case 'K': pos++; return "unsigned long";
+            case 'M': pos++; return "float";
+            case 'N': pos++; return "double";
+            case 'X': pos++; return "void";
+            case '_':
+                pos++;
+                if (pos < mangled.size()) {
+                    char c2 = mangled[pos++];
+                    switch (c2) {
+                        case 'N': return "bool";
+                        case 'W': return "wchar_t";
+                        case 'J': return "long long";
+                        case 'K': return "unsigned long long";
+                    }
+                }
+                return "?";
+        }
+
+        // Pointer/reference modifiers
+        if (c == 'P' || c == 'Q' || c == 'A') {
+            pos++;
+            std::string base = ParseTemplateArg(mangled, pos);
+            if (c == 'P') return base + "*";
+            if (c == 'Q') return base + "* const";
+            if (c == 'A') return base + "&";
+        }
+
+        // User-defined type (class/struct)
+        if (c == 'V' || c == 'U' || c == 'W') {
+            pos++; // Skip type indicator
+            return ParseMangledName(mangled, pos);
+        }
+
+        // Template
+        if (c == '?' && pos + 1 < mangled.size() && mangled[pos + 1] == '$') {
+            pos += 2; // Skip ?$
+            return ParseTemplate(mangled, pos);
+        }
+
+        // Unknown - skip until @ or end
+        pos++;
+        return "?";
+    }
+
+    void PrintRTTI()
+    {
+        auto rttiInfo = ListRTTI();
+        
+        if (rttiInfo.empty()) {
+            printf("// No RTTI information found\n\n");
+            return;
+        }
+
+        printf("// RTTI Information (%zu classes with vtables):\n", rttiInfo.size());
+        printf("// ================================================================\n\n");
+        
+        for (const auto& info : rttiInfo) {
+            printf("// VTable Address: 0x%08x Class: %s", mImageBase + info.vtableRVA, info.demangledName.c_str());
+//            printf("// Class: %s\n", info.demangledName.c_str());
+//            printf("//   VTable Address: 0x%08x\n", mImageBase + info.vtableRVA);
+//            printf("//   Mangled Name: %s\n", info.mangledName.c_str());
+//            printf("//   Object Offset: %d\n", info.offset);
+            
+            // Print inheritance information
+            if (!info.baseClasses.empty()) {
+                printf(" (Base Classes:");
+                for (const auto& base : info.baseClasses) {
+                    printf(" %s", base.demangledName.c_str());
+                    continue;
+                    if (base.offset != 0) {
+                        printf(" (offset: %d)", base.offset);
+                    }
+                    if (base.vbtableIndex != -1) {
+                        printf(" [virtual base: vbtable_offset=%d, index=%d]", 
+                               base.vbtableOffset, base.vbtableIndex);
+                    }
+                    printf("\n");
+                }
+                printf(")");
+            } else {
+//                printf("//   Base Classes: none\n");
+            }
+//            printf("\n");
+
+//            // Print inheritance type
+//            if (info.hasVirtualInheritance) {
+//                printf("//   Inheritance: Virtual\n");
+//            } else if (info.hasMultipleInheritance) {
+//                printf("//   Inheritance: Multiple\n");
+//            } else if (!info.baseClasses.empty()) {
+//                printf("//   Inheritance: Single\n");
+//            }
+
+            // Print virtual functions
+            if (!info.virtualFunctions.empty()) {
+                printf(" (%d virtual functions)", (int)info.virtualFunctions.size());
+//                printf("//   Virtual Functions (%zu):\n", info.virtualFunctions.size());
+//                for (size_t i = 0; i < info.virtualFunctions.size() && i < 10; ++i) {
+//                    printf("//     [%2zu] 0x%08x\n", i, info.virtualFunctions[i]);
+//                }
+//                if (info.virtualFunctions.size() > 10) {
+//                    printf("//     ... (%zu more)\n", info.virtualFunctions.size() - 10);
+//                }
+            }
+            
+            printf("\n");
+            //printf("//\n");
+        }
+        printf("\n");
     }
 };
 
