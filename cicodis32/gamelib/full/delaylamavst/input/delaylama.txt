@@ -1,0 +1,20 @@
+{"id": "config", "loader": "LoaderPe", "executable": "input/Delay Lama.dll", "architecture": "arch32", "loadAddress": 0x10000000, "stackShiftAlways": true, "recursive": false, "quiet": true}
+{"id": "config", "frontend": "javascriptSync"}
+// 10003560 - main vst entry function
+
+// method 10002db0 using indirect jump:
+//    if (r32[eax] > 0x0000000b)
+//        { pc = 0x10002f9a; break; }
+//    indirectJump(cs, memoryAGet32(ds, r32[eax] * 4 + 0x10002fa0)); return; // 0000:10002dc0
+
+{"id": "jumpTable", "addr": "0:10002dc0", "table": "0:10002fa0", "type": "jump32", "entries": 12, "selector": "eax", "useCaseOffset": false}
+
+// method 100011e0 dispatcher opcode switch (opcodes 0..0x18 = 0..24)
+{"id": "jumpTable", "addr": "0:100011f0", "table": "0:10001384", "type": "jump32", "entries": 25, "selector": "eax", "useCaseOffset": false}
+
+// method 100040c0 sub-object opcode switch (opcodes 0..6)
+{"id": "jumpTable", "addr": "0:100040dc", "table": "0:100041e8", "type": "jump32", "entries": 7, "selector": "eax", "useCaseOffset": false}
+
+// method 10001ab0 VST dispatcher opcodes 25..68 (edx = opcode-25, table at 0x10001f90, 44 entries)
+{"id": "jumpTable", "addr": "0:10001ac6", "table": "0:10001f90", "type": "jump32", "entries": 44, "selector": "edx", "useCaseOffset": false}
+
