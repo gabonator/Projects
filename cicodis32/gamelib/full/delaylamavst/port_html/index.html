@@ -13,65 +13,189 @@
     }
     *, *::before, *::after { box-sizing: border-box; }
     body {
-      background: #1a1a1a; color: #ddd; font-family: monospace;
+      background: #111;
       display: flex; flex-direction: column; align-items: center;
-      justify-content: center; min-height: 100dvh; margin: 0; padding: 8px 2px;
+      margin: 0; padding: 8px 0; min-height: 100dvh; gap: 10px;
     }
-    h1 { font-size: 1.3em; letter-spacing: 0.12em; color: #aaa; margin: 0 0 0.2em; }
-    #status { font-size: 0.8em; color: #666; margin-bottom: 0.7em; }
+
+    /* ── Plugin GUI 360×510 ─────────────────────────────── */
+    #gui {
+      position: relative;
+      width: 360px; height: 510px;
+      background: url('gui/bitmap_130_1043.png') 0 0 / 360px 510px no-repeat;
+      overflow: hidden;
+      user-select: none; -webkit-user-select: none;
+      touch-action: none;
+      cursor: default;
+    }
+
+    /* Face animation — sprite 131, 5×6 grid, 314×311 per frame */
+    #face {
+      position: absolute;
+      left: 23px; top: 0;
+      width: 314px; height: 311px;
+      background: url('gui/bitmap_131_1043.png') 0 0 / 1570px 1866px no-repeat;
+      pointer-events: none;
+    }
+
+    /* Touchpad overlay (Tibetan flag area) */
+    #pad {
+      position: absolute;
+      left: 27px; top: 350px;
+      width: 265px; height: 100px;
+      cursor: crosshair;
+    }
+
+    /* X indicator — arrow-down 10×10, moves along top edge of pad */
+    #pad-x {
+      position: absolute;
+      top: 340px;
+      width: 10px; height: 10px;
+      background: url('gui/bitmap_142_1043.png') 0 0 / 10px 10px no-repeat;
+      pointer-events: none;
+    }
+
+    /* Y indicator — arrow-right 10×10, moves along left edge of pad */
+    #pad-y {
+      position: absolute;
+      left: 17px;
+      width: 10px; height: 10px;
+      background: url('gui/bitmap_141_1043.png') 0 0 / 10px 10px no-repeat;
+      pointer-events: none;
+    }
+
+    /* Volume knob (left) — sprite 152, 50×3000, 30 frames of 50×100
+       top=430 so 430+80=510=GUI height: shows 80px of face, shadow below GUI edge */
+    #knob-vol {
+      position: absolute;
+      left: 10px; top: 430px;
+      width: 50px; height: 80px;
+      overflow: hidden;
+      background: url('gui/bitmap_152_1043.png') 0 0 / 50px 3000px no-repeat;
+      cursor: ns-resize;
+    }
+
+    /* Portamento knob (right) */
+    #knob-port {
+      position: absolute;
+      left: 300px; top: 430px;
+      width: 50px; height: 80px;
+      overflow: hidden;
+      background: url('gui/bitmap_152_1043.png') 0 0 / 50px 3000px no-repeat;
+      cursor: ns-resize;
+    }
+
+    /* Slider track */
+    #slider {
+      position: absolute;
+      left: 70px; top: 462px;
+      width: 220px; height: 30px;
+      cursor: ew-resize;
+    }
+
+    /* Slider handle — large arrow-down 20×27 per rsrc notes */
+    #slider-handle {
+      position: absolute;
+      top: 1px;                          /* (30-27)/2 ≈ 1px */
+      width: 20px; height: 27px;
+      background: url('gui/bitmap_151_1043.png') 0 0 / 20px 27px no-repeat;
+      pointer-events: none;
+    }
+
+    /* ? button (about screen) */
+    #btn-about {
+      position: absolute;
+      left: 308px; top: 334px;
+      width: 28px; height: 28px;
+      cursor: pointer;
+      opacity: 0;              /* invisible hit-area over the ? glyph in BG */
+    }
+
+    /* About overlay */
+    #about {
+      display: none;
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.65);
+      justify-content: center; align-items: center;
+      cursor: pointer;
+    }
+    #about.visible { display: flex; }
+    #about-img {
+      width: 253px; height: 275px;
+      background: url('gui/bitmap_160_1043.png') 0 0 / 253px 275px no-repeat;
+    }
+
+    /* Status text (init progress, overlays message area) */
+    #status-gui {
+      position: absolute;
+      left: 30px; top: 185px; right: 30px;
+      text-align: center;
+      font: 11px/1.4 monospace;
+      color: #ccc;
+      pointer-events: none;
+    }
+
+    /* ── Piano keyboard ─────────────────────────────────── */
     #kb {
       position: relative;
       width: calc(15 * var(--ww));
       height: var(--wh);
       touch-action: none;
-      -webkit-user-select: none;
-      user-select: none;
+      user-select: none; -webkit-user-select: none;
     }
     .wkey {
       position: absolute;
-      width: calc(var(--ww) - 2px);
-      height: var(--wh);
-      background: #ddd;
-      border: 1px solid #666;
-      border-radius: 0 0 5px 5px;
+      width: calc(var(--ww) - 2px); height: var(--wh);
+      background: #ddd; border: 1px solid #666; border-radius: 0 0 5px 5px;
       display: flex; align-items: flex-end; justify-content: center;
-      padding-bottom: 5px;
-      font-size: 0.6em; color: #999;
+      padding-bottom: 5px; font: 0.6em/1 monospace; color: #999;
     }
     .bkey {
       position: absolute;
-      width: var(--bw);
-      height: var(--bh);
-      background: #1e1e1e;
-      border: 1px solid #555;
-      border-radius: 0 0 4px 4px;
-      z-index: 1;
+      width: var(--bw); height: var(--bh);
+      background: #1e1e1e; border: 1px solid #555;
+      border-radius: 0 0 4px 4px; z-index: 1;
     }
     .wkey.active { background: #5a9a5a; color: #fff; }
     .bkey.active { background: #2a6a2a; }
-    #hint { margin-top: 0.7em; font-size: 0.7em; color: #555; text-align: center; padding: 0 8px; }
+
+    #hint { font: 0.7em monospace; color: #555; text-align: center; padding: 0 8px; }
   </style>
 </head>
 <body>
 
-<h1>DELAY LAMA</h1>
-<div id="status">Loading…</div>
-<div id="kb"></div>
-<div id="hint">Touch keys to play &nbsp;·&nbsp; Desktop: ASDFGHJK / WETYU (first octave)</div>
+<!-- Plugin GUI -->
+<div id="gui">
+  <div id="face"></div>
+  <div id="pad"></div>
+  <div id="pad-x"></div>
+  <div id="pad-y"></div>
+  <div id="knob-vol"></div>
+  <div id="knob-port"></div>
+  <div id="slider"><div id="slider-handle"></div></div>
+  <div id="btn-about"></div>
+  <div id="about"><div id="about-img"></div></div>
+  <div id="status-gui">Loading…</div>
+</div>
 
-<!-- x86 emulator core — loaded before inline script uses them -->
+<!-- Piano keyboard -->
+<div id="kb"></div>
+<div id="hint">Touch keys · Desktop: ASDFGHJK / WETYU</div>
+
+<!-- x86 emulator core -->
 <script>var archive = {};</script>
 <script src="cpu.js"></script>
 <script src="fpu.js"></script>
 <script src="crt.js"></script>
 <script src="delaylama.js"></script>
+<script src="delaylamagui.js"></script>
 
 <script>
 // ── Constants ──────────────────────────────────────────────
-const BLOCK_SIZE  = 1024 * 2;   // 2048 — matches Node.js main.js
+const BLOCK_SIZE  = 2048;
 const SAMPLE_RATE = 44100;
 
-// QWERTY → MIDI note (C4=60 … C5=72, first octave only)
 const KEY_TO_NOTE = {
   'A':60,'W':61,'S':62,'E':63,'D':64,'F':65,'T':66,
   'G':67,'Y':68,'H':69,'U':70,'J':71,'K':72
@@ -81,34 +205,50 @@ const KEY_TO_NOTE = {
 let pluginPtr, dispatcherPtr, processReplacingPtr;
 let outL, outR, inputPtrs, outputPtrs;
 let vstEventsPtr, vstEventsDataPtr;
-let midiEvents = [];
+let midiEvents   = [];
+let pluginReady  = false;
+
+// Plugin parameters (0..1)
+const params = { volume: 0.5, vowel: 0.3, portamento: 0.0, depth: 1.0 };
 
 // ── Audio scheduling ───────────────────────────────────────
 let audioContext = null;
 let nextTime     = 0;
 
 function audioMasterHandler() {
-  const opcode = stack32(1); // opcode at [esp+4]
-  r32[eax] = opcode === 1 ? 2400 : 0; // audioMasterVersion → VST 2.4
+  r32[eax] = stack32(1) === 1 ? 2400 : 0;
 }
 
 function processEvents(events) {
   if (!events.length) return;
   events.forEach((ev, i) => {
     const p = vstEventsDataPtr + i * 32;
-    memoryASet32(ds, p + 0x00, 1);  memoryASet32(ds, p + 0x04, 32);
-    memoryASet32(ds, p + 0x08, ev.deltaFrames || 0);
-    memoryASet32(ds, p + 0x0c, 0);  memoryASet32(ds, p + 0x10, 0);
-    memoryASet32(ds, p + 0x14, 0);
-    memoryASet32(ds, p + 0x18,
-      (ev.status & 0xff) | ((ev.note & 0xff) << 8) | ((ev.velocity & 0xff) << 16));
-    memoryASet32(ds, p + 0x1c, 0);
-    memoryASet32(ds, vstEventsPtr + 8 + i * 4, p);
+    memoryASet32(ds, p+0x00, 1);  memoryASet32(ds, p+0x04, 32);
+    memoryASet32(ds, p+0x08, ev.deltaFrames || 0);
+    memoryASet32(ds, p+0x0c, 0);  memoryASet32(ds, p+0x10, 0);
+    memoryASet32(ds, p+0x14, 0);
+    memoryASet32(ds, p+0x18,
+      (ev.status&0xff) | ((ev.note&0xff)<<8) | ((ev.velocity&0xff)<<16));
+    memoryASet32(ds, p+0x1c, 0);
+    memoryASet32(ds, vstEventsPtr + 8 + i*4, p);
   });
-  memoryASet32(ds, vstEventsPtr,     events.length);
-  memoryASet32(ds, vstEventsPtr + 4, 0);
+  memoryASet32(ds, vstEventsPtr,   events.length);
+  memoryASet32(ds, vstEventsPtr+4, 0);
   push32(0); push32(vstEventsPtr); push32(0); push32(0); push32(25); push32(pluginPtr);
   indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+}
+
+function setParam(idx, val) {
+  if (!pluginReady) return;
+  val = Math.max(0, Math.min(1, val));
+  const dv = new DataView(new ArrayBuffer(4));
+  dv.setFloat32(0, val, true);
+  const setParamPtr = memoryAGet32(ds, pluginPtr + 0x0c); // AEffect.setParameter = sub_10001080
+  push32(dv.getUint32(0, true)); // float value (arg3)
+  push32(idx);                   // param index (arg2)
+  push32(pluginPtr);             // AEffect* (arg1)
+  indirectCall(cs, setParamPtr);
+  r32[esp] += 12;                // cdecl: caller pops 3 args
 }
 
 function renderBlock() {
@@ -118,8 +258,8 @@ function renderBlock() {
   const buf = audioContext.createBuffer(2, BLOCK_SIZE, SAMPLE_RATE);
   const L = buf.getChannelData(0), R = buf.getChannelData(1);
   for (let i = 0; i < BLOCK_SIZE; i++) {
-    L[i] = FromFp32(memoryAGet32(ds, outL + i * 4));
-    R[i] = FromFp32(memoryAGet32(ds, outR + i * 4));
+    L[i] = FromFp32(memoryAGet32(ds, outL + i*4));
+    R[i] = FromFp32(memoryAGet32(ds, outR + i*4));
   }
   return buf;
 }
@@ -137,92 +277,211 @@ async function startAudio() {
   audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
   await audioContext.resume();
   nextTime = audioContext.currentTime;
-  // Pre-fill ~100 ms ahead; refill every 10 ms
   setInterval(() => {
     while (nextTime < audioContext.currentTime + 0.1) scheduleBuffer();
   }, 10);
-  setStatus('Ready');
+  setGuiStatus('');
 }
 
 async function initPlugin() {
-  setStatus('Fetching resources…');
+  setGuiStatus('Fetching resources…');
   await Promise.all([
-    //'Delay Lama_text.bin', 
-    'Delay Lama_rdata.bin', 'Delay Lama_data.bin',
-    //'Delay Lama_rsrc.bin', 'Delay Lama_reloc.bin',
+    'Delay Lama_text.bin','Delay Lama_rdata.bin','Delay Lama_data.bin',
+    'Delay Lama_rsrc.bin','Delay Lama_reloc.bin',
   ].map(async name => {
-    const r = await fetch('../res/' + encodeURIComponent(name));
+    const r = await fetch('res/' + encodeURIComponent(name));
     if (!r.ok) throw new Error(`${name}: ${r.status}`);
     archive[name] = new Uint8Array(await r.arrayBuffer());
   }));
 
-  setStatus('Initialising…');
+  setGuiStatus('Initialising…');
   init();
-  vstEventsPtr     = allocate(8 + 32 * 4);
-  vstEventsDataPtr = allocate(32 * 32);
+  vstEventsPtr     = allocate(8 + 32*4);
+  vstEventsDataPtr = allocate(32*32);
 
   push32(0x77778888); sub_10003560(); r32[esp] += 4;
   pluginPtr           = r32[eax];
   dispatcherPtr       = memoryAGet32(ds, pluginPtr + 0x04);
   processReplacingPtr = memoryAGet32(ds, pluginPtr + 0x50);
 
-  function fp32bits(f) {
-    const v = new DataView(new ArrayBuffer(4));
-    v.setFloat32(0, f, true);
-    return v.getUint32(0, true);
-  }
+  const fp = f => { const v=new DataView(new ArrayBuffer(4)); v.setFloat32(0,f,true); return v.getUint32(0,true); };
 
-  // effSetProgram(1)
   push32(0); push32(0); push32(1); push32(0); push32(2); push32(pluginPtr);
   indirectCall(cs, dispatcherPtr); r32[esp] += 24;
-  // effSetSampleRate(44100)
-  push32(fp32bits(SAMPLE_RATE)); push32(0); push32(0); push32(0); push32(10); push32(pluginPtr);
+  push32(fp(SAMPLE_RATE)); push32(0); push32(0); push32(0); push32(10); push32(pluginPtr);
   indirectCall(cs, dispatcherPtr); r32[esp] += 24;
-  // effSetBlockSize(2048)
   push32(0); push32(0); push32(BLOCK_SIZE); push32(0); push32(11); push32(pluginPtr);
   indirectCall(cs, dispatcherPtr); r32[esp] += 24;
-  // effMainsChanged(1) — activate
   push32(0); push32(0); push32(1); push32(0); push32(12); push32(pluginPtr);
   indirectCall(cs, dispatcherPtr); r32[esp] += 24;
 
-  const inL = allocate(BLOCK_SIZE * 4), inR = allocate(BLOCK_SIZE * 4);
-  outL = allocate(BLOCK_SIZE * 4); outR = allocate(BLOCK_SIZE * 4);
+  const inL = allocate(BLOCK_SIZE*4), inR = allocate(BLOCK_SIZE*4);
+  outL = allocate(BLOCK_SIZE*4); outR = allocate(BLOCK_SIZE*4);
   inputPtrs = allocate(8); outputPtrs = allocate(8);
-  memoryASet32(ds, inputPtrs,     inL); memoryASet32(ds, inputPtrs  + 4, inR);
-  memoryASet32(ds, outputPtrs,   outL); memoryASet32(ds, outputPtrs + 4, outR);
+  memoryASet32(ds, inputPtrs,   inL); memoryASet32(ds, inputPtrs+4, inR);
+  memoryASet32(ds, outputPtrs, outL); memoryASet32(ds, outputPtrs+4, outR);
 
-  setStatus('Touch a key to begin');
+  pluginReady = true;
+  setParam(0, params.volume);
+  setParam(1, params.vowel);
+  setParam(2, params.portamento);
+  setParam(3, params.depth);
+  updateGui();
+  setGuiStatus('');
 }
 
+// ── GUI rendering ──────────────────────────────────────────
+function updateGui() {
+  updateFace();
+  updatePadX();
+  updatePadY();
+  updateKnob('knob-vol',  params.volume);
+  updateKnob('knob-port', params.portamento);
+  updateSlider();
+}
+
+// Face animation — started after activeNotes is defined (see below)
+let facePhase = 0;
+
+function updateFace() {
+  facePhase = 0;  // reset wobble when vowel is manually set
+  document.getElementById('face').style.backgroundPosition =
+    GUI.faceFramePos(GUI.vowelToFrame(params.vowel));
+}
+
+function updatePadX() {
+  // arrow tip at left edge of pad; moves from PAD_LEFT to PAD_LEFT+PAD_W-XARROW_W
+  const left = GUI.PAD_LEFT + Math.round(params.vowel * (GUI.PAD_W - GUI.XARROW_W));
+  document.getElementById('pad-x').style.left = left + 'px';
+}
+
+function updatePadY() {
+  // arrow tip at left edge of pad; y=0 → top (max depth), y=1 → bottom (min depth)
+  const top = GUI.PAD_TOP + Math.round((1 - params.depth) * (GUI.PAD_H - GUI.YARROW_H));
+  document.getElementById('pad-y').style.top = top + 'px';
+}
+
+function updateKnob(id, val) {
+  const frame = Math.round(val * (GUI.KNOB_FRAMES - 1));
+  document.getElementById(id).style.backgroundPosition = GUI.knobFramePos(frame);
+}
+
+function updateSlider() {
+  const x = Math.round(params.vowel * (GUI.SLIDER_W - GUI.HANDLE_W));
+  document.getElementById('slider-handle').style.left = x + 'px';
+}
+
+// ── Touchpad ───────────────────────────────────────────────
+let padDown = false;
+const pad = document.getElementById('pad');
+
+pad.addEventListener('pointerdown', e => {
+  e.preventDefault(); startAudio(); padDown = true;
+  pad.setPointerCapture(e.pointerId);
+  padUpdate(e);
+}, { passive: false });
+pad.addEventListener('pointermove', e => {
+  if (!padDown) return; e.preventDefault(); padUpdate(e);
+}, { passive: false });
+pad.addEventListener('pointerup',     () => { padDown = false; });
+pad.addEventListener('pointercancel', () => { padDown = false; });
+
+function padUpdate(e) {
+  const r = pad.getBoundingClientRect();
+  const x = Math.max(0, Math.min(1, (e.clientX - r.left)  / r.width));
+  const y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+  params.vowel = x;
+  params.depth = 1 - y;
+  setParam(1, params.vowel);
+  setParam(3, params.depth);
+  // pad-x indicator follows touch; slider stays independent
+  updatePadX(); updatePadY();
+}
+
+// ── Knobs (vertical drag) ──────────────────────────────────
+function setupKnob(id, paramName, paramIdx) {
+  const el = document.getElementById(id);
+  let startY = 0, startVal = 0;
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault(); startAudio();
+    el.setPointerCapture(e.pointerId);
+    startY = e.clientY; startVal = params[paramName];
+  }, { passive: false });
+  el.addEventListener('pointermove', e => {
+    if (!el.hasPointerCapture(e.pointerId)) return;
+    params[paramName] = Math.max(0, Math.min(1, startVal + (startY - e.clientY) / 150));
+    setParam(paramIdx, params[paramName]);
+    updateKnob(id, params[paramName]);
+  });
+  el.addEventListener('dblclick', () => {
+    params[paramName] = paramName === 'volume' ? 0.5 : 0.0;
+    setParam(paramIdx, params[paramName]);
+    updateKnob(id, params[paramName]);
+  });
+}
+setupKnob('knob-vol',  'volume',     0);
+setupKnob('knob-port', 'portamento', 2);
+
+// ── Slider (horizontal drag, links with pad X) ─────────────
+let sliderDown = false;
+const sliderEl = document.getElementById('slider');
+
+sliderEl.addEventListener('pointerdown', e => {
+  e.preventDefault(); startAudio(); sliderDown = true;
+  sliderEl.setPointerCapture(e.pointerId); sliderUpdate(e);
+}, { passive: false });
+sliderEl.addEventListener('pointermove', e => {
+  if (!sliderDown) return; e.preventDefault(); sliderUpdate(e);
+}, { passive: false });
+sliderEl.addEventListener('pointerup',     () => { sliderDown = false; });
+sliderEl.addEventListener('pointercancel', () => { sliderDown = false; });
+
+function sliderUpdate(e) {
+  const r = sliderEl.getBoundingClientRect();
+  params.vowel = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  setParam(1, params.vowel);
+  // slider handle follows drag; pad-x indicator stays independent
+  updateSlider();
+}
+
+// ── About button ───────────────────────────────────────────
+document.getElementById('btn-about').addEventListener('click', () => {
+  document.getElementById('about').classList.toggle('visible');
+});
+document.getElementById('about').addEventListener('click', () => {
+  document.getElementById('about').classList.remove('visible');
+});
+
 // ── Piano keyboard — 2 octaves C4(60)…C6(84) ──────────────
-const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const IS_BLACK   = n => [1, 3, 6, 8, 10].includes(n % 12);
-
-// White-key index (0..14) that each black key sits above
-const BLACK_AFTER = {
-  61: 0,  63: 1,  66: 3,  68: 4,  70: 5,   // octave 4
-  73: 7,  75: 8,  78: 10, 80: 11, 82: 12,   // octave 5
-};
-
+const NOTE_NAMES  = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const IS_BLACK    = n => [1,3,6,8,10].includes(n%12);
+const BLACK_AFTER = {61:0,63:1,66:3,68:4,70:5, 73:7,75:8,78:10,80:11,82:12};
 const keyEls      = {};
 const activeNotes = new Set();
+(function faceLoop() {
+  if (activeNotes.size > 0) {
+    facePhase += 0.3;
+    const base   = GUI.vowelToFrame(params.vowel);
+    const wobble = Math.round(Math.sin(facePhase * 0.21) * 4);
+    const frame  = Math.max(0, Math.min(GUI.FACE_FRAMES - 1, base + wobble));
+    document.getElementById('face').style.backgroundPosition = GUI.faceFramePos(frame);
+  }
+  requestAnimationFrame(faceLoop);
+})();
 
 (function buildKeyboard() {
   const kb = document.getElementById('kb');
   let wi = 0;
   for (let note = 60; note <= 84; note++) {
-    const el  = document.createElement('div');
-    const step = note % 12;
-    const oct  = Math.floor(note / 12) - 1;
+    const el   = document.createElement('div');
+    const step = note % 12, oct = Math.floor(note/12) - 1;
     if (IS_BLACK(note)) {
       el.className = 'bkey';
-      const wIdx = BLACK_AFTER[note];
-      el.style.left = `calc(${wIdx + 0.65} * var(--ww) - var(--bw) / 2)`;
+      el.style.left = `calc(${BLACK_AFTER[note]+0.65}*var(--ww) - var(--bw)/2)`;
     } else {
       el.className = 'wkey';
-      el.style.left = `calc(${wi} * var(--ww) + 1px)`;
-      // Label: C notes show "C4"/"C5"/"C6", others just the letter
-      el.textContent = step === 0 ? NOTE_NAMES[step] + oct : NOTE_NAMES[step];
+      el.style.left = `calc(${wi}*var(--ww) + 1px)`;
+      el.textContent = step===0 ? NOTE_NAMES[step]+oct : NOTE_NAMES[step];
       wi++;
     }
     el.dataset.note = note;
@@ -232,30 +491,24 @@ const activeNotes = new Set();
 })();
 
 function setKeyActive(note, on) { keyEls[note]?.classList.toggle('active', on); }
-
 function noteOn(note) {
   if (activeNotes.has(note)) return;
-  activeNotes.add(note);
-  midiEvents.push({ status: 0x90, note, velocity: 100 });
+  activeNotes.add(note); midiEvents.push({ status:0x90, note, velocity:100 });
   setKeyActive(note, true);
 }
 function noteOff(note) {
   if (!activeNotes.has(note)) return;
-  activeNotes.delete(note);
-  midiEvents.push({ status: 0x80, note, velocity: 0 });
+  activeNotes.delete(note); midiEvents.push({ status:0x80, note, velocity:0 });
   setKeyActive(note, false);
 }
 
-// ── Touch input (multi-touch + slide between keys) ─────────
+// Touch input (multi-touch)
 const touchNotes = {};
-
+const kb = document.getElementById('kb');
 function noteAtPoint(x, y) {
   const el = document.elementFromPoint(x, y);
   return (el && el.dataset.note != null) ? +el.dataset.note : null;
 }
-
-const kb = document.getElementById('kb');
-
 kb.addEventListener('touchstart', e => {
   e.preventDefault(); startAudio();
   for (const t of e.changedTouches) {
@@ -263,12 +516,10 @@ kb.addEventListener('touchstart', e => {
     if (n != null) { touchNotes[t.identifier] = n; noteOn(n); }
   }
 }, { passive: false });
-
 kb.addEventListener('touchmove', e => {
   e.preventDefault();
   for (const t of e.changedTouches) {
-    const n    = noteAtPoint(t.clientX, t.clientY);
-    const prev = touchNotes[t.identifier];
+    const n = noteAtPoint(t.clientX, t.clientY), prev = touchNotes[t.identifier];
     if (n !== prev) {
       if (prev != null) noteOff(prev);
       touchNotes[t.identifier] = n;
@@ -276,7 +527,6 @@ kb.addEventListener('touchmove', e => {
     }
   }
 }, { passive: false });
-
 function onTouchEnd(e) {
   e.preventDefault();
   for (const t of e.changedTouches) {
@@ -287,26 +537,24 @@ function onTouchEnd(e) {
 kb.addEventListener('touchend',    onTouchEnd, { passive: false });
 kb.addEventListener('touchcancel', onTouchEnd, { passive: false });
 
-// ── Mouse input (desktop, supports click-drag) ─────────────
+// Mouse drag on keyboard
 let mouseNote = null;
-
 kb.addEventListener('mousedown', e => {
   e.preventDefault(); startAudio();
   const el = e.target.closest('[data-note]');
-  if (!el) return;
-  mouseNote = +el.dataset.note; noteOn(mouseNote);
+  if (!el) return; mouseNote = +el.dataset.note; noteOn(mouseNote);
 });
 document.addEventListener('mousemove', e => {
   if (mouseNote == null) return;
   const el = document.elementFromPoint(e.clientX, e.clientY);
-  const n  = (el && el.dataset.note != null) ? +el.dataset.note : null;
+  const n = (el && el.dataset.note != null) ? +el.dataset.note : null;
   if (n !== mouseNote) { noteOff(mouseNote); mouseNote = n; if (n != null) noteOn(n); }
 });
 document.addEventListener('mouseup', () => {
   if (mouseNote != null) { noteOff(mouseNote); mouseNote = null; }
 });
 
-// ── QWERTY keyboard (desktop) ──────────────────────────────
+// QWERTY
 document.addEventListener('keydown', e => {
   if (e.repeat) return;
   const n = KEY_TO_NOTE[e.key.toUpperCase()];
@@ -317,10 +565,14 @@ document.addEventListener('keyup', e => {
   if (n) noteOff(n);
 });
 
-function setStatus(msg) { document.getElementById('status').textContent = msg; }
+function setGuiStatus(msg) {
+  const el = document.getElementById('status-gui');
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
 
 // ── Boot ───────────────────────────────────────────────────
-initPlugin().catch(err => { console.error(err); setStatus('Error: ' + err.message); });
+initPlugin().catch(err => { console.error(err); setGuiStatus('Error: ' + err.message); });
 </script>
 </body>
 </html>
