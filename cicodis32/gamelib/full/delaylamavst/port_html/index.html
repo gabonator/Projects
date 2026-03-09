@@ -286,8 +286,9 @@ async function startAudio() {
 async function initPlugin() {
   setGuiStatus('Fetching resources…');
   await Promise.all([
-    'Delay Lama_text.bin','Delay Lama_rdata.bin','Delay Lama_data.bin',
-    'Delay Lama_rsrc.bin','Delay Lama_reloc.bin',
+    //'Delay Lama_text.bin',
+    'Delay Lama_rdata.bin','Delay Lama_data.bin',
+    //'Delay Lama_rsrc.bin','Delay Lama_reloc.bin',
   ].map(async name => {
     const r = await fetch('res/' + encodeURIComponent(name));
     if (!r.ok) throw new Error(`${name}: ${r.status}`);

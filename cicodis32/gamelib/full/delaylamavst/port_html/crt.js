@@ -25,6 +25,9 @@ function indirectCall(s, o)
     case 0x100048d0: sub_100048d0(); break;        // delay buffer init / activation
     case 0x10002060: sub_10002060(); break;        // vtable+0x88: sample-rate getter callback
     case 0x10001970: sub_10001970(); break;
+    case 0x10001080: sub_10001080(); break;        // AEffect.setParameter (cdecl, caller pops 12)
+    case 0x10001060: sub_10001060(); break;        // AEffect.getParameter (cdecl, caller pops 8)
+    case 0x10002fd0: sub_10002fd0(); break;        // vtable[2]: getParameter impl
 
     // Windows API stubs (6ab000xx enum values from IAT)
     // stdcall: callee pops args (r32[esp] += N)

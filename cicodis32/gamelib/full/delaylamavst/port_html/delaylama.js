@@ -367,11 +367,11 @@ function fixReloc(seg)
 
 function init()
 {
-//    loadOverlay("Delay Lama_text.bin", 0x10001000);
+    loadOverlay("Delay Lama_text.bin", 0x10001000);
     loadOverlay("Delay Lama_rdata.bin", 0x1000b000);
     loadOverlay("Delay Lama_data.bin", 0x1000d000);
-//    loadOverlay("Delay Lama_rsrc.bin", 0x1000e000);
-//    loadOverlay("Delay Lama_reloc.bin", 0x10388000);
+    loadOverlay("Delay Lama_rsrc.bin", 0x1000e000);
+    loadOverlay("Delay Lama_reloc.bin", 0x10388000);
     r32[esp] = 0x1038c000;
     r32[ebp] = 0x1038c000;
 }
@@ -4513,4 +4513,84 @@ function sub_10005eb0() // 0000:10005eb0 +long +stackDrop4
   }
 }
 
+// AEffect.setParameter(AEffect*, VstInt32 index, float value) — cdecl, caller pops 12
+function sub_10001080() // 0000:10001080
+{
+    r32[esp] -= 4;
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0x4);    // AEffect*
+    r32[ecx] = memoryAGet32(ds, r32[eax] + 0x40);   // C++ plugin object
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0xc);    // float value (arg3)
+    push32(r32[eax]);
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0xc);    // param index (arg2, was at esp+8)
+    r32[edx] = memoryAGet32(ds, r32[ecx]);           // vtable ptr
+    push32(r32[eax]);                                // push param index (= opcode for sub_10002db0)
+    indirectCall(cs, memoryAGet32(ds, r32[edx] + 0x4)); // vtable[1] = sub_10002db0 (+stackDrop8)
+    r32[esp] += 4;  // undo synthetic
+}
+
+// AEffect.getParameter(AEffect*, VstInt32 index) — cdecl, caller pops 8; returns float in ST(0)
+function sub_10001060() // 0000:10001060
+{
+    r32[esp] -= 4;
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0x4);    // AEffect*
+    r32[ecx] = memoryAGet32(ds, r32[eax] + 0x40);   // C++ plugin object
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0x8);    // param index (arg2)
+    push32(r32[eax]);
+    r32[edx] = memoryAGet32(ds, r32[ecx]);           // vtable ptr
+    indirectCall(cs, memoryAGet32(ds, r32[edx] + 0x8)); // vtable[2] = sub_10002fd0 (+stackDrop4)
+    r32[esp] += 4;  // undo synthetic; float result left in ST(0)
+}
+
+// vtable[2]: getParameter implementation — reads param value from C++ object
+function sub_10002fd0() // 0000:10002fd0 +stackDrop4
+{
+  var pc = 0;
+  while (1) switch(pc)
+  {
+  case 0:
+    r32[esp] -= 4;
+    r32[eax] = memoryAGet32(ds, r32[esp] + 0x4);  // param index
+    fld32(memoryAGet32(ds, 0x1000b208));           // push 0.0 as default
+    if (r32[eax] > 0x00000006)
+        { pc = 0x10003025; break; }
+    switch (r32[eax])
+    {
+        case 0: { pc = 0x10002fe6; break; }
+        case 1: { pc = 0x10002ff1; break; }
+        case 2: { pc = 0x10002ffc; break; }
+        case 3: { pc = 0x10003007; break; }
+        case 4: { pc = 0x10003025; break; }
+        case 5: { pc = 0x1000301d; break; }
+        case 6: { pc = 0x10003012; break; }
+        default:
+            stop("ind 0000:10002fdf");
+    }
+    break;
+  case 0x10002fe6: // param 0: volume
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xb0));
+    r32[esp] += 8; return;
+  case 0x10002ff1: // param 1: vowel
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xb4));
+    r32[esp] += 8; return;
+  case 0x10002ffc: // param 2: portamento
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xbc));
+    r32[esp] += 8; return;
+  case 0x10003007: // param 3: depth
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xc4));
+    r32[esp] += 8; return;
+  case 0x10003012: // param 6
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xc0));
+    r32[esp] += 8; return;
+  case 0x1000301d: // param 5
+    fstpst(0);
+    fld32(memoryAGet32(ds, r32[ecx] + 0xc8));
+  case 0x10003025:
+    r32[esp] += 8; return;
+  }
+}
 
