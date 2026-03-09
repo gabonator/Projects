@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Delay Lama</title>
+  <style>
+    :root {
+      --ww: calc((100vw - 4px) / 15);
+      --wh: 140px;
+      --bw: calc(var(--ww) * 0.62);
+      --bh: calc(var(--wh) * 0.62);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      background: #1a1a1a; color: #ddd; font-family: monospace;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100dvh; margin: 0; padding: 8px 2px;
+    }
+    h1 { font-size: 1.3em; letter-spacing: 0.12em; color: #aaa; margin: 0 0 0.2em; }
+    #status { font-size: 0.8em; color: #666; margin-bottom: 0.7em; }
+    #kb {
+      position: relative;
+      width: calc(15 * var(--ww));
+      height: var(--wh);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .wkey {
+      position: absolute;
+      width: calc(var(--ww) - 2px);
+      height: var(--wh);
+      background: #ddd;
+      border: 1px solid #666;
+      border-radius: 0 0 5px 5px;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 5px;
+      font-size: 0.6em; color: #999;
+    }
+    .bkey {
+      position: absolute;
+      width: var(--bw);
+      height: var(--bh);
+      background: #1e1e1e;
+      border: 1px solid #555;
+      border-radius: 0 0 4px 4px;
+      z-index: 1;
+    }
+    .wkey.active { background: #5a9a5a; color: #fff; }
+    .bkey.active { background: #2a6a2a; }
+    #hint { margin-top: 0.7em; font-size: 0.7em; color: #555; text-align: center; padding: 0 8px; }
+  </style>
+</head>
+<body>
+
+<h1>DELAY LAMA</h1>
+<div id="status">Loading…</div>
+<div id="kb"></div>
+<div id="hint">Touch keys to play &nbsp;·&nbsp; Desktop: ASDFGHJK / WETYU (first octave)</div>
+
+<!-- x86 emulator core — loaded before inline script uses them -->
+<script>var archive = {};</script>
+<script src="cpu.js"></script>
+<script src="fpu.js"></script>
+<script src="crt.js"></script>
+<script src="delaylama.js"></script>
+
+<script>
+// ── Constants ──────────────────────────────────────────────
+const BLOCK_SIZE  = 1024 * 2;   // 2048 — matches Node.js main.js
+const SAMPLE_RATE = 44100;
+
+// QWERTY → MIDI note (C4=60 … C5=72, first octave only)
+const KEY_TO_NOTE = {
+  'A':60,'W':61,'S':62,'E':63,'D':64,'F':65,'T':66,
+  'G':67,'Y':68,'H':69,'U':70,'J':71,'K':72
+};
+
+// ── VST state ──────────────────────────────────────────────
+let pluginPtr, dispatcherPtr, processReplacingPtr;
+let outL, outR, inputPtrs, outputPtrs;
+let vstEventsPtr, vstEventsDataPtr;
+let midiEvents = [];
+
+// ── Audio scheduling ───────────────────────────────────────
+let audioContext = null;
+let nextTime     = 0;
+
+function audioMasterHandler() {
+  const opcode = stack32(1); // opcode at [esp+4]
+  r32[eax] = opcode === 1 ? 2400 : 0; // audioMasterVersion → VST 2.4
+}
+
+function processEvents(events) {
+  if (!events.length) return;
+  events.forEach((ev, i) => {
+    const p = vstEventsDataPtr + i * 32;
+    memoryASet32(ds, p + 0x00, 1);  memoryASet32(ds, p + 0x04, 32);
+    memoryASet32(ds, p + 0x08, ev.deltaFrames || 0);
+    memoryASet32(ds, p + 0x0c, 0);  memoryASet32(ds, p + 0x10, 0);
+    memoryASet32(ds, p + 0x14, 0);
+    memoryASet32(ds, p + 0x18,
+      (ev.status & 0xff) | ((ev.note & 0xff) << 8) | ((ev.velocity & 0xff) << 16));
+    memoryASet32(ds, p + 0x1c, 0);
+    memoryASet32(ds, vstEventsPtr + 8 + i * 4, p);
+  });
+  memoryASet32(ds, vstEventsPtr,     events.length);
+  memoryASet32(ds, vstEventsPtr + 4, 0);
+  push32(0); push32(vstEventsPtr); push32(0); push32(0); push32(25); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+}
+
+function renderBlock() {
+  processEvents(midiEvents); midiEvents = [];
+  push32(BLOCK_SIZE); push32(outputPtrs); push32(inputPtrs); push32(pluginPtr);
+  indirectCall(cs, processReplacingPtr); r32[esp] += 16;
+  const buf = audioContext.createBuffer(2, BLOCK_SIZE, SAMPLE_RATE);
+  const L = buf.getChannelData(0), R = buf.getChannelData(1);
+  for (let i = 0; i < BLOCK_SIZE; i++) {
+    L[i] = FromFp32(memoryAGet32(ds, outL + i * 4));
+    R[i] = FromFp32(memoryAGet32(ds, outR + i * 4));
+  }
+  return buf;
+}
+
+function scheduleBuffer() {
+  const src = audioContext.createBufferSource();
+  src.buffer = renderBlock();
+  src.connect(audioContext.destination);
+  src.start(nextTime);
+  nextTime += BLOCK_SIZE / SAMPLE_RATE;
+}
+
+async function startAudio() {
+  if (audioContext) return;
+  audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+  await audioContext.resume();
+  nextTime = audioContext.currentTime;
+  // Pre-fill ~100 ms ahead; refill every 10 ms
+  setInterval(() => {
+    while (nextTime < audioContext.currentTime + 0.1) scheduleBuffer();
+  }, 10);
+  setStatus('Ready');
+}
+
+async function initPlugin() {
+  setStatus('Fetching resources…');
+  await Promise.all([
+    //'Delay Lama_text.bin', 
+    'Delay Lama_rdata.bin', 'Delay Lama_data.bin',
+    //'Delay Lama_rsrc.bin', 'Delay Lama_reloc.bin',
+  ].map(async name => {
+    const r = await fetch('../res/' + encodeURIComponent(name));
+    if (!r.ok) throw new Error(`${name}: ${r.status}`);
+    archive[name] = new Uint8Array(await r.arrayBuffer());
+  }));
+
+  setStatus('Initialising…');
+  init();
+  vstEventsPtr     = allocate(8 + 32 * 4);
+  vstEventsDataPtr = allocate(32 * 32);
+
+  push32(0x77778888); sub_10003560(); r32[esp] += 4;
+  pluginPtr           = r32[eax];
+  dispatcherPtr       = memoryAGet32(ds, pluginPtr + 0x04);
+  processReplacingPtr = memoryAGet32(ds, pluginPtr + 0x50);
+
+  function fp32bits(f) {
+    const v = new DataView(new ArrayBuffer(4));
+    v.setFloat32(0, f, true);
+    return v.getUint32(0, true);
+  }
+
+  // effSetProgram(1)
+  push32(0); push32(0); push32(1); push32(0); push32(2); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+  // effSetSampleRate(44100)
+  push32(fp32bits(SAMPLE_RATE)); push32(0); push32(0); push32(0); push32(10); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+  // effSetBlockSize(2048)
+  push32(0); push32(0); push32(BLOCK_SIZE); push32(0); push32(11); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+  // effMainsChanged(1) — activate
+  push32(0); push32(0); push32(1); push32(0); push32(12); push32(pluginPtr);
+  indirectCall(cs, dispatcherPtr); r32[esp] += 24;
+
+  const inL = allocate(BLOCK_SIZE * 4), inR = allocate(BLOCK_SIZE * 4);
+  outL = allocate(BLOCK_SIZE * 4); outR = allocate(BLOCK_SIZE * 4);
+  inputPtrs = allocate(8); outputPtrs = allocate(8);
+  memoryASet32(ds, inputPtrs,     inL); memoryASet32(ds, inputPtrs  + 4, inR);
+  memoryASet32(ds, outputPtrs,   outL); memoryASet32(ds, outputPtrs + 4, outR);
+
+  setStatus('Touch a key to begin');
+}
+
+// ── Piano keyboard — 2 octaves C4(60)…C6(84) ──────────────
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const IS_BLACK   = n => [1, 3, 6, 8, 10].includes(n % 12);
+
+// White-key index (0..14) that each black key sits above
+const BLACK_AFTER = {
+  61: 0,  63: 1,  66: 3,  68: 4,  70: 5,   // octave 4
+  73: 7,  75: 8,  78: 10, 80: 11, 82: 12,   // octave 5
+};
+
+const keyEls      = {};
+const activeNotes = new Set();
+
+(function buildKeyboard() {
+  const kb = document.getElementById('kb');
+  let wi = 0;
+  for (let note = 60; note <= 84; note++) {
+    const el  = document.createElement('div');
+    const step = note % 12;
+    const oct  = Math.floor(note / 12) - 1;
+    if (IS_BLACK(note)) {
+      el.className = 'bkey';
+      const wIdx = BLACK_AFTER[note];
+      el.style.left = `calc(${wIdx + 0.65} * var(--ww) - var(--bw) / 2)`;
+    } else {
+      el.className = 'wkey';
+      el.style.left = `calc(${wi} * var(--ww) + 1px)`;
+      // Label: C notes show "C4"/"C5"/"C6", others just the letter
+      el.textContent = step === 0 ? NOTE_NAMES[step] + oct : NOTE_NAMES[step];
+      wi++;
+    }
+    el.dataset.note = note;
+    kb.appendChild(el);
+    keyEls[note] = el;
+  }
+})();
+
+function setKeyActive(note, on) { keyEls[note]?.classList.toggle('active', on); }
+
+function noteOn(note) {
+  if (activeNotes.has(note)) return;
+  activeNotes.add(note);
+  midiEvents.push({ status: 0x90, note, velocity: 100 });
+  setKeyActive(note, true);
+}
+function noteOff(note) {
+  if (!activeNotes.has(note)) return;
+  activeNotes.delete(note);
+  midiEvents.push({ status: 0x80, note, velocity: 0 });
+  setKeyActive(note, false);
+}
+
+// ── Touch input (multi-touch + slide between keys) ─────────
+const touchNotes = {};
+
+function noteAtPoint(x, y) {
+  const el = document.elementFromPoint(x, y);
+  return (el && el.dataset.note != null) ? +el.dataset.note : null;
+}
+
+const kb = document.getElementById('kb');
+
+kb.addEventListener('touchstart', e => {
+  e.preventDefault(); startAudio();
+  for (const t of e.changedTouches) {
+    const n = noteAtPoint(t.clientX, t.clientY);
+    if (n != null) { touchNotes[t.identifier] = n; noteOn(n); }
+  }
+}, { passive: false });
+
+kb.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const n    = noteAtPoint(t.clientX, t.clientY);
+    const prev = touchNotes[t.identifier];
+    if (n !== prev) {
+      if (prev != null) noteOff(prev);
+      touchNotes[t.identifier] = n;
+      if (n != null) noteOn(n);
+    }
+  }
+}, { passive: false });
+
+function onTouchEnd(e) {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (touchNotes[t.identifier] != null) noteOff(touchNotes[t.identifier]);
+    delete touchNotes[t.identifier];
+  }
+}
+kb.addEventListener('touchend',    onTouchEnd, { passive: false });
+kb.addEventListener('touchcancel', onTouchEnd, { passive: false });
+
+// ── Mouse input (desktop, supports click-drag) ─────────────
+let mouseNote = null;
+
+kb.addEventListener('mousedown', e => {
+  e.preventDefault(); startAudio();
+  const el = e.target.closest('[data-note]');
+  if (!el) return;
+  mouseNote = +el.dataset.note; noteOn(mouseNote);
+});
+document.addEventListener('mousemove', e => {
+  if (mouseNote == null) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const n  = (el && el.dataset.note != null) ? +el.dataset.note : null;
+  if (n !== mouseNote) { noteOff(mouseNote); mouseNote = n; if (n != null) noteOn(n); }
+});
+document.addEventListener('mouseup', () => {
+  if (mouseNote != null) { noteOff(mouseNote); mouseNote = null; }
+});
+
+// ── QWERTY keyboard (desktop) ──────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const n = KEY_TO_NOTE[e.key.toUpperCase()];
+  if (n) { startAudio(); noteOn(n); }
+});
+document.addEventListener('keyup', e => {
+  const n = KEY_TO_NOTE[e.key.toUpperCase()];
+  if (n) noteOff(n);
+});
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+
+// ── Boot ───────────────────────────────────────────────────
+initPlugin().catch(err => { console.error(err); setStatus('Error: ' + err.message); });
+</script>
+</body>
+</html>
