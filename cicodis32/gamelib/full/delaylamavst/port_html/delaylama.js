@@ -367,11 +367,11 @@ function fixReloc(seg)
 
 function init()
 {
-    loadOverlay("Delay Lama_text.bin", 0x10001000);
+//    loadOverlay("Delay Lama_text.bin", 0x10001000);
     loadOverlay("Delay Lama_rdata.bin", 0x1000b000);
     loadOverlay("Delay Lama_data.bin", 0x1000d000);
-    loadOverlay("Delay Lama_rsrc.bin", 0x1000e000);
-    loadOverlay("Delay Lama_reloc.bin", 0x10388000);
+//    loadOverlay("Delay Lama_rsrc.bin", 0x1000e000);
+//    loadOverlay("Delay Lama_reloc.bin", 0x10388000);
     r32[esp] = 0x1038c000;
     r32[ebp] = 0x1038c000;
 }
