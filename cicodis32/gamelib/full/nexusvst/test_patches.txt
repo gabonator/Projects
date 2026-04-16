@@ -1,0 +1,31 @@
+# Test patches for validation - paths relative to Nexus Content folder
+# One patch per line. Lines starting with # are comments.
+# The default preset (no FXP) is always tested.
+
+Presets/Arpeggios/AR Bullet Time.fxp
+Presets/Arpeggios/AR Clockworks.fxp
+Presets/Arpeggios/AR Dance Pattern 1.fxp
+Presets/Arpeggios/AR Infernal.fxp
+Presets/Bass/BA Juno Bass.fxp
+Presets/Synthetic Brass/BR Blade Runner.fxp
+Presets/Classical/CL Flute and Strings.fxp
+Presets/Single Layer Sequences/DL Guitar Ballad 1 A.fxp
+Presets/Textures and FX/FX Shodan.fxp
+Presets/Textures and FX/FX Talos.fxp
+Presets/Dance Leads/LD Come with me 1.fxp
+Presets/Single Layer Leads/LD Dance Saw 1.fxp
+Presets/Single Layer Pads/PD Bellpad 1.fxp
+Presets/Epic Pads/PD Nightstring.fxp
+Presets/Single Layer Pads/PD Sinepad 1.fxp
+Presets/Plucked/PL Dyk Pikes.fxp
+Presets/Plucked/PL Pizza Smack.fxp
+Presets/Piano/PN Nebula.fxp
+Presets/Piano/PN Nexus Grandpiano.fxp
+Presets/Splits and Sequences/SQ Two Finger Madness 1.fxp
+Presets/Fantasy And Dream/SY Carribean Dream.fxp
+Presets/Gated Pads/TG Movin Particles.fxp
+Presets/Voice/VO Digichoir.fxp
+Presets/Voice/VO Monastery.fxp
+Presets/Splits and Sequences/SQ Benny Dance Split.fxp
+Presets/Single Layer Sequences/SQ Dance Pattern 1.fxp
+Presets/Single Layer Leads/LD Lead 303.fxp

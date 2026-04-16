@@ -7406,11 +7406,13 @@ void sub_100c91a2() // 0000:100c91a2 +long — _vsprintf(buf, fmt, va_list) cdec
         }
     }
     memoryASet(ds, buf + outPos, 0);
+/*
     { char _fmt[64]={0}, _res[64]={0};
       for(int i=0;i<63;i++){_fmt[i]=memoryAGet(ds,fmt+i);if(!_fmt[i])break;}
       for(int i=0;i<63;i++){_res[i]=memoryAGet(ds,buf+i);if(!_res[i])break;}
       printf("vsprintf: fmt='%s' -> '%s'\n", _fmt, _res);
     }
+*/
     eax = outPos;
     esp += 4; // cdecl: no stackDrop
 }
@@ -9234,10 +9236,12 @@ void sub_100ca881() // 0000:100ca881 +long — strtok: copies chars from src up 
     uint32_t dest = memoryAGet32(ss, esp + 4);
     uint32_t delim_ptr = memoryAGet32(ss, esp + 8);
     char delim = memoryAGet(ds, delim_ptr);
+/*
     { static int _sc=0; if(++_sc<=10) {
         char _buf[64]={0}; for(int _i=0;_i<63;_i++){_buf[_i]=memoryAGet(ds,dest+_i);if(!_buf[_i])break;}
         fprintf(stderr, "strtok #%d: dest=0x%08x '%s' delim='%c'(0x%02x)\n", _sc, dest, _buf, delim?delim:'?', (uint8_t)delim);
     }}
+*/
     // The source string is at edi (set by caller before push/call)
     // Copy from the local buffer at [esp+44 before pushes] = caller's stack buffer
     // Actually the source was copied to [esp+2c] area by the copy loop before the call

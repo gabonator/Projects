@@ -69,6 +69,8 @@ uint32_t _nanWatchBase = 0;
 bool _nanWatchArmed = false;
 bool _nanDetectArmed = false;
 bool _fldNanArmed = false;
+uint32_t _memWatch = 0;
+int _memWatchArmed = 0;
 namespace fpuinsns { bool _traceFpuCompare = false; }
 using fpuinsns::_traceFpuCompare;
 void alarmHandler(int sig) {
@@ -344,6 +346,9 @@ int main(int argc, char* argv[]) {
     setbuf(stdout, NULL); // disable buffering
     printf("Nexus C++ emulator starting...\n");
 
+    // Set transport playing early — arp engine may cache state during init
+    memoryASet32(0, 0x10593010, (1<<1)); // kVstTransportPlaying
+
     // Initialize — load PE sections
     init();
     printf("Init done. allocatorPtr=0x%08x\n", allocatorPtr);
@@ -387,7 +392,7 @@ int main(int argc, char* argv[]) {
     memoryASet32(0, 0x10582d08, 1);
 
     // Set ContentPath string
-    const char* contentPath = "./";
+    const char* contentPath = "C:\\Nexus\\installer\\Nexus Content\\";
     for (int i = 0; contentPath[i]; i++)
         memoryASet(0, 0x1057f420 + i, contentPath[i]);
     memoryASet(0, 0x1057f420 + strlen(contentPath), 0);
@@ -876,6 +881,9 @@ int main(int argc, char* argv[]) {
     printf("  took %lld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(_t1-_t0).count()); }
     printf("  POST-mainsChanged: modBuf=[0x%08x]\n", memoryAGet32(0, thisPtr + 0x26C44));
 
+    // Usage: nexus_emu [patch.fxp] [output.wav] [note]
+    int midiNote = (argc > 3) ? atoi(argv[3]) : 48;
+
     // --- Load preset from .fxp file (if provided) ---
     {
         const char* fxpFile = (argc > 1) ? argv[1] : nullptr;
@@ -936,8 +944,9 @@ int main(int argc, char* argv[]) {
         callDispatcher(25, 0, 0, eventsPtr, 0); // effProcessEvents
     };
 
-    // Set transport playing flag ONLY for processReplacing (not during init)
-    memoryASet32(0, 0x10593010, (1<<1)); // kVstTransportPlaying
+    // kVstTransportPlaying — was set only before render, but arp engine
+    // may cache transport state during init. Now set before VSTPluginMain too.
+    // (moved earlier; see also the init block below)
 
     // No force-patches for voice data — let the plugin handle MIDI naturally
 
@@ -994,12 +1003,16 @@ int main(int argc, char* argv[]) {
     for (int block = 0; block < NUM_BLOCKS; block++) {
         // Match Windows render_batch.py: note C4 (60) vel 100, off at block 172
         if (block == 0) {
-            printf("  ON  C4 (note=60) at block 0\n");
-            sendMidi(0x90, 60, 100);
+            printf("  ON  note=%d at block 0\n", midiNote);
+            sendMidi(0x90, midiNote, 100);
+            _memWatch = thisPtr + 0xDE54;
+            _memWatchArmed = 1;
+            // Also watch the queue pending count [thisPtr+0x1E8]
+            printf("  Queue pending: [+0x1E8]=%d\n", memoryAGet32(0, thisPtr + 0x1E8));
         }
         if (block == 172) {
-            printf("  OFF C4 (note=60) at block 172\n");
-            sendMidi(0x80, 60, 0);
+            printf("  OFF note=%d at block 172\n", midiNote);
+            sendMidi(0x80, midiNote, 0);
         }
         // Note-offs handled by the sequence above
         if (block == 0) {
@@ -1045,10 +1058,6 @@ int main(int argc, char* argv[]) {
             memoryASet32(0, outR + i * 4, 0);
         }
 
-        // Debug: check gate fields before processReplacing
-        printf("  PRE-processReplacing: [438b74]=0x%08x [42c1f0]=0x%08x [42c3c4]=0x%08x\n",
-               memoryAGet32(0, thisPtr+0x438b74), memoryAGet32(0, thisPtr+0x42c1f0),
-               memoryAGet32(0, thisPtr+0x42c3c4));
 
         // Call processReplacing with alarm-based timeout (crashes on timeout)
         uint32_t savedEsp = esp;
@@ -1078,6 +1087,7 @@ int main(int argc, char* argv[]) {
         if (block == 48) _fldNanArmed = true;
         //if (block == 49) { _nanWatchStart = 0x10000000; _nanWatchEnd = 0x20000000; _nanWatchHits = 0; }
         callByAddress(processReplacingAddr);
+        if (block == 0) printf("  POST processReplacing: E0FC=%d de54=%d 1E8=%d\n", memoryAGet32(0, thisPtr+0xE0FC), memoryAGet32(0, thisPtr+0xde54), memoryAGet32(0, thisPtr+0x1E8));
         if (block == 49) { _nanWatchHits = -1; }
         alarm(0);
         // Advance samplePos and ppqPos AFTER processReplacing (matching Windows host behavior)
@@ -1096,302 +1106,24 @@ int main(int argc, char* argv[]) {
 
         // Output should be written directly to outL/outR by processReplacing
 
-        // Check internal buffers for non-zero data
-        {
-            uint32_t ded0 = memoryAGet32(0, thisPtr + 0xDED0);
-            uint32_t ded4 = memoryAGet32(0, thisPtr + 0xDED4);
-            float ded0max = 0, modMax = 0;
-            uint32_t modBuf = memoryAGet32(0, thisPtr + 0x26C40 + 4);
-            if (block == 0) printf("  modBuf ptr=0x%08x (from [0x%08x])\n", modBuf, thisPtr + 0x26C40 + 4);
-            float ded4max = 0; int ded0nz = 0, ded4nz = 0, modnz = 0;
-            for (int i = 0; i < BLOCK_SIZE; i++) {
-                float v = readFloat32(ded0 + i*4);
-                if (fabsf(v) > ded0max) ded0max = fabsf(v);
-                if (fabsf(v) > 0.0001f) ded0nz++;
-                float v4 = readFloat32(ded4 + i*4);
-                if (fabsf(v4) > ded4max) ded4max = fabsf(v4);
-                if (fabsf(v4) > 0.0001f) ded4nz++;
-                if (modBuf) { float mv = readFloat32(modBuf + i*4); if (fabsf(mv) > modMax) modMax = fabsf(mv); if (fabsf(mv) > 0.0001f) modnz++; }
-            }
-            printf("Block %d: DED0 max=%.4f nz=%d DED4 max=%.4f nz=%d modBuf max=%.4f nz=%d\n",
-                   block, ded0max, ded0nz, ded4max, ded4nz, modMax, modnz);
-            // Dump DED0 and outL samples for Windows comparison
-            if ((block >= 0 && block <= 5) || (block >= 38 && block <= 50)) {
-                // Full modBuf dump at blocks 40-41 for divergence analysis
-                if (block == 40 || block == 41) {
-                    printf("MODDUMP%d:", block);
-                    for (int i = 0; i < BLOCK_SIZE; i++)
-                        printf(" %.4f", readFloat32(modBuf + i*4));
-                    printf("\n");
-                }
-                printf("BLK%d: dedMax=%.6f ded0[0..7]=", block, ded0max);
-                for (int i = 0; i < 8; i++) printf("%.4f,", readFloat32(ded0 + i*4));
-                printf(" mod[0..7]=");
-                for (int i = 0; i < 8; i++) printf("%.4f,", readFloat32(modBuf + i*4));
-                printf(" outL[0..7]=");
-                for (int i = 0; i < 8; i++) printf("%.4f,", readFloat32(outL + i*4));
-                printf("\n");
-            }
-            if (block == 0) {
-                uint32_t de54v = memoryAGet32(0, thisPtr + 0xde54);
-                uint32_t de5cv = memoryAGet32(0, thisPtr + 0xde5c);
-                printf("  Post-block0: de54=%d\n", de54v);
-                // Dump voice entry hex - use de5c for voice data
-                // The voice at de5c[0] is a large struct. Dump key offsets matching Windows.
-                {
-                    uint32_t de60arr = memoryAGet32(0, thisPtr + 0xde60);
-                    uint32_t vp0 = memoryAGet32(0, de60arr);
-                    if (vp0 >= 0x12000000) {
-                        printf("VOICE at 0x%08x (from de60[0]):\n", vp0);
-                        // Also dump preset arp config bytes
-                        uint32_t pp = memoryAGet32(0, thisPtr + 0xe734);
-                        if (pp >= 0x12000000) {
-                            printf("PRESET_ARP:");
-                            for (int i = 0xb00; i < 0xd00; i++)
-                                printf(" %02x", memoryAGet(0, pp + i));
-                            printf("\n");
-                        }
-                        // Search for note=60 (0x42700000) and sampleRate=44100 (0x472c4400)
-                        for (int off = 0; off < 0x800; off += 4) {
-                            uint32_t raw = memoryAGet32(0, vp0 + off);
-                            if (raw == 0x42700000) printf("  [+%03x] NOTE=60\n", off);
-                            if (raw == 0x472c4400) printf("  [+%03x] SR=44100\n", off);
-                        }
-                        for (int off = 0; off < 0xA0; off += 4) {
-                            uint32_t raw = memoryAGet32(0, vp0 + off);
-                            if (raw) {
-                                float fv = readFloat32(vp0 + off);
-                                printf("  [+%03x] 0x%08x  f=%.6g\n", off, raw, fv);
-                            }
-                        }
-                    }
-                }
-                // Dump voice notes
-                for (uint32_t vi = 0; vi < de54v && vi < 8; vi++) {
-                    uint32_t vp = memoryAGet32(0, de5cv + vi * 4);
-                    if (vp >= 0x12000000) {
-                        uint8_t note = memoryAGet(0, vp + 0x24);
-                        uint8_t vel = memoryAGet(0, vp + 0x25);
-                        float pitch = readFloat32(vp + 0x8);
-                        printf("  Voice[%d]: note=%d vel=%d pitch=%.4f\n", vi, note, vel, pitch);
-                    }
-                }
-                // Scan heap for any audio-like float data
-                { int regions = 0;
-                  for (uint32_t base = 0x12f00000; base < 0x13400000; base += 2048) {
-                    float mx = 0; int nz = 0;
-                    for (int i = 0; i < 512; i++) {
-                        float v = readFloat32(base + i*4);
-                        if (fabsf(v) > 0.001f && fabsf(v) < 10.0f) nz++;
-                        if (fabsf(v) > mx && fabsf(v) < 100.0f) mx = fabsf(v);
-                    }
-                    if (nz > 10) { printf("  AUDIO at 0x%08x: nz=%d max=%.4f\n", base, nz, mx); regions++; }
-                    if (regions > 10) break;
-                  }
-                  if (!regions) printf("  NO audio data found in heap scan\n");
-                }
-                if (de54v > 0) {
-                    uint32_t entPtr = memoryAGet32(0, de5cv);
-                    printf("  Voice entry ptr: 0x%08x (from de5c=0x%08x)\n", entPtr, de5cv);
-                    if (entPtr >= 0x12000000) {
-                        char oscName[32] = {0};
-                        for (int i = 0; i < 31; i++) { oscName[i] = memoryAGet(0, entPtr + 0x11F08 + i); if (!oscName[i]) break; }
-                        printf("  Voice osc at +0x11F08: '%s'\n", oscName);
-                        printf("  Voice [+0x42c3c8]=0x%08x (module)\n", memoryAGet32(0, entPtr + 0x42c3c8));
-                        printf("  Voice [+0x4]=0x%08x [+0x8]=0x%08x [+0xc]=0x%08x [+0x10]=0x%08x\n",
-                               memoryAGet32(0, entPtr+4), memoryAGet32(0, entPtr+8),
-                               memoryAGet32(0, entPtr+0xc), memoryAGet32(0, entPtr+0x10));
-                        // Scan for first nonzero in voice data
-                        int firstNz = -1;
-                        for (int i = 0; i < 0x42c3d0 && firstNz < 0; i += 4) {
-                            if (memoryAGet32(0, entPtr + i) != 0 && i > 0x40) { firstNz = i; break; }
-                        }
-                        printf("  +0x30=0x%08x +0x34=0x%08x +0x38=0x%08x +0x3c=0x%08x\n",
-                               memoryAGet32(0, entPtr+0x30), memoryAGet32(0, entPtr+0x34),
-                               memoryAGet32(0, entPtr+0x38), memoryAGet32(0, entPtr+0x3c));
-                        int nzCount = 0;
-                        for (int i = 0; i < 0x200; i += 4) {
-                            if (memoryAGet32(0, entPtr + i)) nzCount++;
-                        }
-                        printf("  nonzero dwords in first 0x200: %d\n", nzCount);
-                    }
-                }
-            }
-        }
-
-        // Check if outputPtrs still point to outL
-        if (block == 0) {
-            uint32_t curOL = memoryAGet32(0, outputPtrs);
-            uint32_t curOR = memoryAGet32(0, outputPtrs + 4);
-            printf("  outL check: [outputPtrs]=0x%08x (expect 0x%08x) %s\n", curOL, outL, curOL==outL?"OK":"CHANGED!");
-            printf("  outL raw bytes[90]: %02x %02x %02x %02x\n",
-                memory[outL+360-0x10000000], memory[outL+361-0x10000000],
-                memory[outL+362-0x10000000], memory[outL+363-0x10000000]);
-        }
         // Read output samples from wherever processReplacing actually wrote them
         uint32_t actualOutL = memoryAGet32(0, outputPtrs);
         uint32_t actualOutR = memoryAGet32(0, outputPtrs + 4);
-        // Scan for audio: check if outL has data, and also check where the plugin wrote
-        {
-            float outLmax = 0;
-            for (int i = 0; i < BLOCK_SIZE; i++) {
-                float v = readFloat32(actualOutL + i*4);
-                if (fabsf(v) > outLmax) outLmax = fabsf(v);
-            }
-            // If outL is empty, scan the output pointers array more broadly
-            // The plugin may use a pointer-to-pointer scheme
-            if (block <= 2 || (block >= 48 && block <= 52)) {
-                printf("  outL[0..3]: %.4f %.4f %.4f %.4f  max=%.4f\n",
-                       readFloat32(actualOutL), readFloat32(actualOutL+4),
-                       readFloat32(actualOutL+8), readFloat32(actualOutL+12), outLmax);
-            }
-            if (outLmax < 0.001f && (block <= 5 || block == 50 || block == 51)) {
-                // Check if outputPtrs points to a pointer array that points to actual buffers
-                // processReplacing(ae, inputs**, outputs**, blockSize)
-                // outputs is a float** — array of float pointers
-                // So outputPtrs[0] should be a float* to left channel
-                // Let's check what's at outL itself — maybe it's being used as a pointer
-                uint32_t ptrAtOutL = memoryAGet32(0, outL);
-                printf("  DEBUG: outL=0x%08x [outL]=0x%08x outLmax=%.6f\n", outL, ptrAtOutL, outLmax);
-                // Check the actual AEffect processReplacing call convention
-                // In VST2: processReplacing(AEffect*, float** inputs, float** outputs, int sampleFrames)
-                // outputs[0] = left channel buffer (float*)
-                // outputs[1] = right channel buffer (float*)
-                // So outputPtrs is float**, and outputPtrs[0]=outL, outputPtrs[1]=outR
-                // After processReplacing, we read from outL directly — that should be correct
-                // UNLESS the plugin internally copies the output somewhere else
-
-                // Check if the output was written to a completely different buffer
-                // by scanning some known buffer areas
-                uint32_t ded0 = memoryAGet32(0, thisPtr + 0xDED0);
-                uint32_t ded4 = memoryAGet32(0, thisPtr + 0xDED4);
-                printf("  DEBUG: DED0=0x%08x DED4=0x%08x\n", ded0, ded4);
-                // Check a wider range around outputPtrs for any float** indirection
-                for (int off = -16; off <= 16; off += 4) {
-                    uint32_t p = memoryAGet32(0, outputPtrs + off);
-                    if (p >= 0x12000000 && p < 0x20000000) {
-                        float v0 = readFloat32(p);
-                        float v1 = readFloat32(p+4);
-                        if (fabsf(v0) > 0.001f || fabsf(v1) > 0.001f) {
-                            printf("  DEBUG: outputPtrs+%d -> 0x%08x has audio: [0]=%.4f [1]=%.4f\n", off, p, v0, v1);
-                        }
-                    }
-                }
-            }
-        }
         float maxSample = 0;
-        int nanCountL = 0, nanCountR = 0, infCountL = 0, infCountR = 0;
-        int firstNanL = -1;
         for (int i = 0; i < BLOCK_SIZE; i++) {
             float l = readFloat32(actualOutL + i * 4);
             float r = actualOutR ? readFloat32(actualOutR + i * 4) : l;
-            if (std::isnan(l)) { nanCountL++; if (firstNanL < 0) firstNanL = i; }
-            if (std::isnan(r)) nanCountR++;
-            if (std::isinf(l)) infCountL++;
-            if (std::isinf(r)) infCountR++;
-            // Clamp non-finite output samples (NaN/Inf from FPU precision divergence)
             if (!std::isfinite(l)) l = 0.0f;
             if (!std::isfinite(r)) r = 0.0f;
             allLeft.push_back(l);
             allRight.push_back(r);
             if (fabsf(l) > maxSample) maxSample = fabsf(l);
         }
-        if (nanCountL || nanCountR || infCountL || infCountR) {
-            printf("  OUTPUT block %d: NaN L=%d R=%d, Inf L=%d R=%d, firstNanL=%d\n",
-                   block, nanCountL, nanCountR, infCountL, infCountR, firstNanL);
-            // Dump raw uint32 around first NaN
-            if (firstNanL >= 0) {
-                int s = firstNanL > 4 ? firstNanL - 4 : 0;
-                printf("  RAW outL[%d..%d]:", s, firstNanL+4);
-                for (int j = s; j <= firstNanL + 4 && j < BLOCK_SIZE; j++)
-                    printf(" [%d]=0x%08x", j, memoryAGet32(0, actualOutL + j*4));
-                printf("\n");
-            }
-        }
         // Restore outputPtrs for next block
         memoryASet32(0, outputPtrs, outL);
         memoryASet32(0, outputPtrs + 4, outR);
 
-        // Scan for stored Inf values and track NaN onset
-        if (block >= 40 && block <= 55) {
-            bool hasNan = false;
-            for (int i = 0; i < BLOCK_SIZE && !hasNan; i++) {
-                float v = readFloat32(actualOutL + i*4);
-                if (!std::isfinite(v)) { hasNan = true; printf("  NaN/Inf in outL at blk %d sample %d\n", block, i); }
-            }
-            uint32_t ded0 = memoryAGet32(0, thisPtr + 0xDED0);
-            float dedMax = 0;
-            for (int i = 0; i < BLOCK_SIZE; i++) {
-                float v = readFloat32(ded0 + i*4);
-                if (!std::isfinite(v)) { printf("  Inf/NaN in DED0 at blk %d sample %d\n", block, i); break; }
-                if (fabsf(v) > dedMax) dedMax = fabsf(v);
-            }
-            // Scan thisPtr memory for stored Inf (0x7F800000)
-            static bool _infScanned = false;
-            if (!_infScanned && block == 48) {
-                _infScanned = true;
-                int infCount = 0;
-                for (uint32_t off = 0; off < 0x500000 && infCount < 10; off += 4) {
-                    uint32_t raw = memoryAGet32(0, thisPtr + off);
-                    if (raw == 0x7F800000 || raw == 0xFF800000) {
-                        printf("  INF at tp+0x%x\n", off);
-                        infCount++;
-                    }
-                }
-                if (!infCount) printf("  No Inf in thisPtr range\n");
-            }
-            if (block == 48) {
-                printf("  BLK48 samples 30-42:");
-                for (int i = 30; i <= 42; i++) {
-                    uint32_t raw = memoryAGet32(0, actualOutL + i*4);
-                    float v = readFloat32(actualOutL + i*4);
-                    printf(" %g(0x%08x)", v, raw);
-                }
-                printf("\n");
-            }
-            printf("  BLK%d: outMax=%.4f dedMax=%.4f %s\n", block, maxSample, dedMax, hasNan?"NAN!":"ok");
-        }
-        printf("Block %d: max=%.6f time=%lldms de54=%d\n",
-               block, maxSample, ms, memoryAGet32(0, thisPtr + 0xde54));
     }
-
-    // --- Dump key state for comparison with Windows ---
-    printf("\n=== STATE DUMP ===\n");
-    printf("thisPtr=0x%08x pluginPtr=0x%08x\n", thisPtr, pluginPtr);
-    printf("preset_size [0x103fb04c] = 0x%08x\n", memoryAGet32(0, 0x103fb04c));
-    printf("preset_data @0x103fb460: ");
-    for(int i=0;i<32;i++) printf("%02x",memoryAGet(0,0x103fb460+i)); printf("\n");
-    // Entry arrays
-    uint32_t _de5c = memoryAGet32(0, thisPtr + 0xde5c);
-    uint32_t _de60 = memoryAGet32(0, thisPtr + 0xde60);
-    printf("de5c=0x%08x de60=0x%08x de64=0x%08x\n", _de5c, _de60, memoryAGet32(0, thisPtr + 0xde64));
-    if (_de5c >= 0x12000000) {
-        uint32_t e0 = memoryAGet32(0, _de5c);
-        printf("  entry0=0x%08x\n", e0);
-        if (e0 >= 0x12000000) {
-            printf("  entry0 data: ");
-            for(int i=0;i<52;i++) printf("%02x",memoryAGet(0,e0+i)); printf("\n");
-            uint32_t gb = memoryAGet32(0, e0+0x20);
-            float g; memcpy(&g, &gb, 4);
-            printf("  entry0 gain=%.6f\n", g);
-        }
-    }
-    // Layer enable flags
-    printf("layer0 enable [thisPtr+0x1CEB0]=0x%08x\n", memoryAGet32(0, thisPtr + 0x1CEB0));
-    printf("layer1 enable [thisPtr+0x26C38]=0x%08x\n", memoryAGet32(0, thisPtr + 0x26C38));
-    // DED0/DED4 output buffers
-    printf("DED0=0x%08x DED4=0x%08x\n", memoryAGet32(0, thisPtr + 0xDED0), memoryAGet32(0, thisPtr + 0xDED4));
-    // vtable
-    uint32_t vt = memoryAGet32(0, thisPtr);
-    printf("vtable=0x%08x [0]=0x%08x [4]=0x%08x [8]=0x%08x\n", vt,
-           memoryAGet32(0,vt), memoryAGet32(0,vt+4), memoryAGet32(0,vt+8));
-    printf("  preset_ptr [+0xe734]=0x%08x\n", memoryAGet32(0, thisPtr + 0xe734));
-    uint32_t pp = memoryAGet32(0, thisPtr + 0xe734);
-    if (pp >= 0x10000000) {
-        printf("  preset[+0x131]=0x%02x (layer0en) [+0x133]=0x%02x (vmask) [+0x139]=0x%02x (vtype)\n",
-               memoryAGet(0,pp+0x131), memoryAGet(0,pp+0x133), memoryAGet(0,pp+0x139));
-    }
-    printf("=== END DUMP ===\n\n");
 
     // --- Write WAV ---
     { extern long long _icTotal; extern long long get32count;

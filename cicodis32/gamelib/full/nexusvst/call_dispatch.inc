@@ -893,6 +893,7 @@ void callByAddress(uint32_t addr) {
         case 0x10061ad0: sub_10061ad0(); break;
         case 0x10061b60: sub_10061b60(); break;
         case 0x10061c60: sub_10061c60(); break;
+        case 0x10061a50: sub_10061a50(); break;
         case 0x10061c80: sub_10061c80(); break;
         case 0x10062040: sub_10062040(); break;
         case 0x10062160: sub_10062160(); break;

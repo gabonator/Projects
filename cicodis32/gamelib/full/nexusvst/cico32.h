@@ -41,7 +41,14 @@ inline void memoryASet16(int s, int o, int v) {
 }
 extern uint32_t _nanWatchStart, _nanWatchEnd;
 extern int _nanWatchHits;
+extern uint32_t _memWatch;
+extern int _memWatchArmed;
 inline void memoryASet32(int s, int o, uint32_t v) {
+    if (_memWatchArmed && (uint32_t)o == _memWatch && v != 0) {
+        fprintf(stderr, "*** WATCH 0x%08x = %u func=%s\n", (uint32_t)o, v, _currentFunc ? _currentFunc : "?");
+        void* _bt[8]; int _bn = backtrace(_bt, 8); backtrace_symbols_fd(_bt, _bn, 2); fflush(stderr);
+        _memWatchArmed = 0;
+    }
     if (_nanWatchHits >= 0 && (v == 0x7FC00000 || v == 0xFFC00000) &&
         (uint32_t)o >= _nanWatchStart && (uint32_t)o < _nanWatchEnd && _nanWatchHits < 10) {
         fprintf(stderr, "*** NaN WRITE at 0x%08x func=%s\n", (uint32_t)o, _currentFunc ? _currentFunc : "?");
