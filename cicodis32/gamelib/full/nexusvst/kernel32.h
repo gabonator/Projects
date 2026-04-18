@@ -32,7 +32,7 @@ static struct FileSlot {
 
 static int nextHandle = 0x100;
 
-static const char* VFS_SANDBOX = "/Users/gabrielvalky/Documents/git/CleanRoom/jsfun4/installer/Nexus Content";
+static const char* VFS_SANDBOX = "/Users/gabrielvalky/Documents/git/CleanRoom/jsfun4/installer/";
 static std::string vfsTranslate(const std::string& winPath) {
     std::string p = winPath;
     for (auto& c : p) if (c == '\\') c = '/';

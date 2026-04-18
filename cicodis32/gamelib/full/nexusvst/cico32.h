@@ -16,6 +16,19 @@
 #include <vector>
 #include <string>
 
+// --- Memory access ---
+static const int MEM_BASE = 0x10000000;
+static const int MEM_SIZE_CONST = 256 * 1024 * 1024;
+
+std::vector<uint8_t> memory(MEM_SIZE_CONST, 0); // TODO: sync with cico32.h
+
+int allocatorPtr = 0x12000000;
+
+int allocate(int size) {
+    int ptr = allocatorPtr;
+    allocatorPtr += (size + 3) & ~3;
+    return ptr;
+}
 
 // --- Forward declarations from main.cpp ---
 extern const char* appRootPath;
@@ -25,116 +38,56 @@ extern int allocatorPtr;
 std::vector<uint8_t> GetFileContents(std::string fullPath);
 void loadOverlay(const char*, int);
 
-// --- Memory access ---
-static const int MEM_BASE = 0x10000000;
-static const int MEM_SIZE_CONST = 1024 * 1024 * 1024;
 
 // Alarm handler crashes immediately — no longjmp/setjmp
 
 // --- Memory write (single entry point, all writes go through here) ---
-extern const char* _currentFunc;
-void memoryASet(int s, int o, int v);  // defined in main.cpp
 
-inline void memoryASet16(int s, int o, int v) {
-    memoryASet(s, o, v & 0xff);
-    memoryASet(s, o + 1, (v >> 8) & 0xff);
-}
-extern uint32_t _nanWatchStart, _nanWatchEnd;
-extern int _nanWatchHits;
-extern uint32_t _memWatch;
-extern int _memWatchArmed;
-inline void memoryASet32(int s, int o, uint32_t v) {
-    if (_memWatchArmed && (uint32_t)o == _memWatch && v != 0) {
-        fprintf(stderr, "*** WATCH 0x%08x = %u func=%s\n", (uint32_t)o, v, _currentFunc ? _currentFunc : "?");
-        void* _bt[8]; int _bn = backtrace(_bt, 8); backtrace_symbols_fd(_bt, _bn, 2); fflush(stderr);
-        _memWatchArmed = 0;
-    }
-    if (_nanWatchHits >= 0 && (v == 0x7FC00000 || v == 0xFFC00000) &&
-        (uint32_t)o >= _nanWatchStart && (uint32_t)o < _nanWatchEnd && _nanWatchHits < 10) {
-        fprintf(stderr, "*** NaN WRITE at 0x%08x func=%s\n", (uint32_t)o, _currentFunc ? _currentFunc : "?");
-        _nanWatchHits++;
-    }
-    memoryASet(s, o, v & 0xff);
-    memoryASet(s, o + 1, (v >> 8) & 0xff);
-    memoryASet(s, o + 2, (v >> 16) & 0xff);
-    memoryASet(s, o + 3, (v >> 24) & 0xff);
-}
-inline void memoryASet64(int s, int o, uint64_t v) {
-    for (int i = 0; i < 8; i++)
-        memoryASet(s, o + i, (v >> (i * 8)) & 0xff);
-}
-
-// --- Memory read (inline, bounds-checked, no memPtr) ---
-extern long long get32count;
-
-inline uint8_t memoryAGet(int s, int o) {
-    unsigned uo = (unsigned)o;
-    if (uo < 0x1000) return 0;
+void memoryASet(int s, int o, uint8_t v) {
     int idx = o - MEM_BASE;
-    if (idx < 0 || idx >= MEM_SIZE_CONST) {
-        fprintf(stderr, "READ OUT OF RANGE: [0x%08x]\n", uo);
-        assert(0);
-    }
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    memory[idx] = (uint8_t)v;
+}
+
+void memoryASet16(int s, int o, uint16_t v) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    *((uint16_t*)&memory[idx]) = (uint16_t)v;
+}
+
+void memoryASet32(int s, int o, uint32_t v) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    *((uint32_t*)&memory[idx]) = v;
+}
+void memoryASet64(int s, int o, uint64_t v) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    *((uint64_t*)&memory[idx]) = v;
+}
+
+uint8_t memoryAGet(int s, int o) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
     return memory[idx];
 }
-inline uint16_t memoryAGet16(int s, int o) {
-    unsigned uo = (unsigned)o;
-    if (uo < 0x1000) return 0;
+uint16_t memoryAGet16(int s, int o) {
     int idx = o - MEM_BASE;
-    if (idx < 0 || idx + 1 >= MEM_SIZE_CONST) {
-        fprintf(stderr, "READ OUT OF RANGE: [0x%08x]\n", uo);
-        assert(0);
-    }
-    return memory[idx] | (memory[idx+1] << 8);
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    return *((uint16_t*)&memory[idx]);
 }
-inline uint32_t memoryAGet32(int s, int o) {
-    ++get32count;
-    unsigned uo = (unsigned)o;
-    if (uo < 0x1000) return 0;
+uint32_t memoryAGet32(int s, int o) {
     int idx = o - MEM_BASE;
-    if (idx < 0 || idx + 3 >= MEM_SIZE_CONST) {
-        fprintf(stderr, "READ OUT OF RANGE: [0x%08x]\n", uo);
-        assert(0);
-    }
-    return memory[idx] | (memory[idx+1] << 8) | (memory[idx+2] << 16) | ((uint32_t)memory[idx+3] << 24);
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    return *((uint32_t*)&memory[idx]);
 }
-inline uint64_t memoryAGet64(int s, int o) {
-    unsigned uo = (unsigned)o;
-    if (uo < 0x1000) return 0;
+uint64_t memoryAGet64(int s, int o) {
     int idx = o - MEM_BASE;
-    if (idx < 0 || idx + 7 >= MEM_SIZE_CONST) {
-        fprintf(stderr, "READ OUT OF RANGE: [0x%08x]\n", uo);
-        assert(0);
-    }
-    uint64_t v = 0;
-    for (int i = 0; i < 8; i++) v |= (uint64_t)memory[idx+i] << (i * 8);
-    return v;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    return *((uint64_t*)&memory[idx]);
 }
 int allocate(int size);
 
-// 80-bit FPU load from memory (extended precision stored as 10 bytes)
-inline double memoryAGet80(int s, int o) {
-    // Read 80-bit x87 extended precision: 10 bytes little-endian
-    // For simplicity, read as 64-bit double (losing 16 bits of precision)
-    uint64_t mantissa = memoryAGet64(s, o);
-    uint16_t expSign = memoryAGet16(s, o + 8);
-    int sign = (expSign >> 15) & 1;
-    int exp = expSign & 0x7fff;
-    if (exp == 0 && mantissa == 0) return sign ? -0.0 : 0.0;
-    if (exp == 0x7fff) return sign ? -INFINITY : INFINITY;
-    // Convert: bias is 16383 for 80-bit, 1023 for 64-bit
-    double d = (double)mantissa / (double)(1ULL << 63);
-    d *= pow(2.0, exp - 16383);
-    return sign ? -d : d;
-}
-
-inline void memoryASet80(int s, int o, double d) {
-    // Simplified: store as 64-bit double in the 80-bit slot
-    uint64_t bits;
-    memcpy(&bits, &d, 8);
-    memoryASet64(s, o, bits);
-    memoryASet16(s, o + 8, 0);
-}
 
 // Unused segment memory stubs
 inline void memoryVideoSet(int s, int o, int v) {}
@@ -183,22 +136,6 @@ uint16_t ds, ss, es, gs, cs, fs;
 uint32_t etx;
 uint32_t cr0;
 
-// SSE register stubs — needed for CRT math intrinsics that stop() immediately
-// These must be TYPES (not instances) to satisfy movsd<xmm4, xmm0>() template calls
-#define DEFINE_XMM(name) \
-    struct name { \
-        static uint32_t Get32() { return 0; } \
-        static void Set32(uint32_t) {} \
-        static void Advance(int) {} \
-        static uint8_t Get8() { return 0; } \
-        static uint16_t Get16() { return 0; } \
-        static void Set8(uint8_t) {} \
-        static void Set16(uint16_t) {} \
-    };
-DEFINE_XMM(xmm0) DEFINE_XMM(xmm1) DEFINE_XMM(xmm2) DEFINE_XMM(xmm3)
-DEFINE_XMM(xmm4) DEFINE_XMM(xmm5) DEFINE_XMM(xmm6) DEFINE_XMM(xmm7)
-#undef DEFINE_XMM
-
 // Temp carry flag for multi-precision arithmetic
 bool temp_cf = false;
 
@@ -213,14 +150,14 @@ inline void cwde() { eax = (uint32_t)(int32_t)(int16_t)(uint16_t)(eax & 0xFFFF);
 
 // --- Stack operations ---
 
-inline uint32_t pop32()
+uint32_t pop32()
 {
     uint32_t aux = memoryAGet32(ss, esp);
     esp += 4;
     return aux;
 }
 
-inline void push32(uint32_t w)
+void push32(uint32_t w)
 {
     esp -= 4;
     memoryASet32(ss, esp, w);
@@ -543,27 +480,22 @@ inline void _heartbeat(const char* where) {
 }
 
 // --- StackGuard: detect ESP imbalance at function exit ---
-extern const char* _currentFunc;
 class StackGuard
 {
     uint32_t savedesp;
     const char* func;
-    const char* prevFunc;
 public:
-    StackGuard(int ofs, const char* func) : savedesp(ofs == -999 ? 0 : esp + ofs), func(func), prevFunc(_currentFunc) { _currentFunc = func; }
+    StackGuard(int ofs, const char* func) : savedesp(ofs == -999 ? 0 : esp + ofs), func(func) {}
     ~StackGuard() {
-        _currentFunc = prevFunc;  // restore caller's name
         if (savedesp && savedesp != esp) {
             static int _sgCount = 0;
             if (++_sgCount <= 20)
                 fprintf(stderr, "StackGuard failure #%d in %s: expected esp=0x%08x, got esp=0x%08x (delta=%d)\n",
                         _sgCount, func, savedesp, esp, (int)(esp - savedesp));
-            // assert(0); // disabled — logging only for now
         }
     }
 };
 
-void sync();
 void fixReloc(uint16_t seg);
 
 void indirectCall(int s, int o, int originSeg, int originOfs);
@@ -608,7 +540,6 @@ inline uint32_t _alloc(int size) {
 extern int _nanTrapArmed_g;
 
 namespace fpuinsns {
-extern bool _traceFpuCompare;
 
 static double fpstack[8] = {0};
 static int top = 0;
@@ -642,7 +573,7 @@ inline void setst(int i, double v) {
 }
 
 // --- Float32 conversion helpers ---
-inline float fromFp32(uint32_t v) {
+float fromFp32(uint32_t v) {
     float f;
     memcpy(&f, &v, 4);
     return f;
@@ -826,11 +757,9 @@ inline void fxch80(double& d) {
 // =========================================
 
 inline void fcom32(uint32_t v) {
-    if (_traceFpuCompare) { static int _fc=0; if(++_fc<=30) fprintf(stderr, "  fcom32: ST0=%.6g mem=%.6g\n", st(0), (double)fromFp32(v)); }
     compareResult = emulate_fnstsw_compare(st(0), (double)fromFp32(v));
 }
 inline void fcomp32(uint32_t v){
-    if (_traceFpuCompare) { static int _fc=0; if(++_fc<=30) fprintf(stderr, "  fcomp32: ST0=%.6g mem=%.6g\n", st(0), (double)fromFp32(v)); }
     compareResult = emulate_fnstsw_compare(st(0), (double)fromFp32(v)); fppop();
 }
 inline void fcom64(uint64_t v) { compareResult = emulate_fnstsw_compare(st(0), fromFp64(v)); }
@@ -838,18 +767,12 @@ inline void fcomp64(uint64_t v){ compareResult = emulate_fnstsw_compare(st(0), f
 inline void fcom80(double v)   { compareResult = emulate_fnstsw_compare(st(0), v); }
 inline void fcomp80(double v)  { compareResult = emulate_fnstsw_compare(st(0), v); fppop(); }
 inline void fcomst(int i)      {
-    
-    if (_traceFpuCompare) { static int _fc=0; if(++_fc<=30) fprintf(stderr, "  fcomst(%d): ST0=%.6g ST(%d)=%.6g\n", i, st(0), i, st(i)); }
     compareResult = emulate_fnstsw_compare(st(0), st(i));
 }
 inline void fcompst(int i)     {
-    
-    if (_traceFpuCompare) { static int _fc=0; if(++_fc<=30) fprintf(stderr, "  fcompst(%d): ST0=%.6g ST(%d)=%.6g\n", i, st(0), i, st(i)); }
     compareResult = emulate_fnstsw_compare(st(0), st(i)); fppop();
 }
 inline void fcompp()           {
-    
-    if (_traceFpuCompare) { static int _fc=0; if(++_fc<=30) fprintf(stderr, "  fcompp: ST0=%.6g ST1=%.6g\n", st(0), st(1)); }
     compareResult = emulate_fnstsw_compare(st(0), st(1)); fppop(); fppop();
 }
 inline void ftst()             { compareResult = emulate_fnstsw_compare(st(0), 0.0); }
@@ -908,5 +831,14 @@ inline void fninit()        { top = 0; fppos = 0; controlWord = 0x037f; }
 
 } // namespace fpuinsns
 using namespace fpuinsns;
+
+// 80-bit FPU load from memory (extended precision stored as 10 bytes)
+inline double memoryAGet80(int s, int o) {
+    return fromFp64(memoryAGet64(s, o));
+}
+
+inline void memoryASet80(int s, int o, double d) {
+  memoryASet64(s, o, toFp64(d));
+}
 
 #endif // CICO32_H

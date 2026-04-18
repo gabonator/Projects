@@ -7519,14 +7519,11 @@ void sub_100c9890() // 0000:100c9890 +long
     uint32_t dst = memoryAGet32(ss, esp+4);
     uint32_t src = memoryAGet32(ss, esp+8);
     uint32_t sz = memoryAGet32(ss, esp+12);
-    { extern uint32_t _outLWatch; extern bool _outLWatchArmed;
-      if (_outLWatchArmed && dst >= _outLWatch && dst < _outLWatch + 8192) {
-        static int _mc=0; if(++_mc<=5) fprintf(stderr, "memcpy to outL: dst=0x%08x src=0x%08x sz=%d\n", dst, src, sz);
-      }
-    }
     // memcpy via memoryASet/memoryAGet (no native bypass)
     if (sz > 0 && sz < 0x1000000)
         for (uint32_t i = 0; i < sz; i++) memoryASet(ds, dst+i, memoryAGet(ds, src+i));
+    else
+        printf("Warning: memcpy size %d\n", sz);
     eax = dst;
     esp += 4;
 }
