@@ -684,6 +684,7 @@ int main(int argc, char* argv[]) {
 
     
     // Dump full preset for comparison
+    if (0)
     { uint32_t pp2 = memoryAGet32(0, thisPtr + 0xe734);
       if (pp2 >= 0x12000000) {
         FILE* df = fopen("dump_preset.bin", "wb");

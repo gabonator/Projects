@@ -5,7 +5,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-CONTENT="$(cd ../jsfun4/installer/Nexus\ Content && pwd)"
+CONTENT="$(cd /Users/gabrielvalky/Documents/git/CleanRoom/jsfun4/installer/Nexus\ Content && pwd)"
 
 echo "=== Building ==="
 make clean && make

@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O2 -std=c++17 -Wno-unused-value -Wno-parentheses -Wno-narrowing -Wno-overflow
+CXXFLAGS = -O2 -D NDEBUG -std=c++17 -Wno-unused-value -Wno-parentheses -Wno-narrowing -Wno-overflow
 LDFLAGS = -lm
 
 all: nexus_emu
