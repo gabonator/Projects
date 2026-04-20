@@ -1,12 +1,311 @@
 // Applied 852 PE relocations (delta=0x1000000)
+#include "cico32.h"
 
-// Forward declarations for SYNSOEMU functions used before definition
-void sub_11001323(); void sub_11001450();
-void sub_11006054(); void sub_1100605a(); void sub_11006060();
-void sub_11006066(); void sub_1100606c(); void sub_11006072();
+// Missing imports for kernel32.h!
+// No RTTI information found
+// Sections of SYNSOEMU.dll:
+//  - .text: 11001000 .. 11006078 (20600 bytes)
+//  - .rdata: 11007000 .. 110a5dfd (650749 bytes)
+//  - .data: 110a6000 .. 11149790 (669584 bytes)
+//  - .rsrc: 1114a000 .. 1114a3b0 (944 bytes)
+//  - .reloc: 1114b000 .. 1114c38c (5004 bytes)
+
+void fixReloc(uint16_t seg);
+void sub_11001525();
+
+void init()
+{
+#include "kernel32.h"
+
+void sub_11001525();
+
+void init()
+{
+    loadOverlay("SYNSOEMU_text.bin", 0x11001000);
+    loadOverlay("SYNSOEMU_rdata.bin", 0x11007000);
+    loadOverlay("SYNSOEMU_data.bin", 0x110a6000);
+    loadOverlay("SYNSOEMU_rsrc.bin", 0x1114a000);
+    loadOverlay("SYNSOEMU_reloc.bin", 0x1114b000);
+    esp = 0x1114d000;
+    ebp = 0x1114d000;
+}
+
+void start()
+{
+    sub_11001525();
+}
+
+void posRegisterApplicationWithPackage()
+{
+    sub_110018fa();
+}
+
+
+void posUnregisterApplication()
+{
+    sub_110018fa();
+}
+
+
+void posInstantiateObject()
+{
+    sub_11001582();
+}
+
+
+void posCallMethod()
+{
+    sub_110015fc();
+}
+
+
+void posFreeDLLHeapData()
+{
+    sub_110015ed();
+}
+
+
+void posDeleteObject()
+{
+    sub_110015a2();
+}
+
+
+void posRegisterApplicationWithPackageName()
+{
+    sub_110018fa();
+}
+
+
+void posRegisterApplication()
+{
+    sub_110018fa();
+}
+
+
+void posInstantiateObjectOnExecuter()
+{
+    sub_110018fa();
+}
+
+
+void posCallMethodOnExecuter()
+{
+    sub_110018fa();
+}
+
+
+void posGetObjectInfo()
+{
+    sub_110018fa();
+}
+
+
+void posGetClassInfo()
+{
+    sub_110018fa();
+}
+
+
+void posGetExecuterInfo()
+{
+    sub_110018fa();
+}
+
+
+void posGetInfo()
+{
+    sub_110018fa();
+}
+
+
+void posExecuteCMD()
+{
+    sub_110018fa();
+}
+
+
+void posDeleteDLLHeapData()
+{
+    sub_110015de();
+}
+
+
+void posRegisterApplicationWithClasses()
+{
+    sub_11001531();
+}
+
+
+void posGetInfoWithCommand()
+{
+    sub_110015b7();
+}
+
+
+void posEncryptData()
+{
+    sub_110018fa();
+}
+
+
+void posDecryptData()
+{
+    sub_110018fa();
+}
+
+
+void posEncryptFile()
+{
+    sub_110018fa();
+}
+
+
+void posDecryptFile()
+{
+    sub_110018fa();
+}
+
+
+void posCreateNewSymmetricKey()
+{
+    sub_110018fa();
+}
+
+
+void posSetAlgorithmParameter()
+{
+    sub_110018fa();
+}
+
+
+void posModifyPinCode()
+{
+    sub_110018fa();
+}
+
+
+void posDCPCreateEncryptionContext()
+{
+    sub_110018bb();
+}
+
+
+void posDCPEncryptData()
+{
+    sub_110018e5();
+}
+
+
+void posDCPDecryptData()
+{
+    sub_110018d0();
+}
+
+
+enum class ptrImportTable {
+    ptr_begin = 0x6ab00000,
+    ptr_kernel32_GlobalFree, // 0x11007000 
+    ptr_kernel32_RaiseException, // 0x11007004 
+    ptr_kernel32_VirtualQuery, // 0x11007008 
+    ptr_kernel32_ExitProcess, // 0x1100700c 
+    ptr_kernel32_VirtualProtect, // 0x11007010 
+    ptr_kernel32_GlobalAlloc, // 0x11007014 
+};
+
+void indirectCall(int s, int o) {
+    switch ((ptrImportTable)o) {
+        case ptrImportTable::ptr_kernel32_GlobalFree:
+            eax = kernel32::GlobalFree();
+            break; // 6ab00001
+        case ptrImportTable::ptr_kernel32_RaiseException:
+            eax = kernel32::RaiseException();
+            break; // 6ab00002
+        case ptrImportTable::ptr_kernel32_VirtualQuery:
+            eax = kernel32::VirtualQuery();
+            break; // 6ab00003
+        case ptrImportTable::ptr_kernel32_ExitProcess:
+            eax = kernel32::ExitProcess();
+            break; // 6ab00004
+        case ptrImportTable::ptr_kernel32_VirtualProtect:
+            eax = kernel32::VirtualProtect();
+            break; // 6ab00005
+        case ptrImportTable::ptr_kernel32_GlobalAlloc:
+            eax = kernel32::GlobalAlloc();
+            break; // 6ab00006
+    }
+}
+
+}
+
+void start()
+{
+    sub_11001525();
+}
+
+void sub_11001000();
+void sub_1100101d();
+void sub_1100112d();
+void sub_11001157();
+void sub_11001181();
+void sub_11001200();
+void sub_110012f5();
+void sub_11001316();
+void sub_1100131c();
+void sub_11001322();
+void sub_11001323();
+void sub_110013d0();
+void sub_11001443();
+void sub_11001449();
+void sub_1100144f();
+void sub_11001450();
+void sub_11001507();
+void sub_11001525();
+void sub_11001531();
+void sub_11001582();
+void sub_110015a2();
+void sub_110015b7();
+void sub_110015de();
+void sub_110015ed();
+void sub_110015fc();
+void sub_110018bb();
+void sub_110018d0();
+void sub_110018e5();
+void sub_110018fa();
+void sub_11001900();
+void sub_11001990();
+void sub_11002d50();
+void sub_11002f74();
+void sub_11003022();
+void sub_11003803();
 void sub_110039bb();
+void sub_1100430e();
+void sub_11004337();
+void sub_11004379();
+void sub_110043a2();
+void sub_110043e4();
+void sub_1100440d();
+void sub_1100444f();
+void sub_11004478();
+void sub_110044ba();
+void sub_11004560();
+void sub_110045d0();
+void sub_11004600();
+void sub_11004640();
+void sub_11004670();
+void sub_110046b0();
+void sub_11005a60();
+void sub_11005ad0();
+void sub_11005dc6();
+void sub_11005e70();
+void sub_11005ea6();
+void sub_11006054();
+void sub_1100605a();
+void sub_11006060();
+void sub_11006066();
+void sub_1100606c();
+void sub_11006072();
 
-// Applied 852 PE relocations (delta=0x1000000)
 void sub_11001000() // 0000:11001000 +long +stackDrop8
 {
     esp -= 4;
@@ -308,7 +607,7 @@ loc_11001335: // 0000:11001335
     edx >>= 18;
     eax = memoryAGet32(ss, ebp + 0x14);
     eax = memoryAGet(ds, edx + eax);
-    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007134), __LINE__, 0); // 0000:110013a6
+    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007134), 0x0000, 0x110013a6); // 0000:110013a6
     edx = memoryAGet32(ss, ebp - 8);
     eax = eax + (edx * 4);
     edx = memoryAGet32(ss, ebp - 12);
@@ -357,7 +656,7 @@ loc_110013f0: // 0000:110013f0
     sub_11001450();
     eax = ebx;
     push32(memoryAGet32(ss, ebp + 0xc));
-    indirectCall(cs, memoryAGet32(ds, eax), __LINE__, 0); // 0000:1100141f
+    indirectCall(cs, memoryAGet32(ds, eax), 0x0000, 0x1100141f); // 0000:1100141f
     if (eax == memoryAGet32(ss, ebp + 0x8))
         goto loc_1100143c;
     ecx = (int32_t)edi * (int32_t)0x00000008;
@@ -415,7 +714,7 @@ loc_11001467: // 0000:11001467
     edx >>= 12;
     eax = memoryAGet32(ss, ebp + 0x14);
     eax = memoryAGet(ds, edx + eax);
-    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007148), __LINE__, 0); // 0000:11001479
+    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007148), 0x0000, 0x11001479); // 0000:11001479
     edx = ebx;
     edx &= 0x00000001;
     eax = eax + (edx * 2);
@@ -495,21 +794,14 @@ void sub_11001531() // 0000:11001531 +long
     push32(esi);
     push32(edi);
     eax = memoryAGet32(ss, ebp + 0x1c);
-    printf("  posRegister: [ebp+0xc]=0x%08x [ebp+0x1c]=0x%08x outPtr=0x%08x\n",
-        memoryAGet32(ss, ebp+0xc), memoryAGet32(ss, ebp+0x1c), eax);
     memoryASet32(ds, eax, 0xffffffff);
-    printf("  posRegister: wrote 0xffffffff to outPtr=0x%08x\n", eax);
-    if (!memoryAGet32(ss, ebp + 0xc)) {
-        printf("  posRegister: SKIP (arg2=0)\n");
-        goto loc_1100157b; }
+    if (!memoryAGet32(ss, ebp + 0xc))
+        goto loc_1100157b;
     ebx = 0x11007020;
 loc_1100154b: // 0000:1100154b
-    printf("  posRegister: matching class at ebx=0x%08x [ebx]=0x%08x vs appClasses=0x%08x\n",
-        ebx, memoryAGet32(ds, ebx), memoryAGet32(ss, ebp+0xc));
     push32(ebx);
     push32(memoryAGet32(ss, ebp + 0xc));
     sub_11001000();
-    printf("  posRegister: sub_11001000 returned eax=%d\n", eax);
     if (eax)
         goto loc_11001573;
     push32(0x0000001c);
@@ -517,21 +809,10 @@ loc_1100154b: // 0000:1100154b
     sub_11006054();
     edi = eax;
     eax = memoryAGet32(ss, ebp + 0x1c);
-    printf("  posRegister: MATCH! alloc=0x%08x storing at outPtr=0x%08x, copying from ebx=0x%08x\n", edi, eax, ebx);
-    // Save entire ordinal table + handle area (0x105814bc..0x1058150c = 20 DWORDs)
-    uint32_t _sv[21]; for(int _i=0;_i<21;_i++) _sv[_i]=memoryAGet32(ds,0x105814bc+_i*4);
     memoryASet32(ds, eax, edi);
     esi = ebx;
     ecx = 0x00000018;
     for (; ecx != 0; --ecx) movsb<ES_EDI, DS_ESI>();
-    { uint32_t h = memoryAGet32(ds, 0x105814bc);
-      printf("  POST-COPY: handle=0x%08x [+0x14]=0x%08x edi=0x%08x\n", h, memoryAGet32(ds, h+0x14), edi); }
-    // Restore ordinal table (skip first entry which is the handle ptr itself)
-    for(int _i=2;_i<21;_i++) memoryASet32(ds,0x105814bc+_i*4,_sv[_i]);
-    // Keep the handle ptr and first copy byte at 0x105814bc..0x105814c3
-    { uint32_t h=memoryAGet32(ds,0x105814bc);
-      printf("  posRegister: handle=0x%08x [+0x10]=0x%08x [+0x14]=0x%08x\n",
-          h, memoryAGet32(ds,h+0x10), memoryAGet32(ds,h+0x14)); }
     goto loc_1100157b;
 loc_11001573: // 0000:11001573
     ebx = ebx + 24;
@@ -553,17 +834,13 @@ void sub_11001582() // 0000:11001582 +long
     ebp = esp;
     push32(ebx);
     ebx = memoryAGet32(ss, ebp + 0x8);
-    printf("  posInstantiate: ebx(handle)=0x%08x [ebx+0x10]=0x%08x [ebp+0x10]=0x%08x\n",
-        ebx, ebx >= 0x10000000 ? memoryAGet32(ds, ebx+0x10) : 0, memoryAGet32(ss, ebp+0x10));
     if (ebx == 0xffffffff)
         goto loc_1100159d;
     eax = memoryAGet32(ds, ebx + 0x10);
-    printf("  posInstantiate: factory fn = 0x%08x\n", eax);
     if (!eax)
         goto loc_1100159d;
     push32(memoryAGet32(ss, ebp + 0x10));
-    indirectCall(cs, eax, __LINE__, 0); // 0000:11001598
-    printf("  posInstantiate: factory returned eax=0x%08x, storing at [0x%08x+0x18]\n", eax, ebx);
+    indirectCall(cs, eax, 0x0000, 0x11001598); // 0000:11001598
     memoryASet32(ds, ebx + 0x18, eax);
 loc_1100159d: // 0000:1100159d
     eax = 0;
@@ -775,7 +1052,7 @@ loc_11001782: // 0000:11001782
     eax = eax + 3754892;
 loc_110017cd: // 0000:110017cd
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:110017ce
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x110017ce); // 0000:110017ce
     goto loc_110018b4;
 loc_110017d6: // 0000:110017d6
     push32(0x11007080);
@@ -800,7 +1077,7 @@ loc_1100180c: // 0000:1100180c
     eax = eax + 3333812;
 loc_1100181b: // 0000:1100181b
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100181c
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100181c); // 0000:1100181c
     goto loc_110018b4;
 loc_11001824: // 0000:11001824
     push32(0x11007098);
@@ -818,7 +1095,7 @@ loc_11001846: // 0000:11001846
     eax = eax + 746332;
 loc_1100184c: // 0000:1100184c
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100184d
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100184d); // 0000:1100184d
     goto loc_110018b4;
 loc_11001852: // 0000:11001852
     push32(0x110070b0);
@@ -833,7 +1110,7 @@ loc_11001852: // 0000:11001852
     eax = eax + 928228;
 loc_11001875: // 0000:11001875
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:11001876
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x11001876); // 0000:11001876
     goto loc_110018b4;
 loc_1100187b: // 0000:1100187b
     push32(0x110070f8);
@@ -848,7 +1125,7 @@ loc_1100187b: // 0000:1100187b
     eax = eax + 201308;
 loc_1100189e: // 0000:1100189e
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100189f
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100189f); // 0000:1100189f
     goto loc_110018b4;
 loc_110018a4: // 0000:110018a4
     push32(0x00000000);
@@ -874,7 +1151,7 @@ void sub_110018bb() // 0000:110018bb +long
     eax = memoryAGet32(ds, eax + 0x4);
     push32(0x00000000);
     push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018c9
+    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018c9); // 0000:110018c9
     eax = 0;
     esp = ebp; ebp = pop32();
     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -887,12 +1164,9 @@ void sub_110018d0() // 0000:110018d0 +long
     ebp = esp;
     eax = memoryAGet32(ss, ebp + 0x8);
     eax = memoryAGet32(ds, eax + 0x4);
-    { uint32_t _vfn = memoryAGet32(ds, eax + 0x14);
-      printf("  DCP vtable call: arg=0x%08x [arg+4]=0x%08x addr=0x%08x fn=0x%08x\n",
-          memoryAGet32(ss, ebp+8), eax, eax+0x14, _vfn); }
     push32(0x00000002);
     push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018de
+    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018de); // 0000:110018de
     eax = 0;
     esp = ebp; ebp = pop32();
     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -907,7 +1181,7 @@ void sub_110018e5() // 0000:110018e5 +long
     eax = memoryAGet32(ds, eax + 0x4);
     push32(0x00000001);
     push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018f3
+    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018f3); // 0000:110018f3
     eax = 0;
     esp = ebp; ebp = pop32();
     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -2943,8 +3217,6 @@ void sub_110045d0() // 0000:110045d0 +long +stackDrop4
     push32(memoryAGet32(ss, ebp + 0x8));
     sub_11006066();
     eax = memoryAGet32(ss, ebp + 0x8);
-    { uint32_t _a = eax, _b = memoryAGet32(ds, ebx + 0x4);
-      printf("  factory check: arg=0x%08x [ebx+4]=0x%08x diff=0x%08x (need 0x00581450)\n", _a, _b, _a - _b); }
     eax -= memoryAGet32(ds, ebx + 0x4);
     if (eax != 0x00581450)
         goto loc_110045f9;
@@ -3383,12 +3655,9 @@ loc_11005f12: // 0000:11005f12
     ebx = memoryAGet32(ss, ebp + 0x8);
     eax = memoryAGet32(ds, ebx + 0x8);
     eax = eax + 91;
-    printf("  DCP decrypt: keyLookup at 0x%08x, keyTable=0x11149770\n", eax);
-    printf("    key bytes: "); for(int _k=0;_k<16;_k++) printf("%02x",memoryAGet(ds,eax+_k)); printf("\n");
     push32(0x11149770);
     push32(eax);
     sub_11005e70();
-    printf("  DCP key verification: eax=%d (%s)\n", eax, eax?"FAIL":"OK");
     if (eax)
         goto loc_11005f5b;
     eax = memoryAGet32(ds, ebx + 0x1c);
@@ -3425,33 +3694,38 @@ loc_11005f79: // 0000:11005f79
     // SEH removed (was stack_below, 8/4) // SEH removed (was stack_below, 8/4)
     esp += 12;
 }
-void sub_11006054() // GlobalAlloc (stdcall, 2 args: flags, size)
-{ uint32_t flags=memoryAGet32(ss,esp); uint32_t size=memoryAGet32(ss,esp+4);
-  if(!size) size=32; // minimum alloc
-  eax=allocate(size); printf("  SYNSO GlobalAlloc(flags=0x%x,sz=%d)=0x%08x\n",flags,size,eax); esp+=8; }
-void sub_1100605a() // GlobalFree thunk
-{ esp+=4; eax=0; }
-void sub_11006060() // RaiseException thunk
-{ printf("  SYNSO RaiseException!\n"); esp+=16; }
-void sub_11006066() // VirtualQuery (stdcall, 3 args: addr, buf, len)
-{ esp -= 4; // synthetic
-  uint32_t addr=memoryAGet32(ss,esp+4); uint32_t buf=memoryAGet32(ss,esp+8);
-  printf("  VirtualQuery(addr=0x%08x, buf=0x%08x)\n", addr, buf);
-  if(buf){
-    // Determine allocation base from address
-    uint32_t allocBase = 0x10000000; // default: main DLL base
-    if (addr >= 0x11000000 && addr < 0x11200000) allocBase = 0x11000000; // SYNSOEMU
-    memoryASet32(ds,buf+0x00,addr);       // BaseAddress
-    memoryASet32(ds,buf+0x04,allocBase);  // AllocationBase
-    memoryASet32(ds,buf+0x08,0x40);       // AllocationProtect (PAGE_EXECUTE_READWRITE)
-    memoryASet32(ds,buf+0x0C,0x1000);     // RegionSize
-    memoryASet32(ds,buf+0x10,0x1000);     // State (MEM_COMMIT)
-    memoryASet32(ds,buf+0x14,0x40);       // Protect
-    memoryASet32(ds,buf+0x18,0x1000000);  // Type (MEM_IMAGE)
-  } eax=28; esp+=16; } // +4 synthetic +12 stdcall
-void sub_1100606c() // ExitProcess thunk
-{ printf("  SYNSO ExitProcess!\n"); esp+=4; }
-void sub_11006072() // VirtualProtect thunk
-{ uint32_t oldProt=memoryAGet32(ss,esp+16); if(oldProt) memoryASet32(ds,oldProt,0x40); eax=1; esp+=16; }
+void sub_11006054() // 0000:11006054 +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x11007014), 0x0000, 0x11006054); return; // 0000:11006054
+}
+void sub_1100605a() // 0000:1100605a +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x11007000), 0x0000, 0x1100605a); return; // 0000:1100605a
+}
+void sub_11006060() // 0000:11006060 +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x11007004), 0x0000, 0x11006060); return; // 0000:11006060
+}
+void sub_11006066() // 0000:11006066 +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x11007008), 0x0000, 0x11006066); return; // 0000:11006066
+}
+void sub_1100606c() // 0000:1100606c +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x1100700c), 0x0000, 0x1100606c); return; // 0000:1100606c
+}
+void sub_11006072() // 0000:11006072 +long
+{
+    esp -= 4;
+    indirectJump(cs, memoryAGet32(ds, 0x11007010), 0x0000, 0x11006072); return; // 0000:11006072
+}
+void fixReloc(uint16_t seg)
+{
+}
 
 
