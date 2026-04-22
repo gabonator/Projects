@@ -1,3 +1,6 @@
 res
 render_port
 nexus_emu
+input/Nexus.dll
+input/SYNSOEMU.dll
+*.elf

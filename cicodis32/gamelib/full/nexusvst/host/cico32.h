@@ -467,7 +467,8 @@ inline bool stop(const char* msg = nullptr, const char* info = nullptr)
     }
     if (!msg || !msg[0])
         return false;  // empty stop() — used as condition for unhandled flags
-    printf("STOP: %s %s\n", msg ? msg : "", info ? info : "");
+    fprintf(stderr, "STOP: %s %s\n", msg ? msg : "", info ? info : "");
+    fflush(stderr);
     assert(0);
     return false;
 }
@@ -510,6 +511,7 @@ inline void indirectJump(int s, int o)
 inline void indirectJump(int s, int o, int hint1, int hint2)
 {
     printf("FATAL: indirectJump(0x%08x) at hint 0x%08x — must be fixed in cicodis jump table hints\n", o, hint2);
+    printf("{\"id\": \"jumpTable\", \"addr\": \"0:%x\", \"jumps32\": [\"0:%x\"]}\n", hint2, o);
     abort();
 }
 

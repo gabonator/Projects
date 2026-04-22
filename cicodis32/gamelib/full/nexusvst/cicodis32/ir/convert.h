@@ -1,0 +1,1029 @@
+//
+//  convert.h
+//  cicodis-clean
+//
+//  Created by Gabriel Valky on 09/12/2025.
+//
+
+class ConvertIr {
+    shared<Options> mOptions;
+    Analyser& mAnalyser;
+    
+public:
+    ConvertIr(Analyser& analyser, shared<Options> options) : mOptions(options), mAnalyser(analyser)
+    {
+    }
+    
+    shared<ProcIr> Convert(address_t proc)
+    {
+        shared<ProcIr> xprocir = std::make_shared<ProcIr>();
+        auto append = [&](address_t addr, const StatementIr& statement)
+        {
+            if (statement.type == StatementIr::Type_t::None)
+                return;
+//            PrintIr::Print(statement);
+            xprocir->lines.push_back(statement);
+            xprocir->lines.back().address = addr;
+        };
+        
+        assert(mAnalyser.mInfos.find(proc) != mAnalyser.mInfos.end());
+        shared<Analyser::info_t> info = mAnalyser.mInfos.find(proc)->second;
+        
+        std::string extraInfo = "";
+        if ((info->func.request != procRequest_t::none && info->func.request != procRequest_t::callNear) || mOptions->printLabelAddress)
+        {
+            if (mOptions->printLabelAddress)
+                extraInfo += utils::format("%04x:%04x", proc.segment, proc.offset);
+            
+            extraInfo += info->func.makeProcIdentifier();
+        }
+        xprocir->name = format("sub_%x()", proc.linearOffset());
+        xprocir->info = extraInfo;
+        xprocir->addr = proc;
+
+        //
+        shared <Analyser::info_t> mInfo = mAnalyser.mInfos.find(proc)->second;
+        Analyser::code_t& code = mInfo->code;
+        assert(!code.empty());
+
+        for (std::string str : GetTempVariables(code, info))
+            if (!str.starts_with("flags."))
+                xprocir->temps.push_back(str);
+
+        // stub
+        if (code.size() == 1 && code.begin()->second->instr->mId == X86_INS_JMP && code.begin()->second->instr->IsDirectJump())
+        {
+            StatementIr stubCall{.type = StatementIr::Type_t::DirectCall, .target = code.begin()->second->instr->JumpTarget()};
+            
+            append(code.begin()->first, stubCall);
+            return xprocir;
+        }
+
+        //
+        if (!((int)info->func.request & (int)procRequest_t::callIsolated))
+        {
+            StatementIr shiftSp = OP_MOD("assign") << OP_BINARY(OP_REG("sp", 2), "-", OP_CONST(2));
+            StatementIr shiftEsp = OP_MOD("assign") << OP_BINARY(OP_REG("esp", 4), "-", OP_CONST(4));
+
+            if (info->func.callConv == callConv_t::callConvShiftStackNear)
+                append(code.begin()->first, shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackFar)
+                append(code.begin()->first, shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackNearFar)
+                append(code.begin()->first, shiftSp);
+            if (info->func.callConv == callConv_t::callConvShiftStackLong)
+                append(code.begin()->first, shiftEsp);
+        }
+        
+        if (code.begin()->first != proc)
+        {
+            append(code.begin()->first, StatementIr{.type = StatementIr::Type_t::DirectJump,
+                .target = proc});
+        }
+
+        //
+        address_t next;
+        for (const auto& p : code)
+        {
+            if (next && p.first != next)
+            {
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Comment,
+                    .comment = format("gap %d bytes", p.first.offset - next.offset)});
+            }
+            
+            shared<CapInstr> pinstr = p.second->instr;
+            auto codeit = info->code.find(p.first);
+            assert(codeit != info->code.end());
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            StatementIr post;
+            
+            if (pinstr->isLabel)
+            {
+                std::string label = format("loc_%x", pinstr->mAddress.linearOffset());
+
+                if (mOptions->printProcAddress)
+                    append(p.first, StatementIr{.type = StatementIr::Type_t::Label,
+                        .address = pinstr->mAddress,
+                        .comment = pinstr->mAddress.toString()});
+                else
+                    append(p.first, StatementIr{.type = StatementIr::Type_t::Label,
+                        .address = pinstr->mAddress});
+                xprocir->labels = true;
+            }
+
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+            {
+                static const char* flagName[128] = {['c'] = "flags.carry",
+                    ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow",
+                    ['p'] = "flags.parity"};
+                static const x86_insn flagCond[128] = {
+                    ['c'] = X86_INS_JB,
+                    ['z'] = X86_INS_JE,
+                    ['s'] = X86_INS_JS,
+                    ['p'] = X86_INS_JP,
+                };
+                if (flag->save)
+                {
+                    std::string useFlagName(flagName[flag->type]);
+                    if (!flag->depends.empty())
+                    {
+                        std::string tempName = utils::format("temp_%cf", flag->type);
+                        append(p.first, ASSIGN(OP_VAR(tempName), OP_VAR(useFlagName)));
+                        assert(!post);
+                        post = ASSIGN(OP_VAR(useFlagName), OP_VAR(tempName));
+                        useFlagName = tempName;
+                    }
+
+                    StatementIr st{.type = StatementIr::Type_t::Assignment,
+                            .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
+                            .stmt1 = std::make_shared<StatementIr>(PreCondition(pinfo->instr, flagCond[flag->type]))
+                    };
+                    st.comment = std::move(st.stmt1->comment);
+                    st.postpone = st.stmt1->postpone; // TODO:
+                    if (st.postpone)
+                    {
+                        if (post)
+                        {
+                            assert(!post.next);
+                            post.next = std::make_shared<StatementIr>(st);
+                        } else {
+                            assert(!post);
+                            post = st;
+                        }
+                    } else {
+                        append(p.first, st);
+                    }
+                }
+            }
+            
+            if (pinfo->savePrecondition.size())
+            {
+                for (const auto& prec : pinfo->savePrecondition)
+                {
+                    StatementIr st = ASSIGN(OP_VAR(prec.variable), StatementBuilder(std::make_shared<StatementIr>(PreCondition(pinfo->instr, prec.readOp))));
+                    assert(!st.postpone);
+                    append(p.first, st);
+                }
+            }
+            
+            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop});
+            
+            if (pinfo->infiniteLoop)
+            {
+                bool memOp = false;
+                for (int i=0; i<pinstr->mDetail.op_count; i++)
+                    if (pinstr->mDetail.operands[i].type == X86_OP_MEM)
+                        memOp = true;
+                    
+                if (memOp)
+                    append(p.first, OP_FUNCTION("sync"));
+                else
+                    append(p.first, OP_FUNCTION("stop", OP_STR("\"infinite loop\"")));
+            }
+
+            if (pinfo->instr->mTemplate.ret)
+            {
+                 for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                 {
+                     if (flag->needed)
+                     {
+                         bool allVisible = true;
+                         for (address_t a : flag->lastSet)
+                         {
+                             shared<instrInfo_t> lastSetInstr = mInfo->code.find(a)->second;
+                             allVisible &= lastSetInstr->GetFlag(flag->type).save || lastSetInstr->GetFlag(flag->type).visible;
+                         }
+                         if (!allVisible)
+                         {
+                             // TODO: duplicity!
+                             if(flag->lastSet.size() != 1)
+                             {
+                                 append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = "too complex condition"});
+                             } else {
+                                 
+                                 StatementIr st;
+                                 shared<instrInfo_t> lastSetInstr = mInfo->code.find(*flag->lastSet.begin())->second;
+                                 
+                                 static const char* flagName[128] = {['c'] = "flags.carry",
+                                     ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow",
+                                     ['p'] = "flags.parity"};
+                                 static const x86_insn flagCond[128] = {
+                                     ['c'] = X86_INS_JB,
+                                     ['z'] = X86_INS_JE,
+                                     ['s'] = X86_INS_JS,
+                                     ['p'] = X86_INS_JP,
+                                 };
+                                 std::string useFlagName(flagName[flag->type]);
+                                 
+                                 st = StatementIr{.type = StatementIr::Type_t::Assignment,
+                                         .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
+                                         .stmt1 = std::make_shared<StatementIr>(PreCondition(lastSetInstr->instr, flagCond[flag->type]))
+                                 };
+                                 append(p.first, st);
+                             }
+                         }
+                     }
+                 }
+                
+                auto stf = convertir[pinstr->mId];
+                assert(stf);
+                StatementIr st = stf(pinstr, pinfo, info->func);
+                append(p.first, st);
+            }
+            else if ((pinstr->IsIndirectCall() || pinstr->IsIndirectJump()) && mOptions->GetJumpTables(pinstr->mAddress).size())
+            {
+                append(p.first, DumpIndirectTables(pinstr, info->func));
+            }
+            else if (convertir[pinstr->mId])
+            {
+                auto stf = convertir[pinstr->mId];
+                assert(stf);
+                StatementIr st = stf(pinstr, pinfo, info->func);
+                if(st.type == StatementIr::Type_t::Condition)
+                    assert(st.stConditionTrue && st.stConditionExpr);
+                append(p.first, st);
+            }
+            else if (pinstr->mTemplate.string)
+            {
+                append(p.first, String(pinfo, info->func));
+            }
+            else if (pinstr->mTemplate.conditional)
+            {
+                StatementIr st = StatementIr{
+                    .type = StatementIr::Type_t::Condition,
+                    .stConditionTrue = std::make_shared<StatementIr>(StatementIr{.type = StatementIr::Type_t::DirectJump, .target = pinstr->JumpTarget()}),
+                    .stConditionExpr = std::make_shared<StatementIr>(MakeCondition(pinfo, info))
+                };
+                assert(st.stConditionExpr->type != StatementIr::Type_t::None);
+                append(p.first, st);
+            }
+            else if (pinstr->mTemplate.conditionAs)
+            {
+                StatementIr st = StatementIr{
+                    .type = StatementIr::Type_t::Assignment,
+                    .opd = OP_X86(pinstr, 0).get(),
+                    .stmt1 = std::make_shared<StatementIr>(MakeCondition(pinfo, info))
+                };
+                append(p.first, st);
+            }
+            else
+            {
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = format("disassembly failed at %s (%s %s)", p.first.toString().c_str(), pinstr->mMnemonic, pinstr->mOperands)});
+
+//                { fprintf(stderr, "convert.h assert skipped at line %d\\n", __LINE__); }
+//                    mCode.push_back(utils::format("    stop(\"disassembly failed at %x:%x %s\");\n",
+//                                                  pinstr->mAddress.segment, pinstr->mAddress.offset, pinstr->AsString().c_str()));
+            }
+
+            append(p.first, post);
+            
+            if (!pinfo->stop.empty() && !pinfo->instr->mTemplate.ret /*&& injectstr != "//quiet"*/)
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop});
+
+            if (pinstr->isTerminating)
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = "terminating"});
+
+            if (pinstr->isReturning)
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Return});
+            
+            next = {p.first.segment, p.first.offset + p.second->instr->mSize};
+        }
+        return xprocir;
+    }
+    
+private:
+    std::set<std::string> GetTempVariables(Analyser::code_t& code, shared<Analyser::info_t> info)
+    {
+        std::set<std::string> tempNames;
+        for (const auto& p : code)
+        {
+            shared<instrInfo_t> pinfo = info->code.find(p.first)->second;
+            
+            for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+                if (flag->save && !flag->depends.empty())
+                    tempNames.insert(utils::format("temp_%cf", flag->type));
+
+            for (const auto& p : pinfo->savePrecondition)
+                tempNames.insert(p.variable);
+        }
+        return tempNames;
+    }
+    
+    StatementIr MakeCondition(shared<instrInfo_t> pinfo, shared<Analyser::info_t> proc)
+    {
+        if (!pinfo->readPrecondition.empty())
+        {
+            assert(pinfo->readPrecondition.size() == 1);
+            return StatementIr{.type = StatementIr::Type_t::Compare,
+                .opin1 = OP_VAR(pinfo->readPrecondition[0]).get()};
+        }
+        
+        bool dirty = false;
+        std::set<address_t> lastSet;
+        int needFlags = 0;
+        std::set<char> needType;
+        bool allVisible = false;
+        
+        for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
+            if (flag->needed)
+            {
+                if(flag->lastSet.empty())
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "condition depends on an unset flag"};
+                needFlags++;
+                dirty |= flag->dirty;
+                lastSet.insert(flag->lastSet.begin(), flag->lastSet.end());
+                needType.insert(flag->type);
+            }
+        
+        if (needType.size() == 1)
+        {
+            allVisible = true;
+            for (address_t adr : lastSet)
+            {
+                shared<instrInfo_t> lastSetInstr = proc->code.find(adr)->second;
+                if (!lastSetInstr->GetFlag(*needType.begin()).visible &&
+                    !lastSetInstr->GetFlag(*needType.begin()).save)
+                    allVisible = false;
+            }
+        }
+        
+        if (allVisible)
+        {
+            if (pinfo->instr->mTemplate.conditionAs == X86_INS_INVALID)
+                return Condition(X86_INS_CALL, pinfo->instr->mId);
+            else
+                return Condition(X86_INS_CALL, pinfo->instr->mTemplate.conditionAs);
+        }
+
+        if (!dirty)
+        {
+            shared<instrInfo_t> lastSetInfo;
+            for (int i=0; i<lastSet.size(); i++)
+            {
+                shared<instrInfo_t> curSetInfo = proc->code.find(*lastSet.begin())->second;
+                if (!lastSetInfo)
+                    lastSetInfo = curSetInfo;
+                else if (lastSetInfo->instr->mId != curSetInfo->instr->mId)
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: cant narrow down " + pinfo->instr->mAddress.toString()};
+            }
+            
+            return Condition(lastSetInfo ? lastSetInfo->instr : nullptr, pinfo->instr);
+        }
+        /*
+         mm2
+         --- void sub_1e3b0d() // 160:1e3b0d
+         //   0 loc_1e3b0d 160:1e3b0d shr ax, 1                      wcf: 1e3b10 wcf: 1e3b16 wzf: 1e3b10 wzf: 1e3b1a
+         //   0     1e3b10 160:1e3b10 jbe 0x1e3b16                   rcf: 1e3b0d (dirty) rzf: 1e3b0d
+         //   0     1e3b12 160:1e3b12 fmul st(0)
+         //   0     1e3b14 160:1e3b14 jmp 0x1e3b0d
+         //   0 loc_1e3b16 160:1e3b16 jae 0x1e3b2b                   rcf: 1e3b0d (dirty)
+         //   0     1e3b18 160:1e3b18 fld st(0)
+         //   0 loc_1e3b1a 160:1e3b1a je 0x1e3b27                    rzf: 1e3b0d rzf: 1e3b1e
+         //   0     1e3b1c 160:1e3b1c fmul st(0)
+         //   0     1e3b1e 160:1e3b1e shr ax, 1                      wcf: 1e3b21 (save) wzf: 1e3b1a (save)
+         //   0     1e3b21 160:1e3b21 jae 0x1e3b25                   rcf: 1e3b1e (dirty)
+         //   0     1e3b23 160:1e3b23 fmul st(1), st(0)
+         //   0 loc_1e3b25 160:1e3b25 jmp 0x1e3b1a
+         //   0 loc_1e3b27 160:1e3b27 fstp st(0)
+         //   0     1e3b29 160:1e3b29 jmp 0x1e3b2f
+         //   0 loc_1e3b2b 160:1e3b2b fstp st(0)
+         //   0     1e3b2d 160:1e3b2d fld1
+         //   0 loc_1e3b2f 160:1e3b2f ret
+         */
+        return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: dirty " + pinfo->instr->mAddress.toString()};
+        { fprintf(stderr, "convert.h assert skipped\\n"); }
+        return StatementIr{};
+    }
+    
+    StatementIr Condition(shared<CapInstr> set, shared<CapInstr> get)
+    {
+        if (get->mTemplate.conditionAs == X86_INS_INVALID)
+            return Condition(set, get->mId);
+        else
+            return Condition(set, get->mTemplate.conditionAs);
+    }
+    
+    StatementIr Condition(x86_insn setter, x86_insn getter)
+    {
+        // TODO: duplicity
+        if (setter == X86_INS_CALL)
+        {
+            // Flag-based conditions
+            if (getter == X86_INS_JA)
+                return !OP_VAR("flags.carry") && !OP_VAR("flags.zero");
+            if (getter == X86_INS_JBE)
+                return OP_VAR("flags.carry") || OP_VAR("flags.zero");
+            if (getter == X86_INS_JNE)
+                return !OP_VAR("flags.zero");
+            if (getter == X86_INS_JE)
+                return COMPARE(OP_VAR("flags.zero"));
+            if (getter == X86_INS_JB)
+                return COMPARE(OP_VAR("flags.carry"));
+            if (getter == X86_INS_JAE)
+                return !COMPARE(OP_VAR("flags.carry"));
+            if (getter == X86_INS_JNS)
+                return !OP_VAR("flags.sign");
+            if (getter == X86_INS_JS)
+                return COMPARE(OP_VAR("flags.sign"));
+            if (getter == X86_INS_JP)
+                return COMPARE(OP_VAR("flags.parity"));
+            if (getter == X86_INS_JNP)
+                return !OP_VAR("flags.parity");
+
+            { fprintf(stderr, "convert.h assert skipped\n"); };
+        }
+        { fprintf(stderr, "convert.h assert skipped\n"); };
+        return {};
+    }
+    StatementIr PreCondition(shared<CapInstr> set, x86_insn getter)
+    {
+        auto maxValue = [](shared<CapInstr> set, int op) -> uint64_t {
+            int w = set->mDetail.operands[op].size;
+            switch (w)
+            {
+                case 1:
+                    return 0x100;
+                case 2:
+                    return 0x10000;
+                case 4:
+                    return 0x100000000;
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+                    return 0;
+            }
+        };
+        x86_insn setter = set->mId;
+        // shr, jb
+        if ((setter == X86_INS_SHR || setter == X86_INS_ROR) && getter == X86_INS_JB)
+        {
+            if (set->mDetail.operands[1].type != X86_OP_IMM)
+                return COMPARE(OP_VAR("JB_SHR/ROR/CNT???"));
+//            assert(set->Imm() == 1);
+            return OP_X86(set, 0) & OP_CONST(1<<(set->Imm()-1));
+        }
+        if (setter == X86_INS_SHR && getter == X86_INS_JBE)
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: shr - jbe"};
+        
+        if ((setter == X86_INS_SHL || setter == X86_INS_ROL) && getter == X86_INS_JB)
+        {
+            assert(set->Imm() >= 1);
+            switch (set->mDetail.operands[0].size)
+            {
+                case 1:
+                    return !!COMPARE(OP_X86(set, 0) & OP_CONST(0x100 >> set->Imm(), 1));
+                case 2:
+                    return !!COMPARE(OP_X86(set, 0) & OP_CONST(0x10000 >> set->Imm(), 2));
+                case 4:
+                    return !!COMPARE(OP_X86(set, 0) & OP_CONST(0x100000000l >> set->Imm(), 4));
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+        }
+        if (setter == X86_INS_SUB && getter == X86_INS_JB)
+            return OP_X86(set, 0) < OP_X86(set, 1);
+        if (setter == X86_INS_SUB && getter == X86_INS_JBE)
+            return OP_X86(set, 0) <= OP_X86(set, 1);
+        if (setter == X86_INS_SUB && getter == X86_INS_JG)
+            return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_SUB && getter == X86_INS_JGE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_DEC && getter == X86_INS_JGE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
+        if (setter == X86_INS_DEC && getter == X86_INS_JG)
+            return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(1);
+        if (setter == X86_INS_DEC && getter == X86_INS_JE)
+            return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
+        if (setter == X86_INS_ADD && getter == X86_INS_JG)
+            return (OP_SIGNED(OP_X86(set, 0)) + OP_SIGNED(OP_X86(set, 1))) > OP_CONST(0);
+        if (setter == X86_INS_SUB && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0)) <= OP_SIGNED(OP_X86(set, 1));
+        if (setter == X86_INS_DEC && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0)) <= OP_CONST(1);
+        if (setter == X86_INS_ADD && getter == X86_INS_JB)
+            return (OP_X86(set, 0) + OP_X86(set, 1)) >= OP_CONST(maxValue(set, 0), -1);
+        if (setter == X86_INS_ADD && getter == X86_INS_JL)
+            return OP_SIGNED(OP_X86(set, 0) + OP_X86(set, 1)) < OP_CONST(0);
+        if (setter == X86_INS_ADD && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0) + OP_X86(set, 1)) <= OP_CONST(0);
+        if (setter == X86_INS_SUB && getter == X86_INS_JA)
+            return (OP_X86(set, 0) > OP_X86(set, 1));
+        if (setter == X86_INS_ADC && getter == X86_INS_JB)
+            return (OP_X86(set, 0) + OP_X86(set, 1) + OP_VAR("flags.carry")) >= OP_CONST(maxValue(set, 0), -1);
+        if (setter == X86_INS_OR && getter == X86_INS_JB)
+            return COMPARE(OP_VAR("false"));
+        if (setter == X86_INS_AND && getter == X86_INS_JB)
+            return COMPARE(OP_VAR("false"));
+        if (setter == X86_INS_XOR && getter == X86_INS_JB)
+            return COMPARE(OP_VAR("false"));
+        if (setter == X86_INS_INC && getter == X86_INS_JLE)
+            return OP_SIGNED(OP_X86(set, 0) + OP_CONST(1)) <= OP_CONST(0);
+
+        // stupid, force post condition
+        if (setter == X86_INS_INC && getter == X86_INS_JGE)
+            return (OP_SIGNED(OP_X86(set, 0)) + OP_CONST(1)) >= OP_CONST(0);
+        if (setter == X86_INS_DEC && getter == X86_INS_JL)
+            return OP_SIGNED((OP_X86(set, 0) - OP_CONST(1))) < OP_CONST(0);
+        if (setter == X86_INS_NEG && getter == X86_INS_JB)
+            return OP_X86(set, 0) != OP_CONST(0);
+        if (setter == X86_INS_NEG && getter == X86_INS_JS)
+            return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(0);
+
+        // op0 - op1 - carry < 0
+        if (setter == X86_INS_SBB && getter == X86_INS_JB)
+            return OP_X86(set, 0) < OP_BINARY(OP_X86(set, 1), "+", OP_VAR("flags.carry"));
+        if (setter == X86_INS_OR && getter == X86_INS_JE)
+            return !COMPARE(OP_X86(set, 0) | OP_X86(set, 1));
+
+        if (getter == X86_INS_FNSTSW)
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "FNSTSW reads flags"};
+        /*
+         loc_1cd62f: // 0160:1cd62f mm2
+             flags.sign = (char)(memoryAGet(ds, 0x20c848) | 0x04) < 0;
+
+         */
+        // only instructions which do modify registers
+        if (setter == X86_INS_CMP || setter == X86_INS_TEST)
+            return Condition(set, getter);
+
+        // CALL as flag setter: after a call, flags reflect eax (return value)
+        if (setter == X86_INS_CALL || setter == X86_INS_LCALL)
+        {
+            // sign flag after call: (int32_t)eax < 0
+            if (getter == X86_INS_JS)
+                return COMPARE(OP_SIGNED(OP_VAR("r32s[eax]")) < OP_CONST(0));
+            if (getter == X86_INS_JNS)
+                return COMPARE(OP_SIGNED(OP_VAR("r32s[eax]")) >= OP_CONST(0));
+            if (getter == X86_INS_JE || getter == X86_INS_JNE)
+                return Condition(set, getter); // zero flag from eax
+            fprintf(stderr, "PreCondition: call + getter=%d not handled at %04x:%04x\n", getter, set->mAddress.segment, set->mAddress.offset);
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "propagate sign flag"};
+        }
+
+        if (!(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_DEC || setter == X86_INS_SHR || setter == X86_INS_SHL || setter == X86_INS_SAR || setter == X86_INS_XOR || setter == X86_INS_NEG || setter == X86_INS_SBB || setter == X86_INS_ROR || setter == X86_INS_ROL || setter == X86_INS_RCR || setter == X86_INS_RCL || setter == X86_INS_NOT || setter == X86_INS_IMUL || setter == X86_INS_MUL || setter == X86_INS_DIV || setter == X86_INS_IDIV || setter == X86_INS_BT || setter == X86_INS_BSR || setter == X86_INS_BSF)) {
+            fprintf(stderr, "PreCondition: unhandled setter instruction id=%d mnemonic='%s' at %04x:%04x, getter=%d\n", setter, set->mMnemonic, set->mAddress.segment, set->mAddress.offset, getter);
+        }
+        
+        // Note: apply the basic condition after the instruction was evaluated, not before!
+        StatementIr stat = Condition(set, getter);
+        stat.postpone = true;
+        return stat;
+    }
+    StatementIr Condition(shared<CapInstr> set, x86_insn getter)
+    {
+        if (!set)
+        {
+            switch (getter)
+            {
+                case X86_INS_JCXZ:
+                    assert(mOptions->arch == arch_t::arch16);
+                    return OP_REG("cx", 2) == OP_CONST(0);
+                case X86_INS_JECXZ:
+                    assert(mOptions->arch == arch_t::arch32);
+                    return OP_REG("ecx", 4) == OP_CONST(0);
+                case X86_INS_JP:
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "bad condition - jp"};
+                case X86_INS_JNP:
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "bad condition - jnp"};
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+            { fprintf(stderr, "convert.h assert skipped\n"); };
+        }
+        x86_insn setter = set->mId;
+        
+        if (setter == X86_INS_CALL || setter == X86_INS_INT)
+        {
+            // Flag-based conditions
+            if (getter == X86_INS_JA)
+                return !OP_VAR("flags.carry") && !OP_VAR("flags.zero");
+            if (getter == X86_INS_JBE)
+                return OP_VAR("flags.carry") || OP_VAR("flags.zero");
+            if (getter == X86_INS_JE)
+                return COMPARE(OP_VAR("flags.zero"));
+
+            { fprintf(stderr, "convert.h assert skipped\n"); };
+        }
+        
+        if (setter == X86_INS_CMP)
+        {
+            // Binary comparisons on operands
+            // Extract actual operands from the CMP instruction
+            
+            switch (getter)
+            {
+                case X86_INS_JGE:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
+                case X86_INS_JLE:
+                    return OP_SIGNED(OP_X86(set, 0)) <= OP_SIGNED(OP_X86(set, 1));
+                case X86_INS_JG:
+                    return OP_SIGNED(OP_X86(set, 0)) > OP_SIGNED(OP_X86(set, 1));
+                case X86_INS_JL:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_SIGNED(OP_X86(set, 1));
+                case X86_INS_JA:
+                    return OP_X86(set, 0) > OP_X86(set, 1);
+                case X86_INS_JB:
+                    return OP_X86(set, 0) < OP_X86(set, 1);
+                case X86_INS_JBE:
+                    return OP_X86(set, 0) <= OP_X86(set, 1);
+                case X86_INS_JAE:
+                    return OP_X86(set, 0) >= OP_X86(set, 1);
+                case X86_INS_JNE:
+                case X86_INS_LOOPNE: //check
+                    return OP_X86(set, 0) != OP_X86(set, 1);
+                case X86_INS_JE:
+                case X86_INS_LOOPE: //check
+                    return OP_X86(set, 0) == OP_X86(set, 1);
+                case X86_INS_JNS:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_SIGNED(OP_X86(set, 1));
+//                    if (set->Imm() == 0)
+//                        return OP_MOD("signed") << ((OP_X86(set, 0) >= OP_CONST(0)));
+//                    else
+//                        return OP_MOD("signed") << ((OP_X86(set, 0) - OP_X86(set, 1)) >= OP_CONST(0));
+                case X86_INS_JS:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_SIGNED(OP_X86(set, 1));
+//                    if (set->Imm() == 0)
+//                        return OP_MOD("signed") << ((OP_X86(set, 0) < OP_CONST(0)));
+//                    else
+//                        return OP_MOD("signed") << ((OP_X86(set, 0) - OP_X86(set, 1)) < OP_CONST(0));
+
+                default:
+                {
+                    StatementIr stop = OP_FUNCTION("stop");
+                    stop.comment = format("bad condition, setter: %s, getter: %s, addr %s", Capstone->ToString(setter), Capstone->ToString(getter), set->mAddress.toString().c_str());
+                    return stop;
+                }
+                //{ fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+        }
+        
+        bool passive = setter == X86_INS_TEST && set->ArgsEqual();
+        bool logalu = setter == X86_INS_AND || setter == X86_INS_OR;
+        if (passive || logalu)
+        {
+            switch (getter)
+            {
+                case X86_INS_JGE:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
+                case X86_INS_JG:
+                    return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(0);
+                case X86_INS_JLE:
+                    return OP_SIGNED(OP_X86(set, 0)) <= OP_CONST(0);
+                case X86_INS_JL:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
+                case X86_INS_JE:
+                    return OP_X86(set, 0) == OP_CONST(0);
+                case X86_INS_JNE:
+                    return OP_X86(set, 0) != OP_CONST(0);
+                case X86_INS_JS:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
+                case X86_INS_JNS:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
+                case X86_INS_JA:
+                    return OP_X86(set, 0) > OP_CONST(0);
+                case X86_INS_JAE:
+                    return COMPARE(OP_VAR("true")); // check?
+                case X86_INS_JB:
+                    return COMPARE(OP_VAR("false")); // check?
+                case X86_INS_JBE:
+                    return OP_X86(set, 0) <= OP_CONST(0); // == 0
+                case X86_INS_JNP:
+                    return OP_FUNCTION("parityOdd", OP_X86(set, 0), OP_X86(set, 0));
+                case X86_INS_JP:
+                    return !OP_FUNCTION("parityOdd", OP_X86(set, 0), OP_X86(set, 0));
+                case X86_INS_LOOPNE:
+                    assert(set->ArgsEqual());
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", !OP_X86(set, 0));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", !OP_X86(set, 0));
+                    else
+                        { fprintf(stderr, "convert.h assert skipped\n"); };
+
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+        }
+        
+        // destructive
+        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR  || setter == X86_INS_SHL)
+        {
+            switch (getter)
+            {
+                case X86_INS_JS:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
+                case X86_INS_JNS:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
+                case X86_INS_JE:
+                case X86_INS_LOOPE:
+                    return OP_X86(set, 0) == OP_CONST(0);
+                case X86_INS_JNE:
+                    return OP_X86(set, 0) != OP_CONST(0);
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+        }
+        if (setter == X86_INS_TEST)
+        {
+            switch (getter)
+            {
+                case X86_INS_JNE:
+                    return OP_X86(set, 0) & OP_X86(set, 1);
+                case X86_INS_JE:
+                    return !(OP_X86(set, 0) & OP_X86(set, 1));
+                case X86_INS_JB:
+                    return COMPARE(OP_VAR("false"));
+                case X86_INS_JNS:
+                    if (set->mDetail.operands[0].size == 1)
+                        return !(OP_X86(set, 0) & OP_CONST(0x80));
+                    else if (set->mDetail.operands[0].size == 2)
+                        return !(OP_X86(set, 0) & OP_CONST(0x8000));
+                    else
+                        return !(OP_X86(set, 0) & OP_CONST(0x80000000));
+                case X86_INS_JS:
+                    if (set->mDetail.operands[0].size == 1)
+                        return OP_X86(set, 0) & OP_CONST(0x80);
+                    else if (set->mDetail.operands[0].size == 2)
+                        return OP_X86(set, 0) & OP_CONST(0x8000);
+                    else
+                        return OP_X86(set, 0) & OP_CONST(0x80000000);
+                case X86_INS_LOOPNE:
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", OP_X86(set, 0) & OP_X86(set, 1));
+                    else
+                        return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: unhandled arch"};
+                case X86_INS_LOOPE:
+                    if(mOptions->arch == arch_t::arch16)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_UNARY("!", OP_X86(set, 0) & OP_X86(set, 1)));
+                    else if(mOptions->arch == arch_t::arch32)
+                        return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", OP_UNARY("!", OP_X86(set, 0) & OP_X86(set, 1)));
+                    else
+                        return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: unhandled arch"};
+                case X86_INS_JNP:
+                    return OP_FUNCTION("parityOdd", OP_X86(set, 0), OP_X86(set, 1));
+                case X86_INS_JP:
+                    return !OP_FUNCTION("parityOdd", OP_X86(set, 0), OP_X86(set, 1));
+
+                default:
+                    return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: unhandled TEST getter"};
+            }
+        }
+        // TODO: try using flags
+        if (setter == X86_INS_SAHF)
+            return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: reads sahf"};
+
+        return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: unhandled condition"};
+    }
+
+    StatementIr String(shared<instrInfo_t> instr, const funcInfo_t& func)
+    {
+        auto replace = [](const char* in, const char* s, const char* r)
+        {
+            char temp[128];
+            strcpy(temp, in);
+            for (int i=0; temp[i]; i++)
+                if (temp[i] == s[0])
+                    temp[i] = r[0];
+            return std::string(temp);
+        };
+        auto split = [] (const std::string& input, const std::string& delimiter) -> std::vector<std::string> {
+            std::vector<std::string> tokens;
+            std::size_t start = 0;
+            std::size_t end;
+
+            while ((end = input.find(delimiter, start)) != std::string::npos) {
+                tokens.push_back(input.substr(start, end - start));
+                start = end + delimiter.length();
+            }
+
+            tokens.push_back(input.substr(start)); // add the last token
+            return tokens;
+        };
+        auto argToTemplate = [](std::string in) -> std::string {
+            if (in == "byte ptr es:[edi]" || in == "word ptr es:[edi]" || in == "dword ptr es:[edi]")
+                return "ES_EDI";
+            if (in == "byte ptr es:[di]" || in == "word ptr es:[di]")
+                return "ES_DI";
+            if (in == "word ptr [si]" || in == "byte ptr [si]")
+                return "DS_SI";
+            if (in == "word ptr [esi]")
+                return "DS_ESI";
+            if (in == "byte ptr [esi]")
+                return "DS_ESI";
+            if (in == "byte ptr es:[si]" || in == "word ptr es:[si]")
+                return "ES_SI";
+            if (in == "byte ptr cs:[si]" || in == "word ptr cs:[si]")
+                return "CS_SI";
+            if (in == "dword ptr [esi]")
+                return "DS_ESI";
+            if (in == "byte ptr ss:[si]" || in == "word ptr ss:[si]")
+                return "SS_SI";
+            // SSE: movsd xmmN, xmmN — scalar double move (not string op)
+            if (in.starts_with("xmm"))
+                return in;
+            { fprintf(stderr, "argToTemplate: unmatched operand '%s'\n", in.c_str()); };
+            return "?";
+        };
+        std::string repeat = "";
+        std::string templ = replace(instr->instr->mMnemonic, " ", "_");
+        std::vector<std::string> args = split(instr->instr->mOperands, ", ");
+        assert(args.size() == 2);
+        if (templ.starts_with("rep_"))
+        {
+            if (func.arch == arch_t::arch16)
+                repeat = "for (; cx != 0; --cx)";
+            else
+                repeat = "for (; ecx != 0; --ecx)";
+            templ = templ.substr(4);
+        }
+        if (templ.starts_with("repne_"))
+        {
+            if (func.arch == arch_t::arch16)
+                repeat = "for (flags.zero = 0; cx != 0 && !flags.zero; --cx)";
+            else
+                repeat = "for (flags.zero = 0; ecx != 0 && !flags.zero; --ecx)";
+            templ = templ.substr(6);
+        }
+        if (templ.starts_with("repe_"))
+        {
+            if (func.arch == arch_t::arch16)
+                repeat = "for (flags.zero = 1; cx != 0 && flags.zero; --cx)";
+            else
+                repeat = "for (flags.zero = 1; ecx != 0 && flags.zero; --ecx)";
+            templ = templ.substr(5);
+        }
+//        { fprintf(stderr, "convert.h assert skipped\n"); };
+        if (templ.starts_with("lod"))
+        {
+            assert(args[0] == "al" || args[0] == "ax" || args[0] == "eax");
+            return {.type = StatementIr::Type_t::Function,
+                    .repeat = repeat,
+                    .func = templ,
+                    .templ1 = argToTemplate(args[1]),
+                    .opd = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
+        }
+        if (templ.starts_with("mov"))
+        {
+            return {.type = StatementIr::Type_t::Function,
+                    .repeat = repeat,
+                    .func = templ,
+                    .templ1 = argToTemplate(args[0]),
+                    .templ2 = argToTemplate(args[1])};
+        }
+        if (templ.starts_with("sca"))
+        {
+            if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
+                return {.type = StatementIr::Type_t::Function,
+                        .repeat = repeat,
+                        .func = templ,
+                        .templ1 = argToTemplate(args[0]),
+                        .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[1])};
+            else if (args[0] == "al" || args[0] == "ax" || args[0] == "eax")
+                return {.type = StatementIr::Type_t::Function,
+                        .repeat = repeat,
+                        .func = templ + "_inv",
+                        .templ1 = argToTemplate(args[1]),
+                        .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[0])};
+            else
+                { fprintf(stderr, "convert.h assert skipped\n"); };
+        }
+        if (templ.starts_with("cmp"))
+        {
+            return {.type = StatementIr::Type_t::Function,
+                    .repeat = repeat,
+                    .func = templ,
+                    .templ1 = argToTemplate(args[0]),
+                    .templ2 = argToTemplate(args[1])};
+        }
+        assert(args[1] == "al" || args[1] == "ax" || args[1] == "eax");
+        
+//        if (args[0] == "al" || args[0] == "ax")
+//            return repeat + templ + "_inv<" + argToTemplate(args[1]) + ">("+args[0]+");";
+//        if (args[1] == "al" || args[1] == "ax" || args[1] == "eax")
+//            return repeat + templ + "<" + argToTemplate(args[0]) + ">("+args[1]+");";
+//        else
+//            return repeat + templ + "<" + argToTemplate(args[0]) + ", " + argToTemplate(args[1]) + ">();";
+        return {.type = StatementIr::Type_t::Function,
+                .repeat = repeat,
+                .func = templ,
+                .templ1 = argToTemplate(args[0]),
+                .opin1 = std::make_shared<OperandIr>(instr->instr->mDetail.operands[1])};
+    }
+
+    StatementIr DumpIndirectTables(shared<CapInstr> instr, funcInfo_t func)
+    {
+        std::set<int> dupl;
+        std::string selector;
+        shared<OperandIr> selectorIr;
+        bool first = true;
+
+        std::vector<std::pair<shared<OperandIr>, shared<StatementIr>>> opSwitchCases;
+
+        for (shared<jumpTable_t> jt : mOptions->GetJumpTables(instr->mAddress))
+        {
+            if (selector.empty())
+                selector = jt->selector;
+            
+            if (selector.empty())
+            {
+                if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                    {
+                        selectorIr = OP_X86(instr, 0).get();
+                    } else
+                        { fprintf(stderr, "convert.h assert skipped\n"); };
+                    //selector = iformat(instr, shared<instrInfo_t>(), func, "$rd0");
+                }
+                else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
+                {
+                    selectorIr = OP_X86(instr, 0).get();
+                    selectorIr->memSize = 4;
+                }
+                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
+                {
+                    selectorIr = OP_X86(instr, 0).get();
+                    selectorIr->memSize = 4;
+                }
+                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Jump32)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                        selectorIr = OP_X86(instr, 0).get();
+                    else
+                        { fprintf(stderr, "convert.h assert skipped\n"); };
+                }
+//                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
+//                    selector = iformat(instr, info, func, "cs*0x10000 + $rd0");
+//                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::Call32)
+//                    selector = iformat(instr, info, func, "$rd0");
+//                else if (instr->mId == X86_INS_LCALL && instr->mDetail.op_count == 1)
+//                    selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
+//                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1)
+//                    selector = iformat(instr, info, func, "$rd0");
+//                else if (instr->mId == X86_INS_LJMP && instr->mDetail.op_count == 1)
+//                    selector = iformat(instr, info, func, "$rns0*0x10000 + $rm0");
+                else
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+            
+            // multiple tables must use the same selector
+            assert(jt->selector.empty() || selector == jt->selector);
+                                
+            StatementIr::Type_t type = StatementIr::Type_t::None;
+            int width = 0;
+            switch (jt->type)
+            {
+                case jumpTable_t::CallWords:
+                    type = StatementIr::Type_t::DirectCall;
+                    width = 2;
+                    break;
+                case jumpTable_t::CallDwords:
+                    type = StatementIr::Type_t::DirectCallLong;
+                    width = 4;
+                    break;
+                case jumpTable_t::JumpWords:
+                    type = StatementIr::Type_t::DirectJump;
+                    width = 2;
+                    break;
+                case jumpTable_t::Jump32:
+                    type = StatementIr::Type_t::DirectJump;
+                    width = 4;
+                    break;
+                case jumpTable_t::Call32:
+                    type = StatementIr::Type_t::DirectCall;
+                    width = 4;
+                    break;
+                default:
+                    { fprintf(stderr, "convert.h assert skipped\n"); };
+            }
+
+            for (int i=0; i<jt->GetSize(); i++)
+                if (jt->IsValid(i))
+                {
+                    if (jt->useCaseOffset)
+                    {
+                        int addr = jt->GetTarget(i).linearOffset();
+                        if (dupl.find(addr) != dupl.end())
+                            continue;
+                        dupl.insert(addr);
+                    }
+                    
+                    opSwitchCases.push_back({
+                        std::make_shared<OperandIr>(OperandIr{OperandIr::Type_t::Const, jt->GetCaseKey(i), jt->useCaseOffset ? width : 0}),
+                        std::make_shared<StatementIr>(StatementIr{.type = type, .target = jt->GetTarget(i), .address = instr->mAddress})
+                    });
+                }
+        }
+        
+        return StatementIr{
+            .type = StatementIr::Type_t::Switch,
+            .opSwitchSelector = selector,
+            .opSwitchSelectorIr = selectorIr,
+            .opSwitchCases = opSwitchCases
+        };
+        
+    }
+};
+

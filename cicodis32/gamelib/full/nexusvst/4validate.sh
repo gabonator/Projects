@@ -11,7 +11,7 @@ echo "=== Rendering ==="
 mkdir -p render_port
 
 # Default preset
-./nexus_emu.elf "" "render_port/default.wav" 2>/dev/null
+./nexus.elf "" "render_port/default.wav" 2>/dev/null
 
 # All patches from test_patches.txt
 FAIL=0
@@ -25,7 +25,7 @@ while IFS= read -r line; do
     FAIL=1
     continue
   fi
-  result=$(./nexus_emu.elf "$fxp" "render_port/${name}.wav" 2>&1 | tee "render_port/${name}.txt" | tail -1)
+  result=$(./nexus.elf "$fxp" "render_port/${name}.wav" 2>&1 | tee "render_port/${name}.txt" | tail -1)
   if [ "$result" != "Done." ]; then
     echo "RENDER FAIL: $name"
     FAIL=1

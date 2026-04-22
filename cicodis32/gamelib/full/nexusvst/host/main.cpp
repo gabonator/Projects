@@ -20,6 +20,63 @@ void indirectCallLogPrintAll();
 // 0x11100000 - 0x111fffff: stack (1MB)
 // 0x12000000+: heap (bump allocator)
 
+
+extern int allocatorPtr;
+
+uint32_t memoryAGet32(int s, int o);
+void memoryASet32(int s, int o, uint32_t v);
+uint64_t memoryAGet64(int s, int o);
+void memoryASet64(int s, int o, uint64_t v);
+void memoryASet(int s, int o, uint8_t v);
+int allocate(int size);
+namespace fpuinsns {
+float fromFp32(uint32_t v);
+}
+// Stack helpers (need access to registers)
+extern uint32_t eax, ecx, esp;
+extern uint16_t ds, ss, es, gs, cs, fs;
+void push32(uint32_t);
+
+
+// audiomaster
+void sub_77778888()
+{
+                    uint32_t _amc_op = memoryAGet32(ss, esp + 4);
+                    switch (_amc_op) {
+                        case 0: eax = 1; break; // audioMasterAutomate
+                        case 1: eax = 2400; break; // audioMasterVersion
+                        case 6: eax = 1; break; // audioMasterWantMidi
+                        case 7: { // audioMasterGetTime
+                            // value param = requested flags filter
+                            uint32_t _reqFlags = memoryAGet32(ss, esp + 12);
+                            // samplePos/ppqPos stored at fixed addresses for main.cpp access
+                            static uint32_t _vtiPtr = 0;
+                            // Use fixed memory addresses for the time values
+                            // 0x10593000: samplePos (double), 0x10593008: ppqPos (double)
+                            double _samplePos, _ppqPos;
+                            { uint64_t t; t=memoryAGet64(ds,0x10593000); memcpy(&_samplePos,&t,8); t=memoryAGet64(ds,0x10593008); memcpy(&_ppqPos,&t,8); }
+                            if (!_vtiPtr) { _vtiPtr = allocate(128); }
+                            uint64_t sp64; memcpy(&sp64, &_samplePos, 8);
+                            memoryASet64(ds, _vtiPtr + 0, sp64);  // samplePos
+                            double sr = 44100.0; memcpy(&sp64, &sr, 8);
+                            memoryASet64(ds, _vtiPtr + 8, sp64);  // sampleRate
+                            memcpy(&sp64, &_ppqPos, 8);
+                            memoryASet64(ds, _vtiPtr + 24, sp64); // ppqPos
+                            double bpm = 140.0; memcpy(&sp64, &bpm, 8);
+                            memoryASet64(ds, _vtiPtr + 32, sp64); // tempo
+                            memoryASet32(ds, _vtiPtr + 64, 4);    // timeSigNumerator
+                            memoryASet32(ds, _vtiPtr + 68, 4);    // timeSigDenominator
+                            // flags: ppqValid | tempoValid | timeSigValid
+                            // kVstTransportPlaying (1<<1) set by main.cpp via memory flag
+                            uint32_t _transportFlag = memoryAGet32(ds, 0x10593010);
+                            memoryASet32(ds, _vtiPtr + 84, _transportFlag | (1<<8)|(1<<9)|(1<<10)|(1<<13));
+                            eax = _vtiPtr;
+                            // samplePos/ppqPos advanced by main.cpp render loop, not here
+                            break; }
+                        default: eax = 0; break;
+                    }
+}
+
 std::vector<uint8_t> GetFileContents(std::string fullPath)
 {
     FILE* f = fopen(fullPath.c_str(), "rb");
@@ -34,14 +91,6 @@ std::vector<uint8_t> GetFileContents(std::string fullPath)
     fread(data.data(), 1, sz, f);
     fclose(f);
     return data;
-}
-
-uint32_t memoryAGet32(int s, int o);
-void memoryASet32(int s, int o, uint32_t v);
-void memoryASet(int s, int o, uint8_t v);
-int allocate(int size);
-namespace fpuinsns {
-float fromFp32(uint32_t v);
 }
 
 void loadOverlay(const char* image, int base) {
@@ -66,11 +115,10 @@ extern void sub_1001b3a0();  // dispatcher
 extern void sub_10031d10();  // bus struct initializer
 extern void indirectCall(int s, int o, int originSeg, int originOfs);
 inline void indirectCall(int s, int o) { indirectCall(s, o, 0, 0); }
-extern void callByAddress(uint32_t addr); // dispatch to sub_xxx by address
+void _initterm();
 
-// Stack helpers (need access to registers)
-extern uint32_t eax, ecx;
-void push32(uint32_t);
+//extern void callByAddress(uint32_t addr); // dispatch to sub_xxx by address
+
 
 // --- WAV writer ---
 void writeWav(const char* filename, const float* left, const float* right, int numSamples, int sampleRate) {
@@ -105,6 +153,9 @@ void writeWav(const char* filename, const float* left, const float* right, int n
     printf("WAV written: %s (%d samples)\n", filename, numSamples);
 }
 
+void sub_1001b3a0(); // dispatcher
+void sub_1001b470(); // process replacing
+
 // --- Main ---
 int main(int argc, char* argv[]) {
     printf("Nexus C++ emulator starting...\n");
@@ -124,13 +175,10 @@ int main(int argc, char* argv[]) {
     // The real DLL runs these 75 constructors during DllMain via CRT _initterm.
     // They initialize global objects (linked lists, vtables, etc.) that the main
     // constructor depends on. Without them, the constructor hangs in list walks.
-    {
-        // _initterm table: 0x100e62ec - 0x100e6418 (75 function pointers)
-        printf("Running _initterm global constructors...\n");
-        for (uint32_t slot = 0x100e62ec; slot < 0x100e6418; slot += 4) {
-            callByAddress(memoryAGet32(0, slot));
-        }
-    }
+    printf("pre alloc=%x, esp=%x\n", allocatorPtr, esp);
+    _initterm();
+    printf("post alloc=%x, esp=%x\n", allocatorPtr, esp);
+
     // --- Call sub_10015070 (VSTPluginMain init) directly ---
     extern void sub_10015070();
 
@@ -153,7 +201,10 @@ int main(int argc, char* argv[]) {
         push32(index);
         push32(opcode);
         push32(pluginPtr);
-        callByAddress(dispatcherAddr);
+        sub_1001b3a0();
+//fprintf(stderr, "dispatcher at %x\n", dispatcherAddr); fflush(stderr);
+//        assert(0);
+        //callByAddress(dispatcherAddr);
         return eax;
     };
 
@@ -254,7 +305,10 @@ int main(int argc, char* argv[]) {
         push32(inputPtrs);
         push32(pluginPtr);
         ecx = thisPtr;
-        callByAddress(processReplacingAddr);
+        //printf("process replacing = %x\n", processReplacingAddr);
+        //assert(0);
+        sub_1001b470();
+        //callByAddress(processReplacingAddr);
 
         // Read output samples from wherever processReplacing actually wrote them
         uint32_t actualOutL = memoryAGet32(0, outputPtrs);

@@ -1,175 +1,3 @@
-// Forward declarations for SYNSOEMU functions used before definition
-void sub_11001323(); void sub_11001450();
-void sub_11006054(); void sub_1100605a(); void sub_11006060();
-void sub_11006066(); void sub_1100606c(); void sub_11006072();
-void sub_110039bb();
-
-void posRegisterApplicationWithPackage()
-{
-    sub_110018fa();
-}
-
-
-void posUnregisterApplication()
-{
-    sub_110018fa();
-}
-
-
-void posInstantiateObject()
-{
-    sub_11001582();
-}
-
-
-void posCallMethod()
-{
-    sub_110015fc();
-}
-
-
-void posFreeDLLHeapData()
-{
-    sub_110015ed();
-}
-
-
-void posDeleteObject()
-{
-    sub_110015a2();
-}
-
-
-void posRegisterApplicationWithPackageName()
-{
-    sub_110018fa();
-}
-
-
-void posRegisterApplication()
-{
-    sub_110018fa();
-}
-
-
-void posInstantiateObjectOnExecuter()
-{
-    sub_110018fa();
-}
-
-
-void posCallMethodOnExecuter()
-{
-    sub_110018fa();
-}
-
-
-void posGetObjectInfo()
-{
-    sub_110018fa();
-}
-
-
-void posGetClassInfo()
-{
-    sub_110018fa();
-}
-
-
-void posGetExecuterInfo()
-{
-    sub_110018fa();
-}
-
-
-void posGetInfo()
-{
-    sub_110018fa();
-}
-
-
-void posExecuteCMD()
-{
-    sub_110018fa();
-}
-
-
-void posDeleteDLLHeapData()
-{
-    sub_110015de();
-}
-
-
-void posRegisterApplicationWithClasses()
-{
-    sub_11001531();
-}
-
-
-void posGetInfoWithCommand()
-{
-    sub_110015b7();
-}
-
-
-void posEncryptData()
-{
-    sub_110018fa();
-}
-
-
-void posDecryptData()
-{
-    sub_110018fa();
-}
-
-
-void posEncryptFile()
-{
-    sub_110018fa();
-}
-
-
-void posDecryptFile()
-{
-    sub_110018fa();
-}
-
-
-void posCreateNewSymmetricKey()
-{
-    sub_110018fa();
-}
-
-
-void posSetAlgorithmParameter()
-{
-    sub_110018fa();
-}
-
-
-void posModifyPinCode()
-{
-    sub_110018fa();
-}
-
-
-void posDCPCreateEncryptionContext()
-{
-    sub_110018bb();
-}
-
-
-void posDCPEncryptData()
-{
-    sub_110018e5();
-}
-
-
-void posDCPDecryptData()
-{
-    sub_110018d0();
-}
 
 void sub_11001000();
 void sub_1100101d();
@@ -233,6 +61,98 @@ void sub_11006060();
 void sub_11006066();
 void sub_1100606c();
 void sub_11006072();
+
+void synsoemuIndirectCall(int s, int o, int orgs, int orgo)
+{
+            // SYNSOEMU runtime dispatch (vtable calls, not resolvable by cicodis)
+            switch (o) {
+                case 0x11001000: sub_11001000(); break;
+                case 0x1100101d: sub_1100101d(); break;
+                case 0x1100112d: sub_1100112d(); break;
+                case 0x11001157: sub_11001157(); break;
+                case 0x11001181: sub_11001181(); break;
+                case 0x11001200: sub_11001200(); break;
+                case 0x110012f5: sub_110012f5(); break;
+                case 0x11001316: sub_11001316(); break;
+                case 0x1100131c: sub_1100131c(); break;
+                case 0x11001322: sub_11001322(); break;
+                case 0x11001323: sub_11001323(); break;
+                case 0x110013d0: sub_110013d0(); break;
+                case 0x11001443: sub_11001443(); break;
+                case 0x11001449: sub_11001449(); break;
+                case 0x1100144f: sub_1100144f(); break;
+                case 0x11001450: sub_11001450(); break;
+                case 0x11001507: sub_11001507(); break;
+                case 0x11001525: sub_11001525(); break;
+                case 0x11001531: sub_11001531(); break;
+                case 0x11001582: sub_11001582(); break;
+                case 0x110015a2: sub_110015a2(); break;
+                case 0x110015b7: sub_110015b7(); break;
+                case 0x110015de: sub_110015de(); break;
+                case 0x110015ed: sub_110015ed(); break;
+                case 0x110015fc: sub_110015fc(); break;
+                case 0x110018bb: sub_110018bb(); break;
+                case 0x110018d0: sub_110018d0(); break;
+                case 0x110018e5: sub_110018e5(); break;
+                case 0x110018fa: sub_110018fa(); break;
+                case 0x11001900: sub_11001900(); break;
+                case 0x11001990: sub_11001990(); break;
+                case 0x11002d50: sub_11002d50(); break;
+                case 0x11002f74: sub_11002f74(); break;
+                case 0x11003022: sub_11003022(); break;
+                case 0x11003803: sub_11003803(); break;
+                case 0x110039bb: sub_110039bb(); break;
+                case 0x1100430e: sub_1100430e(); break;
+                case 0x11004337: sub_11004337(); break;
+                case 0x11004379: sub_11004379(); break;
+                case 0x110043a2: sub_110043a2(); break;
+                case 0x110043e4: sub_110043e4(); break;
+                case 0x1100440d: sub_1100440d(); break;
+                case 0x1100444f: sub_1100444f(); break;
+                case 0x11004478: sub_11004478(); break;
+                case 0x110044ba: sub_110044ba(); break;
+                case 0x11004560: sub_11004560(); break;
+                case 0x110045d0: sub_110045d0(); break;
+                case 0x11004600: sub_11004600(); break;
+                case 0x11004640: sub_11004640(); break;
+                case 0x11004670: sub_11004670(); break;
+                case 0x110046b0: sub_110046b0(); break;
+                case 0x11005a60: sub_11005a60(); break;
+                case 0x11005ad0: sub_11005ad0(); break;
+                case 0x11005dc6: sub_11005dc6(); break;
+                case 0x11005e70: sub_11005e70(); break;
+                case 0x11005ea6: sub_11005ea6(); break;
+                case 0x11006054: sub_11006054(); break;
+                case 0x1100605a: sub_1100605a(); break;
+                case 0x11006060: sub_11006060(); break;
+                case 0x11006066: sub_11006066(); break;
+                case 0x1100606c: sub_1100606c(); break;
+                case 0x11006072: sub_11006072(); break;
+                case 0x77779001: sub_11001531(); break; // posAPI
+                case 0x77779003: sub_11001582(); break; // posAPI
+                case 0x77779004: sub_110015fc(); break; // posAPI
+                case 0x77779006: sub_110015a2(); break; // posAPI
+                case 0x77779009: sub_110015b7(); break; // posAPI
+                case 0x77779010: sub_110018bb(); break; // posAPI
+                case 0x77779011: sub_110018e5(); break; // posAPI
+                case 0x77779012: sub_110018d0(); break; // posAPI
+                case 0x77779002: eax = 0; break; // posAPI no-op
+                case 0x77779005: eax = 0; break; // posAPI no-op
+                case 0x77779007: eax = 0; break; // posAPI no-op
+                case 0x77779008: eax = 0; break; // posAPI no-op
+                case 0x7777900a: eax = 0; break; // posAPI no-op
+                case 0x7777900b: eax = 0; break; // posAPI no-op
+                case 0x7777900c: eax = 0; break; // posAPI no-op
+                case 0x7777900d: eax = 0; break; // posAPI no-op
+                case 0x7777900e: eax = 0; break; // posAPI no-op
+                case 0x7777900f: eax = 0; break; // posAPI no-op
+                case 0x10004000: sub_10004000(); break; // TODO CICO!
+                default: 
+                  printf("{\"id\": \"jumpTable\", \"addr\": \"0:%x\", \"calls32\": [\"0:%x\"]}\n", orgo, o);
+                  fprintf(stderr, "missing indirect %x:%x from %x:%x\n", s, o, orgs, orgo); fflush(stderr);
+                  assert(0);
+            }
+}
 
 void sub_11001000() // 0000:11001000 +long +stackDrop8
 {
@@ -535,7 +455,7 @@ loc_11001335: // 0000:11001335
     edx >>= 18;
     eax = memoryAGet32(ss, ebp + 0x14);
     eax = memoryAGet(ds, edx + eax);
-    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007134), __LINE__, 0); // 0000:110013a6
+    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007134), 0x0000, 0x110013a6); // 0000:110013a6
     edx = memoryAGet32(ss, ebp - 8);
     eax = eax + (edx * 4);
     edx = memoryAGet32(ss, ebp - 12);
@@ -584,7 +504,7 @@ loc_110013f0: // 0000:110013f0
     sub_11001450();
     eax = ebx;
     push32(memoryAGet32(ss, ebp + 0xc));
-    indirectCall(cs, memoryAGet32(ds, eax), __LINE__, 0); // 0000:1100141f
+    indirectCall(cs, memoryAGet32(ds, eax), 0x0000, 0x1100141f); // 0000:1100141f
     if (eax == memoryAGet32(ss, ebp + 0x8))
         goto loc_1100143c;
     ecx = (int32_t)edi * (int32_t)0x00000008;
@@ -642,7 +562,7 @@ loc_11001467: // 0000:11001467
     edx >>= 12;
     eax = memoryAGet32(ss, ebp + 0x14);
     eax = memoryAGet(ds, edx + eax);
-    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007148), __LINE__, 0); // 0000:11001479
+    indirectCall(cs, memoryAGet32(ds, eax * 4 + 0x11007148), 0x0000, 0x11001479); // 0000:11001479
     edx = ebx;
     edx &= 0x00000001;
     eax = eax + (edx * 2);
@@ -722,21 +642,14 @@ void sub_11001531() // 0000:11001531 +long
     push32(esi);
     push32(edi);
     eax = memoryAGet32(ss, ebp + 0x1c);
-    printf("  posRegister: [ebp+0xc]=0x%08x [ebp+0x1c]=0x%08x outPtr=0x%08x\n",
-        memoryAGet32(ss, ebp+0xc), memoryAGet32(ss, ebp+0x1c), eax);
     memoryASet32(ds, eax, 0xffffffff);
-    printf("  posRegister: wrote 0xffffffff to outPtr=0x%08x\n", eax);
-    if (!memoryAGet32(ss, ebp + 0xc)) {
-        printf("  posRegister: SKIP (arg2=0)\n");
-        goto loc_1100157b; }
+    if (!memoryAGet32(ss, ebp + 0xc))
+        goto loc_1100157b;
     ebx = 0x11007020;
 loc_1100154b: // 0000:1100154b
-    printf("  posRegister: matching class at ebx=0x%08x [ebx]=0x%08x vs appClasses=0x%08x\n",
-        ebx, memoryAGet32(ds, ebx), memoryAGet32(ss, ebp+0xc));
     push32(ebx);
     push32(memoryAGet32(ss, ebp + 0xc));
     sub_11001000();
-    printf("  posRegister: sub_11001000 returned eax=%d\n", eax);
     if (eax)
         goto loc_11001573;
     push32(0x0000001c);
@@ -780,17 +693,13 @@ void sub_11001582() // 0000:11001582 +long
     ebp = esp;
     push32(ebx);
     ebx = memoryAGet32(ss, ebp + 0x8);
-    printf("  posInstantiate: ebx(handle)=0x%08x [ebx+0x10]=0x%08x [ebp+0x10]=0x%08x\n",
-        ebx, ebx >= 0x10000000 ? memoryAGet32(ds, ebx+0x10) : 0, memoryAGet32(ss, ebp+0x10));
     if (ebx == 0xffffffff)
         goto loc_1100159d;
     eax = memoryAGet32(ds, ebx + 0x10);
-    printf("  posInstantiate: factory fn = 0x%08x\n", eax);
     if (!eax)
         goto loc_1100159d;
     push32(memoryAGet32(ss, ebp + 0x10));
-    indirectCall(cs, eax, __LINE__, 0); // 0000:11001598
-    printf("  posInstantiate: factory returned eax=0x%08x, storing at [0x%08x+0x18]\n", eax, ebx);
+    indirectCall(cs, eax, 0x0000, 0x11001598); // 0000:11001598
     memoryASet32(ds, ebx + 0x18, eax);
 loc_1100159d: // 0000:1100159d
     eax = 0;
@@ -1002,7 +911,7 @@ loc_11001782: // 0000:11001782
     eax = eax + 3754892;
 loc_110017cd: // 0000:110017cd
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:110017ce
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x110017ce); // 0000:110017ce
     goto loc_110018b4;
 loc_110017d6: // 0000:110017d6
     push32(0x11007080);
@@ -1027,7 +936,7 @@ loc_1100180c: // 0000:1100180c
     eax = eax + 3333812;
 loc_1100181b: // 0000:1100181b
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100181c
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100181c); // 0000:1100181c
     goto loc_110018b4;
 loc_11001824: // 0000:11001824
     push32(0x11007098);
@@ -1060,7 +969,7 @@ loc_11001852: // 0000:11001852
     eax = eax + 928228;
 loc_11001875: // 0000:11001875
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:11001876
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x11001876); // 0000:11001876
     goto loc_110018b4;
 loc_1100187b: // 0000:1100187b
     push32(0x110070f8);
@@ -1075,7 +984,7 @@ loc_1100187b: // 0000:1100187b
     eax = eax + 201308;
 loc_1100189e: // 0000:1100189e
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100189f
+    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100189f); // 0000:1100189f
     goto loc_110018b4;
 loc_110018a4: // 0000:110018a4
     push32(0x00000000);
@@ -1101,7 +1010,7 @@ void sub_110018bb() // 0000:110018bb +long
     eax = memoryAGet32(ds, eax + 0x4);
     push32(0x00000000);
     push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018c9
+    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018c9); // 0000:110018c9
     eax = 0;
     esp = ebp; ebp = pop32();
     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -1134,7 +1043,7 @@ void sub_110018e5() // 0000:110018e5 +long
     eax = memoryAGet32(ds, eax + 0x4);
     push32(0x00000001);
     push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018f3
+    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018f3); // 0000:110018f3
     eax = 0;
     esp = ebp; ebp = pop32();
     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -3170,8 +3079,6 @@ void sub_110045d0() // 0000:110045d0 +long +stackDrop4
     push32(memoryAGet32(ss, ebp + 0x8));
     sub_11006066();
     eax = memoryAGet32(ss, ebp + 0x8);
-    { uint32_t _a = eax, _b = memoryAGet32(ds, ebx + 0x4);
-      printf("  factory check: arg=0x%08x [ebx+4]=0x%08x diff=0x%08x (need 0x00581450)\n", _a, _b, _a - _b); }
     eax -= memoryAGet32(ds, ebx + 0x4);
     if (eax != 0x00581450)
         goto loc_110045f9;
@@ -3610,12 +3517,9 @@ loc_11005f12: // 0000:11005f12
     ebx = memoryAGet32(ss, ebp + 0x8);
     eax = memoryAGet32(ds, ebx + 0x8);
     eax = eax + 91;
-    printf("  DCP decrypt: keyLookup at 0x%08x, keyTable=0x11149770\n", eax);
-    printf("    key bytes: "); for(int _k=0;_k<16;_k++) printf("%02x",memoryAGet(ds,eax+_k)); printf("\n");
     push32(0x11149770);
     push32(eax);
     sub_11005e70();
-    printf("  DCP key verification: eax=%d (%s)\n", eax, eax?"FAIL":"OK");
     if (eax)
         goto loc_11005f5b;
     eax = memoryAGet32(ds, ebx + 0x1c);

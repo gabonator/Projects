@@ -1,0 +1,463 @@
+diff --git a/./synsoemu_clean.cpp b/./synsoemu.cpp
+index c6aebf1..0b4f749 100644
+--- a/./synsoemu_clean.cpp
++++ b/./synsoemu.cpp
+@@ -1,247 +1,3 @@
+-// Applied 852 PE relocations (delta=0x1000000)
+-#include "cico32.h"
+-
+-// Missing imports for kernel32.h!
+-// No RTTI information found
+-// Sections of SYNSOEMU.dll:
+-//  - .text: 11001000 .. 11006078 (20600 bytes)
+-//  - .rdata: 11007000 .. 110a5dfd (650749 bytes)
+-//  - .data: 110a6000 .. 11149790 (669584 bytes)
+-//  - .rsrc: 1114a000 .. 1114a3b0 (944 bytes)
+-//  - .reloc: 1114b000 .. 1114c38c (5004 bytes)
+-
+-void fixReloc(uint16_t seg);
+-void sub_11001525();
+-
+-void init()
+-{
+-#include "kernel32.h"
+-
+-void sub_11001525();
+-
+-void init()
+-{
+-    loadOverlay("SYNSOEMU_text.bin", 0x11001000);
+-    loadOverlay("SYNSOEMU_rdata.bin", 0x11007000);
+-    loadOverlay("SYNSOEMU_data.bin", 0x110a6000);
+-    loadOverlay("SYNSOEMU_rsrc.bin", 0x1114a000);
+-    loadOverlay("SYNSOEMU_reloc.bin", 0x1114b000);
+-    esp = 0x1114d000;
+-    ebp = 0x1114d000;
+-}
+-
+-void start()
+-{
+-    sub_11001525();
+-}
+-
+-void posRegisterApplicationWithPackage()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posUnregisterApplication()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posInstantiateObject()
+-{
+-    sub_11001582();
+-}
+-
+-
+-void posCallMethod()
+-{
+-    sub_110015fc();
+-}
+-
+-
+-void posFreeDLLHeapData()
+-{
+-    sub_110015ed();
+-}
+-
+-
+-void posDeleteObject()
+-{
+-    sub_110015a2();
+-}
+-
+-
+-void posRegisterApplicationWithPackageName()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posRegisterApplication()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posInstantiateObjectOnExecuter()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posCallMethodOnExecuter()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posGetObjectInfo()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posGetClassInfo()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posGetExecuterInfo()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posGetInfo()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posExecuteCMD()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posDeleteDLLHeapData()
+-{
+-    sub_110015de();
+-}
+-
+-
+-void posRegisterApplicationWithClasses()
+-{
+-    sub_11001531();
+-}
+-
+-
+-void posGetInfoWithCommand()
+-{
+-    sub_110015b7();
+-}
+-
+-
+-void posEncryptData()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posDecryptData()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posEncryptFile()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posDecryptFile()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posCreateNewSymmetricKey()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posSetAlgorithmParameter()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posModifyPinCode()
+-{
+-    sub_110018fa();
+-}
+-
+-
+-void posDCPCreateEncryptionContext()
+-{
+-    sub_110018bb();
+-}
+-
+-
+-void posDCPEncryptData()
+-{
+-    sub_110018e5();
+-}
+-
+-
+-void posDCPDecryptData()
+-{
+-    sub_110018d0();
+-}
+-
+-
+-enum class ptrImportTable {
+-    ptr_begin = 0x6ab00000,
+-    ptr_kernel32_GlobalFree, // 0x11007000 
+-    ptr_kernel32_RaiseException, // 0x11007004 
+-    ptr_kernel32_VirtualQuery, // 0x11007008 
+-    ptr_kernel32_ExitProcess, // 0x1100700c 
+-    ptr_kernel32_VirtualProtect, // 0x11007010 
+-    ptr_kernel32_GlobalAlloc, // 0x11007014 
+-};
+-
+-void indirectCall(int s, int o) {
+-    switch ((ptrImportTable)o) {
+-        case ptrImportTable::ptr_kernel32_GlobalFree:
+-            eax = kernel32::GlobalFree();
+-            break; // 6ab00001
+-        case ptrImportTable::ptr_kernel32_RaiseException:
+-            eax = kernel32::RaiseException();
+-            break; // 6ab00002
+-        case ptrImportTable::ptr_kernel32_VirtualQuery:
+-            eax = kernel32::VirtualQuery();
+-            break; // 6ab00003
+-        case ptrImportTable::ptr_kernel32_ExitProcess:
+-            eax = kernel32::ExitProcess();
+-            break; // 6ab00004
+-        case ptrImportTable::ptr_kernel32_VirtualProtect:
+-            eax = kernel32::VirtualProtect();
+-            break; // 6ab00005
+-        case ptrImportTable::ptr_kernel32_GlobalAlloc:
+-            eax = kernel32::GlobalAlloc();
+-            break; // 6ab00006
+-    }
+-}
+-
+-}
+-
+-void start()
+-{
+-    sub_11001525();
+-}
+ 
+ void sub_11001000();
+ void sub_1100101d();
+@@ -306,6 +62,98 @@ void sub_11006066();
+ void sub_1100606c();
+ void sub_11006072();
+ 
++void synsoemuIndirectCall(int s, int o, int orgs, int orgo)
++{
++            // SYNSOEMU runtime dispatch (vtable calls, not resolvable by cicodis)
++            switch (o) {
++                case 0x11001000: sub_11001000(); break;
++                case 0x1100101d: sub_1100101d(); break;
++                case 0x1100112d: sub_1100112d(); break;
++                case 0x11001157: sub_11001157(); break;
++                case 0x11001181: sub_11001181(); break;
++                case 0x11001200: sub_11001200(); break;
++                case 0x110012f5: sub_110012f5(); break;
++                case 0x11001316: sub_11001316(); break;
++                case 0x1100131c: sub_1100131c(); break;
++                case 0x11001322: sub_11001322(); break;
++                case 0x11001323: sub_11001323(); break;
++                case 0x110013d0: sub_110013d0(); break;
++                case 0x11001443: sub_11001443(); break;
++                case 0x11001449: sub_11001449(); break;
++                case 0x1100144f: sub_1100144f(); break;
++                case 0x11001450: sub_11001450(); break;
++                case 0x11001507: sub_11001507(); break;
++                case 0x11001525: sub_11001525(); break;
++                case 0x11001531: sub_11001531(); break;
++                case 0x11001582: sub_11001582(); break;
++                case 0x110015a2: sub_110015a2(); break;
++                case 0x110015b7: sub_110015b7(); break;
++                case 0x110015de: sub_110015de(); break;
++                case 0x110015ed: sub_110015ed(); break;
++                case 0x110015fc: sub_110015fc(); break;
++                case 0x110018bb: sub_110018bb(); break;
++                case 0x110018d0: sub_110018d0(); break;
++                case 0x110018e5: sub_110018e5(); break;
++                case 0x110018fa: sub_110018fa(); break;
++                case 0x11001900: sub_11001900(); break;
++                case 0x11001990: sub_11001990(); break;
++                case 0x11002d50: sub_11002d50(); break;
++                case 0x11002f74: sub_11002f74(); break;
++                case 0x11003022: sub_11003022(); break;
++                case 0x11003803: sub_11003803(); break;
++                case 0x110039bb: sub_110039bb(); break;
++                case 0x1100430e: sub_1100430e(); break;
++                case 0x11004337: sub_11004337(); break;
++                case 0x11004379: sub_11004379(); break;
++                case 0x110043a2: sub_110043a2(); break;
++                case 0x110043e4: sub_110043e4(); break;
++                case 0x1100440d: sub_1100440d(); break;
++                case 0x1100444f: sub_1100444f(); break;
++                case 0x11004478: sub_11004478(); break;
++                case 0x110044ba: sub_110044ba(); break;
++                case 0x11004560: sub_11004560(); break;
++                case 0x110045d0: sub_110045d0(); break;
++                case 0x11004600: sub_11004600(); break;
++                case 0x11004640: sub_11004640(); break;
++                case 0x11004670: sub_11004670(); break;
++                case 0x110046b0: sub_110046b0(); break;
++                case 0x11005a60: sub_11005a60(); break;
++                case 0x11005ad0: sub_11005ad0(); break;
++                case 0x11005dc6: sub_11005dc6(); break;
++                case 0x11005e70: sub_11005e70(); break;
++                case 0x11005ea6: sub_11005ea6(); break;
++                case 0x11006054: sub_11006054(); break;
++                case 0x1100605a: sub_1100605a(); break;
++                case 0x11006060: sub_11006060(); break;
++                case 0x11006066: sub_11006066(); break;
++                case 0x1100606c: sub_1100606c(); break;
++                case 0x11006072: sub_11006072(); break;
++                case 0x77779001: sub_11001531(); break; // posAPI
++                case 0x77779003: sub_11001582(); break; // posAPI
++                case 0x77779004: sub_110015fc(); break; // posAPI
++                case 0x77779006: sub_110015a2(); break; // posAPI
++                case 0x77779009: sub_110015b7(); break; // posAPI
++                case 0x77779010: sub_110018bb(); break; // posAPI
++                case 0x77779011: sub_110018e5(); break; // posAPI
++                case 0x77779012: sub_110018d0(); break; // posAPI
++                case 0x77779002: eax = 0; break; // posAPI no-op
++                case 0x77779005: eax = 0; break; // posAPI no-op
++                case 0x77779007: eax = 0; break; // posAPI no-op
++                case 0x77779008: eax = 0; break; // posAPI no-op
++                case 0x7777900a: eax = 0; break; // posAPI no-op
++                case 0x7777900b: eax = 0; break; // posAPI no-op
++                case 0x7777900c: eax = 0; break; // posAPI no-op
++                case 0x7777900d: eax = 0; break; // posAPI no-op
++                case 0x7777900e: eax = 0; break; // posAPI no-op
++                case 0x7777900f: eax = 0; break; // posAPI no-op
++                case 0x10004000: sub_10004000(); break; // TODO CICO!
++                default: 
++                  printf("{\"id\": \"jumpTable\", \"addr\": \"0:%x\", \"calls32\": [\"0:%x\"]}\n", orgo, o);
++                  fprintf(stderr, "missing indirect %x:%x from %x:%x\n", s, o, orgs, orgo); fflush(stderr);
++                  assert(0);
++            }
++}
++
+ void sub_11001000() // 0000:11001000 +long +stackDrop8
+ {
+     esp -= 4;
+@@ -809,10 +657,21 @@ loc_1100154b: // 0000:1100154b
+     sub_11006054();
+     edi = eax;
+     eax = memoryAGet32(ss, ebp + 0x1c);
++    printf("  posRegister: MATCH! alloc=0x%08x storing at outPtr=0x%08x, copying from ebx=0x%08x\n", edi, eax, ebx);
++    // Save entire ordinal table + handle area (0x105814bc..0x1058150c = 20 DWORDs)
++    uint32_t _sv[21]; for(int _i=0;_i<21;_i++) _sv[_i]=memoryAGet32(ds,0x105814bc+_i*4);
+     memoryASet32(ds, eax, edi);
+     esi = ebx;
+     ecx = 0x00000018;
+     for (; ecx != 0; --ecx) movsb<ES_EDI, DS_ESI>();
++    { uint32_t h = memoryAGet32(ds, 0x105814bc);
++      printf("  POST-COPY: handle=0x%08x [+0x14]=0x%08x edi=0x%08x\n", h, memoryAGet32(ds, h+0x14), edi); }
++    // Restore ordinal table (skip first entry which is the handle ptr itself)
++    for(int _i=2;_i<21;_i++) memoryASet32(ds,0x105814bc+_i*4,_sv[_i]);
++    // Keep the handle ptr and first copy byte at 0x105814bc..0x105814c3
++    { uint32_t h=memoryAGet32(ds,0x105814bc);
++      printf("  posRegister: handle=0x%08x [+0x10]=0x%08x [+0x14]=0x%08x\n",
++          h, memoryAGet32(ds,h+0x10), memoryAGet32(ds,h+0x14)); }
+     goto loc_1100157b;
+ loc_11001573: // 0000:11001573
+     ebx = ebx + 24;
+@@ -1095,7 +954,7 @@ loc_11001846: // 0000:11001846
+     eax = eax + 746332;
+ loc_1100184c: // 0000:1100184c
+     push32(eax);
+-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x1100184d); // 0000:1100184d
++    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), __LINE__, 0); // 0000:1100184d
+     goto loc_110018b4;
+ loc_11001852: // 0000:11001852
+     push32(0x110070b0);
+@@ -1164,9 +1023,12 @@ void sub_110018d0() // 0000:110018d0 +long
+     ebp = esp;
+     eax = memoryAGet32(ss, ebp + 0x8);
+     eax = memoryAGet32(ds, eax + 0x4);
++    { uint32_t _vfn = memoryAGet32(ds, eax + 0x14);
++      printf("  DCP vtable call: arg=0x%08x [arg+4]=0x%08x addr=0x%08x fn=0x%08x\n",
++          memoryAGet32(ss, ebp+8), eax, eax+0x14, _vfn); }
+     push32(0x00000002);
+     push32(memoryAGet32(ss, ebp + 0x8));
+-    indirectCall(cs, memoryAGet32(ds, eax + 0x14), 0x0000, 0x110018de); // 0000:110018de
++    indirectCall(cs, memoryAGet32(ds, eax + 0x14), __LINE__, 0); // 0000:110018de
+     eax = 0;
+     esp = ebp; ebp = pop32();
+     // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
+@@ -3694,38 +3556,32 @@ loc_11005f79: // 0000:11005f79
+     // SEH removed (was stack_below, 8/4) // SEH removed (was stack_below, 8/4)
+     esp += 12;
+ }
+-void sub_11006054() // 0000:11006054 +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x11007014), 0x0000, 0x11006054); return; // 0000:11006054
+-}
+-void sub_1100605a() // 0000:1100605a +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x11007000), 0x0000, 0x1100605a); return; // 0000:1100605a
+-}
+-void sub_11006060() // 0000:11006060 +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x11007004), 0x0000, 0x11006060); return; // 0000:11006060
+-}
+-void sub_11006066() // 0000:11006066 +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x11007008), 0x0000, 0x11006066); return; // 0000:11006066
+-}
+-void sub_1100606c() // 0000:1100606c +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x1100700c), 0x0000, 0x1100606c); return; // 0000:1100606c
+-}
+-void sub_11006072() // 0000:11006072 +long
+-{
+-    esp -= 4;
+-    indirectJump(cs, memoryAGet32(ds, 0x11007010), 0x0000, 0x11006072); return; // 0000:11006072
+-}
+-void fixReloc(uint16_t seg)
+-{
+-}
+-
++void sub_11006054() // GlobalAlloc (stdcall, 2 args: flags, size)
++{ uint32_t flags=memoryAGet32(ss,esp); uint32_t size=memoryAGet32(ss,esp+4);
++  if(!size) size=32; // minimum alloc
++  eax=allocate(size); printf("  SYNSO GlobalAlloc(flags=0x%x,sz=%d)=0x%08x\n",flags,size,eax); esp+=8; }
++void sub_1100605a() // GlobalFree thunk
++{ esp+=4; eax=0; }
++void sub_11006060() // RaiseException thunk
++{ printf("  SYNSO RaiseException!\n"); esp+=16; }
++void sub_11006066() // VirtualQuery (stdcall, 3 args: addr, buf, len)
++{ esp -= 4; // synthetic
++  uint32_t addr=memoryAGet32(ss,esp+4); uint32_t buf=memoryAGet32(ss,esp+8);
++  printf("  VirtualQuery(addr=0x%08x, buf=0x%08x)\n", addr, buf);
++  if(buf){
++    // Determine allocation base from address
++    uint32_t allocBase = 0x10000000; // default: main DLL base
++    if (addr >= 0x11000000 && addr < 0x11200000) allocBase = 0x11000000; // SYNSOEMU
++    memoryASet32(ds,buf+0x00,addr);       // BaseAddress
++    memoryASet32(ds,buf+0x04,allocBase);  // AllocationBase
++    memoryASet32(ds,buf+0x08,0x40);       // AllocationProtect (PAGE_EXECUTE_READWRITE)
++    memoryASet32(ds,buf+0x0C,0x1000);     // RegionSize
++    memoryASet32(ds,buf+0x10,0x1000);     // State (MEM_COMMIT)
++    memoryASet32(ds,buf+0x14,0x40);       // Protect
++    memoryASet32(ds,buf+0x18,0x1000000);  // Type (MEM_IMAGE)
++  } eax=28; esp+=16; } // +4 synthetic +12 stdcall
++void sub_1100606c() // ExitProcess thunk
++{ printf("  SYNSO ExitProcess!\n"); esp+=4; }
++void sub_11006072() // VirtualProtect thunk
++{ uint32_t oldProt=memoryAGet32(ss,esp+16); if(oldProt) memoryASet32(ds,oldProt,0x40); eax=1; esp+=16; }
+ 

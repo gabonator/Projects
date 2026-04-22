@@ -8,6 +8,7 @@ void sub_100ceb9a();
 void sub_100d10c1();
 void sub_100d1fa9();
 
+
 void sub_100c0460();
 void sub_100c0480();
 void sub_100c05b0();
@@ -9012,7 +9013,27 @@ void sub_100ca661() // 0000:100ca661 +long +stackDrop20 — NATIVE: _eh_vec_ctor
     for (uint32_t i = 0; i < cnt; i++) {
         esp = save_esp; // reset before each ctor (ctors have ESP drift)
         ecx = arr + i * esz;
-        callByAddress(ctor);
+        switch (ctor) {
+            case 0x10031b90: sub_10031b90(); break;
+            case 0x10031d70: sub_10031d70(); break;
+            case 0x10009670: sub_10009670(); break;
+            case 0x100608b0: sub_100608b0(); break;
+            case 0x10061b60: sub_10061b60(); break;
+            case 0x1000bf80: sub_1000bf80(); break;
+            case 0x10065d80: sub_10065d80(); break;
+            case 0x1004e4e0: sub_1004e4e0(); break;
+case 0x100076c0: sub_100076c0(); break;
+case 0x100574c0: sub_100574c0(); break;
+case 0x10062750: sub_10062750(); break;
+case 0x10065780: sub_10065780(); break;
+case 0x10068560: sub_10068560(); break;
+case 0x10058670: sub_10058670(); break;
+case 0x10064fd0: sub_10064fd0(); break;
+            default:
+              fprintf(stderr, "------sub_100ca661- case 0x%x: sub_%x(); break;\n", ctor, ctor); 
+fflush(stderr);
+assert(0);
+        }
     }
     ebx=save_ebx; esi=save_esi; edi=save_edi; ebp=save_ebp; esp=save_esp;
     esp += 24;
@@ -25199,3 +25220,95 @@ void sub_100d8599() { fprintf(stderr, "STUB: sub_100d8599\n"); assert(0); }
 void sub_100da7f8() { fprintf(stderr, "STUB: sub_100da7f8\n"); assert(0); }
 void sub_100da83b() { fprintf(stderr, "STUB: sub_100da83b\n"); assert(0); }
 void sub_100d3b31() { fprintf(stderr, "STUB: sub_100d3b31\n"); assert(0); }
+
+
+void _initterm()
+{
+        printf("  PRE-initterm: [0x103fb04c]=0x%08x\n", memoryAGet32(0, 0x103fb04c));
+
+    // _initterm table: 0x100e62ec - 0x100e6418 (75 function pointers)
+    //for (uint32_t slot = 0x100e62ec; slot < 0x100e6418; slot += 4) {
+    //  printf("case 0x%x: sub_%x();\n", memoryAGet32(0, slot), memoryAGet32(0, slot));
+    sub_100e4f06();
+    sub_100e4f28();
+    sub_100e4f3e();
+    sub_100e45f0();
+    sub_100e4610();
+    sub_100e4630();
+    sub_100e4650();
+    sub_100e4670();
+    sub_100e4690();
+    sub_100e46b0();
+    sub_100e46d0();
+    sub_100e46f0();
+    sub_100e4710();
+    sub_100e4730();
+    sub_100e4750();
+    sub_100e4770();
+    sub_100e4790();
+    sub_100e47b0();
+    sub_100e47d0();
+    sub_100e47f0();
+    sub_100e4810();
+    sub_100e4830();
+    sub_100e4850();
+    sub_100e4870();
+    sub_100e4890();
+    sub_100e48b0();
+    sub_100e48e0();
+    sub_100e4900();
+    sub_100e4920();
+    sub_100e4940();
+    sub_100e4960();
+    sub_100e4980();
+    sub_100e49a0();
+    sub_100e49c0();
+    sub_100e49e0();
+    sub_100e4a00();
+    sub_100e4a20();
+    sub_100e4a40();
+    sub_100e4a60();
+    sub_100e4a80();
+    sub_100e4ab0();
+    sub_100e4ae0();
+    sub_100e4b10();
+    sub_100e4b40();
+    sub_100e4b70();
+    sub_100e4b90();
+    sub_100e4bb0();
+    sub_100e4bd0();
+    sub_100e4bf0();
+    sub_100e4c10();
+    sub_100e4c30();
+    sub_100e4c60();
+    sub_100e4c90();
+    sub_100e4cb0();
+    sub_100e4cf0();
+    sub_100e4d00();
+    sub_100e4d20();
+    sub_100e4d60();
+    sub_100e4d70();
+    sub_100e4d90();
+    sub_100e4db0();
+    sub_100e4dd0();
+    sub_100e4df0();
+    sub_100e4e10();
+    sub_100e4e30();
+    sub_100e4e50();
+    sub_100e4e70();
+    sub_100e4e90();
+    sub_100e4eb0();
+    sub_100e4ef0();
+    sub_100e4f1c();
+    sub_100e4f50();
+    sub_100e4f70();
+    sub_100e4fe0();
+    sub_100e5000();
+
+        printf("  POST-initterm: [0x103fb04c]=0x%08x\n", memoryAGet32(0, 0x103fb04c));
+}
+
+void sub_6ab00078()
+{
+    eax = kernel32::GetTickCount();
+}
