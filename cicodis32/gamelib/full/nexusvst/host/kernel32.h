@@ -4,8 +4,6 @@
 
 #include <dirent.h>
 #include <sys/stat.h>
-#ifndef KERNEL32_H
-#define KERNEL32_H
 
 // memory access via memoryASet/memoryAGet (defined in cico32.h)
 
@@ -573,5 +571,3 @@ uint32_t TlsSetValue() { esp += 8; return 1; }
 uint32_t TlsFree() { esp += 4; return 1; }
 
 } // namespace kernel32
-
-#endif // KERNEL32_H

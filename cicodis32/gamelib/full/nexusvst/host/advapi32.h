@@ -1,7 +1,4 @@
 // advapi32.h — ADVAPI32.dll stubs (registry emulation)
-#ifndef ADVAPI32_H
-#define ADVAPI32_H
-
 namespace advapi32 {
 
 static uint32_t _regHandle = 0xAA000001;
@@ -80,4 +77,3 @@ uint32_t RegCloseKey() { esp += 4; return 0; }
 uint32_t RegFlushKey() { esp += 4; return 0; }
 
 } // namespace advapi32
-#endif

@@ -7,8 +7,6 @@
 
 const char* appRootPath = "res/";
 
-void indirectCallLogPrintAll();
-
 // Memory layout:
 // 0x10000000 base
 // 0x10001000 - 0x100e531b: .text (934KB)
@@ -106,19 +104,16 @@ void loadOverlay(const char* image, int base) {
 }
 
 // --- Functions from nexus.cpp ---
-extern void init();
-extern void start();
-extern void VSTPluginMain();
-extern void sub_1001d100();  // VSTPluginMain entry
-extern void sub_10015070();  // real plugin init (called by sub_1001d100)
-extern void sub_1001b3a0();  // dispatcher
-extern void sub_10031d10();  // bus struct initializer
-extern void indirectCall(int s, int o, int originSeg, int originOfs);
-inline void indirectCall(int s, int o) { indirectCall(s, o, 0, 0); }
+void init();
+void start();
+void VSTPluginMain();
+void sub_1001d100();  // VSTPluginMain entry
+void sub_10015070();  // real plugin init (called by sub_1001d100)
+void sub_1001b3a0();  // dispatcher
+void sub_10031d10();  // bus struct initializer
+void sub_1001b3a0(); // dispatcher
+void sub_1001b470(); // process replacing
 void _initterm();
-
-//extern void callByAddress(uint32_t addr); // dispatch to sub_xxx by address
-
 
 // --- WAV writer ---
 void writeWav(const char* filename, const float* left, const float* right, int numSamples, int sampleRate) {
@@ -153,9 +148,6 @@ void writeWav(const char* filename, const float* left, const float* right, int n
     printf("WAV written: %s (%d samples)\n", filename, numSamples);
 }
 
-void sub_1001b3a0(); // dispatcher
-void sub_1001b470(); // process replacing
-
 // --- Main ---
 int main(int argc, char* argv[]) {
     printf("Nexus C++ emulator starting...\n");
@@ -175,9 +167,7 @@ int main(int argc, char* argv[]) {
     // The real DLL runs these 75 constructors during DllMain via CRT _initterm.
     // They initialize global objects (linked lists, vtables, etc.) that the main
     // constructor depends on. Without them, the constructor hangs in list walks.
-    printf("pre alloc=%x, esp=%x\n", allocatorPtr, esp);
     _initterm();
-    printf("post alloc=%x, esp=%x\n", allocatorPtr, esp);
 
     // --- Call sub_10015070 (VSTPluginMain init) directly ---
     extern void sub_10015070();
@@ -202,9 +192,6 @@ int main(int argc, char* argv[]) {
         push32(opcode);
         push32(pluginPtr);
         sub_1001b3a0();
-//fprintf(stderr, "dispatcher at %x\n", dispatcherAddr); fflush(stderr);
-//        assert(0);
-        //callByAddress(dispatcherAddr);
         return eax;
     };
 
@@ -305,10 +292,7 @@ int main(int argc, char* argv[]) {
         push32(inputPtrs);
         push32(pluginPtr);
         ecx = thisPtr;
-        //printf("process replacing = %x\n", processReplacingAddr);
-        //assert(0);
-        sub_1001b470();
-        //callByAddress(processReplacingAddr);
+        sub_1001b470(); // processReplacingAddr
 
         // Read output samples from wherever processReplacing actually wrote them
         uint32_t actualOutL = memoryAGet32(0, outputPtrs);
@@ -325,6 +309,5 @@ int main(int argc, char* argv[]) {
     writeWav(outFile, allLeft.data(), allRight.data(), (int)allLeft.size(), 44100);
 
     printf("Done.\n");
-    indirectCallLogPrintAll();
     return 0;
 }

@@ -5,9 +5,6 @@
 #include <execinfo.h>
 #include <unistd.h>
 
-#ifndef CICO32_H
-#define CICO32_H
-
 #include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
@@ -18,7 +15,7 @@
 
 // --- Memory access ---
 static const int MEM_BASE = 0x10000000;
-static const int MEM_SIZE_CONST = 256 * 1024 * 1024;
+static const int MEM_SIZE_CONST = 128 * 1024 * 1024;
 
 std::vector<uint8_t> memory(MEM_SIZE_CONST, 0); // TODO: sync with cico32.h
 
@@ -843,8 +840,7 @@ inline void memoryASet80(int s, int o, double d) {
   memoryASet64(s, o, toFp64(d));
 }
 
-#endif // CICO32_H
-
+/*
 #include <unordered_map>
 #include <unordered_set>
 // Stores all observed targets for each origin.
@@ -875,3 +871,4 @@ void indirectCallLogPrintAll()
 
     std::fflush(stdout);
 }
+*/

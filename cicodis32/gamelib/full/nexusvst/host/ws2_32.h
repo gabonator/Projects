@@ -2,9 +2,6 @@
 // These are referenced as bare macros in nexus.cpp's indirectCall:
 //   ordinal_116   (not ordinal_116())
 // So we define them as macros that include the semicolon-free statement.
-#ifndef WS2_32_H
-#define WS2_32_H
-
 // ordinal 116 = WSAStartup(2 args, stdcall +8)
 #define ordinal_116 { esp += 8; eax = 1; }
 // ordinal 3 = closesocket(1 arg, stdcall +4)
@@ -23,5 +20,3 @@
 #define ordinal_115 { eax = 0; }
 // ordinal 23 = socket(3 args, stdcall +12)
 #define ordinal_23 { esp += 12; eax = 0xffffffff; }
-
-#endif

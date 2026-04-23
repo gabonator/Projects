@@ -1,6 +1,4 @@
 // user32.h — USER32.dll stubs (all no-ops for headless VST)
-#ifndef USER32_H
-#define USER32_H
 namespace user32 {
 uint32_t GetWindowRect() { esp += 8; return 1; }
 uint32_t UnregisterClassA() { esp += 8; return 1; }
@@ -42,4 +40,3 @@ uint32_t GetCursorPos() { esp += 4; return 0; }
 uint32_t SetWindowLongA() { esp += 12; return 0; }
 uint32_t MessageBoxA() { esp += 16; return 0; }
 } // namespace user32
-#endif

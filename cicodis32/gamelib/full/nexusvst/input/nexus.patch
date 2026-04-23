@@ -1,5 +1,5 @@
 diff --git a/./nexus_clean.cpp b/./nexus.cpp
-index 742d6c3..57a2bc7 100644
+index 95eb3ac..45102cd 100644
 --- a/./nexus_clean.cpp
 +++ b/./nexus.cpp
 @@ -29,9 +29,10 @@
@@ -52,7 +52,7 @@ index 742d6c3..57a2bc7 100644
  void sub_10001000();
  void sub_100015a0();
  void sub_10001670();
-@@ -2286,6 +2280,10 @@ void sub_100e4f70();
+@@ -2513,6 +2507,10 @@ void sub_100e4f70();
  void sub_100e4fe0();
  void sub_100e5000();
  
@@ -63,7 +63,7 @@ index 742d6c3..57a2bc7 100644
  void sub_10001000() // 0000:10001000 +long +stackDrop12
  {
      StackGuard _sg(12, __FUNCTION__);
-@@ -9632,7 +9630,7 @@ loc_10005751: // 0000:10005751
+@@ -9859,7 +9857,7 @@ loc_10005751: // 0000:10005751
      ecx = esp + 28;
      push32(ecx);
      ecx = 0x0000053c;
@@ -72,7 +72,7 @@ index 742d6c3..57a2bc7 100644
      // gap 3 bytes // gap 3 bytes
  loc_10005771: // 0000:10005771
      ax = memoryAGet16(ds, esp + 0x460);
-@@ -17317,7 +17315,7 @@ void sub_10009670() // 0000:10009670 +long
+@@ -17544,7 +17542,7 @@ void sub_10009670() // 0000:10009670 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -81,7 +81,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-40) // SEH fixed (was stack_unbalanced, 0/-40)
      esp += 4;
  }
-@@ -17370,7 +17368,7 @@ void sub_10009760() // 0000:10009760 +long
+@@ -17597,7 +17595,7 @@ void sub_10009760() // 0000:10009760 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -90,7 +90,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-40) // SEH fixed (was stack_unbalanced, 0/-40)
      esp += 4;
  }
-@@ -32602,7 +32600,7 @@ loc_1001753a: // 0000:1001753a
+@@ -32829,7 +32827,7 @@ loc_1001753a: // 0000:1001753a
      esi = pop32();
      ebp = pop32();
      ebx = pop32();
@@ -99,7 +99,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 8/4) // SEH fixed (was stack_below, 8/4)
      esp += 12;
  }
-@@ -38245,7 +38243,7 @@ loc_1001b564: // 0000:1001b564
+@@ -38472,7 +38470,7 @@ loc_1001b564: // 0000:1001b564
      indirectCall(cs, edx, 0x0000, 0x1001b569); // 0000:1001b569
      eax = esi;
      esi = pop32();
@@ -108,7 +108,7 @@ index 742d6c3..57a2bc7 100644
  loc_1001b571: // 0000:1001b571
      eax = memoryAGet32(ds, esp + 0x10);
      if ((int32_t)eax >= (int32_t)memoryAGet32(ds, ecx + 0x14))
-@@ -38264,7 +38262,7 @@ loc_1001b58c: // 0000:1001b58c
+@@ -38491,7 +38489,7 @@ loc_1001b58c: // 0000:1001b58c
      indirectCall(cs, eax, 0x0000, 0x1001b591); // 0000:1001b591
      esi = eax;
      esi = pop32();
@@ -117,7 +117,7 @@ index 742d6c3..57a2bc7 100644
  loc_1001b599: // 0000:1001b599
      edx = memoryAGet32(ds, ecx);
      eax = memoryAGet32(ds, esp + 0x14);
-@@ -38274,7 +38272,7 @@ loc_1001b599: // 0000:1001b599
+@@ -38501,7 +38499,7 @@ loc_1001b599: // 0000:1001b599
      eax = esi;
      esi = pop32();
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
@@ -126,7 +126,7 @@ index 742d6c3..57a2bc7 100644
  loc_1001b5ab: // 0000:1001b5ab
      eax = memoryAGet32(ds, ecx);
      edx = memoryAGet32(ds, esp + 0x14);
-@@ -38320,7 +38318,7 @@ loc_1001b5eb: // 0000:1001b5eb
+@@ -38547,7 +38545,7 @@ loc_1001b5eb: // 0000:1001b5eb
      eax = esi;
      esi = pop32();
      // SEH removed (was stack_below, 20/12) // SEH removed (was stack_below, 20/12)
@@ -135,7 +135,7 @@ index 742d6c3..57a2bc7 100644
  loc_1001b602: // 0000:1001b602
      eax = memoryAGet32(ds, ecx);
      fld32(memoryAGet32(ds, esp + 0x18));
-@@ -38336,7 +38334,7 @@ loc_1001b602: // 0000:1001b602
+@@ -38563,7 +38561,7 @@ loc_1001b602: // 0000:1001b602
      eax = esi;
      esi = pop32();
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
@@ -144,7 +144,7 @@ index 742d6c3..57a2bc7 100644
  loc_1001b617: // 0000:1001b617
      eax = memoryAGet32(ds, ecx);
      edx = memoryAGet32(ds, esp + 0x10);
-@@ -40493,7 +40491,7 @@ loc_1001c80d: // 0000:1001c80d
+@@ -40720,7 +40718,7 @@ loc_1001c80d: // 0000:1001c80d
              stop("unhandled indirect 0000:1001c81a");
      }
      esi = pop32();
@@ -153,7 +153,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001c823: // 0000:1001c823
-@@ -40506,7 +40504,7 @@ loc_1001c823: // 0000:1001c823
+@@ -40733,7 +40731,7 @@ loc_1001c823: // 0000:1001c823
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -162,7 +162,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001c842: // 0000:1001c842
-@@ -40521,7 +40519,7 @@ loc_1001c842: // 0000:1001c842
+@@ -40748,7 +40746,7 @@ loc_1001c842: // 0000:1001c842
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -171,7 +171,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c866: // 0000:1001c866
-@@ -40538,7 +40536,7 @@ loc_1001c866: // 0000:1001c866
+@@ -40765,7 +40763,7 @@ loc_1001c866: // 0000:1001c866
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -180,7 +180,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/8) // SEH fixed (was stack_below, 20/8)
      esp += 24; return;
  loc_1001c88f: // 0000:1001c88f
-@@ -40558,7 +40556,7 @@ loc_1001c8a0: // 0000:1001c8a0
+@@ -40785,7 +40783,7 @@ loc_1001c8a0: // 0000:1001c8a0
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -189,7 +189,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001c8bf: // 0000:1001c8bf
-@@ -40572,7 +40570,7 @@ loc_1001c8bf: // 0000:1001c8bf
+@@ -40799,7 +40797,7 @@ loc_1001c8bf: // 0000:1001c8bf
      indirectCall(cs, edx, 0x0000, 0x1001c8d7); // 0000:1001c8d7
      eax = 0x00000001;
      esi = pop32();
@@ -198,7 +198,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c8e5: // 0000:1001c8e5
-@@ -40586,7 +40584,7 @@ loc_1001c8e5: // 0000:1001c8e5
+@@ -40813,7 +40811,7 @@ loc_1001c8e5: // 0000:1001c8e5
      indirectCall(cs, eax, 0x0000, 0x1001c8fe); // 0000:1001c8fe
      eax = 0x00000001;
      esi = pop32();
@@ -207,7 +207,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c90c: // 0000:1001c90c
-@@ -40601,7 +40599,7 @@ loc_1001c90c: // 0000:1001c90c
+@@ -40828,7 +40826,7 @@ loc_1001c90c: // 0000:1001c90c
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -216,7 +216,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c930: // 0000:1001c930
-@@ -40616,7 +40614,7 @@ loc_1001c930: // 0000:1001c930
+@@ -40843,7 +40841,7 @@ loc_1001c930: // 0000:1001c930
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -225,7 +225,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c954: // 0000:1001c954
-@@ -40653,7 +40651,7 @@ loc_1001c987: // 0000:1001c987
+@@ -40880,7 +40878,7 @@ loc_1001c987: // 0000:1001c987
      indirectCall(cs, edx, 0x0000, 0x1001c9a4); // 0000:1001c9a4
      eax = al;
      esi = pop32();
@@ -234,7 +234,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/8) // SEH fixed (was stack_below, 20/8)
      esp += 24; return;
  loc_1001c9b0: // 0000:1001c9b0
-@@ -40666,7 +40664,7 @@ loc_1001c9b0: // 0000:1001c9b0
+@@ -40893,7 +40891,7 @@ loc_1001c9b0: // 0000:1001c9b0
      indirectCall(cs, eax, 0x0000, 0x1001c9c2); // 0000:1001c9c2
      eax = al;
      esi = pop32();
@@ -243,7 +243,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c9ce: // 0000:1001c9ce
-@@ -40679,7 +40677,7 @@ loc_1001c9ce: // 0000:1001c9ce
+@@ -40906,7 +40904,7 @@ loc_1001c9ce: // 0000:1001c9ce
      indirectCall(cs, edx, 0x0000, 0x1001c9e0); // 0000:1001c9e0
      eax = al;
      esi = pop32();
@@ -252,7 +252,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001c9ec: // 0000:1001c9ec
-@@ -40694,7 +40692,7 @@ loc_1001c9ec: // 0000:1001c9ec
+@@ -40921,7 +40919,7 @@ loc_1001c9ec: // 0000:1001c9ec
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -261,7 +261,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001ca10: // 0000:1001ca10
-@@ -40707,7 +40705,7 @@ loc_1001ca10: // 0000:1001ca10
+@@ -40934,7 +40932,7 @@ loc_1001ca10: // 0000:1001ca10
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -270,7 +270,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ca2f: // 0000:1001ca2f
-@@ -40721,7 +40719,7 @@ loc_1001ca2f: // 0000:1001ca2f
+@@ -40948,7 +40946,7 @@ loc_1001ca2f: // 0000:1001ca2f
      indirectCall(cs, edx, 0x0000, 0x1001ca44); // 0000:1001ca44
      eax = 0x00000001;
      esi = pop32();
@@ -279,7 +279,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001ca52: // 0000:1001ca52
-@@ -40735,7 +40733,7 @@ loc_1001ca52: // 0000:1001ca52
+@@ -40962,7 +40960,7 @@ loc_1001ca52: // 0000:1001ca52
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -288,7 +288,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ca78: // 0000:1001ca78
-@@ -40748,7 +40746,7 @@ loc_1001ca78: // 0000:1001ca78
+@@ -40975,7 +40973,7 @@ loc_1001ca78: // 0000:1001ca78
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -297,7 +297,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ca97: // 0000:1001ca97
-@@ -40761,7 +40759,7 @@ loc_1001ca97: // 0000:1001ca97
+@@ -40988,7 +40986,7 @@ loc_1001ca97: // 0000:1001ca97
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -306,7 +306,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cab6: // 0000:1001cab6
-@@ -40774,7 +40772,7 @@ loc_1001cab6: // 0000:1001cab6
+@@ -41001,7 +40999,7 @@ loc_1001cab6: // 0000:1001cab6
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -315,7 +315,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cad5: // 0000:1001cad5
-@@ -40798,7 +40796,7 @@ loc_1001cae6: // 0000:1001cae6
+@@ -41025,7 +41023,7 @@ loc_1001cae6: // 0000:1001cae6
      push32(eax);
      indirectCall(cs, edx, 0x0000, 0x1001cb05); // 0000:1001cb05
      esi = pop32();
@@ -324,7 +324,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/4) // SEH fixed (was stack_below, 20/4)
      esp += 24; return;
  loc_1001cb0e: // 0000:1001cb0e
-@@ -40808,7 +40806,7 @@ loc_1001cb0e: // 0000:1001cb0e
+@@ -41035,7 +41033,7 @@ loc_1001cb0e: // 0000:1001cb0e
      push32(edx);
      indirectCall(cs, eax, 0x0000, 0x1001cb1b); // 0000:1001cb1b
      esi = pop32();
@@ -333,7 +333,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cb24: // 0000:1001cb24
-@@ -40828,7 +40826,7 @@ loc_1001cb35: // 0000:1001cb35
+@@ -41055,7 +41053,7 @@ loc_1001cb35: // 0000:1001cb35
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -342,7 +342,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cb54: // 0000:1001cb54
-@@ -40850,7 +40848,7 @@ loc_1001cb65: // 0000:1001cb65
+@@ -41077,7 +41075,7 @@ loc_1001cb65: // 0000:1001cb65
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -351,7 +351,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cb89: // 0000:1001cb89
-@@ -40882,7 +40880,7 @@ loc_1001cbb4: // 0000:1001cbb4
+@@ -41109,7 +41107,7 @@ loc_1001cbb4: // 0000:1001cbb4
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -360,7 +360,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cbd8: // 0000:1001cbd8
-@@ -40920,7 +40918,7 @@ loc_1001cbe9: // 0000:1001cbe9
+@@ -41147,7 +41145,7 @@ loc_1001cbe9: // 0000:1001cbe9
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -369,7 +369,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cc4b: // 0000:1001cc4b
-@@ -40951,7 +40949,7 @@ loc_1001cc4b: // 0000:1001cc4b
+@@ -41178,7 +41176,7 @@ loc_1001cc4b: // 0000:1001cc4b
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -378,7 +378,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ccad: // 0000:1001ccad
-@@ -40967,7 +40965,7 @@ loc_1001ccad: // 0000:1001ccad
+@@ -41194,7 +41192,7 @@ loc_1001ccad: // 0000:1001ccad
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -387,7 +387,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ccd5: // 0000:1001ccd5
-@@ -40979,7 +40977,7 @@ loc_1001ccd5: // 0000:1001ccd5
+@@ -41206,7 +41204,7 @@ loc_1001ccd5: // 0000:1001ccd5
      push32(eax);
      indirectCall(cs, edx, 0x0000, 0x1001cce7); // 0000:1001cce7
      esi = pop32();
@@ -396,7 +396,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001ccf0: // 0000:1001ccf0
-@@ -40991,7 +40989,7 @@ loc_1001ccf0: // 0000:1001ccf0
+@@ -41218,7 +41216,7 @@ loc_1001ccf0: // 0000:1001ccf0
      push32(edx);
      indirectCall(cs, eax, 0x0000, 0x1001cd02); // 0000:1001cd02
      esi = pop32();
@@ -405,7 +405,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cd0b: // 0000:1001cd0b
-@@ -41003,7 +41001,7 @@ loc_1001cd0b: // 0000:1001cd0b
+@@ -41230,7 +41228,7 @@ loc_1001cd0b: // 0000:1001cd0b
      push32(eax);
      indirectCall(cs, edx, 0x0000, 0x1001cd1d); // 0000:1001cd1d
      esi = pop32();
@@ -414,7 +414,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cd26: // 0000:1001cd26
-@@ -41016,7 +41014,7 @@ loc_1001cd26: // 0000:1001cd26
+@@ -41243,7 +41241,7 @@ loc_1001cd26: // 0000:1001cd26
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -423,7 +423,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cd45: // 0000:1001cd45
-@@ -41031,7 +41029,7 @@ loc_1001cd45: // 0000:1001cd45
+@@ -41258,7 +41256,7 @@ loc_1001cd45: // 0000:1001cd45
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -432,7 +432,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cd69: // 0000:1001cd69
-@@ -41066,7 +41064,7 @@ loc_1001cd9d: // 0000:1001cd9d
+@@ -41293,7 +41291,7 @@ loc_1001cd9d: // 0000:1001cd9d
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -441,7 +441,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001cdc1: // 0000:1001cdc1
-@@ -41076,7 +41074,7 @@ loc_1001cdc1: // 0000:1001cdc1
+@@ -41303,7 +41301,7 @@ loc_1001cdc1: // 0000:1001cdc1
      push32(eax);
      indirectCall(cs, edx, 0x0000, 0x1001cdce); // 0000:1001cdce
      esi = pop32();
@@ -450,7 +450,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cdd7: // 0000:1001cdd7
-@@ -41086,7 +41084,7 @@ loc_1001cdd7: // 0000:1001cdd7
+@@ -41313,7 +41311,7 @@ loc_1001cdd7: // 0000:1001cdd7
      push32(edx);
      indirectCall(cs, eax, 0x0000, 0x1001cde4); // 0000:1001cde4
      esi = pop32();
@@ -459,7 +459,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001cded: // 0000:1001cded
-@@ -41116,7 +41114,7 @@ loc_1001ce0f: // 0000:1001ce0f
+@@ -41343,7 +41341,7 @@ loc_1001ce0f: // 0000:1001ce0f
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -468,7 +468,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/12) // SEH fixed (was stack_below, 20/12)
      esp += 24; return;
  loc_1001ce36: // 0000:1001ce36
-@@ -41126,7 +41124,7 @@ loc_1001ce36: // 0000:1001ce36
+@@ -41353,7 +41351,7 @@ loc_1001ce36: // 0000:1001ce36
      push32(eax);
      indirectCall(cs, edx, 0x0000, 0x1001ce43); // 0000:1001ce43
      esi = pop32();
@@ -477,7 +477,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ce4c: // 0000:1001ce4c
-@@ -41136,7 +41134,7 @@ loc_1001ce4c: // 0000:1001ce4c
+@@ -41363,7 +41361,7 @@ loc_1001ce4c: // 0000:1001ce4c
      push32(edx);
      indirectCall(cs, eax, 0x0000, 0x1001ce59); // 0000:1001ce59
      esi = pop32();
@@ -486,7 +486,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ce62: // 0000:1001ce62
-@@ -41149,7 +41147,7 @@ loc_1001ce62: // 0000:1001ce62
+@@ -41376,7 +41374,7 @@ loc_1001ce62: // 0000:1001ce62
      cl = al != 0;
      esi = pop32();
      eax = ecx;
@@ -495,7 +495,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 20/16) // SEH fixed (was stack_below, 20/16)
      esp += 24; return;
  loc_1001ce81: // 0000:1001ce81
-@@ -44594,7 +44592,7 @@ loc_1001f190: // 0000:1001f190
+@@ -44821,7 +44819,7 @@ loc_1001f190: // 0000:1001f190
      push32(ecx);
      indirectCall(cs, memoryAGet32(ds, 0x100e61dc), 0x0000, 0x1001f194); // 0000:1001f194
      // SEH removed (was stack_unbalanced, 0/-4) // SEH removed (was stack_unbalanced, 0/-4)
@@ -504,7 +504,7 @@ index 742d6c3..57a2bc7 100644
      // gap 5 bytes // gap 5 bytes
  loc_1001f1a0: // 0000:1001f1a0
      ecx += 0x00000004;
-@@ -51003,7 +51001,7 @@ loc_10022fbb: // 0000:10022fbb
+@@ -51230,7 +51228,7 @@ loc_10022fbb: // 0000:10022fbb
      edi = pop32();
      esi = pop32();
      // SEH removed // SEH removed
@@ -513,7 +513,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-16) // SEH fixed (was stack_unbalanced, 0/-16)
      esp += 4;
  }
-@@ -51053,7 +51051,7 @@ void sub_10023050() // 0000:10023050 +long +stackDrop4
+@@ -51280,7 +51278,7 @@ void sub_10023050() // 0000:10023050 +long +stackDrop4
          goto loc_10023080;
      push32(edi);
      sub_100cb09d();
@@ -522,7 +522,7 @@ index 742d6c3..57a2bc7 100644
  loc_10023080: // 0000:10023080
      eax = edi;
      edi = pop32();
-@@ -54865,7 +54863,7 @@ void sub_10031b90() // 0000:10031b90 +long
+@@ -55092,7 +55090,7 @@ void sub_10031b90() // 0000:10031b90 +long
      memoryASet32(ds, esi, 0x1026e14c);
      sub_100c97f0();
      edi = eax;
@@ -531,7 +531,7 @@ index 742d6c3..57a2bc7 100644
      if (!edi)
          goto loc_10031bc2;
      eax = edi + 4;
-@@ -55076,7 +55074,7 @@ void sub_10031d70() // 0000:10031d70 +long
+@@ -55303,7 +55301,7 @@ void sub_10031d70() // 0000:10031d70 +long
      memoryASet32(ds, esi, 0x1026e150);
      sub_100c97f0();
      edi = eax;
@@ -540,7 +540,7 @@ index 742d6c3..57a2bc7 100644
      if (!edi)
          goto loc_10031da2;
      eax = edi + 4;
-@@ -55241,7 +55239,7 @@ void sub_10031f00() // 0000:10031f00 +long +stackDrop4
+@@ -55468,7 +55466,7 @@ void sub_10031f00() // 0000:10031f00 +long +stackDrop4
      push32(esi);
      push32(edi);
      memoryASet32(ds, esp + 0xc, 0x00000000);
@@ -549,7 +549,7 @@ index 742d6c3..57a2bc7 100644
      memoryASet32(ds, esp + 0xc, eax);
      edi = memoryAGet32(ds, esp + 0x14);
      ebx = memoryAGet32(ds, esp + 0xc);
-@@ -55338,7 +55336,7 @@ loc_10032003: // 0000:10032003
+@@ -55565,7 +55563,7 @@ loc_10032003: // 0000:10032003
      esi = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -558,7 +558,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 4/-16) // SEH fixed (was stack_unbalanced, 4/-16)
      esp += 8;
  }
-@@ -56481,7 +56479,7 @@ void sub_10032ea0() // 0000:10032ea0 +long
+@@ -56708,7 +56706,7 @@ void sub_10032ea0() // 0000:10032ea0 +long
      ebx = pop32();
      ecx = memoryAGet32(ds, esp + 0xc);
      // SEH removed // SEH removed
@@ -567,7 +567,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
      esp += 4; return;
  loc_10032f20: // 0000:10032f20
-@@ -59631,7 +59629,7 @@ loc_1004068e: // 0000:1004068e
+@@ -59858,7 +59856,7 @@ loc_1004068e: // 0000:1004068e
      push32(eax);
      ecx = esp + 264;
      push32(ecx);
@@ -576,7 +576,7 @@ index 742d6c3..57a2bc7 100644
      // gap 189 bytes // gap 189 bytes
  loc_1004084c: // 0000:1004084c
      ecx = memoryAGet32(ds, esp + 0x2f4);
-@@ -63110,7 +63108,7 @@ loc_1004a102: // 0000:1004a102
+@@ -63336,7 +63334,7 @@ loc_1004a102: // 0000:1004a102
      ebp = pop32();
      al = 0x01;
      ebx = pop32();
@@ -585,7 +585,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-28) // SEH fixed (was stack_unbalanced, 0/-28)
      esp += 4; return;
  loc_1004a115: // 0000:1004a115
-@@ -63122,7 +63120,7 @@ loc_1004a129: // 0000:1004a129
+@@ -63348,7 +63346,7 @@ loc_1004a129: // 0000:1004a129
      edi = pop32();
      ebp = pop32();
      ebx = pop32();
@@ -594,7 +594,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-28) // SEH fixed (was stack_unbalanced, 0/-28)
      esp += 4;
  }
-@@ -64302,7 +64300,7 @@ loc_1004b1bf: // 0000:1004b1bf
+@@ -64528,7 +64526,7 @@ loc_1004b1bf: // 0000:1004b1bf
  loc_1004b1e2: // 0000:1004b1e2
      push32(eax);
      sub_100ca290();
@@ -603,7 +603,7 @@ index 742d6c3..57a2bc7 100644
  loc_1004b1eb: // 0000:1004b1eb
      edi = pop32();
      esi = pop32();
-@@ -64546,7 +64544,7 @@ void sub_1004b690() // 0000:1004b690 +long
+@@ -64772,7 +64770,7 @@ void sub_1004b690() // 0000:1004b690 +long
      push32(0x0000002f);
      push32(esi);
      sub_100c9860();
@@ -612,7 +612,7 @@ index 742d6c3..57a2bc7 100644
      esi = pop32();
      if (!eax)
          goto loc_1004b6c0;
-@@ -79120,7 +79118,7 @@ loc_10056a0a: // 0000:10056a0a
+@@ -79345,7 +79343,7 @@ loc_10056a0a: // 0000:10056a0a
      ebp = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -621,7 +621,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 8/4) // SEH fixed (was stack_below, 8/4)
      esp += 12;
  }
-@@ -79242,7 +79240,7 @@ void sub_10056b90() // 0000:10056b90 +long +stackDrop12
+@@ -79467,7 +79465,7 @@ void sub_10056b90() // 0000:10056b90 +long +stackDrop12
      edi = pop32();
      esi = pop32();
      ebp = pop32();
@@ -630,7 +630,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 12/8) // SEH fixed (was stack_below, 12/8)
      esp += 16; return;
  loc_10056be3: // 0000:10056be3
-@@ -79404,7 +79402,7 @@ loc_10056d4d: // 0000:10056d4d
+@@ -79629,7 +79627,7 @@ loc_10056d4d: // 0000:10056d4d
      edi = pop32();
      esi = pop32();
      ebp = pop32();
@@ -639,7 +639,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 12/-8) // SEH fixed (was stack_unbalanced, 12/-8)
      esp += 16;
  }
-@@ -86283,7 +86281,7 @@ void sub_1005c0e0() // 0000:1005c0e0 +long
+@@ -86508,7 +86506,7 @@ void sub_1005c0e0() // 0000:1005c0e0 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -648,7 +648,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-32) // SEH fixed (was stack_unbalanced, 0/-32)
      esp += 4;
  }
-@@ -86932,7 +86930,7 @@ loc_1005ccfa: // 0000:1005ccfa
+@@ -87157,7 +87155,7 @@ loc_1005ccfa: // 0000:1005ccfa
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -657,7 +657,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-8) // SEH fixed (was stack_unbalanced, 0/-8)
      esp += 4;
  }
-@@ -87411,9 +87409,10 @@ void sub_1005d150() // 0000:1005d150 +long
+@@ -87636,9 +87634,10 @@ void sub_1005d150() // 0000:1005d150 +long
      memoryASet32(ds, esi + 0xdc, fstp32());
      memoryASet32(ds, esi + 0xd4, fstp32());
      memoryASet32(ds, esi + 0xd8, fstp32());
@@ -669,7 +669,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-20) // SEH fixed (was stack_unbalanced, 0/-20)
      esp += 4;
  }
-@@ -89516,7 +89515,7 @@ void sub_1005f0b0() // 0000:1005f0b0 +long
+@@ -89741,7 +89740,7 @@ void sub_1005f0b0() // 0000:1005f0b0 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -678,7 +678,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-28) // SEH fixed (was stack_unbalanced, 0/-28)
      esp += 4;
  }
-@@ -91934,7 +91933,7 @@ void sub_100608b0() // 0000:100608b0 +long
+@@ -92159,7 +92158,7 @@ void sub_100608b0() // 0000:100608b0 +long
      esi = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -687,7 +687,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-16) // SEH fixed (was stack_unbalanced, 0/-16)
      esp += 4;
  }
-@@ -93623,7 +93622,7 @@ void sub_10061b60() // 0000:10061b60 +long
+@@ -93848,7 +93847,7 @@ void sub_10061b60() // 0000:10061b60 +long
      esi = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -696,7 +696,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-16) // SEH fixed (was stack_unbalanced, 0/-16)
      esp += 4;
  }
-@@ -94315,7 +94314,7 @@ void sub_100623e0() // 0000:100623e0 +long
+@@ -94539,7 +94538,7 @@ void sub_100623e0() // 0000:100623e0 +long
      indirectCall(cs, edx, 0x0000, 0x10062415); // 0000:10062415
      ecx = memoryAGet32(ds, esi + 0x100);
      esi = pop32();
@@ -704,8 +704,8 @@ index 742d6c3..57a2bc7 100644
 +    assert(!"gabo check!"); sub_100dfeb0(); return; // was goto loc_100dfeb0 (cross-function)
  loc_10062423: // 0000:10062423
      esi = pop32();
-     esp += 4;
-@@ -96636,7 +96635,7 @@ loc_10063fde: // 0000:10063fde
+     esp += 4; return;
+@@ -96879,7 +96878,7 @@ loc_10063fde: // 0000:10063fde
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -714,7 +714,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-40) // SEH fixed (was stack_unbalanced, 0/-40)
      esp += 4;
  }
-@@ -96777,7 +96776,7 @@ loc_100643d6: // 0000:100643d6
+@@ -97020,7 +97019,7 @@ loc_100643d6: // 0000:100643d6
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -723,7 +723,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
      esp += 4;
  }
-@@ -97600,7 +97599,7 @@ loc_10064cb0: // 0000:10064cb0
+@@ -97843,7 +97842,7 @@ loc_10064cb0: // 0000:10064cb0
      memoryASet32(ds, esi + 0xb8, fstp32());
      esi = pop32();
      // SEH removed // SEH removed
@@ -732,7 +732,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 8/4) // SEH fixed (was stack_below, 8/4)
      esp += 12;
  }
-@@ -97676,7 +97675,7 @@ void sub_10064dc0() // 0000:10064dc0 +long
+@@ -97919,7 +97918,7 @@ void sub_10064dc0() // 0000:10064dc0 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -741,7 +741,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-12) // SEH fixed (was stack_unbalanced, 0/-12)
      esp += 4;
  }
-@@ -98771,7 +98770,7 @@ void sub_10065e70() // 0000:10065e70 +long
+@@ -99014,7 +99013,7 @@ void sub_10065e70() // 0000:10065e70 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -750,7 +750,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-20) // SEH fixed (was stack_unbalanced, 0/-20)
      esp += 4;
  }
-@@ -98866,7 +98865,7 @@ void sub_10066c80() // 0000:10066c80 +long
+@@ -99109,7 +99108,7 @@ void sub_10066c80() // 0000:10066c80 +long
      eax = esi;
      esi = pop32();
      // SEH removed // SEH removed
@@ -759,7 +759,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-12) // SEH fixed (was stack_unbalanced, 0/-12)
      esp += 4;
  }
-@@ -103548,7 +103547,7 @@ loc_10068aa3: // 0000:10068aa3
+@@ -103791,7 +103790,7 @@ loc_10068aa3: // 0000:10068aa3
          default:
              stop("unhandled indirect 0000:10068aaf");
      }
@@ -768,7 +768,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 4/-20) // SEH fixed (was stack_unbalanced, 4/-20)
      esp += 8;
  }
-@@ -103615,7 +103614,7 @@ loc_10068b34: // 0000:10068b34
+@@ -103858,7 +103857,7 @@ loc_10068b34: // 0000:10068b34
          default:
              stop("unhandled indirect 0000:10068b40");
      }
@@ -777,7 +777,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 4/-20) // SEH fixed (was stack_unbalanced, 4/-20)
      esp += 8;
  }
-@@ -104647,7 +104646,7 @@ loc_10069bb4: // 0000:10069bb4
+@@ -104890,7 +104889,7 @@ loc_10069bb4: // 0000:10069bb4
      ecx = memoryAGet32(ds, esp + 0x4);
      // SEH removed // SEH removed
      esi = pop32();
@@ -786,7 +786,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 0/-12) // SEH fixed (was stack_unbalanced, 0/-12)
      esp += 4; return;
  loc_10069bfa: // 0000:10069bfa
-@@ -116424,7 +116423,7 @@ void sub_10070390() // 0000:10070390 +long +stackDrop4
+@@ -116667,7 +116666,7 @@ void sub_10070390() // 0000:10070390 +long +stackDrop4
      esi = pop32();
      ebx = pop32();
      // SEH removed (was stack_unbalanced, 4/-8) // SEH removed (was stack_unbalanced, 4/-8)
@@ -795,7 +795,7 @@ index 742d6c3..57a2bc7 100644
  loc_100703c8: // 0000:100703c8
      eax = memoryAGet32(ds, esi);
      if (ebx != memoryAGet32(ds, eax + 0xc))
-@@ -116529,7 +116528,7 @@ void sub_10070470() // 0000:10070470 +long
+@@ -116772,7 +116771,7 @@ void sub_10070470() // 0000:10070470 +long
      al = bl;
      ebx = pop32();
      // SEH removed (was stack_unbalanced, 0/-12) // SEH removed (was stack_unbalanced, 0/-12)
@@ -804,7 +804,7 @@ index 742d6c3..57a2bc7 100644
  loc_1007049e: // 0000:1007049e
      esi = memoryAGet32(ds, esi);
      indirectCall(cs, memoryAGet32(ds, 0x100e60c4), 0x0000, 0x100704a0); // 0000:100704a0
-@@ -116540,7 +116539,7 @@ loc_1007049e: // 0000:1007049e
+@@ -116783,7 +116782,7 @@ loc_1007049e: // 0000:1007049e
      al = bl;
      ebx = pop32();
      // SEH fixed (was stack_unbalanced, 0/-12) // SEH fixed (was stack_unbalanced, 0/-12)
@@ -813,7 +813,7 @@ index 742d6c3..57a2bc7 100644
  loc_100704b3: // 0000:100704b3
      esi = pop32();
      al = 0;
-@@ -116711,7 +116710,7 @@ loc_10070648: // 0000:10070648
+@@ -116954,7 +116953,7 @@ loc_10070648: // 0000:10070648
      esi = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -822,7 +822,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_unbalanced, 12/-4) // SEH fixed (was stack_unbalanced, 12/-4)
      esp += 16;
  }
-@@ -118412,7 +118411,7 @@ void sub_10073330() // 0000:10073330 +long +stackDrop24
+@@ -118655,7 +118654,7 @@ void sub_10073330() // 0000:10073330 +long +stackDrop24
      esi = pop32();
      ebx = pop32();
      // SEH removed // SEH removed
@@ -831,7 +831,7 @@ index 742d6c3..57a2bc7 100644
      // SEH fixed (was stack_below, 24/20) // SEH fixed (was stack_below, 24/20)
      esp += 28;
  }
-@@ -143883,8 +143882,3 @@ void sub_100e5000() // 0000:100e5000 +long
+@@ -163807,8 +163806,3 @@ void sub_100e5000() // 0000:100e5000 +long
      ecx = pop32();
      esp += 4;
  }
