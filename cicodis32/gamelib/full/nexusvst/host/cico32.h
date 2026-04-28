@@ -15,7 +15,7 @@
 
 // --- Memory access ---
 static const int MEM_BASE = 0x10000000;
-static const int MEM_SIZE_CONST = 128 * 1024 * 1024;
+static const int MEM_SIZE_CONST = 260 * 1024 * 1024;
 
 std::vector<uint8_t> memory(MEM_SIZE_CONST, 0); // TODO: sync with cico32.h
 
