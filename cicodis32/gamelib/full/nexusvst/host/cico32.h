@@ -14,10 +14,11 @@
 #include <string>
 
 // --- Memory access ---
+#ifndef RASPI
 static const int MEM_BASE = 0x10000000;
-static const int MEM_SIZE_CONST = 260 * 1024 * 1024;
-
+static const int MEM_SIZE_CONST = 256 * 1024 * 1024;
 std::vector<uint8_t> memory(MEM_SIZE_CONST, 0); // TODO: sync with cico32.h
+#endif
 
 int allocatorPtr = 0x12000000;
 
@@ -39,6 +40,17 @@ void loadOverlay(const char*, int);
 // Alarm handler crashes immediately — no longjmp/setjmp
 
 // --- Memory write (single entry point, all writes go through here) ---
+
+#ifdef RASPI
+#define memoryASet(s, o, v) *((uint8_t*)(o)) = v
+#define memoryASet16(s, o, v) *((uint16_t*)(o)) = v
+#define memoryASet32(s, o, v) *((uint32_t*)(o)) = v
+#define memoryASet64(s, o, v) *((uint64_t*)(o)) = v
+#define memoryAGet(s, o) *((uint8_t*)(o))
+#define memoryAGet16(s, o) *((uint16_t*)(o))
+#define memoryAGet32(s, o) *((uint32_t*)(o))
+#define memoryAGet64(s, o) *((uint64_t*)(o))
+#else
 
 void memoryASet(int s, int o, uint8_t v) {
     int idx = o - MEM_BASE;
@@ -83,8 +95,9 @@ uint64_t memoryAGet64(int s, int o) {
     assert (idx >= 0 && idx < MEM_SIZE_CONST);
     return *((uint64_t*)&memory[idx]);
 }
-int allocate(int size);
+#endif
 
+int allocate(int size);
 
 // Unused segment memory stubs
 inline void memoryVideoSet(int s, int o, int v) {}
@@ -442,6 +455,10 @@ inline bool overflow32(uint32_t a, uint32_t b, bool carry) {
     return (uint64_t)a + (uint64_t)b + (carry ? 1 : 0) > 0xFFFFFFFF;
 }
 
+#ifdef RASPI
+#define stop(x) false
+#else
+
 // --- Misc ---
 inline bool stop(const char* msg = nullptr, const char* info = nullptr)
 {
@@ -469,6 +486,7 @@ inline bool stop(const char* msg = nullptr, const char* info = nullptr)
     assert(0);
     return false;
 }
+#endif
 
 static int _callCount = 0;
 inline void _heartbeat(const char* where) {
@@ -532,6 +550,10 @@ inline uint32_t _alloc(int size) {
     return allocate(size);
 }
 
+void cpuid()
+{
+  eax = 0; ebx = 0; ecx = 0; edx = 0;
+}
 // ============================================================
 // FPU EMULATION — Complete x87 stack (8 registers, circular)
 // ============================================================

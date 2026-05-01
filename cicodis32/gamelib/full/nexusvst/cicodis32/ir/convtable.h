@@ -548,6 +548,7 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             stmts[i].next = std::make_shared<StatementIr>(stmts[i+1]);
         return stmts[0];
     },
+    [X86_INS_CPUID]  = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("cpuid"); },
     
     //    [X86_INS_POPAL] = {.convert = [](convert_args){ return "edi = pop32(); esi = pop32(); ebp = pop32(); esp += 4;\n    ebx = pop32(); edx = pop32(); ecx = pop32(); eax = pop32();"; } },
     //    [X86_INS_PUSHAL] = {.convert = [](convert_args){ return "etx = esp; push32(eax); push32(ecx); push32(edx); push32(ebx);\n    push32(etx); push32(ebp); push32(esi); push32(edi);"; } },
@@ -827,5 +828,6 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
     [X86_INS_FLDL2T] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldl2t"); },
     [X86_INS_FLDL2E] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldl2e"); },
     [X86_INS_FLDLG2] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fldlg2"); },
+    [X86_INS_FXAM] = [](convert_args){ assert(instr->mDetail.op_count == 0); return OP_FUNCTION("fxam"); },
 
 };

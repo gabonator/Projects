@@ -290,20 +290,8 @@ void sub_100c924a() // 0000:100c924a +long
   eax=np; esp += 4; } // realloc stub
 void sub_100c9470() // 0000:100c9470 +long
 { esp -= 4; eax = 0; esp += 4; } //  stub
-void sub_100c97d5() // 0000:100c97d5 +long
-{
-    esp -= 4;
-    edi = edi;
-    push32(esi);
-    push32(0x00000001);
-    push32(0x1057dc70);
-    esi = ecx;
-    sub_100cafdf();
-    memoryASet32(ds, esi, 0x103cf748);
-    eax = esi;
-    esi = pop32();
-    esp += 4;
-}
+
+
 void sub_100c97f0() // 0000:100c97f0 +long
 { esp -= 4; uint32_t sz = memoryAGet32(ss, esp+4); if(!sz) sz=1; eax = allocate(sz); esp += 4; }
 void sub_100c9890() // 0000:100c9890 +long
@@ -313,10 +301,12 @@ void sub_100c9890() // 0000:100c9890 +long
     uint32_t src = memoryAGet32(ss, esp+8);
     uint32_t sz = memoryAGet32(ss, esp+12);
     // memcpy via memoryASet/memoryAGet (no native bypass)
-    if (sz > 0 && sz < 0x1000000)
-        for (uint32_t i = 0; i < sz; i++) memoryASet(ds, dst+i, memoryAGet(ds, src+i));
-    else
-        printf("Warning: memcpy size %d\n", sz);
+#ifdef RASPI
+    memcpy((void*)dst, (void*)src, sz);
+#else
+    for (uint32_t i = 0; i < sz; i++) 
+        memoryASet(ds, dst+i, memoryAGet(ds, src+i));
+#endif
     eax = dst;
     esp += 4;
 }
@@ -327,63 +317,7 @@ void sub_100ca3c0() // 0000:100ca3c0 +long — _ftol2_sse: convert ST(0) to int3
 { esp -= 4; eax = (int32_t)st(0); fppop(); esp += 4; }
 void sub_100ca59c() // 0000:100ca59c +long +stackDrop16
 { esp -= 4; eax = 0; esp += 20; } // stub +stackDrop16
-void sub_100ca5ff() // 0000:100ca5ff +long
-{
-    esp -= 4;
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, 0x100e60f0), __LINE__, 0); // 0000:100ca607
-    if (eax)
-        goto loc_100ca619;
-    indirectCall(cs, memoryAGet32(ds, 0x100e60e4), __LINE__, 0); // 0000:100ca611
-    goto loc_100ca61b;
-loc_100ca619: // 0000:100ca619
-    eax = 0;
-loc_100ca61b: // 0000:100ca61b
-    if (!eax)
-        goto loc_100ca62b;
-    push32(eax);
-    sub_100cc017();
-    ecx = pop32();
-    eax |= 0xffffffff;
-    esp = ebp; ebp = pop32();
-    esp += 4; return; // reverted: "SEH fix" +8 was WRONG (+4 leak)
-loc_100ca62b: // 0000:100ca62b
-    eax = 0;
-    esp = ebp; ebp = pop32();
-    esp += 4;
-}
-void sub_100ca62f() // 0000:100ca62f +long
-{
-    esp -= 4;
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    push32(0x00000000);
-    push32(memoryAGet32(ss, ebp + 0x8));
-    indirectCall(cs, memoryAGet32(ds, 0x100e60f4), __LINE__, 0); // 0000:100ca639
-    if (eax)
-        goto loc_100ca64b;
-    indirectCall(cs, memoryAGet32(ds, 0x100e60e4), __LINE__, 0); // 0000:100ca643
-    goto loc_100ca64d;
-loc_100ca64b: // 0000:100ca64b
-    eax = 0;
-loc_100ca64d: // 0000:100ca64d
-    if (!eax)
-        goto loc_100ca65d;
-    push32(eax);
-    sub_100cc017();
-    ecx = pop32();
-    eax |= 0xffffffff;
-    esp = ebp; ebp = pop32();
-    esp += 4; return; // reverted: "SEH fix" +12 was WRONG (+8 leak)
-loc_100ca65d: // 0000:100ca65d
-    eax = 0;
-    esp = ebp; ebp = pop32();
-    esp += 4;
-}
+
 void sub_100ca661() // 0000:100ca661 +long +stackDrop20 — NATIVE: _eh_vec_ctor_vb
 {
     // Args: [esp+4]=array, [esp+8]=elemSize, [esp+12]=count, [esp+16]=ctor, [esp+20]=dtor
@@ -395,9 +329,9 @@ void sub_100ca661() // 0000:100ca661 +long +stackDrop20 — NATIVE: _eh_vec_ctor
     uint32_t dtor  = memoryAGet32(ss, esp + 20);
     if (cnt > 10000) cnt = 0; // safety
     // Save callee-save registers — element constructors modify them
-    volatile uint32_t save_ebx=ebx, save_esi=esi, save_edi=edi, save_ebp=ebp, save_esp=esp;
+    //volatile uint32_t save_ebx=ebx, save_esi=esi, save_edi=edi, save_ebp=ebp, save_esp=esp;
     for (uint32_t i = 0; i < cnt; i++) {
-        esp = save_esp; // reset before each ctor (ctors have ESP drift)
+//        esp = save_esp; // reset before each ctor (ctors have ESP drift)
         ecx = arr + i * esz;
         switch (ctor) {
             case 0x10031b90: sub_10031b90(); break;
@@ -421,9 +355,10 @@ fflush(stderr);
 assert(0);
         }
     }
-    ebx=save_ebx; esi=save_esi; edi=save_edi; ebp=save_ebp; esp=save_esp;
+    //ebx=save_ebx; esi=save_esi; edi=save_edi; ebp=save_ebp; esp=save_esp;
     esp += 24;
 }
+
 void sub_100ca6c6() // 0000:100ca6c6 +long — sprintf(dst, fmt, ...)
 {
     esp -= 4;
@@ -545,119 +480,7 @@ void sub_100cb09d() // 0000:100cb09d +long — operator delete (calls free, inte
 { esp -= 4; esp += 4; }
 void sub_100cb27c() // 0000:100cb27c +long — CRT invalid parameter handler
 {
-    static int _crtCnt = 0;
-    if (++_crtCnt <= 5) printf("CRT invalid parameter (continuing, #%d)\n", _crtCnt);
-    // On Windows this doesn't abort — just returns. Our stricmp gets NULL args from
-    // content entries with empty name strings. Let it continue.
-loc_1001f190: // 0000:1001f190
-    ecx += 0x00000004;
-    push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61dc), __LINE__, 0); // 0000:1001f194
-    // SEH removed (was stack_unbalanced, 0/-4) // SEH removed (was stack_unbalanced, 0/-4)
-    esp += 4; return; // undo synthetic only (stdcall already cleaned the push)
-    // gap 5 bytes // gap 5 bytes
-loc_1001f1a0: // 0000:1001f1a0
-    ecx += 0x00000004;
-    push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61d8), __LINE__, 0); // 0000:1001f1a4
-    // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
-    esp += 4; return;
-    // gap 704425 bytes // gap 704425 bytes
-loc_100cb154: // 0000:100cb154
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    esp -= 0x00000328;
-    eax = memoryAGet32(ds, 0x1057deec);
-    eax ^= ebp;
-    memoryASet32(ss, ebp - 4, eax);
-    memoryASet32(ss, ebp - 808, memoryAGet32(ss, ebp - 808) & 0x00000000);
-    push32(ebx);
-    push32(0x0000004c);
-    eax = ebp - 804;
-    push32(0x00000000);
-    push32(eax);
-    sub_100c8680();
-    eax = ebp - 808;
-    memoryASet32(ss, ebp - 728, eax);
-    eax = ebp - 720;
-    esp += 0x0000000c;
-    memoryASet32(ss, ebp - 724, eax);
-    memoryASet32(ss, ebp - 544, eax);
-    memoryASet32(ss, ebp - 548, ecx);
-    memoryASet32(ss, ebp - 552, edx);
-    memoryASet32(ss, ebp - 556, ebx);
-    memoryASet32(ss, ebp - 560, esi);
-    memoryASet32(ss, ebp - 564, edi);
-    memoryASet16(ss, ebp - 520, ss);
-    memoryASet16(ss, ebp - 532, cs);
-    memoryASet16(ss, ebp - 568, ds);
-    memoryASet16(ss, ebp - 572, es);
-    memoryASet16(ss, ebp - 576, fs);
-    memoryASet16(ss, ebp - 580, gs);
-    push32(flagAsReg32());
-    memoryASet32(ss, ebp - 528, pop32());
-    eax = memoryAGet32(ss, ebp + 0x4);
-    ecx = ebp + 4;
-    memoryASet32(ss, ebp - 720, 0x00010001);
-    memoryASet32(ss, ebp - 536, eax);
-    memoryASet32(ss, ebp - 524, ecx);
-    ecx = memoryAGet32(ds, ecx - 4);
-    memoryASet32(ss, ebp - 540, ecx);
-    memoryASet32(ss, ebp - 808, 0xc0000417);
-    memoryASet32(ss, ebp - 804, 0x00000001);
-    memoryASet32(ss, ebp - 796, eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e610c), __LINE__, 0); // 0000:100cb230
-    push32(0x00000000);
-    ebx = eax;
-    indirectCall(cs, memoryAGet32(ds, 0x100e61e4), __LINE__, 0); // 0000:100cb23a
-    eax = ebp - 728;
-    push32(eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e6104), __LINE__, 0); // 0000:100cb247
-    if (eax)
-        goto loc_100cb25d;
-    if (ebx)
-        goto loc_100cb25d;
-    push32(0x00000002);
-    sub_100d5668();
-    ecx = pop32();
-loc_100cb25d: // 0000:100cb25d
-    push32(0xc0000417);
-    indirectCall(cs, memoryAGet32(ds, 0x100e6100), __LINE__, 0); // 0000:100cb262
-    push32(eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60fc), __LINE__, 0); // 0000:100cb269
-    ecx = memoryAGet32(ss, ebp - 4);
-    ecx ^= ebp;
-    ebx = pop32();
-    sub_100cc203();
-    esp = ebp; ebp = pop32();
-    // SEH removed (was stack_unbalanced, 0/-828) // SEH removed (was stack_unbalanced, 0/-828)
-    esp += 4; return;
-loc_100cb27c: // 0000:100cb27c
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    push32(memoryAGet32(ds, 0x10582140));
-    sub_100d1046();
-    ecx = pop32();
-    if (!eax)
-        goto loc_100cb294;
-    esp = ebp; ebp = pop32();
-    switch (eax)
-    {
-        case 0x1001f190: goto loc_1001f190;
-        case 0x1001f1a0: goto loc_1001f1a0;
-        case 0x00000000: break; // null vtable — no-op
-        default: break; // any other vtable — CriticalSection is no-op in single-threaded emulator
-        //default_disabled:
-            stop("ind 0000:100cb292");
-    }
-loc_100cb294: // 0000:100cb294
-    push32(0x00000002);
-    sub_100d5668();
-    ecx = pop32();
-    ebp = pop32();
-    goto loc_100cb154;
+    printf("FATAL: unimplemented CRT function sub_100cb27c called\n"); abort();
 }
 void sub_100cc52a() // 0000:100cc52a +long
 { esp -= 4; eax = 0; esp += 4; } // _updatetlocinfoEx stub
@@ -673,83 +496,8 @@ void sub_100ce5e8() // 0000:100ce5e8 +long — __CIsinh: sinh(ST(0))
     setst(0, sinh(st(0)));
     esp += 4;
 }
-void sub_100ce9b0() // 0000:100ce9b0 +long
-{
-    esp -= 4;
-    if (cl >= 0x40)
-        goto loc_100ce9cb;
-    if (cl >= 0x20)
-        goto loc_100ce9c0;
-    { uint64_t v = ((uint64_t)edx << 32) | eax; eax = (uint32_t)(v >> (cl & 31)); }
-    edx = sar32(edx, cl);
-    esp += 4; return;
-loc_100ce9c0: // 0000:100ce9c0
-    eax = edx;
-    edx = sar32(edx, 0x1f);
-    cl &= 0x1f;
-    eax = sar32(eax, cl);
-    esp += 4; return;
-loc_100ce9cb: // 0000:100ce9cb
-    edx = sar32(edx, 0x1f);
-    eax = edx;
-    esp += 4;
-}
 void sub_100cebdb() { printf("FATAL: unimplemented CRT function sub_100cebdb called\n"); abort(); }
 void sub_100cec49() { printf("FATAL: unimplemented CRT function sub_100cec49 called\n"); abort(); }
-void sub_100cfe3c() // 0000:100cfe3c +long
-{
-    esp -= 4;
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    esp -= 0x00000018;
-    eax = 0;
-    push32(ebx);
-    memoryASet32(ss, ebp - 4, eax);
-    memoryASet32(ss, ebp - 12, eax);
-    memoryASet32(ss, ebp - 8, eax);
-    push32(ebx);
-    push32(flagAsReg32());
-    eax = pop32();
-    ecx = eax;
-    eax ^= 0x00200000;
-    push32(eax);
-    flagsFromReg32(pop32());
-    push32(flagAsReg32());
-    edx = pop32();
-    edx -= ecx;
-    if (!edx)
-        goto loc_100cfe81;
-    push32(ecx);
-    flagsFromReg32(pop32());
-    eax = 0;
-    eax = 0; ebx = 0; ecx = 0; edx = 0; // cpuid stub
-    memoryASet32(ss, ebp - 12, eax);
-    memoryASet32(ss, ebp - 24, ebx);
-    memoryASet32(ss, ebp - 20, edx);
-    memoryASet32(ss, ebp - 16, ecx);
-    eax = 0x00000001;
-    eax = 0; ebx = 0; ecx = 0; edx = 0; // cpuid stub
-    memoryASet32(ss, ebp - 4, edx);
-    memoryASet32(ss, ebp - 8, eax);
-loc_100cfe81: // 0000:100cfe81
-    ebx = pop32();
-    if (!(memoryAGet32(ss, ebp - 4) & 0x04000000))
-        goto loc_100cfe99;
-    sub_100cfdec();
-    if (!eax)
-        goto loc_100cfe99;
-    eax = 0;
-    eax++;
-    goto loc_100cfe9b;
-loc_100cfe99: // 0000:100cfe99
-    eax = 0;
-loc_100cfe9b: // 0000:100cfe9b
-    ebx = pop32();
-    esp = ebp; ebp = pop32();
-    // SEH removed (was stack_unbalanced, 0/-28) // SEH removed (was stack_unbalanced, 0/-28)
-    esp += 4;
-}
 void sub_100cff64() // 0000:100cff64 +long
 { esp -= 4; eax = 0; esp += 4; } // _unlock stub stub // _unlock stub (no-op)
 void sub_100d0027() // 0000:100d0027 +long
@@ -821,82 +569,6 @@ void sub_100d2ea9() // 0000:100d2ea9 +long — __libm_sse2_pow_precise
 { esp -= 4; setst(1, pow(st(1), st(0))); fppop(); esp += 4; }
 void sub_100d3c00() // 0000:100d3c00 +long
 { esp -= 4; if(fpuinsns::fppos>0) fpuinsns::fppop(); eax=0; esp += 4; } // float classifier stub
-void sub_100d3c67() // 0000:100d3c67 +long
-{
-    esp -= 4;
-    if (memoryAGet(ds, edx + 0xe) != 0x05)
-        goto loc_100d3c7e;
-    bx = memoryAGet16(ss, ebp - 164);
-    bh |= 0x02;
-    bh &= 0xfe;
-    bl = 0x3f;
-    goto loc_100d3c82;
-loc_100d3c7e: // 0000:100d3c7e
-    bx = 0x133f;
-loc_100d3c82: // 0000:100d3c82
-    memoryASet16(ss, ebp - 162, bx);
-    fldcw(memoryAGet16(ss, ebp - 162));
-    ebx = 0x1057ea5c;
-    fxam(); // fxam fixed
-    memoryASet32(ss, ebp - 148, edx);
-    memoryASet16(ss, ebp - 160, fnstsw());
-    memoryASet(ss, ebp - 144, 0x00);
-    fxchst2(0, 1);
-    cl = memoryAGet(ss, ebp - 159);
-    fxam(); // fxam fixed
-    memoryASet16(ss, ebp - 160, fnstsw());
-    fxchst2(0, 1);
-    ch = memoryAGet(ss, ebp - 159);
-    ch <<= 1;
-    ch = sar8(ch, 0x01);
-    ch = rol8(ch, 0x01);
-    al = ch;
-    al &= 0x0f;
-    al = memoryAGet(ds, bx + al);
-    ah = al;
-    cl <<= 1;
-    cl = sar8(cl, 0x01);
-    cl = rol8(cl, 0x01);
-    al = cl;
-    al &= 0x0f;
-    al = memoryAGet(ds, bx + al);
-    ah <<= 1;
-    ah <<= 1;
-    al |= ah;
-    eax = (int8_t)al;
-    ecx &= 0x00000404;
-    ebx = edx;
-    ebx += eax;
-    ebx += 0x00000010;
-    indirectJump(cs, memoryAGet32(ds, ebx), 0x0000, 0x100d3cf1); return; // 0000:100d3cf1
-}
-void sub_100d3e75() // 0000:100d3e75 +long +returnZero
-{
-    esp -= 4;
-    eax = memoryAGet32(ds, edx + 0x4);
-    eax &= 0x7ff00000;
-    if (eax == 0x7ff00000)
-        goto loc_100d3e87;
-    fld64(memoryAGet64(ds, edx));
-    flags.zero = eax == 0x7ff00000;
-    esp += 4; return;
-loc_100d3e87: // 0000:100d3e87
-    eax = memoryAGet32(ds, edx + 0x4);
-    esp -= 0x0000000a;
-    eax |= 0x7fff0000;
-    memoryASet32(ds, esp + 0x6, eax);
-    eax = memoryAGet32(ds, edx + 0x4);
-    ecx = memoryAGet32(ds, edx);
-    eax = (eax << 11) | (ecx >> 21); // shld fixed
-    ecx <<= 11;
-    memoryASet32(ds, esp + 0x4, eax);
-    memoryASet32(ds, esp, ecx);
-    fld80(memoryAGet80(ds, esp));
-    esp += 0x0000000a;
-    flags.zero = !(eax & 0x00000000);
-    eax = memoryAGet32(ds, edx + 0x4);
-    esp += 4;
-}
 void sub_100d67af() // 0000:100d67af +long
 { esp -= 4; eax = 0; esp += 4; } // __ioinit stub
 void sub_100d6a51() // 0000:100d6a51 +long
@@ -923,79 +595,6 @@ void sub_100dfe00() // 0000:100dfe00 +long — [ecx+8] -= 1 (reference count dec
 {
     esp -= 4;
     memoryASet32(ds, ecx + 8, memoryAGet32(ds, ecx + 8) - 1);
-    esp += 4;
-}
-void sub_100dfe20() // 0000:100dfe20 +long
-{
-    esp -= 4;
-    push32(ebp);
-    ebp = esp;
-    push32(ecx);
-    eax = 0;
-    push32(ebx);
-    push32(esi);
-    esi = ecx;
-    memoryASet32(ds, esi, eax);
-    memoryASet32(ds, esi + 0x4, eax);
-    memoryASet32(ds, esi + 0x8, eax);
-    memoryASet32(ds, esi + 0xc, eax);
-    memoryASet32(ds, esi + 0x10, eax);
-    memoryASet32(ds, esi + 0x14, eax);
-    memoryASet32(ds, esi + 0x18, eax);
-    memoryASet32(ds, esi + 0x1c, eax);
-    memoryASet32(ds, esi + 0x20, eax);
-    memoryASet32(ss, ebp - 4, eax);
-    eax = 0;
-    eax = 0; ebx = 0; ecx = 0; edx = 0; // cpuid stub
-    if (eax < 0x00000001)
-        goto loc_100dfe5a;
-    eax = 0x00000001;
-    eax = 0; ebx = 0; ecx = 0; edx = 0; // cpuid stub
-    memoryASet32(ss, ebp - 4, edx);
-loc_100dfe5a: // 0000:100dfe5a
-    eax = memoryAGet32(ss, ebp - 4);
-    eax >>= 25;
-    al &= 0x01;
-    memoryASet(ds, esi + 0x24, al);
-    eax = esi;
-    esi = pop32();
-    ebx = pop32();
-    esp = ebp; ebp = pop32();
-    esp += 4;
-}
-// Restored functions (removed by duplicate-removal script but needed)
-void sub_100ca0cc() // 0000:100ca0cc +long
-{
-    esp -= 4;
-    edi = edi;
-    push32(ebp);
-    ebp = esp;
-    esp -= 0x00000010;
-    push32(memoryAGet32(ss, ebp + 0xc));
-    ecx = ebp - 16;
-    sub_100c8f3d();
-    eax = memoryAGet32(ss, ebp - 16);
-    if ((int32_t)memoryAGet32(ds, eax + 0xac) <= (int32_t)0x00000001)
-        goto loc_100ca101;
-    eax = ebp - 16;
-    push32(eax);
-    push32(0x00000107);
-    push32(memoryAGet32(ss, ebp + 0x8));
-    sub_100d2d11();
-    esp += 0x0000000c;
-    goto loc_100ca113;
-loc_100ca101:
-    eax = memoryAGet32(ds, eax + 0xc8);
-    ecx = memoryAGet32(ss, ebp + 0x8);
-    eax = memoryAGet16(ds, eax + ecx * 2);
-    eax &= 0x00000107;
-loc_100ca113:
-    if (!memoryAGet(ss, ebp - 4))
-        goto loc_100ca120;
-    ecx = memoryAGet32(ss, ebp - 8);
-    memoryASet32(ds, ecx + 0x70, memoryAGet32(ds, ecx + 0x70) & 0xfffffffd);
-loc_100ca120:
-    esp = ebp; ebp = pop32();
     esp += 4;
 }
 void sub_100496af() // 0000:100496af +long — thunk: push ebp; mov ebp,esp; pop ebp; jmp operator_new

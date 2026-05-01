@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <chrono>
+#include "mmap.h"
 
 const char* appRootPath = "res/";
 
@@ -21,11 +23,39 @@ const char* appRootPath = "res/";
 
 extern int allocatorPtr;
 
+#ifdef RASPI
+static inline void memoryASet(int s, int o, uint8_t v) {
+    *((uint8_t*)o) = v;
+}
+static inline void memoryASet16(int s, int o, uint16_t v) {
+    *((uint16_t*)o) = v;
+}
+static inline void memoryASet32(int s, int o, uint32_t v) {
+    *((uint32_t*)o) = v;
+}
+static inline void memoryASet64(int s, int o, uint64_t v) {
+    *((uint64_t*)o) = v;
+}
+static inline uint8_t memoryAGet(int s, int o) {
+    return *((uint8_t*)o);
+}
+static inline uint16_t memoryAGet16(int s, int o) {
+    return *((uint16_t*)o);
+}
+static inline uint32_t memoryAGet32(int s, int o) {
+    return *((uint32_t*)o);
+}
+static inline uint64_t memoryAGet64(int s, int o) {
+    return *((uint64_t*)o);
+}
+#else
 uint32_t memoryAGet32(int s, int o);
 void memoryASet32(int s, int o, uint32_t v);
 uint64_t memoryAGet64(int s, int o);
 void memoryASet64(int s, int o, uint64_t v);
 void memoryASet(int s, int o, uint8_t v);
+#endif
+
 int allocate(int size);
 namespace fpuinsns {
 float fromFp32(uint32_t v);
@@ -151,11 +181,13 @@ void writeWav(const char* filename, const float* left, const float* right, int n
 // --- Main ---
 int main(int argc, char* argv[]) {
     printf("Nexus C++ emulator starting...\n");
+    init_mmap();
     init();
 
     // Load SYNSOEMU DRM engine overlays
     loadOverlay("SYNSOEMU_rdata.bin", 0x11007000);
     loadOverlay("SYNSOEMU_data.bin", 0x110a6000);
+    uint32_t allocatorPtrBegin = allocatorPtr;
 
     // Set ContentPath string
     const char* contentPath = "C:\\Nexus\\installer\\Nexus Content\\";
@@ -268,6 +300,8 @@ int main(int argc, char* argv[]) {
     const int NUM_BLOCKS = 400;
     printf("Rendering %d blocks of %d samples...\n", NUM_BLOCKS, BLOCK_SIZE);
 
+    auto start = std::chrono::steady_clock::now();
+
     for (int block = 0; block < NUM_BLOCKS; block++) {
         if (block == 0) {
             printf("  ON  note=%d at block 0\n", midiNote);
@@ -303,11 +337,16 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    auto end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    uint32_t allocatorPtrEnd = allocatorPtr;
+
     // --- Write WAV ---
     const char* outFile = (argc > 2) ? argv[2] : "output.wav";
     printf("Writing %s (%zu samples)...\n", outFile, allLeft.size());
     writeWav(outFile, allLeft.data(), allRight.data(), (int)allLeft.size(), 44100);
 
+    printf("Process replacing took %d ms, consumed %d MB RAM\n", (int)duration.count(), (allocatorPtrEnd-allocatorPtrBegin)/1024/1024);
     printf("Done.\n");
     return 0;
 }
