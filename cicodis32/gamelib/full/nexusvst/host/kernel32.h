@@ -30,7 +30,12 @@ static struct FileSlot {
 
 static int nextHandle = 0x100;
 
+#ifdef RASPI
+//static const char* VFS_SANDBOX = "./";
+static const char* VFS_SANDBOX = "/home/pi/gabo/";
+#else
 static const char* VFS_SANDBOX = "/Users/gabrielvalky/Documents/git/CleanRoom/jsfun4/installer/";
+#endif
 static std::string vfsTranslate(const std::string& winPath) {
     std::string p = winPath;
     for (auto& c : p) if (c == '\\') c = '/';
@@ -129,11 +134,14 @@ uint32_t ReadFile() { // 5 args, stdcall +20
 
     // Read into temp buffer then copy to emulated memory
     printf("ReadFile: h=0x%x buf=0x%08x sz=%u\n", hFile, bufPtr, nBytes);
+#ifdef RASPI
+    size_t nRead = fread((void*)bufPtr, 1, nBytes, fileSlots[slot].fp);
+#else
     std::vector<uint8_t> buf(nBytes);
     size_t nRead = fread(buf.data(), 1, nBytes, fileSlots[slot].fp);
     for (size_t i = 0; i < nRead; i++)
         memoryASet(ds, bufPtr + i, buf[i]);
-
+#endif
     if (pBytesRead) memoryASet32(ds, pBytesRead, (uint32_t)nRead);
     return 1;
 }

@@ -1,15 +1,16 @@
 #ifdef RASPI
-
+#include <unistd.h>
 #include <sys/mman.h>
+#include <string.h>
 
-void init_mmap()
+int init_mmap()
 {
 
 #ifndef MAP_FIXED_NOREPLACE
 #define MAP_FIXED_NOREPLACE 0x100000
 #endif
 
-    const size_t length = 200UL * 1024UL * 1024UL;   // 256 MiB
+    const size_t length = 256UL * 1024UL * 1024UL;   // 256 MiB
     void *requested = (void *)0x10000000UL;
 
     long page_size = sysconf(_SC_PAGESIZE);
@@ -49,11 +50,13 @@ void init_mmap()
         munmap(p, length);
         return 1;
     }
+    return 0;
 }
 
 #else
 
-void init_mmap()
+int init_mmap()
 {
+    return 0;
 }
 #endif

@@ -1,0 +1,67 @@
+diff --git a/./nexusopt_10015160.cpp b/Users/gabrielvalky/Documents/git/Projects/cicodis32/gamelib/full/nexusvst/host/./nexusopt_10015160.cpp
+index 2df4ae8..6882b81 100644
+--- a/./nexusopt_10015160.cpp
++++ b/Users/gabrielvalky/Documents/git/Projects/cicodis32/gamelib/full/nexusvst/host/./nexusopt_10015160.cpp
+@@ -36,7 +36,7 @@ double subopt_10062e20();
+ void subopt_10056420();
+ void subopt_1005a960();
+ 
+-void subopt_10015160() // 0000:10015160 +long +stackDrop8
++void sub_10015160() // 0000:10015160 +long +stackDrop8
+ {
+     double fp0, fp1, fp2, fp3;
+     float fp4, fp5, fp6, fp7;
+@@ -219,7 +219,7 @@ loc_10015397: // 0000:10015397
+     memoryASet32(ds, esp + 0x18, memoryAGet32(ds, esp + 0x18) + 1);
+     goto loc_10015449;
+ loc_100153a0: // 0000:100153a0
+-    if (parityOdd(ah, 0x44))
++    if (fp0 == _cmp2r)  //gabooo!!! PROBLEM!
+         goto loc_100153e2;
+     eax = memoryAGet32(ds, esp + 0x14);
+     edx = memoryAGet32(ds, edi - 80656);
+@@ -325,7 +325,7 @@ loc_10015449: // 0000:10015449
+     push32(ebp);
+     switch (edx)
+     {
+-        case 0x10066dc0: subopt_10066dc0(); break;
++        case 0x10066dc0: sub_10066dc0(); break;
+         default:
+             stop("unhandled indirect 0000:100154b1");
+     }
+@@ -835,7 +835,7 @@ loc_10015a27: // 0000:10015a27
+     push32(edi);
+     switch (eax)
+     {
+-        case 0x10059ed0: subopt_10059ed0(); break; // gabo check
++        case 0x10059ed0: subopt_10059ed0(); break;
+         default:
+             stop("unhandled indirect 0000:10015a3f");
+     }
+@@ -3929,7 +3929,7 @@ loc_10060717: // 0000:10060717
+     memoryFSet64(ds, esp, fp0); // fstp64()) fpustack: [empty]
+     push32(ebx);
+     push32(eax);
+-    subopt_1005fc90();
++    sub_1005fc90();
+     memoryASet32(ds, esp + 0x2c, eax);
+     if (!eax)
+         goto loc_100607b7;
+@@ -4024,7 +4024,7 @@ loc_1006080d: // 0000:1006080d
+     push32(0x00000000);
+     push32(eax);
+     ecx = esi;
+-    subopt_1005fc90();
++    sub_1005fc90();
+     memoryASet32(ds, esp + 0x2c, eax);
+     if (!eax)
+         goto loc_100607f9;
+@@ -11526,7 +11526,7 @@ double subopt_10062e20() // 0000:10062e20 +long +stackDrop8
+     fp0 = memoryFGet32(ds, esp + 0x10); // fld32(memoryAGet32(ds, esp + 0x10)) fpustack: [fp0]
+     esi = pop32();
+     esp += 0x00000008;
+-    esp += 12; return;
++    esp += 12; return fp0;
+ loc_10062e43: // 0000:10062e43
+     fp0 = memoryFGet32(ds, esi + 0x34); // fld32(memoryAGet32(ds, esi + 0x34)) fpustack: [fp0]
+     fp1 = memoryFGet32(ds, 0x100e6490); // fld32(memoryAGet32(ds, 0x100e6490)) fpustack: [fp1, fp0]

@@ -168,7 +168,12 @@ loc_100c4a8b: // 0000:100c4a8b
 }
 void sub_100c8680() // 0000:100c8680 +long — memset via memoryASet (no native bypass)
 { esp -= 4; uint32_t d = memoryAGet32(ss,esp+4); uint32_t v = memoryAGet32(ss,esp+8)&0xFF; uint32_t sz = memoryAGet32(ss,esp+12);
+#ifdef RASPI
+  memset((void*)d, v, sz);
+#else
   if(sz>0&&sz<0x1000000) for(uint32_t i=0;i<sz;i++) memoryASet(ds,d+i,v);
+#endif
+
   eax=d; esp += 4; }
 void sub_100c8749() // 0000:100c8749 +long
 { esp -= 4; uint32_t sz = memoryAGet32(ss, esp+4);
@@ -315,6 +320,9 @@ void sub_100ca260() // 0000:100ca260 +long
 { esp -= eax; } // __alloca_probe: just sub esp, eax
 void sub_100ca3c0() // 0000:100ca3c0 +long — _ftol2_sse: convert ST(0) to int32 in eax
 { esp -= 4; eax = (int32_t)st(0); fppop(); esp += 4; }
+void sub_100ca3c0(double st0) // 0000:100ca3c0 +long — _ftol2_sse: convert ST(0) to int32 in eax
+{ esp -= 4; eax = (int32_t)st0; fppop(); esp += 4; }
+
 void sub_100ca59c() // 0000:100ca59c +long +stackDrop16
 { esp -= 4; eax = 0; esp += 20; } // stub +stackDrop16
 
@@ -468,6 +476,13 @@ void sub_100ca881() // 0000:100ca881 +long — strtok: copies chars from src up 
 }
 void sub_100caaf0() // 0000:100caaf0 +long +returnZero
 { esp -= 4; double ex=fpuinsns::st(0),ba=fpuinsns::st(1); double r=pow(ba,ex); if(!isfinite(r))r=0; fpuinsns::setst(1,r); fpuinsns::fppop(); esp += 4; } // pow stub
+
+double sub_100caaf0(double ex, double ba) // 0000:100caaf0 +long +returnZero
+{ 
+printf("check pow(%f, %f)\n", ba, ex);
+return pow(ba, ex);
+} // pow stub
+
 void sub_100cad4a() // 0000:100cad4a +long — __CIfmod: fmod(ST(0), ST(1))
 { esp -= 4; double x=st(0), y=st(1); double r=fmod(x,y); if(!isfinite(r)) r=0; setst(1,r); fppop(); esp += 4; }
 void sub_100cad80() // 0000:100cad80 +long — fmod wrapper (cdecl, double args on stack)

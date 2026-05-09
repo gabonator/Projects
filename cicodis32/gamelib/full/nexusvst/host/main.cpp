@@ -181,7 +181,8 @@ void writeWav(const char* filename, const float* left, const float* right, int n
 // --- Main ---
 int main(int argc, char* argv[]) {
     printf("Nexus C++ emulator starting...\n");
-    init_mmap();
+    if (init_mmap())
+        return 1;
     init();
 
     // Load SYNSOEMU DRM engine overlays

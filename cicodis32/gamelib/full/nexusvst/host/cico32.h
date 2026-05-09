@@ -50,6 +50,11 @@ void loadOverlay(const char*, int);
 #define memoryAGet16(s, o) *((uint16_t*)(o))
 #define memoryAGet32(s, o) *((uint32_t*)(o))
 #define memoryAGet64(s, o) *((uint64_t*)(o))
+
+#define memoryFGet32(s, o) *((float*)(o))
+#define memoryFGet64(s, o) *((double*)(o))
+#define memoryFSet32(s, o, v) *((float*)(o)) = v
+#define memoryFSet64(s, o, v) *((double*)(o)) = v
 #else
 
 void memoryASet(int s, int o, uint8_t v) {
@@ -94,6 +99,26 @@ uint64_t memoryAGet64(int s, int o) {
     int idx = o - MEM_BASE;
     assert (idx >= 0 && idx < MEM_SIZE_CONST);
     return *((uint64_t*)&memory[idx]);
+}
+float memoryFGet32(int s, int o) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    return *((float*)&memory[idx]);
+}
+double memoryFGet64(int s, int o) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    return *((double*)&memory[idx]);
+}
+void memoryFSet32(int s, int o, float v) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    *((float*)&memory[idx]) = v;
+}
+void memoryFSet64(int s, int o, double v) {
+    int idx = o - MEM_BASE;
+    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    *((double*)&memory[idx]) = v;
 }
 #endif
 
@@ -589,6 +614,10 @@ inline double& st(int i) {
     return fpstack[(top + i) & 7];
 }
 
+inline double& st0() {
+    return fpstack[top];
+}
+
 inline void setst(int i, double v) {
     fpstack[(top + i) & 7] = v;
 }
@@ -647,15 +676,15 @@ inline void fild32(uint32_t v){ fppush((double)(int32_t)v); }
 inline void fild64(uint64_t v){ fppush((double)(int64_t)v); }
 
 // Integer memory operands
-inline void fimul32(uint32_t v){ st(0) *= (double)(int32_t)v; }
-inline void fidiv32(uint32_t v){ st(0) /= (double)(int32_t)v; }
-inline void fiadd32(uint32_t v){ st(0) += (double)(int32_t)v; }
-inline void fisub32(uint32_t v){ st(0) -= (double)(int32_t)v; }
-inline void fisubr32(uint32_t v){ st(0) = (double)(int32_t)v - st(0); }
-inline void fimul16(uint16_t v){ st(0) *= (double)(int16_t)v; }
-inline void fidiv16(uint16_t v){ st(0) /= (double)(int16_t)v; }
-inline void fiadd16(uint16_t v){ st(0) += (double)(int16_t)v; }
-inline void fisub16(uint16_t v){ st(0) -= (double)(int16_t)v; }
+inline void fimul32(uint32_t v){ st0() *= (double)(int32_t)v; }
+inline void fidiv32(uint32_t v){ st0() /= (double)(int32_t)v; }
+inline void fiadd32(uint32_t v){ st0() += (double)(int32_t)v; }
+inline void fisub32(uint32_t v){ st0() -= (double)(int32_t)v; }
+inline void fisubr32(uint32_t v){ st0() = (double)(int32_t)v - st0(); }
+inline void fimul16(uint16_t v){ st0() *= (double)(int16_t)v; }
+inline void fidiv16(uint16_t v){ st0() /= (double)(int16_t)v; }
+inline void fiadd16(uint16_t v){ st0() += (double)(int16_t)v; }
+inline void fisub16(uint16_t v){ st0() -= (double)(int16_t)v; }
 inline void fld16(uint16_t v) { fppush((double)(int16_t)v); }
 inline void fldst(int i)      { fppush(st(i)); }
 inline void fld1()            { fppush(1.0); }
@@ -672,9 +701,9 @@ inline void fldlg2()          { fppush(0.3010299957316877); }  // log10(2)
 inline uint32_t fstp32() { return toFp32((float)fppop()); }
 inline uint64_t fstp64() { return toFp64(fppop()); }
 inline double   fstp80() { return fppop(); }
-inline uint32_t fst32()  { return toFp32((float)st(0)); }
-inline uint64_t fst64()  { return toFp64(st(0)); }
-inline double   fst80()  { return st(0); }
+inline uint32_t fst32()  { return toFp32((float)st0()); }
+inline uint64_t fst64()  { return toFp64(st0()); }
+inline double   fst80()  { return st0(); }
 // Use floor() instead of lrint() to match x87 behavior for phase accumulators.
 // On x87 with 80-bit precision, values near 0.5 stay below due to extra mantissa bits.
 // With 64-bit double, the reduced precision pushes values slightly above 0.5,
@@ -689,34 +718,34 @@ inline void fstpst(int i){ st(i) = st(0); fppop(); }
 // ARITHMETIC — memory operand (float32)
 // =========================================
 
-inline void fadd32(uint32_t v) { st(0) += (double)fromFp32(v); }
-inline void fsub32(uint32_t v) { st(0) -= (double)fromFp32(v); }
-inline void fsubr32(uint32_t v){ st(0) = (double)fromFp32(v) - st(0); }
-inline void fmul32(uint32_t v) { st(0) *= (double)fromFp32(v); }
-inline void fdiv32(uint32_t v) { st(0) /= (double)fromFp32(v); }
-inline void fdivr32(uint32_t v){ st(0) = (double)fromFp32(v) / st(0); }
+inline void fadd32(uint32_t v) { st0() += (double)fromFp32(v); }
+inline void fsub32(uint32_t v) { st0() -= (double)fromFp32(v); }
+inline void fsubr32(uint32_t v){ st0() = (double)fromFp32(v) - st0(); }
+inline void fmul32(uint32_t v) { st0() *= (double)fromFp32(v); }
+inline void fdiv32(uint32_t v) { st0() /= (double)fromFp32(v); }
+inline void fdivr32(uint32_t v){ st0() = (double)fromFp32(v) / st0(); }
 
 // =========================================
 // ARITHMETIC — memory operand (float64)
 // =========================================
 
-inline void fadd64(uint64_t v) { st(0) += fromFp64(v); }
-inline void fsub64(uint64_t v) { st(0) -= fromFp64(v); }
-inline void fsubr64(uint64_t v){ st(0) = fromFp64(v) - st(0); }
-inline void fmul64(uint64_t v) { st(0) *= fromFp64(v); }
-inline void fdiv64(uint64_t v) { st(0) /= fromFp64(v); }
-inline void fdivr64(uint64_t v){ st(0) = fromFp64(v) / st(0); }
+inline void fadd64(uint64_t v) { st0() += fromFp64(v); }
+inline void fsub64(uint64_t v) { st0() -= fromFp64(v); }
+inline void fsubr64(uint64_t v){ st0() = fromFp64(v) - st0(); }
+inline void fmul64(uint64_t v) { st0() *= fromFp64(v); }
+inline void fdiv64(uint64_t v) { st0() /= fromFp64(v); }
+inline void fdivr64(uint64_t v){ st0() = fromFp64(v) / st0(); }
 
 // =========================================
 // ARITHMETIC — 80-bit (ST register refs)
 // =========================================
 
-inline void fadd80(double d)   { st(0) += d; }
-inline void fsub80(uint64_t v) { st(0) -= fromFp64(v); }
-inline void fsub80()           { st(0) -= st(1); }
-inline void fmul80(double d)   { st(0) *= d; }
-inline void fdiv80(double d)   { st(0) /= d; }
-inline void fdivr80(double d)  { st(0) = d / st(0); }
+inline void fadd80(double d)   { st0() += d; }
+inline void fsub80(uint64_t v) { st0() -= fromFp64(v); }
+inline void fsub80()           { st0() -= st(1); }
+inline void fmul80(double d)   { st0() *= d; }
+inline void fdiv80(double d)   { st0() /= d; }
+inline void fdivr80(double d)  { st0() = d / st(0); }
 
 // p80 = pop variants (operate then pop ST(0))
 inline void faddp80(double& v) { v += st(0); fppop(); }
@@ -734,28 +763,28 @@ inline void faddp64(uint64_t v){ st(0) += fromFp64(v); fppop(); }
 // =========================================
 
 // D8 form: result in ST(0)
-inline void faddst(int i)       { st(0) = st(0) + st(i); }
-inline void fsubst(int i)       { st(0) = st(0) - st(i); }
-inline void fsubrst(int i)      { st(0) = st(i) - st(0); }
-inline void fmulst(int i)       { st(0) = st(0) * st(i); }
-inline void fdivst(int i)       { st(0) = st(0) / st(i); }
-inline void fdivrst(int i)      { st(0) = st(i) / st(0); }
+inline void faddst(int i)       { st0() += st(i); }
+inline void fsubst(int i)       { st0() -= st(i); }
+inline void fsubrst(int i)      { st0() = st(i) - st0(); }
+inline void fmulst(int i)       { st0() *= st(i); }
+inline void fdivst(int i)       { st0() /= st(i); }
+inline void fdivrst(int i)      { st0() = st(i) / st0(); }
 
 // DC form: result in ST(i)
-inline void faddst2(int i, int j){ st(i) = st(i) + st(j); }
-inline void fmulst2(int i, int j){ st(i) = st(i) * st(j); }
-inline void fsubst2(int i, int j){ st(i) = st(i) - st(j); }
-inline void fdivst2(int i, int j){ st(i) = st(i) / st(j); }
+inline void faddst2(int i, int j){ st(i) += st(j); }
+inline void fmulst2(int i, int j){ st(i) *= st(j); }
+inline void fsubst2(int i, int j){ st(i) -= st(j); }
+inline void fdivst2(int i, int j){ st(i) /= st(j); }
 inline void fsubrst2(int i, int j){ st(i) = st(j) - st(i); }
 inline void fdivrst2(int i, int j){ st(i) = st(j) / st(i); }
 
 // DC+pop: result in ST(i), then pop
-inline void faddpst(int i)      { st(i) = st(i) + st(0); fppop(); }
-inline void fsubpst(int i)      { st(i) = st(i) - st(0); fppop(); }
-inline void fsubrpst(int i)     { st(i) = st(0) - st(i); fppop(); }
-inline void fmulpst(int i)      { st(i) = st(i) * st(0); fppop(); }
-inline void fdivpst(int i)      { st(i) = st(i) / st(0); fppop(); }
-inline void fdivrpst(int i)     { st(i) = st(0) / st(i); fppop(); }
+inline void faddpst(int i)      { st(i) += st0(); fppop(); }
+inline void fsubpst(int i)      { st(i) -= st0(); fppop(); }
+inline void fsubrpst(int i)     { st(i) = st0() - st(i); fppop(); }
+inline void fmulpst(int i)      { st(i) *= st0(); fppop(); }
+inline void fdivpst(int i)      { st(i) /= st0(); fppop(); }
+inline void fdivrpst(int i)     { st(i) = st0() / st(i); fppop(); }
 
 // =========================================
 // EXCHANGE
