@@ -5,16 +5,18 @@
 #define I32(base, o)   (*(int32_t*)((base) + (o)))
 #define F32(base, o)   (*(float*)((base) + (o)))
 #define F64(base, o)   (*(double*)((base) + (o)))
+#define load_f32(addr)   (*(float*)(addr))
+#define load_f64(addr)   (*(double*)(addr))
 
 //static inline float load_f32(uintptr_t addr)
 //{ 
 //    return *(float*)addr;
 //}
 
-static inline double load_f64(uintptr_t addr)
-{
-    return *(double*)addr;
-}
+//static inline double load_f64(uintptr_t addr)
+//{
+//    return *(double*)addr;
+//}
 
 static inline int round_to_int_nearest(float x)
 {
