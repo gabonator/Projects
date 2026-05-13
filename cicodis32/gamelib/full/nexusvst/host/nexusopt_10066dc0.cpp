@@ -1,5 +1,3 @@
-#error doesn't work
-
 static inline float f32(uint32_t addr)
 {
     return memoryFGet32(ds, addr);

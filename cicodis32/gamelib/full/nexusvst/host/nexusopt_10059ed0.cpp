@@ -36,7 +36,7 @@
 //   esp+12  = arg4  = 0 (unused)
 // ============================================================
 
-static inline void killDenormal2(float& x)
+static inline void killDenormal(float& x)
 {
     if (fabsf(x) < 1.0e-20f)
         x = 0.0f;
@@ -84,10 +84,10 @@ static void biquad_chain(uint8_t* chain, int numSections, float* buf, int sample
     for (int s = 0; s < numSections; ++s, sec += 0x50)
     {
         if (!*sec) continue;
-        killDenormal2(*(float*)(sec + 0x18));
-        killDenormal2(*(float*)(sec + 0x1c));
-        killDenormal2(*(float*)(sec + 0x20));
-        killDenormal2(*(float*)(sec + 0x24));
+        killDenormal(*(float*)(sec + 0x18));
+        killDenormal(*(float*)(sec + 0x1c));
+        killDenormal(*(float*)(sec + 0x20));
+        killDenormal(*(float*)(sec + 0x24));
     }
 }
 

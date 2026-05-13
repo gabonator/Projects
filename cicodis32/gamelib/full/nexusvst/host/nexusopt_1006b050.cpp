@@ -1,3 +1,10 @@
+// Forward declarations for native functions from other opt files
+// (defined in nexusopt_1006d830.cpp / nexusopt_1006df90.cpp / nexusopt_1006ff60.cpp)
+void sub_1006d830_native(uint8_t*, float*, float*, float*, float*, int);
+void sub_1006df90_native(uint8_t*, float*, float*, float*, float*, int);
+void sub_1006fb80_native(uint8_t*, float*, float*, int);
+void sub_1006ff60_native(char*,    float*, int);
+
 // Forward declarations for subopt_* functions
 void subopt_1006b050();
 void subopt_10070470();
@@ -188,45 +195,53 @@ loc_1006b230: // 0000:1006b230
     fp1 += memoryFGet32(ds, ecx + eax * 4);
     ecx = ecx + (eax * 4);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x20);
     ecx = ecx + (eax * 4);
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 4;
     fp0 *= memoryFGet32(ds, 0x100e64b8);
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x20);
     ecx = (ecx + (eax * 4)) + 4;
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 8;
     fp0 *= memoryFGet32(ds, 0x100e64b8);
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x20);
     ecx = (ecx + (eax * 4)) + 8;
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 12;
     fp0 *= memoryFGet32(ds, 0x100e64b8);
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x20);
     ecx = (ecx + (eax * 4)) + 12;
     fp1 = fp0;
+    fp1 += memoryFGet32(ds, ecx);
+    memoryFSet32(ds, ecx, fp1);
+#endif
     eax += 0x00000004;
-    fp1 += memoryFGet32(ds, ecx);
-    memoryFSet32(ds, ecx, fp1);
     fp0 *= memoryFGet32(ds, 0x100e64b8);
     if ((int32_t)eax < (int32_t)edx)
         goto loc_1006b230;
@@ -240,12 +255,14 @@ loc_1006b2c0: // 0000:1006b2c0
     fp1 += memoryFGet32(ds, edx + eax * 4);
     ecx = edx + (eax * 4);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x20);
     ecx = ecx + (eax * 4);
     fp1 = fp0;
-    eax++;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
+#endif
+    eax++;
     fp0 *= memoryFGet32(ds, 0x100e64b8);
     if ((int32_t)eax < (int32_t)ebx)
         goto loc_1006b2c0;
@@ -389,14 +406,23 @@ loc_1006b460: // 0000:1006b460
     edx = memoryAGet32(ss, ebp + 0x28);
     ecx = memoryAGet32(ds, edi);
     push32(ebx);
+#ifndef MONO
     push32(edx);
+#else
+    push32(memoryAGet32(ss, ebp + 0x24));
+#endif
     subopt_1006ff60();
     memoryASet32(ds, esp + 0x10, memoryAGet32(ds, esp + 0x10) + 1);
     goto loc_1006b4b4;
 loc_1006b486: // 0000:1006b486
+#ifndef MONO
     eax = memoryAGet32(ss, ebp + 0x28);
     ecx = memoryAGet32(ds, edi - 4);
     push32(eax);
+#else
+    ecx = memoryAGet32(ds, edi - 4);
+    push32(memoryAGet32(ss, ebp + 0x24));
+#endif
     subopt_1006ff60();
     ecx = memoryAGet32(ss, ebp + 0x24);
     push32(ebx);
@@ -458,6 +484,8 @@ loc_1006b51d: // 0000:1006b51d
     goto loc_1006b530;
     // gap 3 bytes // gap 3 bytes
 loc_1006b530: // 0000:1006b530
+    // sub-iter 1 (sample i)
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x30);
     fp0 = memoryFGet32(ds, ecx + eax * 4);
     ecx = memoryAGet32(ss, ebp + 0x28);
@@ -468,6 +496,11 @@ loc_1006b530: // 0000:1006b530
     fp1 *= memoryFGet32(ss, ebp + 0x3cc);
     ecx = ecx + (eax * 4);
     fp0 += fp1;
+#else
+    esi = memoryAGet32(ss, ebp + 0x2c);
+    ecx = memoryAGet32(ss, ebp + 0x24);
+    ecx = ecx + (eax * 4);
+#endif
     fp1 = memoryFGet32(ds, esi + eax * 4);
     fp1 *= memoryFGet32(ss, ebp + 0x3bc);
     fp2 = memoryFGet32(ss, ebp + 0x3cc);
@@ -475,9 +508,11 @@ loc_1006b530: // 0000:1006b530
     fp1 += fp2;
     fp1 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x28);
     fp0 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx + eax * 4, fp0);
+#endif
     ecx = memoryAGet32(ss, ebp + 0x30);
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     esi = memoryAGet32(ss, ebp + 0x2c);
@@ -485,6 +520,8 @@ loc_1006b530: // 0000:1006b530
     fp0 *= memoryFGet32(ds, 0x100e64a8);
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
+    // sub-iter 2 (sample i+1)
+#ifndef MONO
     fp1 = memoryFGet32(ds, ecx + eax * 4 + 0x4);
     ecx = memoryAGet32(ss, ebp + 0x28);
     fp1 *= memoryFGet32(ss, ebp + 0x3bc);
@@ -493,6 +530,10 @@ loc_1006b530: // 0000:1006b530
     fp2 *= memoryFGet32(ss, ebp + 0x3cc);
     ecx = (ecx + (eax * 4)) + 4;
     fp1 += fp2;
+#else
+    ecx = memoryAGet32(ss, ebp + 0x24);
+    ecx = (ecx + (eax * 4)) + 4;
+#endif
     fp2 = memoryFGet32(ds, esi + eax * 4 + 0x4);
     fp2 *= memoryFGet32(ss, ebp + 0x3bc);
     fp3 = memoryFGet32(ss, ebp + 0x3cc);
@@ -500,9 +541,11 @@ loc_1006b530: // 0000:1006b530
     fp2 += fp3;
     fp2 *= fp0;
     memoryFSet32(ds, ecx, fp2);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x28);
     fp1 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx + eax * 4 + 0x4, fp1);
+#endif
     ecx = memoryAGet32(ss, ebp + 0x28);
     esi = memoryAGet32(ss, ebp + 0x2c);
 
@@ -511,6 +554,8 @@ loc_1006b530: // 0000:1006b530
     fp0 *= memoryFGet32(ds, 0x100e64a8);
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
+    // sub-iter 3 (sample i+2)
+#ifndef MONO
     fp1 = memoryFGet32(ds, ecx + eax * 4 + 0x8);
     ecx = memoryAGet32(ss, ebp + 0x30);
     fp1 *= memoryFGet32(ss, ebp + 0x3cc);
@@ -519,6 +564,10 @@ loc_1006b530: // 0000:1006b530
     fp2 *= memoryFGet32(ss, ebp + 0x3bc);
     ecx = (ecx + (eax * 4)) + 8;
     fp1 += fp2;
+#else
+    ecx = memoryAGet32(ss, ebp + 0x24);
+    ecx = (ecx + (eax * 4)) + 8;
+#endif
     fp2 = memoryFGet32(ds, esi + eax * 4 + 0x8);
     fp2 *= memoryFGet32(ss, ebp + 0x3bc);
     fp3 = memoryFGet32(ss, ebp + 0x3cc);
@@ -526,9 +575,11 @@ loc_1006b530: // 0000:1006b530
     fp2 += fp3;
     fp2 *= fp0;
     memoryFSet32(ds, ecx, fp2);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x28);
     fp1 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx + eax * 4 + 0x8, fp1);
+#endif
 
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
@@ -539,12 +590,14 @@ loc_1006b530: // 0000:1006b530
     ecx = (ecx + (eax * 4)) + 12;
     memoryFSet32(ss, ebp + 0x3b8, fp0);
     eax += 0x00000004;
+    // sub-iter 4 (sample i+3)
     fp1 = memoryFGet32(ds, esi + eax * 4 - 4);
     fp1 *= memoryFGet32(ss, ebp + 0x3bc);
     esi = memoryAGet32(ss, ebp + 0x30);
     fp2 = memoryFGet32(ss, ebp + 0x3cc);
     fp2 *= memoryFGet32(ds, ecx);
     fp1 += fp2;
+#ifndef MONO
     fp2 = memoryFGet32(ds, esi + eax * 4 - 4);
     esi = memoryAGet32(ss, ebp + 0x28);
     fp2 *= memoryFGet32(ss, ebp + 0x3bc);
@@ -552,14 +605,17 @@ loc_1006b530: // 0000:1006b530
     fp3 *= memoryFGet32(ss, ebp + 0x3cc);
     fp2 += fp3;
     memoryFSet32(ds, esp + 0x58, fp2);
+#endif
     { double _xchg = fp1; fp1 = fp0; fp0 = _xchg; }
     fp1 *= fp0;
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x28);
 
     fp0 = memoryFGet32(ds, esp + 0x58);
     fp0 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx + eax * 4 - 4, fp0);
+#endif
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
     fp0 *= memoryFGet32(ds, 0x100e64a8);
@@ -581,18 +637,22 @@ loc_1006b6f2: // 0000:1006b6f2
     fp1 = memoryFGet32(ss, ebp + 0x3cc);
     fp1 *= memoryFGet32(ds, ecx);
     fp0 += fp1;
+#ifndef MONO
     fp1 = memoryFGet32(ds, edx + eax * 4 - 4);
     edx = memoryAGet32(ss, ebp + 0x28);
     fp1 *= memoryFGet32(ss, ebp + 0x3bc);
     fp2 = memoryFGet32(ds, edx + eax * 4 - 4);
     fp2 *= memoryFGet32(ss, ebp + 0x3cc);
     fp1 += fp2;
+#endif
     { double _xchg = fp1; fp1 = fp0; fp0 = _xchg; }
     fp1 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx, fp1);
+#ifndef MONO
     ecx = memoryAGet32(ss, ebp + 0x28);
     fp0 *= memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ds, ecx + eax * 4 - 4, fp0);
+#endif
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
     fp0 *= memoryFGet32(ds, 0x100e64a8);
@@ -1020,8 +1080,59 @@ loc_1006ce42: // 0000:1006ce42
     esp += 16;
 }
 
+// ============================================================
+// sub_1006f230 native  — simple path (mode == 0)
+// 2-pole direct-form-I IIR filter.
+//
+// Object layout (self = ecx):
+//   self + 0x4  : float  s1    (state 1)
+//   self + 0x8  : float  s2    (state 2)
+//   self + 0x10 : float  b0    (output coeff for new state)
+//   self + 0x14 : float  b1    (output coeff for state 1)
+//   self + 0x18 : float  b2    (output coeff for state 2)
+//   self + 0x1c : float  a1    (feedback coeff for state 1)
+//   self + 0x20 : float  a2    (feedback coeff for state 2)
+//   self + 0x24 : uint32 mode  (0 = simple, !=0 = coefficient transition)
+//
+// Stack args (stackDrop12, last-pushed = esp+0):
+//   esp+0  : float* inBuf
+//   esp+4  : float* outBuf
+//   esp+8  : int    count
+// ============================================================
+
+static void sub_1006f230_native(uint8_t* self, float* inBuf, float* outBuf, int count)
+{
+    float s1 = *(float*)(self + 0x4);
+    float s2 = *(float*)(self + 0x8);
+    const float a1 = *(float*)(self + 0x1c);
+    const float a2 = *(float*)(self + 0x20);
+    const float b0 = *(float*)(self + 0x10);
+    const float b1 = *(float*)(self + 0x14);
+    const float b2 = *(float*)(self + 0x18);
+    for (int i = 0; i < count; ++i) {
+        float x   = s1 * a1 + s2 * a2 + inBuf[i];
+        float y   = x * b0 + s1 * b1 + s2 * b2;
+        outBuf[i] = y;
+        s2 = s1; s1 = x;
+    }
+    *(float*)(self + 0x4) = s1;
+    *(float*)(self + 0x8) = s2;
+}
+
 void subopt_1006f230() // 0000:1006f230 +long +stackDrop12
 {
+    // Native fast-path: simple 2-pole IIR (~99% of calls, mode == 0)
+    if (*(uint32_t*)((uint8_t*)ecx + 0x24) == 0) {
+        sub_1006f230_native((uint8_t*)ecx,
+                            *(float**)(esp + 0),
+                            *(float**)(esp + 4),
+                            *(int32_t*)(esp + 8));
+        esp += 12;
+        return;
+    }
+    // Coefficient-transition crossfade (mode != 0) — emulated.
+    // Simple-path code below (loc_1006f273/loc_1006f352/loc_1006f363) is
+    // never reached here: eax != 0 causes the immediate goto loc_1006f3a1.
     float fp0, fp1, fp2;
     double _cmp0r, _cmp1r, _cmp2r, _cmp3r;
     StackGuard _sg(12, __FUNCTION__);
@@ -1591,6 +1702,13 @@ loc_1006f91f: // 0000:1006f91f
 
 void subopt_100ca3f6(double fp0) // 0000:100ca3f6 +long
 {
+    // Caller uses eax as a positive sample count; (int32_t) truncation is equivalent.
+    eax = (int32_t)fp0;
+}
+
+#if 0 // emulated subopt_100ca3f6 body preserved for reference
+void subopt_100ca3f6_emulated(double fp0) // 0000:100ca3f6 +long
+{
     double fp1;
     StackGuard _sg(0, __FUNCTION__);
     bool temp_cf;
@@ -1607,7 +1725,7 @@ void subopt_100ca3f6(double fp0) // 0000:100ca3f6 +long
     eax = memoryAGet32(ds, esp + 0x10);
     if (!eax)
         goto loc_100ca455;
-loc_100ca419: // 0000:100ca419
+loc_100ca419:
     fp0 -= fp1;
     if ((int32_t)edx >= 0)
         goto loc_100ca43d;
@@ -1623,7 +1741,7 @@ loc_100ca419: // 0000:100ca419
     edx = memoryAGet32(ds, esp + 0x14);
     edx += (0x00000000 + flags.carry);
     goto loc_100ca469;
-loc_100ca43d: // 0000:100ca43d
+loc_100ca43d:
     memoryFSet32(ds, esp, fp0);
     ecx = memoryAGet32(ds, esp);
     flags.carry = overflow32(ecx, 0x7fffffff);
@@ -1635,19 +1753,65 @@ loc_100ca43d: // 0000:100ca43d
     edx = memoryAGet32(ds, esp + 0x14);
     edx -= (0x00000000 + flags.carry);
     goto loc_100ca469;
-loc_100ca455: // 0000:100ca455
+loc_100ca455:
     edx = memoryAGet32(ds, esp + 0x14);
     if (edx & 0x7fffffff)
         goto loc_100ca419;
     memoryFSet32(ds, esp + 0x18, fp1);
     memoryFSet32(ds, esp + 0x18, fp0);
-loc_100ca469: // 0000:100ca469
+loc_100ca469:
     esp = ebp; ebp = pop32();
-    // SEH removed (was stack_unbalanced, 0/-36) // SEH removed (was stack_unbalanced, 0/-36)
     esp += 4;
+}
+#endif // end emulated reference
+
+// ============================================================
+// subopt_1006efe0 native
+// Ring-buffer delay exchange: for each sample, outputs the old
+// ring-buffer value and stores the incoming sample into the ring.
+// Called in-place: in == out (same float* buffer).
+//
+// Object layout (self = ecx):
+//   self + 0x4  : float* bufStart  (ring buffer base)
+//   self + 0x8  : float* writePtr  (current position, byte-addressed)
+//   self + 0xc  : int32  bufCount  (length in floats)
+//
+// Stack args (stackDrop12, last-pushed = esp+0):
+//   esp+0  : float* in  (input  buffer)
+//   esp+4  : float* out (output buffer)
+//   esp+8  : int    samples
+// ============================================================
+
+static void subopt_1006efe0_native(uint8_t* self, float* in, float* out, int samples)
+{
+    float* const bufStart = *(float**)(self + 0x4);
+    float*       writePtr = *(float**)(self + 0x8);
+    const int    bufCount = *(int32_t*)(self + 0xc);
+    float* const limit    = bufStart + bufCount - 1;
+
+    for (int i = 0; i < samples; ++i)
+    {
+        const float old = *writePtr;
+        *writePtr       = in[i];
+        out[i]          = old;
+        if (++writePtr > limit)
+            writePtr = bufStart;
+    }
+
+    *(float**)(self + 0x8) = writePtr;
 }
 
 void subopt_1006efe0() // 0000:1006efe0 +long +stackDrop12
+{
+    float* in    = *(float**)(esp + 0);
+    float* out   = *(float**)(esp + 4);
+    int    count = *(int32_t*)(esp + 8);
+    subopt_1006efe0_native((uint8_t*)ecx, in, out, count);
+    esp += 12;
+}
+
+#if 0 // emulated body preserved for reference
+void subopt_1006efe0_emulated() // 0000:1006efe0 +long +stackDrop12
 {
     float fp0;
     StackGuard _sg(12, __FUNCTION__);
@@ -1778,7 +1942,20 @@ loc_1006f0fe: // 0000:1006f0fe
     esp += 0x00000008;
     esp += 16;
 }
+#endif // end emulated reference
 
+void subopt_1006d830() // 0000:1006d830 +long +stackDrop20
+{
+    float* inL = *(float**)(esp + 0);
+    float* inR = *(float**)(esp + 4);
+    float* outL = *(float**)(esp + 8);
+    float* outR = *(float**)(esp + 12);
+    int    samp = *(int32_t*)(esp + 16);
+    sub_1006d830_native((uint8_t*)ecx, inL, inR, outL, outR, samp);
+    esp += 20;
+}
+
+#if 0 // emulated subopt_1006d830 body preserved for reference
 void subopt_1006d830() // 0000:1006d830 +long +stackDrop20
 {
     double fp0;
@@ -1988,6 +2165,8 @@ loc_1006dafc: // 0000:1006dafc
     esp += 24;
 }
 
+#endif // end emulated reference
+
 void subopt_100704c0() // 0000:100704c0 +long
 {
     double fp0, fp1;
@@ -2100,6 +2279,18 @@ loc_10070417: // 0000:10070417
     esp += 8;
 }
 
+void subopt_1006df90() // 0000:1006df90 +long +stackDrop20
+{
+    float* inL = *(float**)(esp + 0);
+    float* inR = *(float**)(esp + 4);
+    float* outL = *(float**)(esp + 8);
+    float* outR = *(float**)(esp + 12);
+    int    samp = *(int32_t*)(esp + 16);
+    sub_1006df90_native((uint8_t*)ecx, inL, inR, outL, outR, samp);
+    esp += 20;
+}
+
+#if 0 // emulated subopt_1006df90 body preserved for reference
 void subopt_1006df90() // 0000:1006df90 +long +stackDrop20
 {
     float fp0, fp1, fp2;
@@ -2379,6 +2570,18 @@ loc_1006e2f8: // 0000:1006e2f8
     esp += 24;
 }
 
+#endif // end emulated reference
+
+void subopt_1006fb80() // 0000:1006fb80 +long +stackDrop12
+{
+    float* in = *(float**)(esp + 0);
+    float* out = *(float**)(esp + 4);
+    int    samp = *(int32_t*)(esp + 8);
+    sub_1006fb80_native((uint8_t*)ecx, in, out, samp);
+    esp += 12;
+}
+
+#if 0 // emulated subopt_1006fb80 body preserved for reference
 void subopt_1006fb80() // 0000:1006fb80 +long +stackDrop12
 {
     float fp0, fp1;
@@ -2633,6 +2836,17 @@ loc_1006fe34: // 0000:1006fe34
     esp += 16;
 }
 
+#endif // end emulated reference
+
+void subopt_1006ff60() // 0000:1006ff60 +long +stackDrop8
+{
+    float* out = *(float**)(esp + 0);
+    int    samp = *(int32_t*)(esp + 4);
+    sub_1006ff60_native((char*)ecx, out, samp);
+    esp += 8;
+}
+
+#if 0 // emulated subopt_1006ff60 body preserved for reference
 void subopt_1006ff60() // 0000:1006ff60 +long +stackDrop8
 {
     float fp0, fp1;
@@ -2839,6 +3053,8 @@ loc_1007017a: // 0000:1007017a
     esp += 0x00000008;
     esp += 12;
 }
+
+#endif // end emulated reference
 
 void subopt_1006ce60() // 0000:1006ce60 +long +stackDrop16
 {
