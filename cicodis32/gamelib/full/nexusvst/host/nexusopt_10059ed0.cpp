@@ -120,8 +120,10 @@ void sub_10059ed0_native(uint8_t* self, uint8_t* buf_desc, int samples)
         biquad_chain(self + 0x178, numSections, buf1, samples);
 
     // Chain 2 at self+0x1a0, processes buf2 in-place (may be null)
+#ifndef MONO
     if (buf2)
         biquad_chain(self + 0x1a0, numSections, buf2, samples);
+#endif
 }
 
 // Emulated stack wrapper — replaces the original sub_10059ed0() body.

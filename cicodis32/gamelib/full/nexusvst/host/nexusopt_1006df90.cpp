@@ -133,6 +133,10 @@ static inline int sub_100ca3f6_native(float x)
 
 // ============================================================
 // sub_1006df90 native
+// Stereo reverb with 3-stage allpass network and multi-tap ring buffer.
+// In MONO mode: skip all R-channel allpass stages and R ring-buffer writes.
+// The ring buffer stores interleaved [L, R] float pairs; fb[1] is still
+// zeroed each sample to prevent accumulation even when outR is not written.
 // ============================================================
 
 void sub_1006df90_native(
@@ -152,11 +156,17 @@ void sub_1006df90_native(
     const float C_103cd2c0 = load_f32(0x103cd2c0);
 
     float* tmp0L = FPTR(self, 0x3ed2c);
+#ifndef MONO
     float* tmp0R = FPTR(self, 0x3ed30);
+#endif
     float* tmp1L = FPTR(self, 0x3ed34);
+#ifndef MONO
     float* tmp1R = FPTR(self, 0x3ed38);
+#endif
     float* tmp2L = FPTR(self, 0x3ed3c);
+#ifndef MONO
     float* tmp2R = FPTR(self, 0x3ed40);
+#endif
 
     const float amount = F32(self, 0x3ed50);
 
@@ -174,36 +184,48 @@ void sub_1006df90_native(
     if (amount >= C_103cd1c4)
     {
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x04), inL, tmp0L, samples);
+#ifndef MONO
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x08), inR, tmp0R, samples);
+#endif
     }
     else
     {
         copy_float_buffer(tmp0L, inL, samples);
+#ifndef MONO
         copy_float_buffer(tmp0R, inR, samples);
+#endif
     }
 
     // stage 1
     if (amount >= C_103d3a00)
     {
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x0c), tmp0L, tmp1L, samples);
+#ifndef MONO
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x10), tmp0R, tmp1R, samples);
+#endif
     }
     else
     {
         copy_float_buffer(tmp1L, tmp0L, samples);
+#ifndef MONO
         copy_float_buffer(tmp1R, tmp0R, samples);
+#endif
     }
 
     // stage 2
     if (amount >= C_103cd2c0)
     {
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x14), tmp1L, tmp2L, samples);
+#ifndef MONO
         sub_1006fb80_native((uint8_t*)FPTR(self, 0x18), tmp1R, tmp2R, samples);
+#endif
     }
     else
     {
         copy_float_buffer(tmp2L, tmp1L, samples);
+#ifndef MONO
         copy_float_buffer(tmp2R, tmp1R, samples);
+#endif
     }
 
     const float dryGain = F32(self, 0x3ed4c);
@@ -215,7 +237,9 @@ void sub_1006df90_native(
     for (int i = 0; i < samples; ++i)
     {
         float* srcL = tmp0L;
+#ifndef MONO
         float* srcR = tmp0R;
+#endif
         int split = splitA;
 
         uint8_t* tap = self + 0x3ea0c; // 256524 decimal
@@ -228,26 +252,34 @@ void sub_1006df90_native(
                 {
                     split = splitB;
                     srcL = tmp1L;
+#ifndef MONO
                     srcR = tmp1R;
+#endif
                 }
                 else
                 {
                     srcL = tmp2L;
+#ifndef MONO
                     srcR = tmp2R;
+#endif
                 }
             }
 
             float l = srcL[i];
+#ifndef MONO
             float r = srcR[i];
+#endif
 
             float*& p0 = *(float**)tap;
             float*& p1 = *(float**)(tap + 0x50);
 
             p0[0] += l * (*(float*)(tap + 0x1e0));
+#ifndef MONO
             p0[1] += r * (*(float*)(tap + 0x230));
 
             p1[0] += r * (*(float*)(tap + 0x280));
             p1[1] += l * (*(float*)(tap + 0x2d0));
+#endif
 
             p0 += 2;
             if (p0 >= ringEnd)
@@ -263,8 +295,10 @@ void sub_1006df90_native(
         outL[i] = inL[i] * dryGain + fb[0];
         fb[0] = 0.0f;
 
+#ifndef MONO
         outR[i] = inR[i] * dryGain + fb[1];
-        fb[1] = 0.0f;
+#endif
+        fb[1] = 0.0f;  // always zero to prevent ring-buffer accumulation
 
         fb += 2;
         if (fb >= ringEnd)

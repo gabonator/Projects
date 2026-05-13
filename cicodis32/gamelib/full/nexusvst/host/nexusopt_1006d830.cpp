@@ -83,21 +83,29 @@ void sub_1006d830_native(
     const float C_WRAP = load_f32(0x103d7e0c);
 
     float* delayL = (float*)(self + 0x000004);
+#ifndef MONO
     float* delayR = (float*)(self + 0x21348);
+#endif
 
     uint8_t* oscL = self + 272160; // 0x42720
+#ifndef MONO
     uint8_t* oscR = self + 272248; // 0x42778
+#endif
 
     int tapL = I32(self, 0x426c8) + I32(self, 0x42690);
     if (tapL > DELAY_LEN)
         tapL -= DELAY_LEN;
 
+#ifndef MONO
     int tapR = I32(self, 0x426cc) + I32(self, 0x42694);
     if (tapR > DELAY_LEN)
         tapR -= DELAY_LEN;
+#endif
 
     int writeL = I32(self, 0x42690);
+#ifndef MONO
     int writeR = I32(self, 0x42694);
+#endif
 
     for (int i = 0; i < samples; ++i)
     {
@@ -129,6 +137,7 @@ void sub_1006d830_native(
 
         float writeValueL = -(fbL * F32(self, 0x42714));
 
+#ifndef MONO
         // --------------------------------------------------------
         // Right channel fractional read
         // --------------------------------------------------------
@@ -156,6 +165,7 @@ void sub_1006d830_native(
         F32(self, 0x426dc) = fbR;
 
         float writeValueR = -(fbR * F32(self, 0x42718));
+#endif
 
         // --------------------------------------------------------
         // feedback write taps
@@ -164,14 +174,16 @@ void sub_1006d830_native(
         if (tapL > DELAY_LEN)
             tapL = 1;
 
+        delayL[tapL + 1] = writeValueL;
+        ++tapL;
+
+#ifndef MONO
         if (tapR > DELAY_LEN)
             tapR = 1;
 
-        delayL[tapL + 1] = writeValueL;
         delayR[tapR + 1] = writeValueR;
-
-        ++tapL;
         ++tapR;
+#endif
 
         ++writeL;
         if (writeL > DELAY_LEN)
@@ -180,15 +192,19 @@ void sub_1006d830_native(
             writeL = 1;
         }
 
+#ifndef MONO
         ++writeR;
         if (writeR > DELAY_LEN)
         {
             delayR[1] = delayR[writeR + 1];
             writeR = 1;
         }
+#endif
 
         I32(self, 0x42690) = writeL;
+#ifndef MONO
         I32(self, 0x42694) = writeR;
+#endif
 
         // --------------------------------------------------------
         // update modulation oscillator L
@@ -208,6 +224,7 @@ void sub_1006d830_native(
         F32(self, 0x42698) =
             (float)((nextL + (double)C_ZERO) * F32(self, 0x426c0));
 
+#ifndef MONO
         // --------------------------------------------------------
         // update modulation oscillator R
         // --------------------------------------------------------
@@ -225,6 +242,7 @@ void sub_1006d830_native(
 
         F32(self, 0x4269c) =
             (float)((nextR + (double)C_ZERO) * F32(self, 0x426c4));
+#endif
     }
 }
 
