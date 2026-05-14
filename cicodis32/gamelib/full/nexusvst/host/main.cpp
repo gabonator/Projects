@@ -1,3 +1,8 @@
+/* build:
+g++ -O2 -D MONO -D OPT_10015160 -D OPT_1004c750 -D OPT_10056490 -D OPT_10059ed0 -D OPT_1005fc90 -D OPT_10062e20 -D OPT_10066dc0xxx -D OPT_1006b050 -D OPT_1006d830 -D OPT_1006df90 -D OPT_1006ff60 -D OPT_100c90d2 -D RASPI -D NDEBUG --std=c++17 host/main.cpp host/nexus.cpp -o nexus_24.elf 
+# Average replacing time: 2246.85 ms
+*/
+
 #include <cstdio>
 #include <cstdint>
 #include <cassert>
@@ -6,6 +11,9 @@
 #include <string>
 #include <chrono>
 #include "mmap.h"
+
+#include <sys/gmon.h>
+ extern "C" void moncontrol(int); 
 
 const char* appRootPath = "res/";
 
@@ -48,18 +56,22 @@ static inline uint32_t memoryAGet32(int s, int o) {
 static inline uint64_t memoryAGet64(int s, int o) {
     return *((uint64_t*)o);
 }
+#define memoryFGet32(s, o) *((float*)(o))
+#define memoryFGet64(s, o) *((double*)(o))
 #else
 uint32_t memoryAGet32(int s, int o);
 void memoryASet32(int s, int o, uint32_t v);
 uint64_t memoryAGet64(int s, int o);
 void memoryASet64(int s, int o, uint64_t v);
 void memoryASet(int s, int o, uint8_t v);
+float memoryFGet32(int s, int o);
+double memoryFGet64(int s, int o);
 #endif
 
+
+
+
 int allocate(int size);
-namespace fpuinsns {
-float fromFp32(uint32_t v);
-}
 // Stack helpers (need access to registers)
 extern uint32_t eax, ecx, esp;
 extern uint16_t ds, ss, es, gs, cs, fs;
@@ -180,6 +192,7 @@ void writeWav(const char* filename, const float* left, const float* right, int n
 
 // --- Main ---
 int main(int argc, char* argv[]) {
+    moncontrol(0);
     printf("Nexus C++ emulator starting...\n");
     if (init_mmap())
         return 1;
@@ -280,7 +293,10 @@ int main(int argc, char* argv[]) {
     memoryASet32(0, outputPtrs + 0, outL);
     memoryASet32(0, outputPtrs + 4, outR);
 
+    const int NUM_BLOCKS = 400;
     std::vector<float> allLeft, allRight;
+    allLeft.reserve(NUM_BLOCKS*BLOCK_SIZE);
+    allRight.reserve(NUM_BLOCKS*BLOCK_SIZE);
 
     // --- Send MIDI helper ---
     auto sendMidi = [&](uint8_t status, uint8_t note, uint8_t velocity) {
@@ -298,9 +314,9 @@ int main(int argc, char* argv[]) {
     };
 
     // --- Render audio blocks ---
-    const int NUM_BLOCKS = 400;
     printf("Rendering %d blocks of %d samples...\n", NUM_BLOCKS, BLOCK_SIZE);
 
+    moncontrol(1);
     auto start = std::chrono::steady_clock::now();
 
     for (int block = 0; block < NUM_BLOCKS; block++) {
@@ -333,8 +349,8 @@ int main(int argc, char* argv[]) {
         uint32_t actualOutL = memoryAGet32(0, outputPtrs);
         uint32_t actualOutR = memoryAGet32(0, outputPtrs + 4);
         for (int i = 0; i < BLOCK_SIZE; i++) {
-            allLeft.push_back(fpuinsns::fromFp32(memoryAGet32(0, actualOutL + i * 4)));
-            allRight.push_back(fpuinsns::fromFp32(memoryAGet32(0, actualOutR + i * 4)));
+            allLeft.push_back(memoryFGet32(0, actualOutL + i * 4));
+            allRight.push_back(memoryFGet32(0, actualOutR + i * 4));
         }
     }
 

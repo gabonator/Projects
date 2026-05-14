@@ -153,13 +153,13 @@ void sub_10066dc0()
 {
     StackGuard _sg(16, __FUNCTION__);
     const float one = 1.0f;
-    const float k_halfish      = memoryFGet32(ds, 0x100e6490);
-    const float k_feedback2    = memoryFGet32(ds, 0x100e74bc);
-    const float k_input_scale  = memoryFGet32(ds, 0x100e77e8);
-    const float k_gain_mul     = memoryFGet32(ds, 0x103cd1c4);
-    const float k_gain_add     = memoryFGet32(ds, 0x103d3918);
-    const float k_initial_bias = memoryFGet32(ds, 0x103d33f0);
-    const float k_shape_bias   = memoryFGet32(ds, 0x103d4538);
+    const float k_halfish      = 0.5f;
+    const float k_feedback2    = 1.0499999523162842f;
+    const float k_input_scale  = 44100.0f;
+    const float k_gain_mul     = 0.20000000298023224f;
+    const float k_gain_add     = 0.800000011920929f;
+    const float k_initial_bias = 1.000000045813705e-18f;
+    const float k_shape_bias   = 9.999999960041972e-13f;
     esp -= 4;
     esp -= 0x1c;
     eax = memoryAGet32(ds, esp + 0x2c);

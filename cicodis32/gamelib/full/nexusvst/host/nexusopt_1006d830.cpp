@@ -307,12 +307,12 @@ loc_1006d872: // 0000:1006d872
 loc_1006d890: // 0000:1006d890
     fild32(memoryAGet32(ds, esi + 0x42690));
     fsub32(memoryAGet32(ds, esi + 0x42698));
-    fcom32(memoryAGet32(ds, 0x100e6494));
+    fcom32(0x3f800000u);
     memoryASet32(ds, esp + 0x10, fst32());
     ax = fnstsw();
     if (!(parityOdd(ah, 0x05)))
         goto loc_1006d8b7;
-    fadd32(memoryAGet32(ds, 0x103d7e0c));
+    fadd32(0x4704d000u);
     memoryASet32(ds, esp + 0x10, fst32());
 loc_1006d8b7: // 0000:1006d8b7
     memoryASet64(ds, esp + 0x20, fstp64());
@@ -345,12 +345,12 @@ loc_1006d8b7: // 0000:1006d8b7
     memoryASet32(ds, esp + 0x20, fstp32());
     fild32(memoryAGet32(ds, esi + 0x42694));
     fsub32(memoryAGet32(ds, esi + 0x4269c));
-    fcom32(memoryAGet32(ds, 0x100e6494));
+    fcom32(0x3f800000u);
     memoryASet32(ds, esp + 0x10, fst32());
     ax = fnstsw();
     if (!(parityOdd(ah, 0x05)))
         goto loc_1006d946;
-    fadd32(memoryAGet32(ds, 0x103d7e0c));
+    fadd32(0x4704d000u);
     memoryASet32(ds, esp + 0x10, fst32());
 loc_1006d946: // 0000:1006d946
     memoryASet64(ds, esp + 0x28, fstp64());
@@ -444,7 +444,7 @@ loc_1006da62: // 0000:1006da62
     fld64(memoryAGet64(ds, edi + 0x28));
     memoryASet64(ds, edi + 0x30, fstp64());
     fld64(memoryAGet64(ds, edi + 0x28));
-    fadd32(memoryAGet32(ds, 0x100e6494));
+    fadd32(0x3f800000u);
     fmul32(memoryAGet32(ds, esi + 0x426c0));
     memoryASet32(ds, esi + 0x42698, fstp32());
     al = memoryAGet(ds, ecx + 0x40);
@@ -465,7 +465,7 @@ loc_1006daa5: // 0000:1006daa5
     fld64(memoryAGet64(ds, esi + 0x427a0));
     memoryASet64(ds, esi + 0x427a8, fstp64());
     fld64(memoryAGet64(ds, esi + 0x427a0));
-    fadd32(memoryAGet32(ds, 0x100e6494));
+    fadd32(0x3f800000u);
     fmul32(memoryAGet32(ds, esi + 0x426c4));
     memoryASet32(ds, esi + 0x4269c, fstp32());
     if (eax)
@@ -494,7 +494,7 @@ void sub_100704c0() // 0000:100704c0 +long
     fdiv64(memoryAGet64(ds, esi));
     ecx = esp + 4;
     memoryASet(ds, esi + 0x40, 0x00);
-    fmul64(memoryAGet64(ds, 0x103d83f8));
+    fmul64(0x401921fb60000000ull);
     memoryASet64(ds, esi + 0x10, fst64());
     fldst(0);
     fcos();

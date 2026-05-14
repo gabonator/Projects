@@ -87,14 +87,14 @@ void sub_100c05b0() // 0000:100c05b0 +long
 loc_1001f190: // 0000:1001f190
     ecx += 0x00000004;
     push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61dc), __LINE__, 0); // 0000:1001f194
+    indirectCall(cs, 0x6ab00075u, __LINE__, 0); // 0000:1001f194
     // SEH removed (was stack_unbalanced, 0/-4) // SEH removed (was stack_unbalanced, 0/-4)
     esp += 4; return; // undo synthetic only (stdcall already cleaned the push)
     // gap 5 bytes // gap 5 bytes
 loc_1001f1a0: // 0000:1001f1a0
     ecx += 0x00000004;
     push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61d8), __LINE__, 0); // 0000:1001f1a4
+    indirectCall(cs, 0x6ab00074u, __LINE__, 0); // 0000:1001f1a4
     // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
     esp += 4; return;
     // gap 660485 bytes // gap 660485 bytes
@@ -127,14 +127,14 @@ void sub_100c4a60() // 0000:100c4a60 +long
 loc_1001f190: // 0000:1001f190
     ecx += 0x00000004;
     push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61dc), __LINE__, 0); // 0000:1001f194
+    indirectCall(cs, 0x6ab00075u, __LINE__, 0); // 0000:1001f194
     // SEH removed (was stack_unbalanced, 0/-4) // SEH removed (was stack_unbalanced, 0/-4)
     esp += 4; return; // undo synthetic only (stdcall already cleaned the push)
     // gap 5 bytes // gap 5 bytes
 loc_1001f1a0: // 0000:1001f1a0
     ecx += 0x00000004;
     push32(ecx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e61d8), __LINE__, 0); // 0000:1001f1a4
+    indirectCall(cs, 0x6ab00074u, __LINE__, 0); // 0000:1001f1a4
     // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
     esp += 4; return;
     // gap 678069 bytes // gap 678069 bytes

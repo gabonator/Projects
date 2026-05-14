@@ -4,9 +4,13 @@ namespace advapi32 {
 static uint32_t _regHandle = 0xAA000001;
 
 static std::string readStr(uint32_t addr) {
+#ifdef RASPI
+    return std::string((char*)addr);
+#else
     char buf[260] = {0};
     for (int i = 0; i < 259 && memoryAGet(ds, addr + i); i++) buf[i] = memoryAGet(ds, addr + i);
     return buf;
+#endif
 }
 
 uint32_t RegOpenKeyExA() { // 5 args +20

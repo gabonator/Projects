@@ -13,6 +13,8 @@
 #include <vector>
 #include <string>
 
+#define static_inline static inline __attribute__((always_inline))
+
 // --- Memory access ---
 #ifndef RASPI
 static const int MEM_BASE = 0x10000000;
@@ -521,6 +523,11 @@ inline void _heartbeat(const char* where) {
 }
 
 // --- StackGuard: detect ESP imbalance at function exit ---
+#ifdef RASPI
+struct StackGuard {
+  StackGuard(int, const char*) {}
+};
+#else
 class StackGuard
 {
     uint32_t savedesp;
@@ -536,6 +543,7 @@ public:
         }
     }
 };
+#endif
 
 void fixReloc(uint16_t seg);
 
@@ -594,54 +602,54 @@ static uint16_t compareResult = 0;
 static uint16_t controlWord = 0x037f; // default: round to nearest, all exceptions masked
 
 // --- Core stack ops ---
-inline void fppush(double value)
+static_inline void fppush(double value)
 {
     top = (top - 1) & 7;
     fpstack[top] = value;
     fppos++;
 }
 
-inline double fppop()
+static_inline double fppop()
 {
     double value = fpstack[top];
-    fpstack[top] = 0;
+//    fpstack[top] = 0;
     top = (top + 1) & 7;
     fppos--;
     return value;
 }
 
-inline double& st(int i) {
+static_inline double& st(int i) {
     return fpstack[(top + i) & 7];
 }
 
-inline double& st0() {
+static_inline double& st0() {
     return fpstack[top];
 }
 
-inline void setst(int i, double v) {
+static_inline void setst(int i, double v) {
     fpstack[(top + i) & 7] = v;
 }
 
 // --- Float32 conversion helpers ---
-float fromFp32(uint32_t v) {
+static_inline float fromFp32(uint32_t v) {
     float f;
     memcpy(&f, &v, 4);
     return f;
 }
 
-inline uint32_t toFp32(float f) {
+static_inline uint32_t toFp32(float f) {
     uint32_t v;
     memcpy(&v, &f, 4);
     return v;
 }
 
-inline double fromFp64(uint64_t v) {
+static_inline double fromFp64(uint64_t v) {
     double d;
     memcpy(&d, &v, 8);
     return d;
 }
 
-inline uint64_t toFp64(double d) {
+static_inline uint64_t toFp64(double d) {
     uint64_t v;
     memcpy(&v, &d, 8);
     return v;
@@ -668,123 +676,123 @@ inline uint16_t emulate_fnstsw_compare(double a, double b) {
 // LOAD instructions (push onto FPU stack)
 // =========================================
 
-inline void fld32(uint32_t v) { fppush((double)fromFp32(v)); }
-inline void fld64(uint64_t v) { fppush(fromFp64(v)); }
-inline void fld80(double d)   { fppush(d); }
-inline void fild16(uint16_t v){ fppush((double)(int16_t)v); }
-inline void fild32(uint32_t v){ fppush((double)(int32_t)v); }
-inline void fild64(uint64_t v){ fppush((double)(int64_t)v); }
+static_inline void fld32(uint32_t v) { fppush((double)fromFp32(v)); }
+static_inline void fld64(uint64_t v) { fppush(fromFp64(v)); }
+static_inline void fld80(double d)   { fppush(d); }
+static_inline void fild16(uint16_t v){ fppush((double)(int16_t)v); }
+static_inline void fild32(uint32_t v){ fppush((double)(int32_t)v); }
+static_inline void fild64(uint64_t v){ fppush((double)(int64_t)v); }
 
 // Integer memory operands
-inline void fimul32(uint32_t v){ st0() *= (double)(int32_t)v; }
-inline void fidiv32(uint32_t v){ st0() /= (double)(int32_t)v; }
-inline void fiadd32(uint32_t v){ st0() += (double)(int32_t)v; }
-inline void fisub32(uint32_t v){ st0() -= (double)(int32_t)v; }
-inline void fisubr32(uint32_t v){ st0() = (double)(int32_t)v - st0(); }
-inline void fimul16(uint16_t v){ st0() *= (double)(int16_t)v; }
-inline void fidiv16(uint16_t v){ st0() /= (double)(int16_t)v; }
-inline void fiadd16(uint16_t v){ st0() += (double)(int16_t)v; }
-inline void fisub16(uint16_t v){ st0() -= (double)(int16_t)v; }
-inline void fld16(uint16_t v) { fppush((double)(int16_t)v); }
-inline void fldst(int i)      { fppush(st(i)); }
-inline void fld1()            { fppush(1.0); }
-inline void fldz()            { fppush(0.0); }
-inline void fldpi()           { fppush(M_PI); }
-inline void fldln2()          { fppush(0.6931471805599453); }  // ln(2)
-inline void fldl2e()          { fppush(1.4426950408889634); }  // log2(e)
-inline void fldl2t()          { fppush(3.3219280948873626); }  // log2(10)
-inline void fldlg2()          { fppush(0.3010299957316877); }  // log10(2)
+static_inline void fimul32(uint32_t v){ st0() *= (double)(int32_t)v; }
+static_inline void fidiv32(uint32_t v){ st0() /= (double)(int32_t)v; }
+static_inline void fiadd32(uint32_t v){ st0() += (double)(int32_t)v; }
+static_inline void fisub32(uint32_t v){ st0() -= (double)(int32_t)v; }
+static_inline void fisubr32(uint32_t v){ st0() = (double)(int32_t)v - st0(); }
+static_inline void fimul16(uint16_t v){ st0() *= (double)(int16_t)v; }
+static_inline void fidiv16(uint16_t v){ st0() /= (double)(int16_t)v; }
+static_inline void fiadd16(uint16_t v){ st0() += (double)(int16_t)v; }
+static_inline void fisub16(uint16_t v){ st0() -= (double)(int16_t)v; }
+static_inline void fld16(uint16_t v) { fppush((double)(int16_t)v); }
+static_inline void fldst(int i)      { fppush(st(i)); }
+static_inline void fld1()            { fppush(1.0); }
+static_inline void fldz()            { fppush(0.0); }
+static_inline void fldpi()           { fppush(M_PI); }
+static_inline void fldln2()          { fppush(0.6931471805599453); }  // ln(2)
+static_inline void fldl2e()          { fppush(1.4426950408889634); }  // log2(e)
+static_inline void fldl2t()          { fppush(3.3219280948873626); }  // log2(10)
+static_inline void fldlg2()          { fppush(0.3010299957316877); }  // log10(2)
 
 // =========================================
 // STORE instructions (pop from FPU stack)
 // =========================================
-inline uint32_t fstp32() { return toFp32((float)fppop()); }
-inline uint64_t fstp64() { return toFp64(fppop()); }
-inline double   fstp80() { return fppop(); }
-inline uint32_t fst32()  { return toFp32((float)st0()); }
-inline uint64_t fst64()  { return toFp64(st0()); }
-inline double   fst80()  { return st0(); }
+static_inline uint32_t fstp32() { return toFp32((float)fppop()); }
+static_inline uint64_t fstp64() { return toFp64(fppop()); }
+static_inline double   fstp80() { return fppop(); }
+static_inline uint32_t fst32()  { return toFp32((float)st0()); }
+static_inline uint64_t fst64()  { return toFp64(st0()); }
+static_inline double   fst80()  { return st0(); }
 // Use floor() instead of lrint() to match x87 behavior for phase accumulators.
 // On x87 with 80-bit precision, values near 0.5 stay below due to extra mantissa bits.
 // With 64-bit double, the reduced precision pushes values slightly above 0.5,
 // causing lrint() to round up and producing negative fractionals that destabilize filters.
 // floor() gives consistent results regardless of precision at these boundaries.
-inline uint32_t fistp32(){ return (uint32_t)(int32_t)floor(fppop()); }
-inline uint64_t fistp64(){ return (uint64_t)(int64_t)floor(fppop()); }
-inline uint16_t fistp16(){ return (uint16_t)(int16_t)floor(fppop()); }
-inline void fstpst(int i){ st(i) = st(0); fppop(); }
+static_inline uint32_t fistp32(){ return (uint32_t)(int32_t)floor(fppop()); }
+static_inline uint64_t fistp64(){ return (uint64_t)(int64_t)floor(fppop()); }
+static_inline uint16_t fistp16(){ return (uint16_t)(int16_t)floor(fppop()); }
+static_inline void fstpst(int i){ st(i) = st(0); fppop(); }
 
 // =========================================
 // ARITHMETIC — memory operand (float32)
 // =========================================
 
-inline void fadd32(uint32_t v) { st0() += (double)fromFp32(v); }
-inline void fsub32(uint32_t v) { st0() -= (double)fromFp32(v); }
-inline void fsubr32(uint32_t v){ st0() = (double)fromFp32(v) - st0(); }
-inline void fmul32(uint32_t v) { st0() *= (double)fromFp32(v); }
-inline void fdiv32(uint32_t v) { st0() /= (double)fromFp32(v); }
-inline void fdivr32(uint32_t v){ st0() = (double)fromFp32(v) / st0(); }
+static_inline void fadd32(uint32_t v) { st0() += (double)fromFp32(v); }
+static_inline void fsub32(uint32_t v) { st0() -= (double)fromFp32(v); }
+static_inline void fsubr32(uint32_t v){ st0() = (double)fromFp32(v) - st0(); }
+static_inline void fmul32(uint32_t v) { st0() *= (double)fromFp32(v); }
+static_inline void fdiv32(uint32_t v) { st0() /= (double)fromFp32(v); }
+static_inline void fdivr32(uint32_t v){ st0() = (double)fromFp32(v) / st0(); }
 
 // =========================================
 // ARITHMETIC — memory operand (float64)
 // =========================================
 
-inline void fadd64(uint64_t v) { st0() += fromFp64(v); }
-inline void fsub64(uint64_t v) { st0() -= fromFp64(v); }
-inline void fsubr64(uint64_t v){ st0() = fromFp64(v) - st0(); }
-inline void fmul64(uint64_t v) { st0() *= fromFp64(v); }
-inline void fdiv64(uint64_t v) { st0() /= fromFp64(v); }
-inline void fdivr64(uint64_t v){ st0() = fromFp64(v) / st0(); }
+static_inline void fadd64(uint64_t v) { st0() += fromFp64(v); }
+static_inline void fsub64(uint64_t v) { st0() -= fromFp64(v); }
+static_inline void fsubr64(uint64_t v){ st0() = fromFp64(v) - st0(); }
+static_inline void fmul64(uint64_t v) { st0() *= fromFp64(v); }
+static_inline void fdiv64(uint64_t v) { st0() /= fromFp64(v); }
+static_inline void fdivr64(uint64_t v){ st0() = fromFp64(v) / st0(); }
 
 // =========================================
 // ARITHMETIC — 80-bit (ST register refs)
 // =========================================
 
-inline void fadd80(double d)   { st0() += d; }
-inline void fsub80(uint64_t v) { st0() -= fromFp64(v); }
-inline void fsub80()           { st0() -= st(1); }
-inline void fmul80(double d)   { st0() *= d; }
-inline void fdiv80(double d)   { st0() /= d; }
-inline void fdivr80(double d)  { st0() = d / st(0); }
+static_inline void fadd80(double d)   { st0() += d; }
+static_inline void fsub80(uint64_t v) { st0() -= fromFp64(v); }
+static_inline void fsub80()           { st0() -= st(1); }
+static_inline void fmul80(double d)   { st0() *= d; }
+static_inline void fdiv80(double d)   { st0() /= d; }
+static_inline void fdivr80(double d)  { st0() = d / st(0); }
 
 // p80 = pop variants (operate then pop ST(0))
-inline void faddp80(double& v) { v += st(0); fppop(); }
-inline void fsubp80(double& v) { v -= st(0); fppop(); }
-inline void fsubp80()          { st(1) -= st(0); fppop(); }
-inline void fmulp80(double& v) { v *= st(0); fppop(); }
-inline void fmulp80(uint64_t v){ st(1) *= fromFp64(v); fppop(); }
-inline void fdivp80(double& v) { v /= st(0); fppop(); }
-inline void fdivrp80(double& v){ double t = st(0) / v; v = t; fppop(); }
-inline void fdivrp80(uint64_t v){ st(1) = fromFp64(v) / st(1); fppop(); }
-inline void faddp64(uint64_t v){ st(0) += fromFp64(v); fppop(); }
+static_inline void faddp80(double& v) { v += st(0); fppop(); }
+static_inline void fsubp80(double& v) { v -= st(0); fppop(); }
+static_inline void fsubp80()          { st(1) -= st(0); fppop(); }
+static_inline void fmulp80(double& v) { v *= st(0); fppop(); }
+static_inline void fmulp80(uint64_t v){ st(1) *= fromFp64(v); fppop(); }
+static_inline void fdivp80(double& v) { v /= st(0); fppop(); }
+static_inline void fdivrp80(double& v){ double t = st(0) / v; v = t; fppop(); }
+static_inline void fdivrp80(uint64_t v){ st(1) = fromFp64(v) / st(1); fppop(); }
+static_inline void faddp64(uint64_t v){ st(0) += fromFp64(v); fppop(); }
 
 // =========================================
 // ARITHMETIC — ST(i) register operations
 // =========================================
 
 // D8 form: result in ST(0)
-inline void faddst(int i)       { st0() += st(i); }
-inline void fsubst(int i)       { st0() -= st(i); }
-inline void fsubrst(int i)      { st0() = st(i) - st0(); }
-inline void fmulst(int i)       { st0() *= st(i); }
-inline void fdivst(int i)       { st0() /= st(i); }
-inline void fdivrst(int i)      { st0() = st(i) / st0(); }
+static_inline void faddst(int i)       { st0() += st(i); }
+static_inline void fsubst(int i)       { st0() -= st(i); }
+static_inline void fsubrst(int i)      { st0() = st(i) - st0(); }
+static_inline void fmulst(int i)       { st0() *= st(i); }
+static_inline void fdivst(int i)       { st0() /= st(i); }
+static_inline void fdivrst(int i)      { st0() = st(i) / st0(); }
 
 // DC form: result in ST(i)
-inline void faddst2(int i, int j){ st(i) += st(j); }
-inline void fmulst2(int i, int j){ st(i) *= st(j); }
-inline void fsubst2(int i, int j){ st(i) -= st(j); }
-inline void fdivst2(int i, int j){ st(i) /= st(j); }
-inline void fsubrst2(int i, int j){ st(i) = st(j) - st(i); }
-inline void fdivrst2(int i, int j){ st(i) = st(j) / st(i); }
+static_inline void faddst2(int i, int j){ st(i) += st(j); }
+static_inline void fmulst2(int i, int j){ st(i) *= st(j); }
+static_inline void fsubst2(int i, int j){ st(i) -= st(j); }
+static_inline void fdivst2(int i, int j){ st(i) /= st(j); }
+static_inline void fsubrst2(int i, int j){ st(i) = st(j) - st(i); }
+static_inline void fdivrst2(int i, int j){ st(i) = st(j) / st(i); }
 
 // DC+pop: result in ST(i), then pop
-inline void faddpst(int i)      { st(i) += st0(); fppop(); }
-inline void fsubpst(int i)      { st(i) -= st0(); fppop(); }
-inline void fsubrpst(int i)     { st(i) = st0() - st(i); fppop(); }
-inline void fmulpst(int i)      { st(i) *= st0(); fppop(); }
-inline void fdivpst(int i)      { st(i) /= st0(); fppop(); }
-inline void fdivrpst(int i)     { st(i) = st0() / st(i); fppop(); }
+static_inline void faddpst(int i)      { st(i) += st0(); fppop(); }
+static_inline void fsubpst(int i)      { st(i) -= st0(); fppop(); }
+static_inline void fsubrpst(int i)     { st(i) = st0() - st(i); fppop(); }
+static_inline void fmulpst(int i)      { st(i) *= st0(); fppop(); }
+static_inline void fdivpst(int i)      { st(i) /= st0(); fppop(); }
+static_inline void fdivrpst(int i)     { st(i) = st0() / st(i); fppop(); }
 
 // =========================================
 // EXCHANGE

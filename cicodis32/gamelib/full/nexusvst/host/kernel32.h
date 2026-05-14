@@ -10,6 +10,7 @@
 namespace kernel32 {
 
 // Helper to read string from emulated memory
+/*
 static std::string readString(uint32_t addr) {
     std::string s;
     for (int i = 0; i < 1024; i++) {
@@ -18,6 +19,17 @@ static std::string readString(uint32_t addr) {
         s += c;
     }
     return s;
+}
+*/
+
+static std::string readString(uint32_t addr) {
+#ifdef RASPI
+    return std::string((char*)addr);
+#else
+    char buf[260] = {0};
+    for (int i = 0; i < 259 && memoryAGet(ds, addr + i); i++) buf[i] = memoryAGet(ds, addr + i);
+    return buf;
+#endif
 }
 
 // --- File I/O ---

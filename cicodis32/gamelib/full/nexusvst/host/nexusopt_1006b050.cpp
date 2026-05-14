@@ -100,10 +100,10 @@ loc_1006b0f4: // 0000:1006b0f4
 loc_1006b11a: // 0000:1006b11a
     fp0 = memoryFGet32(ss, ebp + 0x36c);
     eax = memoryAGet32(ds, esp + 0x4c);
-    fp0 += memoryFGet32(ds, 0x100e6494);
+    fp0 += 1.0f;
     edx = memoryAGet32(ds, eax + 0x4);
     ecx = memoryAGet32(ds, eax);
-    fp0 *= memoryFGet32(ds, 0x100e6490);
+    fp0 *= 0.5f;
     ebx = esi;
     memoryASet32(ds, esp + 0x10, edi);
     memoryASet32(ds, esp + 0x2c, ecx);
@@ -184,7 +184,7 @@ loc_1006b1d0: // 0000:1006b1d0
     subopt_1006ccd0();
     ebx = eax;
 loc_1006b21c: // 0000:1006b21c
-    fp0 = memoryFGet32(ds, 0x103d33f0);
+    fp0 = 1.000000045813705e-18f;
     eax = 0;
     if ((int32_t)ebx < (int32_t)0x00000004)
         goto loc_1006b2ba;
@@ -204,7 +204,7 @@ loc_1006b230: // 0000:1006b230
 #endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 4;
-    fp0 *= memoryFGet32(ds, 0x100e64b8);
+    fp0 *= -1.0f;
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
@@ -217,7 +217,7 @@ loc_1006b230: // 0000:1006b230
 #endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 8;
-    fp0 *= memoryFGet32(ds, 0x100e64b8);
+    fp0 *= -1.0f;
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
@@ -230,7 +230,7 @@ loc_1006b230: // 0000:1006b230
 #endif
     ecx = memoryAGet32(ss, ebp + 0x1c);
     ecx = (ecx + (eax * 4)) + 12;
-    fp0 *= memoryFGet32(ds, 0x100e64b8);
+    fp0 *= -1.0f;
     fp1 = fp0;
     fp1 += memoryFGet32(ds, ecx);
     memoryFSet32(ds, ecx, fp1);
@@ -242,7 +242,7 @@ loc_1006b230: // 0000:1006b230
     memoryFSet32(ds, ecx, fp1);
 #endif
     eax += 0x00000004;
-    fp0 *= memoryFGet32(ds, 0x100e64b8);
+    fp0 *= -1.0f;
     if ((int32_t)eax < (int32_t)edx)
         goto loc_1006b230;
 loc_1006b2ba: // 0000:1006b2ba
@@ -263,7 +263,7 @@ loc_1006b2c0: // 0000:1006b2c0
     memoryFSet32(ds, ecx, fp1);
 #endif
     eax++;
-    fp0 *= memoryFGet32(ds, 0x100e64b8);
+    fp0 *= -1.0f;
     if ((int32_t)eax < (int32_t)ebx)
         goto loc_1006b2c0;
 loc_1006b2e4: // 0000:1006b2e4
@@ -281,9 +281,9 @@ loc_1006b2e4: // 0000:1006b2e4
     push32(eax);
     subopt_1006efe0();
     fp0 = memoryFGet32(ss, ebp + 0x378);
-    _cmp0r = (double)fromFp32(memoryAGet32(ds, 0x100e649c));
+    _cmp0r = (double)fromFp32(0);
 
-    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x100e649c))
+    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(0)
         goto loc_1006b32b;
     eax = memoryAGet32(ss, ebp + 0x20);
     ecx = memoryAGet32(ss, ebp + 0x1c);
@@ -343,15 +343,15 @@ loc_1006b380: // 0000:1006b380
     fp2 *= memoryFGet32(ds, eax);
     fp1 += fp2;
     fp2 = fp0;
-    fp2 *= memoryFGet32(ds, 0x103cd1c0);
+    fp2 *= 1.5f;
     fp3 = memoryFGet32(ss, ebp + 0x3dc);
-    fp3 *= memoryFGet32(ds, 0x100e6490);
+    fp3 *= 0.5f;
     fp2 -= fp3;
     memoryFSet32(ds, esi + 0x4, fp2);
-    fp2 = memoryFGet32(ds, 0x103cd1c0);
+    fp2 = 1.5f;
     fp2 *= fp1;
     fp3 = memoryFGet32(ss, ebp + 0x3e0);
-    fp3 *= memoryFGet32(ds, 0x100e6490);
+    fp3 *= 0.5f;
     fp2 -= fp3;
     memoryFSet32(ds, edi + 0x4, fp2);
     eax = memoryAGet32(ss, ebp + 0x34);
@@ -517,7 +517,7 @@ loc_1006b530: // 0000:1006b530
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     esi = memoryAGet32(ss, ebp + 0x2c);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
     // sub-iter 2 (sample i+1)
@@ -551,7 +551,7 @@ loc_1006b530: // 0000:1006b530
 
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
     // sub-iter 3 (sample i+2)
@@ -583,7 +583,7 @@ loc_1006b530: // 0000:1006b530
 
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     esi = memoryAGet32(ss, ebp + 0x2c);
     ecx = memoryAGet32(ss, ebp + 0x24);
@@ -618,7 +618,7 @@ loc_1006b530: // 0000:1006b530
 #endif
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
     if ((int32_t)eax < (int32_t)edx)
@@ -655,7 +655,7 @@ loc_1006b6f2: // 0000:1006b6f2
 #endif
     fp0 = memoryFGet32(ss, ebp + 0x3b4);
     fp0 -= memoryFGet32(ss, ebp + 0x3b8);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3b8);
     memoryFSet32(ss, ebp + 0x3b8, fp0);
     if ((int32_t)eax < (int32_t)ebx)
@@ -760,7 +760,7 @@ loc_1006b850: // 0000:1006b850
     memoryFSet32(ds, ecx - 8, fp0);
     fp0 = memoryFGet32(ss, ebp + 0x3c0);
     fp0 -= memoryFGet32(ss, ebp + 0x3c4);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3c4);
     memoryFSet32(ss, ebp + 0x3c4, fp0);
     fp0 *= memoryFGet32(ds, edi + eax - 16);
@@ -777,7 +777,7 @@ loc_1006b850: // 0000:1006b850
     edi += ecx;
     fp0 -= memoryFGet32(ss, ebp + 0x3c4);
     ecx += 0x00000010;
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3c4);
     memoryFSet32(ss, ebp + 0x3c4, fp0);
     fp0 *= memoryFGet32(ds, edi + ebx);
@@ -791,7 +791,7 @@ loc_1006b850: // 0000:1006b850
     memoryFSet32(ds, ecx - 16, fp0);
     fp0 = memoryFGet32(ss, ebp + 0x3c0);
     fp0 -= memoryFGet32(ss, ebp + 0x3c4);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3c4);
     memoryFSet32(ss, ebp + 0x3c4, fp0);
     fp0 *= memoryFGet32(ds, ebx + edx - 16);
@@ -803,7 +803,7 @@ loc_1006b850: // 0000:1006b850
     memoryFSet32(ds, ecx - 12, fp0);
     fp0 = memoryFGet32(ss, ebp + 0x3c0);
     fp0 -= memoryFGet32(ss, ebp + 0x3c4);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3c4);
     memoryFSet32(ss, ebp + 0x3c4, fp0);
     if ((int32_t)esi < (int32_t)edi)
@@ -836,7 +836,7 @@ loc_1006b990: // 0000:1006b990
     memoryFSet32(ds, eax + ecx - 4, fp0);
     fp0 = memoryFGet32(ss, ebp + 0x3c0);
     fp0 -= memoryFGet32(ss, ebp + 0x3c4);
-    fp0 *= memoryFGet32(ds, 0x100e64a8);
+    fp0 *= 0.0010000000474974513f;
     fp0 += memoryFGet32(ss, ebp + 0x3c4);
     memoryFSet32(ss, ebp + 0x3c4, fp0);
     if (esi)
@@ -867,12 +867,12 @@ void subopt_10070470() // 0000:10070470 +long
     ebx = 0x00000001;
     push32(ebx);
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e6064), 0x0000, 0x1007047f); // 0000:1007047f
+    indirectCall(cs, 0x6ab00017u, 0x0000, 0x1007047f); // 0000:1007047f
     if (eax)
         goto loc_1007049e;
     ecx = memoryAGet32(ds, esi);
     memoryASet32(ds, ecx + 0x4, ebx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60c4), 0x0000, 0x1007048e); // 0000:1007048e
+    indirectCall(cs, 0x6ab0002fu, 0x0000, 0x1007048e); // 0000:1007048e
     edx = memoryAGet32(ds, esi);
     memoryASet32(ds, edx + 0xc, eax);
     esi = pop32();
@@ -882,7 +882,7 @@ void subopt_10070470() // 0000:10070470 +long
     esp += 0x0000004; return; // SEH fixed: was +4, deficit 12
 loc_1007049e: // 0000:1007049e
     esi = memoryAGet32(ds, esi);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60c4), 0x0000, 0x100704a0); // 0000:100704a0
+    indirectCall(cs, 0x6ab0002fu, 0x0000, 0x100704a0); // 0000:100704a0
     if (memoryAGet32(ds, esi + 0xc) != eax)
         goto loc_100704b3;
     memoryASet32(ds, esi + 0x4, memoryAGet32(ds, esi + 0x4) + 1);
@@ -907,7 +907,7 @@ void subopt_10070420() // 0000:10070420 +long
     esi = ecx;
     push32(edi);
     edi = memoryAGet32(ds, esi);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60c4), 0x0000, 0x10070426); // 0000:10070426
+    indirectCall(cs, 0x6ab0002fu, 0x0000, 0x10070426); // 0000:10070426
     if (memoryAGet32(ds, edi + 0xc) != eax)
         goto loc_1007045f;
     memoryASet32(ds, edi + 0x4, memoryAGet32(ds, edi + 0x4) - 1);
@@ -919,13 +919,13 @@ void subopt_10070420() // 0000:10070420 +long
     eax = memoryAGet32(ds, esi);
     push32(0x00000000);
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e6060), 0x0000, 0x10070449); // 0000:10070449
+    indirectCall(cs, 0x6ab00016u, 0x0000, 0x10070449); // 0000:10070449
     if ((int32_t)eax >= 0)
         goto loc_1007045f;
     ecx = memoryAGet32(ds, esi);
     edx = memoryAGet32(ds, ecx + 0x8);
     push32(edx);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60c8), 0x0000, 0x10070459); // 0000:10070459
+    indirectCall(cs, 0x6ab00030u, 0x0000, 0x10070459); // 0000:10070459
 loc_1007045f: // 0000:1007045f
     edi = pop32();
     esi = pop32();
@@ -980,10 +980,10 @@ loc_1006cd22: // 0000:1006cd22
 loc_1006cd33: // 0000:1006cd33
     fp0 = (double)(int32_t)memoryAGet32(ss, ebp + 0x10);
     memoryFSet64(ds, esp + 0x18, fp0);
-    fp0 += memoryFGet64(ds, 0x100e64b0);
+    fp0 += 1.0;
     fp0 -= memoryFGet64(ds, ebx + 0x20);
     fp0 /= memoryFGet64(ds, ebx + 0x18);
-    fp0 += memoryFGet64(ds, 0x100e64b0);
+    fp0 += 1.0;
     subopt_100ca3f6(fp0);
     fp0 = memoryFGet64(ds, ebx + 0x20);
     esi = 0;
@@ -1012,22 +1012,22 @@ loc_1006cd70: // 0000:1006cd70
     edx = memoryAGet32(ss, ebp + 0xc);
     fp5 += fp1;
     fp6 = fp2;
-    fp6 *= memoryFGet32(ds, 0x100e7454);
+    fp6 *= 5.0f;
     fp6 += fp4;
-    fp6 *= memoryFGet32(ds, 0x100e6490);
+    fp6 *= 0.5f;
     fp5 -= fp6;
     fp6 = fp2;
     fp6 -= fp3;
-    fp6 *= memoryFGet32(ds, 0x100e7450);
+    fp6 *= 3.0f;
     fp6 -= fp1;
     fp6 += fp4;
-    fp6 *= memoryFGet32(ds, 0x100e6490);
+    fp6 *= 0.5f;
     fp6 *= fp0;
     fp5 += fp6;
     fp5 *= fp0;
     { double _xchg = fp5; fp5 = fp3; fp3 = _xchg; }
     fp5 -= fp1;
-    fp5 *= memoryFGet32(ds, 0x100e6490);
+    fp5 *= 0.5f;
     fp3 += fp5;
     { double _xchg = fp4; fp4 = fp3; fp3 = _xchg; }
     fp4 *= fp0;
@@ -1670,29 +1670,29 @@ loc_1006f8bd: // 0000:1006f8bd
 loc_1006f8c4: // 0000:1006f8c4
     fp0 = memoryFGet32(ds, ecx + 0xf0);
     edi = pop32();
-    _cmp0r = (double)fromFp32(memoryAGet32(ds, 0x103d83e4));
+    _cmp0r = (double)fromFp32(0x8704ec3du);
 
     esi = pop32();
     ebp = pop32();
     ebx = pop32();
-    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e4))
+    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(0x8704ec3du)
         goto loc_1006f8f8;
     fp0 = memoryFGet32(ds, ecx + 0xf0);
-    _cmp1r = (double)fromFp32(memoryAGet32(ds, 0x103d83e0));
+    _cmp1r = (double)fromFp32(0x0704ec3du);
 
-    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e0))
+    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(0x0704ec3du)
         goto loc_1006f8f8;
     memoryASet32(ds, ecx + 0xf0, 0x00000000);
 loc_1006f8f8: // 0000:1006f8f8
     fp0 = memoryFGet32(ds, ecx + 0x4);
-    _cmp2r = (double)fromFp32(memoryAGet32(ds, 0x103d83e4));
+    _cmp2r = (double)fromFp32(0x8704ec3du);
 
-    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e4))
+    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(0x8704ec3du)
         goto loc_1006f91f;
     fp0 = memoryFGet32(ds, ecx + 0x4);
-    _cmp3r = (double)fromFp32(memoryAGet32(ds, 0x103d83e0));
+    _cmp3r = (double)fromFp32(0x0704ec3du);
 
-    if (fp0 >= _cmp3r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e0))
+    if (fp0 >= _cmp3r)  // fp0 vs (double)fromFp32(0x0704ec3du)
         goto loc_1006f91f;
     memoryASet32(ds, ecx + 0x4, 0x00000000);
 loc_1006f91f: // 0000:1006f91f
@@ -1993,12 +1993,12 @@ loc_1006d872: // 0000:1006d872
 loc_1006d890: // 0000:1006d890
     fp0 = (double)(int32_t)memoryAGet32(ds, esi + 0x42690);
     fp0 -= memoryFGet32(ds, esi + 0x42698);
-    _cmp0r = (double)fromFp32(memoryAGet32(ds, 0x100e6494));
+    _cmp0r = (double)fromFp32(0x3f800000u);
 
     memoryFSet32(ds, esp + 0x10, fp0);
-    if (fp0 >= _cmp0r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x100e6494))
+    if (fp0 >= _cmp0r)  // fp0 vs (double)fromFp32(0x3f800000u)
         goto loc_1006d8b7;
-    fp0 += memoryFGet32(ds, 0x103d7e0c);
+    fp0 += 34000.0f;
     memoryFSet32(ds, esp + 0x10, fp0);
 loc_1006d8b7: // 0000:1006d8b7
     memoryFSet64(ds, esp + 0x20, fp0);
@@ -2031,12 +2031,12 @@ loc_1006d8b7: // 0000:1006d8b7
     memoryFSet32(ds, esp + 0x20, fp0);
     fp0 = (double)(int32_t)memoryAGet32(ds, esi + 0x42694);
     fp0 -= memoryFGet32(ds, esi + 0x4269c);
-    _cmp1r = (double)fromFp32(memoryAGet32(ds, 0x100e6494));
+    _cmp1r = (double)fromFp32(0x3f800000u);
 
     memoryFSet32(ds, esp + 0x10, fp0);
-    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x100e6494))
+    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(0x3f800000u)
         goto loc_1006d946;
-    fp0 += memoryFGet32(ds, 0x103d7e0c);
+    fp0 += 34000.0f;
     memoryFSet32(ds, esp + 0x10, fp0);
 loc_1006d946: // 0000:1006d946
     memoryFSet64(ds, esp + 0x28, fp0);
@@ -2130,7 +2130,7 @@ loc_1006da62: // 0000:1006da62
     fp0 = memoryFGet64(ds, edi + 0x28);
     memoryFSet64(ds, edi + 0x30, fp0);
     fp0 = memoryFGet64(ds, edi + 0x28);
-    fp0 += memoryFGet32(ds, 0x100e6494);
+    fp0 += 1.0f;
     fp0 *= memoryFGet32(ds, esi + 0x426c0);
     memoryFSet32(ds, esi + 0x42698, fp0);
     al = memoryAGet(ds, ecx + 0x40);
@@ -2151,7 +2151,7 @@ loc_1006daa5: // 0000:1006daa5
     fp0 = memoryFGet64(ds, esi + 0x427a0);
     memoryFSet64(ds, esi + 0x427a8, fp0);
     fp0 = memoryFGet64(ds, esi + 0x427a0);
-    fp0 += memoryFGet32(ds, 0x100e6494);
+    fp0 += 1.0f;
     fp0 *= memoryFGet32(ds, esi + 0x426c4);
     memoryFSet32(ds, esi + 0x4269c, fp0);
     if (eax)
@@ -2183,7 +2183,7 @@ void subopt_100704c0() // 0000:100704c0 +long
     fp0 /= memoryFGet64(ds, esi);
     ecx = esp + 4;
     memoryASet(ds, esi + 0x40, 0x00);
-    fp0 *= memoryFGet64(ds, 0x103d83f8);
+    fp0 *= 6.2831854820251465;
     memoryFSet64(ds, esi + 0x10, fp0);
     fp1 = fp0;
     fp1 = cos(fp1);
@@ -2212,13 +2212,13 @@ void subopt_10070390() // 0000:10070390 +long +stackDrop4
     push32(esi);
     esi = ecx;
     memoryASet32(ds, esi, eax);
-    indirectCall(cs, memoryAGet32(ds, 0x100e60c4), 0x0000, 0x1007039a); // 0000:1007039a
+    indirectCall(cs, 0x6ab0002fu, 0x0000, 0x1007039a); // 0000:1007039a
     ecx = memoryAGet32(ds, esi);
     push32(0x00000000);
     push32(0x00000001);
     push32(ecx);
     ebx = eax;
-    indirectCall(cs, memoryAGet32(ds, 0x100e6064), 0x0000, 0x100703a9); // 0000:100703a9
+    indirectCall(cs, 0x6ab00017u, 0x0000, 0x100703a9); // 0000:100703a9
     if (eax)
         goto loc_100703c8;
     edx = memoryAGet32(ds, esi);
@@ -2243,13 +2243,13 @@ loc_100703c8: // 0000:100703c8
 loc_100703d9: // 0000:100703d9
     push32(ebp);
     push32(edi);
-    edi = memoryAGet32(ds, 0x100e6060);
+    edi = 0x6ab00016u;
     push32(0xffffffff);
     push32(eax);
     indirectCall(cs, edi, 0x0000, 0x100703e4); // 0000:100703e4
     if (!eax)
         goto loc_10070409;
-    ebp = memoryAGet32(ds, 0x100e60b0);
+    ebp = 0x6ab0002au;
 loc_100703f0: // 0000:100703f0
     ecx = memoryAGet32(ds, esi);
     edx = memoryAGet32(ds, ecx + 0x8);
@@ -2306,15 +2306,15 @@ void subopt_1006df90() // 0000:1006df90 +long +stackDrop20
     push32(esi);
     push32(edi);
     fp0 *= memoryFGet32(ds, ebx + 0x3e820);
-    fp0 *= memoryFGet32(ds, 0x103d83c0);
+    fp0 *= -0.0010000000474974513f;
     subopt_100ca3f6(fp0);
     fp0 = memoryFGet32(ds, ebx + 0x3ed50);
-    _cmp0r = (double)fromFp32(memoryAGet32(ds, 0x103cd1c4));
+    _cmp0r = (double)fromFp32(0x3e4ccccdu);
 
     ecx = 0x00000004;
     ecx -= eax;
     ebp = ebx + (ecx * 8);
-    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103cd1c4))
+    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(0x3e4ccccdu)
         goto loc_1006e003;
     esi = memoryAGet32(ds, esp + 0x2c);
     edx = memoryAGet32(ds, ebx + 0x3ed2c);
@@ -2355,9 +2355,9 @@ loc_1006e003: // 0000:1006e003
     esi = memoryAGet32(ds, esp + 0x2c);
 loc_1006e040: // 0000:1006e040
     fp0 = memoryFGet32(ds, ebx + 0x3ed50);
-    _cmp1r = (double)fromFp32(memoryAGet32(ds, 0x103d3a00));
+    _cmp1r = (double)fromFp32(0x3ecccccdu);
 
-    if (fp0 <= _cmp1r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d3a00))
+    if (fp0 <= _cmp1r)  // fp0 vs (double)fromFp32(0x3ecccccdu)
         goto loc_1006e083;
     ecx = memoryAGet32(ds, ebx + 0x3ed34);
     edx = memoryAGet32(ds, ebx + 0x3ed2c);
@@ -2396,9 +2396,9 @@ loc_1006e083: // 0000:1006e083
     esi = memoryAGet32(ds, esp + 0x2c);
 loc_1006e0c4: // 0000:1006e0c4
     fp0 = memoryFGet32(ds, ebx + 0x3ed50);
-    _cmp2r = (double)fromFp32(memoryAGet32(ds, 0x103cd2c0));
+    _cmp2r = (double)fromFp32(0x3f19999au);
 
-    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103cd2c0))
+    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(0x3f19999au)
         goto loc_1006e107;
     ecx = memoryAGet32(ds, ebx + 0x3ed3c);
     edx = memoryAGet32(ds, ebx + 0x3ed34);
@@ -3019,7 +3019,7 @@ loc_1007010b: // 0000:1007010b
 loc_10070116: // 0000:10070116
     fp0 = memoryFGet32(ds, ecx + 0x68);
     eax = memoryAGet32(ds, ecx + 0x84);
-    _cmp0r = (double)fromFp32(memoryAGet32(ds, 0x103d83e4));
+    _cmp0r = (double)fromFp32(0x8704ec3du);
 
     eax -= ebx;
     edi = pop32();
@@ -3027,24 +3027,24 @@ loc_10070116: // 0000:10070116
     esi = pop32();
     ebp = pop32();
     ebx = pop32();
-    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e4))
+    if (fp0 <= _cmp0r)  // fp0 vs (double)fromFp32(0x8704ec3du)
         goto loc_1007014f;
     fp0 = memoryFGet32(ds, ecx + 0x68);
-    _cmp1r = (double)fromFp32(memoryAGet32(ds, 0x103d83e0));
+    _cmp1r = (double)fromFp32(0x0704ec3du);
 
-    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e0))
+    if (fp0 >= _cmp1r)  // fp0 vs (double)fromFp32(0x0704ec3du)
         goto loc_1007014f;
     memoryASet32(ds, ecx + 0x68, 0x00000000);
 loc_1007014f: // 0000:1007014f
     fp0 = memoryFGet32(ds, ecx + 0x6c);
-    _cmp2r = (double)fromFp32(memoryAGet32(ds, 0x103d83e4));
+    _cmp2r = (double)fromFp32(0x8704ec3du);
 
-    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e4))
+    if (fp0 <= _cmp2r)  // fp0 vs (double)fromFp32(0x8704ec3du)
         goto loc_10070176;
     fp0 = memoryFGet32(ds, ecx + 0x6c);
-    _cmp3r = (double)fromFp32(memoryAGet32(ds, 0x103d83e0));
+    _cmp3r = (double)fromFp32(0x0704ec3du);
 
-    if (fp0 >= _cmp3r)  // fp0 vs (double)fromFp32(memoryAGet32(ds, 0x103d83e0))
+    if (fp0 >= _cmp3r)  // fp0 vs (double)fromFp32(0x0704ec3du)
         goto loc_10070176;
     memoryASet32(ds, ecx + 0x6c, 0x00000000);
 loc_10070176: // 0000:10070176
@@ -3104,10 +3104,10 @@ loc_1006ceb2: // 0000:1006ceb2
 loc_1006cec3: // 0000:1006cec3
     fp0 = (double)(int32_t)memoryAGet32(ss, ebp + 0x10);
     memoryFSet64(ds, esp + 0x18, fp0);
-    fp0 += memoryFGet64(ds, 0x100e64b0);
+    fp0 += 1.0;
     fp0 -= memoryFGet64(ds, ebx + 0x20);
     fp0 /= memoryFGet64(ds, ebx + 0x18);
-    fp0 += memoryFGet64(ds, 0x100e64b0);
+    fp0 += 1.0;
     subopt_100ca3f6(fp0);
     fp0 = memoryFGet64(ds, ebx + 0x20);
     memoryFSet64(ds, esp + 0x28, fp0);
@@ -3136,22 +3136,22 @@ loc_1006cf00: // 0000:1006cf00
     eax = memoryAGet32(ds, ebx + 0x34);
     fp5 += fp1;
     fp6 = fp2;
-    fp6 *= memoryFGet32(ds, 0x100e7454);
+    fp6 *= 5.0f;
     fp6 += fp4;
-    fp6 *= memoryFGet32(ds, 0x100e6490);
+    fp6 *= 0.5f;
     fp5 -= fp6;
     fp6 = fp2;
     fp6 -= fp3;
-    fp6 *= memoryFGet32(ds, 0x100e7450);
+    fp6 *= 3.0f;
     fp6 -= fp1;
     fp6 += fp4;
-    fp6 *= memoryFGet32(ds, 0x100e6490);
+    fp6 *= 0.5f;
     fp6 *= fp0;
     fp5 += fp6;
     fp5 *= fp0;
     { double _xchg = fp5; fp5 = fp3; fp3 = _xchg; }
     fp5 -= fp1;
-    fp5 *= memoryFGet32(ds, 0x100e6490);
+    fp5 *= 0.5f;
     fp3 += fp5;
     { double _xchg = fp4; fp4 = fp3; fp3 = _xchg; }
     fp4 *= fp0;

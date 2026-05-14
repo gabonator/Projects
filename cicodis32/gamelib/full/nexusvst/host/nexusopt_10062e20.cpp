@@ -22,7 +22,7 @@ double subopt2_10062e20()
 
     const float v38 = memoryFGet32(ds, s + 0x38);
 
-    if (memoryFGet32(ds, 0x100e6750) > v38)
+    if (0.009999999776482582f > v38)
     {
         esp += 8;
         return in;
@@ -31,9 +31,9 @@ double subopt2_10062e20()
     float x34 = memoryFGet32(ds, s + 0x34);
 
     float curve;
-    const float c6490 = memoryFGet32(ds, 0x100e6490);
-    const float c74d4 = memoryFGet32(ds, 0x100e74d4);
-    const float c7448 = memoryFGet32(ds, 0x100e7448);
+    const float c6490 = 0.5f;
+    const float c74d4 = 8.0f;
+    const float c7448 = 4.0f;
 
     if (c6490 > x34)
     {
@@ -54,8 +54,8 @@ double subopt2_10062e20()
     const int count = (int32_t)memoryAGet32(ds, s + 0x2c);
 
     const float callArg =
-        (float)count * v38 * memoryFGet32(ds, 0x103cf534) * curve +
-        (float)count * memoryFGet32(ds, 0x103d33f8);
+        (float)count * v38 * 0.3499999940395355f * curve +
+        (float)count * 0.49000000953674316f;
 
     sub_100685e0_inlined(s, callArg, 0);
     ecx = s;
@@ -98,7 +98,7 @@ double subopt2_10062e20()
 
     const float out =
         in +
-        memoryFGet32(ds, 0x103d33f0) +
+        1.000000045813705e-18f +
         x0c +
         remainingFpuValue * memoryFGet32(ds, s + 0x1c);
 

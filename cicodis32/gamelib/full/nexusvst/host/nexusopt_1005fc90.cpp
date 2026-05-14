@@ -53,7 +53,7 @@ loc_1005fcec: // 0000:1005fcec
     memoryASet32(ds, esp + 0x10, edi);
     fp1 = memoryFGet64(ss, ebp + 0x10); // fld64(memoryAGet64(ss, ebp + 0x10)) fpustack: [fp1, fp0]
     fp2 = 0.0f; // fldz() fpustack: [fp2, fp1, fp0]
-    fp3 = memoryFGet64(ds, 0x103d3c90); // fld64(memoryAGet64(ds, 0x103d3c90)) fpustack: [fp3, fp2, fp1, fp0]
+    fp3 = -1.0; // fppush(-1.0) fpustack: [fp3, fp2, fp1, fp0]
 loc_1005fd2f: // 0000:1005fd2f
     fp4 = fp1; // fldst(2) fpustack: [fp4, fp3, fp2, fp1, fp0]
     memoryFSet64(ds, esp + 0x60, fp4); // fst64()) fpustack: [fp4, fp3, fp2, fp1, fp0]
@@ -211,7 +211,7 @@ loc_1005fe92: // 0000:1005fe92
     edx = esi;
     fp0 = fp1; // fstpst(1) fpustack: [fp0]
     ecx = edi;
-    fp1 = memoryFGet32(ds, 0x103d33fc); // fld32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 = 3.0517578125e-05f; // fppush(3.0517578125e-05) fpustack: [fp1, fp0]
 loc_1005fed8: // 0000:1005fed8
     ebx = (int16_t)memoryAGet16(ds, edx);
     memoryASet32(ds, esp + 0x48, ebx);
@@ -229,7 +229,7 @@ loc_1005fed8: // 0000:1005fed8
     edx = ebx;
     goto loc_1005ffe7;
 loc_1005ff03: // 0000:1005ff03
-    fp4 = memoryFGet64(ds, 0x103d3c90); // fld64(memoryAGet64(ds, 0x103d3c90)) fpustack: [fp4, fp3, fp2, fp1, fp0]
+    fp4 = -1.0; // fppush(-1.0) fpustack: [fp4, fp3, fp2, fp1, fp0]
     // fcompp() fpustack: [fp2, fp1, fp0]
     if (fp4 != fp3)  // fp4 vs fp3
         goto loc_1005ff5a;
@@ -241,7 +241,7 @@ loc_1005ff03: // 0000:1005ff03
     eax = ebx;
     fp0 = fp1; // fstpst(1) fpustack: [fp0]
     edx = esi;
-    fp1 = memoryFGet32(ds, 0x103d33fc); // fld32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 = 3.0517578125e-05f; // fppush(3.0517578125e-05) fpustack: [fp1, fp0]
     ecx = edi;
 loc_1005ff2d: // 0000:1005ff2d
     ebx = (int16_t)memoryAGet16(ds, edx);
@@ -267,9 +267,9 @@ loc_1005ff5a: // 0000:1005ff5a
         goto loc_1005ff89;
     fp2 -= memoryFGet64(ss, ebp + 0x10); // fsub64(memoryAGet64(ss, ebp + 0x10)) fpustack: [fp2, fp1, fp0]
     fp2 = fabs(fp2); // fabs() fpustack: [fp2, fp1, fp0]
-    _cmp7r = memoryFGet64(ds, 0x103d3c88);
-    // fcomp64(memoryAGet64(ds, 0x103d3c88)) fpustack: [fp1, fp0] [cmp_7]
-    if (fp2 < _cmp7r)  // fp2 vs memoryFGet64(ds, 0x103d3c88)
+    _cmp7r = 0.10000000149011612;
+    // fcomp64(0x3fb99999a0000000ull) fpustack: [fp1, fp0] [cmp_7]
+    if (fp2 < _cmp7r)  // fp2 vs 0.10000000149011612
         goto loc_1005ff82;
     ecx = 0x00000001;
     goto loc_1005ff8b;
@@ -300,7 +300,7 @@ loc_1005ffa0: // 0000:1005ffa0
     eax--;
     fp1 = (double)(int32_t)memoryAGet32(ds, esp + 0x48); // fild32(memoryAGet32(ds, esp + 0x48)) fpustack: [fp1, fp0]
     edi += 0x00000004;
-    fp1 *= memoryFGet32(ds, 0x103d33fc); // fmul32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 *= 3.0517578125e-05f; // fmul32(0x38000000u) fpustack: [fp1, fp0]
     memoryFSet32(ds, edi - 4, fp1); // fstp32()) fpustack: [fp0]
     fp0 += memoryFGet64(ds, esp + 0x60); // fadd64(memoryAGet64(ds, esp + 0x60)) fpustack: [fp0]
     memoryFSet64(ds, esp + 0x50, fp0); // fstp64()) fpustack: [empty]
@@ -374,7 +374,7 @@ loc_1006007a: // 0000:1006007a
     eax--;
     edi += 0x00000004;
     fp1 += (double)(int32_t)memoryAGet32(ds, esp + 0x20); // fiadd32(memoryAGet32(ds, esp + 0x20)) fpustack: [fp1, fp0]
-    fp1 *= memoryFGet32(ds, 0x103d33fc); // fmul32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 *= 3.0517578125e-05f; // fmul32(0x38000000u) fpustack: [fp1, fp0]
     memoryFSet32(ds, edi - 4, fp1); // fstp32()) fpustack: [fp0]
     fp0 += memoryFGet64(ds, esp + 0x60); // fadd64(memoryAGet64(ds, esp + 0x60)) fpustack: [fp0]
     memoryFSet64(ds, esp + 0x50, fp0); // fstp64()) fpustack: [empty]
@@ -408,7 +408,7 @@ loc_100600d3: // 0000:100600d3
     edi += 0x00000004;
     fp5 = fp4; // fldst(0) fpustack: [fp5, fp4, fp3, fp2, fp1, fp0]
     fp5 -= fp2; // fsubst(3) fpustack: [fp5, fp4, fp3, fp2, fp1, fp0]
-    fp6 = memoryFGet32(ds, 0x100e6490); // fld32(memoryAGet32(ds, 0x100e6490)) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp6 = 0.5f; // fppush(0.5) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp5 *= fp6; // fmulst2(1, 0) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = (double)(int32_t)memoryAGet32(ds, esp + 0x48); // fild32(memoryAGet32(ds, esp + 0x48)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 -= fp2; // fsubst(5) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
@@ -416,7 +416,7 @@ loc_100600d3: // 0000:100600d3
     fp7 = fp3; // fldst(3) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp4 = fp7 - fp4; // fsubrpst(3) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     { double _xchg = fp6; fp6 = fp4; fp4 = _xchg; }  // fxchst2(0, 2) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp6 *= memoryFGet32(ds, 0x103cd1c0); // fmul32(memoryAGet32(ds, 0x103cd1c0)) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp6 *= 1.5f; // fmul32(0x3fc00000u) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp4 += fp6; // faddpst(2) fpustack: [fp5, fp4, fp3, fp2, fp1, fp0]
     { double _xchg = fp5; fp5 = fp2; fp2 = _xchg; }  // fxchst2(0, 3) fpustack: [fp5, fp4, fp3, fp2, fp1, fp0]
     fp5 -= fp3; // fsubst(2) fpustack: [fp5, fp4, fp3, fp2, fp1, fp0]
@@ -430,7 +430,7 @@ loc_100600d3: // 0000:100600d3
     { double _xchg = fp3; fp3 = fp2; fp2 = _xchg; }  // fxchst2(0, 1) fpustack: [fp3, fp2, fp1, fp0]
     fp1 *= fp3; // fmulpst(2) fpustack: [fp2, fp1, fp0]
     fp1 += fp2; // faddpst(1) fpustack: [fp1, fp0]
-    fp1 *= memoryFGet32(ds, 0x103d33fc); // fmul32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 *= 3.0517578125e-05f; // fmul32(0x38000000u) fpustack: [fp1, fp0]
     memoryFSet32(ds, edi - 4, fp1); // fstp32()) fpustack: [fp0]
     fp0 += memoryFGet64(ds, esp + 0x60); // fadd64(memoryAGet64(ds, esp + 0x60)) fpustack: [fp0]
     memoryFSet64(ds, esp + 0x50, fp0); // fstp64()) fpustack: [empty]
@@ -469,8 +469,8 @@ loc_1006017e: // 0000:1006017e
     fp6 = fp4; // fldst(1) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 -= fp3; // fsubst(3) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     memoryFSet32(ds, esp + 0x20, fp6); // fst32()) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp6 *= memoryFGet32(ds, 0x103cf1d4); // fmul32(memoryAGet32(ds, 0x103cf1d4)) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp7 = memoryFGet32(ds, 0x100e7458); // fld32(memoryAGet32(ds, 0x100e7458)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp6 *= 6.0f; // fmul32(0x40c00000u) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp7 = 2.0f; // fppush(2.0) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp5 *= fp7; // fmulst2(2, 0) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     { double _xchg = fp7; fp7 = fp6; fp6 = _xchg; }  // fxchst2(0, 1) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp5 += fp7; // faddpst(2) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
@@ -478,18 +478,18 @@ loc_1006017e: // 0000:1006017e
     fp6 *= fp1; // fmulst(5) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = memoryFGet32(ds, esp + 0x48); // fld32(memoryAGet32(ds, esp + 0x48)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 -= fp2; // fsubst(5) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp7 *= memoryFGet32(ds, 0x100e7454); // fmul32(memoryAGet32(ds, 0x100e7454)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp7 *= 5.0f; // fmul32(0x40a00000u) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 += fp7; // faddpst(1) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = fp3; // fldst(3) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 -= fp4; // fsubst(3) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp7 *= memoryFGet32(ds, 0x103d3a08); // fmul32(memoryAGet32(ds, 0x103d3a08)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp7 *= 15.0f; // fmul32(0x41700000u) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 += fp7; // faddpst(1) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 *= fp1; // fmulst(5) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = memoryFGet32(ds, esp + 0x20); // fld32(memoryAGet32(ds, esp + 0x20)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp7 *= memoryFGet32(ds, 0x103cf288); // fmul32(memoryAGet32(ds, 0x103cf288)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp7 *= 9.0f; // fmul32(0x41100000u) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 += fp7; // faddpst(1) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = memoryFGet32(ds, esp + 0x50); // fld32(memoryAGet32(ds, esp + 0x50)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
-    fp7 *= memoryFGet32(ds, 0x100e7450); // fmul32(memoryAGet32(ds, 0x100e7450)) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
+    fp7 *= 3.0f; // fmul32(0x40400000u) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 += fp7; // faddpst(1) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp6 *= fp1; // fmulst(5) fpustack: [fp6, fp5, fp4, fp3, fp2, fp1, fp0]
     fp7 = fp3; // fldst(3) fpustack: [fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0]
@@ -504,9 +504,9 @@ loc_1006017e: // 0000:1006017e
     { double _xchg = fp3; fp3 = fp2; fp2 = _xchg; }  // fxchst2(0, 1) fpustack: [fp3, fp2, fp1, fp0]
     fp1 *= fp3; // fmulpst(2) fpustack: [fp2, fp1, fp0]
     { double _xchg = fp2; fp2 = fp1; fp1 = _xchg; }  // fxchst2(0, 1) fpustack: [fp2, fp1, fp0]
-    fp2 *= memoryFGet32(ds, 0x100e6490); // fmul32(memoryAGet32(ds, 0x100e6490)) fpustack: [fp2, fp1, fp0]
+    fp2 *= 0.5f; // fmul32(0x3f000000u) fpustack: [fp2, fp1, fp0]
     fp1 += fp2; // faddpst(1) fpustack: [fp1, fp0]
-    fp1 *= memoryFGet32(ds, 0x103d33fc); // fmul32(memoryAGet32(ds, 0x103d33fc)) fpustack: [fp1, fp0]
+    fp1 *= 3.0517578125e-05f; // fmul32(0x38000000u) fpustack: [fp1, fp0]
     memoryFSet32(ds, edi - 4, fp1); // fstp32()) fpustack: [fp0]
     fp0 += memoryFGet64(ds, esp + 0x60); // fadd64(memoryAGet64(ds, esp + 0x60)) fpustack: [fp0]
     memoryFSet64(ds, esp + 0x50, fp0); // fstp64()) fpustack: [empty]
@@ -569,7 +569,7 @@ loc_100602da: // 0000:100602da
     ebx = memoryAGet32(ds, esp + 0x28);
     memoryFSet64(ds, esp + 0x70, fp1); // fst64()) fpustack: [fp1, fp0]
     fp2 = memoryFGet64(ss, ebp + 0x10); // fld64(memoryAGet64(ss, ebp + 0x10)) fpustack: [fp2, fp1, fp0]
-    fp3 = memoryFGet64(ds, 0x103d3c90); // fld64(memoryAGet64(ds, 0x103d3c90)) fpustack: [fp3, fp2, fp1, fp0]
+    fp3 = -1.0; // fppush(-1.0) fpustack: [fp3, fp2, fp1, fp0]
     { double _xchg = fp3; fp3 = fp1; fp1 = _xchg; }  // fxchst2(0, 2) fpustack: [fp3, fp2, fp1, fp0]
     { double _xchg = fp3; fp3 = fp0; fp0 = _xchg; }  // fxchst2(0, 3) fpustack: [fp3, fp2, fp1, fp0]
     { double _xchg = fp3; fp3 = fp2; fp2 = _xchg; }  // fxchst2(0, 1) fpustack: [fp3, fp2, fp1, fp0]

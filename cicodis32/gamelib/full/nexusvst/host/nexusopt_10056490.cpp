@@ -33,7 +33,7 @@ static void sub_10056490_native(uint8_t* self, float* buf, int count, int sectio
     const uint32_t tablePtr = *(uint32_t*)(self + 0x1a8);  // emulated ptr
     const float param   = memoryFGet32(ds, tablePtr + 0x3c);
     const float divisor = *(float*)(self + 0xb4);
-    const float k2pi    = memoryFGet32(ds, 0x103cf094);
+    const float k2pi    = 6.2831854820251465f;
     const float coeff   = sinf(param / divisor * k2pi);
 
     if (count == 0) return;
@@ -45,7 +45,7 @@ static void sub_10056490_native(uint8_t* self, float* buf, int count, int sectio
     float* const s2 = (float*)(base + 0xDF38);
     float* const s3 = (float*)(base + 0xDF3C);
 
-    const float K = memoryFGet32(ds, 0x103d33f0);  // denormal guard
+    const float K = 1.000000045813705e-18f;  // denormal guard
 
     for (int i = 0; i < count; ++i) {
         float sig = buf[i] + K;
@@ -78,12 +78,12 @@ void sub_10056490_emulated() // 0000:10056490 +long +stackDrop12
     push32(esi);
     fdiv32(memoryAGet32(ds, ecx + 0xb4));
     esi = memoryAGet32(ds, esp + 0xc);
-    fmul32(memoryAGet32(ds, 0x103cf094));
+    fmul32(0x40c90fdbu);
     fsin();
     if (!esi)
         goto loc_1005653f;
     eax = memoryAGet32(ds, esp + 0x10);
-    fld32(memoryAGet32(ds, 0x103d33f0));
+    fppush(1.000000045813705e-18);
     edx = eax + 3571;
     edx <<= 4;
     edx += ecx;
