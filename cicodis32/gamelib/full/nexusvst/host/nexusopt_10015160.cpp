@@ -32,7 +32,7 @@ void subopt_10062760();
 void subopt_10068620();
 void subopt_100629a0();
 void subopt_10062f90();
-double subopt_10062e20();
+double subopt2_10062e20();
 void subopt_10056420();
 void subopt_1005a960();
 
@@ -10603,7 +10603,7 @@ loc_10063154: // 0000:10063154
     push32(ecx);
     ecx = esi;
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 *= memoryFGet32(ds, esp + 0x18); // fmul32(memoryAGet32(ds, esp + 0x18)) fpustack: [fp0]
     fp1 = memoryFGet32(ds, esp + 0x20); // fld32(memoryAGet32(ds, esp + 0x20)) fpustack: [fp1, fp0]
     eax = memoryAGet32(ds, esp + 0x34);
@@ -10717,7 +10717,7 @@ loc_100632e7: // 0000:100632e7
     push32(ecx);
     ecx = esi;
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 *= memoryFGet32(ds, esp + 0x18); // fmul32(memoryAGet32(ds, esp + 0x18)) fpustack: [fp0]
     fp1 = memoryFGet32(ds, esp + 0x24); // fld32(memoryAGet32(ds, esp + 0x24)) fpustack: [fp1, fp0]
     ebp += 0x00000004;
@@ -10797,7 +10797,7 @@ loc_10063409: // 0000:10063409
     push32(ecx);
     ecx = esi;
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 *= memoryFGet32(ds, esp + 0x18); // fmul32(memoryAGet32(ds, esp + 0x18)) fpustack: [fp0]
     fp1 = memoryFGet32(ds, esp + 0x28); // fld32(memoryAGet32(ds, esp + 0x28)) fpustack: [fp1, fp0]
     eax = memoryAGet32(ds, esp + 0x34);
@@ -10970,7 +10970,7 @@ loc_1006368b: // 0000:1006368b
     push32(ecx);
     ecx = esi;
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 *= memoryFGet32(ds, esp + 0x18); // fmul32(memoryAGet32(ds, esp + 0x18)) fpustack: [fp0]
     fp1 = memoryFGet32(ds, esp + 0x28); // fld32(memoryAGet32(ds, esp + 0x28)) fpustack: [fp1, fp0]
     eax = esi + 276;
@@ -10984,7 +10984,7 @@ loc_1006368b: // 0000:1006368b
     ebp += edi;
     fp0 = memoryFGet32(ds, esp + 0x2c); // fld32(memoryAGet32(ds, esp + 0x2c)) fpustack: [fp0]
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 *= memoryFGet32(ds, esp + 0x18); // fmul32(memoryAGet32(ds, esp + 0x18)) fpustack: [fp0]
     eax = memoryAGet32(ds, esp + 0x34);
     fp1 = memoryFGet32(ds, esp + 0x10); // fld32(memoryAGet32(ds, esp + 0x10)) fpustack: [fp1, fp0]
@@ -11141,7 +11141,7 @@ loc_100638f1: // 0000:100638f1
     push32(ecx);
     ecx = esi;
     memoryFSet32(ds, esp, fp0); // fstp32()) fpustack: [empty]
-    fp0 = subopt_10062e20();  // fpustack: [fp0]
+    fp0 = subopt2_10062e20();  // fpustack: [fp0]
     fp0 += memoryFGet32(ds, 0x103d33f0); // fadd32(memoryAGet32(ds, 0x103d33f0)) fpustack: [fp0]
     edx = memoryAGet32(ds, esi + 0xe0);
     memoryFSet32(ds, edx, fp0); // fstp32()) fpustack: [empty]
@@ -11508,7 +11508,7 @@ loc_10063e02: // 0000:10063e02
     esp += 0x00000020;
     esp += 20;
 }
-
+/*
 double subopt_10062e20() // 0000:10062e20 +long +stackDrop8
 {
     float fp0, fp1, fp2, fp3, fp4;
@@ -11650,7 +11650,7 @@ loc_10062f81: // 0000:10062f81
     esp += 12;
     return fp0;
 }
-
+*/
 void subopt_10056420() // 0000:10056420 +long
 {
     float fp0, fp1;

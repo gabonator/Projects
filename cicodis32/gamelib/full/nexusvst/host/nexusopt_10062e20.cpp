@@ -13,7 +13,7 @@ static inline void sub_100685e0_inlined(uint32_t s, float value, uint8_t flag)
     memoryASet(ds, s + 0x30, 0x01);
 }
 
-void sub_10062e20()
+double subopt2_10062e20()
 {
     StackGuard _sg(8, __FUNCTION__);
 
@@ -25,8 +25,7 @@ void sub_10062e20()
     if (memoryFGet32(ds, 0x100e6750) > v38)
     {
         esp += 8;
-        fppush(in);
-        return;
+        return in;
     }
 
     float x34 = memoryFGet32(ds, s + 0x34);
@@ -112,5 +111,10 @@ void sub_10062e20()
     memoryASet32(ds, s + 0x00, writePtr);
 
     esp += 8;
-    fppush(remainingFpuValue);
+    return remainingFpuValue;
+}
+
+void sub_10062e20()
+{
+    fppush(subopt2_10062e20());
 }
