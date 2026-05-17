@@ -1,0 +1,274 @@
+diff --git a/./nexus_new.cpp b/./nexus.cpp
+index 1ca71d4..a838975 100644
+--- a/./nexus_new.cpp
++++ b/./nexus.cpp
+@@ -29762,6 +29763,10 @@ loc_10015128: // 0000:10015128
+     // SEH fixed (was stack_unbalanced, 0/-4) // SEH fixed (was stack_unbalanced, 0/-4)
+     esp += 4;
+ }
++#ifdef OPT_10015160
++#include "nexusopt_10015160.cpp"
++#else
++//#error old code OPT_10015160 not enabled!
+ void sub_10015160() // 0000:10015160 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -32279,6 +32274,7 @@ loc_10016e6b: // 0000:10016e6b
+     fstpst(0);
+     goto loc_10016e36;
+ }
++#endif
+ void sub_10016ed0() // 0000:10016ed0 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -66272,6 +66253,9 @@ loc_1004c4eb: // 0000:1004c4eb
+     edi = pop32();
+     esp += 4;
+ }
++#ifdef OPT_1004c750
++#include "nexusopt_1004c750.cpp"
++#else
+ void sub_1004c750() // 0000:1004c750 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -66598,6 +66582,7 @@ loc_1004ca78: // 0000:1004ca78
+     esp += 0x00000028;
+     esp += 4;
+ }
++#endif
+ void sub_1004d060() // 0000:1004d060 +long +stackDrop4
+ {
+     StackGuard _sg(4, __FUNCTION__);
+@@ -79041,6 +79016,9 @@ loc_1005647e: // 0000:1005647e
+     esi = pop32();
+     esp += 4;
+ }
++#ifdef OPT_10056490
++#include "nexusopt_10056490.cpp"
++#else
+ void sub_10056490() // 0000:10056490 +long +stackDrop12
+ {
+     StackGuard _sg(12, __FUNCTION__);
+@@ -79104,6 +79082,7 @@ loc_1005653f: // 0000:1005653f
+     esi = pop32();
+     esp += 16;
+ }
++#endif // OPT_10056490
+ void sub_10056550() // 0000:10056550 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -84219,6 +84188,9 @@ loc_10059e75: // 0000:10059e75
+     fxchst2(0, 2);
+     goto loc_10059e23;
+ }
++#ifdef OPT_10059ed0
++#include "nexusopt_10059ed0.cpp"
++#else
+ void sub_10059ed0() // 0000:10059ed0 +long +stackDrop16
+ {
+     StackGuard _sg(16, __FUNCTION__);
+@@ -84616,6 +84588,7 @@ loc_1005a385: // 0000:1005a385
+     esp += 0x0000000c;
+     esp += 20;
+ }
++#endif // OPT_10059ed0
+ void sub_1005a390() // 0000:1005a390 +long +stackDrop4
+ {
+     StackGuard _sg(4, __FUNCTION__);
+@@ -90998,6 +90971,7 @@ loc_1005fbe2: // 0000:1005fbe2
+     fstpst(0);
+     esp += 8;
+ }
++
+ void sub_1005fc00() // 0000:1005fc00 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -91047,6 +91021,9 @@ loc_1005fc7e: // 0000:1005fc7e
+     ebx = pop32();
+     esp += 12;
+ }
++#ifdef OPT_1005fc90
++#include "nexusopt_1005fc90.cpp"
++#else
+ void sub_1005fc90() // 0000:1005fc90 +long +stackDrop20
+ {
+     StackGuard _sg(20, __FUNCTION__);
+@@ -91676,6 +91653,7 @@ loc_1006035f: // 0000:1006035f
+     ebp = pop32();
+     esp += 24;
+ }
++#endif
+ void sub_10060380() // 0000:10060380 +long +stackDrop24
+ {
+     StackGuard _sg(24, __FUNCTION__);
+@@ -95678,6 +95656,9 @@ loc_10062de8: // 0000:10062de8
+     esi = pop32();
+     esp += 12;
+ }
++#ifdef OPT_10062e20
++#include "nexusopt_10062e20.cpp"
++#else
+ void sub_10062e20() // 0000:10062e20 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -95817,6 +95798,7 @@ loc_10062f81: // 0000:10062f81
+     esp += 0x00000008;
+     esp += 12;
+ }
++#endif
+ void sub_10062f90() // 0000:10062f90 +long +stackDrop16
+ {
+     StackGuard _sg(16, __FUNCTION__);
+@@ -99292,6 +99274,9 @@ loc_10066db8: // 0000:10066db8
+     esi = pop32();
+     esp += 8;
+ }
++#ifdef OPT_10066dc0
++#include "nexusopt_10066dc0.cpp"
++#else
+ void sub_10066dc0() // 0000:10066dc0 +long +stackDrop16
+ {
+     StackGuard _sg(16, __FUNCTION__);
+@@ -99767,6 +99752,7 @@ loc_10067279: // 0000:10067279
+     fstpst(0);
+     goto loc_10067082;
+ }
++#endif
+ void sub_10067280() // 0000:10067280 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -107937,6 +107923,9 @@ void sub_1006b000() // 0000:1006b000 +long +stackDrop16
+ loc_1006b04a: // 0000:1006b04a
+     esp += 20; return;
+ }
++#ifdef OPT_1006b050
++#include "nexusopt_1006b050.cpp"
++#else
+ void sub_1006b050() // 0000:1006b050 +long +stackDrop16
+ {
+     StackGuard _sg(16, __FUNCTION__);
+@@ -108357,12 +108346,14 @@ loc_1006b4f0: // 0000:1006b4f0
+     push32(eax);
+     push32(eax);
+     sub_1006fb80();
++#ifndef MONO
+     eax = memoryAGet32(ss, ebp + 0x28);
+     ecx = memoryAGet32(ds, edi);
+     push32(ebx);
+     push32(eax);
+     push32(eax);
+     sub_1006fb80();
++#endif
+     edx = memoryAGet32(ss, ebp + 0x30c);
+     esi += 0x00000002;
+     edx <<= 1;
+@@ -108529,12 +108520,14 @@ loc_1006b764: // 0000:1006b764
+     push32(eax);
+     push32(eax);
+     sub_1006f230();
++#ifndef MONO
+     eax = memoryAGet32(ss, ebp + 0x28);
+     ecx = memoryAGet32(ss, ebp + 0x2e8);
+     push32(ebx);
+     push32(eax);
+     push32(eax);
+     sub_1006f230();
++#endif
+ loc_1006b790: // 0000:1006b790
+     al = memoryAGet(ss, ebp + 0x3d8);
+     if (!al)
+@@ -108545,12 +108538,14 @@ loc_1006b790: // 0000:1006b790
+     push32(eax);
+     push32(eax);
+     sub_1006f230();
++#ifndef MONO
+     eax = memoryAGet32(ss, ebp + 0x28);
+     ecx = memoryAGet32(ss, ebp + 0x2ec);
+     push32(ebx);
+     push32(eax);
+     push32(eax);
+     sub_1006f230();
++#endif
+ loc_1006b7bc: // 0000:1006b7bc
+     edx = memoryAGet32(ss, ebp + 0x2f0);
+     al = memoryAGet(ds, edx + 0x8);
+@@ -108709,6 +108704,7 @@ loc_1006b9da: // 0000:1006b9da
+     esp += 0x00000038;
+     esp += 20;
+ }
++#endif
+ void sub_1006ba00() // 0000:1006ba00 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -112134,6 +112130,9 @@ void sub_1006d7c0() // 0000:1006d7c0 +long +stackDrop12
+     esi = pop32();
+     esp += 16;
+ }
++#ifdef OPT_1006d830
++#include "nexusopt_1006d830.cpp"
++#else
+ void sub_1006d830() // 0000:1006d830 +long +stackDrop20
+ {
+     StackGuard _sg(20, __FUNCTION__);
+@@ -112339,6 +112338,7 @@ loc_1006dafc: // 0000:1006dafc
+     ebp = pop32();
+     esp += 24;
+ }
++#endif
+ void sub_1006db10() // 0000:1006db10 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -112657,6 +112657,9 @@ loc_1006df64: // 0000:1006df64
+     fsubr32(0x3f800000u); // d8 2d 94 64 0e 10 : fsubr dword ptr [0x100e6494]
+     esp += 8;
+ }
++#ifdef OPT_1006df90
++#include "nexusopt_1006df90.cpp"
++#else
+ void sub_1006df90() // 0000:1006df90 +long +stackDrop20
+ {
+     StackGuard _sg(20, __FUNCTION__);
+@@ -112933,6 +112936,7 @@ loc_1006e2f8: // 0000:1006e2f8
+     esp += 0x00000008;
+     esp += 24;
+ }
++#endif
+ void sub_1006e310() // 0000:1006e310 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -116146,6 +116150,9 @@ loc_1006ff57: // 0000:1006ff57
+     esp += 0x00000008;
+     esp += 4;
+ }
++#ifdef OPT_1006ff60
++#include "nexusopt_1006ff60.cpp"
++#else
+ void sub_1006ff60() // 0000:1006ff60 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -116350,6 +116357,7 @@ loc_1007017a: // 0000:1007017a
+     esp += 0x00000008;
+     esp += 12;
+ }
++#endif
+ void sub_10070000() // 0000:10070000 +long +stackDrop8
+ {
+     StackGuard _sg(8, __FUNCTION__);
+@@ -149601,6 +149609,9 @@ loc_100c90cf: // 0000:100c90cf
+     // SEH removed (was stack_unbalanced, 0/-24) // SEH removed (was stack_unbalanced, 0/-24)
+     esp += 4;
+ }
++#ifdef OPT_100c90d2
++#include "nexusopt_100c90d2.cpp"
++#else
+ void sub_100c90d2() // 0000:100c90d2 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);
+@@ -149679,6 +149690,7 @@ loc_100c9121: // 0000:100c9121
+     ebp = pop32();
+     esp += 4;
+ }
++#endif
+ void sub_100c9212() // 0000:100c9212 +long
+ {
+     StackGuard _sg(0, __FUNCTION__);

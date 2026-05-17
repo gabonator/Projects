@@ -674,3 +674,15 @@
 
 // TODO: fix _eh_vec_ctor_vb
 {"id": "config", "blackList": ["0:100ca661"]}
+
+
+// new patches
+{"id":"jumpTable","addr":"0:100165ce","calls32":["0:10058ab0"]}
+{"id":"jumpTable","addr":"0:10016628","calls32":["0:10058ab0"]}
+{"id":"jumpTable","addr":"0:10016f0f","calls32":["0:10007240"]}
+{"id":"jumpTable","addr":"0:1001b353","calls32":["0:10065910"]}
+{"id":"jumpTable","addr":"0:1001b368","calls32":["0:10065910"]}
+{"id":"jumpTable","addr":"0:100558f3","calls32":["0:10057e40"]}
+{"id":"jumpTable","addr":"0:1005596d","calls32":["0:10004820"]}
+{"id":"jumpTable","addr":"0:10057e4f","calls32":["0:1007d6b0"]}
+{"id":"jumpTable","addr":"0:10057e5b","calls32":["0:1001c4e0"]}

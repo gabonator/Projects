@@ -7,7 +7,7 @@ arm-unknown-linux-gnueabihf-g++ host/main_raspimidi.cpp host/nexus.cpp \
   -O2 -D MONO -D OPT_10015160 -D OPT_1004c750 -D OPT_10056490 -D OPT_10059ed0 -D OPT_1005fc90 -D OPT_10062e20 -D OPT_10066dc0xxx -D OPT_1006b050 -D OPT_1006d830 -D OPT_1006df90 -D OPT_1006ff60 -D OPT_100c90d2 -D RASPI -D NDEBUG --std=c++17 \
   -Iraspi-sysroot/usr/include \
   -Lraspi-sysroot/usr/lib/arm-linux-gnueabihf \
-  -lasound -lpthread -ldl -lm -O2 -o nexus_midi23.elf
+  -lasound -lpthread -ldl -lm -O2 -o nexus_midi.elf
   exit 0
 fi
 

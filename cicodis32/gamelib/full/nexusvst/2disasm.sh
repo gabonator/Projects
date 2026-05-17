@@ -4,7 +4,19 @@ set -e
 patch host/synsoemu.cpp input/synsoemu.patch
 
 ./cicodis.elf input/nexus.txt > host/nexus.cpp
+#cp host/nexus.cpp host/nexus_cleannew.cpp
 patch host/nexus.cpp input/nexus.patch
+
+(        
+  cd host
+  cp ../opttools/replace_fp_consts.py .
+  python3 replace_fp_consts.py --apply --force-data-fp80
+  rm replace_fp_consts.py
+  cp processed/* .
+  rm -rf processed
+)
+
+patch host/nexus.cpp input/nexusopts.patch
 
 mkdir -p res
 mv *.bin res
