@@ -523,7 +523,7 @@ inline void _heartbeat(const char* where) {
 }
 
 // --- StackGuard: detect ESP imbalance at function exit ---
-#ifdef RASPI
+#ifdef RASPI1
 struct StackGuard {
   StackGuard(int, const char*) {}
 };
@@ -536,10 +536,11 @@ public:
     StackGuard(int ofs, const char* func) : savedesp(ofs == -999 ? 0 : esp + ofs), func(func) {}
     ~StackGuard() {
         if (savedesp && savedesp != esp) {
-            static int _sgCount = 0;
-            if (++_sgCount <= 20)
-                fprintf(stderr, "StackGuard failure #%d in %s: expected esp=0x%08x, got esp=0x%08x (delta=%d)\n",
-                        _sgCount, func, savedesp, esp, (int)(esp - savedesp));
+//            static int _sgCount = 0;
+//            if (++_sgCount <= 20)
+                fprintf(stderr, "StackGuard failure in %s: expected esp=0x%08x, got esp=0x%08x (delta=%d)\n",
+                        func, savedesp, esp, (int)(esp - savedesp));
+            assert(0);
         }
     }
 };
