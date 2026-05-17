@@ -7,7 +7,10 @@ patch host/synsoemu.cpp input/synsoemu.patch
 #cp host/nexus.cpp host/nexus_cleannew.cpp
 patch host/nexus.cpp input/nexus.patch
 
-(        
+(
+  # opt tools do not work well with replaced constants
+  cp host/nexus.cpp opttools/nexus.cpp
+
   cd host
   cp ../opttools/replace_fp_consts.py .
   python3 replace_fp_consts.py --apply --force-data-fp80
