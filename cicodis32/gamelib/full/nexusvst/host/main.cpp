@@ -73,7 +73,8 @@ double memoryFGet64(int s, int o);
 
 int allocate(int size);
 // Stack helpers (need access to registers)
-extern uint32_t eax, ecx, esp;
+extern uint32_t eax, ecx;
+extern volatile uint32_t esp;
 extern uint16_t ds, ss, es, gs, cs, fs;
 void push32(uint32_t);
 

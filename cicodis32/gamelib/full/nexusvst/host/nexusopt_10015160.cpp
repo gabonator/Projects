@@ -9997,16 +9997,19 @@ void subopt_10062c60() // 0000:10062c60 +long +stackDrop8
     eax--;
     if (eax > 0x0000000f)
         goto loc_10062de8;
-    ecx = memoryAGet(ds, eax + 0x10062e0c);
-    switch (memoryAGet32(ds, ecx * 4 + 0x10062df0))
     {
-        case 0x10062c8a: goto loc_10062c8a;
-        case 0x10062ccc: goto loc_10062ccc;
-        case 0x10062cdc: goto loc_10062cdc;
-        case 0x10062d0a: goto loc_10062d0a;
-        case 0x10062d2c: goto loc_10062d2c;
-        case 0x10062d8b: goto loc_10062d8b;
-        case 0x10062de8: goto loc_10062de8;
+        const uint8_t table[] = {0, 0, 1, 6, 6, 6, 6, 2, 6, 6, 3, 6, 6, 4, 6, 5};
+        ecx = table[eax];
+    }
+    switch (ecx)
+    {
+        case 0: goto loc_10062ccc;
+        case 1: goto loc_10062cdc;
+        case 2: goto loc_10062d0a;
+        case 3: goto loc_10062d2c;
+        case 4: goto loc_10062d8b;
+        case 5: goto loc_10062c8a;
+        case 6: goto loc_10062de8;
         default:
             stop("unhandled indirect 0000:10062c83");
     }

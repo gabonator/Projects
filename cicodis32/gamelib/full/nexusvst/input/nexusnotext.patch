@@ -1,0 +1,61 @@
+diff --git a/./nexus.cpp b/./nexus_notext.cpp
+index 2e3bde2..c1af2c7 100644
+--- a/./nexus.cpp
++++ b/./nexus_notext.cpp
+@@ -46,7 +46,7 @@ void sub_100cba51();
+ 
+ void init()
+ {
+-    loadOverlay("Nexus_text.bin", 0x10001000);
++//    loadOverlay("Nexus_text.bin", 0x10001000);
+     loadOverlay("Nexus_rdata.bin", 0x100e6000);
+     loadOverlay("Nexus_data.bin", 0x103fb000);
+     esp = 0x10592110;
+@@ -68963,7 +68963,10 @@ loc_10050012: // 0000:10050012
+     edx = memoryAGet(ds, esi);
+     if (edx > 0x000000ef)
+         goto loc_10050097;
+-    ebx = memoryAGet(ds, edx + 0x100500e8);
++    {
++        const uint8_t table[0xf0] = {0, 5, 5, 5, 5, 5, 5, 5, 5, 1, 2, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4};
++        ebx = table[edx];
++    }
+     switch (ebx)
+     {
+         case 0: goto loc_100500c6;
+@@ -78715,7 +78718,10 @@ loc_10055f65: // 0000:10055f65
+     eax += 0xffffff80;
+     if (eax > 0x00000060)
+         goto loc_1005616d;
+-    eax = memoryAGet(ds, eax + 0x100561b4);
++    {
++        const uint8_t table[0x61] = {0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5};
++        eax = table[eax];
++    }
+     switch (eax)
+     {
+         case 0: goto loc_10055fab;
+@@ -87525,7 +87531,10 @@ loc_1005cfc3: // 0000:1005cfc3
+     memoryASet32(ds, esi + edi * 4 + 0xac, fst32());
+     if (edi > 0x0000000d)
+         goto loc_1005d113;
+-    eax = memoryAGet(ds, edi + 0x1005d138);
++    {
++        const uint8_t table[14] = {0, 6, 6, 6, 6, 6, 6, 6, 6, 1, 2, 3, 4, 5};
++        eax = table[edi];
++    }
+     switch (eax)
+     {
+         case 0: goto loc_1005cfe1;
+@@ -95546,7 +95555,10 @@ void sub_10062c60() // 0000:10062c60 +long +stackDrop8
+     eax--;
+     if (eax > 0x0000000f)
+         goto loc_10062de8;
+-    ecx = memoryAGet(ds, eax + 0x10062e0c);
++    {
++        const uint8_t table[] = {0, 0, 1, 6, 6, 6, 6, 2, 6, 6, 3, 6, 6, 4, 6, 5};
++        ecx = table[eax];
++    }
+     switch (ecx)
+     {
+         case 0: goto loc_10062ccc;

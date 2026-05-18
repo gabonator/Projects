@@ -61,65 +61,65 @@ void loadOverlay(const char*, int);
 
 void memoryASet(int s, int o, uint8_t v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST); // TODO: ENABLE!
     memory[idx] = (uint8_t)v;
 }
 
 void memoryASet16(int s, int o, uint16_t v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     *((uint16_t*)&memory[idx]) = (uint16_t)v;
 }
 
 void memoryASet32(int s, int o, uint32_t v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     *((uint32_t*)&memory[idx]) = v;
 }
 void memoryASet64(int s, int o, uint64_t v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     *((uint64_t*)&memory[idx]) = v;
 }
 
 uint8_t memoryAGet(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST); // TODO!
     return memory[idx];
 }
 uint16_t memoryAGet16(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     return *((uint16_t*)&memory[idx]);
 }
 uint32_t memoryAGet32(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     return *((uint32_t*)&memory[idx]);
 }
 uint64_t memoryAGet64(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     return *((uint64_t*)&memory[idx]);
 }
 float memoryFGet32(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     return *((float*)&memory[idx]);
 }
 double memoryFGet64(int s, int o) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     return *((double*)&memory[idx]);
 }
 void memoryFSet32(int s, int o, float v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     *((float*)&memory[idx]) = v;
 }
 void memoryFSet64(int s, int o, double v) {
     int idx = o - MEM_BASE;
-    assert (idx >= 0 && idx < MEM_SIZE_CONST);
+    assert (idx >= 0xe6000 && idx < MEM_SIZE_CONST);
     *((double*)&memory[idx]) = v;
 }
 #endif

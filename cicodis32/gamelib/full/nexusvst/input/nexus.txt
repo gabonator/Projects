@@ -68,9 +68,9 @@
 {"id": "jumpTable", "addr": "0:10022bd2", "jumps32": ["0:1001f190", "0:1001f1a0"]}
 {"id": "jumpTable", "addr": "0:1004d507", "jumps32": ["0:1001f190", "0:1001f1a0", "0:1004d4fb", "0:1004d4ff", "0:1004e4e0"]}
 {"id": "jumpTable", "addr": "0:1005c892", "jumps32": ["0:1001f190", "0:1001f1a0", "0:10068230"]}
-{"id": "jumpTable", "addr": "0:1005cfda", "jumps32": ["0:1005cfe1", "0:1005d079", "0:1005d08b", "0:1005d09d", "0:1005d0af", "0:1005d0c1", "0:1005d113"]}
+//{"id": "jumpTable", "addr": "0:1005cfda", "jumps32": ["0:1005cfe1", "0:1005d079", "0:1005d08b", "0:1005d09d", "0:1005d0af", "0:1005d0c1", "0:1005d113"]}
 {"id": "jumpTable", "addr": "0:1005f679", "jumps32": ["0:1001f190", "0:1001f1a0", "0:1005f650"]}
-{"id": "jumpTable", "addr": "0:10062c83", "jumps32": ["0:10062c8a", "0:10062ccc", "0:10062cdc", "0:10062d0a", "0:10062d2c", "0:10062d8b", "0:10062de8"]}
+//{"id": "jumpTable", "addr": "0:10062c83", "jumps32": ["0:10062c8a", "0:10062ccc", "0:10062cdc", "0:10062d0a", "0:10062d2c", "0:10062d8b", "0:10062de8"]}
 {"id": "jumpTable", "addr": "0:100a247f", "jumps32": ["0:1001f190", "0:1001f1a0", "0:100a2460"]}
 {"id": "jumpTable", "addr": "0:1005ff92", "table": "0:10060368", "type": "jump32", "entries": 5, "selector": "ecx", "useCaseOffset": false}
 {"id": "jumpTable", "addr": "0:1005cdb7", "jumps32": ["0:10007230"]}
@@ -81,7 +81,7 @@
 {"id": "jumpTable", "addr": "0:100cb292", "jumps32": ["0:1001f190", "0:1001f1a0", "0:100cb27c"]}
 {"id": "jumpTable", "addr": "0:10062814", "jumps32": ["0:10007230"]}
 {"id": "jumpTable", "addr": "0:1006e376", "table": "0:1006e73c", "type": "jump32", "entries": 5, "selector": "eax", "useCaseOffset": false}
-{"id": "jumpTable", "addr": "0:1006a4f9", "jumps32": ["0:1006ae21", "0:1006a688", "0:1006a500", "0:1006a96f", "0:1006aaff", "0:1006ac8b", "0:1006acb7", "0:1006ad18"]}
+//{"id": "jumpTable", "addr": "0:1006a4f9", "jumps32": ["0:1006ae21", "0:1006a688", "0:1006a500", "0:1006a96f", "0:1006aaff", "0:1006ac8b", "0:1006acb7", "0:1006ad18"]}
 {"id": "jumpTable", "addr": "0:10065a83", "table": "0:10065d54", "type": "jump32", "entries": 6, "selector": "eax", "useCaseOffset": false}
 {"id": "jumpTable", "addr": "0:10050024", "table": "0:100500d0", "type": "jump32", "entries": 6, "selector": "ebx", "useCaseOffset": false}
 {"id": "jumpTable", "addr": "0:1004ff66", "table": "0:1004ffb4", "type": "jump32", "entries": 4, "selector": "edx", "useCaseOffset": false}
@@ -686,3 +686,9 @@
 {"id":"jumpTable","addr":"0:1005596d","calls32":["0:10004820"]}
 {"id":"jumpTable","addr":"0:10057e4f","calls32":["0:1007d6b0"]}
 {"id":"jumpTable","addr":"0:10057e5b","calls32":["0:1001c4e0"]}
+
+
+
+{"id": "jumpTable", "addr": "0:1006a4f9", "table": "0:1006afdc", "type": "jump32", "entries": 8, "selector": "eax", "useCaseOffset": false}
+{"id": "jumpTable", "addr": "0:1005cfda", "table": "0:1005d11c", "type": "jump32", "entries": 7, "selector": "eax", "useCaseOffset": false}
+{"id": "jumpTable", "addr": "0:10062c83", "table": "0:10062df0", "type": "jump32", "entries": 7, "selector": "ecx", "useCaseOffset": false}
