@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Nexus VST – WASM Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: #0f0f1a; color: #d0d0e0; min-height: 100vh; padding: 24px; }
+    h1   { color: #7ec8e3; font-size: 22px; margin-bottom: 4px; }
+    .sub { color: #556; font-size: 13px; margin-bottom: 24px; }
+
+    .panel { background: #16213e; border: 1px solid #1e3a6e; border-radius: 10px;
+             padding: 18px; margin-bottom: 18px; }
+    .panel h2 { color: #7ec8e3; font-size: 11px; text-transform: uppercase;
+                letter-spacing: 1.5px; margin-bottom: 14px; }
+
+    /* ── log ── */
+    #log { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 11.5px;
+           height: 110px; overflow-y: auto; background: #09090f;
+           border: 1px solid #1e3a6e; border-radius: 6px; padding: 8px 10px; }
+    #log .ok  { color: #4fc3a1; }
+    #log .err { color: #f87171; }
+    #log .inf { color: #6b7aaa; }
+
+    /* ── load row ── */
+    .frow { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .frow label { min-width: 70px; font-size: 13px; color: #8090b0; }
+    select { background: #09090f; color: #c0d0e8; border: 1px solid #1e3a6e;
+             border-radius: 5px; padding: 5px 8px; font-size: 13px; cursor: pointer; min-width: 160px; }
+    select:disabled { opacity: .35; cursor: default; }
+    .fst { font-size: 12px; color: #3d4a6a; }
+    .fst.ok { color: #4fc3a1; }
+
+    /* ── buttons ── */
+    button { background: #1a2a4a; color: #c0d0e8; border: 1px solid #2a4a7a;
+             border-radius: 7px; padding: 9px 22px; cursor: pointer;
+             font-size: 13px; transition: background .15s; }
+    button:hover:not(:disabled) { background: #223060; }
+    button:disabled { opacity: .35; cursor: default; }
+    .btn-primary { background: #1a5c44; border-color: #4fc3a1; color: #d0ffe8; font-weight: 600; }
+    .btn-primary:hover:not(:disabled) { background: #227055; }
+
+    /* ── piano ── */
+    #piano { display: block; border-radius: 6px; cursor: default; }
+
+    /* ── progress ── */
+    .pgbar { height: 3px; background: #09090f; border-radius: 2px; margin: 10px 0; }
+    .pgfill { height: 100%; background: #4fc3a1; border-radius: 2px; width: 0;
+              transition: width .08s linear; }
+
+    .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .status-line { font-size: 12px; color: #4a5a7a; }
+
+    /* ── seq display ── */
+    #seqDisplay { font-family: 'SF Mono', monospace; font-size: 12px;
+                  color: #7080a0; background: #09090f; border: 1px solid #1e3a6e;
+                  border-radius: 5px; padding: 7px 10px; margin-bottom: 12px; }
+    #seqDisplay span.active { color: #4fc3a1; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>Nexus VST <span style="color:#4fc3a1">WASM</span> Demo</h1>
+<p class="sub">Win32 x86 → C++ disassembly → WebAssembly · Web Audio API output</p>
+
+<!-- ── Load panel ────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2>1 · Load</h2>
+  <div class="frow" style="margin-bottom:16px">
+    <label>Preset</label>
+    <select id="selCategory" disabled><option value="">— category —</option></select>
+    <select id="selPatch"    disabled><option value="">— patch —</option></select>
+    <span class="fst" id="stFxp">no preset</span>
+  </div>
+  <div class="row">
+    <button id="btnInit" disabled>Initialize Nexus</button>
+    <span class="status-line" id="stInit">loading WASM…</span>
+  </div>
+</div>
+
+<!-- ── Play panel ────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2>2 · Play</h2>
+  <canvas id="piano" width="660" height="96"></canvas>
+  <div style="font-size:10px;color:#3d4a6a;margin:3px 0 6px">
+    Mouse: click keys &nbsp;|&nbsp; Keyboard: <code>A S D F G H J K</code> = C–C5 &nbsp; <code>W E T Y U O</code> = sharps
+  </div>
+  <div class="pgbar"><div class="pgfill" id="pgfill"></div></div>
+  <div class="row">
+    <button class="btn-primary" id="btnPlay" disabled>▶&nbsp;Play seq</button>
+    <button id="btnLive" disabled>&#127929;&nbsp;Live</button>
+    <span class="status-line" id="stPlay"></span>
+  </div>
+</div>
+
+<!-- ── Log panel ─────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2>Log</h2>
+  <div id="log"></div>
+</div>
+
+<script src="nexuslib.js"></script>
+<script>
+'use strict';
+const { NexusModule, BLOCK_SIZE, SAMPLE_RATE, OUT_L_FI, OUT_R_FI, PRESET_SCRATCH, parseFxp, loadSections, nexusInit, renderBlock } = NexusLib;
+
+// Globals accessed from EM_ASM (kernel32.h)
+window.nexusFileCache      = [];
+window.nexusDirCache       = {};
+window.nexusFindHandles    = {};
+window.nexusFindHandleNext = 0x200;
+
+// ── Logging ───────────────────────────────────────────────────────────────────
+const logEl = document.getElementById('log');
+function log(msg, cls = 'inf') {
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = `[${new Date().toLocaleTimeString('en', { hour12: false })}] ${msg}`;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// ── Piano ─────────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('piano');
+const ctx2d  = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const START_NOTE   = 48, OCTAVES = 3;
+const NUM_WHITES   = OCTAVES * 7 + 1;
+const WW = W / NUM_WHITES, WH = H;
+const BW = WW * 0.62,      BH = WH * 0.60;
+const SEM_TO_WHITE = [0,null,1,null,2,3,null,4,null,5,null,6];
+
+function whiteIdx(n) {
+  const w = SEM_TO_WHITE[n % 12];
+  return w === null ? null : (Math.floor(n / 12) - Math.floor(START_NOTE / 12)) * 7 + w;
+}
+
+function drawPiano(active = []) {
+  ctx2d.clearRect(0, 0, W, H);
+  for (let n = START_NOTE; n <= START_NOTE + OCTAVES * 12; n++) {
+    const wi = whiteIdx(n);
+    if (wi === null) continue;
+    const x = wi * WW;
+    ctx2d.fillStyle = active.includes(n) ? '#4fc3a1' : '#ddeeff';
+    ctx2d.fillRect(x + 1, 0, WW - 2, WH - 1);
+    ctx2d.strokeStyle = '#334'; ctx2d.strokeRect(x + 1, 0, WW - 2, WH - 1);
+    if (n % 12 === 0) {
+      ctx2d.fillStyle = active.includes(n) ? '#0d4a38' : '#334';
+      ctx2d.font = '9px sans-serif';
+      ctx2d.fillText('C' + Math.floor(n / 12 - 1), x + 3, WH - 4);
+    }
+  }
+  for (let n = START_NOTE; n < START_NOTE + OCTAVES * 12; n++) {
+    if (SEM_TO_WHITE[n % 12] !== null) continue;
+    const pw = whiteIdx(n - 1);
+    if (pw === null) continue;
+    ctx2d.fillStyle = active.includes(n) ? '#4fc3a1' : '#1a2030';
+    ctx2d.fillRect((pw + 1) * WW - BW / 2, 0, BW, BH);
+  }
+}
+drawPiano();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let M = null, ready = false, fxpChunk = null, sectionsLoaded = false;
+
+// ── Preset browser ────────────────────────────────────────────────────────────
+const selCategory = document.getElementById('selCategory');
+const selPatch    = document.getElementById('selPatch');
+
+async function populateCategories() {
+  try {
+    const entries = await fetch('/api/list?path=Presets').then(r => r.json());
+    const dirs = entries.filter(e => e.type === 'dir').sort((a, b) => a.name.localeCompare(b.name));
+    selCategory.innerHTML = '<option value="">— category —</option>';
+    for (const d of dirs) {
+      const o = document.createElement('option');
+      o.value = d.name; o.textContent = d.name;
+      selCategory.appendChild(o);
+    }
+    selCategory.disabled = false;
+  } catch (e) { log('Cannot list presets: ' + e, 'err'); }
+}
+
+selCategory.addEventListener('change', async function () {
+  selPatch.innerHTML = '<option value="">— patch —</option>';
+  selPatch.disabled = true;
+  if (!this.value) return;
+  try {
+    const entries = await fetch('/api/list?path=' + encodeURIComponent('Presets/' + this.value)).then(r => r.json());
+    const files = entries
+      .filter(e => e.type === 'file' && e.name.toLowerCase().endsWith('.fxp'))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    for (const f of files) {
+      const o = document.createElement('option');
+      o.value = f.path; o.textContent = f.name.slice(0, -4);
+      selPatch.appendChild(o);
+    }
+    selPatch.disabled = files.length === 0;
+  } catch (e) { log('Cannot list patches: ' + e, 'err'); }
+});
+
+selPatch.addEventListener('change', async function () {
+  if (!this.value) return;
+  const name = this.options[this.selectedIndex].textContent;
+  try {
+    const r = await fetch('/file?path=' + encodeURIComponent(this.value));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const chunk = parseFxp(await r.arrayBuffer());
+    if (!chunk) throw new Error('invalid FXP');
+    fxpChunk = chunk;
+    document.getElementById('stFxp').textContent = `✓ ${name}  (${chunk.length} B)`;
+    document.getElementById('stFxp').className = 'fst ok';
+    autoInit(chunk);
+  } catch (e) { log('Preset load failed: ' + e, 'err'); }
+});
+
+// ── Initialize ────────────────────────────────────────────────────────────────
+// autoInit: load sections + dir scan on first call, then (re)init the synth.
+// Subsequent calls skip section fetching — only the synth engine is restarted.
+async function autoInit(chunk) {
+  if (!M) return;
+  stopLive();
+  ready = false;
+  document.getElementById('btnInit').disabled = true;
+  document.getElementById('btnPlay').disabled = true;
+  document.getElementById('btnLive').disabled = true;
+
+  if (!sectionsLoaded) {
+    log('Fetching section bins…');
+    document.getElementById('stInit').textContent = 'loading…';
+    try {
+      await loadSections(M, async name => {
+        const r = await fetch('res/' + name);
+        if (!r.ok) throw new Error(`HTTP ${r.status}: ${name}`);
+        return new Uint8Array(await r.arrayBuffer());
+      });
+    } catch (e) {
+      log(`Bin fetch failed: ${e}`, 'err');
+      document.getElementById('stInit').textContent = 'load error';
+      document.getElementById('btnInit').disabled = false;
+      return;
+    }
+
+    log('Scanning content directory…');
+    document.getElementById('stInit').textContent = 'scanning…';
+    try {
+      const r = await fetch('/api/list?path=&recursive=1');
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const entries = await r.json();
+      window.nexusDirCache       = {};
+      window.nexusFindHandles    = {};
+      window.nexusFindHandleNext = 0x200;
+      for (const e of entries) {
+        const lastSlash = e.path.lastIndexOf('/');
+        const parentRel = lastSlash >= 0 ? e.path.slice(0, lastSlash) : '';
+        const key = ('c:/nexus content' + (parentRel ? '/' + parentRel : '')).toLowerCase();
+        if (!window.nexusDirCache[key]) window.nexusDirCache[key] = [];
+        window.nexusDirCache[key].push({ name: e.name, isDir: e.type === 'dir', size: e.size || 0 });
+      }
+      log(`Content scanned (${entries.length} entries)`, 'ok');
+    } catch (e) {
+      log(`Content scan failed: ${e} — presets may be silent`, 'err');
+    }
+    sectionsLoaded = true;
+  }
+
+  log(chunk ? `Loading "${selPatch.options[selPatch.selectedIndex]?.textContent}"…` : 'nexus_init()…');
+  document.getElementById('stInit').textContent = 'init…';
+  try {
+    nexusInit(M, chunk);
+  } catch (e) {
+    log(`nexus_init() failed: ${e}`, 'err');
+    document.getElementById('stInit').textContent = 'init failed';
+    document.getElementById('btnInit').disabled = false;
+    return;
+  }
+
+  ready = true;
+  document.getElementById('stInit').textContent = 'ready ✓';
+  document.getElementById('btnInit').disabled = false;
+  document.getElementById('btnPlay').disabled = false;
+  document.getElementById('btnLive').disabled = false;
+  log('Ready — use piano or keyboard (A–L)', 'ok');
+}
+
+function doInit() { autoInit(fxpChunk); }
+
+// ── Note Sequence ─────────────────────────────────────────────────────────────
+// [midiNote, sustainBlocks, releaseBlocks]
+const SEQ = [
+  [60, 18, 28], [64, 18, 28], [67, 18, 28], [72, 18, 28],
+  [67, 18, 28], [64, 18, 28], [60, 18, 56],
+];
+
+async function doPlay() {
+  if (!ready) return;
+  stopLive();
+  document.getElementById('btnPlay').disabled = true;
+  document.getElementById('btnLive').disabled = true;
+
+  const totalBlocks  = SEQ.reduce((s, [, sus, rel]) => s + 1 + sus + rel, 0);
+  const totalSamples = totalBlocks * BLOCK_SIZE;
+  log(`Rendering ${totalBlocks} blocks (${(totalSamples / SAMPLE_RATE).toFixed(2)}s)…`);
+  document.getElementById('stPlay').textContent = 'rendering…';
+
+  const bufL   = new Float32Array(totalSamples);
+  const bufR   = new Float32Array(totalSamples);
+  const pgfill = document.getElementById('pgfill');
+
+  // Build timeline for piano animation
+  const timeline = [];
+  let cur = 0;
+  for (const [note, sus, rel] of SEQ) {
+    timeline.push({ note, onSample: cur, offSample: cur + (sus + 1) * BLOCK_SIZE });
+    cur += (1 + sus + rel) * BLOCK_SIZE;
+  }
+
+  const YIELD_EVERY = 32;
+  let block = 0;
+  for (const [note, sus, rel] of SEQ) {
+    M._nexus_midi(0x90, note, 100);
+    for (let b = 0; b < 1 + sus; b++) {
+      renderBlock(M, bufL, bufR, block++);
+      pgfill.style.width = `${(100 * block / totalBlocks).toFixed(1)}%`;
+      if (block % YIELD_EVERY === 0) await new Promise(r => setTimeout(r, 0));
+    }
+    M._nexus_midi(0x80, note, 0);
+    for (let b = 0; b < rel; b++) {
+      renderBlock(M, bufL, bufR, block++);
+      pgfill.style.width = `${(100 * block / totalBlocks).toFixed(1)}%`;
+      if (block % YIELD_EVERY === 0) await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  log(`Rendered ${totalSamples} samples`, 'ok');
+  document.getElementById('stPlay').textContent = 'playing…';
+
+  const audioCtx = new AudioContext({ sampleRate: SAMPLE_RATE });
+  const audioBuf = audioCtx.createBuffer(2, totalSamples, SAMPLE_RATE);
+  audioBuf.copyToChannel(bufL, 0);
+  audioBuf.copyToChannel(bufR, 1);
+  const src = audioCtx.createBufferSource();
+  src.buffer = audioBuf;
+  src.connect(audioCtx.destination);
+  src.start();
+
+  src.onended = () => {
+    document.getElementById('stPlay').textContent = '';
+    document.getElementById('btnPlay').disabled = false;
+    document.getElementById('btnLive').disabled = false;
+    pgfill.style.width = '0';
+    drawPiano();
+    audioCtx.close();
+    log('Playback complete', 'ok');
+  };
+
+  function animate() {
+    const pos    = Math.floor(audioCtx.currentTime * SAMPLE_RATE);
+    const active = timeline.filter(n => pos >= n.onSample && pos < n.offSample).map(n => n.note);
+    drawPiano(active);
+    if (pos < totalSamples) requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+}
+
+// ── Live Mode ─────────────────────────────────────────────────────────────────
+let liveCtx  = null;
+let liveProc = null;
+const liveNotes = new Set();
+
+function startLive() {
+  if (liveCtx || !ready) return;
+  document.getElementById('btnPlay').disabled = true;
+  liveCtx  = new AudioContext({ sampleRate: SAMPLE_RATE });
+  liveProc = liveCtx.createScriptProcessor(BLOCK_SIZE, 0, 2);
+  liveProc.onaudioprocess = e => {
+    M._nexus_process();
+    const hf = M.HEAPF32;
+    e.outputBuffer.copyToChannel(hf.subarray(OUT_L_FI, OUT_L_FI + BLOCK_SIZE), 0);
+    e.outputBuffer.copyToChannel(hf.subarray(OUT_R_FI, OUT_R_FI + BLOCK_SIZE), 1);
+  };
+  liveProc.connect(liveCtx.destination);
+  document.getElementById('btnLive').textContent = '\u25A0\u00A0Live';
+  document.getElementById('stPlay').textContent = 'live';
+}
+
+function stopLive() {
+  if (!liveCtx) return;
+  liveNotes.forEach(n => M._nexus_midi(0x80, n, 0));
+  liveNotes.clear();
+  liveProc.disconnect();
+  liveCtx.close();
+  liveProc = null; liveCtx = null;
+  document.getElementById('btnLive').textContent = '\uD83C\uDFB9\u00A0Live';
+  document.getElementById('stPlay').textContent = '';
+  document.getElementById('btnPlay').disabled = false;
+  drawPiano();
+}
+
+function liveNoteOn(note) {
+  if (!liveCtx || liveNotes.has(note)) return;
+  liveNotes.add(note);
+  M._nexus_midi(0x90, note, 100);
+  drawPiano([...liveNotes]);
+}
+
+function liveNoteOff(note) {
+  if (!liveNotes.has(note)) return;
+  liveNotes.delete(note);
+  M._nexus_midi(0x80, note, 0);
+  if (liveCtx) drawPiano([...liveNotes]);
+}
+
+// Return MIDI note for a canvas (x, y) click, or null
+function noteAtPoint(x, y) {
+  // Black keys sit on top — check them first
+  if (y < BH) {
+    for (let n = START_NOTE; n < START_NOTE + OCTAVES * 12; n++) {
+      if (SEM_TO_WHITE[n % 12] !== null) continue;
+      const pw = whiteIdx(n - 1);
+      if (pw === null) continue;
+      const bx = (pw + 1) * WW - BW / 2;
+      if (x >= bx && x < bx + BW) return n;
+    }
+  }
+  // White keys
+  const wi = Math.floor(x / WW);
+  for (let n = START_NOTE; n <= START_NOTE + OCTAVES * 12; n++)
+    if (whiteIdx(n) === wi) return n;
+  return null;
+}
+
+// Mouse
+let mouseNote = null;
+canvas.addEventListener('mousedown', e => {
+  if (!ready) return;
+  const r = canvas.getBoundingClientRect();
+  const note = noteAtPoint(e.clientX - r.left, e.clientY - r.top);
+  if (note === null) return;
+  if (!liveCtx) startLive();
+  mouseNote = note;
+  liveNoteOn(note);
+});
+canvas.addEventListener('mouseup',    () => { if (mouseNote !== null) { liveNoteOff(mouseNote); mouseNote = null; } });
+canvas.addEventListener('mouseleave', () => { if (mouseNote !== null) { liveNoteOff(mouseNote); mouseNote = null; } });
+
+// Keyboard  (A S D F G H J K = C4..C5, W E T Y U O = sharps)
+const KEY_MAP = {
+  'a':60,'w':61,'s':62,'e':63,'d':64,'f':65,'t':66,
+  'g':67,'y':68,'h':69,'u':70,'j':71,'k':72,'o':73,'l':74,'p':75,
+};
+document.addEventListener('keydown', e => {
+  if (!ready || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (document.activeElement?.tagName === 'INPUT') return;
+  const note = KEY_MAP[e.key.toLowerCase()];
+  if (note === undefined) return;
+  e.preventDefault();
+  if (!liveCtx) startLive();
+  liveNoteOn(note);
+});
+document.addEventListener('keyup', e => {
+  const note = KEY_MAP[e.key.toLowerCase()];
+  if (note !== undefined) liveNoteOff(note);
+});
+
+// ── Startup ───────────────────────────────────────────────────────────────────
+log('Loading NexusModule…');
+NexusModule({ locateFile: f => f, printErr: msg => log(msg, 'err') })
+  .then(mod => {
+    M = mod;
+    log(`WASM loaded (${mod.HEAPU8.byteLength >> 20} MB heap)`, 'ok');
+    document.getElementById('stInit').textContent = 'click Initialize';
+    document.getElementById('btnInit').disabled = false;
+    populateCategories();
+  })
+  .catch(e => {
+    log('Module load failed: ' + e, 'err');
+    document.getElementById('stInit').textContent = 'load error';
+  });
+
+document.getElementById('btnInit').addEventListener('click', doInit);
+document.getElementById('btnPlay').addEventListener('click', doPlay);
+document.getElementById('btnLive').addEventListener('click', () => liveCtx ? stopLive() : startLive());
+</script>
+</body>
+</html>
