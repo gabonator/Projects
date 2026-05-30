@@ -1,4 +1,7 @@
 
+// Nexus module functions called via vtable slot 0x60
+void sub_7230();
+
 void sub_1001000();
 void sub_100101d();
 void sub_100112d();
@@ -147,7 +150,8 @@ void synsoemuIndirectCall(int s, int o, int orgs, int orgo)
                 case 0x7777900e: eax = 0; break; // posAPI no-op
                 case 0x7777900f: eax = 0; break; // posAPI no-op
                 case 0x00004000: sub_4000(); break; // TODO CICO!
-                default: 
+                case 0x00007230: sub_7230(); break; // Nexus vtable slot 0x60: get enabled state
+                default:
                   printf("{\"id\": \"jumpTable\", \"addr\": \"0:%x\", \"calls32\": [\"0:%x\"]}\n", orgo, o);
                   fprintf(stderr, "missing indirect %x:%x from %x:%x\n", s, o, orgs, orgo); fflush(stderr);
                   assert(0);
@@ -699,7 +703,11 @@ void sub_1001582() // 0000:1001582 +long
     if (!eax)
         goto loc_100159d;
     push32(memoryAGet32(ss, ebp + 0x10));
-    indirectCall(cs, eax, 0x0000, 0x01001598); // 0000:1001598
+//[01:48:55] missing indirect 0:10045d0 from 0:1001598
+    if (eax == 0x10045d0)
+       sub_10045d0();
+    else
+      indirectCall(cs, eax, 0x0000, 0x01001598); // 0000:1001598
     memoryASet32(ds, ebx + 0x18, eax);
 loc_100159d: // 0000:100159d
     eax = 0;
@@ -984,7 +992,11 @@ loc_100187b: // 0000:100187b
     eax = eax + 201308;
 loc_100189e: // 0000:100189e
     push32(eax);
-    indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x0100189f); // 0000:100189f
+//missing indirect 0:1005ea6 from 0:100189f
+    if (memoryAGet32(ds, ebx + 0x14)==0x1005ea6)
+      sub_1005ea6();
+    else
+      indirectCall(cs, memoryAGet32(ds, ebx + 0x14), 0x0000, 0x0100189f); // 0000:100189f
     goto loc_10018b4;
 loc_10018a4: // 0000:10018a4
     push32(0x00000000);

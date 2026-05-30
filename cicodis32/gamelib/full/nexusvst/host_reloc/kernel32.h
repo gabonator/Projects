@@ -4,6 +4,15 @@
 
 #ifdef WASM
 #include <emscripten.h>
+extern "C" {
+    int32_t nexus_vfs_open(const char* url, int32_t slot);
+    int32_t nexus_vfs_read(int32_t slot, int32_t bufPtr, int32_t nBytes);
+    void    nexus_vfs_close(int32_t slot);
+    int32_t nexus_vfs_seek(int32_t slot, int32_t dist, int32_t method);
+    int32_t nexus_vfs_find_first(const char* key, int32_t dataPtr);
+    int32_t nexus_vfs_find_next(int32_t handle, int32_t dataPtr);
+    void    nexus_vfs_find_close(int32_t handle);
+}
 #endif
 #ifndef WASM
 #include <dirent.h>
@@ -89,8 +98,8 @@ uint32_t CreateFileA() { // 7 args, stdcall +28
     std::string name = readString(namePtr);
     for (auto& c : name) if (c == '\\') c = '/';
     // Match Windows: these files don't exist on the test system
-    if (name.find("!Info.ned") != std::string::npos ||
-        name.find(".nsk") != std::string::npos) {
+    if (name.find("Samples/Rom/!Info.ned") != std::string::npos) {
+//        name.find(".nsk") != std::string::npos) {
         printf("CreateFileA BLOCKED: %s\n", name.c_str());
         return 0xffffffff;
     }
@@ -106,21 +115,7 @@ uint32_t CreateFileA() { // 7 args, stdcall +28
         return 0xffffffff;
     }
     std::string relUrl = vfsPath.substr(strlen(VFS_SANDBOX));
-    int32_t result = (int32_t)EM_ASM_INT(({
-        var path = UTF8ToString($0);
-        var slot = $1;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', path, false);
-        xhr.responseType = 'arraybuffer';
-        xhr.send(null);
-        if (xhr.status !== 200) {
-            console.warn('CreateFileA: HTTP ' + xhr.status + ' for ' + path);
-            return -1;
-        }
-        window.nexusFileCache[slot] = { data: new Uint8Array(xhr.response), pos: 0 };
-        console.log('CreateFileA: slot ' + slot + ' OK (' + window.nexusFileCache[slot].data.length + ' bytes)');
-        return window.nexusFileCache[slot].data.length;
-    }), relUrl.c_str(), slot);
+    int32_t result = nexus_vfs_open(relUrl.c_str(), slot);
     if (result < 0) {
         printf("CreateFileA FAIL (fetch): %s\n", name.c_str());
         return 0xffffffff;
@@ -175,15 +170,7 @@ uint32_t ReadFile() { // 5 args, stdcall +20
 
     printf("ReadFile: h=0x%x buf=0x%08x sz=%u\n", hFile, bufPtr, nBytes);
 #ifdef WASM
-    int nRead = EM_ASM_INT({
-        var f = window.nexusFileCache[$0];
-        if (!f) return 0;
-        var avail = f.data.length - f.pos;
-        var n = Math.min($2, avail);
-        HEAPU8.set(f.data.subarray(f.pos, f.pos + n), $1);
-        f.pos += n;
-        return n;
-    }, slot, bufPtr, nBytes);
+    int nRead = nexus_vfs_read(slot, (int32_t)bufPtr, (int32_t)nBytes);
 #elif defined(RASPI)
     size_t nRead = fread((void*)bufPtr, 1, nBytes, fileSlots[slot].fp);
 #else
@@ -203,7 +190,7 @@ uint32_t CloseHandle() {
     if (slot >= 0 && slot < 64 && fileSlots[slot].opened) {
         fileSlots[slot].opened = false;
 #ifdef WASM
-        EM_ASM({ delete window.nexusFileCache[$0]; }, slot);
+        nexus_vfs_close(slot);
 #else
         fclose(fileSlots[slot].fp);
         fileSlots[slot].fp = nullptr;
@@ -223,16 +210,7 @@ uint32_t SetFilePointer() { // 4 args +16
     if (slot < 0 || slot >= 64 || !fileSlots[slot].opened) return 0xffffffff;
 
 #ifdef WASM
-    return (uint32_t)EM_ASM_INT({
-        var f = window.nexusFileCache[$0];
-        if (!f) return 0xffffffff;
-        var m = $2;
-        if (m === 0) f.pos = $1;
-        else if (m === 1) f.pos += $1;
-        else f.pos = f.data.length + $1;
-        f.pos = Math.max(0, Math.min(f.pos, f.data.length));
-        return f.pos;
-    }, slot, dist, (int)method);
+    return (uint32_t)nexus_vfs_seek(slot, dist, (int32_t)method);
 #else
     int whence = (method == 0) ? SEEK_SET : (method == 1) ? SEEK_CUR : SEEK_END;
     fseek(fileSlots[slot].fp, dist, whence);
@@ -571,23 +549,7 @@ uint32_t FindFirstFileA() {
         }
         for (auto& c : pattern) c = (char)tolower((unsigned char)c);
         // Look up pre-scanned cache via JS and fill WIN32_FIND_DATA
-        int32_t handle = (int32_t)EM_ASM_INT(({
-            var key = UTF8ToString($0);
-            var dp  = $1;
-            var cache = window.nexusDirCache ? window.nexusDirCache[key] : null;
-            if (!cache || cache.length === 0) { return -1; }
-            var h = window.nexusFindHandleNext++;
-            window.nexusFindHandles[h] = { entries: cache, index: 0 };
-            var e = cache[0];
-            HEAPU32[dp >> 2] = e.isDir ? 0x10 : 0x80;
-            HEAPU32[(dp + 28) >> 2] = 0;
-            HEAPU32[(dp + 32) >> 2] = e.size >>> 0;
-            for (var i = 0; i < 260; i++) { HEAPU8[dp + 44 + i] = 0; }
-            for (var i = 0; i < e.name.length && i < 259; i++) {
-                HEAPU8[dp + 44 + i] = e.name.charCodeAt(i);
-            }
-            return h;
-        }), pattern.c_str(), (int32_t)dataPtr);
+        int32_t handle = nexus_vfs_find_first(pattern.c_str(), (int32_t)dataPtr);
         if (handle < 0) return 0xffffffff;
         return (uint32_t)handle;
     }
@@ -638,23 +600,7 @@ uint32_t FindNextFileA() {
     uint32_t dataPtr = memoryAGet32(ss, esp + 4);
     esp += 8;
 #ifdef WASM
-    return (uint32_t)EM_ASM_INT(({
-        var h = $0;
-        var dp = $1;
-        var fh = window.nexusFindHandles ? window.nexusFindHandles[h] : null;
-        if (!fh) { return 0; }
-        fh.index++;
-        if (fh.index >= fh.entries.length) { return 0; }
-        var e = fh.entries[fh.index];
-        HEAPU32[dp >> 2] = e.isDir ? 0x10 : 0x80;
-        HEAPU32[(dp + 28) >> 2] = 0;
-        HEAPU32[(dp + 32) >> 2] = e.size >>> 0;
-        for (var i = 0; i < 260; i++) { HEAPU8[dp + 44 + i] = 0; }
-        for (var i = 0; i < e.name.length && i < 259; i++) {
-            HEAPU8[dp + 44 + i] = e.name.charCodeAt(i);
-        }
-        return 1;
-    }), (int32_t)hFind, (int32_t)dataPtr);
+    return (uint32_t)nexus_vfs_find_next((int32_t)hFind, (int32_t)dataPtr);
 #else
     int slot = (hFind - 0x200) % 16;
     if (slot < 0 || slot >= 16 || !findHandles[slot].active) return 0;
@@ -679,7 +625,7 @@ uint32_t FindNextFileA() {
 uint32_t FindClose() {
     uint32_t hFind = memoryAGet32(ss, esp); esp += 4;
 #ifdef WASM
-    EM_ASM_INT(({ if (window.nexusFindHandles) { delete window.nexusFindHandles[$0]; } return 0; }), (int32_t)hFind);
+    nexus_vfs_find_close((int32_t)hFind);
     return 1;
 #else
     int slot = (hFind - 0x200) % 16;

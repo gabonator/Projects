@@ -131,6 +131,17 @@ void nexus_init()
 void nexus_load_preset(int ptr, int size)
 {
     callDispatcher(24, 1, (uint32_t)size, (uint32_t)ptr, 0); // effSetChunk
+
+    // effSetChunk enables audio objects (sets byte+0x8d=1 via sub_62240).
+    // The per-SR audio setup (sub_68810) only runs inside sub_62310 when:
+    //   (a) the stored SR differs from the new SR, AND (b) al==1.
+    // During nexus_init(), the child list was empty so sub_62310 was never
+    // reached.  Now that objects exist and are enabled, force a re-propagation
+    // by clearing the cached SR so sub_5f4c0 sees a "changed" value.
+    memoryASet32(0, s_thisPtr + 0xb4, 0);
+    float sr = 44100.0f;
+    uint32_t srBits; memcpy(&srBits, &sr, 4);
+    callDispatcher(10, 0, 0, 0, srBits); // effSetSampleRate — now with al==1
 }
 
 // nexus_midi — queue one MIDI event for the next nexus_process() call
