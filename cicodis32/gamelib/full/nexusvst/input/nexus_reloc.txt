@@ -705,3 +705,17 @@
 {"id": "jumpTable", "addr": "0:169b6", "calls32": ["0:5c930"]}
 {"id": "jumpTable", "addr": "0:5caa5", "calls32": ["0:68250"]}
 {"id": "jumpTable", "addr": "0:1828b", "calls32": ["0:56df0"]}
+
+
+//
+{"id": "jumpTable", "addr": "0:000168fa", "calls32": ["0:0005c930"]}
+{"id": "jumpTable", "addr": "0:0005ca88", "calls32": ["0:00007230"]}
+{"id": "jumpTable", "addr": "0:00068260", "calls32": ["0:00068280"]}
+{"id":"config","procList":["0:00068280", "0:00068fd0"]}
+
+{"id": "jumpTable", "addr": "0:0005cabe", "calls32": ["0:00068250"]}
+{"id": "jumpTable", "addr": "0:00068260", "calls32": ["0:000682a0"]}
+{"id":"config","procList":["0:000682a0", "0:00069000"]}
+{"id": "jumpTable", "addr": "0:0005cada", "calls32": ["0:00068240"]}
+{"id":"config","procList":["0:00068240", "0:00069c90", "0:00069dd0", "0:00069dd0"]}
+{"id": "jumpTable", "addr": "0:16316", "calls32": ["0:5cf90"]}
