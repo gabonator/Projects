@@ -85,8 +85,18 @@
   <canvas id="piano" width="660" height="96"></canvas>
   <div style="font-size:10px;color:#3d4a6a;margin:3px 0 6px">
     Mouse: click keys &nbsp;|&nbsp; Keyboard: <code>A S D F G H J K</code> = C–C5 &nbsp; <code>W E T Y U O</code> = sharps
+    &nbsp;|&nbsp; <span id="midiStatus" style="color:#3d4a6a">MIDI: checking…</span>
   </div>
   <div class="pgbar"><div class="pgfill" id="pgfill"></div></div>
+  <div style="display:none;margin:6px 0 2px" id="dspRow">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:10px;color:#4a5a7a;min-width:26px" id="dspPct">0%</span>
+      <div style="flex:1;height:5px;background:#09090f;border-radius:3px;overflow:hidden">
+        <div id="dspBar" style="height:100%;width:0%;background:#4fc3a1;border-radius:3px;transition:width .1s,background .1s"></div>
+      </div>
+      <span style="font-size:10px;color:#3d4a6a;white-space:nowrap" id="dspDetail"></span>
+    </div>
+  </div>
   <div class="row">
     <button class="btn-primary" id="btnPlay" disabled>▶&nbsp;Play seq</button>
     <button id="btnLive" disabled>&#127929;&nbsp;Live</button>
@@ -369,18 +379,44 @@ let liveCtx  = null;
 let liveProc = null;
 const liveNotes = new Set();
 
+const BUDGET_MS  = BLOCK_SIZE / SAMPLE_RATE * 1000; // 11.61 ms
+const dspRow     = document.getElementById('dspRow');
+const dspBar     = document.getElementById('dspBar');
+const dspPct     = document.getElementById('dspPct');
+const dspDetail  = document.getElementById('dspDetail');
+let _dspSum = 0, _dspN = 0, _dspPeak = 0;
+
+function updateDspMeter(dt) {
+  _dspSum += dt; _dspN++;
+  if (dt > _dspPeak) _dspPeak = dt;
+  if (_dspN % 32 !== 0) return;
+  const avg  = _dspSum / _dspN;
+  const pct  = Math.min(avg / BUDGET_MS * 100, 100);
+  const peak = Math.min(_dspPeak / BUDGET_MS * 100, 999);
+  dspBar.style.width      = pct.toFixed(1) + '%';
+  dspBar.style.background = pct < 50 ? '#4fc3a1' : pct < 80 ? '#f59e0b' : '#f87171';
+  dspPct.style.color      = pct < 50 ? '#4fc3a1' : pct < 80 ? '#f59e0b' : '#f87171';
+  dspPct.textContent      = pct.toFixed(0) + '%';
+  dspDetail.textContent   = `avg ${avg.toFixed(1)}ms  peak ${_dspPeak.toFixed(1)}ms  budget ${BUDGET_MS.toFixed(1)}ms`;
+  _dspSum = _dspN = _dspPeak = 0;
+}
+
 function startLive() {
   if (liveCtx || !ready) return;
+  _dspSum = _dspN = _dspPeak = 0;
   document.getElementById('btnPlay').disabled = true;
   liveCtx  = new AudioContext({ sampleRate: SAMPLE_RATE });
   liveProc = liveCtx.createScriptProcessor(BLOCK_SIZE, 0, 2);
   liveProc.onaudioprocess = e => {
+    const t0 = performance.now();
     M._nexus_process();
+    updateDspMeter(performance.now() - t0);
     const hf = M.HEAPF32;
     e.outputBuffer.copyToChannel(hf.subarray(OUT_L_FI, OUT_L_FI + BLOCK_SIZE), 0);
     e.outputBuffer.copyToChannel(hf.subarray(OUT_R_FI, OUT_R_FI + BLOCK_SIZE), 1);
   };
   liveProc.connect(liveCtx.destination);
+  dspRow.style.display = '';
   document.getElementById('btnLive').textContent = '\u25A0\u00A0Live';
   document.getElementById('stPlay').textContent = 'live';
 }
@@ -392,6 +428,8 @@ function stopLive() {
   liveProc.disconnect();
   liveCtx.close();
   liveProc = null; liveCtx = null;
+  dspRow.style.display = 'none';
+  dspBar.style.width   = '0%';
   document.getElementById('btnLive').textContent = '\uD83C\uDFB9\u00A0Live';
   document.getElementById('stPlay').textContent = '';
   document.getElementById('btnPlay').disabled = false;
@@ -463,6 +501,49 @@ document.addEventListener('keyup', e => {
   const note = KEY_MAP[e.key.toLowerCase()];
   if (note !== undefined) liveNoteOff(note);
 });
+
+// ── MIDI ──────────────────────────────────────────────────────────────────────
+const midiStatusEl = document.getElementById('midiStatus');
+
+function onMidiMessage(e) {
+  const [status, note, velocity] = e.data;
+  const type = status & 0xf0;
+  if (type === 0x90 && velocity > 0) {
+    if (!liveCtx) startLive();
+    liveNoteOn(note);
+  } else if (type === 0x80 || (type === 0x90 && velocity === 0)) {
+    liveNoteOff(note);
+  }
+}
+
+function connectMidiInputs(access) {
+  let count = 0;
+  for (const input of access.inputs.values()) {
+    input.onmidimessage = onMidiMessage;
+    count++;
+  }
+  const names = [...access.inputs.values()].map(i => i.name).join(', ');
+  if (count === 0) {
+    midiStatusEl.textContent = 'MIDI: no devices';
+    midiStatusEl.style.color = '#3d4a6a';
+  } else {
+    midiStatusEl.textContent = `MIDI: ${names}`;
+    midiStatusEl.style.color = '#4fc3a1';
+    log(`MIDI: ${count} device(s) — ${names}`, 'ok');
+  }
+}
+
+if (navigator.requestMIDIAccess) {
+  navigator.requestMIDIAccess({ sysex: false }).then(access => {
+    connectMidiInputs(access);
+    access.onstatechange = () => connectMidiInputs(access);
+  }).catch(err => {
+    midiStatusEl.textContent = 'MIDI: denied';
+    log('MIDI access denied: ' + err, 'err');
+  });
+} else {
+  midiStatusEl.textContent = 'MIDI: not supported';
+}
 
 // ── Startup ───────────────────────────────────────────────────────────────────
 log('Loading NexusModule…');

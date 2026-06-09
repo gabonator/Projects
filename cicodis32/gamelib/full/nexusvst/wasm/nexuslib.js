@@ -60,14 +60,11 @@ async function NexusModule(opts = {}) {
 
   // Heap views — undefined until updateViews() is called after WASM instantiation.
   // Closures below capture the let-binding, so they see the updated values at call time.
-  let HEAPU8, HEAPU32, HEAP32, HEAPF32, HEAPF64, HEAP64;
+  let HEAPU8, HEAPU32, HEAPF32;
   function updateViews(buf) {
     HEAPU8  = new Uint8Array(buf);
     HEAPU32 = new Uint32Array(buf);
-    HEAP32  = new Int32Array(buf);
     HEAPF32 = new Float32Array(buf);
-    HEAPF64 = new Float64Array(buf);
-    HEAP64  = new BigInt64Array(buf);
   }
 
   // UTF-8 string reader from WASM memory
@@ -80,102 +77,22 @@ async function NexusModule(opts = {}) {
                 : String.fromCharCode(...HEAPU8.subarray(ptr, end));
   }
 
-  // EM_ASM argument unpacker (mirrors emscripten's readEmAsmArgs)
-  const _emArgs = [];
-  function readEmAsmArgs(sigPtr, buf) {
-    _emArgs.length = 0;
-    let ch;
-    while ((ch = HEAPU8[sigPtr++])) {
-      const wide = ch !== 105 && ch !== 112;  // 'i'=int32, 'p'=ptr are 32-bit; rest are 64-bit
-      if (wide && buf % 8) buf += 4;
-      _emArgs.push(ch === 112 ? HEAPU32[buf >> 2] :
-                   ch === 105 ? HEAP32 [buf >> 2] :
-                   ch === 106 ? HEAP64 [buf >> 3] :
-                                HEAPF64[buf >> 3]);
-      buf += wide ? 8 : 4;
-    }
-    return _emArgs;
-  }
+  // VFS state — shared across all kernel32 file/dir calls
+  const _fileCache = {};   // slot → { data: Uint8Array, pos: number }
+  const _findHandles = {}; // handle → { entries, index }
+  let _findHandleNext = 0;
 
-  // EM_ASM constants — indices are byte-offsets baked into the WASM binary by emscripten.
-  // These implement the Win32 file / directory API used by kernel32.h.
-  const ASM_CONSTS = {
-    // CreateFileA: XHR-fetch path, cache result in nexusFileCache[slot]
-    46964: ($0, $1) => {
-      const winPath = UTF8ToString($0), slot = $1;
-      // In browser: rewrite "Nexus Content/foo" → "/file?path=foo" (served by server.js).
-      // In Node.js: MockXHR handles the path directly.
-      const IS_BROWSER = typeof document !== 'undefined';
-      const url = (IS_BROWSER && winPath.startsWith('Nexus Content/'))
-        ? '/file?path=' + encodeURIComponent(winPath.slice('Nexus Content/'.length))
-        : winPath;
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', url, false);
-      // Browser sync XHR cannot use responseType='arraybuffer' — use overrideMimeType instead.
-      // Node.js MockXHR ignores overrideMimeType (optional chain) and returns xhr.response as ArrayBuffer.
-      xhr.overrideMimeType?.('text/plain; charset=x-user-defined');
-      xhr.send(null);
-      if (xhr.status !== 200) { printErr('CreateFileA: HTTP ' + xhr.status + ' ' + url); return -1; }
-      let bytes;
-      if (xhr.response instanceof ArrayBuffer) {
-        bytes = new Uint8Array(xhr.response);  // Node.js MockXHR path
-      } else {
-        const t = xhr.responseText;             // Browser path: extract binary from string
-        bytes = new Uint8Array(t.length);
-        for (let i = 0; i < t.length; i++) bytes[i] = t.charCodeAt(i) & 0xff;
-      }
-      window.nexusFileCache[slot] = { data: bytes, pos: 0 };
-      return bytes.length;
-    },
-    // ReadFile
-    47463: ($0, $1, $2) => {
-      const f = window.nexusFileCache[$0];
-      if (!f) return 0;
-      const n = Math.min($2, f.data.length - f.pos);
-      HEAPU8.set(f.data.subarray(f.pos, f.pos + n), $1);
-      f.pos += n;
-      return n;
-    },
-    // CloseHandle (file)
-    47657: ($0) => { delete window.nexusFileCache[$0]; },
-    // SetFilePointer
-    47695: ($0, $1, $2) => {
-      const f = window.nexusFileCache[$0];
-      if (!f) return 0xffffffff;
-      f.pos = $2 === 0 ? $1 : $2 === 1 ? f.pos + $1 : f.data.length + $1;
-      f.pos = Math.max(0, Math.min(f.pos, f.data.length));
-      return f.pos;
-    },
-    // FindFirstFileA
-    47929: ($0, $1) => {
-      const key = UTF8ToString($0), dp = $1;
-      const cache = window.nexusDirCache?.[key];
-      if (!cache?.length) return -1;
-      const h = window.nexusFindHandleNext++;
-      window.nexusFindHandles[h] = { entries: cache, index: 0 };
-      const e = cache[0];
-      HEAPU32[ dp        >> 2] = e.isDir ? 16 : 128;
-      HEAPU32[(dp + 28)  >> 2] = 0;
-      HEAPU32[(dp + 32)  >> 2] = e.size >>> 0;
-      for (let i = 0; i < 260; i++) HEAPU8[dp+44+i] = 0;
-      for (let i = 0; i < e.name.length && i < 259; i++) HEAPU8[dp+44+i] = e.name.charCodeAt(i);
-      return h;
-    },
-    // FindNextFileA
-    48488: ($0, $1) => {
-      const fh = window.nexusFindHandles?.[$0];
-      if (!fh || ++fh.index >= fh.entries.length) return 0;
-      const e = fh.entries[fh.index], dp = $1;
-      HEAPU32[ dp        >> 2] = e.isDir ? 16 : 128;
-      HEAPU32[(dp + 28)  >> 2] = 0;
-      HEAPU32[(dp + 32)  >> 2] = e.size >>> 0;
-      for (let i = 0; i < 260; i++) HEAPU8[dp+44+i] = 0;
-      for (let i = 0; i < e.name.length && i < 259; i++) HEAPU8[dp+44+i] = e.name.charCodeAt(i);
-      return 1;
-    },
-    // FindClose
-    48982: ($0) => { if (window.nexusFindHandles) delete window.nexusFindHandles[$0]; return 0; },
-  };
+  // nexusDirCache is populated by the host (test.js / nexus.html) before nexus_init()
+  const _gbl = typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : global);
+
+  // Helper: write a WIN32_FIND_DATA entry into WASM memory at dp
+  function _writeFindData(dp, e) {
+    HEAPU32[ dp        >> 2] = e.isDir ? 16 : 128;
+    HEAPU32[(dp + 28)  >> 2] = 0;
+    HEAPU32[(dp + 32)  >> 2] = e.size >>> 0;
+    for (let i = 0; i < 260; i++) HEAPU8[dp+44+i] = 0;
+    for (let i = 0; i < e.name.length && i < 259; i++) HEAPU8[dp+44+i] = e.name.charCodeAt(i);
+  }
 
   // fd_write — routes WASM printf to console
   const _bufs = [null, [], []];  // fd 0 unused, 1=stdout, 2=stderr
@@ -199,14 +116,69 @@ async function NexusModule(opts = {}) {
   }
 
   const wasmImports = {
-    __assert_fail:            (cond) => { throw new Error('Assertion failed: ' + UTF8ToString(cond)); },
-    __cxa_throw:              (ptr, type, dtor) => { HEAPU32[(ptr-20) >> 2] = type; HEAPU32[(ptr-16) >> 2] = dtor; throw ptr; },
-    _abort_js:                () => { throw new Error('abort'); },
-    emscripten_asm_const_int: (code, sigPtr, argbuf) => ASM_CONSTS[code](...readEmAsmArgs(sigPtr, argbuf)),
-    emscripten_resize_heap:   () => { throw new Error('OOM'); },
-    fd_close:                 () => 52,
-    fd_seek:                  () => 70,
-    fd_write:                 _fdWrite,
+    __assert_fail:        (cond) => { throw new Error('Assertion failed: ' + UTF8ToString(cond)); },
+    __cxa_throw:          (ptr, type, dtor) => { HEAPU32[(ptr-20) >> 2] = type; HEAPU32[(ptr-16) >> 2] = dtor; throw ptr; },
+    _abort_js:            () => { throw new Error('abort'); },
+    emscripten_resize_heap: () => { throw new Error('OOM'); },
+    fd_close:             () => 52,
+    fd_seek:              () => 70,
+    fd_write:             _fdWrite,
+
+    // VFS imports — replace all EM_ASM blocks in kernel32.h
+    nexus_vfs_open: (urlPtr, slot) => {
+      const winPath = UTF8ToString(urlPtr);
+      const IS_BROWSER = typeof document !== 'undefined';
+      const url = (IS_BROWSER && winPath.startsWith('Nexus Content/'))
+        ? '/file?path=' + encodeURIComponent(winPath.slice('Nexus Content/'.length))
+        : winPath;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false);
+      xhr.overrideMimeType?.('text/plain; charset=x-user-defined');
+      xhr.send(null);
+      if (xhr.status !== 200) { printErr('nexus_vfs_open: HTTP ' + xhr.status + ' ' + url); return -1; }
+      let bytes;
+      if (xhr.response instanceof ArrayBuffer) {
+        bytes = new Uint8Array(xhr.response);
+      } else {
+        const t = xhr.responseText;
+        bytes = new Uint8Array(t.length);
+        for (let i = 0; i < t.length; i++) bytes[i] = t.charCodeAt(i) & 0xff;
+      }
+      _fileCache[slot] = { data: bytes, pos: 0 };
+      return bytes.length;
+    },
+    nexus_vfs_read: (slot, bufPtr, nBytes) => {
+      const f = _fileCache[slot];
+      if (!f) return 0;
+      const n = Math.min(nBytes, f.data.length - f.pos);
+      HEAPU8.set(f.data.subarray(f.pos, f.pos + n), bufPtr);
+      f.pos += n;
+      return n;
+    },
+    nexus_vfs_close: (slot) => { delete _fileCache[slot]; },
+    nexus_vfs_seek: (slot, dist, method) => {
+      const f = _fileCache[slot];
+      if (!f) return 0xffffffff;
+      f.pos = method === 0 ? dist : method === 1 ? f.pos + dist : f.data.length + dist;
+      f.pos = Math.max(0, Math.min(f.pos, f.data.length));
+      return f.pos;
+    },
+    nexus_vfs_find_first: (keyPtr, dataPtr) => {
+      const key = UTF8ToString(keyPtr);
+      const cache = _gbl.nexusDirCache?.[key];
+      if (!cache?.length) return -1;
+      const h = _findHandleNext++;
+      _findHandles[h] = { entries: cache, index: 0 };
+      _writeFindData(dataPtr, cache[0]);
+      return h;
+    },
+    nexus_vfs_find_next: (handle, dataPtr) => {
+      const fh = _findHandles[handle];
+      if (!fh || ++fh.index >= fh.entries.length) return 0;
+      _writeFindData(dataPtr, fh.entries[fh.index]);
+      return 1;
+    },
+    nexus_vfs_find_close: (handle) => { delete _findHandles[handle]; },
   };
   const imports = { env: wasmImports, wasi_snapshot_preview1: wasmImports };
 

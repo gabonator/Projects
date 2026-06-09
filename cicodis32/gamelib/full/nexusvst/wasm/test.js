@@ -10,10 +10,10 @@ const FXP_PATH     = process.argv[2] || null;
 
 // Note sequence [midiNote, sustainBlocks, releaseBlocks]
 const SEQ = [
-  [60, 18, 28],  // C4
-  [64, 18, 28],  // E4
-  [67, 18, 28],  // G4
-  [72, 18, 56],  // C5 (long release)
+  [60, 36, 28],  // C4
+  [64, 36, 28],  // E4
+  [67, 36, 28],  // G4
+  [72, 36, 56],  // C5 (long release)
 ];
 
 // ── WASM globals (accessed from EM_ASM in kernel32.h) ────────────────────────
@@ -93,17 +93,21 @@ async function main() {
   nexusInit(M, chunk);
   if (chunk) console.log(`Preset: ${path.basename(FXP_PATH)}  (${chunk.length} bytes)`);
 
-  const totalBlocks = SEQ.reduce((s, [, sus, rel]) => s + 1 + sus + rel, 0);
+  const totalBlocks = SEQ.reduce((s, [, sus, rel]) => s + Math.ceil(1 + sus/4) + Math.ceil(rel/4), 0) * 30;
   const bufL = new Float32Array(totalBlocks * BLOCK_SIZE);
   const bufR = new Float32Array(totalBlocks * BLOCK_SIZE);
 
   let block = 0;
-  for (const [note, sus, rel] of SEQ) {
-    M._nexus_midi(0x90, note, 100);
-    for (let b = 0; b < 1 + sus; b++) renderBlock(M, bufL, bufR, block++);
-    M._nexus_midi(0x80, note, 0);
-    for (let b = 0; b < rel; b++) renderBlock(M, bufL, bufR, block++);
-  }
+  for (let x = 0; x < 30; x++)
+    for (const [note, sus, rel] of SEQ) {
+      let note2 = note + Math.floor(Math.random()*12)
+      M._nexus_midi(0x90, note2, 100);
+      M._nexus_midi(0x90, note2+7, 100);
+      for (let b = 0; b < 1 + sus/4; b++) renderBlock(M, bufL, bufR, block++);
+      M._nexus_midi(0x80, note2, 0);
+      M._nexus_midi(0x80, note2+7, 0);
+      for (let b = 0; b < rel/4; b++) renderBlock(M, bufL, bufR, block++);
+    }
 
   let peakL = 0, peakR = 0;
   for (let i = 0; i < bufL.length; i++) {

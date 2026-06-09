@@ -1,4 +1,4 @@
-// wasm_main.cpp — WebAssembly interface for Nexus VST emulator (RELOC build)
+    // wasm_main.cpp — WebAssembly interface for Nexus VST emulator (RELOC build)
 //
 // Memory model: flat direct access, same as RASPI.
 // App only touches addresses >= 0xe6000.  Low memory (0x0–0xe5fff) is
@@ -84,7 +84,16 @@ void sub_77778888()
 static uint32_t s_pluginPtr, s_thisPtr;
 static uint32_t s_inL, s_inR, s_outL, s_outR;
 static uint32_t s_inputPtrs, s_outputPtrs;
-static int s_midiStatus = -1, s_midiD1, s_midiD2;
+
+// MIDI queue — up to 32 events per block
+struct MidiMsg { int status, d1, d2; };
+static MidiMsg   s_midiQueue[32];
+static int       s_midiCount = 0;
+// Pre-allocated VstEvents buffer (filled in nexus_init, reused every block)
+//   evs layout: numEvents(4) + reserved(4) + 32 event pointers(4 each) = 136 bytes
+//   ev[i] layout: VstMidiEvent 32 bytes each, 32 total = 1024 bytes
+static uint32_t  s_evsBuf;          // wasm addr of VstEvents header
+static uint32_t  s_evBuf[32];       // wasm addrs of the 32 VstMidiEvent slots
 
 static uint32_t callDispatcher(uint32_t opcode, uint32_t index, uint32_t value,
                                uint32_t ptr, uint32_t opt)
@@ -125,6 +134,20 @@ void nexus_init()
     memoryASet32(0, s_inputPtrs  + 4, s_inR);
     memoryASet32(0, s_outputPtrs + 0, s_outL);
     memoryASet32(0, s_outputPtrs + 4, s_outR);
+
+    // Pre-allocate MIDI event buffers — reused every block, never reallocated
+    s_evsBuf = allocate(8 + 32 * 4); // VstEvents header + 32 pointers
+    memoryASet32(0, s_evsBuf + 4, 0); // reserved = 0 (constant)
+    for (int i = 0; i < 32; i++) {
+        s_evBuf[i] = allocate(32);    // VstMidiEvent slot
+        memoryASet32(0, s_evBuf[i] + 0x00, 1);  // type = kVstMidiType (constant)
+        memoryASet32(0, s_evBuf[i] + 0x04, 32); // byteSize (constant)
+        memoryASet32(0, s_evBuf[i] + 0x08, 0);  // deltaFrames (constant)
+        memoryASet32(0, s_evBuf[i] + 0x0c, 0);  // flags (constant)
+        memoryASet32(0, s_evBuf[i] + 0x10, 0);  // noteLength (constant)
+        memoryASet32(0, s_evBuf[i] + 0x14, 0);  // noteOffset (constant)
+        memoryASet32(0, s_evsBuf + 8 + i * 4, s_evBuf[i]); // pointer (constant)
+    }
 }
 
 // nexus_load_preset — ptr/size point to FXP chunk data already in wasm memory
@@ -144,30 +167,25 @@ void nexus_load_preset(int ptr, int size)
     callDispatcher(10, 0, 0, 0, srBits); // effSetSampleRate — now with al==1
 }
 
-// nexus_midi — queue one MIDI event for the next nexus_process() call
+// nexus_midi — queue a MIDI event for the next nexus_process() call (up to 32)
 void nexus_midi(int status, int data1, int data2)
 {
-    s_midiStatus = status;
-    s_midiD1 = data1;
-    s_midiD2 = data2;
+    if (s_midiCount < 32)
+        s_midiQueue[s_midiCount++] = { status, data1, data2 };
 }
 
 // nexus_process — render 512 samples; copies L/R output to OUT_L_ADDR / OUT_R_ADDR
 // Returns OUT_L_ADDR so JS can build Float32Array(Module.HEAPF32.buffer, retval, 512)
 int nexus_process()
 {
-    if (s_midiStatus >= 0) {
-        uint32_t ev = allocate(32);
-        memoryASet32(0, ev + 0x00, 1);   // kVstMidiType
-        memoryASet32(0, ev + 0x04, 32);  // byteSize
-        memoryASet32(0, ev + 0x08, 0);   // deltaFrames
-        memoryASet32(0, ev + 0x18, (uint32_t)(s_midiStatus | (s_midiD1<<8) | (s_midiD2<<16)));
-        uint32_t evs = allocate(12);
-        memoryASet32(0, evs + 0, 1);
-        memoryASet32(0, evs + 4, 0);
-        memoryASet32(0, evs + 8, ev);
-        callDispatcher(25, 0, 0, evs, 0); // effProcessEvents
-        s_midiStatus = -1;
+    if (s_midiCount > 0) {
+        memoryASet32(0, s_evsBuf + 0, (uint32_t)s_midiCount);
+        for (int i = 0; i < s_midiCount; i++)
+            memoryASet32(0, s_evBuf[i] + 0x18, (uint32_t)(s_midiQueue[i].status |
+                                                           (s_midiQueue[i].d1 << 8) |
+                                                           (s_midiQueue[i].d2 << 16)));
+        callDispatcher(25, 0, 0, s_evsBuf, 0); // effProcessEvents
+        s_midiCount = 0;
     }
 
     push32(BLOCK_SIZE);

@@ -719,3 +719,5 @@
 {"id": "jumpTable", "addr": "0:0005cada", "calls32": ["0:00068240"]}
 {"id":"config","procList":["0:00068240", "0:00069c90", "0:00069dd0", "0:00069dd0"]}
 {"id": "jumpTable", "addr": "0:16316", "calls32": ["0:5cf90"]}
+{"id": "jumpTable", "addr": "0:16369", "calls32": ["0:5cf90"]}
+{"id": "jumpTable", "addr": "0:199f1", "calls32": ["0:c430"]}
