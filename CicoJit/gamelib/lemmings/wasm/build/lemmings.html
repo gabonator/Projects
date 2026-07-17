@@ -2,7 +2,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style> 
-body {  font-family: 'Poppins', sans-serif; user-select: none;}
+body {  font-family: 'Poppins', sans-serif; user-select: none; background:#fff}
 .banner {
   display: flex;
   justify-content: space-between;
@@ -49,6 +49,7 @@ body {  font-family: 'Poppins', sans-serif; user-select: none;}
 <!--<script src="touch.js"></script>-->
 <script>
 "use strict"
+
 var speed = 40, startupLevel = 30;
 var s = window.location.search.substr(1);
 for (var att of s.split("&"))
@@ -114,7 +115,7 @@ function toggleDraw()
     {
       var clr = [game.memoryPalette[c*4], game.memoryPalette[c*4+1], game.memoryPalette[c*4+2]]
       clr = clr.map(x=>("0"+x.toString(16)).substr(-2)).join("");
-      html += `<div id="draw${c}" style="display:inline-block; width:40px; height:40px; margin:4px; box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); background:#${clr}" onClick="toggleColor(this, ${c})"></div>`
+      html += `<div id="draw${c}" style="display:inline-block; width:40px; height:40px; margin:4px; box-shadow: 2px 2px 6px #0008; background:#${clr}" onClick="toggleColor(this, ${c})"></div>`
     }
     document.querySelector("#drawContents").innerHTML = html;
   } else
@@ -128,7 +129,7 @@ function toggleColor(obj, s)
 {
   selColor = s;
   for (var c=0; c<16; c++)
-    document.querySelector("#draw"+c).style.boxShadow = c == s ? "0px 0px 8px #000" : "2px 2px 6px rgba(0, 0, 0, 0.5)"
+    document.querySelector("#draw"+c).style.boxShadow = c == s ? "0px 0px 8px #000f" : "2px 2px 6px #0008"
 }
 
 var canvas2 = document.getElementById('canvas2');
@@ -148,10 +149,30 @@ game.load().then(() => {
   game.symbols.appLoop();
   game.symbols.asyncify_stop_unwind();
 
-  canvas.addEventListener('mousemove', e => game.symbols.lemmingsMouse(e.offsetX/1.5, e.offsetY/1.5), false);
+  var remainDelta = 0
+
+  canvas.addEventListener('wheel', (evt) => {
+    if (evt.deltaX != 0)
+    {
+      var scrollX = game.memoryBuffer[0x19a90]+game.memoryBuffer[0x19a91]*256;
+      var delta = evt.deltaX + remainDelta;
+      remainDelta = delta % 8;
+      delta = delta - remainDelta;
+      scrollX += delta;
+      scrollX = Math.max(0, Math.min(scrollX, 1200));
+      game.memoryBuffer[0x19a90] = scrollX & 255;
+      game.memoryBuffer[0x19a91] = scrollX >> 8;
+      game.memoryBuffer[0x19a92] = (scrollX>>3) & 255;
+      game.memoryBuffer[0x19a93] = (scrollX>>3) >> 8;
+      game.symbols.lemmingsInvalidateMap();
+      evt.preventDefault();
+    }
+  });
+  var insideX = x => Math.max(12, Math.min(x, 640-12-1));
+  canvas.addEventListener('mousemove', e => game.symbols.lemmingsMouse(insideX(e.offsetX/1.5), e.offsetY/1.5), false);
   canvas.addEventListener('mousedown', e => game.symbols.lemmingsButton(1), false);
   canvas.addEventListener('mouseup', e => game.symbols.lemmingsButton(0), false)
-  canvas.addEventListener("touchmove", e => game.symbols.lemmingsMouse(e.touches[0].clientX/1.5, e.touches[0].clientY/1.5), false);
+  canvas.addEventListener("touchmove", e => game.symbols.lemmingsMouse(insideX(e.touches[0].clientX/1.5), e.touches[0].clientY/1.5), false);
   canvas.addEventListener('touchstart', e => game.symbols.lemmingsButton(1), false);
   canvas.addEventListener('touchend', e => game.symbols.lemmingsButton(0), false)
 
