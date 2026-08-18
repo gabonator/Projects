@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Star Goose Map Viewer</title>
+<style>
+body { background: #111; color: #ccc; font-family: monospace; margin: 10px; }
+#controls { margin-bottom: 10px; }
+select { font-family: monospace; font-size: 14px; margin-right: 8px; }
+canvas { border: 1px solid #444; image-rendering: pixelated; }
+#info { margin-top: 6px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <label>Section: <select id="section"></select></label>
+  <label>Variant: <select id="variant">
+    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+  </select></label>
+  <label>Zoom: <select id="zoom">
+    <option value="1">1x</option><option value="2" selected>2x</option><option value="3">3x</option>
+  </select></label>
+  <label><input type="checkbox" id="showEntities" checked> Entities</label>
+</div>
+<canvas id="map"></canvas>
+<div id="info"></div>
+
+<script src="map_data.js"></script>
+<script>
+const TILE_W = 24;
+const TILE_H = 16;
+const MAP_W = 256;
+const MAP_H = 1024;
+const COLS = 12;
+const ROWS = 64;
+
+const secSel = document.getElementById('section');
+const varSel = document.getElementById('variant');
+const zoomSel = document.getElementById('zoom');
+const canvas = document.getElementById('map');
+const ctx = canvas.getContext('2d');
+const info = document.getElementById('info');
+
+for (let i = 0; i < 8; i++) {
+  const o = document.createElement('option');
+  o.value = i; o.textContent = i;
+  secSel.appendChild(o);
+}
+
+let spriteSheet = null;
+let bird1Sheet = null;
+let bird2Sheet = null;
+const showEntCb = document.getElementById('showEntities');
+
+function draw() {
+  if (!spriteSheet) return;
+  const s = +secSel.value;
+  const v = +varSel.value;
+  const z = +zoomSel.value;
+  const key = 's' + s + 'v' + v;
+  const tiles = MAP_DATA.maps[key];
+  const atlas = MAP_DATA.tileAtlas;
+
+  canvas.width = MAP_W * z;
+  canvas.height = MAP_H * z;
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw tiles
+  for (let row = 0; row < ROWS; row++) {
+    const destRowY = (ROWS - 1 - row) * TILE_H;
+    let accum = 0;
+    for (let col = 0; col < COLS; col++) {
+      const tileIdx = tiles[row][col];
+      const t = atlas[tileIdx];
+      const frame = (accum << 24) >> 24;
+      accum = (accum + (t.yAdv || 0)) & 0xff;
+      if (!t || !t.h) continue;
+
+      let srcX = t.sx;
+      let srcW = TILE_W;
+      let destX;
+
+      if (col === 0) {
+        srcX += 16;
+        srcW = 8;
+        destX = 0;
+      } else if (col === 11) {
+        srcW = 8;
+        destX = 248;
+      } else {
+        destX = 8 + (col - 1) * TILE_W;
+      }
+
+      const destY = destRowY + t.yOfs - frame;
+
+      const sheet = (t.page === 'bird2' && bird2Sheet) ? bird2Sheet : spriteSheet;
+      ctx.drawImage(sheet,
+        srcX, t.sy, srcW, t.h,
+        destX * z, destY * z, srcW * z, t.h * z);
+    }
+  }
+
+  // Draw entities
+  if (showEntCb.checked && bird1Sheet && MAP_DATA.entities[key]) {
+    const ents = MAP_DATA.entities[key];
+    for (const e of ents) {
+      if (!e.tmpl) continue;
+      // Entity row is inverted relative to tile row
+      const tileRow = ROWS - 1 - e.row;
+      const tileRowData = tiles[tileRow];
+      // Accumulate yAdv up to entity's column (same as tile rendering)
+      let accum = 0;
+      for (let c = 0; c < e.col && c < COLS; c++) {
+        const ct = atlas[tileRowData[c]];
+        accum = (accum + (ct.yAdv || 0)) & 0xff;
+      }
+      const frame = (accum << 24) >> 24;
+      const blockTile = atlas[tileRowData[e.col]];
+      const destY = e.row * TILE_H + (blockTile.yOfs || 0) - frame;
+      const destX = e.x;
+      ctx.drawImage(bird1Sheet,
+        e.tmpl.sx, e.tmpl.sy, e.tmpl.w, e.tmpl.h,
+        destX * z, destY * z, e.tmpl.w * z, e.tmpl.h * z);
+    }
+  }
+
+  let entCount = 0;
+  if (MAP_DATA.entities[key]) {
+    entCount = MAP_DATA.entities[key].filter(e => e.tmpl).length;
+  }
+  info.textContent = 'Section ' + s + ' Variant ' + v + ' (' + MAP_W + 'x' + MAP_H + ') - ' + entCount + ' entities';
+}
+
+secSel.onchange = varSel.onchange = zoomSel.onchange = showEntCb.onchange = draw;
+
+let loadCount = 0;
+function onLoaded() { loadCount++; if (loadCount >= 3) draw(); }
+
+const img = new Image();
+img.onload = () => { spriteSheet = img; onLoaded(); };
+img.src = 'blox_sprites.png';
+
+const bird1Img = new Image();
+bird1Img.onload = () => { bird1Sheet = bird1Img; onLoaded(); };
+bird1Img.src = 'BIRD1_sprites.png';
+
+const bird2Img = new Image();
+bird2Img.onload = () => { bird2Sheet = bird2Img; onLoaded(); };
+bird2Img.src = 'BIRD2_sprites.png';
+</script>
+</body>
+</html>

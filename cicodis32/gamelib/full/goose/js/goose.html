@@ -1,0 +1,50 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style> 
+body {  font-family: 'Poppins', sans-serif; overflow:hidden;}
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2); 
+}
+.banner .left-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.banner .right-text a {
+  color: white;
+}
+.tile {
+display:block;
+width: 320px;
+height: 200px;
+background-image: url('preview.jpg');
+background-size: 5120px 1800px;
+background-repeat: no-repeat;
+}
+.replay { display:inline-block; font-size:30px; width:40px; height:40px; right:0px; left:295px; top:-190px; width:40px; height:40px; position:relative; text-decoration:none}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<div class="banner">
+<div class="left-text">Star Goose <font color="silver">(cicoparser javascript port)</font></div>
+<div class="right-text"><span id="status"></span></div>
+</div>
+<br>
+
+<canvas id="canvas" style="width:640px; height:400px;"></canvas><br>
+<script src="resources.js"></script>
+<script src="ega.js"></script>
+<script src="cpu.js"></script>
+<script src="goose.js"></script>
+<script src="controls.js"></script>
+<script src="machine.js"></script>

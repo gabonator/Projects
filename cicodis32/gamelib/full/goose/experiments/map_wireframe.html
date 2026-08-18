@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Star Goose 3D Map Wireframe</title>
+<style>
+body { margin: 0; background: #111; color: #ccc; font-family: monospace; overflow: hidden; }
+#controls {
+  position: absolute; top: 10px; left: 10px; z-index: 10;
+  background: rgba(0,0,0,0.75); padding: 8px 12px; border-radius: 4px;
+}
+select, label { font-family: monospace; font-size: 13px; margin-right: 8px; }
+#info {
+  position: absolute; bottom: 10px; left: 10px; z-index: 10;
+  background: rgba(0,0,0,0.75); padding: 6px 10px; border-radius: 4px; font-size: 12px;
+}
+canvas { display: block; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <label>Section: <select id="section"></select></label>
+  <label>Variant: <select id="variant">
+    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+  </select></label>
+  <label>Y Scale: <select id="yscale">
+    <option value="1">1x</option>
+    <option value="2">2x</option>
+    <option value="4" selected>4x</option>
+    <option value="8">8x</option>
+    <option value="16">16x</option>
+  </select></label>
+</div>
+<div id="info">Drag to rotate, scroll to zoom, right-drag to pan</div>
+
+<script src="map_data.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLS = 12;
+const ROWS = 64;
+
+// Column edge X positions in pixels (col 0 = 8px wide, cols 1-10 = 24px, col 11 = 8px)
+const colEdgeX = [0, 8, 32, 56, 80, 104, 128, 152, 176, 200, 224, 248, 256];
+
+const secSel = document.getElementById('section');
+const varSel = document.getElementById('variant');
+const yscaleSel = document.getElementById('yscale');
+const info = document.getElementById('info');
+
+for (let i = 0; i < 8; i++) {
+  const o = document.createElement('option');
+  o.value = i; o.textContent = i;
+  secSel.appendChild(o);
+}
+
+// Three.js setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+camera.position.set(128, 300, -250);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(128, 0, 512);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+controls.update();
+
+// Ambient light for mesh visibility
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+dirLight.position.set(200, 300, -100);
+scene.add(dirLight);
+
+// Reference grid at Y=0
+const gridHelper = new THREE.GridHelper(1024, 64, 0x333333, 0x1a1a1a);
+gridHelper.position.set(128, 0, 512);
+scene.add(gridHelper);
+
+let meshGroup = null;
+
+function signedByte(v) {
+  return (v << 24) >> 24;
+}
+
+function computeHeightmap(tiles) {
+  const atlas = MAP_DATA.tileAtlas;
+  // heights[r][c] = elevation at row edge r, column edge c
+  // 65 row edges x 13 column edges
+  const heights = [];
+  for (let row = 0; row < ROWS; row++) {
+    const rowH = [0]; // left edge always starts at 0
+    let accum = 0;
+    for (let col = 0; col < COLS; col++) {
+      const t = atlas[tiles[row][col]];
+      accum = (accum + (t.yAdv || 0)) & 0xff;
+      rowH.push(signedByte(accum));
+    }
+    heights.push(rowH);
+  }
+  // Row edge 64 = copy of row 63 (bottom boundary)
+  heights.push([...heights[ROWS - 1]]);
+  return heights;
+}
+
+function elevationColor(elev, minE, maxE) {
+  const range = Math.max(maxE - minE, 1);
+  const t = (elev - minE) / range;
+  if (t < 0.4) {
+    // deep blue to cyan
+    const f = t / 0.4;
+    return new THREE.Color(0, f * 0.5, 0.4 + f * 0.4);
+  } else if (t < 0.6) {
+    // cyan to green
+    const f = (t - 0.4) / 0.2;
+    return new THREE.Color(0, 0.5 + f * 0.5, 0.8 - f * 0.6);
+  } else {
+    // green to white
+    const f = (t - 0.6) / 0.4;
+    return new THREE.Color(f, 1, 0.2 + f * 0.8);
+  }
+}
+
+function buildTerrain(tiles, yScale) {
+  // Cleanup previous
+  if (meshGroup) {
+    scene.remove(meshGroup);
+    meshGroup.traverse(c => {
+      if (c.geometry) c.geometry.dispose();
+      if (c.material) c.material.dispose();
+    });
+  }
+  meshGroup = new THREE.Group();
+
+  const heights = computeHeightmap(tiles);
+
+  // Find elevation range
+  let minE = Infinity, maxE = -Infinity;
+  for (const row of heights) {
+    for (const h of row) {
+      minE = Math.min(minE, h);
+      maxE = Math.max(maxE, h);
+    }
+  }
+
+  const vertRows = 65;
+  const vertCols = 13;
+  const vertexCount = vertRows * vertCols;
+  const positions = new Float32Array(vertexCount * 3);
+  const colors = new Float32Array(vertexCount * 3);
+
+  for (let r = 0; r < vertRows; r++) {
+    for (let c = 0; c < vertCols; c++) {
+      const idx = (r * vertCols + c) * 3;
+      const elev = heights[r][c];
+      positions[idx]     = colEdgeX[c];           // X
+      positions[idx + 1] = elev * yScale;          // Y (elevation, up)
+      positions[idx + 2] = r * 16;                 // Z (row 0 near, row 64 far)
+
+      const col = elevationColor(elev, minE, maxE);
+      colors[idx]     = col.r;
+      colors[idx + 1] = col.g;
+      colors[idx + 2] = col.b;
+    }
+  }
+
+  // Build triangle indices (two triangles per cell)
+  const indices = [];
+  for (let r = 0; r < vertRows - 1; r++) {
+    for (let c = 0; c < vertCols - 1; c++) {
+      const tl = r * vertCols + c;
+      const tr = r * vertCols + c + 1;
+      const bl = (r + 1) * vertCols + c;
+      const br = (r + 1) * vertCols + c + 1;
+      indices.push(tl, bl, tr);
+      indices.push(tr, bl, br);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  // Semi-transparent solid fill
+  const solidMat = new THREE.MeshLambertMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.35,
+    side: THREE.DoubleSide,
+  });
+  meshGroup.add(new THREE.Mesh(geometry, solidMat));
+
+  // Wireframe overlay with elevation colors
+  const wireGeo = new THREE.WireframeGeometry(geometry);
+  const wirePos = wireGeo.getAttribute('position');
+  const wireColors = new Float32Array(wirePos.count * 3);
+  for (let i = 0; i < wirePos.count; i++) {
+    const elev = wirePos.getY(i) / yScale;
+    const col = elevationColor(elev, minE, maxE);
+    wireColors[i * 3]     = col.r;
+    wireColors[i * 3 + 1] = col.g;
+    wireColors[i * 3 + 2] = col.b;
+  }
+  wireGeo.setAttribute('color', new THREE.BufferAttribute(wireColors, 3));
+  const wireMat = new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1 });
+  meshGroup.add(new THREE.LineSegments(wireGeo, wireMat));
+
+  // Flat reference plane at Y=0 (thin wireframe)
+  const planeGeo = new THREE.PlaneGeometry(256, ROWS * 16, 12, ROWS);
+  planeGeo.rotateX(-Math.PI / 2);
+  planeGeo.translate(128, -0.5, ROWS * 8);
+  const planeMat = new THREE.MeshBasicMaterial({
+    color: 0x222244,
+    transparent: true,
+    opacity: 0.15,
+    side: THREE.DoubleSide,
+  });
+  meshGroup.add(new THREE.Mesh(planeGeo, planeMat));
+
+  scene.add(meshGroup);
+
+  info.textContent =
+    `Elevation: ${minE} to ${maxE} px | ` +
+    `Y scale: ${yScale}x | ` +
+    `Drag=rotate  Scroll=zoom  Right-drag=pan`;
+}
+
+function rebuild() {
+  const s = +secSel.value;
+  const v = +varSel.value;
+  const yScale = +yscaleSel.value;
+  const key = 's' + s + 'v' + v;
+  const tiles = MAP_DATA.maps[key];
+  if (!tiles) {
+    info.textContent = 'No map data for ' + key;
+    return;
+  }
+  buildTerrain(tiles, yScale);
+}
+
+secSel.onchange = varSel.onchange = yscaleSel.onchange = rebuild;
+rebuild();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

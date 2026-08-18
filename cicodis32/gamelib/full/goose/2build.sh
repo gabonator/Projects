@@ -1,0 +1,1 @@
+arch -arm64 g++ -std=c++20 cpp_test/*.cpp -o app.elf `pkg-config --libs --cflags sdl2` -D HEADLESS
