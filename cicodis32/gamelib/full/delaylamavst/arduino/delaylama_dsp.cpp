@@ -217,7 +217,7 @@ void DelayLamaDSP::cleanup()
 //   3: vowel depth / resonator amplitude  (0..1)
 //   4: IIR feedback coefficient  (0..1)
 // -----------------------------------------------------------------
-void DelayLamaDSP::setParameter(int idx, float value)
+bool DelayLamaDSP::setParameter(int idx, float value)
 {
     switch (idx) {
         case 0: p_volume      = value; break;
@@ -232,6 +232,7 @@ void DelayLamaDSP::setParameter(int idx, float value)
         {
           p_vowel_sel   = newVowel;
           p_vowel_changed = true;
+          return true;
           }
         break;
         }
@@ -239,6 +240,7 @@ void DelayLamaDSP::setParameter(int idx, float value)
         case 3: p_vowel_depth = value; break;
         case 4: p_feedback    = value; break;
     }
+    return false;
 }
 
 // -----------------------------------------------------------------
@@ -256,6 +258,8 @@ void DelayLamaDSP::noteOn(int midi_note, int /*velocity*/)
     // of the first pass with pitchShift(0), pre-filling pitch_buf_[0..N_frames-1]
     force_trigger_  = true;
     period_counter_ = 0;
+    block_counter_  = 0;        // so first trigger uses pitchShift(0)
+    write_pos_      = read_pos_; // sync so new note is heard immediately
 }
 
 void DelayLamaDSP::noteOff(int /*midi_note*/)
@@ -296,8 +300,10 @@ void DelayLamaDSP::updateAmpBlock()
 //   sin_lut index via fldst(2)/sub_1000a75c(); advance via faddpst(3); wrap at 1024
 //   exp_win index via fldst(5)/sub_1000a75c(); advance via fadd32([0x639c])
 // -----------------------------------------------------------------
-void DelayLamaDSP::triggerResonator(int vowel_idx)
+void DelayLamaDSP::triggerResonator(int vowel_idx, float* dst)
 {
+    if (!dst) dst = output_buf_;
+
     // Compute vowel index: trunc(vowel_param * 1279)
     // DLL uses [esi+0xb4] * 1279 for the formant table index
     if (vowel_idx < 0) vowel_idx = 0;
@@ -330,7 +336,7 @@ void DelayLamaDSP::triggerResonator(int vowel_idx)
         {
             int sl_idx = (int)sin_phase[0] & (SIN_LUT_SIZE - 1);
             int ep_idx = (int)exp_phase[0]; if (ep_idx > exp_cap) ep_idx = exp_cap;
-            output_buf_[i] = (float)((DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
+            dst[i] = (float)((DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
             exp_phase[0] += (DOUBLE)DELAY_STEP_F32[0];
             sin_phase[0] += (DOUBLE)amp_step_f32[0];
             if (sin_phase[0] >= 1024.0) sin_phase[0] -= 1024.0;
@@ -339,7 +345,7 @@ void DelayLamaDSP::triggerResonator(int vowel_idx)
         {
             int sl_idx = (int)sin_phase[1] & (SIN_LUT_SIZE - 1);
             int ep_idx = (int)exp_phase[1]; if (ep_idx > exp_cap) ep_idx = exp_cap;
-            output_buf_[i] = (float)((DOUBLE)output_buf_[i] + (DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
+            dst[i] = (float)((DOUBLE)dst[i] + (DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
             exp_phase[1] += (DOUBLE)DELAY_STEP_F32[1];
             sin_phase[1] += (DOUBLE)amp_step_f32[1];
             if (sin_phase[1] >= 1024.0) sin_phase[1] -= 1024.0;
@@ -348,7 +354,7 @@ void DelayLamaDSP::triggerResonator(int vowel_idx)
         {
             int sl_idx = (int)sin_phase[2] & (SIN_LUT_SIZE - 1);
             int ep_idx = (int)exp_phase[2]; if (ep_idx > exp_cap) ep_idx = exp_cap;
-            output_buf_[i] = (float)((DOUBLE)output_buf_[i] + (DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
+            dst[i] = (float)((DOUBLE)dst[i] + (DOUBLE)sin_lut_[sl_idx] * (DOUBLE)exp_win_[ep_idx]);
             exp_phase[2] += (DOUBLE)DELAY_STEP_F32[2];
             sin_phase[2] += (DOUBLE)amp_step_f32[2];
             if (sin_phase[2] >= 1024.0) sin_phase[2] -= 1024.0;
@@ -356,10 +362,10 @@ void DelayLamaDSP::triggerResonator(int vowel_idx)
 
         // Add kernel contribution (4950+3800 Hz windowed sinusoids)
         // DLL applies *0.5 here (0x1000ba78 = 0.5)
-        output_buf_[i] = (float)((DOUBLE)kern_buf_[i] * 0.5 + (DOUBLE)output_buf_[i]);
+        dst[i] = (float)((DOUBLE)kern_buf_[i] * 0.5 + (DOUBLE)dst[i]);
 
         // Apply amplitude window
-        output_buf_[i] = (float)((DOUBLE)ampl_buf_[i] * (DOUBLE)output_buf_[i]);
+        dst[i] = (float)((DOUBLE)ampl_buf_[i] * (DOUBLE)dst[i]);
     }
 }
 
@@ -374,12 +380,23 @@ void DelayLamaDSP::pitchShift(int period_cnt)
 {
     write_pos_ = (write_pos_ + period_cnt) % PITCH_BUF_SIZE;
     if (write_pos_ < 0) write_pos_ += PITCH_BUF_SIZE;
-
+  
     int wp = write_pos_;
     for (int i = 0; i < N_frames; i++) {
-        pitch_buf_[wp] = (float)((DOUBLE)pitch_buf_[wp] + (DOUBLE)output_buf_[i]);
+        //pitch_buf_[wp] = (float)((DOUBLE)pitch_buf_[wp] + (DOUBLE)output_buf_[i]);
+        pitch_buf_[wp] += output_buf_[i];
         if (++wp >= PITCH_BUF_SIZE) wp = 0;
     }
+/*
+    int wp = write_pos_;
+    float* __restrict dst = pitch_buf_;
+    const float* __restrict src = output_buf_;
+
+    for (int i = 0; i < N_frames; ++i) {
+        dst[wp] += src[i];
+        if (++wp == PITCH_BUF_SIZE)
+            wp = 0;
+    }*/
 }
 
 // -----------------------------------------------------------------
@@ -421,7 +438,7 @@ void DelayLamaDSP::process(float* out_L, float* out_R, int num_frames)
 
         if (note_on_) {
             // DLL copies current_note to voice_wt_pos each sample (temp for pitch calc)
-            float voice_wt_pos = current_note_;
+            float voice_wt_pos = current_note_ + pitch_bend_;
 
             // Voice phase wrap at 1024
             if (voice_phase_ >= 1024.f)
@@ -468,9 +485,10 @@ void DelayLamaDSP::process(float* out_L, float* out_R, int num_frames)
 
             if (do_trigger) {
                 if (force_trigger_ || p_vowel_changed) {
-                    triggerResonator(p_vowel_sel);
-                    p_vowel_changed = false;
+                    //triggerResonator(p_vowel_sel);
+                    //p_vowel_changed = false;
                 }
+                //requestPitch = block_counter_;
                 pitchShift(block_counter_);
                 block_counter_ = 0;
                 force_trigger_ = false;

@@ -44,7 +44,7 @@ struct DelayLamaDSP {
     // ----- constants -----
     static constexpr int   SIN_LUT_SIZE   = 1024;
     static constexpr int   PITCH_BUF_SIZE = 10240;
-    static constexpr int   FB_BUF_SIZE    = 20000;  // IIR delay buffer size
+    static constexpr int   FB_BUF_SIZE    = 18000;  // IIR delay buffer size (min ~17572 for read_B)
     //static constexpr int   FB_BUF_SIZE    = 10000;  // IIR delay buffer size
     static constexpr int   FORMANT_STEPS  = 4;      // 5 vowels -> 4 segments
     static constexpr int   FORMANT_SEG    = 320;    // floats per segment
@@ -62,7 +62,7 @@ struct DelayLamaDSP {
     void  init(float sample_rate);
     void  noteOn(int midi_note, int velocity);
     void  noteOff(int midi_note);
-    void  setParameter(int idx, float value);
+    bool setParameter(int idx, float value);
     void  process(float* out_L, float* out_R, int num_frames);
     void  cleanup();
 
@@ -70,12 +70,13 @@ struct DelayLamaDSP {
     static constexpr float sr         = 44100.f;
     static constexpr int   N_frames   = 882;       // trunc(sr / 50) = 20ms frame
 
-private:
+public:
     // note state
     bool  note_on_       = false;
     bool  force_trigger_ = false;
     float target_note_   = 0.f;
     float current_note_  = 0.f;
+    float pitch_bend_    = 0.f;   // pitch bend offset in semitones (±2 default range)
 
     // voice oscillator
     float voice_phase_   = 0.f;   // oscillator phase (0..1024)
@@ -136,7 +137,8 @@ private:
 
     void buildTables();
     void buildFormantTable(float* out, const float* hz_values);
-    void triggerResonator(int vowel_param);
+    void triggerResonator(int vowel_param, float* dst = nullptr);
     void pitchShift(int period_cnt);
     void updateAmpBlock();
+    int requestPitch = -999;
 };
