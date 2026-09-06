@@ -40,7 +40,7 @@ uart_event_t event;
 float resonatorBuf[DelayLamaDSP::N_frames];
 volatile bool resonatorReady = false;
 volatile int pendingVowelIdx = 0;
-volatile int64_t resonatorKickTime = 0;  // when xTaskNotifyGive was called
+volatile bool pendingForceTrigger = false;
 
 void resonatorTaskFunc(void* arg) {
     while (true) {
@@ -140,7 +140,12 @@ int gMidiVelocity = 0;
 int gMidiMod = 0;
 int gMidiEcho = -1;
 int gMidiPrevEcho = -1;
-volatile int64_t gNoteOnTimestamp = 0;
+int gMidiVibrato = -1;
+int gMidiPrevVibrato = -1;
+int gMidiPortamento = -1;
+int gMidiPrevPortamento = -1;
+int gMidiDepth = -1;
+int gMidiPrevDepth = -1;
 volatile uint32_t gNoteOnSeq = 0;   // incremented on every note-on
 uint32_t prevNoteOnSeq = 0;
 volatile uint32_t gNoteOffSeq = 0;  // incremented on every note-off
@@ -209,7 +214,6 @@ void processMidiEvent(uint8_t event, uint8_t data1, uint8_t data2)
             {
               noteOnStack(data1);
               gMidiVelocity = data2;
-              gNoteOnTimestamp = esp_timer_get_time();
               gNoteOnSeq++;
             }
             break;
@@ -222,11 +226,20 @@ void processMidiEvent(uint8_t event, uint8_t data1, uint8_t data2)
         case 0xB0:      // Control Change
             switch (data1)
             {
-                case 73:
+                case 1: // VIBRATO - mod
+                    gMidiVibrato = data2;
+                    break;
+                case 72: // 72,91 touch Y ///72 amp release
+                    gMidiDepth = data2;
+                    break;
+                case 73: // ECHO - 73 amp atk
                     gMidiEcho = data2;
                     break;
-                case 74:
+                case 74: // 74,71 touch X 
                     gMidiMod = data2;
+                    break;
+                case 75: // PORTA SPD - 75 amp decay
+                    gMidiPortamento = data2;
                     break;
             }
             break;
@@ -251,7 +264,7 @@ void setupI2S()
     i2s_chan_config_t chan_cfg = {
         .id = I2S_NUM_0,
         .role = I2S_ROLE_MASTER,
-        .dma_desc_num = 2,      // Only 2 DMA buffers
+        .dma_desc_num = 2,      // fully async, no blocking on audio thread
         .dma_frame_num = BLOCK_SIZE,   // Frames per buffer
         .auto_clear = true,
     #if SOC_I2S_SUPPORTS_TDM
@@ -408,22 +421,20 @@ void playTestSequence()
 
 void loop()
 {
-  static bool tested = false;
-  if (!tested) {
-      tested = true;
-      playTestSequence();
-  }
+//  static bool tested = false;
+//  if (!tested) {
+//      tested = true;
+//      playTestSequence();
+//  }
   vTaskDelay(pdMS_TO_TICKS(1000));
 }
 
 void audioTaskStreamFunc(void *arg)
 {
-    int64_t t0, t1, t2, t3, t4;
     int loopCount = 0;
     float maxPeakL = 0.f, maxPeakR = 0.f;
 
     while (true) {
-      t0 = esp_timer_get_time();
 
       // 1. Drain all pending MIDI bytes (non-blocking)
       uint8_t buf[32];
@@ -434,21 +445,26 @@ void audioTaskStreamFunc(void *arg)
       // 2. Apply MIDI state to DSP
       bool trigger = false;
       bool noteOnThisLoop = false;
-      int64_t noteOnTs = 0;
 
       // Detect note-on via sequence counter (never misses repeated same-note)
       if (prevNoteOnSeq != gNoteOnSeq) {
           prevNoteOnSeq = gNoteOnSeq;
-          noteOnTs = gNoteOnTimestamp;
           noteOnThisLoop = true;
+          bool fromSilence = !dsp.note_on_;
           dsp.noteOn(gMidiNote, gMidiVelocity);
+          if (fromSilence) pendingForceTrigger = true;
           trigger = true;
       }
       // Detect note-off only if no note-on overrode it
       if (prevNoteOffSeq != gNoteOffSeq) {
           prevNoteOffSeq = gNoteOffSeq;
-          if (!noteOnThisLoop && gMidiNote == 0) {
-              dsp.noteOff(0);
+          if (!noteOnThisLoop) {
+              if (gMidiNote == 0) {
+                  dsp.noteOff(0);
+              } else {
+                  // Released a note but another is still held — glide back
+                  dsp.target_note_ = (float)(gMidiNote - 12);
+              }
           }
       }
       if (gMidiPrevMod != gMidiMod) {
@@ -460,35 +476,45 @@ void audioTaskStreamFunc(void *arg)
           gMidiPrevEcho = gMidiEcho;
           dsp.setParameter(4, gMidiEcho / 127.0f);  // feedback 0..1
       }
+      if (gMidiPrevVibrato != gMidiVibrato) {
+          gMidiPrevVibrato = gMidiVibrato;
+          dsp.voice_raw_ = gMidiVibrato / 127.0f;   // CC1 mod wheel: vibrato depth/rate
+      }
+      if (gMidiPrevPortamento != gMidiPortamento) {
+          gMidiPrevPortamento = gMidiPortamento;
+          dsp.setParameter(2, gMidiPortamento / 127.0f);  // CC75: portamento speed
+      }
+      if (gMidiPrevDepth != gMidiDepth) {
+          gMidiPrevDepth = gMidiDepth;
+          dsp.setParameter(3, gMidiDepth / 127.0f);       // CC72: resonator depth
+      }
       if (gMidiPrevPitch != gMidiPitch) {
           gMidiPrevPitch = gMidiPitch;
           // ±2 semitones pitch bend range (standard MIDI default)
           dsp.pitch_bend_ = (gMidiPitch / 8192.0f) * 2.0f;
       }
 
-      t1 = esp_timer_get_time();
 
-      // Kick off resonator computation on core 1 (non-blocking)
+      // Resonator: always async on core 1 (never block audio thread)
       if (trigger) {
           pendingVowelIdx = dsp.p_vowel_sel;
-          resonatorKickTime = esp_timer_get_time();
           xTaskNotifyGive(resonatorTask);
       }
 
-      // Swap in completed resonator buffer
+      // Swap in completed buffer + deferred force_trigger
       if (resonatorReady) {
-          int64_t resLatency = esp_timer_get_time() - resonatorKickTime;
-          printf("[RESONATOR] computed in %lld us\n", resLatency);
           memcpy(dsp.output_buf_, resonatorBuf, sizeof(dsp.output_buf_));
           resonatorReady = false;
+          if (pendingForceTrigger) {
+              dsp.force_trigger_ = true;
+              pendingForceTrigger = false;
+          }
       }
 
-      t2 = esp_timer_get_time();
 
       // 3. Render audio
       dsp.process(left, right, BLOCK_SIZE);
 
-      t3 = esp_timer_get_time();
 
       float peakL = 0.f, peakR = 0.f;
       for (int i = 0; i < BLOCK_SIZE; i++) {
@@ -508,34 +534,15 @@ void audioTaskStreamFunc(void *arg)
           &written,
           portMAX_DELAY);
 
-      t4 = esp_timer_get_time();
 
-      // Print note-on latency: MIDI parse → I2S committed
-      if (noteOnThisLoop) {
-          int64_t latency = t4 - noteOnTs;
-          printf("[LATENCY] note-on to i2s commit: %lld us (%lld ms)\n",
-                 latency, latency / 1000);
-      }
+      // (latency printf removed — was causing DMA underruns)
 
-      // Print timing every 1000 loops (~362ms), or immediately on trigger
+      // Periodic stats (printf removed from hot path to avoid DMA underruns)
       loopCount++;
-      if (trigger || loopCount >= 1000) {
-          int64_t dt_midi = t1 - t0;
-          int64_t dt_trig = t2 - t1;
-          int64_t dt_proc = t3 - t2;
-          int64_t dt_i2s  = t4 - t3;
-          int64_t dt_total = t4 - t0;
-          // peak as % of full range (clipping at |sample| >= 2.0 due to /2 scaling)
-          float pctL = maxPeakL / 2.0f * 100.f;
-          float pctR = maxPeakR / 2.0f * 100.f;
-          printf("[audio] midi=%lld trig=%lld proc=%lld i2s=%lld total=%lld us  peak=%.0f%%/%.0f%%%s%s\n",
-                 dt_midi, dt_trig, dt_proc, dt_i2s, dt_total,
-                 pctL, pctR,
-                 (pctL > 100.f || pctR > 100.f) ? " CLIP!" : "",
-                 trigger ? " <<TRIGGER>>" : "");
+      if (loopCount >= 5000) {
+          loopCount = 0;
           maxPeakL = 0.f;
           maxPeakR = 0.f;
-          loopCount = 0;
       }
     }
 }

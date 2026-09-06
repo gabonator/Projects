@@ -237,7 +237,12 @@ bool DelayLamaDSP::setParameter(int idx, float value)
         break;
         }
         case 2: p_portamento  = value; break;
-        case 3: p_vowel_depth = value; break;
+        case 3:
+            if (p_vowel_depth != value) {
+                p_vowel_depth = value;
+                return true;  // resonator depends on depth
+            }
+            break;
         case 4: p_feedback    = value; break;
     }
     return false;
@@ -250,16 +255,17 @@ void DelayLamaDSP::noteOn(int midi_note, int /*velocity*/)
 {
     // DLL stores internal_note = midi_note - 12 (see sub_10006240: ebx -= 0x0C)
     target_note_ = (float)(midi_note - 12);
-    if (!note_on_)
-        current_note_ = target_note_;  // no portamento on first note
+    if (!note_on_) {
+        // First note from silence: reset counters for immediate response
+        // force_trigger_ deferred until resonator buffer is ready (set by caller)
+        current_note_   = target_note_;
+        write_pos_      = read_pos_;
+        period_counter_ = 0;
+        block_counter_  = 0;
+    }
+    // Legato notes: just update target_note_, portamento handles the rest
     note_on_        = true;
     amp_target_     = 5.f;
-    // Matches DLL [esi+0x6142]=1 at note-on: fire resonator at sample 0
-    // of the first pass with pitchShift(0), pre-filling pitch_buf_[0..N_frames-1]
-    force_trigger_  = true;
-    period_counter_ = 0;
-    block_counter_  = 0;        // so first trigger uses pitchShift(0)
-    write_pos_      = read_pos_; // sync so new note is heard immediately
 }
 
 void DelayLamaDSP::noteOff(int /*midi_note*/)
@@ -454,13 +460,14 @@ void DelayLamaDSP::process(float* out_L, float* out_R, int num_frames)
                 voice_pos_ = (float)(2.0 * ((int32_t)lcg_state_ / 4294967296.0) + 5.0);
             }
 
-            // Voice wavetable sample: voice_sample = 0.2 * voice_wt[trunc(phase)]
+            // Voice wavetable sample: (voice_raw + 0.2) * voice_wt[trunc(phase)]
+            // DLL: voice_raw controlled by CC1 (mod wheel), default 0
             int wt_idx = (int)voice_phase_;
-            float voice_sample = (float)(0.2 * (DOUBLE)voice_wt_[wt_idx]);
+            float voice_sample = (float)(((DOUBLE)voice_raw_ + 0.2) * (DOUBLE)voice_wt_[wt_idx]);
 
-            // Voice phase advance: voice_pos / (sr / 1024)
+            // Voice phase advance: (voice_raw*0.2 + 1.0) * voice_pos / (sr / 1024)
             voice_phase_ = (float)((DOUBLE)voice_phase_ +
-                            (DOUBLE)voice_pos_ / (DOUBLE)sr_div_1024_);
+                            ((DOUBLE)voice_raw_ * 0.2 + 1.0) * (DOUBLE)voice_pos_ / (DOUBLE)sr_div_1024_);
 
             // Pitch = voice_sample + current_note (in internal MIDI space, -12 from input)
             // current_note 48 -> index 1536 -> 130.8 Hz (C3) -> period 337

@@ -81,6 +81,7 @@ public:
     // voice oscillator
     float voice_phase_   = 0.f;   // oscillator phase (0..1024)
     float voice_pos_     = 4.f;   // LCG-derived speed (~4..6)
+    float voice_raw_     = 0.f;   // CC1 mod wheel: vibrato depth/rate (0..1)
     float sr_div_1024_   = 0.f;   // precomputed sr/1024
 
     // two separate trigger counters
