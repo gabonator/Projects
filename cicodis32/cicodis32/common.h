@@ -458,6 +458,7 @@ public:
     bool verbose{false};
     bool verboseTracer{false};
     bool verboseAsm{false};
+    bool verboseIndirect{false};
     bool printOpcodes{false};
     bool printProcAddress{true};
     bool printLabelAddress{true};

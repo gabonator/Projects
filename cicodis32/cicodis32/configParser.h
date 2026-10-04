@@ -116,6 +116,10 @@ void ConfigParser::ParseConfigObject(CJson& json, std::shared_ptr<Options> optio
             options->verboseAsm = true;
         else if (k == "verboseAsm" && v == "false")
             options->verboseAsm = false;
+        else if (k == "verboseIndirect" && v == "true")
+            options->verboseIndirect = true;
+        else if (k == "verboseIndirect" && v == "false")
+            options->verboseIndirect = false;
         else if (k == "printf" && v == "true")
             options->usePrintf = true;
         else if (k == "jit" && v == "true")

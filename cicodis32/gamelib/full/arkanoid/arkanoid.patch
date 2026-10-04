@@ -1,0 +1,767 @@
+--- arkanoid.cpp	2026-10-01 21:32:01
++++ run/arkanoid.cpp	2026-10-01 21:20:43
+@@ -2,26 +2,27 @@
+ #include "cicoemu.h"
+ using namespace CicoContext;
+ 
+-void fixReloc(uint16_t seg);
+-void sub_1b0c0();
++bool arkanoidSkipIntro = false;
++bool arkanoidInfiniteLives = true;
++int arkanoidStartupLevel = 0;
++int arkanoidStartupSide = 0;
+ 
+-void init()
++static bool stackOverride = false;
++
++void sub_1b0c0(bool resume);
++
++void start()
+ {
+     headerSize = 0x00c0;
+     loadAddress = 0x10df;
+-    endAddress = 0x261f;
+     cs = 0x1b0c;
+     ds = 0x1afc;
+     es = 0x1afc;
+     ss = 0x10df;
+     sp = 0x0190;
+-    load("dos", "REVOFDOH.DAT", 86544);
+-    fixReloc(loadAddress);
+-}
+-
+-void start()
+-{
+-    sub_1b0c0();
++    overlay("dos", "REVOFDOH.DAT", 86544, 0x1b0c, -0xa390+headerSize*0);
++    overlay("dos", "MEMDUMP.BIN", 0x100, 0x4dd, 0x0000);
++    sub_1b0c0(false);
+ }
+ 
+ void sub_1a1d7();
+@@ -45,7 +46,7 @@
+ void sub_1b08e();
+ void sub_1b0b1();
+ void sub_1b0b6();
+-void sub_1b0c0();
++void sub_1b0c0(bool resume);
+ void sub_1b130();
+ void sub_1b14b();
+ void sub_1b14f();
+@@ -321,15 +322,15 @@
+ void sub_1f2dc();
+ void sub_1f2e1();
+ void sub_1f311();
+-void sub_1f320();
++void sub_1f320(bool resume);
+ void sub_1f34a();
+ void sub_1f35f();
+ void sub_1f364();
+ void sub_1f36f();
+-void sub_1f37c();
++void sub_1f37c_ctxswitch1();
+ void sub_1f404();
+-void sub_1f41f();
+-void sub_1f472();
++void sub_1f41f_ctxswitch2();
++void sub_1f472_ctxswitch3();
+ void sub_1f4b3();
+ void sub_1f571();
+ void sub_1f5da();
+@@ -452,9 +453,8 @@
+ void sub_21ab2();
+ void sub_21ac2();
+ 
+-void sub_1a1d7() // 19ee:02f7 +nearfar +stackDrop2
++void sub_1a1d7() // 19ee:02f7 +far +stackDrop2
+ {
+-    sp -= 2;
+     push(cx);
+     push(bx);
+     push(si);
+@@ -484,7 +484,7 @@
+     si = pop();
+     bx = pop();
+     cx = pop();
+-    sp += 2; cs = pop();
++    cs = pop();
+ }
+ void sub_1a2f8() // 19ee:0418 +stackDrop2
+ {
+@@ -602,6 +602,7 @@
+     cx = pop();
+     bx = pop();
+     cs = pop();
++    flags.zero = true; //check???
+ }
+ void sub_1a861() // 19ee:0981 +far +stackDrop2
+ {
+@@ -873,34 +874,39 @@
+     cx = pop();
+     cs = pop();
+ }
+-void sub_1b06b() // 19ee:118b +nearfar
++void sub_1b06b() // 19ee:118b
+ {
+-    sp -= 2;
+-    goto loc_1a8e9;
++    cs = 0x19ee;
++    sub_1a8e9();
+ }
+-void sub_1b075() // 19ee:1195 +far
++void sub_1b075() // 19ee:1195
+ {
+-    goto loc_1a41e;
++    assert(0); // not referenced during real gameplay
+ }
+-void sub_1b07f() // 19ee:119f +far
++void sub_1b07f() // 19ee:119f
+ {
+-    goto loc_1a1d7;
++    cs = 0x19ee;
++    sub_1a1d7();
+ }
+-void sub_1b08e() // 19ee:11ae +far +returnZero
++void sub_1b08e() // 19ee:11ae
+ {
+-    goto loc_1a83d;
++    cs = 0x19ee;
++    sub_1a83d();
+ }
+-void sub_1b0b1() // 19ee:11d1 +nearfar
++void sub_1b0b1() // 19ee:11d1
+ {
+-    sp -= 2;
+-    goto loc_1a2f8;
++    cs = 0x19ee;
++    sub_1a2f8();
+ }
+-void sub_1b0b6() // 19ee:11d6 +far
++void sub_1b0b6() // 19ee:11d6
+ {
+-    goto loc_1a330;
++    cs = 0x19ee;
++    sub_1a330();
+ }
+-void sub_1b0c0() // 1b0c:0000 +entry
++void sub_1b0c0(bool resume) // 1b0c:0000 +entry
+ {
++    if (resume)
++        goto resumelabel;
+     ax = 0x1118;
+     ds = ax;
+     sub_1b994();
+@@ -909,15 +915,19 @@
+     sub_1c178();
+     sub_1f87a();
+     sub_1f158();
+-    sub_1f320();
++    sub_1f320(false);
++resumelabel:
+     sub_1f072();
+ loc_1b0dd: // 1b0c:001d
+-    sub_1ba4f();
++    if (!arkanoidSkipIntro)
++      sub_1ba4f();
+     al = memoryAGet(ds, 0x00c7);
+     if (al)
+         goto loc_1b10f;
+-    sub_1baf1();
+-    sub_1bb74();
++    if (!arkanoidSkipIntro)
++      sub_1baf1();
++    if (!arkanoidSkipIntro)
++      sub_1bb74();
+     sub_1b970();
+     sub_1bcf0();
+     sub_1b1aa();
+@@ -943,15 +953,21 @@
+ }
+ void sub_1b130() // 1b0c:0070
+ {
+-    if (!memoryAGet(ds, 0x48d3))
++    if (memoryAGet(ds, 0x48d3) == 0x00)
+         goto loc_1b141;
++    flags.carry = (al + al) >= 0x100;
+     al += al;
+     daa();
+-    flags.carry = flags.carry;
+-    tl = al; al = ah; ah = tl;
+-    al += (al + flags.carry);
++    tl = al;
++    al = ah;
++    ah = tl;
++    tl = flags.carry;
++    flags.carry = (al + al + tl) >= 0x100;
++    al += al + tl;
+     daa();
+-    tl = al; al = ah; ah = tl;
++    tl = al;
++    al = ah;
++    ah = tl;
+ loc_1b141: // 1b0c:0081
+     sub_1b14b();
+     push(si);
+@@ -985,8 +1001,11 @@
+     al = ah;
+     sub_1b159();
+     al = 0x00;
++    flags.carry = bx == 0;
+     bx--;
+-    al += memoryAGet(ds, bx) + flags.carry;
++    tl = flags.carry;
++    flags.carry = (al + memoryAGet(ds, bx) + tl) >= 0x100;
++    al += memoryAGet(ds, bx) + tl;
+     daa();
+     memoryASet(ds, bx, al);
+ }
+@@ -996,18 +1015,23 @@
+     al = ah;
+     sub_1b159();
+     al = 0x00;
++    flags.carry = bx == 0;
+     bx--;
+-    al += memoryAGet(ds, bx) + flags.carry;
++    tl = flags.carry;
++    flags.carry = (al + memoryAGet(ds, bx) + tl) >= 0x100;
++    al += memoryAGet(ds, bx) + tl;
+     daa();
+     memoryASet(ds, bx, al);
+ }
+ void sub_1b159() // 1b0c:0099 +returnCarry
+ {
++    flags.carry = bx == 0;
+     bx--;
+-    al += memoryAGet(ds, bx) + flags.carry;
++    tl = flags.carry;
++    flags.carry = (al + memoryAGet(ds, bx) + tl) >= 0x100;
++    al += memoryAGet(ds, bx) + tl;
+     daa();
+     memoryASet(ds, bx, al);
+-    flags.carry = flags.carry;
+ }
+ void sub_1b160() // 1b0c:00a0
+ {
+@@ -1061,8 +1085,7 @@
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    if (stop())
+-        goto loc_1b1c9;
++    goto loc_1b1c9;
+     flags.carry = false;
+     return;
+ loc_1b1d7: // 1b0c:0117
+@@ -1082,8 +1105,8 @@
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    if (stop())
+-        goto loc_1b1c9;
++//    stop(/*e2*/);
++    goto loc_1b1c9;
+     flags.carry = false;
+     return;
+ loc_1b1d7: // 1b0c:0117
+@@ -1710,6 +1733,7 @@
+         default:
+             stop("ind 1b0c:0539");
+     }
++    return;
+ loc_1b5fc: // 1b0c:053c
+     si += 0x0007;
+     if (memoryAGet16(ds, si) != 0xffff)
+@@ -1725,8 +1749,8 @@
+ void sub_1b970() // 1b0c:08b0
+ {
+     ax = 0;
+-    memoryASet(ds, 0x0493, al);
+-    memoryASet(ds, 0x0494, al);
++    memoryASet(ds, 0x0493, arkanoidStartupLevel);
++    memoryASet(ds, 0x0494, arkanoidStartupSide);
+     memoryASet(ds, 0x0490, al);
+     memoryASet16(ds, 0x0491, ax);
+     memoryASet(ds, 0x0497, 0x03);
+@@ -1747,7 +1771,9 @@
+ {
+     push(es);
+     push(ds);
+-    interrupt(0x61);
++    //interrupt(0x61);
++    ax = 0x04dd;
++    si = 0x003c;
+     es = ax;
+     al = memoryAGet(es, si);
+     memoryASet(ds, 0x00c7, al);
+@@ -2250,7 +2276,10 @@
+     sub_1f961();
+ loc_1bd19: // 1b0c:0c59
+     sub_1c750();
+-    if (memoryAGet(ds, 0x0a4c) < 0x01)
++    // cmp [0x0a4c], 1 ; jb — set flags from the comparison
++    flags.carry = (memoryAGet(ds, 0x0a4c) < 0x01) ? 1 : 0;
++    flags.zero = (memoryAGet(ds, 0x0a4c) == 0x01) ? 1 : 0;
++    if (flags.carry)
+         goto loc_1bd19;
+     tx = flags.carry | (flags.zero << 1);
+     push(tx);
+@@ -2261,10 +2290,11 @@
+     memoryASet(ds, 0x47e1, 0x00);
+     tx = pop();
+     flags.carry = tx & 1;
+-    flags.zero = (tx << 1) & 1;
+-    if (stop())
++    flags.zero = (tx >> 1) & 1;
++    if (flags.zero)
+         goto loc_1bd41;
+-    memoryASet(ds, 0x0497, memoryAGet(ds, 0x0497) - 1);
++    if (!arkanoidInfiniteLives)
++        memoryASet(ds, 0x0497, memoryAGet(ds, 0x0497) - 1);
+     if (!memoryAGet(ds, 0x0497))
+         goto loc_1bd5f;
+     return;
+@@ -3146,6 +3176,7 @@
+         default:
+             stop("ind 1b0c:1207");
+     }
++    return;
+ loc_1c2ca: // 1b0c:120a
+     return;
+ }
+@@ -3336,6 +3367,7 @@
+ void sub_1c413() // 1b0c:1353
+ {
+ loc_1c413: // 1b0c:1353
++    sync();
+     al = memoryAGet(cs, 0x1339);
+     if (!al)
+         goto loc_1c413;
+@@ -3923,7 +3955,10 @@
+ loc_1c752: // 1b0c:1692
+     dh = memoryAGet(cs, 0x325a);
+     if (!dh)
++    {
++        sync();
+         goto loc_1c752;
++    }
+     if (dh <= 0x08)
+         goto loc_1c762;
+     dh = 0x08;
+@@ -3997,8 +4032,9 @@
+         case 106: sub_1cb83(); break;
+         case 108: sub_1dbef(); break;
+         default:
+-            stop("ind 1b0c:16ba");
++            break; // unhandled sprite type (e.g. 0xFF empty slot)
+     }
++    if (stackOverride) { pop(); pop(); stackOverride = false; return; }
+     si += 0x000b;
+     cx = pop();
+     if (--cx)
+@@ -4009,6 +4045,7 @@
+     si = 0x4d69;
+ loc_1c78a: // 1b0c:16ca
+     sub_1c97a();
++    if (stackOverride) { stackOverride = false; return; }
+ loc_1c78d: // 1b0c:16cd
+     bl = memoryAGet(ds, si);
+     if (bl == 0xff)
+@@ -4050,6 +4087,7 @@
+         default:
+             stop("ind 1b0c:16d6");
+     }
++    if (stackOverride) { stackOverride = false; return; }
+     si += 0x000b;
+     if (!memoryAGet(cs, 0x3259))
+         goto loc_1c78d;
+@@ -4146,6 +4184,7 @@
+     // gap 5737 bytes // gap 5737 bytes
+ loc_1c78a: // 1b0c:16ca
+     sub_1c97a();
++    if (stackOverride) { stackOverride = false; return; }
+ loc_1c78d: // 1b0c:16cd
+     bl = memoryAGet(ds, si);
+     if (bl == 0xff)
+@@ -4187,6 +4226,7 @@
+         default:
+             stop("ind 1b0c:16d6");
+     }
++    if (stackOverride) { stackOverride = false; return; }
+     si += 0x000b;
+     if (!memoryAGet(cs, 0x3259))
+         goto loc_1c78d;
+@@ -4253,10 +4293,12 @@
+ {
+     sub_1ca4a();
+     sub_1ce96();
++    if (stackOverride) return;
+     if (!memoryAGet(ds, si))
+         goto loc_1c842;
+     sub_1ca4a();
+     sub_1ce96();
++    if (stackOverride) return;
+ loc_1c842: // 1b0c:1782
+     return;
+ }
+@@ -4285,11 +4327,7 @@
+     if (al > bl)
+         goto loc_1ce95;
+     sub_1e01c();
+-    cx = pop();
+-    // stop("stack_below");
+-    cx = pop();
+-    cx = pop();
+-    // stop("stack_unbalanced");
++    stackOverride = true;
+     return;
+ loc_1ce92: // 1b0c:1dd2
+     memoryASet(ds, si, 0x00);
+@@ -4368,6 +4406,7 @@
+ loc_1d326: // 1b0c:2266
+     sub_1d330();
+     sub_1d37e();
++    if (stackOverride) { stackOverride = false; return; }
+     sub_1d3a1();
+ }
+ void sub_1c85b() // 1b0c:179b
+@@ -4594,6 +4633,7 @@
+     push(cx);
+     sub_1ca4a();
+     sub_1ce96();
++    if (stackOverride) { pop(); pop(); pop(); return; }
+     cx = pop();
+     if (!memoryAGet(ds, si))
+         goto loc_1c9ad;
+@@ -4602,6 +4642,7 @@
+     sub_1caa4();
+ loc_1c9ad: // 1b0c:18ed
+     sub_1c9c5();
++    if (stackOverride) return;
+     sub_1ccfc();
+ loc_1c9b3: // 1b0c:18f3
+     cx = pop();
+@@ -4670,8 +4711,6 @@
+     return;
+     // gap 5829 bytes // gap 5829 bytes
+ loc_1e10f: // 1b0c:304f
+-    ax = pop();
+-    // stop("stack_below");
+     cx = pop();
+     si = pop();
+     sub_1c78d();
+@@ -4681,8 +4720,7 @@
+     sub_1c750();
+     sub_1e14e();
+     memoryASet(ds, 0x48df, 0x00);
+-    ax = pop();
+-    // stop("stack_unbalanced");
++    stackOverride = true;
+ }
+ void sub_1ca4a() // 1b0c:198a
+ {
+@@ -5424,7 +5462,9 @@
+ void sub_1ce96() // 1b0c:1dd6
+ {
+     sub_1cee6();
++    if (stackOverride) return;
+     sub_1d04b();
++    if (stackOverride) return;
+     sub_1d15f();
+     sub_1d1ae();
+     sub_1d105();
+@@ -5551,14 +5591,8 @@
+         goto loc_1cf43;
+     sub_1dea0();
+     sub_1e01c();
+-    if (si != 0x4d5e)
+-        goto loc_1cf42;
+-    ax = pop();
+-    // stop("stack_below");
+-    ax = pop();
+-    ax = pop();
+-    ax = pop();
+-    ax = pop();
++    stackOverride = true;
++    return;
+ loc_1cf42: // 1b0c:1e82
+     ax = pop();
+ loc_1cf43: // 1b0c:1e83
+@@ -5752,8 +5786,9 @@
+         goto loc_1d0b1;
+     memoryASet(ds, 0x48e5, 0x02);
+     sub_1d6be();
+-    ax = pop();
+-    // stop("stack_below");
++    // x86: pop ax; ret — skips caller's return, use stackOverride
++    stackOverride = true;
++    return;
+ loc_1d0b0: // 1b0c:1ff0
+     return;
+ loc_1d0b1: // 1b0c:1ff1
+@@ -5793,9 +5828,9 @@
+         goto loc_1d0f0;
+     sub_1d28e();
+     si = pop();
+-    ax = pop();
+-    // stop("stack_below");
+-    // stop("stack_unbalanced");
++    // x86: pop ax; ret — skips caller's return, use stackOverride
++    stackOverride = true;
++    return;
+ }
+ void sub_1d05e() // 1b0c:1f9e
+ {
+@@ -5832,8 +5867,8 @@
+         goto loc_1d0b1;
+     memoryASet(ds, 0x48e5, 0x02);
+     sub_1d6be();
+-    ax = pop();
+-    // stop("stack_below");
++    // x86: pop ax; ret — skips sub_1d04b's return, but caller already does sub_1d05e(); return;
++    // so just return normally
+ loc_1d0b0: // 1b0c:1ff0
+     return;
+ loc_1d0b1: // 1b0c:1ff1
+@@ -5873,9 +5908,7 @@
+         goto loc_1d0f0;
+     sub_1d28e();
+     si = pop();
+-    ax = pop();
+-    // stop("stack_below");
+-    // stop("stack_unbalanced");
++    // x86: pop ax; ret — same as above, just return normally
+ }
+ void sub_1d105() // 1b0c:2045
+ {
+@@ -6323,9 +6356,10 @@
+         goto loc_1d39f;
+     sub_1d3f0();
+ loc_1d39f: // 1b0c:22df
+-    ax = pop();
+-    // stop("stack_below");
+-    // stop("stack_unbalanced");
++    // Original x86: pop ax; ret — pops return address, skips back to sprite loop
++    // In C++ port: no emulated return addresses, so use stackOverride to skip sub_1c855's remaining code
++    stackOverride = true;
++    return;
+ }
+ void sub_1d3a1() // 1b0c:22e1
+ {
+@@ -8059,11 +8093,11 @@
+     sub_1ccfc();
+     sub_1f961();
+     sub_1c46f();
+-    if (memoryAGet(ds, 0x48d4) != 0x02)
+-        goto loc_1ddca;
+-    al = memoryAGet(ds, 0x5870);
+-    if (memoryAGet(ds, 0x48d7) > al)
+-        goto loc_1ddca;
++//    if (memoryAGet(ds, 0x48d4) != 0x02)
++//        goto loc_1ddca;
++//    al = memoryAGet(ds, 0x5870);
++//    if (memoryAGet(ds, 0x48d7) > al)
++//        goto loc_1ddca;
+     memoryASet(ds, 0x48cf, 0x03);
+     sub_1ccfc();
+ }
+@@ -9246,8 +9280,10 @@
+ loc_1f31e: // 1b0c:425e
+     return;
+ }
+-void sub_1f320() // 1b0c:4260
++void sub_1f320(bool resume) // 1b0c:4260
+ {
++    if (resume)
++        goto resume_1b0c_4269;
+     goto loc_1f320;
+ loc_1c4da: // 1b0c:141a
+     sub_1c3a8();
+@@ -9270,6 +9306,7 @@
+     sub_1f6d9();
+     sub_1f6b1();
+     sub_1f64d();
++resume_1b0c_4269:
+     if (flags.carry)
+         goto loc_1f341;
+     sub_1f66a();
+@@ -9283,6 +9320,11 @@
+     if (--cx && flags.zero)
+         goto loc_1f331;
+     sub_1f83b();
++    if (resume)
++    {
++        sub_1b0c0(true);
++        assert(0);
++    }
+     return;
+ loc_1f341: // 1b0c:4281
+     ax = 0x5d95;
+@@ -9305,14 +9347,14 @@
+ {
+     push(ax);
+     push(bx);
+-    sub_1f37c();
++    sub_1f37c_ctxswitch1();
+     bx = pop();
+     ax = pop();
+     if (flags.carry)
+         goto loc_1f377;
+     cx = 0;
+     dx = 0;
+-    sub_1f41f();
++    sub_1f41f_ctxswitch2();
+     push(cx);
+     push(dx);
+     sub_1f404();
+@@ -9324,23 +9366,20 @@
+ }
+ void sub_1f364() // 1b0c:42a4
+ {
++//    stop(/*override stack*/);
+     bx = pop();
+-    // stop("stack_below");
+     ax = pop();
+-    if (stop("condition depends on an unset flag"))
+-        goto loc_1f377;
++    if (flags.carry)
++        return;
+     cx = 0;
+     dx = 0;
+-    sub_1f41f();
++    sub_1f41f_ctxswitch2();
+     push(cx);
+     push(dx);
+     sub_1f404();
+     dx = pop();
+-    // stop("stack_below");
+     cx = pop();
+     flags.carry = false;
+-loc_1f377: // 1b0c:42b7
+-    // stop("stack_unbalanced");
+     return;
+ }
+ void sub_1f36f() // 1b0c:42af
+@@ -9351,17 +9390,22 @@
+     dx = pop();
+     cx = pop();
+     flags.carry = false;
++    // continues 1b0c:45a9?
++    //continues 1b0c:4269
++    sub_1f320(true);
++    assert(0);
+ }
+-void sub_1f37c() // 1b0c:42bc +returnCarry
++void sub_1f37c_ctxswitch1() // 1b0c:42bc +returnCarry
+ {
+-    sp -= 2;
++    push(0x7777);
+     sub_1f404();
+     ah = 0x3d;
+     al = 0;
+     interrupt(0x21);
+     if (!flags.carry)
+         goto loc_1f388;
+-    sp += 2; return;
++    assert(pop() == 0x7777);
++    return;
+ loc_1f388: // 1b0c:42c8
+     memoryASet16(cs, 0x42ba, ax);
+     ax = 0x1118;
+@@ -9401,8 +9445,10 @@
+     sp = dx;
+     flags.interrupts = true;
+     flags.carry = false;
+-    // stop("stack_unbalanced");
+-    sp += 2;
++    assert(pop() == 0x7777);
++    // continues 1b0c:42a4
++    sub_1f364();
++    assert(0);
+ }
+ void sub_1f404() // 1b0c:4344
+ {
+@@ -9416,9 +9462,8 @@
+ loc_1f41d: // 1b0c:435d
+     flags.carry = false;
+ }
+-void sub_1f41f() // 1b0c:435f
++void sub_1f41f_ctxswitch2() // 1b0c:435f
+ {
+-    sp -= 2;
+     memoryASet16(cs, 0x455e, ax);
+     memoryASet16(cs, 0x4560, bx);
+     memoryASet16(cs, 0x43ae, cx);
+@@ -9452,12 +9497,11 @@
+     cx = pop();
+     bx = pop();
+     ax = pop();
+-    // stop("stack_unbalanced");
+-    sp += 2;
++    sub_1f4b3();
++    if (stackOverride) { stackOverride = false; return; }
+ }
+-void sub_1f472() // 1b0c:43b2
++void sub_1f472_ctxswitch3() // 1b0c:43b2
+ {
+-    sp -= 2;
+     push(ax);
+     push(bx);
+     push(cx);
+@@ -9490,8 +9534,9 @@
+     tx = pop();
+     flags.carry = tx & 1;
+     flags.zero = (tx << 1) & 1;
+-    // stop("stack_unbalanced");
+-    sp += 2;
++    // ctx continues 1b0c:42af
++    sub_1f36f();
++    stackOverride = true;
+ }
+ void sub_1f4b3() // 1b0c:43f3
+ {
+@@ -9505,7 +9550,8 @@
+     if (ax != 0x0101)
+         goto loc_1f4ce;
+     flags.carry = false;
+-    sub_1f472();
++    sub_1f472_ctxswitch3();
++    if (stackOverride) { stackOverride = false; return; }
+ loc_1f4ce: // 1b0c:440e
+     if (ax != 0x0100)
+         goto loc_1f4ed;
+@@ -9648,7 +9694,8 @@
+     if (memoryAGet16(cs, 0x4564))
+         goto loc_1f61d;
+     flags.carry = false;
+-    sub_1f472();
++    sub_1f472_ctxswitch3();
++    if (stackOverride) { stackOverride = false; return; }
+ loc_1f61d: // 1b0c:455d
+     return;
+ }
+@@ -9724,6 +9771,9 @@
+ }
+ void sub_1f6be() // 1b0c:45fe
+ {
++    if (arkanoidSkipIntro)
++      goto loc_1f6d5;
++
+     ah = 0;
+     interrupt(0x1a);
+     flags.carry = dx < memoryAGet16(ds, 0x615b);
+@@ -9754,6 +9804,7 @@
+     ds = pop();
+     sub_1fb2b();
+     es = pop();
++    sync();
+ }
+ void sub_1f6fc() // 1b0c:463c
+ {
+@@ -10099,6 +10150,7 @@
+ }
+ void sub_1f961() // 1b0c:48a1
+ {
++    sync(); // wait for vsync frame
+     dx = 0x03da;
+ loc_1f964: // 1b0c:48a4
+     in(al, dx);

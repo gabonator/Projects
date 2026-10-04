@@ -387,15 +387,26 @@ public:
                 
                 if (sel.size() == 2)
                     sel = OffsetRegister(sel); // js reg transform
-                std::string aux = format("    switch (%s)\n    {\n", sel.c_str());
+                std::string aux;
+                bool needsTemp = (sel.find("pop()") != std::string::npos);
+                if (needsTemp)
+                {
+                    aux += format("    { uint16_t _sel = %s;\n", sel.c_str());
+                    sel = "_sel";
+                }
+                aux += format("    switch (%s)\n    {\n", sel.c_str());
                 for (auto p : st.opSwitchCases)
                     if (p.second->type == StatementIr::Type_t::DirectJump)
                         aux += format("        case %s: %s\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                     else
                         aux += format("        case %s: %s break;\n", ToString(p.first).c_str(), trim(ToString(*p.second)).c_str());
                 aux += "        default:\n";
-                aux += format("            stop(\"ind %s\");\n", st.address.toString().c_str()); // TODO
+                if (mOptions->verboseIndirect)
+                    aux += format("            printf(\"indirect call from %s to 0x%%04x\\n\", %s);\n", st.address.toString().c_str(), sel.c_str());
+                aux += format("            stop(\"ind %s\");\n", st.address.toString().c_str());
                 aux += "    }";
+                if (needsTemp)
+                    aux += " }";
                 return aux;
             }
             default:

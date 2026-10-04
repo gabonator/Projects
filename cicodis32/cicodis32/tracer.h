@@ -58,7 +58,7 @@ instruction_t Instructions[X86_INS_ENDING] = {
     [X86_INS_JP] = { .conditional = true, .simpleJump = true },
     [X86_INS_JRCXZ] = { .conditional = true, .simpleJump = true },
     [X86_INS_JS] = { .conditional = true, .simpleJump = true },
-    [X86_INS_LOOP] = { .simpleJump = true },
+    [X86_INS_LOOP] = { .conditional = true, .simpleJump = true },
     [X86_INS_LOOPE] = { .simpleJump = true, .conditional = true },
     [X86_INS_LOOPNE] = { .simpleJump = true, .conditional = true },
     [X86_INS_CALL] = { .savedVisiblyCarry = true },
@@ -190,6 +190,8 @@ public:
     {
         if (mId != X86_INS_JMP && mId != X86_INS_LJMP)
             return false;
+        if (mDetail.op_count == 2)
+            return false; // direct far jump (jmp far seg:ofs)
         assert(mDetail.op_count == 1);
         return mDetail.operands[0].type != X86_OP_IMM;
     }
@@ -634,6 +636,10 @@ public:
     {
         return mLoader->GetBufferAt(addr);
     }
+    bool InRange(address_t addr)
+    {
+        return mLoader->InRange(addr);
+    }
     
     //
     void Preprocess(cs_insn* insn)
@@ -696,6 +702,11 @@ public:
                 if (verbose)
                     printf("disasm: %x->%x ", addr.first.offset, addr.second.offset);
                
+                if (!Capstone->InRange(addr.second))
+                {
+                    fprintf(stderr, "Skipping out-of-range address: %04x:%04x\n", addr.second.segment, addr.second.offset);
+                    continue;
+                }
                 std::shared_ptr<CapInstr> instr = Capstone->Disasm(addr.second);
                 assert(instr);
                 if (instr->mAddress == a && instr->IsDirectJump() && !instr->IsConditionalJump())

@@ -32,15 +32,20 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
             return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_REG("cs", 2).get(), .opin2 = OP_X86(instr, 0).get()};
     },
     [X86_INS_LJMP] = [](convert_args){
+        if (instr->mDetail.op_count == 2 && instr->mDetail.operands[0].type == X86_OP_IMM && instr->mDetail.operands[1].type == X86_OP_IMM)
+        {
+            address_t target{(int)instr->mDetail.operands[0].imm, (int)instr->mDetail.operands[1].imm};
+            return StatementIr{.type = StatementIr::Type_t::DirectJump, .target = target};
+        }
         assert(instr->mDetail.op_count == 1 && instr->mDetail.operands[0].type == X86_OP_MEM);
-        
+
         cs_x86_op lowWord = instr->mDetail.operands[0];
         cs_x86_op highWord = instr->mDetail.operands[0];
         assert(highWord.type == X86_OP_MEM);
         highWord.mem.disp += 2;
         highWord.size = 2;
         lowWord.size = 2;
-        
+
         return StatementIr{.type = StatementIr::Type_t::IndirectJump, .opin1 = OP_X86(highWord).get(), .opin2 = OP_X86(lowWord).get()};
     },
     [X86_INS_LOOP] = [](convert_args){
@@ -271,6 +276,9 @@ std::function<StatementIr(convert_args)> convertir[X86_INS_ENDING] = {
         .type = StatementIr::Type_t::Function,
         .func = func.arch == arch_t::arch16 ? "cbw" : "cwde"}; },
     [X86_INS_NOP] = [](convert_args){ return StatementIr{}; },
+    [X86_INS_DAA] = [](convert_args){ return StatementIr{
+        .type = StatementIr::Type_t::Function,
+        .func = "daa"}; },
     
     [X86_INS_XCHG] = [](convert_args){
         int tempSize = instr->mDetail.operands[0].size;

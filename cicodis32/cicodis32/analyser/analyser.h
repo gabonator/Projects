@@ -554,6 +554,35 @@ public:
                 }
             }
         }
+        // Propagate returnZero/returnCarry through RET jump tables (push/ret vtable pattern)
+        procRequest_t flagMask = (procRequest_t)((int)info->func.request & ((int)procRequest_t::returnZero | (int)procRequest_t::returnCarry));
+        if (flagMask != procRequest_t::none)
+        {
+            for (auto& i : info->code)
+            {
+                if (i.second->instr->mId == X86_INS_RET || i.second->instr->mId == X86_INS_RETF)
+                {
+                    for (auto& jt : mOptions->GetJumpTables(i.second->instr->mAddress))
+                    {
+                        if (jt->type == jumpTable_t::switch_e::CallWords)
+                        {
+                            for (int k = 0; k < jt->GetSize(); k++)
+                            {
+                                if (jt->IsValid(k))
+                                {
+                                    address_t target = jt->GetTarget(k);
+                                    procRequest_t r = (procRequest_t)((int)procRequest_t::callNear | (int)flagMask);
+                                    if (aux.find(target) == aux.end())
+                                        aux.insert({target, r});
+                                    else
+                                        aux[target] = (procRequest_t)((int)aux[target] | (int)r);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return aux;
     }
 

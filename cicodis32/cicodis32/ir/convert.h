@@ -164,8 +164,8 @@ public:
                 }
             }
             
-            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret)
-                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop});
+            if (!pinfo->stop.empty() && pinfo->instr->mTemplate.ret && !mOptions->GetJumpTables(pinstr->mAddress).size())
+                append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = pinfo->stop, .comment = p.first.toString()});
             
             if (pinfo->infiniteLoop)
             {
@@ -180,7 +180,12 @@ public:
                     append(p.first, OP_FUNCTION("stop", OP_STR("\"infinite loop\"")));
             }
 
-            if (pinfo->instr->mTemplate.ret)
+            if (pinfo->instr->mTemplate.ret && mOptions->GetJumpTables(pinstr->mAddress).size())
+            {
+                // RET with jump table = push/ret indirect call pattern
+                append(p.first, DumpIndirectTables(pinstr, info->func));
+            }
+            else if (pinfo->instr->mTemplate.ret)
             {
                  for (const instrInfo_t::instrInfoFlag_t* flag : pinfo->Flags())
                  {
@@ -199,10 +204,10 @@ public:
                              {
                                  append(p.first, StatementIr{.type = StatementIr::Type_t::Stop, .stop = "too complex condition"});
                              } else {
-                                 
+
                                  StatementIr st;
                                  shared<instrInfo_t> lastSetInstr = mInfo->code.find(*flag->lastSet.begin())->second;
-                                 
+
                                  static const char* flagName[128] = {['c'] = "flags.carry",
                                      ['z'] = "flags.zero", ['s'] = "flags.sign", ['o'] = "flags.overflow"};
                                  static const x86_insn flagCond[128] = {
@@ -211,7 +216,7 @@ public:
                                      ['s'] = X86_INS_JS,
                                  };
                                  std::string useFlagName(flagName[flag->type]);
-                                 
+
                                  st = StatementIr{.type = StatementIr::Type_t::Assignment,
                                          .opd = std::make_shared<OperandIr>(OperandIr::Type_t::Variable, useFlagName),
                                          .stmt1 = std::make_shared<StatementIr>(PreCondition(lastSetInstr->instr, flagCond[flag->type]))
@@ -221,7 +226,7 @@ public:
                          }
                      }
                  }
-                
+
                 auto stf = convertir[pinstr->mId];
                 assert(stf);
                 StatementIr st = stf(pinstr, pinfo, info->func);
@@ -403,7 +408,7 @@ private:
     StatementIr Condition(x86_insn setter, x86_insn getter)
     {
         // TODO: duplicity
-        if (setter == X86_INS_CALL)
+        if (setter == X86_INS_CALL || setter == X86_INS_POPF)
         {
             // Flag-based conditions
             if (getter == X86_INS_JA)
@@ -422,11 +427,21 @@ private:
                 return !OP_VAR("flags.sign");
             if (getter == X86_INS_JS)
                 return COMPARE(OP_VAR("flags.sign"));
+            if (getter == X86_INS_LOOPE)
+            {
+                if(mOptions->arch == arch_t::arch16)
+                    return OP_BINARY(OP_UNARY("--", OP_REG("cx", 2)), "&&", OP_VAR("flags.zero"));
+                else
+                    return OP_BINARY(OP_UNARY("--", OP_REG("ecx", 4)), "&&", OP_VAR("flags.zero"));
+            }
 
-            assert(0);
+            StatementIr stop = OP_FUNCTION("stop");
+            stop.comment = format("unhandled condition(2), setter: %s, getter: %s", Capstone->ToString(setter), Capstone->ToString(getter));
+            return stop;
         }
-        assert(0);
-        return {};
+        StatementIr stop = OP_FUNCTION("stop");
+        stop.comment = format("unhandled condition(3), setter: %s, getter: %s", Capstone->ToString(setter), Capstone->ToString(getter));
+        return stop;
     }
     StatementIr PreCondition(shared<CapInstr> set, x86_insn getter)
     {
@@ -537,8 +552,11 @@ private:
         // only instructions which do modify registers
         if (setter == X86_INS_CMP || setter == X86_INS_TEST)
             return Condition(set, getter);
+        // CBW/CWD/CWDE don't modify flags - treat as transparent
+        if (setter == X86_INS_CBW || setter == X86_INS_CWD || setter == X86_INS_CWDE || setter == X86_INS_CDQ)
+            return Condition(set, getter);
         
-        assert(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_SHR || setter == X86_INS_XOR);
+        if (!(setter == X86_INS_ADD || setter == X86_INS_OR || setter == X86_INS_AND || setter == X86_INS_ADC || setter == X86_INS_SUB || setter == X86_INS_INC || setter == X86_INS_DEC || setter == X86_INS_SHR || setter == X86_INS_SHL || setter == X86_INS_SAR || setter == X86_INS_NEG || setter == X86_INS_XOR || setter == X86_INS_SBB || setter == X86_INS_RCL || setter == X86_INS_RCR || setter == X86_INS_ROL || setter == X86_INS_ROR || setter == X86_INS_DAA || setter == X86_INS_DAS)) { fprintf(stderr, "Unknown setter: %d at %04x:%04x\n", setter, set->mAddress.segment, set->mAddress.offset); assert(0); }
         
         // Note: apply the basic condition after the instruction was evaluated, not before!
         StatementIr stat = Condition(set, getter);
@@ -678,7 +696,7 @@ private:
         }
         
         // destructive
-        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR  || setter == X86_INS_SHL)
+        if (setter == X86_INS_DEC || setter == X86_INS_INC ||setter == X86_INS_ADD || setter == X86_INS_SUB || setter == X86_INS_SHR || setter == X86_INS_ADC || setter == X86_INS_ADD || setter == X86_INS_SAR || setter == X86_INS_XOR  || setter == X86_INS_SHL || setter == X86_INS_RCR || setter == X86_INS_RCL || setter == X86_INS_SBB || setter == X86_INS_NEG || setter == X86_INS_AND || setter == X86_INS_OR)
         {
             switch (getter)
             {
@@ -691,8 +709,26 @@ private:
                     return OP_X86(set, 0) == OP_CONST(0);
                 case X86_INS_JNE:
                     return OP_X86(set, 0) != OP_CONST(0);
+                case X86_INS_JGE:
+                    return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(0);
+                case X86_INS_JG:
+                    return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(0);
+                case X86_INS_JLE:
+                    return OP_SIGNED(OP_X86(set, 0)) <= OP_CONST(0);
+                case X86_INS_JL:
+                    return OP_SIGNED(OP_X86(set, 0)) < OP_CONST(0);
+                case X86_INS_JA:
+                    return OP_X86(set, 0) > OP_CONST(0);
+                case X86_INS_JBE:
+                    return OP_X86(set, 0) <= OP_CONST(0);
+                case X86_INS_JAE:
+                case X86_INS_JB:
                 default:
-                    assert(0);
+                {
+                    StatementIr stop = OP_FUNCTION("stop");
+                    stop.comment = format("carry condition, setter: %s, getter: %s, addr %s", Capstone->ToString(setter), Capstone->ToString(getter), set->mAddress.toString().c_str());
+                    return stop;
+                }
             }
         }
         if (setter == X86_INS_TEST)
@@ -742,8 +778,34 @@ private:
         if (setter == X86_INS_SAHF)
             return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "TODO: reads sahf"};
 
-        assert(0);
-        return StatementIr{}; // Return empty statement on error
+        // DAA/DAS modify flags based on AL result
+        if (setter == X86_INS_DAA || setter == X86_INS_DAS)
+        {
+            switch (getter)
+            {
+                case X86_INS_JE:
+                    return OP_REG("al", 1) == OP_CONST(0);
+                case X86_INS_JNE:
+                    return OP_REG("al", 1) != OP_CONST(0);
+                case X86_INS_JB:
+                    return COMPARE(OP_VAR("flags.carry"));
+                case X86_INS_JAE:
+                    return !COMPARE(OP_VAR("flags.carry"));
+                default:
+                {
+                    StatementIr stop = OP_FUNCTION("stop");
+                    stop.comment = format("bad condition, setter: DAA/DAS, getter: %s", Capstone->ToString(getter));
+                    return stop;
+                }
+            }
+        }
+
+        {
+            fprintf(stderr, "Unhandled Condition: setter=%d (%s) getter=%d (%s) at %04x:%04x\n", setter, Capstone->ToString(setter), getter, Capstone->ToString(getter), set->mAddress.segment, set->mAddress.offset);
+            StatementIr stop = OP_FUNCTION("stop");
+            stop.comment = format("unhandled condition, setter: %s, getter: %s", Capstone->ToString(setter), Capstone->ToString(getter));
+            return stop;
+        }
     }
 
     StatementIr String(shared<instrInfo_t> instr, const funcInfo_t& func)
@@ -919,6 +981,27 @@ private:
                         selectorIr = OP_X86(instr, 0).get();
                     else
                         assert(0);
+                }
+                // JMP with 16-bit near jump table (JumpWords)
+                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::JumpWords)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                        selectorIr = OP_X86(instr, 0).get();
+                    else
+                        assert(0);
+                }
+                // JMP with callsNear (tail call via indirect jump)
+                else if (instr->mId == X86_INS_JMP && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallWords)
+                {
+                    if (instr->mDetail.operands[0].type == X86_OP_MEM || instr->mDetail.operands[0].type == X86_OP_REG)
+                        selectorIr = OP_X86(instr, 0).get();
+                    else
+                        assert(0);
+                }
+                // RET with callsNear (push/ret indirect call pattern)
+                else if ((instr->mId == X86_INS_RET || instr->mId == X86_INS_RETF) && jt->type == jumpTable_t::switch_e::CallWords)
+                {
+                    selector = "pop()";
                 }
 //                else if (instr->mId == X86_INS_CALL && instr->mDetail.op_count == 1 && jt->type == jumpTable_t::switch_e::CallDwords)
 //                    selector = iformat(instr, info, func, "cs*0x10000 + $rd0");

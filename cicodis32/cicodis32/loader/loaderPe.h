@@ -5,6 +5,8 @@
 //  Created by Gabriel Valky on 15/11/2025.
 //
 
+#pragma once
+#include "../common.h"
 #include <map>
 #include "win32/dllimport.h"
 #include "win32/dlldecl.h"
@@ -130,7 +132,7 @@ public:
         if (!(pe->Signature[0] == 'P' && pe->Signature[1] == 'E')) return false;
         const COFFHeader* coff = (const COFFHeader*)(&mBytes[pe_offset + sizeof(PEHeader)]);
         const OptionalHeader* opt = (const OptionalHeader*)(&mBytes[pe_offset + sizeof(PEHeader) + sizeof(COFFHeader)]);
-        mImageBase = opt->ImageBase;
+        mImageBase = (uint32_t)loadAddress;
         mEntryPoint = opt->AddressOfEntryPoint;
         mSizeOfImage = opt->SizeOfImage;
         mSizeOfStackReserve = opt->SizeOfStackReserve;
