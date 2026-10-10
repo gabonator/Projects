@@ -1,0 +1,102 @@
+--- host/dynablaster.cpp.orig
++++ host/dynablaster.cpp
+@@ -475,6 +475,7 @@
+     ax = 0x0011;
+     di = 0x0000;
+     sub_2c81();
++    sync();
+     if (memoryAGet(ds, 0x0026))
+         goto loc_2129;
+     sub_699a();
+@@ -2797,7 +2798,7 @@
+     cx = pop();
+     bx = pop();
+     ax = pop();
+-    goto loc_32c8;
++    return; // was: goto loc_32c8 (chain to original INT 0x1c)
+ }
+ void sub_32e0() // 01ed:1410
+ {
+@@ -2883,7 +2884,7 @@
+     cx = pop();
+     bx = pop();
+     ax = pop();
+-    goto loc_33b6;
++    return; // was: goto loc_33b6 (chain to original INT 0x09)
+ }
+ void sub_33d1() // 01ed:1501
+ {
+@@ -3053,6 +3054,8 @@
+ }
+ void sub_350c() // 01ed:163c
+ {
++    sync();
++    return;
+     if (memoryAGet(ds, 0x204f))
+         goto loc_351a;
+ loc_3513: // 01ed:1643
+@@ -3366,6 +3369,7 @@
+     al &= 0x03;
+     if (!al)
+         goto loc_3840;
++    sync();
+     if (memoryAGet(ds, 0x236c))
+         goto loc_383e;
+     al = ah;
+@@ -5315,6 +5319,7 @@
+     ax = memoryAGet16(ds, 0x001a);
+     sub_305b();
+ loc_4b27: // 01ed:2c57
++    sync();
+     sub_5476();
+     if (al & 0x10)
+         goto loc_4b7b;
+@@ -5491,9 +5496,12 @@
+ }
+ void sub_4cd0() // 01ed:2e00
+ {
++    sync();
++    return;
+ loc_4cd0: // 01ed:2e00
+     memoryASet(ds, 0x0020, 0xff);
+ loc_4cd5: // 01ed:2e05
++    sync();
+     al = memoryAGet(ds, 0x0020);
+     if ((char)al < 0x00)
+         goto loc_4cd5;
+@@ -6354,6 +6362,11 @@
+ }
+ void sub_5429() // 01ed:3559
+ {
++    sync();
++    sync();
++    sync();
++    sync();
++    return;
+ loc_5429: // 01ed:3559
+     ax = memoryAGet16(ds, 0x001c);
+ loc_542c: // 01ed:355c
+@@ -6398,6 +6411,7 @@
+ }
+ void sub_5476() // 01ed:35a6
+ {
++    sync();
+     sub_552a();
+     al = memoryAGet(ds, 0x37f3);
+     al |= memoryAGet(ds, 0x37f4);
+@@ -6473,13 +6487,13 @@
+     bl = 0x20;
+     bh = 0x00;
+     sub_567c();
+-    memoryASet(ds, 0x37f1, bh);
++//    memoryASet(ds, 0x37f1, bh);
+     si = 0x37eb;
+     ah = 0x00;
+     bl = 0x80;
+     bh = 0x00;
+     sub_567c();
+-    memoryASet(ds, 0x37f2, bh);
++//    memoryASet(ds, 0x37f2, bh);
+     if (memoryAGet(ds, 0x37f9))
+         goto loc_55b4;
+     memoryASet(ds, 0x37f0, 0x00);

@@ -1,0 +1,11 @@
+{"id": "config", "loader": "LoaderMz", "executable": "dos/dyna.exe", "architecture": "arch16", "loadAddress": 0x01ed0}
+{"id": "config", "frontend": "c++"}
+{"id": "config", "verboseIndirect": "true"}
+
+// ISR handlers: INT 0x1c (timer tick), INT 0x09 (keyboard), INT 0x1b (ctrl-break)
+{"id":"config","procList":["01ed:1355","01ed:1410","01ed:15dd"]}
+
+// sound driver dispatch tables (empty - stubs)
+{"id": "jumpTable", "addr": "096b:077c", "callsNear": []}
+{"id": "jumpTable", "addr": "0a07:1141", "callsNear": []}
+{"id": "jumpTable", "addr": "0a07:1150", "callsNear": []}

@@ -499,8 +499,6 @@ private:
             return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
         if (setter == X86_INS_DEC && getter == X86_INS_JG)
             return OP_SIGNED(OP_X86(set, 0)) > OP_CONST(1);
-        if (setter == X86_INS_DEC && getter == X86_INS_JE)
-            return OP_SIGNED(OP_X86(set, 0)) >= OP_CONST(1);
         if (setter == X86_INS_ADD && getter == X86_INS_JG)
             return (OP_SIGNED(OP_X86(set, 0)) + OP_SIGNED(OP_X86(set, 1))) > OP_CONST(0);
         if (setter == X86_INS_SUB && getter == X86_INS_JLE)
@@ -541,6 +539,10 @@ private:
             return OP_X86(set, 0) < OP_BINARY(OP_X86(set, 1), "+", OP_VAR("flags.carry"));
         if (setter == X86_INS_OR && getter == X86_INS_JE)
             return !COMPARE(OP_X86(set, 0) | OP_X86(set, 1));
+
+        // SAR/SHR carry: last bit shifted out. Pre-condition since operand is modified by shift.
+        if ((setter == X86_INS_SAR || setter == X86_INS_SHR) && getter == X86_INS_JB)
+            return OP_X86(set, 0) & OP_CONST(1);
 
         if (getter == X86_INS_FNSTSW)
             return StatementIr{.type = StatementIr::Type_t::Stop, .stop = "FNSTSW reads flags"};

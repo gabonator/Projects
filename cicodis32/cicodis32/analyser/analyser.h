@@ -421,6 +421,9 @@ public:
                     break;
                 case X86_INS_XCHG:
                     break;
+                case X86_INS_PUSH:
+                case X86_INS_POP:
+                    break;
                 default:
                     assert(0);
             }

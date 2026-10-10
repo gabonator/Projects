@@ -215,7 +215,7 @@ struct jumpTable_t {
                 if (useCaseOffset)
                     return format("case 0x%04x: sub_%x(); break;", GetTarget(i).offset, GetTarget(i).linearOffset());
                 else
-                    return format("case %d: sub_%x(); break;", i*2, GetTarget(i).linearOffset());
+                    return format("case %d: sub_%x(); break;", elements[i]*2, GetTarget(i).linearOffset());
             case CallDwords:
                 if (useCaseOffset)
                     return format("case 0x%x: push(cs); cs = 0x%04x; sub_%x(); assert(cs == 0x%04x); break;", (GetTarget(i).segment<<16) | GetTarget(i).offset, GetTarget(i).segment, GetTarget(i).linearOffset(), instruction.segment);
@@ -226,7 +226,7 @@ struct jumpTable_t {
                 if (useCaseOffset)
                     return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset,  GetTarget(i).linearOffset());
                 else
-                    return format("case %d: goto loc_%x;", i*2,  GetTarget(i).linearOffset());
+                    return format("case %d: goto loc_%x;", elements[i]*2,  GetTarget(i).linearOffset());
             }
             case JumpFix:
                 return format("case 0x%04x: goto loc_%x;", GetTarget(i).offset, GetTarget(i).linearOffset());
@@ -257,7 +257,7 @@ struct jumpTable_t {
                 if (useCaseOffset)
                     return GetTarget(i).offset;
                 else
-                    return i*2;
+                    return elements[i]*2;
             case CallDwords:
                 if (useCaseOffset)
                     return (GetTarget(i).segment<<16) | GetTarget(i).offset;
@@ -268,7 +268,7 @@ struct jumpTable_t {
                 if (useCaseOffset)
                     return GetTarget(i).offset;
                 else
-                    return i*2;
+                    return elements[i]*2;
             }
             case JumpFix:
             case Call:
